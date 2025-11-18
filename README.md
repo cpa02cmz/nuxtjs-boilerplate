@@ -4,7 +4,7 @@ Deploy your [Nuxt](https://nuxt.com) project to Vercel with zero configuration.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/examples/tree/main/framework-boilerplates/nuxtjs&template=nuxtjs)
 
-_Live Example: https://nuxtjs-template.vercel.app_
+_Live Example: <https://nuxtjs-template.vercel.app>_
 
 Look at the [Nuxt 3 documentation](https://v3.nuxtjs.org) to learn more.
 
@@ -25,7 +25,8 @@ pnpm install
 
 ### Linting Setup
 
-This project uses ESLint with Nuxt.js configuration. After installing dependencies, you can run the linter with:
+This project uses ESLint with Nuxt.js configuration. After installing dependencies,
+you can run the linter with:
 
 ```bash
 # Run linting checks
@@ -37,7 +38,7 @@ pnpm run lint:fix
 
 ## Development Server
 
-Start the development server on http://localhost:3000
+Start the development server on <http://localhost:3000>
 
 ```bash
 npm run dev
