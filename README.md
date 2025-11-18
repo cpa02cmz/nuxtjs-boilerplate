@@ -19,8 +19,20 @@ yarn
 # npm
 npm install
 
-# pnpm
-pnpm install --shamefully-hoist
+# pnpm (recommended)
+pnpm install
+```
+
+### Linting Setup
+
+This project uses ESLint with Nuxt.js configuration. After installing dependencies, you can run the linter with:
+
+```bash
+# Run linting checks
+pnpm run lint
+
+# Fix linting issues automatically
+pnpm run lint:fix
 ```
 
 ## Development Server
