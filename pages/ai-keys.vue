@@ -11,61 +11,73 @@
       </div>
 
       <div class="space-y-8">
-        <ResourceCard
-          title="OpenAI API"
-          description="OpenAI provides a free tier for their API with limited usage. Perfect for testing and small projects."
-          :benefits="[
-            '$5 worth of usage for new users',
-            '3 free months of ChatGPT Plus for students',
-            'Limited requests per minute/hour/day',
-          ]"
-          url="https://platform.openai.com/"
-          button-label="Get Free API Key"
-        />
+        <ClientOnly>
+          <ResourceCard
+            title="OpenAI API"
+            description="OpenAI provides a free tier for their API with limited usage. Perfect for testing and small projects."
+            :benefits="[
+              '$5 worth of usage for new users',
+              '3 free months of ChatGPT Plus for students',
+              'Limited requests per minute/hour/day',
+            ]"
+            url="https://platform.openai.com/"
+            button-label="Get Free API Key"
+          />
+        </ClientOnly>
 
-        <ResourceCard
-          title="Hugging Face Inference API"
-          description="Access thousands of open-source AI models with Hugging Face's free inference API."
-          :benefits="[
-            '30,000 free tokens per month',
-            'Access to 100,000+ models',
-            'Community-hosted models',
-          ]"
-          url="https://huggingface.co/inference-api"
-          button-label="Access API"
-        />
+        <ClientOnly>
+          <ResourceCard
+            title="Hugging Face Inference API"
+            description="Access thousands of open-source AI models with Hugging Face's free inference API."
+            :benefits="[
+              '30,000 free tokens per month',
+              'Access to 100,000+ models',
+              'Community-hosted models',
+            ]"
+            url="https://huggingface.co/inference-api"
+            button-label="Access API"
+          />
+        </ClientOnly>
 
-        <ResourceCard
-          title="Google AI Studio"
-          description="Google's platform for building with their AI models, including Gemini."
-          :benefits="[
-            'Free usage up to monthly limits',
-            'Access to Gemini models',
-            'API keys for integration',
-          ]"
-          url="https://aistudio.google.com/"
-          button-label="Get API Key"
-        />
+        <ClientOnly>
+          <ResourceCard
+            title="Google AI Studio"
+            description="Google's platform for building with their AI models, including Gemini."
+            :benefits="[
+              'Free usage up to monthly limits',
+              'Access to Gemini models',
+              'API keys for integration',
+            ]"
+            url="https://aistudio.google.com/"
+            button-label="Get API Key"
+          />
+        </ClientOnly>
 
-        <ResourceCard
-          title="Anthropic Claude API"
-          description="Anthropic's Claude AI models with a generous free tier."
-          :benefits="[
-            '100,000 free input tokens per month',
-            '100,000 free output tokens per month',
-            'Access to Claude 3 models',
-          ]"
-          url="https://www.anthropic.com/api"
-          button-label="Get API Key"
-        />
+        <ClientOnly>
+          <ResourceCard
+            title="Anthropic Claude API"
+            description="Anthropic's Claude AI models with a generous free tier."
+            :benefits="[
+              '100,000 free input tokens per month',
+              '100,000 free output tokens per month',
+              'Access to Claude 3 models',
+            ]"
+            url="https://www.anthropic.com/api"
+            button-label="Get API Key"
+          />
+        </ClientOnly>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-// Import ResourceCard component
-import ResourceCard from '~/components/ResourceCard.vue'
+// Import ResourceCard component with dynamic import for better performance
+import { defineAsyncComponent } from 'vue'
+
+const ResourceCard = defineAsyncComponent(
+  () => import('~/components/ResourceCard.vue')
+)
 
 definePageMeta({
   layout: 'default',

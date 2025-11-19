@@ -5,13 +5,15 @@
     <div class="flex items-start">
       <!-- Using Nuxt Image for optimization -->
       <div v-if="icon" class="flex-shrink-0 mr-4">
-        <img
+        <NuxtImg
           :src="icon"
           :alt="title"
           width="48"
           height="48"
           class="w-12 h-12 rounded object-contain"
+          :preload="false"
           loading="lazy"
+          :sizes="imageSizes"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -52,13 +54,13 @@ interface Props {
   buttonLabel?: string
 }
 
-const {
-  title,
-  description,
-  benefits,
-  url,
-  icon = '',
-  newTab = true,
-  buttonLabel = 'Get Free Access',
-} = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  newTab: true,
+  buttonLabel: 'Get Free Access',
+})
+
+// Define responsive image sizes for optimization
+const imageSizes = ref('xs:48px sm:48px md:48px lg:48px xl:48px')
+
+const { title, description, benefits, url, icon = '', newTab, buttonLabel } = props
 </script>
