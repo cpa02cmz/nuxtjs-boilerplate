@@ -6,7 +6,6 @@ export default defineNuxtConfig({
   // Performance optimizations
   experimental: {
     payloadExtraction: true,
-    inlineSSRStyles: false,
   },
   nitro: {
     // Optimize server-side rendering
