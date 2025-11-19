@@ -1,6 +1,6 @@
 # Documentation
 
-Welcome to the documentation for the Free Stuff on the Internet website.
+Welcome to the documentation for the Nuxt.js Boilerplate project.
 
 ## 📚 Documentation Structure
 
