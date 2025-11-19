@@ -107,7 +107,7 @@ jobs:
             - Use `gh issue create` or `gh pr create` commands within the agent to perform creations.
           PROMPT
           )" \
-            --model iflowcn/glm-4.6 \
+            --model iflowcn/qwen3-coder-plus \
             --share false \
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
