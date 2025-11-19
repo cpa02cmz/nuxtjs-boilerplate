@@ -4,13 +4,9 @@ A modern Nuxt.js boilerplate with Tailwind CSS, ESLint, Prettier, and Stylelint 
 
 ## Features
 
-- ⚡️ [Nuxt 3](https://nuxt.com) - The Intuitive Vue Framework
-- 🎨 [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
-- 🔍 [ESLint](https://eslint.org) - Code linting and formatting
-- 💅 [Prettier](https://prettier.io) - Code formatting
-- 🎯 [Stylelint](https://stylelint.io) - CSS linting
-- 📦 [pnpm](https://pnpm.io) - Fast, disk space efficient package manager
-- 🚀 Optimized for production builds
+_Live Example: <https://nuxtjs-template.vercel.app>_
+
+Look at the [Nuxt 3 documentation](https://v3.nuxtjs.org) to learn more.
 
 ## Setup
 
@@ -23,13 +19,26 @@ pnpm install
 # npm
 npm install
 
-# yarn
-yarn install
+# pnpm (recommended)
+pnpm install
+```
+
+### Linting Setup
+
+This project uses ESLint with Nuxt.js configuration. After installing dependencies,
+you can run the linter with:
+
+```bash
+# Run linting checks
+pnpm run lint
+
+# Fix linting issues automatically
+pnpm run lint:fix
 ```
 
 ## Development
 
-Start the development server on http://localhost:3000
+Start the development server on <http://localhost:3000>
 
 ```bash
 pnpm run dev
