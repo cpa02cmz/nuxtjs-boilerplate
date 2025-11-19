@@ -11,6 +11,9 @@ permissions:
   pull-requests: write
   issues: write
   actions: read
+env:
+  GH_TOKEN: ${{ github.token }}
+  IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}
 
 jobs:
   gather_data:
@@ -71,9 +74,6 @@ jobs:
 
       - name: Run OpenCode1
         id: run_devin
-        with:
-          api_key: ${{ secrets.IFLOW_API_KEY }}
-          timeout: "7200"
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}
