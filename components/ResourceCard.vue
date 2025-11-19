@@ -60,8 +60,5 @@ const {
   icon,
   newTab = true,
   buttonLabel = 'Get Free Access',
-} = withDefaults(defineProps<Props>(), {
-  newTab: true,
-  buttonLabel: 'Get Free Access',
-})
+} = defineProps<Props>()
 </script>
