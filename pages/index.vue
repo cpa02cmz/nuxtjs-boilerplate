@@ -77,8 +77,4 @@
 <script setup>
 // Import ResourceCard component
 import ResourceCard from '~/components/ResourceCard.vue'
-
-definePageMeta({
-  layout: 'default',
-})
 </script>
