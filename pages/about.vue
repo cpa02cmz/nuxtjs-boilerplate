@@ -112,8 +112,4 @@
   </div>
 </template>
 
-<script setup>
-definePageMeta({
-  layout: 'default',
-})
-</script>
+<script setup></script>
