@@ -12,18 +12,21 @@
             <NuxtLink
               to="/"
               class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >Home</NuxtLink
             >
+              Home
+            </NuxtLink>
             <NuxtLink
               to="/ai-keys"
               class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >AI Keys</NuxtLink
             >
+              AI Keys
+            </NuxtLink>
             <NuxtLink
               to="/about"
               class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >About</NuxtLink
             >
+              About
+            </NuxtLink>
           </nav>
         </div>
       </div>

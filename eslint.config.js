@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 // ESLint flat config for Nuxt 3 project
 import js from '@eslint/js'
 import pluginPrettier from 'eslint-plugin-prettier'
@@ -139,6 +140,91 @@ export default [
         sourceType: 'module',
       },
       globals: {
+=======
+import js from '@eslint/js'
+import vuePlugin from 'eslint-plugin-vue'
+import globals from 'globals'
+import vueParser from 'vue-eslint-parser'
+import tsParser from '@typescript-eslint/parser'
+
+// Get the vue recommended config
+const vueRecommendedConfig = vuePlugin.configs['flat/recommended']
+
+export default [
+  js.configs.recommended,
+  ...vueRecommendedConfig,
+  {
+    // For Vue files
+    files: ['**/*.vue'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        definePageMeta: 'readonly',
+        defineNuxtConfig: 'readonly',
+        defineNuxtRouteMiddleware: 'readonly',
+        useRuntimeConfig: 'readonly',
+        useState: 'readonly',
+        useFetch: 'readonly',
+        useAsyncData: 'readonly',
+        navigateTo: 'readonly',
+        $fetch: 'readonly',
+      },
+      parser: vueParser,
+      parserOptions: {
+        parser: tsParser, // Use TypeScript parser for script blocks in Vue files
+        ecmaVersion: 2024,
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+    rules: {
+      'comma-dangle': ['error', 'only-multiline'],
+      'vue/multi-word-component-names': 'off',
+      'vue/html-self-closing': 'off',
+      'vue/max-attributes-per-line': 'off',
+      'vue/no-unused-vars': 'off', // Allow unused vars in templates
+    },
+  },
+  {
+    // For JS files
+    files: ['**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        definePageMeta: 'readonly',
+        defineNuxtConfig: 'readonly',
+        defineNuxtRouteMiddleware: 'readonly',
+        useRuntimeConfig: 'readonly',
+        useState: 'readonly',
+        useFetch: 'readonly',
+        useAsyncData: 'readonly',
+        navigateTo: 'readonly',
+        $fetch: 'readonly',
+      },
+    },
+    rules: {
+      'comma-dangle': ['error', 'only-multiline'],
+      'no-console': 'off',
+      'no-debugger': 'off',
+    },
+  },
+  {
+    // For TS files
+    files: ['**/*.ts'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+>>>>>>> 673cec2 (fix: migrate ESLint to flat config format and resolve linting issues)
         definePageMeta: 'readonly',
         defineNuxtConfig: 'readonly',
         defineNuxtRouteMiddleware: 'readonly',
@@ -150,6 +236,7 @@ export default [
         $fetch: 'readonly',
         defineNuxtPlugin: 'readonly',
       },
+<<<<<<< HEAD
     },
     plugins: {
       vue: pluginVue,
@@ -272,3 +359,28 @@ export default [
   },
 ]
 >>>>>>> 9273e24 ([maintenance] critical fixes for repository health)
+=======
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 2024,
+        sourceType: 'module',
+      },
+    },
+    rules: {
+      'comma-dangle': ['error', 'only-multiline'],
+      'no-console': 'off',
+      'no-debugger': 'off',
+    },
+  },
+  {
+    // Ignore generated files and build artifacts
+    ignores: [
+      '.nuxt/**',
+      'dist/**',
+      'build/**',
+      '.output/**',
+      'node_modules/**',
+    ],
+  },
+]
+>>>>>>> 673cec2 (fix: migrate ESLint to flat config format and resolve linting issues)
