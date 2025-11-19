@@ -405,14 +405,22 @@ function finalizePR(prNumber, success) {
 
       if (prStatus.mergeable === 'MERGEABLE') {
         console.log(`Attempting to merge PR #${prNumber}...`)
-        execSync(
-          `gh pr merge ${prNumber} --auto --delete-branch --admin --squash`,
-          {
-            stdio: 'pipe',
-          }
-        )
-        console.log(`✓ PR #${prNumber} merged successfully and branch deleted`)
-        return true
+        try {
+          execSync(
+            `gh pr merge ${prNumber} --auto --delete-branch --admin --squash`,
+            {
+              stdio: 'pipe',
+            }
+          )
+          console.log(
+            `✓ PR #${prNumber} merged successfully and branch deleted`
+          )
+          return true
+        } catch (mergeError) {
+          console.log(`⚠️ Could not merge PR due to: ${mergeError.message}`)
+          console.log(`PR #${prNumber} requires manual merge`)
+          return false
+        }
       } else {
         console.log(`PR #${prNumber} is not mergeable, requires manual review`)
         return false
@@ -424,14 +432,22 @@ function finalizePR(prNumber, success) {
         `⚠️ Some review comments could not be addressed automatically\n` +
         `⚠️ Manual review required`
 
-      execSync(`gh pr edit ${prNumber} --add-label "needs-human-review"`, {
-        stdio: 'pipe',
-      })
+      // Try to add label, but continue if it fails due to permissions
+      try {
+        execSync(`gh pr edit ${prNumber} --add-label "needs-human-review"`, {
+          stdio: 'pipe',
+        })
+      } catch (labelError) {
+        console.log(
+          `⚠️ Could not add label due to permission issues: ${labelError.message}`
+        )
+      }
+
       execSync(
         `gh pr comment ${prNumber} --body '${failComment.replace(/'/g, "'\"'\"'")}'`,
         { stdio: 'pipe' }
       )
-      console.log(`PR #${prNumber} labeled for manual review`)
+      console.log(`PR #${prNumber} commented for manual review`)
       return false
     }
   } catch (error) {
