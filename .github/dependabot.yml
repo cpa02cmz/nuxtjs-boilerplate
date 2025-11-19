@@ -1,0 +1,71 @@
+# Dependabot Configuration v2
+# See https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+    open-pull-requests-limit: 10
+    reviewers:
+      - 'cpa02cmz'
+    assignees:
+      - 'cpa02cmz'
+    commit-message:
+      prefix: 'deps'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'npm'
+    # Allow both direct and indirect dependencies
+    allow:
+      - dependency-type: 'direct'
+      - dependency-type: 'indirect'
+    # Ignore patch updates for some packages
+    ignore:
+      - dependency-name: 'eslint'
+        update-types: ['version-update:semver-patch']
+      - dependency-name: 'prettier'
+        update-types: ['version-update:semver-patch']
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+    open-pull-requests-limit: 5
+    reviewers:
+      - 'cpa02cmz'
+    assignees:
+      - 'cpa02cmz'
+    commit-message:
+      prefix: 'ci'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'github-actions'
+
+  # Enable version updates for Docker
+  - package-ecosystem: 'docker'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+    open-pull-requests-limit: 5
+    reviewers:
+      - 'cpa02cmz'
+    assignees:
+      - 'cpa02cmz'
+    commit-message:
+      prefix: 'docker'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'docker'
