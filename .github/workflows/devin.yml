@@ -20,7 +20,7 @@ concurrency:
 jobs:
   opencode:
     name: OC
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 40
     permissions:
       id-token: write
@@ -42,8 +42,8 @@ jobs:
         run: |
           curl -fsSL https://opencode.ai/install | bash
           echo "$HOME/.opencode/bin" >> $GITHUB_PATH
-      - name: Run OpenCode1
-        id: run_agent1
+      - name: Run devin
+        id: run_devin
         timeout-minutes: 20
         run: |
           opencode run "$(cat <<'PROMPT'
