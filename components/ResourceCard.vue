@@ -57,8 +57,10 @@ const {
   description,
   benefits,
   url,
-  icon,
+<<<<<<< HEAD
+  icon = '',
   newTab = true,
   buttonLabel = 'Get Free Access',
 } = defineProps<Props>()
 </script>
+>>>>>>> origin/main
