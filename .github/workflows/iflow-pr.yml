@@ -68,6 +68,13 @@ jobs:
         with:
           api_key: ${{ secrets.IFLOW_API_KEY }}
           timeout: "5400"
+          settings_json: |
+            {
+              "theme": "Dark",
+              "selectedAuthType": "iflow",
+              "apiKey": "${{ secrets.IFLOW_API_KEY }}",
+              "modelName": "qwen3-coder-plus",
+            }
           prompt: |
             ## ROLE
             You are an autonomous GitHub PR management agent.
