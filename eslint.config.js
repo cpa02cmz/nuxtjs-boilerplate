@@ -1,0 +1,213 @@
+// ESLint flat config for Nuxt 3 project
+import js from '@eslint/js'
+import pluginPrettier from 'eslint-plugin-prettier'
+import pluginVue from 'eslint-plugin-vue'
+import tsParser from '@typescript-eslint/parser'
+import tsPlugin from '@typescript-eslint/eslint-plugin'
+import vueParser from 'vue-eslint-parser'
+
+export default [
+  // Ignore generated and dependency directories
+  {
+    ignores: [
+      '**/.nuxt/**',
+      '**/.output/**',
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/coverage/**',
+      '**/public/**',
+    ],
+  },
+
+  // Base JavaScript rules
+  js.configs.recommended,
+
+  // Register plugins
+  {
+    plugins: {
+      vue: pluginVue,
+      prettier: pluginPrettier,
+      '@typescript-eslint': tsPlugin,
+    },
+  },
+
+  // JS files configuration
+  {
+    files: ['**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        browser: true,
+        node: true,
+        process: 'readonly',
+        Buffer: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        global: 'readonly',
+        console: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        defineNuxtPlugin: 'readonly',
+      },
+    },
+    linterOptions: {
+      reportUnusedDisableDirectives: true,
+    },
+    rules: {
+      // Basic code style
+      'prefer-const': [
+        'error',
+        {
+          destructuring: 'any',
+          ignoreReadBeforeAssign: false,
+        },
+      ],
+      'no-var': 'error',
+      'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+      'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+
+      // Prettier integration
+      'prettier/prettier': 'error',
+    },
+  },
+
+  // TS files configuration
+  {
+    files: ['**/*.ts'],
+    languageOptions: {
+      parser: tsParser,
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        browser: true,
+        node: true,
+        definePageMeta: 'readonly',
+        defineNuxtConfig: 'readonly',
+        defineNuxtRouteMiddleware: 'readonly',
+        useRuntimeConfig: 'readonly',
+        useState: 'readonly',
+        useFetch: 'readonly',
+        useAsyncData: 'readonly',
+        navigateTo: 'readonly',
+        $fetch: 'readonly',
+        defineNuxtPlugin: 'readonly',
+      },
+    },
+    linterOptions: {
+      reportUnusedDisableDirectives: true,
+    },
+    rules: {
+      // Basic code style
+      'prefer-const': [
+        'error',
+        {
+          destructuring: 'any',
+          ignoreReadBeforeAssign: false,
+        },
+      ],
+      'no-var': 'error',
+      'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+      'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+
+      // TypeScript specific
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'warn',
+
+      // Prettier integration
+      'prettier/prettier': 'error',
+    },
+  },
+
+  // Vue files configuration
+  {
+    files: ['**/*.vue'],
+    languageOptions: {
+      parser: vueParser,
+      parserOptions: {
+        parser: tsParser, // Use TS parser for script blocks in Vue files
+        ecmaVersion: 2022,
+        sourceType: 'module',
+      },
+      globals: {
+        definePageMeta: 'readonly',
+        defineNuxtConfig: 'readonly',
+        defineNuxtRouteMiddleware: 'readonly',
+        useRuntimeConfig: 'readonly',
+        useState: 'readonly',
+        useFetch: 'readonly',
+        useAsyncData: 'readonly',
+        navigateTo: 'readonly',
+        $fetch: 'readonly',
+        defineNuxtPlugin: 'readonly',
+      },
+    },
+    plugins: {
+      vue: pluginVue,
+      '@typescript-eslint': tsPlugin,
+      prettier,
+    },
+    rules: {
+      // Basic Vue rules
+      'vue/multi-word-component-names': 'off', // Allow single word component names in pages/layouts
+      'vue/no-multiple-template-root': 'error',
+
+      // TypeScript specific
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'warn',
+
+      // Code style
+      'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+      'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+
+      // Prettier integration
+      'prettier/prettier': 'error',
+    },
+  },
+
+  // Pages and layouts specific rules
+  {
+    files: [
+      '**/pages/**/*.{js,ts,vue}',
+      '**/layouts/**/*.{js,ts,vue}',
+      '**/app.{js,ts,vue}',
+      '**/error.{js,ts,vue}',
+    ],
+    rules: {
+      'vue/multi-word-component-names': 'off',
+    },
+  },
+
+  // Configuration for config files that need process global
+  {
+    files: ['eslint.config.js'],
+    languageOptions: {
+      globals: {
+        process: 'readonly',
+      },
+    },
+  },
+
+  // Configuration for plugin files that need browser globals
+  {
+    files: ['plugins/**/*.{js,ts}'],
+    languageOptions: {
+      globals: {
+        defineNuxtPlugin: 'readonly',
+        process: 'readonly',
+        window: 'readonly',
+        performance: 'readonly',
+        console: 'readonly',
+        navigator: 'readonly',
+      },
+    },
+  },
+]

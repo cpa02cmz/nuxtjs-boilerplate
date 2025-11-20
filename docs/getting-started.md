@@ -1,6 +1,6 @@
 # Getting Started
 
-This guide will help you set up the Nuxt.js Boilerplate project for development and deployment.
+This guide will help you set up the "Free Stuff on the Internet" project for development and deployment. This is a comprehensive directory platform built with Nuxt.js 3 that curates free resources for developers and tech enthusiasts.
 
 ## 📋 Prerequisites
 
@@ -52,7 +52,7 @@ Create a `.env` file in the root directory:
 ```env
 # Development
 NUXT_PUBLIC_SITE_URL=http://localhost:3000
-NUXT_PUBLIC_SITE_NAME="Nuxt.js Boilerplate"
+NUXT_PUBLIC_SITE_NAME="Free Stuff on the Internet"
 
 # Optional: Analytics and monitoring
 NUXT_PUBLIC_GA_ID=""
@@ -97,10 +97,17 @@ pnpm test:coverage    # Run tests with coverage
 ```
 nuxtjs-boilerplate/
 ├── assets/            # Static assets (CSS, images)
+│   └── css/           # Global stylesheets
 ├── components/        # Vue components
+│   └── ResourceCard.vue  # Reusable resource card component
 ├── layouts/           # Nuxt layouts
+│   └── default.vue   # Main layout with header and footer
 ├── pages/             # Vue pages (auto-routing)
+│   ├── index.vue     # Home page with resource grid
+│   ├── ai-keys.vue   # AI resources page
+│   └── about.vue     # About page
 ├── plugins/           # Nuxt plugins
+│   └── performance.client.ts  # Performance monitoring
 ├── server/            # Server-side code
 ├── docs/              # Project documentation
 ├── public/            # Public static files
