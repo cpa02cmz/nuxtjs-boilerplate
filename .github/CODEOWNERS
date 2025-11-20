@@ -1,0 +1,52 @@
+# CODEOWNERS File
+
+# This file controls who is auto-requested for reviews in pull requests.
+# Format: <file pattern> <github username> <github username>...
+
+# Global owners - will be requested for review on every PR
+* @cpa02cmz
+
+# Documentation
+*.md @cpa02cmz
+docs/ @cpa02cmz
+
+# GitHub workflows and automation
+.github/ @cpa02cmz
+
+# Configuration files
+*.config.* @cpa02cmz
+*.json @cpa02cmz
+*.yml @cpa02cmz
+*.yaml @cpa02cmz
+
+# Source code
+src/ @cpa02cmz
+components/ @cpa02cmz
+pages/ @cpa02cmz
+layouts/ @cpa02cmz
+plugins/ @cpa02cmz
+composables/ @cpa02cmz
+
+# Server-side code
+server/ @cpa02cmz
+
+# Security-related files
+SECURITY.md @cpa02cmz
+LICENSE @cpa02cmz
+
+# Dependencies
+package*.json @cpa02cmz
+pnpm-lock.yaml @cpa02cmz
+
+# Public assets
+public/ @cpa02cmz
+
+# Types
+types/ @cpa02cmz
+
+# Data files
+data/ @cpa02cmz
+
+# Default fallback owner if no other rule matches
+# This should be the repository owner or a team
+* @cpa02cmz
