@@ -5,6 +5,10 @@
 </template>
 
 <script setup lang="ts">
+// This app.vue file ensures proper layout integration across the application
+// It replaces the default Nuxt welcome page and integrates with the custom default layout
+// All pages will now properly render within the default layout structure
+
 // Set default meta tags for the entire application
 useSeoMeta({
   title: 'Free Stuff on the Internet - Free Resources for Developers',
