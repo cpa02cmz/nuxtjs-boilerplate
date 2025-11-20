@@ -24,9 +24,7 @@
           {{ description }}
         </p>
         <div class="mt-3 bg-gray-50 p-3 rounded-md">
-          <p class="font-medium text-gray-900 text-sm">
-            Free Tier:
-          </p>
+          <p class="font-medium text-gray-900 text-sm">Free Tier:</p>
           <ul class="mt-1 space-y-1 text-xs text-gray-700">
             <li v-for="(benefit, index) in benefits" :key="index">
               {{ benefit }}
@@ -67,3 +65,4 @@ withDefaults(defineProps<Props>(), {
 
 // Define responsive image sizes for optimization
 const imageSizes = 'xs:48px sm:48px md:48px lg:48px xl:48px'
+</script>
