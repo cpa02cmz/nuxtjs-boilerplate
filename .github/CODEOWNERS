@@ -1,0 +1,61 @@
+# CODEOWNERS
+
+# This file controls who is auto-assigned to pull requests and who can approve pull requests.
+
+# Global owners - will be default owners for everything in the repo
+* @your-username
+
+# Documentation
+/docs/ @your-username
+*.md @your-username
+
+# Security files
+SECURITY.md @your-username
+.github/SECURITY.md @your-username
+.github/security/ @your-username
+
+# GitHub workflows and configuration
+.github/workflows/ @your-username
+.github/dependabot.yml @your-username
+.github/PULL_REQUEST_TEMPLATE.md @your-username
+.github/ISSUE_TEMPLATE/ @your-username
+
+# Core application files
+/components/ @your-username
+/composables/ @your-username
+/layouts/ @your-username
+/pages/ @your-username
+/plugins/ @your-username
+/server/ @your-username
+
+# Configuration files
+nuxt.config.ts @your-username
+tsconfig.json @your-username
+eslint.config.js @your-username
+.prettierrc @your-username
+.stylelintrc @your-username
+
+# Package management
+package.json @your-username
+pnpm-lock.yaml @your-username
+package-lock.json @your-username
+
+# Type definitions
+/types/ @your-username
+
+# Data files
+/data/ @your-username
+
+# Assets and public files
+/assets/ @your-username
+/public/ @your-username
+
+# Scripts
+/scripts/ @your-username
+
+# PR Intel and automation
+/pr_intel/ @your-username
+
+# Emergency override - can be used for critical security fixes
+# This line should be used sparingly and only for emergency situations
+# * @emergency-team
