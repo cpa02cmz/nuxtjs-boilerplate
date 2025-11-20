@@ -59,14 +59,16 @@ The application will be available at <http://localhost:3000>
 ## 📋 Available Scripts
 
 ```bash
-# Using pnpm
-pnpm dev
+# Development
+pnpm dev              # Start development server
+pnpm build            # Build for production
+pnpm preview          # Preview production build
 
-# Using npm
-npm run dev
+# Code Quality
+pnpm lint             # Run linting
+pnpm lint:fix         # Fix linting issues
+pnpm format           # Format code with Prettier
 ```
-
-The application will be available at <http://localhost:3000>
 
 ## 📁 Project Structure
 
@@ -94,42 +96,6 @@ nuxtjs-boilerplate/
 - **[Deployment](./docs/deployment/README.md)** - Platform-specific deployment instructions
 - **[Roadmap](./docs/roadmap.md)** - Project development roadmap and milestones
 
-
-
-The application will be available at <http://localhost:3000>
-
-### Available Scripts
-
-```bash
-# Development
-pnpm dev              # Start development server
-pnpm build            # Build for production
-pnpm preview          # Preview production build
-
-# Code Quality
-pnpm lint             # Run linting
-pnpm lint:fix         # Fix linting issues
-pnpm format           # Format code with Prettier
-```
-
-## 📁 Project Structure
-
-```
-nuxtjs-boilerplate/
-├── assets/            # Static assets (CSS, images)
-├── components/        # Vue components
-├── layouts/           # Nuxt layouts
-├── pages/             # Vue pages (auto-routing)
-├── plugins/           # Nuxt plugins
-├── server/            # Server-side code
-├── docs/              # Project documentation
-├── public/            # Public static files
-├── .github/           # GitHub workflows and templates
-├── nuxt.config.ts     # Nuxt configuration
-├── package.json       # Dependencies and scripts
-└── README.md          # Project overview
-```
-
 ## 🤝 Contributing
 
 We welcome contributions! Please read our [Development Guidelines](./docs/development.md) for details on:
@@ -154,52 +120,6 @@ NUXT_PUBLIC_GA_ID=""
 NUXT_PUBLIC_SENTRY_DSN=""
 ```
 
-## 🛠️ Development
-
-### Start Development Server
-
-```bash
-# Using pnpm
-pnpm dev
-
-# Using npm
-npm run dev
-```
-
-The application will be available at <http://localhost:3000>
-
-## 🛠️ Available Scripts
-
-```bash
-# Development
-pnpm dev              # Start development server
-pnpm build            # Build for production
-pnpm preview          # Preview production build
-
-# Code Quality
-pnpm lint             # Run linting
-pnpm lint:fix         # Fix linting issues
-pnpm format           # Format code with Prettier
-```
-
-## 📁 Project Structure
-
-```
-nuxtjs-boilerplate/
-├── assets/            # Static assets (CSS, images)
-├── components/        # Vue components
-├── layouts/           # Nuxt layouts
-├── pages/             # Vue pages (auto-routing)
-├── plugins/           # Nuxt plugins
-├── server/            # Server-side code
-├── docs/              # Project documentation
-├── public/            # Public static files
-├── .github/           # GitHub workflows and templates
-├── nuxt.config.ts     # Nuxt configuration
-├── package.json       # Dependencies and scripts
-└── README.md          # Project overview
-```
-
 ## 🧪 Technology Stack
 
 - **Framework**: [Nuxt 3](https://nuxt.com/) - Vue.js Meta Framework
@@ -208,47 +128,9 @@ nuxtjs-boilerplate/
 - **Linting**: ESLint + Prettier + Stylelint
 - **Type Safety**: TypeScript support
 
-## 📚 Documentation
-
-- [Getting Started Guide](./docs/getting-started.md)
-- [Development Guidelines](./docs/development.md)
-- [Project Architecture](./docs/architecture/README.md)
-- [Deployment Guide](./docs/deployment/README.md)
-
 ## 🤝 Contributing
 
 We welcome contributions! Please read our [Development Guidelines](./docs/development.md) for details on our code of conduct and the process for submitting pull requests.
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### 1. Dependency Installation Fails
-
-```bash
-# Clear cache and reinstall
-pnpm store prune
-rm -rf node_modules pnpm-lock.yaml
-pnpm install
-```
-
-#### 2. ESLint Configuration Issues
-
-```bash
-# Check ESLint version and configuration
-npx eslint --version
-pnpm run lint:fix
-```
-
-#### 3. Build Fails
-
-```bash
-# Clean build
-rm -rf .nuxt .output
-pnpm build
-```
-
-For more troubleshooting, see our [Troubleshooting Guide](./docs/maintenance/troubleshooting.md).
 
 ## 🐛 Troubleshooting
 
