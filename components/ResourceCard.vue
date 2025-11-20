@@ -67,6 +67,3 @@ withDefaults(defineProps<Props>(), {
 
 // Define responsive image sizes for optimization
 const imageSizes = 'xs:48px sm:48px md:48px lg:48px xl:48px'
-
-const { title, description, benefits, url, icon = '', newTab, buttonLabel } = props
-</script>
