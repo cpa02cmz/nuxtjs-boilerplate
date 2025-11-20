@@ -74,6 +74,25 @@
         <!-- No Results Message -->
         <div
           v-if="!filteredResources.length && !loading"
+          class="text-center py-12">
+          <h3 class="text-xl font-medium text-gray-900 mb-2">
+            No resources found
+          </h3>
+          <p class="text-gray-500 mb-6">
+            Try adjusting your search or filter criteria
+          </p>
+          <button
+            @click="resetAllFilters"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900">
+            Reset Filters
+          </button>
+        </div>
+      </div>
+        </div>
+
+        <!-- No Results Message -->
+        <div
+          v-if="!filteredResources.length && !loading"
           class="text-center py-12"
         >
           <h3 class="text-xl font-medium text-gray-900 mb-2">
