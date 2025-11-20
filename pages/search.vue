@@ -84,6 +84,12 @@
               :benefits="resource.benefits"
               :url="resource.url"
               :button-label="getButtonLabel(resource.category)"
+              :highlighted-title="
+                highlightSearchTerms(resource.title, searchQuery)
+              "
+              :highlighted-description="
+                highlightSearchTerms(resource.description, searchQuery)
+              "
             />
           </div>
         </div>
@@ -135,6 +141,7 @@ const {
   toggleTechnology,
   setSortOption,
   resetFilters,
+  highlightSearchTerms,
 } = useResources()
 
 // Set up URL synchronization

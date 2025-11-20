@@ -245,6 +245,20 @@ export const useResources = () => {
   // Initialize resources when composable is created
   initResources()
 
+  // Function to highlight search terms in text
+  const highlightSearchTerms = (text: string, searchQuery: string): string => {
+    if (!searchQuery || !text) return text || ''
+
+    // Escape special regex characters in search query
+    const escapedQuery = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const regex = new RegExp(`(${escapedQuery})`, 'gi')
+
+    return text.replace(
+      regex,
+      '<mark class="bg-yellow-200 text-gray-900">$1</mark>'
+    )
+  }
+
   return {
     resources: readonly(resources),
     filteredResources,
@@ -263,5 +277,6 @@ export const useResources = () => {
     toggleTechnology,
     setSortOption,
     resetFilters,
+    highlightSearchTerms,
   }
 }

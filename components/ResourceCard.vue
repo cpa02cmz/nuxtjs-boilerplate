@@ -16,10 +16,15 @@
       </div>
       <div class="flex-1 min-w-0">
         <h3 class="text-lg font-medium text-gray-900 truncate">
-          {{ title }}
+          <span v-if="highlightedTitle" v-html="highlightedTitle"></span>
+          <span v-else>{{ title }}</span>
         </h3>
         <p class="mt-1 text-gray-600 text-sm">
-          {{ description }}
+          <span
+            v-if="highlightedDescription"
+            v-html="highlightedDescription"
+          ></span>
+          <span v-else>{{ description }}</span>
         </p>
         <div class="mt-3 bg-gray-50 p-3 rounded-md">
           <p class="font-medium text-gray-900 text-sm">Free Tier:</p>
@@ -54,6 +59,8 @@ interface Props {
   icon?: string
   newTab?: boolean
   buttonLabel?: string
+  highlightedTitle?: string
+  highlightedDescription?: string
 }
 
 withDefaults(defineProps<Props>(), {
@@ -63,6 +70,9 @@ withDefaults(defineProps<Props>(), {
 
 // Define responsive image sizes for optimization
 const imageSizes = 'xs:48px sm:48px md:48px lg:48px xl:48px'
+
+// Get the props
+const props = defineProps<Props>()
 
 // Add structured data for the resource
 const resourceSchema = {
@@ -86,7 +96,7 @@ useHead({
   script: [
     {
       type: 'application/ld+json',
-      children: JSON.stringify(resourceSchema),
+      innerHTML: JSON.stringify(resourceSchema),
     },
   ],
 })

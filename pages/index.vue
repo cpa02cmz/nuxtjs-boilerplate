@@ -68,6 +68,12 @@
             :benefits="resource.benefits"
             :url="resource.url"
             :button-label="getButtonLabel(resource.category)"
+            :highlighted-title="
+              highlightSearchTerms(resource.title, searchQuery)
+            "
+            :highlighted-description="
+              highlightSearchTerms(resource.description, searchQuery)
+            "
           />
         </div>
 
@@ -104,6 +110,12 @@
               :benefits="resource.benefits"
               :url="resource.url"
               :button-label="getButtonLabel(resource.category)"
+              :highlighted-title="
+                highlightSearchTerms(resource.title, searchQuery)
+              "
+              :highlighted-description="
+                highlightSearchTerms(resource.description, searchQuery)
+              "
             />
           </div>
         </div>
@@ -149,6 +161,7 @@ const {
   setSortOption,
   resetFilters,
   resources,
+  highlightSearchTerms,
 } = useResources()
 
 // Compute trending resources (top 5 by popularity)
