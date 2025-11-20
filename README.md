@@ -55,6 +55,78 @@ npm install
 pnpm dev
 ```
 
+The development server will start at `http://localhost:3000`.
+
+The application will be available at <http://localhost:3000>
+
+### Available Scripts
+
+```bash
+# Development
+pnpm dev              # Start development server
+pnpm build            # Build for production
+pnpm preview          # Preview production build
+
+# Code Quality
+pnpm lint             # Run linting
+pnpm lint:fix         # Fix linting issues
+pnpm format           # Format code with Prettier
+```
+
+## 📁 Project Structure
+
+```
+nuxtjs-boilerplate/
+├── assets/            # Static assets (CSS, images)
+├── components/        # Vue components
+├── layouts/           # Nuxt layouts
+├── pages/             # Vue pages (auto-routing)
+├── plugins/           # Nuxt plugins
+├── server/            # Server-side code
+├── docs/              # Project documentation
+├── public/            # Public static files
+├── .github/           # GitHub workflows and templates
+├── nuxt.config.ts     # Nuxt configuration
+├── package.json       # Dependencies and scripts
+└── README.md          # Project overview
+```
+
+## 🤝 Contributing
+
+We welcome contributions! Please read our [Development Guidelines](./docs/development.md) for details on:
+
+- **[Getting Started](./docs/getting-started.md)** - Detailed setup and development guide
+- **[Development Guidelines](./docs/development.md)** - Coding standards and best practices
+- **[Architecture](./docs/architecture/)** - System design and technical decisions
+- **[Deployment](./docs/deployment/)** - Platform-specific deployment instructions
+- **[Maintenance](./docs/maintenance/)** - CI/CD and troubleshooting guides
+
+## 🐛 Troubleshooting
+
+Create a `.env` file in the root directory:
+
+```env
+# Development
+NUXT_PUBLIC_SITE_URL=http://localhost:3000
+NUXT_PUBLIC_SITE_NAME="Free Stuff Website"
+
+# Optional: Analytics and monitoring
+NUXT_PUBLIC_GA_ID=""
+NUXT_PUBLIC_SENTRY_DSN=""
+```
+
+## 🛠️ Development
+
+### Start Development Server
+
+```bash
+# Using pnpm
+pnpm dev
+
+# Using npm
+npm run dev
+```
+
 The application will be available at <http://localhost:3000>
 
 ## 🛠️ Available Scripts
@@ -107,6 +179,37 @@ nuxtjs-boilerplate/
 ## 🤝 Contributing
 
 We welcome contributions! Please read our [Development Guidelines](./docs/development.md) for details on our code of conduct and the process for submitting pull requests.
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+#### 1. Dependency Installation Fails
+
+```bash
+# Clear cache and reinstall
+pnpm store prune
+rm -rf node_modules pnpm-lock.yaml
+pnpm install
+```
+
+#### 2. ESLint Configuration Issues
+
+```bash
+# Check ESLint version and configuration
+npx eslint --version
+pnpm run lint:fix
+```
+
+#### 3. Build Fails
+
+```bash
+# Clean build
+rm -rf .nuxt .output
+pnpm build
+```
+
+For common issues and solutions, check our [Troubleshooting Guide](./docs/maintenance/troubleshooting.md).
 
 ## 🐛 Troubleshooting
 
