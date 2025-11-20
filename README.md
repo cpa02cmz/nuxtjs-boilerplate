@@ -1,17 +1,28 @@
-# 🆓 Free Stuff on the Internet
+# Nuxt.js Boilerplate
 
-A curated platform that helps developers, students, and tech enthusiasts discover and access valuable free resources across various categories including AI tools, cloud services, hosting, databases, and more.
+A modern, production-ready [Nuxt.js](https://nuxt.com) boilerplate with best practices, security scanning, and comprehensive documentation.
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://your-demo-url.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Nuxt Version](https://img.shields.io/badge/Nuxt-3.8.2-00DC82)](https://nuxt.com/)
-[![Vue Version](https://img.shields.io/badge/Vue-3.3.8-4FC08D)](https://vuejs.org/)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/cpa02cmz/nuxtjs-boilerplate)
 
-Built with [Nuxt 3](https://nuxt.com) and [Tailwind CSS](https://tailwindcss.com) for optimal performance and developer experience.
+[![Security Scan](https://github.com/cpa02cmz/nuxtjs-boilerplate/workflows/Security%20Scan/badge.svg)](https://github.com/cpa02cmz/nuxtjs-boilerplate/actions/workflows/security.yml)
+[![CI/CD Pipeline](https://github.com/cpa02cmz/nuxtjs-boilerplate/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/cpa02cmz/nuxtjs-boilerplate/actions/workflows/ci.yml)
 
-## 🚀 Quick Start
+_Live Example: <https://nuxtjs-boilerplate.vercel.app>_
 
-### Prerequisites
+Look at the [Nuxt 3 documentation](https://nuxt.com/docs) to learn more.
+
+## 🚀 Features
+
+- ⚡ **Nuxt 3** with Vue 3 and TypeScript
+- 🎨 **Tailwind CSS** for styling
+- 📦 **ESLint & Prettier** for code quality
+- 🔒 **Security scanning** with CodeQL and dependency review
+- 📚 **Comprehensive documentation**
+- 🚀 **Performance optimizations**
+- ♿ **Accessibility standards**
+- 🔄 **CI/CD pipeline**
+
+## 📋 Setup
 
 - **Node.js**: Version 18.0 or higher
 - **Package Manager**: pnpm (recommended) or npm
