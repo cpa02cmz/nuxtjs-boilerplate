@@ -17,10 +17,16 @@
         />
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-gray-900 truncate">{{ title }}</h3>
-        <p class="mt-1 text-gray-600 text-sm">{{ description }}</p>
+        <h3 class="text-lg font-medium text-gray-900 truncate">
+          {{ title }}
+        </h3>
+        <p class="mt-1 text-gray-600 text-sm">
+          {{ description }}
+        </p>
         <div class="mt-3 bg-gray-50 p-3 rounded-md">
-          <p class="font-medium text-gray-900 text-sm">Free Tier:</p>
+          <p class="font-medium text-gray-900 text-sm">
+            Free Tier:
+          </p>
           <ul class="mt-1 space-y-1 text-xs text-gray-700">
             <li v-for="(benefit, index) in benefits" :key="index">
               {{ benefit }}
@@ -54,7 +60,7 @@ interface Props {
   buttonLabel?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   newTab: true,
   buttonLabel: 'Get Free Access',
 })
