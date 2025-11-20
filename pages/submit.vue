@@ -11,7 +11,7 @@
       </div>
 
       <div class="bg-white shadow-xl rounded-lg p-6 sm:p-8">
-        <form @submit.prevent="submitResource" class="space-y-6">
+        <form class="space-y-6" @submit.prevent="submitResource">
           <div>
             <label
               for="title"

@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   modules: [
     '@nuxtjs/tailwindcss',
-    '@nuxt/image', // Add image optimization module
+    // '@nuxt/image', // Temporarily commented out due to build issues
   ],
   runtimeConfig: {
     public: {
@@ -156,20 +156,7 @@ export default defineNuxtConfig({
   },
   // Explicitly use Vite for faster builds
   builder: 'vite',
-  // Image optimization configuration
-  image: {
-    // Use the same provider as your deployment
-    provider: 'ipx',
-    // Set up image optimization options
-    quality: 80,
-    format: ['webp', 'jpeg', 'png'],
-    // Cache configuration
-    staticCache: {
-      maxAge: 60 * 60 * 24 * 30, // 30 days
-    },
-    // Add responsive sizes
-    sizes: 'xs:100vw sm:100vw md:50vw lg:33vw xl:25vw',
-  },
+
   nitro: {
     // Optimize server-side rendering
     minify: true,
@@ -204,7 +191,7 @@ export default defineNuxtConfig({
             'vendor-router': ['vue-router'],
             // Group common dependencies for better caching
             vendor: ['vue', 'vue-router', 'nuxt'],
-            'vendor-ui': ['@nuxt/image'],
+
             'vendor-search': ['fuse.js'],
             'vendor-utils': ['zod'],
           },
@@ -231,7 +218,7 @@ export default defineNuxtConfig({
     // Additional build performance optimizations
     optimizeDeps: {
       // Only scan necessary files
-      include: ['vue', 'vue-router', '@nuxt/image'],
+      include: ['vue', 'vue-router'],
       // Exclude heavy dependencies that shouldn't be pre-bundled
       exclude: [],
     },

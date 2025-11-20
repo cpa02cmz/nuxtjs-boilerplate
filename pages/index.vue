@@ -37,13 +37,13 @@
           <button
             v-for="category in categories"
             :key="category"
-            @click="toggleCategory(category)"
             :class="[
               'px-3 py-1 text-sm rounded-full border',
               selectedCategories.includes(category)
                 ? 'bg-gray-800 text-white border-gray-800'
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
             ]"
+            @click="toggleCategory(category)"
           >
             {{ category }}
           </button>
@@ -83,8 +83,8 @@
             Try adjusting your search or filter criteria
           </p>
           <button
-            @click="resetAllFilters"
             class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900"
+            @click="resetAllFilters"
           >
             Reset Filters
           </button>
