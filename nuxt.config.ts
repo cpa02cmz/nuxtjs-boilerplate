@@ -8,7 +8,9 @@ export default defineNuxtConfig({
   ],
   runtimeConfig: {
     public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://free-stuff-on-the-internet.vercel.app',
+      siteUrl:
+        process.env.NUXT_PUBLIC_SITE_URL ||
+        'https://free-stuff-on-the-internet.vercel.app',
     },
   },
   // SEO Configuration - using built-in meta handling
@@ -27,7 +29,10 @@ export default defineNuxtConfig({
         // Preload critical CSS
         { rel: 'preload', href: '/_nuxt/', as: 'fetch', crossorigin: true },
         // Add canonical URL
-        { rel: 'canonical', href: 'https://free-stuff-on-the-internet.vercel.app/' },
+        {
+          rel: 'canonical',
+          href: 'https://free-stuff-on-the-internet.vercel.app/',
+        },
       ],
       script: [
         // Add script for performance monitoring if needed
@@ -45,19 +50,44 @@ export default defineNuxtConfig({
         // Resource hints
         { name: 'format-detection', content: 'telephone=no' },
         // SEO meta tags
-        { name: 'description', content: 'Discover amazing free resources available on the internet - from AI tools to hosting services.' },
-        { name: 'keywords', content: 'free resources, AI tools, hosting, databases, CDN, VPS, web development' },
+        {
+          name: 'description',
+          content:
+            'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+        },
+        {
+          name: 'keywords',
+          content:
+            'free resources, AI tools, hosting, databases, CDN, VPS, web development',
+        },
         { name: 'author', content: 'Free Stuff on the Internet' },
         // Open Graph tags
-        { property: 'og:title', content: 'Free Stuff on the Internet - Free Resources for Developers' },
-        { property: 'og:description', content: 'Discover amazing free resources available on the internet - from AI tools to hosting services.' },
+        {
+          property: 'og:title',
+          content: 'Free Stuff on the Internet - Free Resources for Developers',
+        },
+        {
+          property: 'og:description',
+          content:
+            'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+        },
         { property: 'og:type', content: 'website' },
-        { property: 'og:url', content: 'https://free-stuff-on-the-internet.vercel.app/' },
+        {
+          property: 'og:url',
+          content: 'https://free-stuff-on-the-internet.vercel.app/',
+        },
         { property: 'og:image', content: '/og-image.jpg' }, // This will be updated later
         // Twitter card
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: 'Free Stuff on the Internet - Free Resources for Developers' },
-        { name: 'twitter:description', content: 'Discover amazing free resources available on the internet - from AI tools to hosting services.' },
+        {
+          name: 'twitter:title',
+          content: 'Free Stuff on the Internet - Free Resources for Developers',
+        },
+        {
+          name: 'twitter:description',
+          content:
+            'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+        },
       ],
       // Add resource hints
       htmlAttrs: {
@@ -159,66 +189,6 @@ export default defineNuxtConfig({
     // Improve build performance
     ignore: ['**/.git/**', '**/node_modules/**', '**/dist/**'],
   },
-
-  // Optimize loading
-  vite: {
-    build: {
-      cssCodeSplit: true,
-      minify: 'terser',
-      target: 'esnext',
-      sourcemap: false, // Disable sourcemaps for faster builds in CI
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            // Split vendor chunks to improve caching
-            'vendor-reactivity': ['vue', '@vue/reactivity'],
-            'vendor-router': ['vue-router'],
-            // Group common dependencies for better caching
-            vendor: ['vue', 'vue-router', 'nuxt'],
-            'vendor-ui': ['@nuxt/image'],
-            'vendor-search': ['fuse.js'],
-            'vendor-utils': ['zod'],
-          },
-          // Optimize chunk naming for better caching
-          chunkFileNames: '_nuxt/[name].[hash].js',
-          entryFileNames: '_nuxt/[name].[hash].js',
-        },
-        // Externalize dependencies that don't need to be bundled
-        external: [],
-      },
-    },
-    // Optimize build speed
-    esbuild: {
-      logLevel: 'silent', // Reduce build noise
-    },
-    // Optimize module resolution
-    resolve: {
-      // Enable more aggressive caching
-      alias: {
-        // Add common aliases to speed up resolution
-        'node-fetch-native': 'node-fetch-native/pure.js',
-      },
-    },
-    // Additional build performance optimizations
-    optimizeDeps: {
-      // Only scan necessary files
-      include: ['vue', 'vue-router', '@nuxt/image'],
-      // Exclude heavy dependencies that shouldn't be pre-bundled
-      exclude: [],
-    },
-  },
-  // Additional build optimization settings
-  build: {
-    // Enable compression
-    compress: true,
-    // Optimize for faster builds
-    transpile: ['vue'],
-    // Enable parallel builds
-    parallel: true,
-    // Add more detailed build information
-    analyze: false, // Enable only when needed for analysis
-  },
-})
   // Optimize bundle size
   vite: {
     build: {
