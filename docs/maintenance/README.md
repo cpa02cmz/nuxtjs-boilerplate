@@ -1,6 +1,6 @@
 # Maintenance Documentation
 
-This section contains guides and procedures for maintaining the Free Stuff on the Internet website.
+This section contains guides and procedures for maintaining the Nuxt.js Boilerplate project.
 
 ## 📚 Available Documentation
 
@@ -22,8 +22,9 @@ This section contains guides and procedures for maintaining the Free Stuff on th
 
 - Regular maintenance tasks
 - Dependency updates
-- Security audits
+- Security audits and automated scanning
 - Performance monitoring
+- Repository automation
 
 ### [Monitoring & Analytics](./maintenance/monitoring.md)
 
@@ -34,4 +35,4 @@ This section contains guides and procedures for maintaining the Free Stuff on th
 
 ---
 
-_Last Updated: 2025-11-18_
+_Last Updated: 2025-11-19_
