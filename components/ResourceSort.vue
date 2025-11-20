@@ -10,6 +10,8 @@
         :value="selectedSortOption"
         class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-gray-800 focus:border-transparent sm:text-sm rounded-md"
         @change="handleChange"
+        @keydown.enter="handleChange"
+        @keydown.space="handleChange"
       >
         <option value="popularity-desc">Most Popular</option>
         <option value="alphabetical-asc">A-Z</option>
@@ -27,7 +29,7 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'update-sort-option', option: string): void
+  (event: 'update-sort-option', option: string): void
 }
 
 const props = defineProps<Props>()

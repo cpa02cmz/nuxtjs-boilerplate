@@ -77,13 +77,16 @@
 
           <div class="mt-6 grid grid-cols-1 gap-6">
             <ResourceCard
-              v-for="resource in filteredResources"
+              v-for="resource in filteredResourcesWithHighlights"
               :key="resource.id"
               :title="resource.title"
               :description="resource.description"
               :benefits="resource.benefits"
               :url="resource.url"
               :button-label="getButtonLabel(resource.category)"
+              :highlighted-title="resource.highlightedTitle"
+              :highlighted-description="resource.highlightedDescription"
+              :highlighted-benefits="resource.highlightedBenefits"
             />
           </div>
         </div>
@@ -119,7 +122,7 @@ useSeoMeta({
 
 // Use the resources composable
 const {
-  filteredResources,
+  filteredResourcesWithHighlights,
   loading,
   error,
   categories,
