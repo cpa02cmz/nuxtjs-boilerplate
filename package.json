@@ -35,7 +35,7 @@
     "stylelint": "^16.1.0",
     "stylelint-config-css-modules": "^4.3.0",
     "stylelint-config-recommended": "^14.0.0",
-    "stylelint-config-standard": "^36.0.0",
+    "stylelint-config-standard": "^39.0.1",
     "vue": "^3.3.8",
     "vue-eslint-parser": "^10.2.0",
     "vue-router": "^4.2.5"
