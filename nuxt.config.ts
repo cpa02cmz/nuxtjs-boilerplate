@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: false }, // Disable in production for performance
+  devtools: { enabled: false }, // Disable in production for performance and security (addresses GHSA-xmq3-q5pm-rp26 XSS vulnerability in @nuxt/devtools)
   css: ['~/assets/css/main.css'],
   modules: [
     '@nuxtjs/tailwindcss',
