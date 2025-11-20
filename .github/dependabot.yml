@@ -25,12 +25,23 @@ updates:
     allow:
       - dependency-type: 'direct'
       - dependency-type: 'indirect'
-    # Ignore patch updates for some packages
-    ignore:
-      - dependency-name: 'eslint'
-        update-types: ['version-update:semver-patch']
-      - dependency-name: 'prettier'
-        update-types: ['version-update:semver-patch']
+    # Allow both direct and indirect dependencies
+    allow:
+      - dependency-type: 'direct'
+      - dependency-type: 'indirect'
+    # Group updates for better review
+    groups:
+      nuxt-dependencies:
+        dependency-type: 'direct'
+        patterns:
+          - 'nuxt*'
+          - '@nuxt*'
+      development-dependencies:
+        dependency-type: 'development'
+        patterns:
+          - 'eslint*'
+          - 'prettier*'
+          - 'stylelint*'
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: 'github-actions'
