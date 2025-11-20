@@ -16,13 +16,16 @@
       </div>
       <div class="flex-1 min-w-0">
         <h3 class="text-lg font-medium text-gray-900 truncate">
-          <span v-if="highlightedTitle" v-html="highlightedTitle"></span>
+          <span
+            v-if="highlightedTitle"
+            v-html="sanitizedHighlightedTitle"
+          ></span>
           <span v-else>{{ title }}</span>
         </h3>
         <p class="mt-1 text-gray-600 text-sm">
           <span
             v-if="highlightedDescription"
-            v-html="highlightedDescription"
+            v-html="sanitizedHighlightedDescription"
           ></span>
           <span v-else>{{ description }}</span>
         </p>
@@ -51,6 +54,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 interface Props {
   title: string
   description: string
@@ -63,16 +68,36 @@ interface Props {
   highlightedDescription?: string
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   newTab: true,
   buttonLabel: 'Get Free Access',
+  highlightedTitle: undefined,
+  highlightedDescription: undefined,
+  icon: undefined,
 })
 
-// Define responsive image sizes for optimization
-const imageSizes = 'xs:48px sm:48px md:48px lg:48px xl:48px'
+// Sanitize highlighted content to prevent XSS
+const sanitizedHighlightedTitle = computed(() => {
+  if (!props.highlightedTitle) return ''
+  // Basic sanitization to prevent XSS - only allow mark tags
+  return props.highlightedTitle
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/data:/gi, '')
+    .replace(/vbscript:/gi, '')
+})
 
-// Get the props
-const props = defineProps<Props>()
+const sanitizedHighlightedDescription = computed(() => {
+  if (!props.highlightedDescription) return ''
+  // Basic sanitization to prevent XSS - only allow mark tags
+  return props.highlightedDescription
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/data:/gi, '')
+    .replace(/vbscript:/gi, '')
+})
 
 // Add structured data for the resource
 const resourceSchema = {
