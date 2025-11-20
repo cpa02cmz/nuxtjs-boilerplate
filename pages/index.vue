@@ -89,6 +89,24 @@
             Reset Filters
           </button>
         </div>
+
+        <!-- Trending Resources Section -->
+        <div v-if="filteredResources.length > 0 && !loading" class="mt-16">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            Trending Resources
+          </h2>
+          <div class="grid grid-cols-1 gap-6">
+            <ResourceCard
+              v-for="resource in trendingResources"
+              :key="resource.id"
+              :title="resource.title"
+              :description="resource.description"
+              :benefits="resource.benefits"
+              :url="resource.url"
+              :button-label="getButtonLabel(resource.category)"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -105,6 +123,19 @@ definePageMeta({
   layout: 'default',
 })
 
+// Set page-specific meta tags
+useSeoMeta({
+  title: 'Free Stuff on the Internet - Free Resources for Developers',
+  ogTitle: 'Free Stuff on the Internet - Free Resources for Developers',
+  description:
+    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+  ogDescription:
+    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+  ogImage: '/og-image.jpg',
+  ogUrl: 'https://free-stuff-on-the-internet.vercel.app/',
+  twitterCard: 'summary_large_image',
+})
+
 // Use the resources composable
 const {
   filteredResources,
@@ -117,7 +148,17 @@ const {
   toggleCategory,
   setSortOption,
   resetFilters,
+  resources,
 } = useResources()
+
+// Compute trending resources (top 5 by popularity)
+const trendingResources = computed(() => {
+  if (!resources.value || resources.value.length === 0) return []
+
+  return [...resources.value]
+    .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+    .slice(0, 5)
+})
 
 // Set up URL synchronization
 useUrlSync(filterOptions, sortOption)
@@ -157,5 +198,25 @@ const getButtonLabel = (category: string) => {
     default:
       return 'Get Free Access'
   }
+}
+
+// Function to get related resources based on category
+const getRelatedResources = (currentResource: any, allResources: any[]) => {
+  if (!currentResource?.category) return []
+
+  return allResources
+    .filter(
+      (resource: any) =>
+        resource.category === currentResource.category &&
+        resource.id !== currentResource.id
+    )
+    .slice(0, 3) // Limit to 3 related resources
+}
+
+// Function to get trending resources (top 5 by popularity)
+const getTrendingResources = (allResources: any[]) => {
+  return [...allResources]
+    .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+    .slice(0, 5)
 }
 </script>

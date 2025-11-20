@@ -65,4 +65,31 @@ withDefaults(defineProps<Props>(), {
 
 // Define responsive image sizes for optimization
 const imageSizes = 'xs:48px sm:48px md:48px lg:48px xl:48px'
+
+// Add structured data for the resource
+const resourceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication', // Using SoftwareApplication as most resources are web-based tools
+  name: props.title,
+  description: props.description,
+  url: props.url,
+  offers: {
+    '@type': 'Offer',
+    availability: 'https://schema.org/InStock',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  applicationCategory: 'http://schema.org/BusinessApplication',
+  operatingSystem: 'Web',
+}
+
+// Add JSON-LD structured data to the head
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify(resourceSchema),
+    },
+  ],
+})
 </script>

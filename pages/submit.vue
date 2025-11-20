@@ -351,4 +351,17 @@ const submitResource = async () => {
 definePageMeta({
   layout: 'default',
 })
+
+// Set page-specific meta tags
+useSeoMeta({
+  title: 'Submit a Resource - Free Stuff on the Internet',
+  ogTitle: 'Submit a Resource - Free Stuff on the Internet',
+  description:
+    'Share valuable free resources with the community. Submit free AI tools, hosting services, databases, and other developer resources.',
+  ogDescription:
+    'Share valuable free resources with the community. Submit free AI tools, hosting services, databases, and other developer resources.',
+  ogImage: '/og-image.jpg',
+  ogUrl: 'https://free-stuff-on-the-internet.vercel.app/submit',
+  twitterCard: 'summary_large_image',
+})
 </script>

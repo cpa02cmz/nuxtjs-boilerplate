@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://free-stuff-on-the-internet.vercel.app/sitemap.xml

@@ -116,4 +116,17 @@
 definePageMeta({
   layout: 'default',
 })
+
+// Set page-specific meta tags
+useSeoMeta({
+  title: 'About - Free Stuff on the Internet',
+  ogTitle: 'About - Free Stuff on the Internet',
+  description:
+    'Learn more about Free Stuff on the Internet - a curated collection of free resources for developers, students, and anyone looking to save money while accessing powerful tools and services.',
+  ogDescription:
+    'Learn more about Free Stuff on the Internet - a curated collection of free resources for developers, students, and anyone looking to save money while accessing powerful tools and services.',
+  ogImage: '/og-image.jpg',
+  ogUrl: 'https://free-stuff-on-the-internet.vercel.app/about',
+  twitterCard: 'summary_large_image',
+})
 </script>

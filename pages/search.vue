@@ -104,6 +104,19 @@ definePageMeta({
   layout: 'default',
 })
 
+// Set page-specific meta tags
+useSeoMeta({
+  title: 'Search Resources - Free Stuff on the Internet',
+  ogTitle: 'Search Resources - Free Stuff on the Internet',
+  description:
+    'Search and filter through our collection of free resources including AI tools, hosting services, databases, and more for developers.',
+  ogDescription:
+    'Search and filter through our collection of free resources including AI tools, hosting services, databases, and more for developers.',
+  ogImage: '/og-image.jpg',
+  ogUrl: 'https://free-stuff-on-the-internet.vercel.app/search',
+  twitterCard: 'summary_large_image',
+})
+
 // Use the resources composable
 const {
   filteredResources,
