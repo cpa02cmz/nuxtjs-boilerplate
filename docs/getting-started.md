@@ -1,6 +1,6 @@
 # Getting Started
 
-This guide will help you set up the "Free Stuff on the Internet" project for development and deployment. This is a comprehensive directory platform built with Nuxt.js 3 that curates free resources for developers and tech enthusiasts.
+This guide will help you set up the "Nuxt.js Boilerplate" project for development and deployment. This is a modern, production-ready Nuxt.js 3 boilerplate with best practices, security scanning, and comprehensive documentation.
 
 ## 📋 Prerequisites
 
@@ -52,7 +52,7 @@ Create a `.env` file in the root directory:
 ```env
 # Development
 NUXT_PUBLIC_SITE_URL=http://localhost:3000
-NUXT_PUBLIC_SITE_NAME="Free Stuff on the Internet"
+NUXT_PUBLIC_SITE_NAME="Nuxt.js Boilerplate"
 
 # Optional: Analytics and monitoring
 NUXT_PUBLIC_GA_ID=""
