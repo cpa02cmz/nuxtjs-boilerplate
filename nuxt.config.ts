@@ -10,7 +10,11 @@ export default defineNuxtConfig({
   experimental: {
     payloadExtraction: true,
     inlineSSRStyles: false,
+    // Enable faster module resolution
+    respectNoExternal: true,
   },
+  // Explicitly use Vite for faster builds
+  builder: 'vite',
   // Image optimization configuration
   image: {
     // Use the same provider as your deployment
@@ -118,14 +122,38 @@ export default defineNuxtConfig({
     build: {
       cssCodeSplit: true,
       minify: 'terser',
+      target: 'esnext',
+      sourcemap: false, // Disable sourcemaps for faster builds in CI
       rollupOptions: {
         output: {
           manualChunks: {
             // Split vendor chunks to improve caching
             'vendor-reactivity': ['vue', '@vue/reactivity'],
             'vendor-router': ['vue-router'],
+            // Group common dependencies for better caching
+            vendor: ['vue', 'vue-router', 'nuxt'],
+            'vendor-ui': ['@nuxt/image'],
+            'vendor-search': ['fuse.js'],
+            'vendor-utils': ['zod'],
           },
+          // Optimize chunk naming for better caching
+          chunkFileNames: '_nuxt/[name].[hash].js',
+          entryFileNames: '_nuxt/[name].[hash].js',
         },
+        // Externalize dependencies that don't need to be bundled
+        external: [],
+      },
+    },
+    // Optimize build speed
+    esbuild: {
+      logLevel: 'silent', // Reduce build noise
+    },
+    // Optimize module resolution
+    resolve: {
+      // Enable more aggressive caching
+      alias: {
+        // Add common aliases to speed up resolution
+        'node-fetch-native': 'node-fetch-native/pure.js',
       },
     },
   },
