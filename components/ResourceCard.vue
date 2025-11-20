@@ -5,20 +5,28 @@
     <div class="flex items-start">
       <!-- Using Nuxt Image for optimization -->
       <div v-if="icon" class="flex-shrink-0 mr-4">
-        <img
+        <NuxtImg
           :src="icon"
           :alt="title"
           width="48"
           height="48"
           class="w-12 h-12 rounded object-contain"
+          :preload="false"
           loading="lazy"
+          :sizes="imageSizes"
         />
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-gray-900 truncate">{{ title }}</h3>
-        <p class="mt-1 text-gray-600 text-sm">{{ description }}</p>
+        <h3 class="text-lg font-medium text-gray-900 truncate">
+          {{ title }}
+        </h3>
+        <p class="mt-1 text-gray-600 text-sm">
+          {{ description }}
+        </p>
         <div class="mt-3 bg-gray-50 p-3 rounded-md">
-          <p class="font-medium text-gray-900 text-sm">Free Tier:</p>
+          <p class="font-medium text-gray-900 text-sm">
+            Free Tier:
+          </p>
           <ul class="mt-1 space-y-1 text-xs text-gray-700">
             <li v-for="(benefit, index) in benefits" :key="index">
               {{ benefit }}
@@ -52,15 +60,10 @@ interface Props {
   buttonLabel?: string
 }
 
-const {
-  title,
-  description,
-  benefits,
-  url,
-<<<<<<< HEAD
-  icon = '',
-  newTab = true,
-  buttonLabel = 'Get Free Access',
-} = defineProps<Props>()
-</script>
->>>>>>> origin/main
+withDefaults(defineProps<Props>(), {
+  newTab: true,
+  buttonLabel: 'Get Free Access',
+})
+
+// Define responsive image sizes for optimization
+const imageSizes = 'xs:48px sm:48px md:48px lg:48px xl:48px'

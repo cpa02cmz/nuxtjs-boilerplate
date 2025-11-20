@@ -1,6 +1,7 @@
 {
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@9.15.0",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -14,7 +15,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.39.1",
-    "@nuxt/devtools": "^1.0.3",
+    "@nuxt/devtools": "^2.6.4",
     "@nuxt/image": "^2.0.0",
     "@nuxtjs/stylelint-module": "^5.1.0",
     "@nuxtjs/tailwindcss": "^6.10.0",
@@ -40,6 +41,8 @@
     "vue-router": "^4.2.5"
   },
   "dependencies": {
-    "web-vitals": "^5.1.0"
+    "fuse.js": "^7.1.0",
+    "web-vitals": "^5.1.0",
+    "zod": "^3.22.4"
   }
 }
