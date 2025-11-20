@@ -3,17 +3,15 @@
     class="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow duration-300"
   >
     <div class="flex items-start">
-      <!-- Using Nuxt Image for optimization -->
+      <!-- Using standard img tag for optimization -->
       <div v-if="icon" class="flex-shrink-0 mr-4">
-        <NuxtImg
+        <img
           :src="icon"
           :alt="title"
           width="48"
           height="48"
           class="w-12 h-12 rounded object-contain"
-          :preload="false"
           loading="lazy"
-          :sizes="imageSizes"
         />
       </div>
       <div class="flex-1 min-w-0">
