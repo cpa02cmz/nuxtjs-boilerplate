@@ -59,6 +59,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute, navigateTo } from '#app'
 import { useResources } from '~/composables/useResources'
 import SearchBar from '~/components/SearchBar.vue'
 

@@ -15,17 +15,26 @@
         />
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-gray-900 truncate">
-          {{ title }}
+        <h3 class="text-lg font-medium text-gray-900">
+          <span v-if="highlightedTitle" v-html="highlightedTitle"></span>
+          <span v-else>{{ title }}</span>
         </h3>
         <p class="mt-1 text-gray-600 text-sm">
-          {{ description }}
+          <span
+            v-if="highlightedDescription"
+            v-html="highlightedDescription"
+          ></span>
+          <span v-else>{{ description }}</span>
         </p>
         <div class="mt-3 bg-gray-50 p-3 rounded-md">
           <p class="font-medium text-gray-900 text-sm">Free Tier:</p>
           <ul class="mt-1 space-y-1 text-xs text-gray-700">
             <li v-for="(benefit, index) in benefits" :key="index">
-              {{ benefit }}
+              <span
+                v-if="highlightedBenefits && highlightedBenefits[index]"
+                v-html="highlightedBenefits[index]"
+              ></span>
+              <span v-else>{{ benefit }}</span>
             </li>
           </ul>
         </div>
@@ -46,6 +55,8 @@
 </template>
 
 <script setup lang="ts">
+import { useHead } from '#imports'
+
 interface Props {
   title: string
   description: string
@@ -54,15 +65,19 @@ interface Props {
   icon?: string
   newTab?: boolean
   buttonLabel?: string
+  highlightedTitle?: string
+  highlightedDescription?: string
+  highlightedBenefits?: string[]
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   newTab: true,
   buttonLabel: 'Get Free Access',
+  icon: undefined,
+  highlightedTitle: undefined,
+  highlightedDescription: undefined,
+  highlightedBenefits: undefined,
 })
-
-// Define responsive image sizes for optimization
-const imageSizes = 'xs:48px sm:48px md:48px lg:48px xl:48px'
 
 // Add structured data for the resource
 const resourceSchema = {

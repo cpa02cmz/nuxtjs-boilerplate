@@ -15,9 +15,12 @@
       <h4 class="text-sm font-medium text-gray-900 mb-3">Category</h4>
       <div class="space-y-2 max-h-40 overflow-y-auto">
         <label
-          v-for="category in categories"
+          v-for="(category, index) in categories"
           :key="category"
           class="flex items-center"
+          :tabindex="0"
+          @keydown.enter.prevent="toggleCategory(category)"
+          @keydown.space.prevent="toggleCategory(category)"
         >
           <input
             type="checkbox"
@@ -36,9 +39,12 @@
       <h4 class="text-sm font-medium text-gray-900 mb-3">Pricing Model</h4>
       <div class="space-y-2 max-h-40 overflow-y-auto">
         <label
-          v-for="pricingModel in pricingModels"
+          v-for="(pricingModel, index) in pricingModels"
           :key="pricingModel"
           class="flex items-center"
+          :tabindex="0"
+          @keydown.enter.prevent="togglePricingModel(pricingModel)"
+          @keydown.space.prevent="togglePricingModel(pricingModel)"
         >
           <input
             type="checkbox"
@@ -57,9 +63,12 @@
       <h4 class="text-sm font-medium text-gray-900 mb-3">Difficulty</h4>
       <div class="space-y-2 max-h-40 overflow-y-auto">
         <label
-          v-for="difficulty in difficultyLevels"
+          v-for="(difficulty, index) in difficultyLevels"
           :key="difficulty"
           class="flex items-center"
+          :tabindex="0"
+          @keydown.enter.prevent="toggleDifficultyLevel(difficulty)"
+          @keydown.space.prevent="toggleDifficultyLevel(difficulty)"
         >
           <input
             type="checkbox"
@@ -78,9 +87,12 @@
       <h4 class="text-sm font-medium text-gray-900 mb-3">Technology</h4>
       <div class="space-y-2 max-h-40 overflow-y-auto">
         <label
-          v-for="technology in technologies"
+          v-for="(technology, index) in technologies"
           :key="technology"
           class="flex items-center"
+          :tabindex="0"
+          @keydown.enter.prevent="toggleTechnology(technology)"
+          @keydown.space.prevent="toggleTechnology(technology)"
         >
           <input
             type="checkbox"
@@ -109,11 +121,11 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'toggle-category', category: string): void
-  (e: 'toggle-pricing-model', pricingModel: string): void
-  (e: 'toggle-difficulty-level', difficulty: string): void
-  (e: 'toggle-technology', technology: string): void
-  (e: 'reset-filters'): void
+  (event: 'toggle-category', category: string): void
+  (event: 'toggle-pricing-model', pricingModel: string): void
+  (event: 'toggle-difficulty-level', difficulty: string): void
+  (event: 'toggle-technology', technology: string): void
+  (event: 'reset-filters'): void
 }
 
 const props = defineProps<Props>()
