@@ -1,4 +1,4 @@
-// Simple flat config for ESLint 8
+// ESLint flat config for Nuxt 3 project
 import js from '@eslint/js'
 import pluginPrettier from 'eslint-plugin-prettier'
 import pluginVue from 'eslint-plugin-vue'
