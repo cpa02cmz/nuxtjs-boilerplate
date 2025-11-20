@@ -31,6 +31,7 @@ Look at the [Nuxt 3 documentation](https://nuxt.com/docs) to learn more.
 ### Installation
 
 1. **Clone the repository**
+>>>>>>> main
 
 ```bash
 git clone https://github.com/cpa02cmz/nuxtjs-boilerplate.git
@@ -44,6 +45,62 @@ cd nuxtjs-boilerplate
 pnpm install
 
 # Using npm
+npm install
+```
+
+> **Note**: The project uses `pnpm-lock.yaml`, so pnpm is the recommended package manager.
+3. **Start development server**
+
+```bash
+pnpm dev
+```
+
+The application will be available at <http://localhost:3000>
+
+## 📋 Available Scripts
+
+```bash
+# Development
+pnpm dev              # Start development server
+pnpm build            # Build for production
+pnpm preview          # Preview production build
+
+# Code Quality
+pnpm lint             # Run linting checks
+pnpm lint:fix         # Fix linting issues automatically
+pnpm format           # Format code with Prettier
+```
+
+## 📁 Project Structure
+
+```
+nuxtjs-boilerplate/
+├── assets/            # Static assets (CSS, images)
+├── components/        # Vue components
+├── layouts/           # Nuxt layouts
+├── pages/             # Vue pages (auto-routing)
+├── plugins/           # Nuxt plugins
+├── server/            # Server-side code
+├── docs/              # Project documentation
+├── public/            # Public static files
+├── .github/           # GitHub workflows and templates
+├── nuxt.config.ts     # Nuxt configuration
+├── package.json       # Dependencies and scripts
+└── README.md          # Project overview
+```
+
+## 📚 Documentation
+
+- **[Getting Started](./docs/getting-started.md)** - Detailed setup and development guide
+- **[Development Guidelines](./docs/development.md)** - Coding standards and conventions
+- **[Architecture](./docs/architecture/README.md)** - System design and project structure
+- **[Deployment](./docs/deployment/README.md)** - Platform-specific deployment instructions
+- **[Roadmap](./docs/roadmap.md)** - Project development roadmap and milestones
+
+=======
+**Using npm:**
+
+```bash
 npm install
 ```
 
