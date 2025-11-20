@@ -1,26 +1,75 @@
+// ESLint flat config for Nuxt 3 project
 import js from '@eslint/js'
-import prettier from 'eslint-config-prettier'
-import vue from 'eslint-plugin-vue'
-import importPlugin from 'eslint-plugin-import'
-import unicorn from 'eslint-plugin-unicorn'
-import prettierPlugin from 'eslint-plugin-prettier'
-import vueParser from 'vue-eslint-parser'
+import pluginPrettier from 'eslint-plugin-prettier'
+import pluginVue from 'eslint-plugin-vue'
 import tsParser from '@typescript-eslint/parser'
 
-// Create a flat config based on @nuxtjs/eslint-config
 export default [
-  js.configs.recommended,
+  // Ignore generated and dependency directories
   {
-    // Language options (replaces 'env')
+    ignores: [
+      '**/.nuxt/**',
+      '**/.output/**',
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/coverage/**',
+      '**/public/**',
+    ],
+  },
+
+  // Base JavaScript rules
+  js.configs.recommended,
+
+  // Register plugins
+  {
+    plugins: {
+      prettier: pluginPrettier,
+      vue: pluginVue,
+    },
+  },
+
+  // JS files configuration
+  {
+    files: ['**/*.js'],
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 2022,
       sourceType: 'module',
       globals: {
         browser: true,
         node: true,
-        es6: true, // For Nuxt 3
-        process: 'readonly', // Add process global
-        module: 'readonly', // Add module global
+      },
+    },
+    linterOptions: {
+      reportUnusedDisableDirectives: true,
+    },
+    rules: {
+      // Basic code style
+      'prefer-const': [
+        'error',
+        {
+          destructuring: 'any',
+          ignoreReadBeforeAssign: false,
+        },
+      ],
+      'no-var': 'error',
+      'no-console': 'warn',
+      'no-debugger': 'warn',
+
+      // Prettier integration
+      'prettier/prettier': 'error',
+    },
+  },
+
+  // TS files configuration
+  {
+    files: ['**/*.ts'],
+    languageOptions: {
+      parser: tsParser,
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        browser: true,
+        node: true,
         definePageMeta: 'readonly',
         defineNuxtConfig: 'readonly',
         defineNuxtRouteMiddleware: 'readonly',
@@ -32,27 +81,11 @@ export default [
         $fetch: 'readonly',
       },
     },
-    // Register plugins
-    plugins: {
-      vue: vue,
-      import: importPlugin,
-      unicorn: unicorn,
-      prettier: prettierPlugin,
+    linterOptions: {
+      reportUnusedDisableDirectives: true,
     },
-    // Extends (use recommended configurations)
-    linterOptions: {},
     rules: {
-      // Import/order rules
-      'import/order': 'error',
-      'import/first': 'error',
-      'import/no-mutable-exports': 'error',
-      'import/no-unresolved': 'off', // Allow unresolved imports
-
-      // General code rules
-      'arrow-parens': ['error', 'as-needed', { requireForBlockBody: true }],
-      'generator-star-spacing': 'off', // Allow async-await
-      'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-      'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+      // Basic code style
       'prefer-const': [
         'error',
         {
@@ -60,72 +93,51 @@ export default [
           ignoreReadBeforeAssign: false,
         },
       ],
-      'no-lonely-if': 'error',
-      curly: ['error', 'all'],
-      'require-await': 'error',
-      'dot-notation': 'error',
       'no-var': 'error',
-      'object-shorthand': 'off', // Disable this rule to avoid the shorthand warnings
-      'no-useless-rename': 'error',
+      'no-console': 'warn',
+      'no-debugger': 'warn',
 
-      // Unicorn rules
-      'unicorn/error-message': 'error',
-      'unicorn/escape-case': 'error',
-      'unicorn/no-array-instanceof': 'error',
-      'unicorn/no-new-buffer': 'error',
-      'unicorn/no-unsafe-regex': 'off',
-      'unicorn/number-literal-case': 'error',
-      'unicorn/prefer-exponentiation-operator': 'error',
-      'unicorn/prefer-includes': 'error',
-      'unicorn/prefer-starts-ends-with': 'error',
-      'unicorn/prefer-text-content': 'error',
-      'unicorn/prefer-type-error': 'error',
-      'unicorn/throw-new-error': 'error',
-
-      // Vue rules (Vue 3 specific)
-      'vue/no-parsing-error': [
-        'error',
-        {
-          'x-invalid-end-tag': false,
-        },
-      ],
-      'vue/max-attributes-per-line': [
-        'error',
-        {
-          singleline: 5,
-        },
-      ],
-      'vue/no-v-model-argument': 'off', // Off for Vue 3/Nuxt 3
-      'vue/multi-word-component-names': 'error', // Default Vue 3 setting
+      // Prettier integration
       'prettier/prettier': 'error',
     },
-    settings: {
-      'import/resolver': {
-        node: { extensions: ['.js', '.mjs'] },
-      },
-    },
   },
-  prettier,
-  // Override for Vue files to use Vue parser
+
+  // Vue files configuration
   {
     files: ['**/*.vue'],
     languageOptions: {
-      parser: vueParser,
+      parser: (await import('vue-eslint-parser')).default,
       parserOptions: {
-        parser: tsParser, // Use TypeScript parser for Vue files
-        requireConfigFile: false, // Don't require babel config
+        parser: tsParser, // Use TS parser for script blocks in Vue files
+        ecmaVersion: 2022,
         sourceType: 'module',
-        ecmaVersion: 2020,
-        ecmaFeatures: {
-          jsx: false,
-        },
+      },
+      globals: {
+        definePageMeta: 'readonly',
+        defineNuxtConfig: 'readonly',
+        defineNuxtRouteMiddleware: 'readonly',
+        useRuntimeConfig: 'readonly',
+        useState: 'readonly',
+        useFetch: 'readonly',
+        useAsyncData: 'readonly',
+        navigateTo: 'readonly',
+        $fetch: 'readonly',
       },
     },
+    plugins: {
+      vue: pluginVue,
+    },
     rules: {
-      // Vue-specific rules can go here
+      // Basic Vue rules
+      'vue/multi-word-component-names': 'off', // Allow single word component names in pages/layouts
+      'vue/no-multiple-template-root': 'error',
+
+      // Prettier integration
+      'prettier/prettier': 'error',
     },
   },
-  // Override for pages and layouts
+
+  // Pages and layouts specific rules
   {
     files: [
       '**/pages/**/*.{js,ts,vue}',
@@ -134,8 +146,32 @@ export default [
       '**/error.{js,ts,vue}',
     ],
     rules: {
-      'vue/multi-word-component-names': 'off', // Pages and layouts can be single words
-      'vue/no-multiple-template-root': 'error',
+      'vue/multi-word-component-names': 'off',
+    },
+  },
+
+  // Configuration for config files that need process global
+  {
+    files: ['eslint.config.js'],
+    languageOptions: {
+      globals: {
+        process: 'readonly',
+      },
+    },
+  },
+
+  // Configuration for plugin files that need browser globals
+  {
+    files: ['plugins/**/*.{js,ts}'],
+    languageOptions: {
+      globals: {
+        defineNuxtPlugin: 'readonly',
+        process: 'readonly',
+        window: 'readonly',
+        performance: 'readonly',
+        console: 'readonly',
+        navigator: 'readonly',
+      },
     },
   },
 ]
