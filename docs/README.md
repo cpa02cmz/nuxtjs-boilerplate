@@ -39,9 +39,10 @@ This folder contains comprehensive documentation for the project:
 
 ### [Maintenance Documentation](./maintenance/)
 
-- CI/CD processes
+- CI/CD processes and workflows
+- Security scanning and monitoring
 - Troubleshooting guides
-- Maintenance procedures
+- Maintenance procedures and automation
 
 ## 🚀 Quick Links
 
