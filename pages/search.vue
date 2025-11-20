@@ -39,8 +39,8 @@
           Try adjusting your search or filter criteria
         </p>
         <button
-          @click="resetAllFilters"
           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900"
+          @click="resetAllFilters"
         >
           Reset Filters
         </button>

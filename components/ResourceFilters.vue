@@ -3,8 +3,8 @@
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-lg font-medium text-gray-900">Filters</h3>
       <button
-        @click="onResetFilters"
         class="text-sm text-gray-600 hover:text-gray-900"
+        @click="onResetFilters"
       >
         Reset all
       </button>
@@ -23,8 +23,8 @@
             type="checkbox"
             :value="category"
             :checked="selectedCategories.includes(category)"
-            @change="toggleCategory(category)"
             class="h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500"
+            @change="toggleCategory(category)"
           />
           <span class="ml-2 text-sm text-gray-700">{{ category }}</span>
         </label>
@@ -44,8 +44,8 @@
             type="checkbox"
             :value="pricingModel"
             :checked="selectedPricingModels.includes(pricingModel)"
-            @change="togglePricingModel(pricingModel)"
             class="h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500"
+            @change="togglePricingModel(pricingModel)"
           />
           <span class="ml-2 text-sm text-gray-700">{{ pricingModel }}</span>
         </label>
@@ -65,8 +65,8 @@
             type="checkbox"
             :value="difficulty"
             :checked="selectedDifficultyLevels.includes(difficulty)"
-            @change="toggleDifficultyLevel(difficulty)"
             class="h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500"
+            @change="toggleDifficultyLevel(difficulty)"
           />
           <span class="ml-2 text-sm text-gray-700">{{ difficulty }}</span>
         </label>
@@ -86,8 +86,8 @@
             type="checkbox"
             :value="technology"
             :checked="selectedTechnologies.includes(technology)"
-            @change="toggleTechnology(technology)"
             class="h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500"
+            @change="toggleTechnology(technology)"
           />
           <span class="ml-2 text-sm text-gray-700">{{ technology }}</span>
         </label>

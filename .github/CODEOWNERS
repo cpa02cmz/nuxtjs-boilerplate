@@ -1,61 +1,52 @@
-# CODEOWNERS
+# CODEOWNERS File
 
-# This file controls who is auto-assigned to pull requests and who can approve pull requests.
+# This file controls who is auto-requested for reviews in pull requests.
+# Format: <file pattern> <github username> <github username>...
 
-# Global owners - will be default owners for everything in the repo
-* @your-username
+# Global owners - will be requested for review on every PR
+* @cpa02cmz
 
 # Documentation
-/docs/ @your-username
-*.md @your-username
+*.md @cpa02cmz
+docs/ @cpa02cmz
 
-# Security files
-SECURITY.md @your-username
-.github/SECURITY.md @your-username
-.github/security/ @your-username
-
-# GitHub workflows and configuration
-.github/workflows/ @your-username
-.github/dependabot.yml @your-username
-.github/PULL_REQUEST_TEMPLATE.md @your-username
-.github/ISSUE_TEMPLATE/ @your-username
-
-# Core application files
-/components/ @your-username
-/composables/ @your-username
-/layouts/ @your-username
-/pages/ @your-username
-/plugins/ @your-username
-/server/ @your-username
+# GitHub workflows and automation
+.github/ @cpa02cmz
 
 # Configuration files
-nuxt.config.ts @your-username
-tsconfig.json @your-username
-eslint.config.js @your-username
-.prettierrc @your-username
-.stylelintrc @your-username
+*.config.* @cpa02cmz
+*.json @cpa02cmz
+*.yml @cpa02cmz
+*.yaml @cpa02cmz
 
-# Package management
-package.json @your-username
-pnpm-lock.yaml @your-username
-package-lock.json @your-username
+# Source code
+src/ @cpa02cmz
+components/ @cpa02cmz
+pages/ @cpa02cmz
+layouts/ @cpa02cmz
+plugins/ @cpa02cmz
+composables/ @cpa02cmz
 
-# Type definitions
-/types/ @your-username
+# Server-side code
+server/ @cpa02cmz
+
+# Security-related files
+SECURITY.md @cpa02cmz
+LICENSE @cpa02cmz
+
+# Dependencies
+package*.json @cpa02cmz
+pnpm-lock.yaml @cpa02cmz
+
+# Public assets
+public/ @cpa02cmz
+
+# Types
+types/ @cpa02cmz
 
 # Data files
-/data/ @your-username
+data/ @cpa02cmz
 
-# Assets and public files
-/assets/ @your-username
-/public/ @your-username
-
-# Scripts
-/scripts/ @your-username
-
-# PR Intel and automation
-/pr_intel/ @your-username
-
-# Emergency override - can be used for critical security fixes
-# This line should be used sparingly and only for emergency situations
-# * @emergency-team
+# Default fallback owner if no other rule matches
+# This should be the repository owner or a team
+* @cpa02cmz

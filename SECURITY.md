@@ -2,143 +2,96 @@
 
 ## Supported Versions
 
-This section outlines the security support policy for different versions of "Free Stuff on the Internet".
-
-| Version | Supported          | Security Updates |
-| ------- | ------------------ | ---------------- |
-| 3.x.x   | :white_check_mark: | Yes              |
-| < 3.x   | :x:                | No               |
+| Version | Supported          |
+| ------- | ------------------ |
+| Latest  | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
-The "Free Stuff on the Internet" team and community take security bugs seriously. We appreciate your efforts to responsibly disclose your findings.
-
-If you discover a security vulnerability, please report it to us privately before disclosing it publicly.
+If you discover a security vulnerability in this project, please follow these guidelines:
 
 ### How to Report
 
-**Preferred Method**: Create a [Security Advisory](https://github.com/your-username/nuxtjs-boilerplate/security/advisories) on GitHub.
+**Please do not report security vulnerabilities through public GitHub issues.**
 
-**Alternative Methods**:
+Instead, send an email to: **security@example.com**
 
-- Send an email to: security@example.com
-- Use GitHub's private vulnerability reporting feature
+Include the following information in your report:
 
-### What to Include
-
-Please include the following information in your report:
-
-- **Type of issue** (e.g., buffer overflow, SQL injection, cross-site scripting, etc.)
-- **Full paths** of source file(s) related to the manifestation of the issue
-- **Location** of the affected source code (tag/branch/commit or direct URL)
-- **Special configuration** required to reproduce the issue
-- **Step-by-step instructions** to reproduce the issue
-- **Proof-of-concept or exploit code** (if possible)
-- **Impact** of the issue, including how an attacker might exploit it
+- Type of vulnerability (e.g., XSS, SQL injection, etc.)
+- Steps to reproduce the vulnerability
+- Potential impact of the vulnerability
+- Any screenshots or proof-of-concept code (if applicable)
 
 ### Response Timeline
 
 - **Initial response**: Within 48 hours
-- **Detailed response**: Within 7 days
-- **Resolution**: Based on severity and complexity
+- **Detailed assessment**: Within 7 days
+- **Resolution timeline**: Depends on severity and complexity
 
-### Security Levels
+### Security Measures
 
-| Level    | Description                                 | Response Time |
-| -------- | ------------------------------------------- | ------------- |
-| Critical | Remote code execution, data exposure        | 24-48 hours   |
-| High     | Privilege escalation, authentication bypass | 48-72 hours   |
-| Medium   | Information disclosure, denial of service   | 3-7 days      |
-| Low      | Minor security issues                       | 7-14 days     |
+This project implements several security measures:
+
+#### Automated Security Scanning
+
+- **CodeQL Analysis**: Static code analysis for potential vulnerabilities
+- **Dependency Scanning**: Automated checks for vulnerable dependencies
+- **License Compliance**: Verification of open source licenses
+
+#### Development Practices
+
+- Regular dependency updates
+- Security-focused code reviews
+- Principle of least privilege for permissions
+- No hardcoded secrets or credentials
+
+#### GitHub Security Features
+
+- Dependabot for automated dependency updates
+- Secret scanning for exposed credentials
+- Security advisories for known vulnerabilities
 
 ## Security Best Practices
 
-### For Developers
+### For Contributors
 
-1. **Keep dependencies updated**
-
-   ```bash
-   pnpm audit
-   pnpm update
-   ```
-
-2. **Use environment variables for secrets**
-
-   ```bash
-   # .env.example
-   API_KEY=your_api_key_here
-   DATABASE_URL=your_database_url_here
-   ```
-
-3. **Enable security headers**
-   - Content Security Policy (CSP)
-   - X-Frame-Options
-   - X-Content-Type-Options
-   - Referrer Policy
-
-4. **Validate all inputs**
-   - Use Zod schemas for validation
-   - Sanitize user inputs
-   - Implement rate limiting
+- Never commit secrets, API keys, or sensitive data
+- Use environment variables for configuration
+- Follow secure coding guidelines
+- Review dependencies for known vulnerabilities
 
 ### For Users
 
-1. **Keep your application updated**
-2. **Use strong, unique passwords**
-3. **Enable two-factor authentication when available**
-4. **Review permissions carefully**
+- Keep dependencies updated
+- Review security advisories
+- Report suspicious activity
+- Use HTTPS in production environments
 
-## Security Features
+## Severity Levels
 
-This project includes several security features:
+| Level    | Description                                    | Response Time |
+| -------- | ---------------------------------------------- | ------------- |
+| Critical | Immediate danger to users/systems              | 24-48 hours   |
+| High     | Significant impact, potential for exploitation | 72 hours      |
+| Medium   | Limited impact, difficult to exploit           | 7 days        |
+| Low      | Minimal impact, theoretical risk               | 30 days       |
 
-- **Dependency scanning** via Dependabot
-- **CodeQL analysis** for code vulnerabilities
-- **Secret scanning** to prevent credential leaks
-- **Automated security updates** for critical dependencies
-- **Input validation** using Zod schemas
+## Security Contacts
 
-## Disclosure Policy
+- **Security Team**: security@example.com
+- **Maintainer**: [GitHub Maintainer Username]
 
-### Coordination
+## Security Acknowledgments
 
-We follow a coordinated disclosure process:
+We thank all researchers and contributors who help keep this project secure. All valid security reports will be acknowledged and, when appropriate, credited in our security advisories.
 
-1. **Report received and acknowledged**
-2. **Investigation and validation** (1-3 days)
-3. **Patch development** (based on severity)
-4. **Coordinated disclosure** with reporter
-5. **Public disclosure** and patch release
+## Related Links
 
-### Credit
-
-Security researchers who follow this policy will be credited in:
-
-- Security advisory
-- Release notes
-- Hall of Fame (if desired)
-
-### Legal Protection
-
-We commit to:
-
-- Not pursue legal action against researchers who follow this policy
-- Work with researchers to understand and resolve issues
-- Credit researchers for their valuable contributions
-
-## Additional Resources
-
-- [GitHub Security Advisories](https://docs.github.com/en/code-security/security-advisories)
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [Nuxt.js Security Best Practices](https://nuxt.com/docs/guide/security)
-
-## Contact
-
-For security-related questions that don't involve vulnerability reports, please:
-
-- Create an issue with the `security` label
-- Start a discussion in the Security category
+- [GitHub Security Advisories](https://github.com/cpa02cmz/nuxtjs-boilerplate/security/advisories)
+- [Dependabot Alerts](https://github.com/cpa02cmz/nuxtjs-boilerplate/security/dependabot)
+- [Code Scanning Alerts](https://github.com/cpa02cmz/nuxtjs-boilerplate/security/code-scanning)
 
 ---
 
-Thank you for helping keep "Free Stuff on the Internet" and its users safe!
+_This security policy is part of our commitment to maintaining a secure and trustworthy project._

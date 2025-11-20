@@ -22,19 +22,19 @@
       <input
         type="text"
         :value="modelValue"
-        @input="handleInput"
         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
         placeholder="Search resources by name, description, tags..."
         aria-label="Search resources"
+        @input="handleInput"
       />
       <div
         v-if="modelValue"
         class="absolute inset-y-0 right-0 flex items-center pr-3"
       >
         <button
-          @click="clearSearch"
           class="text-gray-400 hover:text-gray-600 focus:outline-none"
           aria-label="Clear search"
+          @click="clearSearch"
         >
           <svg
             class="w-5 h-5"
