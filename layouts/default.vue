@@ -4,9 +4,12 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
           <div class="flex items-center">
-            <h1 class="text-xl font-semibold text-gray-900">
+            <NuxtLink to="/" class="text-xl font-semibold text-gray-900">
               Free Stuff on the Internet
-            </h1>
+            </NuxtLink>
+          </div>
+          <div class="flex items-center flex-1 max-w-lg mx-8">
+            <SearchBar v-model="searchQuery" @search="handleSearch" />
           </div>
           <nav class="flex items-center space-x-4">
             <NuxtLink
@@ -15,6 +18,11 @@
             >
               Home
             </NuxtLink>
+            <NuxtLink
+              to="/search"
+              class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+              >Search</NuxtLink
+            >
             <NuxtLink
               to="/ai-keys"
               class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
@@ -45,6 +53,26 @@
   </div>
 </template>
 
-<script setup>
-// Default layout component
+<script setup lang="ts">
+import { useResources } from '~/composables/useResources'
+import SearchBar from '~/components/SearchBar.vue'
+
+// Use the resources composable to enable global search
+const { filterOptions, updateSearchQuery } = useResources()
+
+// Reactive reference for search query
+const searchQuery = computed({
+  get: () => filterOptions.value.searchQuery || '',
+  set: value => updateSearchQuery(value),
+})
+
+// Handle search
+const handleSearch = (query: string) => {
+  updateSearchQuery(query)
+
+  // If we're not on the search page, navigate to it
+  if (useRoute().path !== '/search') {
+    navigateTo('/search')
+  }
+}
 </script>
