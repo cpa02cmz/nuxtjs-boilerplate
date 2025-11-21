@@ -1,16 +1,6 @@
 import { beforeAll, afterEach, afterAll } from 'vitest'
 import { config } from '@vue/test-utils'
 
-// Create mock implementations for Nuxt composables
-const mockUseHead = vi.fn()
-const mockUseSeoMeta = vi.fn()
-const mockDefinePageMeta = vi.fn()
-const mockUseState = vi.fn()
-const mockUseFetch = vi.fn()
-const mockUseAsyncData = vi.fn()
-const mockNavigateTo = vi.fn()
-const mock$fetch = vi.fn()
-
 // Mock Nuxt composables
 config.global.mocks = {
   $nuxt: {
@@ -30,77 +20,18 @@ config.global.mocks = {
       meta: {},
     },
   },
-  useHead: mockUseHead,
-  useSeoMeta: mockUseSeoMeta,
-  definePageMeta: mockDefinePageMeta,
-  useState: mockUseState,
-  useFetch: mockUseFetch,
-  useAsyncData: mockUseAsyncData,
-  navigateTo: mockNavigateTo,
-  $fetch: mock$fetch,
+  useHead: vi.fn(),
+  useSeoMeta: vi.fn(),
+  useRuntimeConfig: vi.fn(() => ({})),
 }
 
-// Add global properties to Vue app
-config.global.provide = {
-  ...config.global.provide,
-  useHead: mockUseHead,
-  useSeoMeta: mockUseSeoMeta,
-  definePageMeta: mockDefinePageMeta,
-  useState: mockUseState,
-  useFetch: mockUseFetch,
-  useAsyncData: mockUseAsyncData,
-  navigateTo: mockNavigateTo,
-  $fetch: mock$fetch,
-}
-
-// Add to globalThis for global access
-Object.defineProperty(global, 'useHead', {
-  value: mockUseHead,
-  writable: true,
-  configurable: true,
-})
-
-Object.defineProperty(global, 'useSeoMeta', {
-  value: mockUseSeoMeta,
-  writable: true,
-  configurable: true,
-})
-
-Object.defineProperty(global, 'definePageMeta', {
-  value: mockDefinePageMeta,
-  writable: true,
-  configurable: true,
-})
-
-Object.defineProperty(global, 'useState', {
-  value: mockUseState,
-  writable: true,
-  configurable: true,
-})
-
-Object.defineProperty(global, 'useFetch', {
-  value: mockUseFetch,
-  writable: true,
-  configurable: true,
-})
-
-Object.defineProperty(global, 'useAsyncData', {
-  value: mockUseAsyncData,
-  writable: true,
-  configurable: true,
-})
-
-Object.defineProperty(global, 'navigateTo', {
-  value: mockNavigateTo,
-  writable: true,
-  configurable: true,
-})
-
-Object.defineProperty(global, '$fetch', {
-  value: mock$fetch,
-  writable: true,
-  configurable: true,
-})
+// Mock global Nuxt composables
+global.useHead = vi.fn()
+global.useSeoMeta = vi.fn()
+global.useRuntimeConfig = vi.fn(() => ({}))
+global.computed = vi.fn()
+global.ref = vi.fn()
+global.reactive = vi.fn()
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
