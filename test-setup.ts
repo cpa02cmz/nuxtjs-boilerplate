@@ -21,6 +21,9 @@ config.global.mocks = {
       meta: {},
     },
   },
+  useHead: vi.fn(),
+  useSeoMeta: vi.fn(),
+  useRuntimeConfig: vi.fn(() => ({})),
 }
 
 // Mock Nuxt composables
