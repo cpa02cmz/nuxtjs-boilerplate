@@ -15,14 +15,17 @@
         />
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-gray-900">
-          <span v-if="highlightedTitle" v-html="highlightedTitle"></span>
+        <h3 class="text-lg font-medium text-gray-900 truncate">
+          <span
+            v-if="highlightedTitle"
+            v-html="sanitizedHighlightedTitle"
+          ></span>
           <span v-else>{{ title }}</span>
         </h3>
         <p class="mt-1 text-gray-600 text-sm">
           <span
             v-if="highlightedDescription"
-            v-html="highlightedDescription"
+            v-html="sanitizedHighlightedDescription"
           ></span>
           <span v-else>{{ description }}</span>
         </p>
@@ -30,11 +33,7 @@
           <p class="font-medium text-gray-900 text-sm">Free Tier:</p>
           <ul class="mt-1 space-y-1 text-xs text-gray-700">
             <li v-for="(benefit, index) in benefits" :key="index">
-              <span
-                v-if="highlightedBenefits && highlightedBenefits[index]"
-                v-html="highlightedBenefits[index]"
-              ></span>
-              <span v-else>{{ benefit }}</span>
+              {{ benefit }}
             </li>
           </ul>
         </div>
@@ -55,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
+import { computed } from 'vue'
 
 interface Props {
   title: string
@@ -67,16 +66,37 @@ interface Props {
   buttonLabel?: string
   highlightedTitle?: string
   highlightedDescription?: string
-  highlightedBenefits?: string[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
   newTab: true,
   buttonLabel: 'Get Free Access',
-  icon: undefined,
   highlightedTitle: undefined,
   highlightedDescription: undefined,
-  highlightedBenefits: undefined,
+  icon: undefined,
+})
+
+// Sanitize highlighted content to prevent XSS
+const sanitizedHighlightedTitle = computed(() => {
+  if (!props.highlightedTitle) return ''
+  // Basic sanitization to prevent XSS - only allow mark tags
+  return props.highlightedTitle
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/data:/gi, '')
+    .replace(/vbscript:/gi, '')
+})
+
+const sanitizedHighlightedDescription = computed(() => {
+  if (!props.highlightedDescription) return ''
+  // Basic sanitization to prevent XSS - only allow mark tags
+  return props.highlightedDescription
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/data:/gi, '')
+    .replace(/vbscript:/gi, '')
 })
 
 // Add structured data for the resource
@@ -101,7 +121,7 @@ useHead({
   script: [
     {
       type: 'application/ld+json',
-      children: JSON.stringify(resourceSchema),
+      innerHTML: JSON.stringify(resourceSchema),
     },
   ],
 })

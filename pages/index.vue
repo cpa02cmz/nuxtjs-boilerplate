@@ -35,7 +35,7 @@
         <!-- Category Filters -->
         <div class="flex flex-wrap gap-2 mb-8 justify-center">
           <button
-            v-for="(category, index) in categories"
+            v-for="category in categories"
             :key="category"
             :class="[
               'px-3 py-1 text-sm rounded-full border',
@@ -43,81 +43,10 @@
                 ? 'bg-gray-800 text-white border-gray-800'
                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
             ]"
-            :tabindex="0"
             @click="toggleCategory(category)"
-            @keydown.enter="toggleCategory(category)"
-            @keydown.space="toggleCategory(category)"
           >
             {{ category }}
           </button>
-        </div>
-
-        <!-- Advanced Filters -->
-        <div class="flex flex-wrap justify-center gap-4 mb-8">
-          <!-- Pricing Model Filters -->
-          <div class="flex flex-wrap gap-2">
-            <span class="text-sm font-medium text-gray-700 mr-2">Pricing:</span>
-            <button
-              v-for="(pricingModel, index) in pricingModels"
-              :key="pricingModel"
-              :class="[
-                'px-2 py-1 text-xs rounded-full border',
-                selectedPricingModels.includes(pricingModel)
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
-              ]"
-              :tabindex="0"
-              @click="togglePricingModel(pricingModel)"
-              @keydown.enter="togglePricingModel(pricingModel)"
-              @keydown.space="togglePricingModel(pricingModel)"
-            >
-              {{ pricingModel }}
-            </button>
-          </div>
-
-          <!-- Difficulty Filters -->
-          <div class="flex flex-wrap gap-2">
-            <span class="text-sm font-medium text-gray-700 mr-2"
-              >Difficulty:</span
-            >
-            <button
-              v-for="(difficulty, index) in difficultyLevels"
-              :key="difficulty"
-              :class="[
-                'px-2 py-1 text-xs rounded-full border',
-                selectedDifficultyLevels.includes(difficulty)
-                  ? 'bg-green-600 text-white border-green-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
-              ]"
-              :tabindex="0"
-              @click="toggleDifficultyLevel(difficulty)"
-              @keydown.enter="toggleDifficultyLevel(difficulty)"
-              @keydown.space="toggleDifficultyLevel(difficulty)"
-            >
-              {{ difficulty }}
-            </button>
-          </div>
-
-          <!-- Technology Filters -->
-          <div class="flex flex-wrap gap-2">
-            <span class="text-sm font-medium text-gray-700 mr-2">Tech:</span>
-            <button
-              v-for="(technology, index) in technologies"
-              :key="technology"
-              :class="[
-                'px-2 py-1 text-xs rounded-full border',
-                selectedTechnologies.includes(technology)
-                  ? 'bg-purple-600 text-white border-purple-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
-              ]"
-              :tabindex="0"
-              @click="toggleTechnology(technology)"
-              @keydown.enter="toggleTechnology(technology)"
-              @keydown.space="toggleTechnology(technology)"
-            >
-              {{ technology }}
-            </button>
-          </div>
         </div>
 
         <!-- Results Info -->
@@ -132,16 +61,19 @@
         <!-- Resources Grid -->
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <ResourceCard
-            v-for="resource in filteredResourcesWithHighlights"
+            v-for="resource in filteredResources"
             :key="resource.id"
             :title="resource.title"
             :description="resource.description"
             :benefits="resource.benefits"
             :url="resource.url"
             :button-label="getButtonLabel(resource.category)"
-            :highlighted-title="resource.highlightedTitle"
-            :highlighted-description="resource.highlightedDescription"
-            :highlighted-benefits="resource.highlightedBenefits"
+            :highlighted-title="
+              highlightSearchTerms(resource.title, searchQuery)
+            "
+            :highlighted-description="
+              highlightSearchTerms(resource.description, searchQuery)
+            "
           />
         </div>
 
@@ -165,10 +97,7 @@
         </div>
 
         <!-- Trending Resources Section -->
-        <div
-          v-if="filteredResourcesWithHighlights.length > 0 && !loading"
-          class="mt-16"
-        >
+        <div v-if="filteredResources.length > 0 && !loading" class="mt-16">
           <h2 class="text-2xl font-bold text-gray-900 mb-6">
             Trending Resources
           </h2>
@@ -181,9 +110,12 @@
               :benefits="resource.benefits"
               :url="resource.url"
               :button-label="getButtonLabel(resource.category)"
-              :highlighted-title="resource.highlightedTitle"
-              :highlighted-description="resource.highlightedDescription"
-              :highlighted-benefits="resource.highlightedBenefits"
+              :highlighted-title="
+                highlightSearchTerms(resource.title, searchQuery)
+              "
+              :highlighted-description="
+                highlightSearchTerms(resource.description, searchQuery)
+              "
             />
           </div>
         </div>
@@ -218,62 +150,27 @@ useSeoMeta({
 
 // Use the resources composable
 const {
-  filteredResourcesWithHighlights,
+  filteredResources,
   loading,
   error,
   categories,
-  pricingModels,
-  difficultyLevels,
-  technologies,
   filterOptions,
   sortOption,
   updateSearchQuery,
   toggleCategory,
-  togglePricingModel,
-  toggleDifficultyLevel,
-  toggleTechnology,
   setSortOption,
   resetFilters,
   resources,
+  highlightSearchTerms,
 } = useResources()
 
 // Compute trending resources (top 5 by popularity)
 const trendingResources = computed(() => {
   if (!resources.value || resources.value.length === 0) return []
 
-  // Get all resources sorted by popularity and apply highlighting if search is active
-  const allResources = [...resources.value].sort(
-    (a, b) => (b.popularity || 0) - (a.popularity || 0)
-  )
-  const query = filterOptions.value.searchQuery || ''
-
-  return allResources.slice(0, 5).map(resource => {
-    if (query) {
-      // Apply highlighting if there's a search query
-      const highlightedTitle = highlightMatches(resource.title, query)
-      const highlightedDescription = highlightMatches(
-        resource.description,
-        query
-      )
-      const highlightedBenefits = resource.benefits.map(benefit =>
-        highlightMatches(benefit, query)
-      )
-
-      return {
-        ...resource,
-        highlightedTitle,
-        highlightedDescription,
-        highlightedBenefits,
-      }
-    }
-
-    return {
-      ...resource,
-      highlightedTitle: undefined,
-      highlightedDescription: undefined,
-      highlightedBenefits: undefined,
-    }
-  })
+  return [...resources.value]
+    .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+    .slice(0, 5)
 })
 
 // Set up URL synchronization
@@ -286,15 +183,6 @@ const searchQuery = computed({
 })
 
 const selectedCategories = computed(() => filterOptions.value.categories || [])
-const selectedPricingModels = computed(
-  () => filterOptions.value.pricingModels || []
-)
-const selectedDifficultyLevels = computed(
-  () => filterOptions.value.difficultyLevels || []
-)
-const selectedTechnologies = computed(
-  () => filterOptions.value.technologies || []
-)
 
 // Handle search
 const handleSearch = (query: string) => {
@@ -322,20 +210,6 @@ const getButtonLabel = (category: string) => {
       return 'Get CDN'
     default:
       return 'Get Free Access'
-  }
-}
-
-// Function to highlight matching text
-const highlightMatches = (text: string, query: string) => {
-  if (!query || !text) return text
-  try {
-    // Escape special regex characters
-    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    const regex = new RegExp(`(${escapedQuery})`, 'gi')
-    return text.replace(regex, '<mark class="bg-yellow-200">$1</mark>')
-  } catch (e) {
-    console.warn('Error highlighting text:', e)
-    return text
   }
 }
 

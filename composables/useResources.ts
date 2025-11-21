@@ -245,59 +245,23 @@ export const useResources = () => {
   // Initialize resources when composable is created
   initResources()
 
-  // Function to highlight matching text
-  const highlightMatches = (text: string, query: string) => {
-    if (!query || !text) return text
-    try {
-      // Escape special regex characters
-      const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      const regex = new RegExp(`(${escapedQuery})`, 'gi')
-      return text.replace(regex, '<mark class="bg-yellow-200">$1</mark>')
-    } catch (e) {
-      console.warn('Error highlighting text:', e)
-      return text
-    }
+  // Function to highlight search terms in text
+  const highlightSearchTerms = (text: string, searchQuery: string): string => {
+    if (!searchQuery || !text) return text || ''
+
+    // Escape special regex characters in search query
+    const escapedQuery = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const regex = new RegExp(`(${escapedQuery})`, 'gi')
+
+    return text.replace(
+      regex,
+      '<mark class="bg-yellow-200 text-gray-900">$1</mark>'
+    )
   }
-
-  // Filtered resources with highlighting
-  const filteredResourcesWithHighlights = computed(() => {
-    const baseResources = filteredResources.value
-    const query = filterOptions.value.searchQuery || ''
-
-    if (!query) {
-      // If no search query, return resources without highlighting
-      return baseResources.map(resource => ({
-        ...resource,
-        highlightedTitle: undefined,
-        highlightedDescription: undefined,
-        highlightedBenefits: undefined,
-      }))
-    }
-
-    // If there's a search query, return resources with highlighted text
-    return baseResources.map(resource => {
-      const highlightedTitle = highlightMatches(resource.title, query)
-      const highlightedDescription = highlightMatches(
-        resource.description,
-        query
-      )
-      const highlightedBenefits = resource.benefits.map(benefit =>
-        highlightMatches(benefit, query)
-      )
-
-      return {
-        ...resource,
-        highlightedTitle,
-        highlightedDescription,
-        highlightedBenefits,
-      }
-    })
-  })
 
   return {
     resources: readonly(resources),
     filteredResources,
-    filteredResourcesWithHighlights,
     loading: readonly(loading),
     error: readonly(error),
     categories,
@@ -313,5 +277,6 @@ export const useResources = () => {
     toggleTechnology,
     setSortOption,
     resetFilters,
+    highlightSearchTerms,
   }
 }
