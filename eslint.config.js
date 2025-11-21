@@ -47,6 +47,14 @@ export default [
         process: 'readonly',
         console: 'readonly',
         performance: 'readonly',
+        // Vue 3 composition API
+        watch: 'readonly',
+        onMounted: 'readonly',
+        onUnmounted: 'readonly',
+        nextTick: 'readonly',
+        defineProps: 'readonly',
+        defineEmits: 'readonly',
+        withDefaults: 'readonly',
         // Additional Nuxt globals that might be needed
         useCookie: 'readonly',
         useRequestHeaders: 'readonly',
@@ -131,6 +139,14 @@ export default [
         setResponseHeader: 'readonly',
         createError: 'readonly',
         vi: 'readonly',
+        // Vue 3 composition API
+        watch: 'readonly',
+        onMounted: 'readonly',
+        onUnmounted: 'readonly',
+        nextTick: 'readonly',
+        defineProps: 'readonly',
+        defineEmits: 'readonly',
+        withDefaults: 'readonly',
       },
     },
     plugins: {
@@ -192,6 +208,14 @@ export default [
         process: 'readonly',
         console: 'readonly',
         performance: 'readonly',
+        // Vue 3 composition API
+        watch: 'readonly',
+        onMounted: 'readonly',
+        onUnmounted: 'readonly',
+        nextTick: 'readonly',
+        defineProps: 'readonly',
+        defineEmits: 'readonly',
+        withDefaults: 'readonly',
       },
       parser: tsParser,
       parserOptions: {
@@ -222,6 +246,7 @@ export default [
         defineEventHandler: 'readonly',
         setResponseHeader: 'readonly',
         createError: 'readonly',
+        readBody: 'readonly',
       },
     },
   },
