@@ -1,6 +1,49 @@
 import { beforeAll, afterEach, afterAll, vi } from 'vitest'
 import { config } from '@vue/test-utils'
 import { ref, computed } from 'vue'
+import { createRouter, createMemoryHistory } from 'vue-router'
+
+// Create a mock router for testing
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: [
+    { path: '/', name: 'index', component: { template: '<div />' } },
+    { path: '/search', name: 'search', component: { template: '<div />' } },
+    { path: '/about', name: 'about', component: { template: '<div />' } },
+    { path: '/submit', name: 'submit', component: { template: '<div />' } },
+  ],
+})
+
+// Mock vue-router composables specifically for Nuxt
+vi.mock('vue-router', async () => {
+  const actual = await vi.importActual('vue-router')
+  return {
+    ...actual,
+    useRoute: () => ({
+      path: '/',
+      query: {},
+      params: {},
+      hash: '',
+      name: 'index',
+      meta: {},
+    }),
+    useRouter: () => ({
+      push: vi.fn(),
+      replace: vi.fn(),
+      go: vi.fn(),
+      back: vi.fn(),
+      forward: vi.fn(),
+      currentRoute: ref({
+        path: '/',
+        query: {},
+        params: {},
+        hash: '',
+        name: 'index',
+        meta: {},
+      }),
+    }),
+  }
+})
 
 // Mock Nuxt composables
 config.global.mocks = {
@@ -52,6 +95,21 @@ global.useAsyncData = vi.fn(() => ({
 }))
 global.navigateTo = vi.fn()
 global.$fetch = vi.fn()
+global.useRoute = () => ({
+  path: '/',
+  query: {},
+  params: {},
+  hash: '',
+  name: 'index',
+  meta: {},
+})
+global.useRouter = () => ({
+  push: vi.fn(),
+  replace: vi.fn(),
+  go: vi.fn(),
+  back: vi.fn(),
+  forward: vi.fn(),
+})
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
