@@ -7,6 +7,12 @@ export default defineConfig({
   test: {
     environment: 'happy-dom',
     globals: true,
+    setupFiles: ['./test-setup.ts'],
+    environmentOptions: {
+      happyDOM: {
+        url: 'http://localhost:3000',
+      },
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -29,7 +35,6 @@ export default defineConfig({
         },
       },
     },
-    setupFiles: ['./test-setup.ts'],
   },
   resolve: {
     alias: {
