@@ -99,11 +99,11 @@ describe('useUrlSync', () => {
     filterOptions.value.technologies = ['React']
     sortOption.value = 'date-added-desc'
 
-    const { updateUrlParams } = useUrlSync(filterOptions, sortOption)
-    updateUrlParams()
+    // Wait for the watcher to trigger the updateUrlParams
+    await nextTick()
 
     // Check that the router was called with the expected parameters
-    // (including the initial values from the URL parsing)
+    // (including the updated values from the filter changes)
     const expectedQuery = {
       q: 'updated query',
       categories: ['Development'],
