@@ -447,12 +447,9 @@ function finalizePR(prNumber, success) {
       if (prStatus.mergeable === 'MERGEABLE') {
         console.log(`Attempting to merge PR #${prNumber}...`)
         try {
-          execSync(
-            `gh pr merge ${prNumber} --auto --delete-branch --admin --squash`,
-            {
-              stdio: 'pipe',
-            }
-          )
+          execSync(`gh pr merge ${prNumber} --admin --delete-branch --squash`, {
+            stdio: 'pipe',
+          })
           console.log(
             `✓ PR #${prNumber} merged successfully and branch deleted`
           )
