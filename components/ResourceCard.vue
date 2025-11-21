@@ -116,13 +116,15 @@ const resourceSchema = {
   operatingSystem: 'Web',
 }
 
-// Add JSON-LD structured data to the head
-useHead({
-  script: [
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify(resourceSchema),
-    },
-  ],
-})
+// Add JSON-LD structured data to the head only in client side
+if (typeof window !== 'undefined') {
+  useHead({
+    script: [
+      {
+        type: 'application/ld+json',
+        innerHTML: JSON.stringify(resourceSchema),
+      },
+    ],
+  })
+}
 </script>

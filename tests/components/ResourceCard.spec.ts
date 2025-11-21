@@ -2,26 +2,21 @@ import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ResourceCard from '@/components/ResourceCard.vue'
 
-// Mock resource data
-const mockResource = {
-  id: '1',
+// Mock resource data - using individual props that match ResourceCard component
+const mockProps = {
   title: 'Test Resource',
   description: 'This is a test resource description',
+  benefits: ['Free tier available', 'Open source', 'Community support'],
   url: 'https://example.com',
-  category: {
-    id: 'test-category',
-    name: 'Test Category',
-    slug: 'test-category',
-    icon: 'test-icon',
-  },
-  tags: ['test', 'resource'],
-  featured: false,
+  icon: 'test-icon',
+  newTab: true,
+  buttonLabel: 'Get Free Access',
 }
 
 describe('ResourceCard', () => {
   it('renders resource information correctly', () => {
     const wrapper = mount(ResourceCard, {
-      props: { resource: mockResource },
+      props: mockProps,
     })
 
     expect(wrapper.find('h3').text()).toBe('Test Resource')
@@ -29,50 +24,46 @@ describe('ResourceCard', () => {
     expect(wrapper.find('a').attributes('href')).toBe('https://example.com')
   })
 
-  it('displays featured badge when resource is featured', () => {
-    const featuredResource = { ...mockResource, featured: true }
+  it('displays button with correct label', () => {
     const wrapper = mount(ResourceCard, {
-      props: { resource: featuredResource },
+      props: { ...mockProps, buttonLabel: 'Visit Site' },
     })
 
-    expect(wrapper.find('.featured-badge').exists()).toBe(true)
+    expect(wrapper.find('a').text()).toContain('Visit Site')
   })
 
-  it('does not display featured badge when resource is not featured', () => {
+  it('opens link in new tab by default', () => {
     const wrapper = mount(ResourceCard, {
-      props: { resource: mockResource },
+      props: mockProps,
     })
 
-    expect(wrapper.find('.featured-badge').exists()).toBe(false)
+    const link = wrapper.find('a')
+    expect(link.attributes('target')).toBe('_blank')
   })
 
-  it('emits visit event when link is clicked', async () => {
+  it('opens link in same tab when newTab is false', () => {
     const wrapper = mount(ResourceCard, {
-      props: { resource: mockResource },
+      props: { ...mockProps, newTab: false },
     })
 
-    await wrapper.find('a').trigger('click')
-
-    expect(wrapper.emitted('visit')).toBeTruthy()
-    expect(wrapper.emitted('visit')[0]).toEqual([mockResource])
+    const link = wrapper.find('a')
+    expect(link.attributes('target')).toBe('_self')
   })
 
-  it('displays category name correctly', () => {
+  it('renders icon when provided', () => {
     const wrapper = mount(ResourceCard, {
-      props: { resource: mockResource },
+      props: mockProps,
     })
 
-    expect(wrapper.find('.category').text()).toBe('Test Category')
+    expect(wrapper.find('img').exists()).toBe(true)
+    expect(wrapper.find('img').attributes('src')).toBe('test-icon')
   })
 
-  it('renders tags correctly', () => {
+  it('does not render icon when not provided', () => {
     const wrapper = mount(ResourceCard, {
-      props: { resource: mockResource },
+      props: { ...mockProps, icon: undefined },
     })
 
-    const tags = wrapper.findAll('.tag')
-    expect(tags).toHaveLength(2)
-    expect(tags[0].text()).toBe('test')
-    expect(tags[1].text()).toBe('resource')
+    expect(wrapper.find('img').exists()).toBe(false)
   })
 })
