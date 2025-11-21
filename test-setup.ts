@@ -1,5 +1,6 @@
-import { beforeAll, afterEach, afterAll } from 'vitest'
+import { beforeAll, afterEach, afterAll, vi } from 'vitest'
 import { config } from '@vue/test-utils'
+import { ref, computed } from 'vue'
 
 // Mock Nuxt composables
 config.global.mocks = {
@@ -21,6 +22,33 @@ config.global.mocks = {
     },
   },
 }
+
+// Mock Nuxt composables
+global.useHead = vi.fn()
+global.useSeoMeta = vi.fn()
+global.definePageMeta = vi.fn()
+global.defineNuxtConfig = vi.fn()
+global.defineNuxtRouteMiddleware = vi.fn()
+global.useRuntimeConfig = vi.fn(() => ({
+  public: {
+    siteUrl: 'https://example.com',
+  },
+}))
+global.useState = vi.fn((key, defaultValue) => ref(defaultValue))
+global.useFetch = vi.fn(() => ({
+  data: ref(null),
+  pending: ref(false),
+  error: ref(null),
+  refresh: vi.fn(),
+}))
+global.useAsyncData = vi.fn(() => ({
+  data: ref(null),
+  pending: ref(false),
+  error: ref(null),
+  refresh: vi.fn(),
+}))
+global.navigateTo = vi.fn()
+global.$fetch = vi.fn()
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
