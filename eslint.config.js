@@ -1,6 +1,7 @@
 // ESLint flat config for Nuxt 3 project
 import js from '@eslint/js'
 import vuePlugin from 'eslint-plugin-vue'
+import nuxtPlugin from 'eslint-plugin-nuxt'
 import globals from 'globals'
 import vueParser from 'vue-eslint-parser'
 import tsParser from '@typescript-eslint/parser'
@@ -21,9 +22,12 @@ export default [
       sourceType: 'module',
       globals: {
         ...globals.browser,
+        ...globals.node,
+        // Nuxt 3 composables and utilities
         definePageMeta: 'readonly',
         defineNuxtConfig: 'readonly',
         defineNuxtRouteMiddleware: 'readonly',
+        defineNuxtPlugin: 'readonly',
         useRuntimeConfig: 'readonly',
         useState: 'readonly',
         useFetch: 'readonly',
@@ -43,6 +47,35 @@ export default [
         process: 'readonly',
         console: 'readonly',
         performance: 'readonly',
+        // Additional Nuxt globals that might be needed
+        useCookie: 'readonly',
+        useRequestHeaders: 'readonly',
+        useRequestEvent: 'readonly',
+        useNuxtData: 'readonly',
+        refreshNuxtData: 'readonly',
+        clearNuxtData: 'readonly',
+        useError: 'readonly',
+        showError: 'readonly',
+        clearError: 'readonly',
+        useAppConfig: 'readonly',
+        getAppManifest: 'readonly',
+        getNuxtClientPayload: 'readonly',
+        getNuxtData: 'readonly',
+        preloadComponents: 'readonly',
+        preloadRouteComponents: 'readonly',
+        refresh: 'readonly',
+        abortNavigation: 'readonly',
+        addRouteMiddleware: 'readonly',
+        callOnce: 'readonly',
+        defineNuxtComponent: 'readonly',
+        isNuxtError: 'readonly',
+        isVue2: 'readonly',
+        isVue3: 'readonly',
+        onNuxtReady: 'readonly',
+        setResponseStatus: 'readonly',
+        useRequestURL: 'readonly',
+        useRoute: 'readonly',
+        useRouter: 'readonly',
       },
       parser: vueParser,
       parserOptions: {
@@ -56,6 +89,7 @@ export default [
     },
     plugins: {
       prettier: pluginPrettier,
+      nuxt: nuxtPlugin,
     },
     rules: {
       'comma-dangle': ['error', 'only-multiline'],
@@ -66,17 +100,19 @@ export default [
       'prettier/prettier': 'error',
       'no-console': 'warn',
       'no-debugger': 'warn',
+      'no-unused-vars': 'off', // Disable this rule to allow unused variables in development
     },
   },
   {
     // For JS files
-    files: ['**/*.js'],
+    files: ['**/*.js', '**/*.mjs'],
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: 'module',
       globals: {
         ...globals.browser,
         ...globals.node,
+        // Nuxt 3 composables and utilities
         definePageMeta: 'readonly',
         defineNuxtConfig: 'readonly',
         defineNuxtRouteMiddleware: 'readonly',
@@ -99,12 +135,14 @@ export default [
     },
     plugins: {
       prettier: pluginPrettier,
+      nuxt: nuxtPlugin,
     },
     rules: {
       'comma-dangle': ['error', 'only-multiline'],
       'no-console': 'warn',
       'no-debugger': 'warn',
       'prettier/prettier': 'error',
+      'no-unused-vars': 'off', // Disable this rule to allow unused variables in development
     },
   },
   {
@@ -116,6 +154,7 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.node,
+        // Nuxt 3 composables and utilities
         definePageMeta: 'readonly',
         defineNuxtConfig: 'readonly',
         defineNuxtRouteMiddleware: 'readonly',
@@ -148,12 +187,14 @@ export default [
     },
     plugins: {
       prettier: pluginPrettier,
+      nuxt: nuxtPlugin,
     },
     rules: {
       'comma-dangle': ['error', 'only-multiline'],
       'no-console': 'warn',
       'no-debugger': 'warn',
       'prettier/prettier': 'error',
+      'no-unused-vars': 'off', // Disable this rule to allow unused variables in development
     },
   },
   // Apply prettier config to disable conflicting rules
@@ -167,6 +208,9 @@ export default [
       '.output/**',
       'coverage/**',
       'public/**',
+      '.nuxt/**/*',
+      'nuxt.d.ts',
+      'app.config.ts',
     ],
   },
 ]

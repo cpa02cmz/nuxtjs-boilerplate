@@ -26,7 +26,7 @@ function getRepoOwner() {
       encoding: 'utf-8',
     }).trim()
     // Extract owner from URLs like git@github.com:owner/repo.git or https://github.com/owner/repo.git
-    const match = remoteUrl.match(/github\.com[\/:]([^\/]+)\/([^\/.]+)/)
+    const match = remoteUrl.match(/github\.com[/:]([^/]+)\/([^/.]+)/)
     return match ? match[1] : 'nuxtjs-boilerplate'
   } catch {
     return 'nuxtjs-boilerplate'
@@ -38,7 +38,7 @@ function getRepoName() {
     const remoteUrl = execSync('git remote get-url origin', {
       encoding: 'utf-8',
     }).trim()
-    const match = remoteUrl.match(/github\.com[\/:]([^\/]+)\/([^\/.]+)/)
+    const match = remoteUrl.match(/github\.com[/:]([^/]+)\/([^/.]+)/)
     return match ? match[2] : 'nuxtjs-boilerplate'
   } catch {
     return 'nuxtjs-boilerplate'
