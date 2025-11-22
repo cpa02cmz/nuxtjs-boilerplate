@@ -7,7 +7,7 @@ This guide will help you set up the "Free Stuff on the Internet" project for dev
 Before you begin, ensure you have the following installed:
 
 - **Node.js**: Version 18.0 or higher
-- **Package Manager**: pnpm (recommended) or npm
+- **Package Manager**: npm (recommended) or pnpm
 - **Git**: For version control
 - **Code Editor**: VS Code (recommended) with Vue extensions
 
@@ -27,7 +27,13 @@ cd nuxtjs-boilerplate
 
 ### 2. Install Dependencies
 
-**Using pnpm (Recommended):**
+**Using npm (Recommended):**
+
+```bash
+npm install
+```
+
+**Using pnpm:**
 
 ```bash
 # Install pnpm if not already installed
@@ -37,13 +43,7 @@ npm install -g pnpm
 pnpm install
 ```
 
-**Using npm:**
-
-```bash
-npm install
-```
-
-> **Note**: The project uses `pnpm-lock.yaml`, so pnpm is the recommended package manager.
+> **Note**: The project uses `packageManager: npm` in package.json, so npm is the recommended package manager.
 
 ### 3. Environment Setup
 
@@ -64,11 +64,11 @@ NUXT_PUBLIC_SENTRY_DSN=""
 ### Start Development Server
 
 ```bash
-# Using pnpm
-pnpm dev
-
 # Using npm
 npm run dev
+
+# Using pnpm
+pnpm dev
 ```
 
 The development server will start at `http://localhost:3000`.
@@ -77,19 +77,19 @@ The development server will start at `http://localhost:3000`.
 
 ```bash
 # Development
-pnpm dev              # Start development server
-pnpm build            # Build for production
-pnpm preview          # Preview production build
+npm run dev           # Start development server
+npm run build         # Build for production
+npm run preview       # Preview production build
 
 # Code Quality
-pnpm lint             # Run linting
-pnpm lint:fix         # Fix linting issues
-pnpm format           # Format code with Prettier
+npm run lint          # Run linting
+npm run lint:fix      # Fix linting issues
+npm run format        # Format code with Prettier
 
 # Testing (when implemented)
-pnpm test             # Run tests
-pnpm test:watch       # Run tests in watch mode
-pnpm test:coverage    # Run tests with coverage
+npm run test          # Run tests
+npm run test:watch    # Run tests in watch mode
+npm run test:coverage # Run tests with coverage
 ```
 
 ## 📁 Project Structure
@@ -140,9 +140,9 @@ git checkout -b feature/your-feature-name
 ### 3. Run Quality Checks
 
 ```bash
-pnpm lint
-pnpm format
-pnpm test  # When tests are implemented
+npm run lint
+npm run format
+npm run test  # When tests are implemented
 ```
 
 ### 4. Commit Changes
@@ -199,9 +199,8 @@ Configuration files:
 
 ```bash
 # Clear cache and reinstall
-pnpm store prune
-rm -rf node_modules pnpm-lock.yaml
-pnpm install
+rm -rf node_modules package-lock.json
+npm install
 ```
 
 #### 2. ESLint Configuration Not Found
@@ -227,7 +226,7 @@ pnpm build
 lsof -ti:3000 | xargs kill -9
 
 # Or use different port
-pnpm dev --port 3001
+npm run dev -- --port 3001
 ```
 
 ### Getting Help
