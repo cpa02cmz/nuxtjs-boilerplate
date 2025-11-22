@@ -43,7 +43,7 @@ export default defineNuxtConfig({
         // Add canonical URL
         {
           rel: 'canonical',
-          href: 'https://free-stuff-on-the-internet.vercel.app/',
+          href: process.env.CANONICAL_URL || 'https://free-stuff-on-the-internet.vercel.app/',
         },
       ],
       script: [
@@ -93,7 +93,7 @@ export default defineNuxtConfig({
         { property: 'og:type', content: 'website' },
         {
           property: 'og:url',
-          content: 'https://free-stuff-on-the-internet.vercel.app/',
+          content: process.env.CANONICAL_URL || 'https://free-stuff-on-the-internet.vercel.app/',
         },
         { property: 'og:image', content: '/og-image.jpg' }, // This will be updated later
         // Twitter card
@@ -236,7 +236,7 @@ export default defineNuxtConfig({
     },
   },
   sitemap: {
-    hostname: 'https://free-stuff-on-the-internet.vercel.app',
+    hostname: process.env.CANONICAL_URL || 'https://free-stuff-on-the-internet.vercel.app',
   },
   ogImage: {
     enabled: false, // We'll implement this later if needed
