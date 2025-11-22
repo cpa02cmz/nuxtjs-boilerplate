@@ -115,6 +115,15 @@ jobs:
           # Checkout ke head branch PR supaya bisa di-push
           ref: ${{ needs.select_pr.outputs.pr_head_ref }}
 
+      # ⬇⬇⬇ Tambahan ini yang menghilangkan error "Unable to locate executable file: pnpm"
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          # Sesuaikan versi kalau mau, 9/10 dll
+          version: 9
+          run_install: false
+      # ⬆⬆⬆
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
