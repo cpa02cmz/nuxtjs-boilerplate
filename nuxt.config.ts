@@ -52,6 +52,13 @@ export default defineNuxtConfig({
       ],
       // Add performance-related meta tags
       meta: [
+        // Security headers
+        {
+          'http-equiv': 'Content-Security-Policy',
+          content:
+            "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.example.com; frame-src 'none'; object-src 'none';",
+        },
+        { name: 'referrer', content: 'no-referrer' },
         { name: 'theme-color', content: '#ffffff' },
         { name: 'msapplication-TileColor', content: '#ffffff' },
         // Add Core Web Vitals meta tags
@@ -189,6 +196,16 @@ export default defineNuxtConfig({
     },
     // Improve build performance
     ignore: ['**/.git/**', '**/node_modules/**', '**/dist/**'],
+    // Add security headers
+    headers: {
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'X-XSS-Protection': '1; mode=block',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+    },
+    // CSP headers via middleware
+    plugins: ['~/server/plugins/security-headers.ts'],
   },
   // Optimize bundle size
   vite: {
