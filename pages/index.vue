@@ -18,16 +18,54 @@
         <SearchBar v-model="searchQuery" @search="handleSearch" />
       </div>
 
-      <!-- Loading State -->
-      <div v-if="loading" class="flex justify-center items-center py-12 mt-16">
-        <div
-          class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-800"
-        ></div>
+      <!-- Loading State with Skeletons -->
+      <div v-if="loading" class="mt-16">
+        <div class="flex flex-wrap gap-2 mb-8 justify-center">
+          <div
+            v-for="i in 5"
+            :key="i"
+            class="px-3 py-1 text-sm rounded-full border bg-gray-200 animate-pulse"
+            style="width: 80px; height: 28px"
+          ></div>
+        </div>
+
+        <div class="flex justify-between items-center mb-6">
+          <div class="h-8 w-48 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+
+        <!-- Resources Grid with Skeletons -->
+        <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <ResourceCardSkeleton v-for="i in 6" :key="`skeleton-${i}`" />
+        </div>
       </div>
 
       <!-- Error State -->
       <div v-else-if="error" class="text-center py-12 mt-16">
-        <p class="text-red-600 text-lg">Error loading resources: {{ error }}</p>
+        <div class="mb-6">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-16 w-16 text-red-500 mx-auto"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+        </div>
+        <p class="text-red-600 text-lg mb-4">
+          Error loading resources: {{ error }}
+        </p>
+        <button
+          @click="retryResources"
+          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900"
+        >
+          Retry
+        </button>
       </div>
 
       <!-- Resources Grid -->
@@ -162,6 +200,7 @@ const {
   resetFilters,
   resources,
   highlightSearchTerms,
+  retryResources,
 } = useResources()
 
 // Compute trending resources (top 5 by popularity)

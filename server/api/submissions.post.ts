@@ -8,10 +8,10 @@ export default defineEventHandler(async event => {
 
     // Basic validation
     if (!body || typeof body !== 'object') {
-      return {
-        success: false,
-        message: 'Invalid request body',
-      }
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid request body',
+      })
     }
 
     // Required fields validation
@@ -20,11 +20,13 @@ export default defineEventHandler(async event => {
       typeof body.title !== 'string' ||
       body.title.trim().length === 0
     ) {
-      return {
-        success: false,
-        message: 'Title is required',
-        errors: [{ field: 'title', message: 'Title is required' }],
-      }
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Title is required',
+        data: {
+          errors: [{ field: 'title', message: 'Title is required' }],
+        },
+      })
     }
 
     if (
@@ -32,35 +34,35 @@ export default defineEventHandler(async event => {
       typeof body.description !== 'string' ||
       body.description.trim().length < 10
     ) {
-      return {
-        success: false,
-        message: 'Description must be at least 10 characters',
-        errors: [
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Description must be at least 10 characters',
+        data: [
           {
             field: 'description',
             message: 'Description must be at least 10 characters',
           },
         ],
-      }
+      })
     }
 
     if (!body.url || typeof body.url !== 'string') {
-      return {
-        success: false,
-        message: 'URL is required',
-        errors: [{ field: 'url', message: 'URL is required' }],
-      }
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'URL is required',
+        data: { errors: [{ field: 'url', message: 'URL is required' }] },
+      })
     }
 
     // Basic URL validation
     try {
       new URL(body.url)
     } catch {
-      return {
-        success: false,
-        message: 'URL must be valid',
-        errors: [{ field: 'url', message: 'URL must be valid' }],
-      }
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'URL must be valid',
+        data: { errors: [{ field: 'url', message: 'URL must be valid' }] },
+      })
     }
 
     if (
@@ -68,11 +70,13 @@ export default defineEventHandler(async event => {
       typeof body.category !== 'string' ||
       body.category.trim().length === 0
     ) {
-      return {
-        success: false,
-        message: 'Category is required',
-        errors: [{ field: 'category', message: 'Category is required' }],
-      }
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Category is required',
+        data: {
+          errors: [{ field: 'category', message: 'Category is required' }],
+        },
+      })
     }
 
     // Create a submission object with metadata
@@ -99,8 +103,19 @@ export default defineEventHandler(async event => {
       message: 'Resource submitted successfully',
       submissionId: submission.id,
     }
-  } catch (error) {
-    // console.error('Error processing submission:', error) // Commented for production
+  } catch (error: any) {
+    // Log the error server-side for debugging
+    console.error('Error processing submission:', error) // Commented for production
+
+    // Return proper error response
+    if (error.statusCode) {
+      return {
+        success: false,
+        message: error.statusMessage,
+        errors: error.data,
+      }
+    }
+
     return {
       success: false,
       message: 'An error occurred while processing your submission',

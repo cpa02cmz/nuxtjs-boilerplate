@@ -147,4 +147,10 @@ describe('useResources', () => {
     expect(highlighted).toContain('<mark')
     expect(highlighted).toContain('test')
   })
+
+  it('provides retry functionality', async () => {
+    // The retry functionality exists as a method on the composable
+    expect(resourcesComposable.retryResources).toBeDefined()
+    expect(typeof resourcesComposable.retryResources).toBe('function')
+  })
 })

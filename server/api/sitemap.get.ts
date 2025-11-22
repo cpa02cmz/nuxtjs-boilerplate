@@ -1,38 +1,49 @@
 export default defineEventHandler(async event => {
-  // Set the content type to XML
-  setResponseHeader(event, 'Content-Type', 'application/xml')
+  try {
+    // Set the content type to XML
+    setResponseHeader(event, 'Content-Type', 'application/xml')
 
-  // Get the base URL
-  const config = useRuntimeConfig()
-  const baseUrl =
-    config.public.siteUrl || 'https://free-stuff-on-the-internet.vercel.app'
+    // Get the base URL
+    const config = useRuntimeConfig()
+    const baseUrl =
+      config.public.siteUrl || 'https://free-stuff-on-the-internet.vercel.app'
 
-  // Define the static pages
-  const staticPages = [
-    { url: '/', priority: '1.0', changefreq: 'daily' },
-    { url: '/ai-keys', priority: '0.9', changefreq: 'weekly' },
-    { url: '/about', priority: '0.8', changefreq: 'monthly' },
-    { url: '/search', priority: '0.9', changefreq: 'daily' },
-    { url: '/submit', priority: '0.7', changefreq: 'monthly' },
-  ]
+    // Define the static pages
+    const staticPages = [
+      { url: '/', priority: '1.0', changefreq: 'daily' },
+      { url: '/ai-keys', priority: '0.9', changefreq: 'weekly' },
+      { url: '/about', priority: '0.8', changefreq: 'monthly' },
+      { url: '/search', priority: '0.9', changefreq: 'daily' },
+      { url: '/submit', priority: '0.7', changefreq: 'monthly' },
+    ]
 
-  // Build the sitemap XML
-  let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+    // Build the sitemap XML
+    let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`
 
-  // Add static pages to the sitemap
-  staticPages.forEach(page => {
-    sitemap += `
+    // Add static pages to the sitemap
+    staticPages.forEach(page => {
+      sitemap += `
   <url>
     <loc>${baseUrl}${page.url}</loc>
     <priority>${page.priority}</priority>
     <changefreq>${page.changefreq}</changefreq>
     <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
   </url>`
-  })
+    })
 
-  sitemap += `
+    sitemap += `
 </urlset>`
 
-  return sitemap
+    return sitemap
+  } catch (error: any) {
+    console.error('Error generating sitemap:', error) // Commented for production
+
+    // Set response status to 500 in case of error
+    setResponseStatus(event, 500)
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<error>
+  <message>Failed to generate sitemap</message>
+</error>`
+  }
 })
