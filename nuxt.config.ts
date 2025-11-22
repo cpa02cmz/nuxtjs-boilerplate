@@ -43,7 +43,9 @@ export default defineNuxtConfig({
         // Add canonical URL
         {
           rel: 'canonical',
-          href: process.env.CANONICAL_URL || 'https://free-stuff-on-the-internet.vercel.app/',
+          href:
+            process.env.CANONICAL_URL ||
+            'https://free-stuff-on-the-internet.vercel.app/',
         },
       ],
       script: [
@@ -93,7 +95,9 @@ export default defineNuxtConfig({
         { property: 'og:type', content: 'website' },
         {
           property: 'og:url',
-          content: process.env.CANONICAL_URL || 'https://free-stuff-on-the-internet.vercel.app/',
+          content:
+            process.env.CANONICAL_URL ||
+            'https://free-stuff-on-the-internet.vercel.app/',
         },
         { property: 'og:image', content: '/og-image.jpg' }, // This will be updated later
         // Twitter card
@@ -116,38 +120,7 @@ export default defineNuxtConfig({
   },
   // Sitemap configuration
   routeRules: {
-    // Prerender all static routes by default
-    '/': {
-      prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
-    },
-    '/ai-keys': {
-      prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
-    },
-    '/about': {
-      prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
-    },
-    '/search': {
-      prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
-    },
-    '/submit': {
-      prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
-    },
-    // Add security headers
+    // Add security headers globally
     '/**': {
       headers: {
         'X-Content-Type-Options': 'nosniff',
@@ -156,8 +129,9 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
       },
     },
-    // Add CSP headers (with nonce support for inline styles)
+    // Main routes with prerender and security headers
     '/': {
+      prerender: true,
       headers: {
         'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
         'Content-Security-Policy':
@@ -169,6 +143,7 @@ export default defineNuxtConfig({
       },
     },
     '/ai-keys': {
+      prerender: true,
       headers: {
         'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
         'Content-Security-Policy':
@@ -180,6 +155,7 @@ export default defineNuxtConfig({
       },
     },
     '/about': {
+      prerender: true,
       headers: {
         'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
         'Content-Security-Policy':
@@ -191,6 +167,7 @@ export default defineNuxtConfig({
       },
     },
     '/search': {
+      prerender: true,
       headers: {
         'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
         'Content-Security-Policy':
@@ -202,6 +179,7 @@ export default defineNuxtConfig({
       },
     },
     '/submit': {
+      prerender: true,
       headers: {
         'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
         'Content-Security-Policy':
@@ -236,7 +214,9 @@ export default defineNuxtConfig({
     },
   },
   sitemap: {
-    hostname: process.env.CANONICAL_URL || 'https://free-stuff-on-the-internet.vercel.app',
+    hostname:
+      process.env.CANONICAL_URL ||
+      'https://free-stuff-on-the-internet.vercel.app',
   },
   ogImage: {
     enabled: false, // We'll implement this later if needed
