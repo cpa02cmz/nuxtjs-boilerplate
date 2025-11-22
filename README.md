@@ -42,19 +42,19 @@ cd nuxtjs-boilerplate
 2. **Install dependencies**
 
 ```bash
-# Using pnpm (recommended)
-pnpm install
-
-# Using npm
+# Using npm (recommended)
 npm install
+
+# Using pnpm
+pnpm install
 ```
 
-> **Note**: The project uses `pnpm-lock.yaml`, so pnpm is the recommended package manager.
+> **Note**: The project uses `packageManager: npm` in package.json, so npm is the recommended package manager.
 
 3. **Start development server**
 
 ```bash
-pnpm dev
+npm run dev
 ```
 
 The application will be available at <http://localhost:3000>

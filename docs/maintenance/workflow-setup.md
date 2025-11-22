@@ -4,7 +4,7 @@ This document explains the required changes to properly set up GitHub Actions wo
 
 ## Problem
 
-The repository uses pnpm as the package manager (evident from `pnpm-lock.yaml` and the README recommendation), but the GitHub Actions workflows are not configured to use pnpm. This causes:
+The repository uses npm as the package manager (evident from `packageManager: npm` in package.json), but the GitHub Actions workflows need to be configured properly for npm. This causes:
 
 1. ESLint configuration errors (dependencies not installed)
 2. Dependency installation timeouts
@@ -13,7 +13,7 @@ The repository uses pnpm as the package manager (evident from `pnpm-lock.yaml` a
 
 ## Solution
 
-All workflow files in `.github/workflows/` need to be updated to include proper pnpm setup:
+All workflow files in `.github/workflows/` need to be updated to include proper npm setup:
 
 - `.github/workflows/oc- researcher.yml`
 - `.github/workflows/oc-issue-solver.yml`
@@ -45,22 +45,16 @@ With this updated version:
   uses: actions/setup-node@v4
   with:
     node-version: '20'
-    cache: 'pnpm'
-
-- name: Install pnpm
-  uses: pnpm/action-setup@v4
-  with:
-    version: 9
-    run_install: false
+    cache: 'npm'
 
 - name: Install dependencies
-  run: pnpm install --frozen-lockfile
+  run: npm ci
 ```
 
 ## Verification
 
 After implementing these changes, the following commands should work in the CI environment:
 
-- `pnpm run lint` - Should run ESLint without configuration errors
-- `pnpm run build` - Should build the Nuxt application successfully
-- `pnpm run dev` - Should start the development server
+- `npm run lint` - Should run ESLint without configuration errors
+- `npm run build` - Should build the Nuxt application successfully
+- `npm run dev` - Should start the development server
