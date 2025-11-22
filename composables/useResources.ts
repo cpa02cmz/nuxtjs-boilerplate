@@ -39,9 +39,11 @@ export const useResources = () => {
   const loading = ref(true)
   const error = ref<string | null>(null)
   const fuse = ref<Fuse<Resource> | null>(null)
+  const retryCount = ref(0)
+  const maxRetries = 3
 
   // Initialize resources
-  const initResources = async () => {
+  const initResources = async (attempt = 1) => {
     try {
       // Import resources from JSON
       const resourcesModule = await import('~/data/resources.json')
@@ -60,12 +62,30 @@ export const useResources = () => {
       })
 
       loading.value = false
+      error.value = null
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Error loading resources:', err) // Keep for debugging during development
-      error.value = 'Failed to load resources'
-      loading.value = false
+      error.value = `Failed to load resources${attempt < maxRetries ? '. Retrying...' : ''}`
+
+      // Retry if we haven't exceeded max retries
+      if (attempt < maxRetries) {
+        retryCount.value = attempt
+        // Wait for a bit before retrying (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
+        await initResources(attempt + 1)
+      } else {
+        loading.value = false
+      }
     }
+  }
+
+  // Retry loading resources
+  const retryResources = async () => {
+    loading.value = true
+    error.value = null
+    retryCount.value = 0
+    await initResources()
   }
 
   // Get unique categories
@@ -265,6 +285,8 @@ export const useResources = () => {
     filteredResources,
     loading: readonly(loading),
     error: readonly(error),
+    retryCount: readonly(retryCount),
+    maxRetries,
     categories,
     pricingModels,
     difficultyLevels,
@@ -279,5 +301,6 @@ export const useResources = () => {
     setSortOption,
     resetFilters,
     highlightSearchTerms,
+    retryResources,
   }
 }

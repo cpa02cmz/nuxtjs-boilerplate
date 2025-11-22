@@ -172,4 +172,10 @@ describe('useResources', () => {
     expect(highlighted).toContain('test')
     expect(highlighted).toContain('class="bg-yellow-200')
   })
+
+  it('provides retry functionality', async () => {
+    // The retry functionality exists as a method on the composable
+    expect(resourcesComposable.retryResources).toBeDefined()
+    expect(typeof resourcesComposable.retryResources).toBe('function')
+  })
 })
