@@ -152,7 +152,7 @@ jobs:
       - name: Run iFlow CLI with Serena auto-fix
         uses: iflow-ai/iflow-cli-action@v2.1.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}
 
           REPOSITORY: ${{ github.repository }}
@@ -168,9 +168,9 @@ jobs:
 
         with:
           api_key: ${{ secrets.IFLOW_API_KEY }}
-          model: "Qwen3-Coder"
+          model: "glm-4.6"
           timeout: "3600"
-          debug: "true"
+          debug: "false"
 
           settings_json: |
             {
