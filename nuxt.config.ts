@@ -52,6 +52,28 @@ export default defineNuxtConfig({
       ],
       // Add performance-related meta tags
       meta: [
+        // Add preloading for critical resources
+        { rel: 'preload', href: '/favicon.ico', as: 'image' },
+        // Preload critical CSS
+        { rel: 'preload', href: '/_nuxt/', as: 'fetch', crossorigin: true },
+        // Add canonical URL
+        {
+          rel: 'canonical',
+          href: 'https://free-stuff-on-the-internet.vercel.app/',
+        },
+      ],
+      script: [
+        // Add script for performance monitoring if needed
+        // Preload important scripts
+      ],
+      // Add security-related meta tags
+      meta: [
+        // Content Security Policy via meta tag (backup)
+        {
+          'http-equiv': 'Content-Security-Policy',
+          content:
+            "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none';",
+        },
         { name: 'theme-color', content: '#ffffff' },
         { name: 'msapplication-TileColor', content: '#ffffff' },
         // Add Core Web Vitals meta tags
@@ -140,16 +162,91 @@ export default defineNuxtConfig({
         'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
       },
     },
+    // Add security headers
+    '/**': {
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+      },
+    },
+    // Add CSP headers (with nonce support for inline styles)
+    '/': {
+      headers: {
+        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none';",
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+      },
+    },
+    '/ai-keys': {
+      headers: {
+        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none';",
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+      },
+    },
+    '/about': {
+      headers: {
+        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none';",
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+      },
+    },
+    '/search': {
+      headers: {
+        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none';",
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+      },
+    },
+    '/submit': {
+      headers: {
+        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none';",
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+      },
+    },
     // Add caching headers for better performance
     '/api/**': {
       headers: {
         'cache-control': 'max-age=300, public, s-maxage=300', // 5 minutes
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none';",
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
       },
     },
     // Cache static assets
     '/_nuxt/**': {
       headers: {
         'cache-control': 'max-age=31536000, immutable',
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
       },
     },
   },
