@@ -1,6 +1,8 @@
 import { ref, computed, readonly } from 'vue'
 import Fuse from 'fuse.js'
 import DOMPurify from 'dompurify'
+import { useLoading } from '~/composables/useLoading'
+import { useErrorLog } from '~/composables/useErrorLog'
 
 // Define TypeScript interfaces
 export interface Resource {
@@ -37,11 +39,20 @@ export type SortOption =
 // Main composable for managing resources
 export const useResources = () => {
   const resources = ref<Resource[]>([])
-  const loading = ref(true)
-  const error = ref<string | null>(null)
   const fuse = ref<Fuse<Resource> | null>(null)
   const retryCount = ref(0)
   const maxRetries = 3
+
+  // Use the standardized loading state
+  const {
+    loading,
+    error,
+    startLoading,
+    stopLoading,
+    setError,
+    reset,
+    withLoading,
+  } = useLoading(true)
 
   // Initialize resources
   const initResources = async (attempt = 1) => {
@@ -62,15 +73,19 @@ export const useResources = () => {
         includeScore: true,
       })
 
-      loading.value = false
-      error.value = null
-    } catch (err) {
-      // In production, we might want to use a proper error tracking service instead of console
-      if (process.env.NODE_ENV === 'development') {
-        // eslint-disable-next-line no-console
-        console.error('Error loading resources:', err)
-      }
-      error.value = `Failed to load resources${attempt < maxRetries ? '. Retrying...' : ''}`
+      stopLoading()
+      reset() // Clear any previous error state
+    } catch (err: any) {
+      const errorMessage = `Failed to load resources${attempt < maxRetries ? '. Retrying...' : ''}`
+      setError(errorMessage)
+
+      // Log the error using our error logging service
+      const { logError } = useErrorLog()
+      logError('Error loading resources', err?.stack, 'useResources', {
+        attempt,
+        maxRetries,
+        error: err?.message,
+      })
 
       // Retry if we haven't exceeded max retries
       if (attempt < maxRetries) {
@@ -79,15 +94,14 @@ export const useResources = () => {
         await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
         await initResources(attempt + 1)
       } else {
-        loading.value = false
+        stopLoading()
       }
     }
   }
 
   // Retry loading resources
   const retryResources = async () => {
-    loading.value = true
-    error.value = null
+    startLoading()
     retryCount.value = 0
     await initResources()
   }

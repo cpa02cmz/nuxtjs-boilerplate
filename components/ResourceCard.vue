@@ -101,6 +101,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import DOMPurify from 'dompurify'
+import { useErrorLog } from '~/composables/useErrorLog'
 
 interface Props {
   title: string
@@ -123,6 +124,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const hasError = ref(false)
+const { logError } = useErrorLog()
 
 // Sanitize highlighted content to prevent XSS using DOMPurify
 const sanitizedHighlightedTitle = computed(() => {
@@ -204,11 +206,12 @@ const sanitizedHighlightedDescription = computed(() => {
 // Handle image loading errors
 const handleImageError = () => {
   hasError.value = true
-  // In production, we might want to use a proper error tracking service instead of console
-  if (process.dev) {
-    // eslint-disable-next-line no-console
-    console.error(`Failed to load image for resource: ${props.title}`)
-  }
+  logError(
+    `Failed to load image for resource: ${props.title}`,
+    undefined,
+    'ResourceCard',
+    { resourceTitle: props.title, iconUrl: props.icon }
+  )
 }
 
 // Handle link clicks and validate URL
@@ -216,14 +219,19 @@ const handleLinkClick = (event: Event) => {
   try {
     const url = new URL(props.url)
     // URL is valid, allow the click
-  } catch (err) {
+  } catch (err: any) {
     event.preventDefault()
     hasError.value = true
-    // In production, we might want to use a proper error tracking service instead of console
-    if (process.dev) {
-      // eslint-disable-next-line no-console
-      console.error(`Invalid URL for resource: ${props.url}`, err)
-    }
+    logError(
+      `Invalid URL for resource: ${props.url}`,
+      err?.stack,
+      'ResourceCard',
+      {
+        resourceTitle: props.title,
+        resourceUrl: props.url,
+        error: err?.message,
+      }
+    )
   }
 }
 

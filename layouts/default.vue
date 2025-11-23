@@ -120,19 +120,34 @@
 
     <!-- Offline Indicator -->
     <OfflineIndicator />
+
+    <!-- Toast Notifications -->
+    <ToastNotification ref="toastRef" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, navigateTo } from '#app'
 import { useResources } from '~/composables/useResources'
+import { initToastManager } from '~/composables/useToast'
 import SearchBar from '~/components/SearchBar.vue'
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
 import OfflineIndicator from '~/components/OfflineIndicator.vue'
+import ToastNotification from '~/components/ToastNotification.vue'
+
+// Reference to the toast notification component
+const toastRef = ref()
 
 // Use the resources composable to enable global search
 const { filterOptions, updateSearchQuery } = useResources()
+
+// Initialize the toast manager when the component is mounted
+onMounted(() => {
+  if (toastRef.value) {
+    initToastManager(toastRef.value)
+  }
+})
 
 // Reactive reference for search query
 const searchQuery = computed({
