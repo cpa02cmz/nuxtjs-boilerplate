@@ -39,7 +39,11 @@ export default defineEventHandler(async event => {
 
     return sitemap
   } catch (error: any) {
-    console.error('Error generating sitemap:', error) // Commented for production
+    // In production, we might want to use a proper error tracking service instead of console
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.error('Error generating sitemap:', error)
+    }
 
     // Set response status to 500 in case of error
     setResponseStatus(event, 500)
