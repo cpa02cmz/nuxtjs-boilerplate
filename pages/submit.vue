@@ -352,6 +352,7 @@ definePageMeta({
 })
 
 // Set page-specific meta tags
+const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
   title: 'Submit a Resource - Free Stuff on the Internet',
   ogTitle: 'Submit a Resource - Free Stuff on the Internet',
@@ -360,7 +361,7 @@ useSeoMeta({
   ogDescription:
     'Share valuable free resources with the community. Submit free AI tools, hosting services, databases, and other developer resources.',
   ogImage: '/og-image.jpg',
-  ogUrl: 'https://free-stuff-on-the-internet.vercel.app/submit',
+  ogUrl: `${runtimeConfig.public.canonicalUrl || 'https://free-stuff-on-the-internet.vercel.app'}/submit`,
   twitterCard: 'summary_large_image',
 })
 </script>

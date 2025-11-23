@@ -108,6 +108,7 @@ definePageMeta({
 })
 
 // Set page-specific meta tags
+const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
   title: 'Free AI API Keys - Free Stuff on the Internet',
   ogTitle: 'Free AI API Keys - Free Stuff on the Internet',
@@ -116,7 +117,7 @@ useSeoMeta({
   ogDescription:
     'Access powerful AI models with these free API keys and tools. Discover OpenAI, Hugging Face, Google AI Studio, and more free AI resources.',
   ogImage: '/og-image.jpg',
-  ogUrl: 'https://free-stuff-on-the-internet.vercel.app/ai-keys',
+  ogUrl: `${runtimeConfig.public.canonicalUrl || 'https://free-stuff-on-the-internet.vercel.app'}/ai-keys`,
   twitterCard: 'summary_large_image',
 })
 

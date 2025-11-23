@@ -130,6 +130,8 @@ export default defineNuxtConfig({
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '1; mode=block',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Strict-Transport-Security':
+          'max-age=31536000; includeSubDomains; preload',
       },
     },
     // Main routes with prerender and security headers
@@ -141,6 +143,8 @@ export default defineNuxtConfig({
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '0',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Strict-Transport-Security':
+          'max-age=31536000; includeSubDomains; preload',
       },
     },
     '/ai-keys': {
@@ -151,6 +155,8 @@ export default defineNuxtConfig({
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '0',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Strict-Transport-Security':
+          'max-age=31536000; includeSubDomains; preload',
       },
     },
     '/about': {
@@ -161,6 +167,8 @@ export default defineNuxtConfig({
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '0',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Strict-Transport-Security':
+          'max-age=31536000; includeSubDomains; preload',
       },
     },
     '/search': {
@@ -171,6 +179,8 @@ export default defineNuxtConfig({
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '0',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Strict-Transport-Security':
+          'max-age=31536000; includeSubDomains; preload',
       },
     },
     '/submit': {
@@ -181,6 +191,8 @@ export default defineNuxtConfig({
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '0',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Strict-Transport-Security':
+          'max-age=31536000; includeSubDomains; preload',
       },
     },
     // Add caching headers for better performance
@@ -191,6 +203,8 @@ export default defineNuxtConfig({
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '0',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Strict-Transport-Security':
+          'max-age=31536000; includeSubDomains; preload',
       },
     },
     // Cache static assets
@@ -201,6 +215,8 @@ export default defineNuxtConfig({
         'X-Frame-Options': 'DENY',
         'X-XSS-Protection': '1; mode=block',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Strict-Transport-Security':
+          'max-age=31536000; includeSubDomains; preload',
       },
     },
   },

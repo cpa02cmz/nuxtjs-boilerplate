@@ -30,6 +30,11 @@ export default defineNitroPlugin(nitroApp => {
       'Referrer-Policy',
       'strict-origin-when-cross-origin'
     )
+    // Add HSTS header for transport security
+    event.node.res.setHeader(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains; preload'
+    )
     event.node.res.setHeader(
       'Permissions-Policy',
       'geolocation=(), microphone=(), camera=()'
