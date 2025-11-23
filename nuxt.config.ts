@@ -2,13 +2,91 @@
 export default defineNuxtConfig({
   devtools: { enabled: false }, // Disable in production for performance
   css: ['~/assets/css/main.css'],
-  modules: ['@nuxtjs/tailwindcss', '@nuxt/image'],
-
-  runtimeConfig: {
-    public: {
-      canonicalUrl:
-        process.env.CANONICAL_URL ||
-        'https://free-stuff-on-the-internet.vercel.app/',
+  modules: ['@nuxtjs/tailwindcss', '@nuxt/image', '@vite-pwa/nuxt'],
+  pwa: {
+    strategies: 'generateSW',
+    registerType: 'autoUpdate',
+    manifest: {
+      name: 'Free Stuff on the Internet',
+      short_name: 'Free Stuff',
+      description:
+        'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+      theme_color: '#ffffff',
+      background_color: '#ffffff',
+      display: 'standalone',
+      icon: 'public/android-chrome-192x192.png',
+      lang: 'en',
+      categories: ['utilities', 'developer-tools'],
+      screenshots: [
+        {
+          src: '/og-image.jpg',
+          sizes: '1200x630',
+          type: 'image/jpeg',
+          platform: 'wide',
+        },
+      ],
+    },
+    workbox: {
+      // Cache strategies for different assets
+      globPatterns: ['**/*.{js,css,html,png,svg,ico,jpg,webp,woff2}'],
+      runtimeCaching: [
+        {
+          // Cache API calls with a network-first strategy
+          urlPattern: '^/api/.*',
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'api-cache',
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 60 * 24, // 24 hours
+            },
+          },
+        },
+        {
+          // Cache resources data
+          urlPattern: '.*resources\\\\.json',
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'resources-cache',
+            expiration: {
+              maxEntries: 10,
+              maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+            },
+          },
+        },
+        {
+          // Cache static assets
+          urlPattern: '^https://fonts\\\\.(?:googleapis|gstatic)\\\\.com/.*',
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'google-fonts-cache',
+            expiration: {
+              maxEntries: 10,
+              maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+            },
+          },
+        },
+        {
+          // Cache Nuxt build assets
+          urlPattern:
+            '^/_nuxt/.*\\\\.(js|css|png|svg|jpg|jpeg|gif|webp|woff|woff2)',
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'nuxt-assets-cache',
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+            },
+          },
+        },
+      ],
+    },
+    devOptions: {
+      enabled: true,
+      suppressWarnings: true,
+      navigateFallback: '/',
+      navigateFallbackAllowlist: ['^/$'],
+      type: 'module',
     },
   },
 
@@ -121,7 +199,7 @@ export default defineNuxtConfig({
       },
     },
   },
-  // Sitemap configuration
+
   routeRules: {
     // Add security headers globally
     '/**': {
@@ -236,6 +314,7 @@ export default defineNuxtConfig({
       },
     },
   },
+
   sitemap: {
     hostname:
       process.env.CANONICAL_URL ||
@@ -263,6 +342,7 @@ export default defineNuxtConfig({
     // CSP headers via middleware
     plugins: ['~/server/plugins/security-headers.ts'],
   },
+
   // Optimize bundle size
   vite: {
     build: {
