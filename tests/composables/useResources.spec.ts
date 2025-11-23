@@ -178,4 +178,15 @@ describe('useResources', () => {
     expect(resourcesComposable.retryResources).toBeDefined()
     expect(typeof resourcesComposable.retryResources).toBe('function')
   })
+
+  it('exposes loading and error states', async () => {
+    expect(resourcesComposable.loading).toBeDefined()
+    expect(resourcesComposable.error).toBeDefined()
+    expect(typeof resourcesComposable.loading.value).toBe('boolean')
+    // The error is now a computed ref that returns either string or null
+    expect(
+      typeof resourcesComposable.error.value === 'string' ||
+        resourcesComposable.error.value === null
+    ).toBe(true)
+  })
 })

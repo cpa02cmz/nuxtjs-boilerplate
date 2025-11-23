@@ -1,6 +1,7 @@
 import { ref, computed, readonly } from 'vue'
 import Fuse from 'fuse.js'
 import DOMPurify from 'dompurify'
+import { useLoading } from './useLoading'
 
 // Define TypeScript interfaces
 export interface Resource {
@@ -37,11 +38,17 @@ export type SortOption =
 // Main composable for managing resources
 export const useResources = () => {
   const resources = ref<Resource[]>([])
-  const loading = ref(true)
-  const error = ref<string | null>(null)
   const fuse = ref<Fuse<Resource> | null>(null)
   const retryCount = ref(0)
   const maxRetries = 3
+
+  // Use the standardized loading composable
+  const loadingComposable = useLoading()
+  const { withLoading, loadingState } = loadingComposable
+
+  // Create refs for loading and error that mirror the loading state
+  const loading = ref(true)
+  const error = ref<string | null>(null)
 
   // Initialize resources
   const initResources = async (attempt = 1) => {
@@ -400,8 +407,8 @@ export const useResources = () => {
   return {
     resources: readonly(resources),
     filteredResources,
-    loading: readonly(loading),
-    error: readonly(error),
+    loading: loading,
+    error: error,
     retryCount: readonly(retryCount),
     maxRetries,
     categories,

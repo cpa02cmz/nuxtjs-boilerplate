@@ -57,6 +57,22 @@
             >
               Go Home
             </NuxtLink>
+            <button
+              v-if="showErrorDetails"
+              class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
+              @click="toggleErrorDetails"
+            >
+              {{ errorDetailsVisible ? 'Hide Details' : 'Show Details' }}
+            </button>
+          </div>
+
+          <!-- Error details section -->
+          <div
+            v-if="showErrorDetails && errorDetailsVisible && error.stack"
+            class="mt-4 p-4 bg-gray-100 rounded-md text-left text-xs text-gray-700 max-h-40 overflow-auto"
+          >
+            <p><strong>Stack Trace:</strong></p>
+            <pre class="mt-2">{{ error.stack }}</pre>
           </div>
         </div>
       </div>
@@ -65,15 +81,27 @@
 </template>
 
 <script setup lang="ts">
+import { errorLogger } from '~/utils/errorLogger'
+
 interface ErrorProps {
   error: {
     statusCode: number
     message: string
     url: string
+    stack?: string
   }
 }
 
 const props = defineProps<ErrorProps>()
+
+// Log the error when the component is created
+onMounted(() => {
+  if (props.error) {
+    const errorObj = new Error(props.error.message)
+    errorObj.stack = props.error.stack
+    errorLogger.log(errorObj, 'error', props.error.url)
+  }
+})
 
 const handleRetry = () => {
   if (process.client) {
@@ -83,4 +111,14 @@ const handleRetry = () => {
 
 // Clear the error so the page can render
 const handleError = () => clearError({ redirect: '/' })
+
+// Error details visibility
+const errorDetailsVisible = ref(false)
+const showErrorDetails = computed(
+  () => process.env.NODE_ENV === 'development' && props.error?.stack
+)
+
+const toggleErrorDetails = () => {
+  errorDetailsVisible.value = !errorDetailsVisible.value
+}
 </script>
