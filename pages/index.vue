@@ -40,7 +40,7 @@
       </div>
 
       <!-- Error State -->
-      <div v-else-if="error" class="text-center py-12 mt-16">
+      <div v-else-if="error && isInitialized" class="text-center py-12 mt-16">
         <div class="mb-6">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -60,12 +60,17 @@
         <p class="text-red-600 text-lg mb-4">
           Error loading resources: {{ error }}
         </p>
-        <button
-          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900"
-          @click="retryResources"
-        >
-          Retry
-        </button>
+        <div class="space-y-4">
+          <button
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900"
+            @click="retryResources"
+          >
+            Retry
+          </button>
+          <p class="text-sm text-gray-500 mt-2">
+            Attempt {{ retryCount }} of {{ maxRetries }}
+          </p>
+        </div>
       </div>
 
       <!-- Resources Grid -->
@@ -133,7 +138,7 @@
 
         <!-- No Results Message -->
         <div
-          v-if="!filteredResources.length && !loading"
+          v-if="!filteredResources.length && isInitialized && !loading"
           class="text-center py-12"
         >
           <h3 class="text-xl font-medium text-gray-900 mb-2">
@@ -221,6 +226,9 @@ const {
   resources,
   highlightSearchTerms,
   retryResources,
+  isInitialized,
+  retryCount,
+  maxRetries,
 } = useResources()
 
 // Compute trending resources (top 5 by popularity)

@@ -7,7 +7,7 @@
   >
     <div class="flex items-start">
       <!-- Using standard img tag for optimization -->
-      <div v-if="icon" class="flex-shrink-0 mr-4">
+      <div v-if="icon && !imageError" class="flex-shrink-0 mr-4">
         <img
           :src="icon"
           :alt="title"
@@ -17,6 +17,26 @@
           loading="lazy"
           @error="handleImageError"
         />
+      </div>
+      <div v-else-if="icon && imageError" class="flex-shrink-0 mr-4">
+        <div
+          class="w-12 h-12 rounded object-contain bg-gray-200 flex items-center justify-center"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+        </div>
       </div>
       <div class="flex-1 min-w-0">
         <h3
@@ -93,6 +113,14 @@
         <p class="mt-1 text-red-700 text-sm">
           This resource could not be displayed due to an error.
         </p>
+        <div class="mt-3">
+          <button
+            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 transition-colors duration-200"
+            @click="resetError"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -123,6 +151,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const hasError = ref(false)
+const imageError = ref(false)
 
 // Sanitize highlighted content to prevent XSS using DOMPurify
 const sanitizedHighlightedTitle = computed(() => {
@@ -203,7 +232,7 @@ const sanitizedHighlightedDescription = computed(() => {
 
 // Handle image loading errors
 const handleImageError = () => {
-  hasError.value = true
+  imageError.value = true
   // In production, we might want to use a proper error tracking service instead of console
   if (process.dev) {
     // eslint-disable-next-line no-console
@@ -225,6 +254,12 @@ const handleLinkClick = (event: Event) => {
       console.error(`Invalid URL for resource: ${props.url}`, err)
     }
   }
+}
+
+// Reset the error state
+const resetError = () => {
+  hasError.value = false
+  imageError.value = false
 }
 
 // Add structured data for the resource

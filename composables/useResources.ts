@@ -42,6 +42,7 @@ export const useResources = () => {
   const fuse = ref<Fuse<Resource> | null>(null)
   const retryCount = ref(0)
   const maxRetries = 3
+  const isInitialized = ref(false)
 
   // Initialize resources
   const initResources = async (attempt = 1) => {
@@ -64,6 +65,7 @@ export const useResources = () => {
 
       loading.value = false
       error.value = null
+      isInitialized.value = true
     } catch (err) {
       // In production, we might want to use a proper error tracking service instead of console
       if (process.env.NODE_ENV === 'development') {
@@ -80,6 +82,7 @@ export const useResources = () => {
         await initResources(attempt + 1)
       } else {
         loading.value = false
+        isInitialized.value = true
       }
     }
   }
@@ -267,6 +270,16 @@ export const useResources = () => {
     sortOption.value = 'popularity-desc'
   }
 
+  // Reset the entire resources state
+  const resetResourceState = () => {
+    resources.value = []
+    loading.value = true
+    error.value = null
+    retryCount.value = 0
+    isInitialized.value = false
+    initResources()
+  }
+
   // Initialize resources when composable is created
   initResources()
 
@@ -371,5 +384,7 @@ export const useResources = () => {
     resetFilters,
     highlightSearchTerms,
     retryResources,
+    isInitialized: readonly(isInitialized),
+    resetResourceState,
   }
 }
