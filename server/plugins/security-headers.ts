@@ -1,6 +1,8 @@
 import { defineNitroPlugin } from 'nitropack/runtime'
 import { randomBytes } from 'node:crypto'
 
+// Security headers plugin to enhance XSS protection and add HSTS
+
 export default defineNitroPlugin(nitroApp => {
   nitroApp.hooks.hook('render:html', (html, { event }) => {
     // Generate a unique nonce for each request to allow inline scripts/styles when needed
