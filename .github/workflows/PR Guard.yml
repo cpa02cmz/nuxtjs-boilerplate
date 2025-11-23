@@ -29,7 +29,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -99,7 +99,7 @@ jobs:
 
       - name: Checkout PR head (non-fork)
         if: steps.forkcheck.outputs.fork != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           ref: ${{ github.event.pull_request.head.ref }}
@@ -170,7 +170,7 @@ jobs:
 
       - name: Checkout PR head
         if: matrix.pr.number != 0
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ matrix.pr.head_repo_full_name }}
           ref: ${{ matrix.pr.head_ref }}
@@ -216,7 +216,7 @@ jobs:
 
       - name: Checkout PR head
         if: steps.pr.outputs.head_repo_fork != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ steps.pr.outputs.head_repo_full_name }}
           ref: ${{ steps.pr.outputs.head_ref }}
