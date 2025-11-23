@@ -214,7 +214,11 @@ const sanitizedHighlightedDescription = computed(() => {
 // Handle image loading errors
 const handleImageError = () => {
   hasError.value = true
-  console.error(`Failed to load image for resource: ${props.title}`)
+  // In production, we might want to use a proper error tracking service instead of console
+  if (process.env.NODE_ENV === 'development') {
+    // eslint-disable-next-line no-console
+    console.error(`Failed to load image for resource: ${props.title}`)
+  }
 }
 
 // Handle link clicks and validate URL
@@ -225,7 +229,11 @@ const handleLinkClick = (event: Event) => {
   } catch (err) {
     event.preventDefault()
     hasError.value = true
-    console.error(`Invalid URL for resource: ${props.url}`, err)
+    // In production, we might want to use a proper error tracking service instead of console
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.error(`Invalid URL for resource: ${props.url}`, err)
+    }
   }
 }
 
