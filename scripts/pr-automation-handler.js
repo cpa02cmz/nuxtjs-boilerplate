@@ -405,7 +405,7 @@ function runValidation() {
   // Run build
   try {
     if (process.env.DEBUG) console.log('📦 Running build...')
-    execSync('npm run build', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 }) // 10MB buffer
+    execSync('npx nuxt build', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 }) // 10MB buffer
     if (process.env.DEBUG) console.log('✓ Build successful')
   } catch (buildError) {
     if (process.env.DEBUG)
@@ -419,7 +419,7 @@ function runValidation() {
 
   // Run tests if available
   try {
-    execSync('pnpm test', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })
+    execSync('npx vitest --run', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })
     if (process.env.DEBUG) console.log('✓ Tests passed')
   } catch (testError) {
     if (process.env.DEBUG)
