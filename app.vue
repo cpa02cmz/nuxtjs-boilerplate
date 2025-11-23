@@ -10,6 +10,8 @@
 // All pages will now properly render within the default layout structure
 
 // Set default meta tags for the entire application
+const runtimeConfig = useRuntimeConfig()
+
 useSeoMeta({
   title: 'Free Stuff on the Internet - Free Resources for Developers',
   ogTitle: 'Free Stuff on the Internet - Free Resources for Developers',
@@ -28,11 +30,10 @@ const websiteSchema = {
   name: 'Free Stuff on the Internet',
   description:
     'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-  url: 'https://free-stuff-on-the-internet.vercel.app/',
+  url: runtimeConfig.public.canonicalUrl,
   potentialAction: {
     '@type': 'SearchAction',
-    target:
-      'https://free-stuff-on-the-internet.vercel.app/search?q={search_term_string}',
+    target: `${runtimeConfig.public.canonicalUrl}/search?q={search_term_string}`,
     'query-input': 'required name=search_term_string',
   },
 }
@@ -50,6 +51,18 @@ useHead({
     // Add resource hints for performance
     { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
     { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
+    // Add canonical URL
+    {
+      rel: 'canonical',
+      href: runtimeConfig.public.canonicalUrl,
+    },
+  ],
+  meta: [
+    // Add og:url using runtime config
+    {
+      property: 'og:url',
+      content: runtimeConfig.public.canonicalUrl,
+    },
   ],
   script: [
     {
