@@ -7,7 +7,7 @@
         >
           Free Stuff on the Internet
         </h1>
-        <p class="mt-6 max-w-lg mx-auto text-xl text-gray-500">
+        <p class="mt-6 max-w-lg mx-auto text-xl text-gray-600">
           Discover amazing free resources available on the internet - from AI
           tools to hosting services.
         </p>
@@ -89,7 +89,7 @@
               'px-3 py-1 text-sm rounded-full border',
               selectedCategories.includes(category)
                 ? 'bg-gray-800 text-white border-gray-800'
-                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50',
+                : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-50',
             ]"
             :aria-label="
               selectedCategories.includes(category)
@@ -189,9 +189,8 @@ definePageMeta({
   layout: 'default',
 })
 
-const runtimeConfig = useRuntimeConfig()
-
 // Set page-specific meta tags
+const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
   title: 'Free Stuff on the Internet - Free Resources for Developers',
   ogTitle: 'Free Stuff on the Internet - Free Resources for Developers',
@@ -200,7 +199,10 @@ useSeoMeta({
   ogDescription:
     'Discover amazing free resources available on the internet - from AI tools to hosting services.',
   ogImage: '/og-image.jpg',
-  ogUrl: runtimeConfig.public.canonicalUrl,
+  ogUrl:
+    runtimeConfig.public.siteUrl ||
+    runtimeConfig.public.canonicalUrl ||
+    'https://free-stuff-on-the-internet.vercel.app/',
   twitterCard: 'summary_large_image',
 })
 
