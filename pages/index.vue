@@ -189,9 +189,8 @@ definePageMeta({
   layout: 'default',
 })
 
-const runtimeConfig = useRuntimeConfig()
-
 // Set page-specific meta tags
+const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
   title: 'Free Stuff on the Internet - Free Resources for Developers',
   ogTitle: 'Free Stuff on the Internet - Free Resources for Developers',
@@ -200,7 +199,10 @@ useSeoMeta({
   ogDescription:
     'Discover amazing free resources available on the internet - from AI tools to hosting services.',
   ogImage: '/og-image.jpg',
-  ogUrl: runtimeConfig.public.canonicalUrl,
+  ogUrl:
+    runtimeConfig.public.siteUrl ||
+    runtimeConfig.public.canonicalUrl ||
+    'https://free-stuff-on-the-internet.vercel.app/',
   twitterCard: 'summary_large_image',
 })
 
