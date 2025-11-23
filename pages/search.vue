@@ -132,7 +132,7 @@ useSeoMeta({
   ogDescription:
     'Search and filter through our collection of free resources including AI tools, hosting services, databases, and more for developers.',
   ogImage: '/og-image.jpg',
-  ogUrl: `${runtimeConfig.public.canonicalUrl || 'https://free-stuff-on-the-internet.vercel.app'}/search`,
+  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'https://free-stuff-on-the-internet.vercel.app'}/search`,
   twitterCard: 'summary_large_image',
 })
 

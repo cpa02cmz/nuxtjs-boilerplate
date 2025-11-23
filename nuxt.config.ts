@@ -132,6 +132,8 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
       },
     },
     // Main routes with prerender and security headers
@@ -145,6 +147,8 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
       },
     },
     '/ai-keys': {
@@ -157,6 +161,8 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
       },
     },
     '/about': {
@@ -169,6 +175,8 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
       },
     },
     '/search': {
@@ -181,6 +189,8 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
       },
     },
     '/submit': {
@@ -193,6 +203,8 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
       },
     },
     // Add caching headers for better performance
@@ -205,6 +217,8 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
       },
     },
     // Cache static assets
@@ -217,6 +231,8 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        'Content-Security-Policy':
+          "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
       },
     },
   },
