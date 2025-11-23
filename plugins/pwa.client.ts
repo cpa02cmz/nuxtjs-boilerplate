@@ -1,3 +1,5 @@
+import { ref, readonly } from 'vue'
+
 export default defineNuxtPlugin(() => {
   const showInstallPrompt = ref(false)
   const deferredPrompt: any = ref(null)

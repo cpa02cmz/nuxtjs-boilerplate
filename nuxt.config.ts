@@ -340,10 +340,7 @@ export default defineNuxtConfig({
     // Improve build performance
     ignore: ['**/.git/**', '**/node_modules/**', '**/dist/**'],
     // CSP headers via middleware
-    plugins: [
-      '~/server/plugins/security-headers.ts',
-      '~/plugins/pwa.client.ts',
-    ],
+    plugins: ['~/server/plugins/security-headers.ts'],
   },
 
   // Optimize bundle size
