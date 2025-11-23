@@ -3,26 +3,55 @@ export default defineNuxtConfig({
   devtools: { enabled: false }, // Disable in production for performance
   css: ['~/assets/css/main.css'],
   modules: ['@nuxtjs/tailwindcss', '@nuxt/image', '@vite-pwa/nuxt'],
+
+  // Runtime configuration for environment variables
+  runtimeConfig: {
+    public: {
+      canonicalUrl:
+        process.env.CANONICAL_URL ||
+        'https://free-stuff-on-the-internet.vercel.app/',
+    },
+  },
+
+  // PWA Configuration - merged from both branches
   pwa: {
     strategies: 'generateSW',
     registerType: 'autoUpdate',
     manifest: {
       name: 'Free Stuff on the Internet',
-      short_name: 'Free Stuff',
+      short_name: 'Free Resources',
       description:
         'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-      theme_color: '#ffffff',
-      background_color: '#ffffff',
-      display: 'standalone',
-      icon: 'public/android-chrome-192x192.png',
+      theme_color: '#4f46e5',
       lang: 'en',
-      categories: ['utilities', 'developer-tools'],
-      screenshots: [
+      display: 'standalone',
+      orientation: 'any',
+      background_color: '#ffffff',
+      id: '/',
+      start_url: '/',
+      scope: '/',
+      icons: [
         {
-          src: '/og-image.jpg',
-          sizes: '1200x630',
-          type: 'image/jpeg',
-          platform: 'wide',
+          src: 'pwa/icon-192x192.png',
+          sizes: '192x192',
+          type: 'image/png',
+        },
+        {
+          src: 'pwa/icon-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+        },
+        {
+          src: 'pwa/maskable-icon-192x192.png',
+          sizes: '192x192',
+          type: 'image/png',
+          purpose: 'maskable',
+        },
+        {
+          src: 'pwa/maskable-icon-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable',
         },
       ],
     },
@@ -44,7 +73,7 @@ export default defineNuxtConfig({
         },
         {
           // Cache resources data
-          urlPattern: '.*resources\\\\.json',
+          urlPattern: '.*resources\\.json',
           handler: 'CacheFirst',
           options: {
             cacheName: 'resources-cache',
@@ -56,7 +85,7 @@ export default defineNuxtConfig({
         },
         {
           // Cache static assets
-          urlPattern: '^https://fonts\\\\.(?:googleapis|gstatic)\\\\.com/.*',
+          urlPattern: '^https://fonts\\.(?:googleapis|gstatic)\\.com/.*',
           handler: 'CacheFirst',
           options: {
             cacheName: 'google-fonts-cache',
@@ -69,13 +98,69 @@ export default defineNuxtConfig({
         {
           // Cache Nuxt build assets
           urlPattern:
-            '^/_nuxt/.*\\\\.(js|css|png|svg|jpg|jpeg|gif|webp|woff|woff2)',
+            '^/_nuxt/.*\\.(js|css|png|svg|jpg|jpeg|gif|webp|woff|woff2)',
           handler: 'CacheFirst',
           options: {
             cacheName: 'nuxt-assets-cache',
             expiration: {
               maxEntries: 50,
               maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+            },
+          },
+        },
+        {
+          urlPattern: 'https://.*\\.githubusercontent\\.com/.*',
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'github-cdn-cache',
+            expiration: {
+              maxEntries: 10,
+              maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+            },
+            cacheableResponse: {
+              statuses: [0, 200],
+            },
+          },
+        },
+        {
+          urlPattern: 'https://fonts.googleapis.com/.*',
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'google-fonts-cache',
+            expiration: {
+              maxEntries: 10,
+              maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+            },
+            cacheableResponse: {
+              statuses: [0, 200],
+            },
+          },
+        },
+        {
+          urlPattern: 'https://fonts.gstatic.com/.*',
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'font-files-cache',
+            expiration: {
+              maxEntries: 10,
+              maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+            },
+            cacheableResponse: {
+              statuses: [0, 200],
+            },
+          },
+        },
+        {
+          urlPattern: '^https://.*\\.(png|jpe?g|gif|svg|webp)$',
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'image-cache',
+            expiration: {
+              maxEntries: 20,
+              maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+            },
+            cacheableResponse: {
+              statuses: [0, 200],
             },
           },
         },
@@ -386,6 +471,7 @@ export default defineNuxtConfig({
       exclude: [],
     },
   },
+
   // Additional build optimization settings
   build: {
     // Enable compression
