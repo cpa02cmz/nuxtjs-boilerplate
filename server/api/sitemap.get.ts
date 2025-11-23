@@ -8,7 +8,9 @@ export default defineEventHandler(async event => {
     // Get the base URL
     const config = useRuntimeConfig()
     const baseUrl =
-      config.public.siteUrl || 'https://free-stuff-on-the-internet.vercel.app'
+      config.public.siteUrl ||
+      config.public.canonicalUrl ||
+      'https://free-stuff-on-the-internet.vercel.app'
 
     // Define the static pages
     const staticPages = [
@@ -40,7 +42,7 @@ export default defineEventHandler(async event => {
     return sitemap
   } catch (error: any) {
     // In production, we might want to use a proper error tracking service instead of console
-    if (process.env.NODE_ENV === 'development') {
+    if (process.dev) {
       // eslint-disable-next-line no-console
       console.error('Error generating sitemap:', error)
     }
