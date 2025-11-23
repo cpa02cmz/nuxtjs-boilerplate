@@ -81,6 +81,12 @@
         <p class="sr-only">Footer content ends</p>
       </div>
     </footer>
+
+    <!-- PWA Install Prompt -->
+    <PWAInstallPrompt />
+
+    <!-- Offline Indicator -->
+    <OfflineIndicator />
   </div>
 </template>
 
@@ -89,6 +95,8 @@ import { computed } from 'vue'
 import { useRoute, navigateTo } from '#app'
 import { useResources } from '~/composables/useResources'
 import SearchBar from '~/components/SearchBar.vue'
+import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
+import OfflineIndicator from '~/components/OfflineIndicator.vue'
 
 // Use the resources composable to enable global search
 const { filterOptions, updateSearchQuery } = useResources()

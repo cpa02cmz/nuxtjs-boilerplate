@@ -87,8 +87,8 @@ function getOpenPRs() {
         return bPriority - aPriority // Higher priority first
       }
 
-      // Same priority - sort by creation date (oldest first)
-      return new Date(a.createdAt) - new Date(b.createdAt)
+      // Same priority - sort by creation date (newest first to handle recent PRs)
+      return new Date(b.createdAt) - new Date(a.createdAt)
     })
   } catch (error) {
     if (process.env.DEBUG)
@@ -225,6 +225,25 @@ async function processReviewComments(prNumber) {
     // Process general PR comments
     if (prDetails.comments) {
       for (const comment of prDetails.comments) {
+        // Skip comments from automation bots to avoid loops
+        if (
+          comment.author.login === 'github-actions' ||
+          comment.author.login.includes('bot') ||
+          comment.author.login === 'openhands'
+        ) {
+          continue
+        }
+
+        // Skip old automation comments to avoid processing them as new feedback
+        if (
+          comment.body &&
+          (comment.body.includes('🤖 Automated PR processing') ||
+            comment.body.includes('Automated PR handling completed') ||
+            comment.body.includes('PR processing completed'))
+        ) {
+          continue
+        }
+
         if (isTechnicalFeedback(comment.body)) {
           if (process.env.DEBUG)
             console.log(
@@ -245,9 +264,7 @@ async function processReviewComments(prNumber) {
         execSync('git add .', { stdio: 'pipe' })
 
         // Check if there are actual changes to commit
-        const diff = execSync('git diff --cached --name-only', {
-          encoding: 'utf-8',
-        })
+        const diff = execSync('git status --porcelain', { encoding: 'utf-8' })
         if (diff.trim()) {
           execSync(
             `git commit -m "fix(pr#${prNumber}): address review comments"`,
@@ -404,10 +421,20 @@ function runValidation() {
     }
   }
 
-  // Run build
+  // Run build - try different build commands for this project
   try {
     if (process.env.DEBUG) console.log('📦 Running build...')
-    execSync('pnpm build', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 }) // 10MB buffer
+    // Try different build commands for this nuxt project
+    try {
+      execSync('npm run build', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })
+      if (process.env.DEBUG)
+        console.log('✓ Build successful with npm run build')
+    } catch (npmBuildError) {
+      if (process.env.DEBUG)
+        console.log('npm run build failed, trying nuxt build directly...')
+      execSync('npx nuxt build', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })
+      if (process.env.DEBUG) console.log('✓ Build successful with nuxt build')
+    }
     if (process.env.DEBUG) console.log('✓ Build successful')
   } catch (buildError) {
     if (process.env.DEBUG)
@@ -419,9 +446,21 @@ function runValidation() {
     // Don't set allPassed to false for build failures - it's non-critical
   }
 
-  // Run tests if available
+  // Run tests if available - try the specific test command for this project
   try {
-    execSync('pnpm test', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })
+    // Try various test commands for this nuxt project
+    try {
+      execSync('npm run test', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })
+      if (process.env.DEBUG) console.log('✓ Tests passed with npm run test')
+    } catch (npmTestError) {
+      if (process.env.DEBUG)
+        console.log('npm run test failed, trying vitest...')
+      execSync('npx vitest --run', {
+        stdio: 'pipe',
+        maxBuffer: 10 * 1024 * 1024,
+      })
+      if (process.env.DEBUG) console.log('✓ Tests passed with vitest')
+    }
     if (process.env.DEBUG) console.log('✓ Tests passed')
   } catch (testError) {
     if (process.env.DEBUG)
