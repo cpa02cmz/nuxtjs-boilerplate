@@ -245,9 +245,7 @@ async function processReviewComments(prNumber) {
         execSync('git add .', { stdio: 'pipe' })
 
         // Check if there are actual changes to commit
-        const diff = execSync('git diff --cached --name-only', {
-          encoding: 'utf-8',
-        })
+        const diff = execSync('git status --porcelain', { encoding: 'utf-8' })
         if (diff.trim()) {
           execSync(
             `git commit -m "fix(pr#${prNumber}): address review comments"`,
@@ -407,7 +405,7 @@ function runValidation() {
   // Run build
   try {
     if (process.env.DEBUG) console.log('📦 Running build...')
-    execSync('pnpm build', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 }) // 10MB buffer
+    execSync('npm run build', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 }) // 10MB buffer
     if (process.env.DEBUG) console.log('✓ Build successful')
   } catch (buildError) {
     if (process.env.DEBUG)
