@@ -191,6 +191,47 @@ Configuration files:
 - `.prettierrc` - Prettier configuration
 - `.stylelintrc` - Stylelint configuration
 
+## 🚨 Current Known Issues (2025-11-23)
+
+### Critical Infrastructure Issues
+
+**⚠️ IMPORTANT**: The repository currently has critical infrastructure issues that must be resolved before normal development:
+
+#### 1. Build System Issues
+
+- **ESLint Configuration**: Flat config not detected properly
+- **Package Manager**: Inconsistency between npm and pnpm usage
+- **Dependency Conflicts**: Vitest version incompatibilities
+
+#### 2. Security Vulnerabilities
+
+- **XSS Protection**: Needed in ResourceCard.vue
+- **Hardcoded Secrets**: URLs and configuration values
+- **CSP Headers**: Missing Content Security Policy
+
+#### 3. Development Environment
+
+- **Test Framework**: Vitest setup incomplete
+- **Error Handling**: Missing global error boundaries
+- **Performance**: No monitoring or optimization
+
+### Temporary Workarounds
+
+#### For Development Setup
+
+```bash
+# Use npm instead of pnpm for now
+npm install
+npm run dev
+```
+
+#### For Linting Issues
+
+```bash
+# Run ESLint with legacy config if needed
+npx eslint --config .eslintrc.cjs .
+```
+
 ## 🐛 Troubleshooting
 
 ### Common Issues
@@ -208,7 +249,7 @@ npm install
 ```bash
 # Check ESLint version and configuration
 npx eslint --version
-ls -la .eslintrc.*
+ls -la eslint.config.js
 ```
 
 #### 3. Build Fails
@@ -216,7 +257,7 @@ ls -la .eslintrc.*
 ```bash
 # Clean build
 rm -rf .nuxt .output
-pnpm build
+npm build
 ```
 
 #### 4. Port Already in Use
@@ -227,6 +268,14 @@ lsof -ti:3000 | xargs kill -9
 
 # Or use different port
 npm run dev -- --port 3001
+```
+
+#### 5. Test Framework Issues
+
+```bash
+# If Vitest fails, check dependencies
+npm list vitest
+npm install --save-dev vitest@latest
 ```
 
 ### Getting Help
@@ -247,4 +296,30 @@ We welcome contributions! Please read our [Development Guidelines](./development
 
 ---
 
-_Last Updated: 2025-11-19_
+## 📋 Current Development Status
+
+### 🚨 Critical Issues Being Addressed
+
+- **Issue #152**: Security vulnerabilities and hardcoded secrets
+- **Issue #153**: Error handling and loading states
+- **Issue #154**: Performance optimization needs
+- **Issue #155**: Testing infrastructure gaps
+- **Issue #156**: Accessibility compliance requirements
+
+### 🔄 Recent Improvements
+
+- Comprehensive repository analysis completed
+- 5 new high-priority issues created
+- Project management framework established
+- Task breakdown and resource allocation completed
+
+### 📞 Getting Help
+
+- Check the [Troubleshooting Guide](./maintenance/troubleshooting.md)
+- Review [GitHub Issues](https://github.com/cpa02cmz/nuxtjs-boilerplate/issues)
+- Consult [Nuxt Documentation](https://nuxt.com/docs)
+- Check [Project Management](./project-management.md) for current priorities
+
+---
+
+_Last Updated: 2025-11-23_
