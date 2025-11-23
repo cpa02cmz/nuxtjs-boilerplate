@@ -45,6 +45,8 @@
 </template>
 
 <script setup lang="ts">
+import { useNuxtApp } from '#app'
+
 const { pwa } = useNuxtApp()
 
 const installPWA = () => {
