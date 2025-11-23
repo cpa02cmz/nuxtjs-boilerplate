@@ -9,9 +9,10 @@ export default defineEventHandler(async event => {
       submissions: [],
     }
   } catch (error: any) {
-    if (process.dev) {
+    // In production, we might want to use a proper error tracking service instead of console
+    if (process.env.NODE_ENV === 'development') {
       // eslint-disable-next-line no-console
-      console.error('Error fetching submissions:', error) // Only log in development
+      console.error('Error fetching submissions:', error)
     }
 
     // Return proper error response

@@ -65,9 +65,10 @@ export const useResources = () => {
       loading.value = false
       error.value = null
     } catch (err) {
-      if (process.dev) {
+      // In production, we might want to use a proper error tracking service instead of console
+      if (process.env.NODE_ENV === 'development') {
         // eslint-disable-next-line no-console
-        console.error('Error loading resources:', err) // Only log in development
+        console.error('Error loading resources:', err)
       }
       error.value = `Failed to load resources${attempt < maxRetries ? '. Retrying...' : ''}`
 
