@@ -193,7 +193,10 @@ const sanitizedHighlightedDescription = computed(() => {
 // Handle image loading errors
 const handleImageError = () => {
   hasError.value = true
-  console.error(`Failed to load image for resource: ${props.title}`)
+  if (process.dev) {
+    // eslint-disable-next-line no-console
+    console.error(`Failed to load image for resource: ${props.title}`)
+  }
 }
 
 // Handle link clicks and validate URL
@@ -204,7 +207,10 @@ const handleLinkClick = (event: Event) => {
   } catch (err) {
     event.preventDefault()
     hasError.value = true
-    console.error(`Invalid URL for resource: ${props.url}`, err)
+    if (process.dev) {
+      // eslint-disable-next-line no-console
+      console.error(`Invalid URL for resource: ${props.url}`, err)
+    }
   }
 }
 

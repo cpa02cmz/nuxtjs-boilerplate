@@ -4,6 +4,14 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   modules: ['@nuxtjs/tailwindcss', '@nuxt/image'],
 
+  runtimeConfig: {
+    public: {
+      canonicalUrl:
+        process.env.CANONICAL_URL ||
+        'https://free-stuff-on-the-internet.vercel.app/',
+    },
+  },
+
   // Security and CSP configuration
   experimental: {
     // Enable nonce-based CSP support
@@ -51,13 +59,7 @@ export default defineNuxtConfig({
         { rel: 'preload', href: '/favicon.ico', as: 'image' },
         // Preload critical CSS
         { rel: 'preload', href: '/_nuxt/', as: 'fetch', crossorigin: true },
-        // Add canonical URL
-        {
-          rel: 'canonical',
-          href:
-            process.env.CANONICAL_URL ||
-            'https://free-stuff-on-the-internet.vercel.app/',
-        },
+        // Add canonical URL - will be set dynamically in app.vue
       ],
       script: [
         // Add script for performance monitoring if needed
@@ -99,12 +101,7 @@ export default defineNuxtConfig({
             'Discover amazing free resources available on the internet - from AI tools to hosting services.',
         },
         { property: 'og:type', content: 'website' },
-        {
-          property: 'og:url',
-          content:
-            process.env.CANONICAL_URL ||
-            'https://free-stuff-on-the-internet.vercel.app/',
-        },
+        // og:url will be set dynamically in app.vue
         { property: 'og:image', content: '/og-image.jpg' }, // This will be updated later
         // Twitter card
         { name: 'twitter:card', content: 'summary_large_image' },

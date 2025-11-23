@@ -39,7 +39,10 @@ export default defineEventHandler(async event => {
 
     return sitemap
   } catch (error: any) {
-    console.error('Error generating sitemap.xml:', error) // Commented for production
+    if (process.dev) {
+      // eslint-disable-next-line no-console
+      console.error('Error generating sitemap.xml:', error) // Only log in development
+    }
 
     // Set response status to 500 in case of error
     setResponseStatus(event, 500)

@@ -105,7 +105,10 @@ export default defineEventHandler(async event => {
     }
   } catch (error: any) {
     // Log the error server-side for debugging
-    console.error('Error processing submission:', error) // Commented for production
+    if (process.dev) {
+      // eslint-disable-next-line no-console
+      console.error('Error processing submission:', error) // Only log in development
+    }
 
     // Return proper error response
     if (error.statusCode) {

@@ -9,7 +9,10 @@ export default defineEventHandler(async event => {
       submissions: [],
     }
   } catch (error: any) {
-    console.error('Error fetching submissions:', error) // Commented for production
+    if (process.dev) {
+      // eslint-disable-next-line no-console
+      console.error('Error fetching submissions:', error) // Only log in development
+    }
 
     // Return proper error response
     return {
