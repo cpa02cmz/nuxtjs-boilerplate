@@ -90,8 +90,8 @@
           <div class="mt-6 grid grid-cols-1 gap-6">
             <ResourceCard
               v-for="resource in filteredResources"
-              :key="resource.id"
               :id="resource.id"
+              :key="resource.id"
               :title="resource.title"
               :description="resource.description"
               :benefits="resource.benefits"

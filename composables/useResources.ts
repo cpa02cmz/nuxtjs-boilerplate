@@ -342,9 +342,9 @@ export const useResources = () => {
   const highlightSearchTerms = (text: string, searchQuery: string): string => {
     if (!searchQuery || !text) return text || ''
 
-    // First sanitize the input text to prevent XSS
+    // First sanitize the input text to prevent XSS - only allow text content
     const sanitizedText = DOMPurify.sanitize(text, {
-      ALLOWED_TAGS: [],
+      ALLOWED_TAGS: [], // No HTML tags allowed, just plain text
       ALLOWED_ATTR: [],
       FORBID_TAGS: [
         'script',
@@ -374,14 +374,14 @@ export const useResources = () => {
     const escapedQuery = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const regex = new RegExp(`(${escapedQuery})`, 'gi')
 
-    // Create highlighted text
+    // Create highlighted text - only highlighting the already sanitized text
     const highlighted = sanitizedText.replace(
       regex,
       '<mark class="bg-yellow-200 text-gray-900">$1</mark>'
     )
 
-    // Sanitize the final result to ensure no malicious content remains
-    const sanitized = DOMPurify.sanitize(highlighted, {
+    // Final sanitization to ensure only safe mark tags with allowed classes are present
+    const fullySanitized = DOMPurify.sanitize(highlighted, {
       ALLOWED_TAGS: ['mark'],
       ALLOWED_ATTR: ['class'],
       FORBID_TAGS: [
@@ -408,7 +408,13 @@ export const useResources = () => {
       ],
     })
 
-    return sanitized
+    // Additional check to ensure no dangerous patterns remain in the final HTML
+    // This prevents cases where the highlighted term itself could be dangerous
+    return fullySanitized
+      .replace(/javascript:/gi, '')
+      .replace(/data:/gi, '')
+      .replace(/vbscript:/gi, '')
+      .replace(/on\w+\s*=/gi, '') // Remove any event handlers
   }
 
   return {

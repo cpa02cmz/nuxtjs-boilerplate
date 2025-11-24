@@ -1,6 +1,8 @@
 import { defineNitroPlugin } from 'nitropack/runtime'
 import { randomBytes } from 'node:crypto'
 
+// Security headers plugin to enhance XSS protection and add HSTS
+
 export default defineNitroPlugin(nitroApp => {
   nitroApp.hooks.hook('render:html', (html, { event }) => {
     // Generate a unique nonce for each request to allow inline scripts/styles when needed
@@ -40,6 +42,11 @@ export default defineNitroPlugin(nitroApp => {
     event.node.res.setHeader(
       'Permissions-Policy',
       'geolocation=(), microphone=(), camera=()'
+    )
+    // Add HSTS header for transport security
+    event.node.res.setHeader(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains; preload'
     )
     // Remove wildcard CORS to prevent security issues
     // event.node.res.setHeader('Access-Control-Allow-Origin', '*')
