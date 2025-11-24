@@ -1,220 +1,91 @@
-# Workflow Startup AI - Dokumentasi Lengkap
+# Workflow Documentation
+
+This document explains the current GitHub Actions workflow structure after optimization to eliminate overlaps and ensure one workflow per function.
 
 ## Overview
 
-Dokumentasi ini berisi lengkap workflow untuk startup AI dengan 13 agen otonom yang bekerja secara terkoordinasi untuk mengelola dan mengembangkan perusahaan.
+After optimization, the repository now has a streamlined workflow system with clearly defined responsibilities for each workflow:
 
-## Struktur Dokumentasi
+1. **PR Automation & CI** → `PR Guard.yml` (event-driven)
+2. **Issue Solving** → `oc-issue-solver.yml` (scheduled)
+3. **AI Agent Workflows** → Various agent-specific workflows (CEO, CTO, CFO, etc.)
 
-### 📋 Daftar Workflow
+## Workflow Details
 
-| Agen | Dokumentasi | Prioritas | Model AI |
-|------|-------------|-----------|----------|
-| [CEO Agent](./ai-ceo-agent.md) | [Link](./ai-ceo-agent.md) | Tertinggi | glm-4.6 |
-| [Integration Agent](./ai-integration-agent.md) | [Link](./ai-integration-agent.md) | Tertinggi | glm-4.6 |
-| [CTO Agent](./ai-cto-agent.md) | [Link](./ai-cto-agent.md) | Tinggi | qwen3-coder-plus |
-| [Product Manager Agent](./ai-product-manager-agent.md) | [Link](./ai-product-manager-agent.md) | Tinggi | qwen3-max |
-| [CFO Agent](./ai-cfo-agent.md) | [Link](./ai-cfo-agent.md) | Tinggi | qwen3-max |
-| [COO Agent](./ai-coo-agent.md) | [Link](./ai-coo-agent.md) | Tinggi | qwen3-coder-plus |
-| [CMO Agent](./ai-cmo-agent.md) | [Link](./ai-cmo-agent.md) | Sedang | qwen3-vl-plus |
-| [R&D Agent](./ai-rd-agent.md) | [Link](./ai-rd-agent.md) | Sedang | qwen3-235b |
-| [Data Analyst Agent](./ai-data-analyst-agent.md) | [Link](./ai-data-analyst-agent.md) | Sedang | qwen3-coder-plus |
-| [Security Officer Agent](./ai-security-officer-agent.md) | [Link](./ai-security-officer-agent.md) | Tinggi | qwen3-coder-plus |
-| [Customer Success Agent](./ai-customer-success-agent.md) | [Link](./ai-customer-success-agent.md) | Sedang | qwen3-coder-plus |
-| [HR Agent](./ai-hr-agent.md) | [Link](./ai-hr-agent.md) | Rendah | qwen3-coder-plus |
-| [Legal & Compliance Agent](./ai-legal-compliance-agent.md) | [Link](./ai-legal-compliance-agent.md) | Sedang | qwen3-coder-plus |
+### 1. PR Guard (PR Automation + CI)
 
-### 📅 Dokumentasi Pendukung
+**File**: `.github/workflows/PR Guard.yml`
 
-| Dokumen | Deskripsi |
-|---------|-----------|
-| [Jadwal Eksekusi dan Koordinasi](./workflow-schedule-coordination.md) | Jadwal lengkap dan mekanisme koordinasi antar agen |
-| [Panduan Implementasi](./implementation-guide.md) | Panduan lengkap implementasi dan deployment |
-| [Arsitektur Workflow](../architecture/startup-ai-workflows.md) | Arsitektur sistem dan desain workflow |
-| [Diagram Alur Kerja](../architecture/workflow-diagram.md) | Visualisasi alur kerja dan integrasi |
+**Purpose**: Comprehensive PR handling and CI validation
 
-## Quick Start
+**Triggers**:
+- `pull_request`: When PRs are opened, updated, or reopened
+- `push` to main branch: To trigger CI validation
+- `pull_request_target`: For handling PR events with write permissions
+- `schedule`: Periodic checks every 4 hours
+- `issue_comment`: For `/update` command handling
 
-### 1. Prasyarat
-- GitHub repository dengan akses admin
-- GitHub Actions enabled
-- OpenCode CLI dan API key
-- Secrets yang dikonfigurasi (GH_TOKEN, IFLOW_API_KEY)
+**Functions**:
+- CI validation (lint/build/test)
+- Auto-update PR branches with main branch
+- Handle `/update` comment commands
+- Process review comments and implement changes
+- Validate and finalize PRs
 
-### 2. Implementasi Cepat
-```bash
-# 1. Clone repository
-git clone [repository-url]
-cd [repository-name]
+**Concurrency**: Uses PR-specific concurrency groups to prevent conflicts
 
-# 2. Buat branch untuk implementasi
-git checkout -b setup/ai-workflows
+### 2. Issue Solver
 
-# 3. Copy workflow files dari dokumentasi
-# 4. Setup secrets di GitHub repository
-# 5. Test workflow dispatch secara manual
-# 6. Monitor eksekusi terjadwal
-```
+**File**: `.github/workflows/oc-issue-solver.yml`
 
-### 3. Jadwal Eksekusi
-```
-08:00 - CEO Agent (Strategis)
-08:30 - Integration Agent (Koordinasi)
-09:00 - CTO Agent (Teknologi)
-09:30 - Product Manager Agent (Produk)
-10:00 - CFO Agent (Keuangan)
-10:30 - COO Agent (Operasional)
-11:00 - CMO Agent (Pemasaran)
-14:00 - R&D Agent (Inovasi)
-14:30 - Data Analyst Agent (Analisis)
-15:00 - Security Officer Agent (Keamanan)
-15:30 - Customer Success Agent (Pelanggan)
-16:00 - HR Agent (SDM)
-16:30 - Legal & Compliance Agent (Kepatuhan)
-```
+**Purpose**: End-to-end issue resolution with PR creation
 
-## Arsitektur Sistem
+**Triggers**:
+- `schedule`: Every 30 minutes to check for new issues
+- `workflow_dispatch`: Manual trigger option
 
-### Hierarki Agen
-```
-CEO Agent (Strategis)
-├── Integration Agent (Koordinasi)
-├── CTO Agent (Teknologi)
-├── CMO Agent (Pemasaran)
-├── CFO Agent (Keuangan)
-├── COO Agent (Operasional)
-├── Product Manager Agent (Produk)
-├── R&D Agent (Inovasi)
-├── Customer Success Agent (Pelanggan)
-├── Data Analyst Agent (Analisis)
-├── Security Officer Agent (Keamanan)
-├── HR Agent (SDM)
-└── Legal & Compliance Agent (Kepatuhan)
-```
+**Functions**:
+- Select and prioritize open issues
+- Analyze issues and create implementation plan
+- Implement solution and create PR
+- Link PR to original issue
 
-### Alur Komunikasi
-1. **CEO Agent** → Memberikan arahan strategis
-2. **Integration Agent** → Mengkoordinasikan dan mendistribusikan tugas
-3. **Agen Fungsional** → Melaksanakan tugas spesifik
-4. **Integration Agent** → Mengumpulkan dan mengintegrasikan hasil
-5. **CEO Agent** → Menerima laporan dan membuat keputusan berikutnya
+**Concurrency**: Uses issue-solver specific concurrency to avoid conflicts with other workflows
 
-## Fitur Utama
+### 3. AI Agent Workflows
 
-### 🤖 Otonomi Penuh
-- Setiap agen bekerja secara otonomom
-- Pengambilan keputusan berdasarkan data dan analisis
-- Eksekusi tugas tanpa intervensi manual
+**Files**: `.github/workflows/ai-*.yml`
 
-### 🔄 Integrasi Sempurna
-- Koordinasi otomatis antar agen
-- Sinkronisasi tugas dan dependensi
-- Alur komunikasi terstruktur
+**Purpose**: Various business function automation using AI agents
 
-### 📊 Data-Driven
-- Keputusan berdasarkan data dan analytics
-- Monitoring performa real-time
-- Continuous improvement berdasarkan hasil
+**Functions**:
+- CEO Agent: Strategic oversight and coordination
+- CTO Agent: Technical leadership and architecture decisions
+- CFO Agent: Financial planning and analysis
+- CMO Agent: Marketing strategy and campaigns
+- COO Agent: Operations optimization
+- HR Agent: Human resources management
+- R&D Agent: Research and development
+- Data Analyst Agent: Data analysis and insights
+- Security Officer Agent: Security monitoring and compliance
+- Customer Success Agent: Customer relationship management
+- Legal & Compliance Agent: Legal review and compliance
+- Product Manager Agent: Product development and management
+- Integration Agent: Cross-agent coordination and integration
 
-### 🛡️ Keamanan Terjamin
-- Security officer dedicated
-- Compliance monitoring otomatis
-- Risk management proaktif
+## Benefits of Current Structure
 
-### 📈 Skalabilitas
-- Arsitektur yang dapat diskalakan
-- Resource optimization otomatis
-- Load balancing untuk high-demand scenarios
+1. **No Overlaps**: Each workflow has a specific, non-overlapping responsibility
+2. **Efficient Resource Usage**: Eliminates redundant workflow executions
+3. **Clear Ownership**: Each function has a designated workflow
+4. **Scalability**: Structure allows for easy addition of new specialized workflows
+5. **Maintainability**: Easier to debug and modify individual workflows
 
-## Monitoring dan Evaluasi
+## Migration Notes
 
-### KPI Utama
-- **Success Rate**: >95% workflow execution success
-- **Response Time**: <60 menit average execution time
-- **Quality Score**: >90% decision quality
-- **Integration Score**: >95% cross-agent coordination
+The following workflows were removed as part of optimization:
+- `oc-pr-handler.yml` - Functionality merged into `PR Guard.yml`
+- `iflow-pr.yml` - Functionality merged into `PR Guard.yml`
+- `scripts/pr-automation.js` - Duplicate of `scripts/pr-automation-handler.js`
 
-### Dashboard Monitoring
-- Real-time status semua agen
-- Performance metrics dan trends
-- Alert system untuk issues kritis
-- Historical data dan analytics
-
-## Troubleshooting
-
-### Issues Umum
-1. **Workflow Timeout**: Increase timeout atau optimize prompt
-2. **Rate Limiting**: Adjust schedule atau implement retry logic
-3. **Permission Errors**: Verify token permissions
-4. **Integration Issues**: Check communication protocols
-
-### Support Resources
-- [Implementation Guide](./implementation-guide.md)
-- [Architecture Documentation](../architecture/startup-ai-workflows.md)
-- [Schedule Coordination](./workflow-schedule-coordination.md)
-- GitHub Issues untuk troubleshooting
-
-## Best Practices
-
-### 🎯 Fokus pada Tujuan
-- Setiap agen memiliki tujuan yang jelas
-- Alignment dengan strategic goals
-- Measurable outcomes dan KPIs
-
-### 🔄 Continuous Improvement
-- Learning dari eksekusi sebelumnya
-- Adaptasi terhadap perubahan kebutuhan
-- Optimization berkelanjutan
-
-### 🤝 Kolaborasi Efektif
-- Komunikasi transparan antar agen
-- Conflict resolution mechanisms
-- Shared goals dan objectives
-
-### 📊 Data-Driven Decisions
-- Analytics untuk semua keputusan
-- Evidence-based recommendations
-- Performance tracking dan optimization
-
-## Roadmap Pengembangan
-
-### Phase 1: Core Implementation (Saat Ini)
-- ✅ Desain arsitektur workflow
-- ✅ Dokumentasi lengkap semua agen
-- ✅ Jadwal dan koordinasi terstruktur
-- 🔄 Implementasi dan testing
-
-### Phase 2: Optimization
-- Performance tuning
-- Cost optimization
-- Feature enhancements
-- Advanced analytics
-
-### Phase 3: Scaling
-- Multi-repository support
-- Distributed execution
-- Advanced integrations
-- AI model improvements
-
-## Kontribusi
-
-### Cara Berkontribusi
-1. Review dokumentasi yang ada
-2. Identifikasi area untuk improvement
-3. Buat issue dengan proposal perubahan
-4. Submit pull request dengan perubahan
-5. Participate dalam review dan discussion
-
-### Guidelines
-- Follow existing documentation structure
-- Maintain consistency dalam format dan style
-- Include testing dan validation steps
-- Update relevant documentation dependencies
-
-## Lisensi
-
-Dokumentasi ini adalah bagian dari startup AI workflow system dan mengikuti lisensi perusahaan.
-
----
-
-**Catatan**: Pastikan untuk membaca dokumentasi lengkap setiap agen sebelum implementasi. Untuk pertanyaan atau dukungan, buat issue di repository atau hubungi tim development.
+The `PR Guard.yml` workflow was enhanced with PR automation features previously found in the removed workflows.
