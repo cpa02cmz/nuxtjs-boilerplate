@@ -83,7 +83,9 @@
     </footer>
 
     <!-- PWA Install Prompt -->
-    <PWAInstallPrompt />
+    <client-only>
+      <PWAInstallPrompt />
+    </client-only>
 
     <!-- Offline Indicator -->
     <OfflineIndicator />
