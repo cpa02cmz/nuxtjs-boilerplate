@@ -1,4 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+// Define security headers configuration to avoid duplication
+const securityHeaders = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+}
+
 export default defineNuxtConfig({
   devtools: { enabled: false }, // Disable in production for performance
   css: ['~/assets/css/main.css'],
@@ -292,15 +302,10 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    // Add security headers globally
+    // Add security headers globally using consolidated configuration
     '/**': {
       headers: {
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '1; mode=block',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Strict-Transport-Security':
-          'max-age=31536000; includeSubDomains; preload',
+        ...securityHeaders,
       },
     },
     // Main routes with prerender and security headers
@@ -308,84 +313,49 @@ export default defineNuxtConfig({
       prerender: true,
       headers: {
         'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '0',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Strict-Transport-Security':
-          'max-age=31536000; includeSubDomains; preload',
+        ...securityHeaders,
       },
     },
     '/ai-keys': {
       prerender: true,
       headers: {
         'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '0',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Strict-Transport-Security':
-          'max-age=31536000; includeSubDomains; preload',
+        ...securityHeaders,
       },
     },
     '/about': {
       prerender: true,
       headers: {
         'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '0',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Strict-Transport-Security':
-          'max-age=31536000; includeSubDomains; preload',
+        ...securityHeaders,
       },
     },
     '/search': {
       prerender: true,
       headers: {
         'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '0',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Strict-Transport-Security':
-          'max-age=31536000; includeSubDomains; preload',
+        ...securityHeaders,
       },
     },
     '/submit': {
       prerender: true,
       headers: {
         'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '0',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Strict-Transport-Security':
-          'max-age=31536000; includeSubDomains; preload',
+        ...securityHeaders,
       },
     },
     // Add caching headers for better performance
     '/api/**': {
       headers: {
         'cache-control': 'max-age=300, public, s-maxage=300', // 5 minutes
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '0',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Strict-Transport-Security':
-          'max-age=31536000; includeSubDomains; preload',
+        ...securityHeaders,
       },
     },
     // Cache static assets
     '/_nuxt/**': {
       headers: {
         'cache-control': 'max-age=31536000, immutable',
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '1; mode=block',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Strict-Transport-Security':
-          'max-age=31536000; includeSubDomains; preload',
+        ...securityHeaders,
       },
     },
   },
@@ -444,14 +414,21 @@ export default defineNuxtConfig({
     },
     plugins: [
       // Add bundle analyzer for performance monitoring
-      process.env.ANALYZE_BUNDLE === 'true' &&
-        (await import('rollup-plugin-visualizer')).default({
-          filename: './dist/stats.html',
-          open: false,
-          gzipSize: true,
-          brotliSize: true,
-        }),
-    ].filter(Boolean), // Filter out falsy values when ANALYZE_BUNDLE is not true
+      // Fixed: Replaced problematic await import with conditional require to avoid build issues
+      // The original code had: (await import('rollup-plugin-visualizer')).default(...)
+      // This caused build issues due to async import in sync context
+      // Using a require() approach that works in the config context
+      ...(process.env.ANALYZE_BUNDLE === 'true'
+        ? [
+            require('rollup-plugin-visualizer').default({
+              filename: './dist/stats.html',
+              open: false,
+              gzipSize: true,
+              brotliSize: true,
+            }),
+          ]
+        : []),
+    ],
     // Optimize build speed
     esbuild: {
       logLevel: 'silent', // Reduce build noise
