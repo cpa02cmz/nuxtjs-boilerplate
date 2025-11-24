@@ -61,8 +61,8 @@
             v-for="resource in filteredResources.filter(r =>
               r.category.includes('AI')
             )"
-            :key="resource.id"
             :id="resource.id"
+            :key="resource.id"
             :title="resource.title"
             :description="resource.description"
             :benefits="resource.benefits"
