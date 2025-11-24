@@ -1,6 +1,8 @@
 // Test setup file for Vitest
-import { vi, expect } from 'vitest'
-import '@testing-library/jest-dom/vitest'
+import { vi } from 'vitest'
+
+// For now, we'll keep the setup minimal to avoid environment conflicts
+// DOM testing utilities will be imported in individual test files as needed
 
 // Mock window.matchMedia
 if (typeof window !== 'undefined' && !window.matchMedia) {
