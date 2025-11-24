@@ -6,15 +6,16 @@
     role="article"
   >
     <div class="flex items-start">
-      <!-- Using standard img tag for optimization -->
       <div v-if="icon" class="flex-shrink-0 mr-4">
-        <img
+        <OptimizedImage
           :src="icon"
           :alt="title"
           width="48"
           height="48"
-          class="w-12 h-12 rounded object-contain"
+          format="webp"
           loading="lazy"
+          quality="80"
+          img-class="w-12 h-12 rounded object-contain"
           @error="handleImageError"
         />
       </div>
@@ -100,7 +101,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useHead } from '@unhead/vue'
 import DOMPurify from 'dompurify'
+import OptimizedImage from '~/components/OptimizedImage.vue'
 
 interface Props {
   title: string
@@ -250,14 +253,17 @@ const resourceSchema = computed(() => {
 })
 
 // Add JSON-LD structured data to the head if no error
-if (!hasError.value && resourceSchema.value) {
-  useHead({
+useHead(() => {
+  if (hasError.value || !resourceSchema.value) {
+    return {}
+  }
+  return {
     script: [
       {
         type: 'application/ld+json',
         innerHTML: JSON.stringify(resourceSchema.value),
       },
     ],
-  })
-}
+  }
+})
 </script>

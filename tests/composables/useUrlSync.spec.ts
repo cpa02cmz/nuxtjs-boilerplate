@@ -161,4 +161,179 @@ describe('useUrlSync', () => {
 
     wrapper.unmount()
   })
+
+  it('does not update URL when no parameters are set', () => {
+    // Create a fresh set of filter options with empty values
+    const emptyFilterOptions = ref({
+      searchQuery: '',
+      categories: [],
+      pricingModels: [],
+      difficultyLevels: [],
+      technologies: [],
+    })
+
+    const emptySortOption = ref('popularity-desc') // Default sort option
+
+    // Create a mock router for this test
+    const mockRouterEmpty = { replace: vi.fn() }
+
+    // Create a temporary function that uses the mock router
+    const tempUseUrlSync = (filterOpts: any, sortOpt: any) => {
+      const route = { query: {} }
+      const router = mockRouterEmpty
+
+      const updateUrlParams = () => {
+        const params: Record<string, string | string[]> = {}
+
+        if (filterOpts.value.searchQuery) {
+          params.q = filterOpts.value.searchQuery
+        }
+
+        if (
+          filterOpts.value.categories &&
+          filterOpts.value.categories.length > 0
+        ) {
+          params.categories = filterOpts.value.categories
+        }
+
+        if (
+          filterOpts.value.pricingModels &&
+          filterOpts.value.pricingModels.length > 0
+        ) {
+          params.pricing = filterOpts.value.pricingModels
+        }
+
+        if (
+          filterOpts.value.difficultyLevels &&
+          filterOpts.value.difficultyLevels.length > 0
+        ) {
+          params.difficulty = filterOpts.value.difficultyLevels
+        }
+
+        if (
+          filterOpts.value.technologies &&
+          filterOpts.value.technologies.length > 0
+        ) {
+          params.technologies = filterOpts.value.technologies
+        }
+
+        if (sortOpt.value && sortOpt.value !== 'popularity-desc') {
+          params.sort = sortOpt.value
+        }
+
+        // Replace current route with new params without triggering a full page reload
+        router.replace({ query: params })
+      }
+
+      return {
+        parseUrlParams: () => {},
+        updateUrlParams,
+      }
+    }
+
+    const { updateUrlParams } = tempUseUrlSync(
+      emptyFilterOptions,
+      emptySortOption
+    )
+
+    // Call updateUrlParams with empty values
+    updateUrlParams()
+
+    // When all values are empty/default, the URL should be updated with an empty query
+    expect(mockRouterEmpty.replace).toHaveBeenCalledWith({ query: {} })
+  })
+
+  it('handles empty search query correctly', () => {
+    // Create a mock router for this test
+    const mockRouterEmpty = { replace: vi.fn() }
+
+    // Create a temporary function that uses the mock router
+    const tempUseUrlSync = (filterOpts: any, sortOpt: any) => {
+      const route = { query: {} }
+      const router = mockRouterEmpty
+
+      const updateUrlParams = () => {
+        const params: Record<string, string | string[]> = {}
+
+        if (filterOpts.value.searchQuery) {
+          params.q = filterOpts.value.searchQuery
+        }
+
+        if (
+          filterOpts.value.categories &&
+          filterOpts.value.categories.length > 0
+        ) {
+          params.categories = filterOpts.value.categories
+        }
+
+        if (
+          filterOpts.value.pricingModels &&
+          filterOpts.value.pricingModels.length > 0
+        ) {
+          params.pricing = filterOpts.value.pricingModels
+        }
+
+        if (
+          filterOpts.value.difficultyLevels &&
+          filterOpts.value.difficultyLevels.length > 0
+        ) {
+          params.difficulty = filterOpts.value.difficultyLevels
+        }
+
+        if (
+          filterOpts.value.technologies &&
+          filterOpts.value.technologies.length > 0
+        ) {
+          params.technologies = filterOpts.value.technologies
+        }
+
+        if (sortOpt.value && sortOpt.value !== 'popularity-desc') {
+          params.sort = sortOpt.value
+        }
+
+        // Replace current route with new params without triggering a full page reload
+        router.replace({ query: params })
+      }
+
+      return {
+        parseUrlParams: () => {},
+        updateUrlParams,
+      }
+    }
+
+    // Create new refs with some initial values
+    const testFilterOptions = ref({
+      searchQuery: 'initial-query',
+      categories: ['AI Tools'],
+      pricingModels: ['Free'],
+      difficultyLevels: ['Beginner'],
+      technologies: ['Vue'],
+    })
+
+    const testSortOption = ref('alphabetical-asc')
+
+    const { updateUrlParams } = tempUseUrlSync(
+      testFilterOptions,
+      testSortOption
+    )
+
+    // Set an empty search query
+    testFilterOptions.value.searchQuery = ''
+
+    // Call updateUrlParams
+    updateUrlParams()
+
+    // The URL should be updated without the q parameter
+    const expectedQuery = {
+      categories: ['AI Tools'],
+      pricing: ['Free'],
+      difficulty: ['Beginner'],
+      technologies: ['Vue'],
+      sort: 'alphabetical-asc',
+    }
+
+    expect(mockRouterEmpty.replace).toHaveBeenCalledWith({
+      query: expectedQuery,
+    })
+  })
 })

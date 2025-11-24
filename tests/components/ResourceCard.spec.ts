@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ResourceCard from '@/components/ResourceCard.vue'
 
@@ -46,10 +46,10 @@ describe('ResourceCard', () => {
       props: mockResourceProps,
     })
 
-    const icon = wrapper.find('img')
+    const icon = wrapper.findComponent({ name: 'OptimizedImage' })
     expect(icon.exists()).toBe(true)
-    expect(icon.attributes('src')).toBe('https://example.com/icon.png')
-    expect(icon.attributes('alt')).toBe('Test Resource')
+    expect(icon.props('src')).toBe('https://example.com/icon.png')
+    expect(icon.props('alt')).toBe('Test Resource')
   })
 
   it('opens link in new tab when newTab is true', () => {
@@ -131,5 +131,80 @@ describe('ResourceCard', () => {
     expect(titleElement.html()).toContain('highlighted text')
     expect(titleElement.html()).toContain('bg-yellow-200')
     expect(titleElement.html()).toContain('text-gray-900')
+  })
+
+  it('shows error state when image fails to load', async () => {
+    const wrapper = mount(ResourceCard, {
+      props: mockResourceProps,
+    })
+
+    // Get the initial state - should not be in error state
+    expect(wrapper.find('.bg-red-600').exists()).toBe(false)
+
+    // Check that the hasError ref is initially false
+    expect(wrapper.vm.hasError).toBe(false)
+
+    // Directly call the handleImageError method to trigger the error state
+    wrapper.vm.handleImageError()
+
+    // Wait for Vue to update the DOM
+    await wrapper.vm.$nextTick()
+
+    // Verify that error state is shown
+    expect(wrapper.vm.hasError).toBe(true)
+    expect(wrapper.find('.bg-red-600').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Resource Unavailable')
+  })
+
+  it('shows error state when URL is invalid', async () => {
+    const wrapper = mount(ResourceCard, {
+      props: {
+        ...mockResourceProps,
+        url: 'invalid-url',
+      },
+    })
+
+    // Get the initial state - should not be in error state
+    expect(wrapper.find('.bg-red-600').exists()).toBe(false)
+    expect(wrapper.vm.hasError).toBe(false)
+
+    // Create a mock event to pass to handleLinkClick
+    const mockEvent = { preventDefault: vi.fn() }
+
+    // Directly call the handleLinkClick method to trigger the error state with invalid URL
+    wrapper.vm.handleLinkClick(mockEvent)
+
+    // Wait for Vue to update the DOM
+    await wrapper.vm.$nextTick()
+
+    // Verify that error state is shown (event.preventDefault should have been called)
+    expect(mockEvent.preventDefault).toHaveBeenCalled()
+    expect(wrapper.vm.hasError).toBe(true)
+    expect(wrapper.find('.bg-red-600').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Resource Unavailable')
+  })
+
+  it('handles valid URL correctly', async () => {
+    const wrapper = mount(ResourceCard, {
+      props: mockResourceProps,
+    })
+
+    // Get the initial state - should not be in error state
+    expect(wrapper.find('.bg-red-600').exists()).toBe(false)
+    expect(wrapper.vm.hasError).toBe(false)
+
+    // Create a mock event to pass to handleLinkClick
+    const mockEvent = { preventDefault: vi.fn() }
+
+    // Directly call the handleLinkClick method with a valid URL (should not cause error)
+    wrapper.vm.handleLinkClick(mockEvent)
+
+    // No error should have occurred, so preventDefault should not have been called
+    expect(mockEvent.preventDefault).not.toHaveBeenCalled()
+
+    // Verify that no error state is shown
+    expect(wrapper.vm.hasError).toBe(false)
+    expect(wrapper.find('.bg-red-600').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('Resource Unavailable')
   })
 })
