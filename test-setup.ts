@@ -45,6 +45,16 @@ vi.mock('vue-router', async () => {
   }
 })
 
+// Mock the unhead/vue module specifically for useHead
+vi.mock('@unhead/vue', async () => {
+  const actual = await vi.importActual('@unhead/vue')
+  return {
+    ...actual,
+    useHead: vi.fn(),
+    useSeoMeta: vi.fn(),
+  }
+})
+
 // Mock Nuxt composables
 config.global.mocks = {
   $nuxt: {
@@ -105,42 +115,43 @@ global.useAsyncData = vi.fn(() => ({
 }))
 global.navigateTo = vi.fn()
 global.$fetch = vi.fn()
-global.useRoute = () => ({
-  path: '/',
-  query: {},
-  params: {},
-  hash: '',
-  name: 'index',
-  meta: {},
-})
-global.useRouter = () => ({
-  push: vi.fn(),
-  replace: vi.fn(),
-  go: vi.fn(),
-  back: vi.fn(),
-  forward: vi.fn(),
-})
 
-// Mock Nuxt components
-config.global.stubs = {
-  ...config.global.stubs,
+// Mock OptimizedImage and NuxtImg components
+config.global.components = {
+  ...config.global.components,
+  OptimizedImage: {
+    name: 'OptimizedImage',
+    props: {
+      src: { type: String, required: true },
+      alt: { type: String, required: true },
+      width: { type: [Number, String] },
+      height: { type: [Number, String] },
+      format: String,
+      loading: String,
+      sizes: String,
+      quality: [Number, String],
+      imgClass: String,
+      provider: String,
+    },
+    template:
+      '<img :src="src" :alt="alt" :width="width" :height="height" :class="imgClass" />',
+  },
   NuxtImg: {
     name: 'NuxtImg',
-    props: [
-      'src',
-      'alt',
-      'width',
-      'height',
-      'format',
-      'loading',
-      'sizes',
-      'quality',
-      'class',
-      'provider',
-    ],
+    props: {
+      src: { type: String, required: true },
+      alt: { type: String, required: true },
+      width: { type: [Number, String] },
+      height: { type: [Number, String] },
+      format: String,
+      loading: String,
+      sizes: String,
+      quality: [Number, String],
+      class: String,
+      provider: String,
+    },
     template:
       '<img :src="src" :alt="alt" :width="width" :height="height" :class="class" />',
-    emits: ['load', 'error'],
   },
   OptimizedImage: {
     name: 'OptimizedImage',
@@ -166,6 +177,15 @@ config.global.stubs = {
     template: '<a :href="to || href" :rel="rel" :target="target"><slot /></a>',
   },
 }
+
+global.useRoute = () => ({
+  path: '/',
+  query: {},
+  params: {},
+  hash: '',
+  name: 'index',
+  meta: {},
+})
 global.useRouter = () => ({
   push: vi.fn(),
   replace: vi.fn(),
@@ -174,11 +194,23 @@ global.useRouter = () => ({
   forward: vi.fn(),
 })
 
+// Mock Nuxt components
+config.global.stubs = {
+  ...config.global.stubs,
+}
+
 // Make Vue Composition API functions globally available
 global.Ref = ref
 global.ComputedRef = computed
 global.ComputedGetters = {}
 global.ComputedSetters = {}
+
+// Mock navigator.onLine for offline detection
+Object.defineProperty(navigator, 'onLine', {
+  writable: true,
+  configurable: true,
+  value: true, // Default to online, tests can change this as needed
+})
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
