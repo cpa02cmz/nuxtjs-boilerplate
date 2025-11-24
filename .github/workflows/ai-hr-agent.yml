@@ -14,7 +14,7 @@ permissions:
 
 # global lock: only 1 instance of this workflow running across events
 concurrency:
-  group: ${{ github.workflow }}-global
+  group: global-workflow-lock
   cancel-in-progress: false
 
 jobs:
@@ -263,12 +263,6 @@ jobs:
             - Values telah dipromosikan
             - Successes telah dirayakan
             - Team building telah difasilitasi
-
-            ========================================
-            MODEL AI YANG DIGUNAKAN
-            ========================================
-            Model: iflowcn/qwen3-coder-plus
-            Alasan: Kemampuan analisis HR data yang baik, pemahaman human resource management, dan kemampuan komunikasi yang efektif untuk employee engagement.
 
             ========================================
             INTEGRASI DENGAN AGEN LAIN

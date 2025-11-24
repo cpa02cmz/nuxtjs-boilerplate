@@ -14,7 +14,7 @@ permissions:
 
 # global lock: only 1 instance of this workflow running across events
 concurrency:
-  group: ${{ github.workflow }}-global
+  group: global-workflow-lock
   cancel-in-progress: false
 
 jobs:
@@ -237,12 +237,6 @@ jobs:
             - Semua agen aligned dengan strategi
             - Keputusan menunjukkan judgment yang baik
             - Perusahaan bergerak maju sesuai roadmap
-
-            ========================================
-            MODEL AI YANG DIGUNAKAN
-            ========================================
-            Model: iflowcn/glm-4.6
-            Alasan: Kemampuan analisis strategis, pemahaman konteks bisnis yang mendalam, dan kemampuan pengambilan keputusan kompleks.
 
             ========================================
             INTEGRASI DENGAN AGEN LAIN

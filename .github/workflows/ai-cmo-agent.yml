@@ -14,7 +14,7 @@ permissions:
 
 # global lock: only 1 instance of this workflow running across events
 concurrency:
-  group: ${{ github.workflow }}-global
+  group: global-workflow-lock
   cancel-in-progress: false
 
 jobs:
@@ -257,12 +257,6 @@ jobs:
             - Strategy adjustments telah dibuat
             - Upcoming initiatives telah direncanakan
             - Cross-functional alignment telah tercapai
-
-            ========================================
-            MODEL AI YANG DIGUNAKAN
-            ========================================
-            Model: iflowcn/qwen3-vl-plus
-            Alasan: Kemampuan analisis visual untuk creative assets, pemahaman multi-channel marketing, dan kemampuan strategis untuk brand positioning.
 
             ========================================
             INTEGRASI DENGAN AGEN LAIN

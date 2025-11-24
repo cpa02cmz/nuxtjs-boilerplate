@@ -14,7 +14,7 @@ permissions:
 
 # global lock: only 1 instance of this workflow running across events
 concurrency:
-  group: ${{ github.workflow }}-global
+  group: global-workflow-lock
   cancel-in-progress: false
 
 jobs:
@@ -272,12 +272,6 @@ jobs:
             - Guidance telah disediakan
             - Business initiatives telah direview
             - Ethical practices telah dipastikan
-
-            ========================================
-            MODEL AI YANG DIGUNAKAN
-            ========================================
-            Model: iflowcn/qwen3-coder-plus
-            Alasan: Kemampuan analisis legal yang baik, pemahaman compliance requirements, dan kemampuan implementasi legal frameworks yang sistematis.
 
             ========================================
             INTEGRASI DENGAN AGEN LAIN

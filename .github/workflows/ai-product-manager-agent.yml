@@ -14,7 +14,7 @@ permissions:
 
 # global lock: only 1 instance of this workflow running across events
 concurrency:
-  group: ${{ github.workflow }}-global
+  group: global-workflow-lock
   cancel-in-progress: false
 
 jobs:
@@ -251,12 +251,6 @@ jobs:
             - Stakeholder telah diupdate tentang product progress
             - Cross-functional alignment telah tercapai
             - Product decisions telah didokumentasikan
-
-            ========================================
-            MODEL AI YANG DIGUNAKAN
-            ========================================
-            Model: iflowcn/qwen3-max
-            Alasan: Kemampuan analisis produk yang mendalam, pemahaman user behavior, dan kemampuan strategic thinking untuk product development.
 
             ========================================
             INTEGRASI DENGAN AGEN LAIN

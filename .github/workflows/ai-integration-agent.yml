@@ -14,7 +14,7 @@ permissions:
 
 # global lock: only 1 instance of this workflow running across events
 concurrency:
-  group: ${{ github.workflow }}-global
+  group: global-workflow-lock
   cancel-in-progress: false
 
 jobs:
@@ -247,12 +247,6 @@ jobs:
             - Area improvement telah diidentifikasi
             - Prosedur koordinasi telah diperbarui
             - Best practices telah didokumentasikan
-
-            ========================================
-            MODEL AI YANG DIGUNAKAN
-            ========================================
-            Model: iflowcn/glm-4.6
-            Alasan: Kemampuan koordinasi kompleks, pemahaman konteks multidisiplin, dan kemampuan integrasi informasi dari berbagai sumber.
 
             ========================================
             INTEGRASI DENGAN AGEN LAIN

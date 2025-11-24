@@ -14,7 +14,7 @@ permissions:
 
 # global lock: only 1 instance of this workflow running across events
 concurrency:
-  group: ${{ github.workflow }}-global
+  group: global-workflow-lock
   cancel-in-progress: false
 
 jobs:
@@ -249,12 +249,6 @@ jobs:
             - Financial models telah diperbarui
             - Key decisions telah didokumentasikan
             - Stakeholder telah diinformasikan
-
-            ========================================
-            MODEL AI YANG DIGUNAKAN
-            ========================================
-            Model: iflowcn/qwen3-max
-            Alasan: Kemampuan analisis finansial yang kuat, pemahaman kompleksitas financial modeling, dan kemampuan strategic financial planning.
 
             ========================================
             INTEGRASI DENGAN AGEN LAIN

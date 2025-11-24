@@ -14,7 +14,7 @@ permissions:
 
 # global lock: only 1 instance of this workflow running across events
 concurrency:
-  group: ${{ github.workflow }}-global
+  group: global-workflow-lock
   cancel-in-progress: false
 
 jobs:
@@ -267,12 +267,6 @@ jobs:
             - Insights telah didokumentasikan
             - Success stories telah dikumpulkan
             - Recommendations telah dibuat
-
-            ========================================
-            MODEL AI YANG DIGUNAKAN
-            ========================================
-            Model: iflowcn/qwen3-coder-plus
-            Alasan: Kemampuan analisis customer data yang baik, pemahaman customer relationship management, dan kemampuan komunikasi yang efektif.
 
             ========================================
             INTEGRASI DENGAN AGEN LAIN

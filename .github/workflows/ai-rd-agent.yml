@@ -14,7 +14,7 @@ permissions:
 
 # global lock: only 1 instance of this workflow running across events
 concurrency:
-  group: ${{ github.workflow }}-global
+  group: global-workflow-lock
   cancel-in-progress: false
 
 jobs:
@@ -268,12 +268,6 @@ jobs:
             - Insights telah dibagikan
             - Educational materials telah dibuat
             - Innovation database telah diperbarui
-
-            ========================================
-            MODEL AI YANG DIGUNAKAN
-            ========================================
-            Model: iflowcn/qwen3-235b
-            Alasan: Kapasitas riset yang besar, kemampuan analisis kompleks, dan kemampuan mengidentifikasi pola dalam data research yang extensive.
 
             ========================================
             INTEGRASI DENGAN AGEN LAIN
