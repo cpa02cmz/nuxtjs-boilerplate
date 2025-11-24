@@ -182,7 +182,6 @@ const clearSearch = () => {
   suggestions.value = []
   showSuggestions.value = false
 }
-
 const handleFocus = () => {
   // Update search history when input is focused
   searchHistory.value = getSearchHistory()
@@ -228,4 +227,9 @@ const handleNavigate = (direction: 'up' | 'down') => {
   // This is handled by the SearchSuggestions component
   // but we can add additional logic here if needed
 }
+
+// Expose focus method to parent components
+defineExpose({
+  focus: () => searchInputRef.value?.focus(),
+})
 </script>
