@@ -106,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide } from 'vue'
+import { ref, provide } from 'vue'
 
 interface Toast {
   id: string
