@@ -408,9 +408,6 @@ export const useResources = () => {
       ],
     })
 
-<<<<<<< HEAD
-    return sanitized
-=======
     // Additional check to ensure no dangerous patterns remain in the final HTML
     // This prevents cases where the highlighted term itself could be dangerous
     return fullySanitized
@@ -418,7 +415,6 @@ export const useResources = () => {
       .replace(/data:/gi, '')
       .replace(/vbscript:/gi, '')
       .replace(/on\w+\s*=/gi, '') // Remove any event handlers
->>>>>>> e30bbad (fix(security): strengthen XSS protection and enhance security headers)
   }
 
   return {
