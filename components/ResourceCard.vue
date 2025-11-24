@@ -134,6 +134,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  id: undefined,
   newTab: true,
   buttonLabel: 'Get Free Access',
   highlightedTitle: undefined,
@@ -282,7 +283,7 @@ const resourceSchema = computed(() => {
 
 // Add JSON-LD structured data to the head if no error
 // Skip useHead in test environment to avoid injection issues
-if (process.env.NODE_ENV !== 'test' && typeof useHead === 'function') {
+if (typeof useHead === 'function') {
   useHead(() => {
     if (hasError.value || !resourceSchema.value) {
       return {}

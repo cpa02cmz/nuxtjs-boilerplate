@@ -1,6 +1,6 @@
 // Test setup file for Vitest
 import { vi, expect } from 'vitest'
-import '@testing-library/jest-dom/vitest'
+import '@testing-library/jest-dom'
 
 // Mock window.matchMedia
 if (typeof window !== 'undefined' && !window.matchMedia) {
@@ -74,7 +74,6 @@ if (typeof global !== 'undefined') {
         ...process.env,
         NODE_ENV: 'test',
       },
-      dev: false, // Set dev to false to prevent console logs
     },
     writable: true,
   })
