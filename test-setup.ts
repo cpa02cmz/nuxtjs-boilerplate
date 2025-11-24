@@ -1,6 +1,6 @@
 import { beforeAll, afterEach, afterAll, vi } from 'vitest'
 import { config } from '@vue/test-utils'
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
 // Create a mock router for testing
@@ -127,6 +127,24 @@ config.global.components = {
     template:
       '<img :src="src" :alt="alt" :width="width" :height="height" :class="imgClass" />',
   },
+  NuxtImg: {
+    name: 'NuxtImg',
+    props: [
+      'src',
+      'alt',
+      'width',
+      'height',
+      'format',
+      'loading',
+      'sizes',
+      'quality',
+      'class',
+      'provider',
+    ],
+    template:
+      '<img :src="src" :alt="alt" :width="width" :height="height" :class="class" />',
+    emits: ['load', 'error'],
+  },
 }
 global.useRouter = () => ({
   push: vi.fn(),
@@ -135,6 +153,12 @@ global.useRouter = () => ({
   back: vi.fn(),
   forward: vi.fn(),
 })
+
+// Make Vue Composition API functions globally available
+global.Ref = ref
+global.ComputedRef = computed
+global.ComputedGetters = {}
+global.ComputedSetters = {}
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
