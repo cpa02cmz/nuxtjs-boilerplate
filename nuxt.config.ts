@@ -431,7 +431,6 @@ export default defineNuxtConfig({
             // Split vendor chunks to improve caching
             'vendor-vue': ['vue', '@vue/reactivity', 'vue-router'],
             'vendor-search': ['fuse.js'],
-            'vendor-utils': ['zod'],
             'vendor-security': ['dompurify', 'xss'],
             'vendor-web-vitals': ['web-vitals'],
           },
@@ -479,7 +478,7 @@ export default defineNuxtConfig({
     // Enable compression
     compress: true,
     // Optimize for faster builds
-    transpile: ['vue'],
+    transpile: ['vue', 'entities', 'estree-walker'],
     // Enable parallel builds
     parallel: true,
     // Add more detailed build information
