@@ -1,17 +1,9 @@
-import { defineConfig } from 'vitest/config'
-import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
+import { defineVitestConfig } from '@nuxt/test-utils/config'
 
-export default defineConfig({
-  plugins: [vue()],
+export default defineVitestConfig({
   test: {
-    environment: 'happy-dom',
-    environmentOptions: {
-      happyDOM: {
-        url: 'http://localhost:3000',
-      },
-    },
     globals: true,
+    environment: 'nuxt',
     setupFiles: ['./test-setup.ts'],
     coverage: {
       provider: 'v8',
@@ -34,14 +26,6 @@ export default defineConfig({
           statements: 80,
         },
       },
-    },
-  },
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, '.'),
-      '~': resolve(__dirname, '.'),
-      '~~': resolve(__dirname, '.'),
-      '@@': resolve(__dirname, '.'),
     },
   },
 })
