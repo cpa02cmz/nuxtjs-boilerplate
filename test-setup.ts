@@ -64,19 +64,33 @@ config.global.mocks = {
       meta: {},
     },
   },
-  useHead: vi.fn(),
-  useSeoMeta: vi.fn(),
+  useHead: vi.fn(() => ({})),
+  useSeoMeta: vi.fn(() => ({})),
   useRuntimeConfig: vi.fn(() => ({})),
 }
 
-// Mock Nuxt composables
-global.useHead = vi.fn()
-global.useSeoMeta = vi.fn()
+// Mock Nuxt composables with proper context
+const mockHead = {
+  push: vi.fn(),
+  addHeadObjs: vi.fn(),
+  removeHeadObjs: vi.fn(),
+  updateDOM: vi.fn(),
+}
+
+global.useHead = vi.fn(() => ({}))
+global.useSeoMeta = vi.fn(() => ({}))
 global.definePageMeta = vi.fn()
 global.defineNuxtConfig = vi.fn()
 global.defineNuxtRouteMiddleware = vi.fn()
 global.useRuntimeConfig = vi.fn(() => ({}))
 global.useState = vi.fn((key, defaultValue) => ref(defaultValue))
+
+// Provide usehead injection
+global.provide = vi.fn((key: string, value: any) => {
+  if (key === 'usehead') {
+    return mockHead
+  }
+})
 global.useFetch = vi.fn(() => ({
   data: ref(null),
   pending: ref(false),
@@ -107,26 +121,9 @@ global.useRouter = () => ({
   forward: vi.fn(),
 })
 
-// Mock OptimizedImage component
-config.global.components = {
-  ...config.global.components,
-  OptimizedImage: {
-    name: 'OptimizedImage',
-    props: [
-      'src',
-      'alt',
-      'width',
-      'height',
-      'format',
-      'loading',
-      'sizes',
-      'quality',
-      'imgClass',
-      'provider',
-    ],
-    template:
-      '<img :src="src" :alt="alt" :width="width" :height="height" :class="imgClass" />',
-  },
+// Mock Nuxt components
+config.global.stubs = {
+  ...config.global.stubs,
   NuxtImg: {
     name: 'NuxtImg',
     props: [
@@ -144,6 +141,29 @@ config.global.components = {
     template:
       '<img :src="src" :alt="alt" :width="width" :height="height" :class="class" />',
     emits: ['load', 'error'],
+  },
+  OptimizedImage: {
+    name: 'OptimizedImage',
+    props: [
+      'src',
+      'alt',
+      'width',
+      'height',
+      'format',
+      'loading',
+      'sizes',
+      'quality',
+      'imgClass',
+      'provider',
+    ],
+    template:
+      '<img :src="src" :alt="alt" :width="width" :height="height" :class="imgClass" />',
+    emits: ['load', 'error'],
+  },
+  NuxtLink: {
+    name: 'NuxtLink',
+    props: ['to', 'href', 'rel', 'target'],
+    template: '<a :href="to || href" :rel="rel" :target="target"><slot /></a>',
   },
 }
 global.useRouter = () => ({
@@ -191,6 +211,8 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
 
 beforeAll(() => {
   // Global test setup
+  // Set test environment
+  process.env.NODE_ENV = 'test'
 })
 
 afterEach(() => {
