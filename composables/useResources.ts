@@ -293,7 +293,10 @@ export const useResources = () => {
       const history = localStorage.getItem(SEARCH_HISTORY_KEY)
       return history ? JSON.parse(history) : []
     } catch (e) {
-      console.error('Error reading search history:', e)
+      logError(
+        'Error reading search history',
+        e instanceof Error ? e : new Error(String(e))
+      )
       return []
     }
   }
@@ -310,7 +313,10 @@ export const useResources = () => {
     try {
       localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history))
     } catch (e) {
-      console.error('Error saving search history:', e)
+      logError(
+        'Error clearing search history',
+        e instanceof Error ? e : new Error(String(e))
+      )
     }
   }
 
@@ -319,7 +325,11 @@ export const useResources = () => {
     try {
       localStorage.removeItem(SEARCH_HISTORY_KEY)
     } catch (e) {
-      console.error('Error clearing search history:', e)
+      logError(
+        'Error reading search history',
+        e instanceof Error ? e : new Error(String(e))
+      )
+      return []
     }
   }
 

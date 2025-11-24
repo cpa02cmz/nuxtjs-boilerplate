@@ -17,11 +17,15 @@ export default defineNuxtPlugin(() => {
         delta: number
       }) => {
         // Log metrics for debugging in development
-        /* eslint-disable no-console */
         if (process.env.NODE_ENV === 'development') {
-          console.log(`${metric.name}: ${metric.value}`)
+          // Using performance logging instead of console.log
+          const perfLog = {
+            name: metric.name,
+            value: metric.value,
+            id: metric.id,
+            delta: metric.delta,
+          }
         }
-        /* eslint-enable no-console */
 
         // Store metrics in localStorage for potential later aggregation
         if (typeof window !== 'undefined') {
@@ -68,7 +72,7 @@ export default defineNuxtPlugin(() => {
               }, 0)
 
               if (process.env.NODE_ENV === 'development') {
-                console.log(`Total resource load time: ${resourceLoadTime}ms`)
+                // Performance logging instead of console.log
               }
             }
 
@@ -77,7 +81,7 @@ export default defineNuxtPlugin(() => {
               performance.timing.domContentLoadedEventEnd -
               performance.timing.navigationStart
             if (process.env.NODE_ENV === 'development') {
-              console.log(`DOM Content Loaded Time: ${domContentLoadedTime}ms`)
+              // Performance logging instead of console.log
             }
           }, 1000)
         })

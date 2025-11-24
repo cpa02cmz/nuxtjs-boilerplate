@@ -319,13 +319,13 @@
         <h2 class="text-2xl font-bold text-gray-900 mb-6">Related Resources</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <ResourceCard
-            v-for="resource in relatedResources"
-            :key="resource.id"
-            :title="resource.title"
-            :description="resource.description"
-            :benefits="resource.benefits"
-            :url="resource.url"
-            :button-label="getButtonLabel(resource.category)"
+            v-for="relatedResource in relatedResources"
+            :key="relatedResource.id"
+            :title="relatedResource.title"
+            :description="relatedResource.description"
+            :benefits="relatedResource.benefits"
+            :url="relatedResource.url"
+            :button-label="getButtonLabel(relatedResource.category)"
           />
         </div>
       </div>

@@ -134,6 +134,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  id: undefined,
   newTab: true,
   buttonLabel: 'Get Free Access',
   highlightedTitle: undefined,

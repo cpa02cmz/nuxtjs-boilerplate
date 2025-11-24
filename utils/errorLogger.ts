@@ -84,6 +84,7 @@ class ErrorLogger {
     try {
       // Example: await fetch('/api/logs', { method: 'POST', body: JSON.stringify(log) })
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('Failed to send log to external service:', err)
     }
   }
