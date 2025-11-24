@@ -21,6 +21,11 @@ export default defineEventHandler(event => {
     'Permissions-Policy',
     'geolocation=(), microphone=(), camera=()'
   )
+  // Add HSTS header for transport security
+  event.node.res.setHeader(
+    'Strict-Transport-Security',
+    'max-age=31536000; includeSubDomains; preload'
+  )
 
   // Set Content Security Policy - more restrictive without 'unsafe-inline' and 'unsafe-eval'
   event.node.res.setHeader(
