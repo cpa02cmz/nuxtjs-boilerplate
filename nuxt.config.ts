@@ -301,6 +301,7 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        // Content-Security-Policy handled by server/plugins/security-headers.ts for dynamic nonce support
       },
     },
     // Main routes with prerender and security headers
@@ -314,6 +315,7 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        // Content-Security-Policy handled by server/plugins/security-headers.ts for dynamic nonce support
       },
     },
     '/ai-keys': {
@@ -326,6 +328,7 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        // Content-Security-Policy handled by server/plugins/security-headers.ts for dynamic nonce support
       },
     },
     '/about': {
@@ -338,6 +341,7 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        // Content-Security-Policy handled by server/plugins/security-headers.ts for dynamic nonce support
       },
     },
     '/search': {
@@ -350,6 +354,7 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        // Content-Security-Policy handled by server/plugins/security-headers.ts for dynamic nonce support
       },
     },
     '/submit': {
@@ -362,6 +367,7 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        // Content-Security-Policy handled by server/plugins/security-headers.ts for dynamic nonce support
       },
     },
     // Add caching headers for better performance
@@ -374,6 +380,7 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        // Content-Security-Policy handled by server/plugins/security-headers.ts for dynamic nonce support
       },
     },
     // Cache static assets
@@ -386,6 +393,7 @@ export default defineNuxtConfig({
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Strict-Transport-Security':
           'max-age=31536000; includeSubDomains; preload',
+        // Content-Security-Policy handled by server/plugins/security-headers.ts for dynamic nonce support
       },
     },
   },
