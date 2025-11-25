@@ -85,6 +85,13 @@ export default [
     },
   },
   {
+    // For plugin files that handle errors
+    files: ['plugins/**/*.{js,ts,tsx,vue}'],
+    rules: {
+      'no-console': 'off', // Allow console statements in plugin files for error logging
+    },
+  },
+  {
     // For JS files
     files: ['**/*.js', '**/*.mjs'],
     languageOptions: {
@@ -264,6 +271,13 @@ export default [
   },
   // Apply prettier config to disable conflicting rules
   configPrettier,
+  {
+    // For plugin files that handle errors and performance metrics (must be last to override other configs)
+    files: ['plugins/**/*.{js,ts,tsx,vue}'],
+    rules: {
+      'no-console': 'off', // Allow console statements in plugin files for error logging and performance metrics
+    },
+  },
   {
     // Global ignores
     ignores: [
