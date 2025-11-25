@@ -304,13 +304,23 @@ async function processPRComments(prNumber) {
 
     // If changes were made, commit and push
     if (changesMade) {
-      execSync(`git add .`, { stdio: 'pipe' })
-      execSync(`git commit -m "fix(pr#${prNumber}): address review comments"`, {
-        stdio: 'pipe',
-      })
-      execSync(`git push origin HEAD`, { stdio: 'pipe' })
-      if (process.env.DEBUG)
-        console.log(`✓ Committed changes to address PR #${prNumber} comments`)
+      // Check if there are actually any changes to commit
+      const diff = execSync('git status --porcelain', { encoding: 'utf-8' })
+      if (diff.trim()) {
+        execSync(`git add .`, { stdio: 'pipe' })
+        execSync(
+          `git commit -m "fix(pr#${prNumber}): address review comments"`,
+          {
+            stdio: 'pipe',
+          }
+        )
+        execSync(`git push origin HEAD`, { stdio: 'pipe' })
+        if (process.env.DEBUG)
+          console.log(`✓ Committed changes to address PR #${prNumber} comments`)
+      } else {
+        if (process.env.DEBUG)
+          console.log(`No actual changes to commit for PR #${prNumber}`)
+      }
     }
 
     return true
