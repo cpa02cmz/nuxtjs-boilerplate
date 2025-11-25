@@ -11,9 +11,9 @@ permissions:
   issues: write
   actions: read
 
-# global lock: only 1 instance of this workflow running across events
+# issue-solver lock: only 1 instance of this workflow running across events
 concurrency:
-  group: global-workflow-lock
+  group: issue-solver-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:

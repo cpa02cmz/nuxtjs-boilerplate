@@ -1,15 +1,5 @@
 # 🔧 Development Guide
 
-## 🚨 CRITICAL STATUS NOTICE
-
-**Date**: November 22, 2025  
-**Status**: 🚨 CRITICAL INFRASTRUCTURE FAILURE  
-**Development**: Currently BLOCKED due to critical issues
-
-**Please read the [Status Report](./status.md) for current infrastructure issues before proceeding.**
-
----
-
 This document outlines the standards, conventions, and best practices for contributing to the "Free Stuff on the Internet" project.
 
 ## 📋 Table of Contents
@@ -572,31 +562,12 @@ npm test  # ❌ BLOCKED
 # npm is now the standard, pnpm deprecated
 ```
 
-### **Development Workarounds**
-
-Until critical issues are resolved:
-
-1. **Use npm for all operations** (pnpm deprecated)
-2. **Install with --legacy-peer-deps** if needed
-3. **Use npx eslint@9.39.1** for linting
-4. **Focus on documentation and planning** until build system fixed
-
-### **Priority Actions**
-
-See the [Task List](./tasks.md) for immediate action items:
-
-1. **Issue #126**: Fix dependency conflicts
-2. **Issue #127**: Standardize package manager
-3. **Issue #128**: Fix ESLint configuration
-
----
-
 ## 📋 Prerequisites
 
 ### **System Requirements**
 
 - Node.js 18.x or higher
-- **npm 9.x or higher** (pnpm support deprecated)
+- **npm 9.x or higher**
 - Git 2.x or higher
 - Modern web browser for development
 
@@ -609,9 +580,8 @@ See the [Task List](./tasks.md) for immediate action items:
 git clone https://github.com/cpa02cmz/nuxtjs-boilerplate.git
 cd nuxtjs-boilerplate
 
-# Install dependencies (npm is now the standard)
-npm install  # May fail due to Issue #126
-npm install --legacy-peer-deps  # Temporary workaround
+# Install dependencies
+npm install
 
 # Start development server
 npm run dev
@@ -630,6 +600,4 @@ cp .env.example .env
 
 ---
 
-_Last Updated: 2025-11-22_
-_Next Review: November 23, 2025_
-_Status: 🚨 Critical Infrastructure Issues - Development Blocked_
+_Last Updated: 2025-11-24_

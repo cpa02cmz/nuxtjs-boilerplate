@@ -417,6 +417,22 @@ export const useResources = () => {
       .replace(/on\w+\s*=/gi, '') // Remove any event handlers
   }
 
+  // Function to get search suggestions based on query
+  const getSearchSuggestions = (
+    query: string,
+    limit: number = 5
+  ): Resource[] => {
+    if (!query || !fuse.value) {
+      return []
+    }
+
+    // Perform search with Fuse.js
+    const searchResults = fuse.value.search(query)
+
+    // Return top results, with a limit
+    return searchResults.slice(0, limit).map(item => item.item)
+  }
+
   return {
     resources: readonly(resources),
     filteredResources,
@@ -438,6 +454,7 @@ export const useResources = () => {
     setSortOption,
     resetFilters,
     highlightSearchTerms,
+    getSearchSuggestions,
     retryResources,
     getSuggestions,
     getSearchHistory,
