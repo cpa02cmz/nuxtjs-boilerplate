@@ -79,8 +79,8 @@ if (typeof global !== 'undefined') {
   })
 }
 
-// Mock console to prevent test errors from console logs
-if (typeof global !== 'undefined') {
+// Only mock console if not already in a test environment
+if (typeof global !== 'undefined' && !global.console['__isMocked']) {
   Object.defineProperty(global, 'console', {
     value: {
       ...console,
@@ -92,6 +92,8 @@ if (typeof global !== 'undefined') {
     },
     writable: true,
   })
+  // Mark as mocked to avoid double mocking
+  global.console['__isMocked'] = true
 }
 
 // Mock fetch API if needed
@@ -106,8 +108,8 @@ if (typeof global !== 'undefined' && !global.fetch) {
   ) as any
 }
 
-// Mock URL constructor
-if (typeof vi !== 'undefined') {
+// Only mock URL if it doesn't exist
+if (typeof window !== 'undefined' && typeof window.URL === 'undefined') {
   vi.stubGlobal('URL', {
     prototype: {
       href: '',
@@ -125,8 +127,11 @@ if (typeof vi !== 'undefined') {
   })
 }
 
-// Mock localStorage if needed
-if (typeof window !== 'undefined') {
+// Only mock localStorage if it doesn't exist
+if (
+  typeof window !== 'undefined' &&
+  typeof window.localStorage === 'undefined'
+) {
   const vitestLocalStorageMock = {
     getItem: vi.fn(),
     setItem: vi.fn(),

@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ShareButton from '../ShareButton.vue'
 
-// Mock the runtime config
-vi.mock('#imports', async () => {
-  const actual = await vi.importActual('#imports')
+// Mock the runtime config for Nuxt environment
+vi.mock('#imports', async importOriginal => {
+  const actual = await importOriginal()
   return {
     ...actual,
     useRuntimeConfig: () => ({
@@ -38,10 +38,12 @@ describe('ShareButton', () => {
     vi.clearAllMocks()
   })
 
-  it('renders correctly with props', () => {
+  it('renders correctly with props', async () => {
     const wrapper = mount(ShareButton, {
       props: defaultProps,
     })
+
+    await wrapper.vm.$nextTick() // Wait for component to update
 
     expect(wrapper.exists()).toBe(true)
     expect(wrapper.find('button').attributes('aria-label')).toBe(
@@ -53,6 +55,8 @@ describe('ShareButton', () => {
     const wrapper = mount(ShareButton, {
       props: defaultProps,
     })
+
+    await wrapper.vm.$nextTick() // Wait for component to update
 
     // Initially, the share menu should not be visible
     expect(wrapper.find('.absolute').exists()).toBe(false)
@@ -75,6 +79,8 @@ describe('ShareButton', () => {
       props: defaultProps,
     })
 
+    await wrapper.vm.$nextTick() // Wait for component to update
+
     // Open the share menu
     await wrapper.find('button').trigger('click')
 
@@ -91,6 +97,8 @@ describe('ShareButton', () => {
     const wrapper = mount(ShareButton, {
       props: defaultProps,
     })
+
+    await wrapper.vm.$nextTick() // Wait for component to update
 
     // Open the share menu
     await wrapper.find('button').trigger('click')
@@ -113,6 +121,8 @@ describe('ShareButton', () => {
     const wrapper = mount(ShareButton, {
       props: defaultProps,
     })
+
+    await wrapper.vm.$nextTick() // Wait for component to update
 
     // Open the share menu
     await wrapper.find('button').trigger('click')

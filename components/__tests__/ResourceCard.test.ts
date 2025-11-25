@@ -2,13 +2,6 @@ import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ResourceCard from '../ResourceCard.vue'
 
-// Mock NuxtLink globally to avoid issues with Nuxt app instance
-const mockNuxtLink = {
-  name: 'NuxtLink',
-  template: '<a :href="to"><slot /></a>',
-  props: ['to'],
-}
-
 // Mock SocialShare component
 const mockSocialShare = {
   name: 'SocialShare',
@@ -24,16 +17,17 @@ describe('ResourceCard', () => {
     url: 'https://example.com',
   }
 
-  it('renders correctly with required props', () => {
+  it('renders correctly with required props', async () => {
     const wrapper = mount(ResourceCard, {
       props: defaultProps,
       global: {
         components: {
-          NuxtLink: mockNuxtLink,
           SocialShare: mockSocialShare,
         },
       },
     })
+
+    await wrapper.vm.$nextTick() // Wait for component to update
 
     expect(wrapper.find('h3').text()).toContain('Test Resource')
     expect(wrapper.find('p').text()).toContain('Test description')
@@ -41,7 +35,7 @@ describe('ResourceCard', () => {
     expect(wrapper.text()).toContain('Benefit 2')
   })
 
-  it('renders button with correct label', () => {
+  it('renders button with correct label', async () => {
     const wrapper = mount(ResourceCard, {
       props: {
         ...defaultProps,
@@ -49,31 +43,33 @@ describe('ResourceCard', () => {
       },
       global: {
         components: {
-          NuxtLink: mockNuxtLink,
           SocialShare: mockSocialShare,
         },
       },
     })
+
+    await wrapper.vm.$nextTick() // Wait for component to update
 
     expect(wrapper.text()).toContain('Custom Button')
   })
 
-  it('opens link in new tab by default', () => {
+  it('opens link in new tab by default', async () => {
     const wrapper = mount(ResourceCard, {
       props: defaultProps,
       global: {
         components: {
-          NuxtLink: mockNuxtLink,
           SocialShare: mockSocialShare,
         },
       },
     })
+
+    await wrapper.vm.$nextTick() // Wait for component to update
 
     const link = wrapper.find('a')
     expect(link.attributes('target')).toBe('_blank')
   })
 
-  it('opens link in same tab when newTab is false', () => {
+  it('opens link in same tab when newTab is false', async () => {
     const wrapper = mount(ResourceCard, {
       props: {
         ...defaultProps,
@@ -81,11 +77,12 @@ describe('ResourceCard', () => {
       },
       global: {
         components: {
-          NuxtLink: mockNuxtLink,
           SocialShare: mockSocialShare,
         },
       },
     })
+
+    await wrapper.vm.$nextTick() // Wait for component to update
 
     const link = wrapper.find('a')
     expect(link.attributes('target')).toBe('_self')
