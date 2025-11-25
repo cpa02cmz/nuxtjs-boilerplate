@@ -65,6 +65,27 @@ export const useResourceFilters = (resources: readonly Resource[]) => {
       )
     }
 
+    // Apply tag filter - support both string and Tag object types
+    if (filterOptions.value.tags && filterOptions.value.tags.length > 0) {
+      result = result.filter(resource => {
+        if (!resource.tags || resource.tags.length === 0) return false
+
+        return resource.tags.some(resourceTag => {
+          const tagId =
+            typeof resourceTag === 'string'
+              ? resourceTag
+              : resourceTag.id || resourceTag.name
+          return filterOptions.value.tags!.some(filterTag => {
+            const filterTagId =
+              typeof filterTag === 'string'
+                ? filterTag
+                : filterTag.id || filterTag.name
+            return tagId === filterTagId
+          })
+        })
+      })
+    }
+
     // Apply sorting
     result.sort((a, b) => {
       switch (sortOption.value) {
@@ -133,6 +154,19 @@ export const useResourceFilters = (resources: readonly Resource[]) => {
     }
   }
 
+  const toggleTag = (tag: string | any) => {
+    if (!filterOptions.value.tags) filterOptions.value.tags = []
+    const tagId = typeof tag === 'string' ? tag : tag.id || tag.name
+    const index = filterOptions.value.tags.findIndex(t =>
+      typeof t === 'string' ? t === tagId : (t.id || t.name) === tagId
+    )
+    if (index > -1) {
+      filterOptions.value.tags.splice(index, 1)
+    } else {
+      filterOptions.value.tags.push(tag)
+    }
+  }
+
   const setSortOption = (option: SortOption) => {
     sortOption.value = option
   }
@@ -145,6 +179,7 @@ export const useResourceFilters = (resources: readonly Resource[]) => {
       pricingModels: [],
       difficultyLevels: [],
       technologies: [],
+      tags: [],
     }
     sortOption.value = 'popularity-desc'
   }
@@ -158,6 +193,7 @@ export const useResourceFilters = (resources: readonly Resource[]) => {
     togglePricingModel,
     toggleDifficultyLevel,
     toggleTechnology,
+    toggleTag,
     setSortOption,
     resetFilters,
   }

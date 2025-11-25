@@ -1,3 +1,5 @@
+import type { Tag } from './tag'
+
 // Define TypeScript interfaces for resources
 export interface Resource {
   id: string
@@ -8,7 +10,7 @@ export interface Resource {
   category: string
   pricingModel: string
   difficulty: string
-  tags: readonly string[]
+  tags: readonly (string | Tag)[]
   technology: readonly string[]
   dateAdded: string
   popularity: number
@@ -21,6 +23,7 @@ export interface FilterOptions {
   pricingModels?: string[]
   difficultyLevels?: string[]
   technologies?: string[]
+  tags?: (string | Tag)[]
 }
 
 export type SortOption =

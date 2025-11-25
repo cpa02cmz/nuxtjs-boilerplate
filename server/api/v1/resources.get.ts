@@ -109,7 +109,14 @@ export default defineEventHandler(async event => {
         resource =>
           resource.title.toLowerCase().includes(searchTerm) ||
           resource.description.toLowerCase().includes(searchTerm) ||
-          resource.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+          resource.tags.some(resourceTag => {
+            // Handle both string tags and Tag objects for search
+            const tagValue =
+              typeof resourceTag === 'string'
+                ? resourceTag.toLowerCase()
+                : (resourceTag.name || resourceTag.id).toLowerCase()
+            return tagValue.includes(searchTerm)
+          })
       )
     }
 

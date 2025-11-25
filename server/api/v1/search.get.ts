@@ -90,9 +90,18 @@ export default defineEventHandler(async event => {
     if (tagsParam) {
       // Validate tags parameter - ensure it's a string before splitting
       if (typeof tagsParam === 'string') {
-        const tags = tagsParam.split(',').map(tag => tag.trim().toLowerCase())
+        const tagFilters = tagsParam
+          .split(',')
+          .map(tag => tag.trim().toLowerCase())
         resources = resources.filter(resource =>
-          resource.tags.some(tag => tags.includes(tag.toLowerCase()))
+          resource.tags.some(resourceTag => {
+            // Handle both string tags and Tag objects
+            const tagValue =
+              typeof resourceTag === 'string'
+                ? resourceTag.toLowerCase()
+                : (resourceTag.id || resourceTag.name).toLowerCase()
+            return tagFilters.includes(tagValue)
+          })
         )
       } else {
         // Invalid tags parameter format
@@ -121,7 +130,14 @@ export default defineEventHandler(async event => {
         resource =>
           resource.title.toLowerCase().includes(searchTerm) ||
           resource.description.toLowerCase().includes(searchTerm) ||
-          resource.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+          resource.tags.some(resourceTag => {
+            // Handle both string tags and Tag objects for search
+            const tagValue =
+              typeof resourceTag === 'string'
+                ? resourceTag.toLowerCase()
+                : (resourceTag.name || resourceTag.id).toLowerCase()
+            return tagValue.includes(searchTerm)
+          })
       )
     }
 

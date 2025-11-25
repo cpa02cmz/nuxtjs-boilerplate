@@ -1,10 +1,12 @@
+import type { Tag } from './tag'
+
 // Define the form data interface
 export interface FormData {
   title: string
   description: string
   url: string
   category: string
-  tags: string[]
+  tags: (string | Tag)[]
 }
 
 export interface Submission {
@@ -13,7 +15,7 @@ export interface Submission {
   description: string
   url: string
   category: string
-  tags: string[]
+  tags: (string | Tag)[]
   status: string
   submittedAt: string
   submittedBy: string
