@@ -13,6 +13,13 @@ export interface Resource {
   dateAdded: string
   popularity: number
   icon?: string
+  healthStatus?: {
+    status: 'healthy' | 'broken' | 'redirected' | 'slow' | 'unknown'
+    lastChecked: string
+    statusCode?: number
+    responseTime?: number
+    redirectUrl?: string
+  }
 }
 
 export interface FilterOptions {

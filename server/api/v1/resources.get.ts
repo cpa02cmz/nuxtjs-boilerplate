@@ -1,6 +1,7 @@
 import { getQuery, setResponseHeader, setResponseStatus } from 'h3'
 import { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
+import { getResourceHealthStatus } from '~/server/plugins/validation-scheduler'
 
 /**
  * GET /api/v1/resources
@@ -137,11 +138,20 @@ export default defineEventHandler(async event => {
     const total = resources.length
     const paginatedResources = resources.slice(offset, offset + limit)
 
+    // Add health status to each resource if available
+    const resourcesWithHealth = paginatedResources.map(resource => {
+      const healthStatus = getResourceHealthStatus(resource.id)
+      return {
+        ...resource,
+        healthStatus,
+      }
+    })
+
     // Set success response
     setResponseStatus(event, 200)
     return {
       success: true,
-      data: paginatedResources,
+      data: resourcesWithHealth,
       pagination: {
         total,
         limit,

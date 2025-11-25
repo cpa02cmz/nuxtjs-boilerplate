@@ -212,8 +212,11 @@ export default defineNuxtConfig({
   // Define reusable security headers to reduce duplication
   // Note: These headers will be applied via the security headers plugin
   nitro: {
-    // CSP headers via middleware
-    plugins: ['~/server/plugins/security-headers.ts'],
+    // CSP headers via middleware and validation scheduler
+    plugins: [
+      '~/server/plugins/security-headers.ts',
+      '~/server/plugins/validation-scheduler.ts',
+    ],
   },
 
   // SEO Configuration - using built-in meta handling

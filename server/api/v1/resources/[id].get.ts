@@ -1,6 +1,7 @@
 import { createError, setResponseStatus } from 'h3'
 import { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
+import { getResourceHealthStatus } from '~/server/plugins/validation-scheduler'
 
 /**
  * GET /api/v1/resources/:id
@@ -53,9 +54,16 @@ export default defineEventHandler(async event => {
       throw error
     }
 
+    // Add health status to the resource if available
+    const healthStatus = getResourceHealthStatus(resource.id)
+    const resourceWithHealth = {
+      ...resource,
+      healthStatus,
+    }
+
     return {
       success: true,
-      data: resource,
+      data: resourceWithHealth,
     }
   } catch (error: any) {
     if (error.statusCode) {
