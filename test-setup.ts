@@ -218,22 +218,21 @@ if (typeof process !== 'undefined') {
     console.warn('Unhandled promise rejection:', reason, promise)
   })
 
-  process.on('uncaughtException', (error) => {
+  process.on('uncaughtException', error => {
     console.warn('Uncaught exception:', error)
   })
 }
 
 // Handle unhandled rejections in browser environment as well
 if (typeof window !== 'undefined') {
-  window.addEventListener('unhandledrejection', (event) => {
+  window.addEventListener('unhandledrejection', event => {
     console.warn('Unhandled promise rejection in browser:', event.reason)
   })
 
-  window.addEventListener('error', (event) => {
+  window.addEventListener('error', event => {
     console.warn('Uncaught error in browser:', event.error)
   })
 }
-})
 
 // Create a basic Nuxt app mock to handle useNuxtApp calls
 if (typeof window !== 'undefined') {
