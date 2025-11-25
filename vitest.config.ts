@@ -3,13 +3,18 @@ import { defineVitestConfig } from '@nuxt/test-utils/config'
 export default defineVitestConfig({
   test: {
     globals: true,
-    environment: 'nuxt', // Use nuxt environment for Nuxt-specific features
+    environment: 'nuxt',
     setupFiles: ['./test-setup.ts'],
     environmentOptions: {
       nuxt: {
         rootDir: '.',
         overrides: {
           // Add any necessary nuxt config overrides for testing
+          runtimeConfig: {
+            public: {
+              canonicalUrl: 'http://localhost:3000',
+            },
+          },
         },
       },
     },
