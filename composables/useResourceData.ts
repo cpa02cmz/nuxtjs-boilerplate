@@ -9,22 +9,34 @@ export const useResourceData = () => {
   const error = ref<string | null>(null)
   const retryCount = ref(0)
   const maxRetries = 3
+  const lastError = ref<Error | null>(null)
 
   // Initialize resources
   const initResources = async (attempt = 1) => {
     try {
+      // Set loading state
+      if (attempt === 1) {
+        loading.value = true
+      }
+      error.value = null
+
       // Import resources from JSON
       const resourcesModule = await import('~/data/resources.json')
       resources.value = resourcesModule.default || resourcesModule
 
       loading.value = false
       error.value = null
+      lastError.value = null
     } catch (err) {
+      // Store the actual error object
+      lastError.value = err as Error
+
       // Log error using our error logging service
       logError(
         `Failed to load resources (attempt ${attempt}/${maxRetries}): ${err instanceof Error ? err.message : 'Unknown error'}`,
         err as Error,
-        'useResourceData'
+        'useResourceData',
+        { attempt, maxRetries, errorType: err?.constructor?.name }
       )
 
       // In production, we might want to use a proper error tracking service instead of console
@@ -51,26 +63,31 @@ export const useResourceData = () => {
     loading.value = true
     error.value = null
     retryCount.value = 0
+    lastError.value = null
     await initResources()
   }
 
   // Get unique categories
   const categories = computed(() => {
+    if (!resources.value || !Array.isArray(resources.value)) return []
     return [...new Set(resources.value.map(r => r.category))]
   })
 
   // Get unique pricing models
   const pricingModels = computed(() => {
+    if (!resources.value || !Array.isArray(resources.value)) return []
     return [...new Set(resources.value.map(r => r.pricingModel))]
   })
 
   // Get unique difficulty levels
   const difficultyLevels = computed(() => {
+    if (!resources.value || !Array.isArray(resources.value)) return []
     return [...new Set(resources.value.map(r => r.difficulty))]
   })
 
   // Get unique technologies
   const technologies = computed(() => {
+    if (!resources.value || !Array.isArray(resources.value)) return []
     const allTechnologies = resources.value.flatMap(r => r.technology)
     return [...new Set(allTechnologies)]
   })
@@ -84,6 +101,7 @@ export const useResourceData = () => {
     error: readonly(error),
     retryCount: readonly(retryCount),
     maxRetries,
+    lastError: readonly(lastError),
     categories,
     pricingModels,
     difficultyLevels,

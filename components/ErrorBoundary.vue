@@ -58,7 +58,9 @@ const emit = defineEmits<{
 
 const throwError = (err: Error, info: ErrorInfo) => {
   error.value = err
-  logError(`ErrorBoundary caught error: ${err.message}`, err, 'ErrorBoundary')
+  logError(`ErrorBoundary caught error: ${err.message}`, err, 'ErrorBoundary', {
+    componentStack: info.componentStack,
+  })
   emit('error', err, info)
 }
 

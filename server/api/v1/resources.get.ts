@@ -1,4 +1,4 @@
-import { getQuery, setResponseHeader } from 'h3'
+import { getQuery, setResponseHeader, setResponseStatus } from 'h3'
 import { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 
@@ -22,15 +22,65 @@ export default defineEventHandler(async event => {
     const resourcesModule = await import('~/data/resources.json')
     let resources: Resource[] = resourcesModule.default || resourcesModule
 
-    // Parse query parameters
+    // Parse query parameters with validation
     const query = getQuery(event)
-    const limit = Math.min(parseInt(query.limit as string) || 20, 100)
-    const offset = Math.max(parseInt(query.offset as string) || 0, 0)
+
+    // Validate and parse limit parameter
+    let limit = 20 // default
+    if (query.limit !== undefined) {
+      const parsedLimit = parseInt(query.limit as string)
+      if (!isNaN(parsedLimit) && parsedLimit > 0) {
+        limit = Math.min(parsedLimit, 100) // max 100
+      } else {
+        // Invalid limit provided, return error
+        setResponseStatus(event, 400)
+        return {
+          success: false,
+          message: 'Invalid limit parameter. Must be a positive integer.',
+          error: 'Bad Request',
+        }
+      }
+    }
+
+    // Validate and parse offset parameter
+    let offset = 0 // default
+    if (query.offset !== undefined) {
+      const parsedOffset = parseInt(query.offset as string)
+      if (!isNaN(parsedOffset) && parsedOffset >= 0) {
+        offset = parsedOffset
+      } else {
+        // Invalid offset provided, return error
+        setResponseStatus(event, 400)
+        return {
+          success: false,
+          message: 'Invalid offset parameter. Must be a non-negative integer.',
+          error: 'Bad Request',
+        }
+      }
+    }
+
+    // Validate and parse other parameters
     const category = query.category as string | undefined
     const pricing = query.pricing as string | undefined
     const difficulty = query.difficulty as string | undefined
     const search = query.search as string | undefined
     const sort = query.sort as string | undefined
+
+    // Validate sort parameter
+    const validSortOptions = [
+      'alphabetical-asc',
+      'alphabetical-desc',
+      'date-added-desc',
+      'popularity-desc',
+    ]
+    if (sort && !validSortOptions.includes(sort)) {
+      setResponseStatus(event, 400)
+      return {
+        success: false,
+        message: `Invalid sort parameter. Valid options: ${validSortOptions.join(', ')}`,
+        error: 'Bad Request',
+      }
+    }
 
     // Apply filters
     if (category) {
@@ -87,6 +137,8 @@ export default defineEventHandler(async event => {
     const total = resources.length
     const paginatedResources = resources.slice(offset, offset + limit)
 
+    // Set success response
+    setResponseStatus(event, 200)
     return {
       success: true,
       data: paginatedResources,
@@ -103,9 +155,15 @@ export default defineEventHandler(async event => {
     logError(
       `Error fetching resources: ${error instanceof Error ? error.message : 'Unknown error'}`,
       error as Error,
-      'api-v1-resources'
+      'api-v1-resources',
+      {
+        query: getQuery(event),
+        errorType: error?.constructor?.name,
+      }
     )
 
+    // Set error response status
+    setResponseStatus(event, 500)
     return {
       success: false,
       message: 'An error occurred while fetching resources',

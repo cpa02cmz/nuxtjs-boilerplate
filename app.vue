@@ -1,7 +1,9 @@
 <template>
-  <NuxtLayout>
-    <NuxtPage />
-  </NuxtLayout>
+  <ErrorBoundary>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+  </ErrorBoundary>
 </template>
 
 <script setup lang="ts">
@@ -11,6 +13,9 @@
 
 // Set default meta tags for the entire application
 const runtimeConfig = useRuntimeConfig()
+
+// Import ErrorBoundary component for global error handling
+import ErrorBoundary from '~/components/ErrorBoundary.vue'
 
 useSeoMeta({
   title: 'Free Stuff on the Internet - Free Resources for Developers',

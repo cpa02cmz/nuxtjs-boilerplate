@@ -1,4 +1,4 @@
-import { getQuery } from 'h3'
+import { getQuery, setResponseStatus } from 'h3'
 import { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 
@@ -22,11 +22,45 @@ export default defineEventHandler(async event => {
     const resourcesModule = await import('~/data/resources.json')
     let resources: Resource[] = resourcesModule.default || resourcesModule
 
-    // Parse query parameters
+    // Parse query parameters with validation
     const query = getQuery(event)
+
+    // Validate and parse limit parameter
+    let limit = 20 // default
+    if (query.limit !== undefined) {
+      const parsedLimit = parseInt(query.limit as string)
+      if (!isNaN(parsedLimit) && parsedLimit > 0) {
+        limit = Math.min(parsedLimit, 100) // max 100
+      } else {
+        // Invalid limit provided, return error
+        setResponseStatus(event, 400)
+        return {
+          success: false,
+          message: 'Invalid limit parameter. Must be a positive integer.',
+          error: 'Bad Request',
+        }
+      }
+    }
+
+    // Validate and parse offset parameter
+    let offset = 0 // default
+    if (query.offset !== undefined) {
+      const parsedOffset = parseInt(query.offset as string)
+      if (!isNaN(parsedOffset) && parsedOffset >= 0) {
+        offset = parsedOffset
+      } else {
+        // Invalid offset provided, return error
+        setResponseStatus(event, 400)
+        return {
+          success: false,
+          message: 'Invalid offset parameter. Must be a non-negative integer.',
+          error: 'Bad Request',
+        }
+      }
+    }
+
+    // Parse other parameters
     const searchQuery = query.q as string | undefined
-    const limit = Math.min(parseInt(query.limit as string) || 20, 100)
-    const offset = Math.max(parseInt(query.offset as string) || 0, 0)
     const category = query.category as string | undefined
     const pricing = query.pricing as string | undefined
     const difficulty = query.difficulty as string | undefined
@@ -54,14 +88,34 @@ export default defineEventHandler(async event => {
     }
 
     if (tagsParam) {
-      const tags = tagsParam.split(',').map(tag => tag.trim().toLowerCase())
-      resources = resources.filter(resource =>
-        resource.tags.some(tag => tags.includes(tag.toLowerCase()))
-      )
+      // Validate tags parameter - ensure it's a string before splitting
+      if (typeof tagsParam === 'string') {
+        const tags = tagsParam.split(',').map(tag => tag.trim().toLowerCase())
+        resources = resources.filter(resource =>
+          resource.tags.some(tag => tags.includes(tag.toLowerCase()))
+        )
+      } else {
+        // Invalid tags parameter format
+        setResponseStatus(event, 400)
+        return {
+          success: false,
+          message: 'Invalid tags parameter. Must be a comma-separated string.',
+          error: 'Bad Request',
+        }
+      }
     }
 
     // Apply search if query exists
     if (searchQuery) {
+      if (typeof searchQuery !== 'string') {
+        // Invalid search query format
+        setResponseStatus(event, 400)
+        return {
+          success: false,
+          message: 'Invalid search query parameter. Must be a string.',
+          error: 'Bad Request',
+        }
+      }
       const searchTerm = searchQuery.toLowerCase()
       resources = resources.filter(
         resource =>
@@ -75,6 +129,8 @@ export default defineEventHandler(async event => {
     const total = resources.length
     const paginatedResources = resources.slice(offset, offset + limit)
 
+    // Set success response status
+    setResponseStatus(event, 200)
     return {
       success: true,
       data: paginatedResources,
@@ -91,9 +147,15 @@ export default defineEventHandler(async event => {
     logError(
       `Error searching resources: ${error instanceof Error ? error.message : 'Unknown error'}`,
       error as Error,
-      'api-v1-search'
+      'api-v1-search',
+      {
+        query: getQuery(event),
+        errorType: error?.constructor?.name,
+      }
     )
 
+    // Set error response status
+    setResponseStatus(event, 500)
     return {
       success: false,
       message: 'An error occurred while searching resources',
