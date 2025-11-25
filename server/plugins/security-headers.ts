@@ -67,6 +67,7 @@ export default defineNitroPlugin(nitroApp => {
     } catch (error) {
       // In production, we might want to log this properly
       if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
         console.warn('Failed to set security headers in render:html:', error)
       }
     }
@@ -219,6 +220,7 @@ export default defineNitroPlugin(nitroApp => {
     } catch (error) {
       // In production, we might want to log this properly
       if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
         console.warn('Failed to set security headers in afterResponse:', error)
       }
     }
