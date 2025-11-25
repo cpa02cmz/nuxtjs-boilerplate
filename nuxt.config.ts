@@ -392,15 +392,24 @@ export default defineNuxtConfig({
     },
     plugins:
       process.env.ANALYZE_BUNDLE === 'true'
-        ? [
-            // Add bundle analyzer for performance monitoring
-            require('rollup-plugin-visualizer').default({
-              filename: './dist/stats.html',
-              open: false,
-              gzipSize: true,
-              brotliSize: true,
-            }),
-          ]
+        ? (function () {
+            try {
+              const {
+                default: visualizer,
+              } = require('rollup-plugin-visualizer')
+              return [
+                visualizer({
+                  filename: './dist/stats.html',
+                  open: false,
+                  gzipSize: true,
+                  brotliSize: true,
+                }),
+              ]
+            } catch (error) {
+              console.warn('Rollup visualizer not available:', error?.message)
+              return []
+            }
+          })()
         : [], // Only add the plugin when ANALYZE_BUNDLE is true
     // Optimize build speed
     esbuild: {
