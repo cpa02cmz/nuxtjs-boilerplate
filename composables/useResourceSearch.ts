@@ -14,7 +14,20 @@ export const useResourceSearch = (resources: readonly Resource[]) => {
         { name: 'title', weight: 0.4 },
         { name: 'description', weight: 0.3 },
         { name: 'benefits', weight: 0.2 },
-        { name: 'tags', weight: 0.1 },
+        {
+          name: 'tags',
+          weight: 0.1,
+          getFn: (resource: Resource) => {
+            // Handle both string tags and hierarchical tags for search
+            return resource.tags.map(tag => {
+              if (typeof tag === 'string') {
+                return tag
+              } else {
+                return tag.name
+              }
+            })
+          },
+        },
       ],
       threshold: 0.3,
       includeScore: true,

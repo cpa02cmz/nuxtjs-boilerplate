@@ -1,5 +1,5 @@
 import { getQuery, setResponseHeader, setResponseStatus } from 'h3'
-import { Resource } from '~/types/resource'
+import type { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 
 /**
@@ -13,6 +13,7 @@ import { logError } from '~/utils/errorLogger'
  * - category: Filter by category
  * - pricing: Filter by pricing model
  * - difficulty: Filter by difficulty level
+ * - tags: Filter by tags (comma-separated)
  * - search: Search term to filter by title/description
  * - sort: Sort option (default: 'popularity-desc')
  */
@@ -63,8 +64,14 @@ export default defineEventHandler(async event => {
     const category = query.category as string | undefined
     const pricing = query.pricing as string | undefined
     const difficulty = query.difficulty as string | undefined
+    const tagsParam = query.tags as string | undefined
     const search = query.search as string | undefined
     const sort = query.sort as string | undefined
+
+    // Parse tags from comma-separated string
+    const tags = tagsParam
+      ? tagsParam.split(',').map(tag => tag.trim())
+      : undefined
 
     // Validate sort parameter
     const validSortOptions = [
@@ -109,7 +116,26 @@ export default defineEventHandler(async event => {
         resource =>
           resource.title.toLowerCase().includes(searchTerm) ||
           resource.description.toLowerCase().includes(searchTerm) ||
-          resource.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+          resource.tags.some(tag => {
+            if (typeof tag === 'string') {
+              return tag.toLowerCase().includes(searchTerm)
+            } else {
+              return tag.name.toLowerCase().includes(searchTerm)
+            }
+          })
+      )
+    }
+
+    // Apply tag filter
+    if (tags && tags.length > 0) {
+      resources = resources.filter(resource =>
+        resource.tags.some(tag => {
+          if (typeof tag === 'string') {
+            return tags.includes(tag)
+          } else {
+            return tags.includes(tag.name)
+          }
+        })
       )
     }
 

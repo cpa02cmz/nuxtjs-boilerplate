@@ -10,6 +10,7 @@ export const useResourceFilters = (resources: readonly Resource[]) => {
     pricingModels: [],
     difficultyLevels: [],
     technologies: [],
+    tags: [],
   })
 
   // Sort option
@@ -62,6 +63,20 @@ export const useResourceFilters = (resources: readonly Resource[]) => {
         resource.technology.some(tech =>
           filterOptions.value.technologies!.includes(tech)
         )
+      )
+    }
+
+    // Apply tag filter
+    if (filterOptions.value.tags && filterOptions.value.tags.length > 0) {
+      result = result.filter(resource =>
+        resource.tags.some(tag => {
+          // Handle both string tags and hierarchical tags
+          if (typeof tag === 'string') {
+            return filterOptions.value.tags!.includes(tag)
+          } else {
+            return filterOptions.value.tags!.includes(tag.name)
+          }
+        })
       )
     }
 
@@ -133,6 +148,16 @@ export const useResourceFilters = (resources: readonly Resource[]) => {
     }
   }
 
+  const toggleTag = (tag: string) => {
+    if (!filterOptions.value.tags) filterOptions.value.tags = []
+    const index = filterOptions.value.tags.indexOf(tag)
+    if (index > -1) {
+      filterOptions.value.tags.splice(index, 1)
+    } else {
+      filterOptions.value.tags.push(tag)
+    }
+  }
+
   const setSortOption = (option: SortOption) => {
     sortOption.value = option
   }
@@ -145,6 +170,7 @@ export const useResourceFilters = (resources: readonly Resource[]) => {
       pricingModels: [],
       difficultyLevels: [],
       technologies: [],
+      tags: [],
     }
     sortOption.value = 'popularity-desc'
   }
@@ -158,6 +184,7 @@ export const useResourceFilters = (resources: readonly Resource[]) => {
     togglePricingModel,
     toggleDifficultyLevel,
     toggleTechnology,
+    toggleTag,
     setSortOption,
     resetFilters,
   }

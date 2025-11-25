@@ -1,5 +1,5 @@
 import { getQuery, setResponseStatus } from 'h3'
-import { Resource } from '~/types/resource'
+import type { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 
 /**
@@ -92,7 +92,13 @@ export default defineEventHandler(async event => {
       if (typeof tagsParam === 'string') {
         const tags = tagsParam.split(',').map(tag => tag.trim().toLowerCase())
         resources = resources.filter(resource =>
-          resource.tags.some(tag => tags.includes(tag.toLowerCase()))
+          resource.tags.some(tag => {
+            if (typeof tag === 'string') {
+              return tags.includes(tag.toLowerCase())
+            } else {
+              return tags.includes(tag.name.toLowerCase())
+            }
+          })
         )
       } else {
         // Invalid tags parameter format
@@ -121,7 +127,13 @@ export default defineEventHandler(async event => {
         resource =>
           resource.title.toLowerCase().includes(searchTerm) ||
           resource.description.toLowerCase().includes(searchTerm) ||
-          resource.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+          resource.tags.some(tag => {
+            if (typeof tag === 'string') {
+              return tag.toLowerCase().includes(searchTerm)
+            } else {
+              return tag.name.toLowerCase().includes(searchTerm)
+            }
+          })
       )
     }
 

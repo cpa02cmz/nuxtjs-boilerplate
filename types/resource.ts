@@ -1,4 +1,18 @@
 // Define TypeScript interfaces for resources
+export interface Tag {
+  id: string
+  name: string
+  parentId?: string
+  synonyms?: readonly string[]
+  description?: string
+  children?: readonly Tag[]
+}
+
+export interface HierarchicalTag extends Tag {
+  level?: number
+  path?: readonly string[]
+}
+
 export interface Resource {
   id: string
   title: string
@@ -8,7 +22,7 @@ export interface Resource {
   category: string
   pricingModel: string
   difficulty: string
-  tags: readonly string[]
+  tags: readonly (string | HierarchicalTag)[]
   technology: readonly string[]
   dateAdded: string
   popularity: number
@@ -21,6 +35,7 @@ export interface FilterOptions {
   pricingModels?: string[]
   difficultyLevels?: string[]
   technologies?: string[]
+  tags?: string[]
 }
 
 export type SortOption =
