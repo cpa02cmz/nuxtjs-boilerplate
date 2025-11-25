@@ -1,5 +1,3 @@
-import { visualizer } from 'rollup-plugin-visualizer'
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: false }, // Disable in production for performance
@@ -209,13 +207,6 @@ export default defineNuxtConfig({
     inlineStyles: true,
   },
 
-  // Define reusable security headers to reduce duplication
-  // Note: These headers will be applied via the security headers plugin
-  nitro: {
-    // CSP headers via middleware
-    plugins: ['~/server/plugins/security-headers.ts'],
-  },
-
   // SEO Configuration - using built-in meta handling
   app: {
     head: {
@@ -232,6 +223,7 @@ export default defineNuxtConfig({
         { rel: 'prefetch', href: '/api/submissions' },
         // Add preloading for critical resources
         { rel: 'preload', href: '/favicon.ico', as: 'image' },
+        // Preload critical CSS
         { rel: 'preload', href: '/_nuxt/', as: 'fetch', crossorigin: true },
         // DNS prefetch for external resources
         { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
@@ -300,53 +292,29 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    // Security headers are now handled via the security-headers plugin
-    // This reduces duplication and centralizes security configuration
-    '/**': {
-      // Global route rules handled by security plugin
-    },
     // Main routes with prerender
     '/': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
     '/ai-keys': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
     '/about': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
     '/search': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
     '/submit': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
-    // Add caching headers for better performance
+    // API routes
     '/api/**': {
-      headers: {
-        'cache-control': 'max-age=300, public, s-maxage=300', // 5 minutes
-      },
+      // Cache control handled by security headers plugin
     },
-    // Cache static assets
+    // Static assets
     '/_nuxt/**': {
-      headers: {
-        'cache-control': 'max-age=31536000, immutable',
-      },
+      // Cache control handled by security headers plugin
     },
   },
 
@@ -367,7 +335,17 @@ export default defineNuxtConfig({
   // Explicitly use Vite for faster builds
   builder: 'vite',
 
-  // Nitro configuration moved to top level
+  nitro: {
+    // Optimize server-side rendering
+    minify: true,
+    // Enable compression
+    compressPublicAssets: true,
+    // Improve build performance
+    ignore: ['**/.git/**', '**/node_modules/**', '**/dist/**'],
+    // CSP headers via middleware
+    plugins: ['~/server/plugins/security-headers.ts'],
+  },
+
   // Optimize bundle size
   vite: {
     build: {
@@ -392,17 +370,19 @@ export default defineNuxtConfig({
         external: ['@nuxt/kit'],
       },
     },
-    plugins:
-      process.env.ANALYZE_BUNDLE === 'true'
+    plugins: [
+      // Add bundle analyzer for performance monitoring (only when ANALYZE_BUNDLE is true)
+      ...(process.env.ANALYZE_BUNDLE === 'true'
         ? [
-            visualizer({
+            require('rollup-plugin-visualizer').default({
               filename: './dist/stats.html',
               open: false,
               gzipSize: true,
               brotliSize: true,
             }),
           ]
-        : [], // Only add the plugin when ANALYZE_BUNDLE is true
+        : []),
+    ],
     // Optimize build speed
     esbuild: {
       logLevel: 'silent', // Reduce build noise
