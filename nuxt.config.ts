@@ -1,4 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+let visualizerPlugin = null
+if (process.env.ANALYZE_BUNDLE === 'true') {
+  const { default: rollupVisualizer } = require('rollup-plugin-visualizer')
+  visualizerPlugin = rollupVisualizer
+}
+
 export default defineNuxtConfig({
   devtools: { enabled: false }, // Disable in production for performance
   css: ['~/assets/css/main.css'],
@@ -391,16 +397,16 @@ export default defineNuxtConfig({
       },
     },
     plugins:
-      process.env.ANALYZE_BUNDLE === 'true'
+      process.env.ANALYZE_BUNDLE === 'true' && visualizerPlugin
         ? [
-            require('rollup-plugin-visualizer')({
+            visualizerPlugin({
               filename: './dist/stats.html',
               open: false,
               gzipSize: true,
               brotliSize: true,
             }),
           ]
-        : [], // Only add the plugin when ANALYZE_BUNDLE is true
+        : [],
     // Optimize build speed
     esbuild: {
       logLevel: 'silent', // Reduce build noise
