@@ -140,6 +140,7 @@ const props = withDefaults(defineProps<Props>(), {
   highlightedTitle: undefined,
   highlightedDescription: undefined,
   icon: undefined,
+  id: undefined,
 })
 
 const hasError = ref(false)
