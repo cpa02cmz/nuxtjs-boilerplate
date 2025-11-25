@@ -3,7 +3,7 @@ import { defineVitestConfig } from '@nuxt/test-utils/config'
 export default defineVitestConfig({
   test: {
     globals: true,
-    environment: 'nuxt',
+    environment: 'nuxt', // Use nuxt environment for Nuxt-specific features
     setupFiles: ['./test-setup.ts'],
     environmentOptions: {
       nuxt: {
