@@ -2,47 +2,75 @@ import { defineNitroPlugin } from 'nitropack/runtime'
 import { randomBytes } from 'node:crypto'
 
 // Security headers plugin to enhance XSS protection and add HSTS
+// This plugin consolidates all security header configuration in one place
+// Applies appropriate security headers based on environment
 
 export default defineNitroPlugin(nitroApp => {
   nitroApp.hooks.hook('render:html', (html, { event }) => {
+    // Only apply security headers to HTML responses, not API routes
+    const contentType = event.node.res.getHeader('content-type')
+    if (
+      contentType &&
+      typeof contentType === 'string' &&
+      !contentType.includes('text/html')
+    ) {
+      return
+    }
+
     // Generate a unique nonce for each request to allow inline scripts/styles when needed
     const nonce = randomBytes(16).toString('base64')
 
-    // Set Content Security Policy - more restrictive without 'unsafe-inline' and 'unsafe-eval'
-    event.node.res.setHeader(
-      'Content-Security-Policy',
+    // Determine if we're in development mode
+    const isDev = process.env.NODE_ENV === 'development'
+
+    // Set Content Security Policy - adjust based on environment
+    let csp =
       `default-src 'self'; ` +
-        `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https:; ` +
-        `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com; ` +
-        `font-src 'self' https://fonts.gstatic.com; ` +
-        `img-src 'self' data: blob: https:; ` +
-        `connect-src 'self' https:; ` +
-        `frame-ancestors 'none'; ` +
-        `object-src 'none'; ` +
-        `base-uri 'self'; ` +
-        `form-action 'self'; ` +
-        `upgrade-insecure-requests;`
-    )
+      `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https:; ` +
+      `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com https://fonts.gstatic.com; ` +
+      `font-src 'self' https://fonts.gstatic.com; ` +
+      `img-src 'self' data: blob: https:; ` +
+      `connect-src 'self' https:; ` +
+      `frame-ancestors 'none'; ` +
+      `object-src 'none'; ` +
+      `base-uri 'self'; ` +
+      `form-action 'self'; `
+
+    // In development, allow more flexibility for debugging tools
+    if (isDev) {
+      csp +=
+        `script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; ` +
+        `style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; `
+    } else {
+      // In production, use stricter policy and upgrade insecure requests
+      csp += `upgrade-insecure-requests;`
+    }
+
+    event.node.res.setHeader('Content-Security-Policy', csp)
 
     // Additional security headers
     event.node.res.setHeader('X-Content-Type-Options', 'nosniff')
     event.node.res.setHeader('X-Frame-Options', 'DENY')
-    event.node.res.setHeader('X-XSS-Protection', '0') // Modern CSP makes this redundant, and legacy X-XSS-Protection can cause issues
+    // Modern CSP makes X-XSS-Protection redundant, and legacy X-XSS-Protection can cause issues
+    event.node.res.setHeader('X-XSS-Protection', '0')
     event.node.res.setHeader(
       'Referrer-Policy',
       'strict-origin-when-cross-origin'
     )
-    // Add HSTS header for transport security
-    event.node.res.setHeader(
-      'Strict-Transport-Security',
-      'max-age=31536000; includeSubDomains; preload'
-    )
+
+    // Only set HSTS in production (it's permanent and can't be undone if set in dev)
+    if (!isDev) {
+      event.node.res.setHeader(
+        'Strict-Transport-Security',
+        'max-age=31536000; includeSubDomains; preload'
+      )
+    }
+
     event.node.res.setHeader(
       'Permissions-Policy',
       'geolocation=(), microphone=(), camera=()'
     )
-    // Remove wildcard CORS to prevent security issues
-    // event.node.res.setHeader('Access-Control-Allow-Origin', '*')
+    // CORS headers - only allow necessary methods and headers
     event.node.res.setHeader(
       'Access-Control-Allow-Methods',
       'GET, HEAD, POST, OPTIONS'
@@ -52,10 +80,7 @@ export default defineNitroPlugin(nitroApp => {
       'Content-Type, Authorization'
     )
 
-    // Add nonce to HTML if it's available
-    if (html.body && nonce) {
-      // Add the nonce to any inline scripts in the HTML
-      // This is handled by Nuxt's built-in nonce support
-    }
+    // Store nonce in event context for use in components if needed
+    event.context.nonce = nonce
   })
 })
