@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
 import { onErrorCaptured, ref, computed } from 'vue'
+import { logError } from '~/utils/errorLogger'
 
 interface ErrorInfo {
   componentStack: string

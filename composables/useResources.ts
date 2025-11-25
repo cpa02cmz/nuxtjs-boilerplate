@@ -140,4 +140,5 @@ export const useResources = () => {
     getSearchHistory,
     addSearchToHistory,
     clearSearchHistory,
-
+  }
+}
