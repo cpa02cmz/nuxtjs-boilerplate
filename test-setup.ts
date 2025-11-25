@@ -79,8 +79,8 @@ if (typeof global !== 'undefined') {
   })
 }
 
-// Mock console to prevent test errors from console logs
-if (typeof global !== 'undefined') {
+// Only mock console if not already mocked to avoid conflicts
+if (typeof global !== 'undefined' && !global.console?.mocked) {
   Object.defineProperty(global, 'console', {
     value: {
       ...console,
@@ -123,6 +123,15 @@ if (typeof vi !== 'undefined') {
     createObjectURL: vi.fn(),
     revokeObjectURL: vi.fn(),
   })
+}
+
+// Mock Nuxt runtime config if needed
+if (typeof global !== 'undefined' && !global.mockNuxtRuntimeConfig) {
+  global.mockNuxtRuntimeConfig = {
+    public: {
+      canonicalUrl: 'http://localhost:3000',
+    },
+  }
 }
 
 // Mock localStorage if needed
