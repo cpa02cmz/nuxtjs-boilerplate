@@ -2,7 +2,12 @@
 export default defineNuxtConfig({
   devtools: { enabled: false }, // Disable in production for performance
   css: ['~/assets/css/main.css'],
-  modules: ['@nuxtjs/tailwindcss', '@nuxt/image', '@vite-pwa/nuxt'],
+  modules: [
+    '@nuxt/test-utils/module',
+    '@nuxtjs/tailwindcss',
+    '@nuxt/image',
+    '@vite-pwa/nuxt',
+  ],
 
   // Runtime configuration for environment variables
   runtimeConfig: {
