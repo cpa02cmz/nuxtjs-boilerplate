@@ -5,7 +5,7 @@ import {
   cacheManager,
   cacheSetWithTags,
   invalidateCacheByTag,
-} from '../../utils/cache'
+} from '../../utils/enhanced-cache'
 import {
   rateLimit,
   getRateLimiterForPath,
