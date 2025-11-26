@@ -2,19 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ShareButton from '../ShareButton.vue'
 
-// Mock the runtime config
-vi.mock('#imports', async () => {
-  const actual = await vi.importActual('#imports')
-  return {
-    ...actual,
-    useRuntimeConfig: () => ({
-      public: {
-        canonicalUrl: 'https://example.com',
-      },
-    }),
-  }
-})
-
 // Mock the shareUtils
 vi.mock('~/utils/shareUtils', () => ({
   generateResourceShareUrls: vi.fn((url, title, description) => ({
