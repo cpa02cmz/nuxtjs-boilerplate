@@ -1,6 +1,7 @@
 import { getQuery, setResponseHeader, setResponseStatus } from 'h3'
 import { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
+import { cacheManager } from '../../utils/cache'
 
 /**
  * GET /api/v1/resources
@@ -18,13 +19,22 @@ import { logError } from '~/utils/errorLogger'
  */
 export default defineEventHandler(async event => {
   try {
+    // Generate cache key based on query parameters
+    const query = getQuery(event)
+    const cacheKey = `resources:${JSON.stringify(query)}`
+
+    // Try to get from cache first
+    const cachedResult = await cacheManager.get(cacheKey)
+    if (cachedResult) {
+      event.node.res?.setHeader('X-Cache', 'HIT')
+      return cachedResult
+    }
+
     // Import resources from JSON
     const resourcesModule = await import('~/data/resources.json')
     let resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Parse query parameters with validation
-    const query = getQuery(event)
-
     // Validate and parse limit parameter
     let limit = 20 // default
     if (query.limit !== undefined) {
@@ -137,9 +147,8 @@ export default defineEventHandler(async event => {
     const total = resources.length
     const paginatedResources = resources.slice(offset, offset + limit)
 
-    // Set success response
-    setResponseStatus(event, 200)
-    return {
+    // Prepare response
+    const response = {
       success: true,
       data: paginatedResources,
       pagination: {
@@ -150,6 +159,16 @@ export default defineEventHandler(async event => {
         hasPrev: offset > 0,
       },
     }
+
+    // Cache the result for 5 minutes (300 seconds)
+    await cacheManager.set(cacheKey, response, 300)
+
+    // Set cache miss header
+    event.node.res?.setHeader('X-Cache', 'MISS')
+
+    // Set success response
+    setResponseStatus(event, 200)
+    return response
   } catch (error: any) {
     // Log error using our error logging service
     logError(
