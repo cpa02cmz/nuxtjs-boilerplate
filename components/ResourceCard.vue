@@ -134,12 +134,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useHead, useRuntimeConfig } from '#imports'
 import DOMPurify from 'dompurify'
 import OptimizedImage from '~/components/OptimizedImage.vue'
 import BookmarkButton from '~/components/BookmarkButton.vue'
 import ShareButton from '~/components/ShareButton.vue'
+import { trackResourceView, trackResourceClick } from '~/utils/analytics'
 
 interface Props {
   title: string
@@ -147,6 +148,7 @@ interface Props {
   benefits: string[]
   url: string
   id?: string
+  category: string // Added for analytics tracking
   icon?: string
   newTab?: boolean
   buttonLabel?: string
@@ -156,6 +158,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   id: undefined,
+  category: 'unknown',
   newTab: true,
   buttonLabel: 'Get Free Access',
   highlightedTitle: undefined,
@@ -164,6 +167,13 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const hasError = ref(false)
+
+// Track resource view when component mounts
+onMounted(() => {
+  if (props.id) {
+    trackResourceView(props.id, props.title, props.category)
+  }
+})
 
 // Sanitize highlighted content to prevent XSS using DOMPurify
 const sanitizedHighlightedTitle = computed(() => {
@@ -266,6 +276,11 @@ const handleImageError = () => {
 
 // Handle link clicks and validate URL
 const handleLinkClick = (event: Event) => {
+  // Track the resource click
+  if (props.id) {
+    trackResourceClick(props.id, props.title, props.category)
+  }
+
   try {
     const url = new URL(props.url)
     // URL is valid, allow the click
