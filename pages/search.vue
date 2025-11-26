@@ -71,10 +71,10 @@
             :selected-technologies="selectedTechnologies"
             role="region"
             aria-label="Resource filters"
-            @toggle-category="toggleCategory"
-            @toggle-pricing-model="togglePricingModel"
-            @toggle-difficulty-level="toggleDifficultyLevel"
-            @toggle-technology="toggleTechnology"
+            @toggle-category="enhancedToggleCategory"
+            @toggle-pricing-model="enhancedTogglePricingModel"
+            @toggle-difficulty-level="enhancedToggleDifficultyLevel"
+            @toggle-technology="enhancedToggleTechnology"
             @reset-filters="resetAllFilters"
           />
         </div>
@@ -158,6 +158,27 @@ const {
   highlightSearchTerms,
 } = useResources()
 
+// Enhanced toggle functions with analytics tracking
+const enhancedToggleCategory = (category: string) => {
+  toggleCategory(category)
+  trackFilter('category', category)
+}
+
+const enhancedTogglePricingModel = (pricingModel: string) => {
+  togglePricingModel(pricingModel)
+  trackFilter('pricing', pricingModel)
+}
+
+const enhancedToggleDifficultyLevel = (difficultyLevel: string) => {
+  toggleDifficultyLevel(difficultyLevel)
+  trackFilter('difficulty', difficultyLevel)
+}
+
+const enhancedToggleTechnology = (technology: string) => {
+  toggleTechnology(technology)
+  trackFilter('technology', technology)
+}
+
 // Set up URL synchronization
 useUrlSync(filterOptions, sortOption)
 
@@ -178,9 +199,16 @@ const selectedTechnologies = computed(
   () => filterOptions.value.technologies || []
 )
 
+import { trackSearch, trackFilter } from '~/utils/analytics'
+
 // Handle search
 const handleSearch = (query: string) => {
   updateSearchQuery(query)
+
+  // Track the search event with results count after a short delay to ensure results are updated
+  setTimeout(() => {
+    trackSearch(query, filteredResources.value.length)
+  }, 500)
 }
 
 // Reset all filters
