@@ -9,7 +9,19 @@ export default defineNuxtPlugin(() => {
         filename: event.filename,
         lineno: event.lineno,
         colno: event.colno,
+        stack: event.error?.stack,
       })
+      // In a real application, you would send this to an error tracking service
+      // For now, we'll just log it to console in development
+      if (process.env.NODE_ENV === 'development') {
+        logError('Error details', event.error, 'GlobalErrorHandler', {
+          message: event.error?.message,
+          filename: event.filename,
+          lineno: event.lineno,
+          colno: event.colno,
+          stack: event.error?.stack,
+        })
+      }
     })
 
     window.addEventListener('unhandledrejection', event => {
@@ -21,6 +33,13 @@ export default defineNuxtPlugin(() => {
           reason: event.reason,
         }
       )
+      // In a real application, you would send this to an error tracking service
+      // For now, we'll just log it to console in development
+      if (process.env.NODE_ENV === 'development') {
+        logError('Unhandled rejection details', event.reason as Error, 'GlobalErrorHandler', {
+          reason: event.reason,
+        })
+      }
     })
   }
 })

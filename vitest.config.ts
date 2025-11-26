@@ -10,6 +10,11 @@ export default defineVitestConfig({
         rootDir: '.',
         overrides: {
           // Add any necessary nuxt config overrides for testing
+          runtimeConfig: {
+            public: {
+              canonicalUrl: 'http://localhost:3000',
+            },
+          },
         },
       },
     },
