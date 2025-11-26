@@ -237,10 +237,8 @@ export async function rateLimit(event: H3Event, key?: string): Promise<void> {
     return
   }
 
-  // Check for bypass key in header only (security: prevent bypass keys in query parameters)
-  const bypassKey =
-    (event.node.req.headers['x-admin-bypass-key'] as string) ||
-    process.env.ADMIN_RATE_LIMIT_BYPASS_KEY
+  // Check for bypass key in header only (security: prevent bypass keys in query parameters or environment variable fallback)
+  const bypassKey = event.node.req.headers['x-admin-bypass-key'] as string
 
   // Generate rate limit key if not provided
   const rateLimitKey =
