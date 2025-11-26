@@ -1,6 +1,7 @@
 import { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 import { cacheManager } from '../../utils/cache'
+import { performanceMonitor } from '../../utils/performance-monitoring'
 
 /**
  * GET /api/v1/categories
@@ -8,12 +9,33 @@ import { cacheManager } from '../../utils/cache'
  * Retrieve a list of all available categories with counts
  */
 export default defineEventHandler(async event => {
+  const startTime = Date.now()
+
   try {
     // Try to get from cache first
     const cacheKey = 'categories:all'
     const cachedResult = await cacheManager.get(cacheKey)
     if (cachedResult) {
       event.node.res?.setHeader('X-Cache', 'HIT')
+
+      // Record performance metrics
+      const responseTime = Date.now() - startTime
+      performanceMonitor.recordMetrics({
+        endpoint: event.path || '/api/v1/categories',
+        method: 'GET',
+        responseTime,
+        cacheHit: true,
+        cacheType: event.node.res?.getHeader('X-Cache-Type') as
+          | string
+          | undefined,
+        statusCode: 200,
+        timestamp: Date.now(),
+        userAgent: event.node.req.headers['user-agent'],
+        clientIP:
+          (event.node.req.headers['x-forwarded-for'] as string) ||
+          (event.node.req.connection.remoteAddress as string),
+      })
+
       return cachedResult
     }
 
@@ -48,6 +70,24 @@ export default defineEventHandler(async event => {
     // Set cache miss header
     event.node.res?.setHeader('X-Cache', 'MISS')
 
+    // Record performance metrics
+    const responseTime = Date.now() - startTime
+    performanceMonitor.recordMetrics({
+      endpoint: event.path || '/api/v1/categories',
+      method: 'GET',
+      responseTime,
+      cacheHit: false, // This was a cache miss
+      cacheType: event.node.res?.getHeader('X-Cache-Type') as
+        | string
+        | undefined,
+      statusCode: 200,
+      timestamp: Date.now(),
+      userAgent: event.node.req.headers['user-agent'],
+      clientIP:
+        (event.node.req.headers['x-forwarded-for'] as string) ||
+        (event.node.req.connection.remoteAddress as string),
+    })
+
     return response
   } catch (error: any) {
     // Log error using our error logging service
@@ -56,6 +96,21 @@ export default defineEventHandler(async event => {
       error as Error,
       'api-v1-categories'
     )
+
+    // Record performance metrics for error
+    const responseTime = Date.now() - startTime
+    performanceMonitor.recordMetrics({
+      endpoint: event.path || '/api/v1/categories',
+      method: 'GET',
+      responseTime,
+      cacheHit: false,
+      statusCode: 500,
+      timestamp: Date.now(),
+      userAgent: event.node.req.headers['user-agent'],
+      clientIP:
+        (event.node.req.headers['x-forwarded-for'] as string) ||
+        (event.node.req.connection.remoteAddress as string),
+    })
 
     return {
       success: false,

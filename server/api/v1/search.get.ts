@@ -2,6 +2,7 @@ import { getQuery, setResponseStatus } from 'h3'
 import { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 import { cacheManager } from '../../utils/cache'
+import { performanceMonitor } from '../../utils/performance-monitoring'
 
 /**
  * GET /api/v1/search
@@ -18,6 +19,8 @@ import { cacheManager } from '../../utils/cache'
  * - tags: Filter by tags (comma-separated)
  */
 export default defineEventHandler(async event => {
+  const startTime = Date.now()
+
   try {
     // Generate cache key based on query parameters
     const query = getQuery(event)
@@ -27,6 +30,25 @@ export default defineEventHandler(async event => {
     const cachedResult = await cacheManager.get(cacheKey)
     if (cachedResult) {
       event.node.res?.setHeader('X-Cache', 'HIT')
+
+      // Record performance metrics
+      const responseTime = Date.now() - startTime
+      performanceMonitor.recordMetrics({
+        endpoint: event.path || '/api/v1/search',
+        method: 'GET',
+        responseTime,
+        cacheHit: true,
+        cacheType: event.node.res?.getHeader('X-Cache-Type') as
+          | string
+          | undefined,
+        statusCode: 200,
+        timestamp: Date.now(),
+        userAgent: event.node.req.headers['user-agent'],
+        clientIP:
+          (event.node.req.headers['x-forwarded-for'] as string) ||
+          (event.node.req.connection.remoteAddress as string),
+      })
+
       return cachedResult
     }
 
@@ -44,6 +66,22 @@ export default defineEventHandler(async event => {
       } else {
         // Invalid limit provided, return error
         setResponseStatus(event, 400)
+
+        // Record performance metrics for error
+        const responseTime = Date.now() - startTime
+        performanceMonitor.recordMetrics({
+          endpoint: event.path || '/api/v1/search',
+          method: 'GET',
+          responseTime,
+          cacheHit: false,
+          statusCode: 400,
+          timestamp: Date.now(),
+          userAgent: event.node.req.headers['user-agent'],
+          clientIP:
+            (event.node.req.headers['x-forwarded-for'] as string) ||
+            (event.node.req.connection.remoteAddress as string),
+        })
+
         return {
           success: false,
           message: 'Invalid limit parameter. Must be a positive integer.',
@@ -61,6 +99,22 @@ export default defineEventHandler(async event => {
       } else {
         // Invalid offset provided, return error
         setResponseStatus(event, 400)
+
+        // Record performance metrics for error
+        const responseTime = Date.now() - startTime
+        performanceMonitor.recordMetrics({
+          endpoint: event.path || '/api/v1/search',
+          method: 'GET',
+          responseTime,
+          cacheHit: false,
+          statusCode: 400,
+          timestamp: Date.now(),
+          userAgent: event.node.req.headers['user-agent'],
+          clientIP:
+            (event.node.req.headers['x-forwarded-for'] as string) ||
+            (event.node.req.connection.remoteAddress as string),
+        })
+
         return {
           success: false,
           message: 'Invalid offset parameter. Must be a non-negative integer.',
@@ -107,6 +161,22 @@ export default defineEventHandler(async event => {
       } else {
         // Invalid tags parameter format
         setResponseStatus(event, 400)
+
+        // Record performance metrics for error
+        const responseTime = Date.now() - startTime
+        performanceMonitor.recordMetrics({
+          endpoint: event.path || '/api/v1/search',
+          method: 'GET',
+          responseTime,
+          cacheHit: false,
+          statusCode: 400,
+          timestamp: Date.now(),
+          userAgent: event.node.req.headers['user-agent'],
+          clientIP:
+            (event.node.req.headers['x-forwarded-for'] as string) ||
+            (event.node.req.connection.remoteAddress as string),
+        })
+
         return {
           success: false,
           message: 'Invalid tags parameter. Must be a comma-separated string.',
@@ -120,6 +190,22 @@ export default defineEventHandler(async event => {
       if (typeof searchQuery !== 'string') {
         // Invalid search query format
         setResponseStatus(event, 400)
+
+        // Record performance metrics for error
+        const responseTime = Date.now() - startTime
+        performanceMonitor.recordMetrics({
+          endpoint: event.path || '/api/v1/search',
+          method: 'GET',
+          responseTime,
+          cacheHit: false,
+          statusCode: 400,
+          timestamp: Date.now(),
+          userAgent: event.node.req.headers['user-agent'],
+          clientIP:
+            (event.node.req.headers['x-forwarded-for'] as string) ||
+            (event.node.req.connection.remoteAddress as string),
+        })
+
         return {
           success: false,
           message: 'Invalid search query parameter. Must be a string.',
@@ -160,6 +246,25 @@ export default defineEventHandler(async event => {
 
     // Set success response status
     setResponseStatus(event, 200)
+
+    // Record performance metrics
+    const responseTime = Date.now() - startTime
+    performanceMonitor.recordMetrics({
+      endpoint: event.path || '/api/v1/search',
+      method: 'GET',
+      responseTime,
+      cacheHit: false, // This was a cache miss
+      cacheType: event.node.res?.getHeader('X-Cache-Type') as
+        | string
+        | undefined,
+      statusCode: 200,
+      timestamp: Date.now(),
+      userAgent: event.node.req.headers['user-agent'],
+      clientIP:
+        (event.node.req.headers['x-forwarded-for'] as string) ||
+        (event.node.req.connection.remoteAddress as string),
+    })
+
     return response
   } catch (error: any) {
     // Log error using our error logging service
@@ -175,6 +280,22 @@ export default defineEventHandler(async event => {
 
     // Set error response status
     setResponseStatus(event, 500)
+
+    // Record performance metrics for error
+    const responseTime = Date.now() - startTime
+    performanceMonitor.recordMetrics({
+      endpoint: event.path || '/api/v1/search',
+      method: 'GET',
+      responseTime,
+      cacheHit: false,
+      statusCode: 500,
+      timestamp: Date.now(),
+      userAgent: event.node.req.headers['user-agent'],
+      clientIP:
+        (event.node.req.headers['x-forwarded-for'] as string) ||
+        (event.node.req.connection.remoteAddress as string),
+    })
+
     return {
       success: false,
       message: 'An error occurred while searching resources',
