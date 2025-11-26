@@ -26,7 +26,10 @@ describe('ResourceCard', () => {
 
   it('renders correctly with required props', () => {
     const wrapper = mount(ResourceCard, {
-      props: defaultProps,
+      props: {
+        ...defaultProps,
+        category: 'Test Category', // Added required prop
+      },
       global: {
         components: {
           NuxtLink: mockNuxtLink,
@@ -140,6 +143,7 @@ describe('ResourceCard', () => {
     const wrapper = mount(ResourceCard, {
       props: {
         ...defaultProps,
+        category: 'Test Category', // Added required prop
         highlightedTitle: maliciousContent,
       },
       global: {
@@ -155,5 +159,78 @@ describe('ResourceCard', () => {
     expect(titleElement.html()).not.toContain('iframe')
     expect(titleElement.html()).not.toContain('javascript:')
     expect(titleElement.text()).toContain('Test content')
+  })
+
+  it('handles advanced XSS attempts with event handlers', () => {
+    const maliciousContent =
+      'Test <img src="x" onerror="alert(1)"> content <div onclick="javascript:alert(1)">click me</div>'
+
+    const wrapper = mount(ResourceCard, {
+      props: {
+        ...defaultProps,
+        category: 'Test Category', // Added required prop
+        highlightedTitle: maliciousContent,
+      },
+      global: {
+        components: {
+          NuxtLink: mockNuxtLink,
+          SocialShare: mockSocialShare,
+        },
+      },
+    })
+
+    const titleElement = wrapper.find('h3')
+    expect(titleElement.html()).not.toContain('onerror')
+    expect(titleElement.html()).not.toContain('onclick')
+    expect(titleElement.html()).not.toContain('javascript:')
+    expect(titleElement.text()).toContain('Test content click me')
+  })
+
+  it('handles CSS expression XSS attempts', () => {
+    const maliciousContent = 'Test style="color: expression(alert(1))" content'
+
+    const wrapper = mount(ResourceCard, {
+      props: {
+        ...defaultProps,
+        category: 'Test Category', // Added required prop
+        highlightedTitle: maliciousContent,
+      },
+      global: {
+        components: {
+          NuxtLink: mockNuxtLink,
+          SocialShare: mockSocialShare,
+        },
+      },
+    })
+
+    const titleElement = wrapper.find('h3')
+    expect(titleElement.html()).not.toContain('expression(')
+    expect(titleElement.text()).toContain('Test style=')
+  })
+
+  it('handles multi-vector XSS attempts', () => {
+    const maliciousContent =
+      '<svg onload=alert(1)> <img src=x onerror=alert(2)> <a href="javascript:alert(3)">link</a>'
+
+    const wrapper = mount(ResourceCard, {
+      props: {
+        ...defaultProps,
+        category: 'Test Category', // Added required prop
+        highlightedTitle: maliciousContent,
+      },
+      global: {
+        components: {
+          NuxtLink: mockNuxtLink,
+          SocialShare: mockSocialShare,
+        },
+      },
+    })
+
+    const titleElement = wrapper.find('h3')
+    expect(titleElement.html()).not.toContain('svg')
+    expect(titleElement.html()).not.toContain('onload')
+    expect(titleElement.html()).not.toContain('onerror')
+    expect(titleElement.html()).not.toContain('javascript:')
+    expect(titleElement.text()).toContain('link')
   })
 })

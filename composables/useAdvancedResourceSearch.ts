@@ -230,11 +230,11 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
 
     // Remove other dangerous tags that might have been missed
     preprocessedText = preprocessedText.replace(
-      /<\s*(iframe|object|embed|form|input|button|img)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
+      /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|body|html|head|frameset|frame|applet|bgsound|ilayer|layer|spacer|xml)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
       ''
     )
     preprocessedText = preprocessedText.replace(
-      /<\s*(iframe|object|embed|form|input|button|img)[^>]*\/?\s*>/gi,
+      /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|body|html|head|frameset|frame|applet|bgsound|ilayer|layer|spacer|xml)[^>]*\/?\s*>/gi,
       ''
     )
 
@@ -250,6 +250,20 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         'input',
         'button',
         'img',
+        'link',
+        'meta',
+        'base',
+        'body',
+        'html',
+        'head',
+        'frameset',
+        'frame',
+        'applet',
+        'bgsound',
+        'ilayer',
+        'layer',
+        'spacer',
+        'xml',
       ],
       FORBID_ATTR: [
         'src',
@@ -260,8 +274,30 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         'onclick',
         'onmouseover',
         'onmouseout',
+        'onfocus',
+        'onblur',
+        'onkeydown',
+        'onkeypress',
+        'onkeyup',
+        'ondblclick',
+        'ondrag',
+        'ondragend',
+        'ondragenter',
+        'ondragleave',
+        'ondragover',
+        'ondragstart',
+        'ondrop',
+        'onmousedown',
+        'onmouseenter',
+        'onmouseleave',
+        'onmousemove',
+        'onmouseout',
+        'onmouseover',
+        'onmouseup',
         'data',
         'formaction',
+        'action',
+        'form',
       ],
       SANITIZE_DOM: true,
       FORBID_CONTENTS: [
@@ -273,6 +309,20 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         'input',
         'button',
         'img',
+        'link',
+        'meta',
+        'base',
+        'body',
+        'html',
+        'head',
+        'frameset',
+        'frame',
+        'applet',
+        'bgsound',
+        'ilayer',
+        'layer',
+        'spacer',
+        'xml',
       ],
     })
 
@@ -309,6 +359,20 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         'input',
         'button',
         'img',
+        'link',
+        'meta',
+        'base',
+        'body',
+        'html',
+        'head',
+        'frameset',
+        'frame',
+        'applet',
+        'bgsound',
+        'ilayer',
+        'layer',
+        'spacer',
+        'xml',
       ],
       FORBID_ATTR: [
         'src',
@@ -319,8 +383,30 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         'onclick',
         'onmouseover',
         'onmouseout',
+        'onfocus',
+        'onblur',
+        'onkeydown',
+        'onkeypress',
+        'onkeyup',
+        'ondblclick',
+        'ondrag',
+        'ondragend',
+        'ondragenter',
+        'ondragleave',
+        'ondragover',
+        'ondragstart',
+        'ondrop',
+        'onmousedown',
+        'onmouseenter',
+        'onmouseleave',
+        'onmousemove',
+        'onmouseout',
+        'onmouseover',
+        'onmouseup',
         'data',
         'formaction',
+        'action',
+        'form',
       ],
       SANITIZE_DOM: true,
       FORBID_CONTENTS: [
@@ -332,6 +418,20 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         'input',
         'button',
         'img',
+        'link',
+        'meta',
+        'base',
+        'body',
+        'html',
+        'head',
+        'frameset',
+        'frame',
+        'applet',
+        'bgsound',
+        'ilayer',
+        'layer',
+        'spacer',
+        'xml',
       ],
     })
 
@@ -342,11 +442,15 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
       .replace(/data:/gi, '')
       .replace(/vbscript:/gi, '')
       .replace(/on\w+\s*=/gi, '') // Remove any event handlers
+      .replace(/expression:/gi, '') // Additional protection against CSS expressions
+      .replace(/javascript\s*:/gi, '') // Additional protection for different spacing
+      .replace(/vbscript\s*:/gi, '') // Additional protection for different spacing
       .replace(/script/gi, '') // Additional protection
       .replace(/iframe/gi, '') // Additional protection
       .replace(/object/gi, '') // Additional protection
       .replace(/embed/gi, '') // Additional protection
       .replace(/img/gi, '') // Additional protection
+      .replace(/on\w+\s*=/gi, '') // Remove any event handlers again after other replacements
   }
 
   // Manage search history
