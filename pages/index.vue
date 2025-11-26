@@ -154,6 +154,11 @@
             />
           </div>
         </div>
+
+        <!-- Recommendations Section -->
+        <div v-if="filteredResources.length > 0 && !loading" class="mt-16">
+          <RecommendationsSection />
+        </div>
       </div>
     </div>
   </div>
@@ -165,6 +170,7 @@ import { useUrlSync } from '~/composables/useUrlSync'
 import ResourceCard from '~/components/ResourceCard.vue'
 import SearchBar from '~/components/SearchBar.vue'
 import ResourceSort from '~/components/ResourceSort.vue'
+import RecommendationsSection from '~/components/RecommendationsSection.vue'
 
 definePageMeta({
   layout: 'default',
