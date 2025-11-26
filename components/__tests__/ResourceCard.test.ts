@@ -156,4 +156,121 @@ describe('ResourceCard', () => {
     expect(titleElement.html()).not.toContain('javascript:')
     expect(titleElement.text()).toContain('Test content')
   })
+
+  it('sanitizes SVG-based XSS attempts in highlighted content', () => {
+    const svgXssContent =
+      'Test <svg onload=alert("XSS")> content <img src=x onerror=alert("XSS")>'
+
+    const wrapper = mount(ResourceCard, {
+      props: {
+        ...defaultProps,
+        highlightedTitle: svgXssContent,
+      },
+      global: {
+        components: {
+          NuxtLink: mockNuxtLink,
+          SocialShare: mockSocialShare,
+        },
+      },
+    })
+
+    const titleElement = wrapper.find('h3')
+    expect(titleElement.html()).not.toContain('svg')
+    expect(titleElement.html()).not.toContain('onload')
+    expect(titleElement.html()).not.toContain('onerror')
+    expect(titleElement.text()).toContain('Test content')
+  })
+
+  it('sanitizes CSS expression-based XSS attempts', () => {
+    const cssXssContent = 'Test style="color: expression(alert("XSS"))" content'
+
+    const wrapper = mount(ResourceCard, {
+      props: {
+        ...defaultProps,
+        highlightedTitle: cssXssContent,
+      },
+      global: {
+        components: {
+          NuxtLink: mockNuxtLink,
+          SocialShare: mockSocialShare,
+        },
+      },
+    })
+
+    const titleElement = wrapper.find('h3')
+    expect(titleElement.html()).not.toContain('expression(')
+    expect(titleElement.text()).toContain('Test content')
+  })
+
+  it('sanitizes event handler attributes in highlighted content', () => {
+    const eventHandlerContent =
+      'Test <div onclick="alert(1)">click me</div> content'
+
+    const wrapper = mount(ResourceCard, {
+      props: {
+        ...defaultProps,
+        highlightedTitle: eventHandlerContent,
+      },
+      global: {
+        components: {
+          NuxtLink: mockNuxtLink,
+          SocialShare: mockSocialShare,
+        },
+      },
+    })
+
+    const titleElement = wrapper.find('h3')
+    expect(titleElement.html()).not.toContain('onclick')
+    expect(titleElement.text()).toContain('Test content')
+  })
+
+  it('sanitizes data URI XSS attempts in highlighted content', () => {
+    const dataUriContent =
+      'Test <img src="data:image/svg+xml,<svg onload=alert(1)>"> content'
+
+    const wrapper = mount(ResourceCard, {
+      props: {
+        ...defaultProps,
+        highlightedTitle: dataUriContent,
+      },
+      global: {
+        components: {
+          NuxtLink: mockNuxtLink,
+          SocialShare: mockSocialShare,
+        },
+      },
+    })
+
+    const titleElement = wrapper.find('h3')
+    expect(titleElement.html()).not.toContain('data:image')
+    expect(titleElement.text()).toContain('Test content')
+  })
+
+  it('properly highlights legitimate search terms without sanitization issues', () => {
+    const wrapper = mount(ResourceCard, {
+      props: {
+        ...defaultProps,
+        highlightedTitle:
+          'This is a <mark class="bg-yellow-200">test</mark> term',
+        highlightedDescription:
+          'This is a <mark class="bg-yellow-200">description</mark> with highlighting',
+      },
+      global: {
+        components: {
+          NuxtLink: mockNuxtLink,
+          SocialShare: mockSocialShare,
+        },
+      },
+    })
+
+    const titleElement = wrapper.find('h3')
+    const descriptionElement = wrapper.find('p')
+
+    expect(titleElement.html()).toContain(
+      '<mark class="bg-yellow-200">test</mark>'
+    )
+    expect(descriptionElement.html()).toContain(
+      '<mark class="bg-yellow-200">description</mark>'
+    )
+  })
 })

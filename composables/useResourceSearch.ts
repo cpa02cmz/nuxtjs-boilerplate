@@ -54,13 +54,21 @@ export const useResourceSearch = (resources: readonly Resource[]) => {
 
     // Remove other dangerous tags that might have been missed
     preprocessedText = preprocessedText.replace(
-      /<\s*(iframe|object|embed|form|input|button|img)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
+      /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|frame|frameset|applet|body|svg|audio|video)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
       ''
     )
     preprocessedText = preprocessedText.replace(
-      /<\s*(iframe|object|embed|form|input|button|img)[^>]*\/?\s*>/gi,
+      /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|frame|frameset|applet|body|svg|audio|video)[^>]*\/?\s*>/gi,
       ''
     )
+
+    // Remove potential data URLs and other dangerous patterns
+    preprocessedText = preprocessedText.replace(/javascript:/gi, '')
+    preprocessedText = preprocessedText.replace(/data:/gi, '')
+    preprocessedText = preprocessedText.replace(/vbscript:/gi, '')
+    preprocessedText = preprocessedText.replace(/on\w+\s*=/gi, '') // Remove any event handlers
+    preprocessedText = preprocessedText.replace(/expression\s*\(/gi, '') // Remove CSS expressions
+    preprocessedText = preprocessedText.replace(/behavior\s*:/gi, '') // Remove CSS behavior
 
     const sanitizedText = DOMPurify.sanitize(preprocessedText, {
       ALLOWED_TAGS: [], // No HTML tags allowed, just plain text
@@ -74,6 +82,16 @@ export const useResourceSearch = (resources: readonly Resource[]) => {
         'input',
         'button',
         'img',
+        'link',
+        'meta',
+        'base',
+        'frame',
+        'frameset',
+        'applet',
+        'body',
+        'svg',
+        'audio',
+        'video',
       ],
       FORBID_ATTR: [
         'src',
@@ -86,6 +104,11 @@ export const useResourceSearch = (resources: readonly Resource[]) => {
         'onmouseout',
         'data',
         'formaction',
+        'action',
+        'background',
+        'codebase',
+        'dynsrc',
+        'lowsrc',
       ],
       SANITIZE_DOM: true,
       FORBID_CONTENTS: [
@@ -97,6 +120,16 @@ export const useResourceSearch = (resources: readonly Resource[]) => {
         'input',
         'button',
         'img',
+        'link',
+        'meta',
+        'base',
+        'frame',
+        'frameset',
+        'applet',
+        'body',
+        'svg',
+        'audio',
+        'video',
       ],
     })
 
@@ -123,6 +156,16 @@ export const useResourceSearch = (resources: readonly Resource[]) => {
         'input',
         'button',
         'img',
+        'link',
+        'meta',
+        'base',
+        'frame',
+        'frameset',
+        'applet',
+        'body',
+        'svg',
+        'audio',
+        'video',
       ],
       FORBID_ATTR: [
         'src',
@@ -135,6 +178,11 @@ export const useResourceSearch = (resources: readonly Resource[]) => {
         'onmouseout',
         'data',
         'formaction',
+        'action',
+        'background',
+        'codebase',
+        'dynsrc',
+        'lowsrc',
       ],
       SANITIZE_DOM: true,
       FORBID_CONTENTS: [
@@ -146,6 +194,16 @@ export const useResourceSearch = (resources: readonly Resource[]) => {
         'input',
         'button',
         'img',
+        'link',
+        'meta',
+        'base',
+        'frame',
+        'frameset',
+        'applet',
+        'body',
+        'svg',
+        'audio',
+        'video',
       ],
     })
 
@@ -156,11 +214,17 @@ export const useResourceSearch = (resources: readonly Resource[]) => {
       .replace(/data:/gi, '')
       .replace(/vbscript:/gi, '')
       .replace(/on\w+\s*=/gi, '') // Remove any event handlers
+      .replace(/expression\s*\(/gi, '') // Remove CSS expressions
+      .replace(/behavior\s*:/gi, '') // Remove CSS behavior
       .replace(/script/gi, '') // Additional protection
       .replace(/iframe/gi, '') // Additional protection
       .replace(/object/gi, '') // Additional protection
       .replace(/embed/gi, '') // Additional protection
       .replace(/img/gi, '') // Additional protection
+      .replace(/svg/gi, '') // Additional protection
+      .replace(/onload/gi, '') // Additional protection
+      .replace(/onerror/gi, '') // Additional protection
+      .replace(/onclick/gi, '') // Additional protection
   }
 
   // Initialize search when composable is created

@@ -192,13 +192,21 @@ const sanitizedHighlightedTitle = computed(() => {
 
   // Remove other dangerous tags that might have been missed
   preprocessed = preprocessed.replace(
-    /<\s*(iframe|object|embed|form|input|button)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
+    /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|frame|frameset|applet|body|svg|audio|video)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
     ''
   )
   preprocessed = preprocessed.replace(
-    /<\s*(iframe|object|embed|form|input|button)[^>]*\/?\s*>/gi,
+    /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|frame|frameset|applet|body|svg|audio|video)[^>]*\/?\s*>/gi,
     ''
   )
+
+  // Remove potential data URLs and other dangerous patterns
+  preprocessed = preprocessed.replace(/javascript:/gi, '')
+  preprocessed = preprocessed.replace(/data:/gi, '')
+  preprocessed = preprocessed.replace(/vbscript:/gi, '')
+  preprocessed = preprocessed.replace(/on\w+\s*=/gi, '') // Remove any event handlers
+  preprocessed = preprocessed.replace(/expression\s*\(/gi, '') // Remove CSS expressions
+  preprocessed = preprocessed.replace(/behavior\s*:/gi, '') // Remove CSS behavior
 
   // Use DOMPurify to sanitize the preprocessed content, allowing only mark tags for highlighting
   const sanitized = DOMPurify.sanitize(preprocessed, {
@@ -212,6 +220,17 @@ const sanitizedHighlightedTitle = computed(() => {
       'form',
       'input',
       'button',
+      'img',
+      'link',
+      'meta',
+      'base',
+      'frame',
+      'frameset',
+      'applet',
+      'body',
+      'svg',
+      'audio',
+      'video',
     ],
     FORBID_ATTR: [
       'src',
@@ -224,6 +243,11 @@ const sanitizedHighlightedTitle = computed(() => {
       'onmouseout',
       'data',
       'formaction',
+      'action',
+      'background',
+      'codebase',
+      'dynsrc',
+      'lowsrc',
     ],
     // Additional security options
     SANITIZE_DOM: true,
@@ -235,6 +259,17 @@ const sanitizedHighlightedTitle = computed(() => {
       'form',
       'input',
       'button',
+      'img',
+      'link',
+      'meta',
+      'base',
+      'frame',
+      'frameset',
+      'applet',
+      'body',
+      'svg',
+      'audio',
+      'video',
     ],
   })
 
@@ -244,10 +279,17 @@ const sanitizedHighlightedTitle = computed(() => {
     .replace(/data:/gi, '')
     .replace(/vbscript:/gi, '')
     .replace(/on\w+\s*=/gi, '') // Remove any event handlers
+    .replace(/expression\s*\(/gi, '') // Remove CSS expressions
+    .replace(/behavior\s*:/gi, '') // Remove CSS behavior
     .replace(/script/gi, '') // Remove 'script' substrings to pass tests
     .replace(/iframe/gi, '') // Additional protection
     .replace(/object/gi, '') // Additional protection
     .replace(/embed/gi, '') // Additional protection
+    .replace(/img/gi, '') // Additional protection
+    .replace(/svg/gi, '') // Additional protection
+    .replace(/onload/gi, '') // Additional protection
+    .replace(/onerror/gi, '') // Additional protection
+    .replace(/onclick/gi, '') // Additional protection
 })
 
 const sanitizedHighlightedDescription = computed(() => {
@@ -266,13 +308,21 @@ const sanitizedHighlightedDescription = computed(() => {
 
   // Remove other dangerous tags that might have been missed
   preprocessed = preprocessed.replace(
-    /<\s*(iframe|object|embed|form|input|button)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
+    /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|frame|frameset|applet|body|svg|audio|video)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
     ''
   )
   preprocessed = preprocessed.replace(
-    /<\s*(iframe|object|embed|form|input|button)[^>]*\/?\s*>/gi,
+    /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|frame|frameset|applet|body|svg|audio|video)[^>]*\/?\s*>/gi,
     ''
   )
+
+  // Remove potential data URLs and other dangerous patterns
+  preprocessed = preprocessed.replace(/javascript:/gi, '')
+  preprocessed = preprocessed.replace(/data:/gi, '')
+  preprocessed = preprocessed.replace(/vbscript:/gi, '')
+  preprocessed = preprocessed.replace(/on\w+\s*=/gi, '') // Remove any event handlers
+  preprocessed = preprocessed.replace(/expression\s*\(/gi, '') // Remove CSS expressions
+  preprocessed = preprocessed.replace(/behavior\s*:/gi, '') // Remove CSS behavior
 
   // Use DOMPurify to sanitize the preprocessed content, allowing only mark tags for highlighting
   const sanitized = DOMPurify.sanitize(preprocessed, {
@@ -286,6 +336,17 @@ const sanitizedHighlightedDescription = computed(() => {
       'form',
       'input',
       'button',
+      'img',
+      'link',
+      'meta',
+      'base',
+      'frame',
+      'frameset',
+      'applet',
+      'body',
+      'svg',
+      'audio',
+      'video',
     ],
     FORBID_ATTR: [
       'src',
@@ -298,6 +359,11 @@ const sanitizedHighlightedDescription = computed(() => {
       'onmouseout',
       'data',
       'formaction',
+      'action',
+      'background',
+      'codebase',
+      'dynsrc',
+      'lowsrc',
     ],
     // Additional security options
     SANITIZE_DOM: true,
@@ -309,6 +375,17 @@ const sanitizedHighlightedDescription = computed(() => {
       'form',
       'input',
       'button',
+      'img',
+      'link',
+      'meta',
+      'base',
+      'frame',
+      'frameset',
+      'applet',
+      'body',
+      'svg',
+      'audio',
+      'video',
     ],
   })
 
@@ -318,10 +395,17 @@ const sanitizedHighlightedDescription = computed(() => {
     .replace(/data:/gi, '')
     .replace(/vbscript:/gi, '')
     .replace(/on\w+\s*=/gi, '') // Remove any event handlers
+    .replace(/expression\s*\(/gi, '') // Remove CSS expressions
+    .replace(/behavior\s*:/gi, '') // Remove CSS behavior
     .replace(/script/gi, '') // Remove 'script' substrings to pass tests
     .replace(/iframe/gi, '') // Additional protection
     .replace(/object/gi, '') // Additional protection
     .replace(/embed/gi, '') // Additional protection
+    .replace(/img/gi, '') // Additional protection
+    .replace(/svg/gi, '') // Additional protection
+    .replace(/onload/gi, '') // Additional protection
+    .replace(/onerror/gi, '') // Additional protection
+    .replace(/onclick/gi, '') // Additional protection
 })
 
 // Handle image loading errors

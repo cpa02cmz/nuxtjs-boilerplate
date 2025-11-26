@@ -214,7 +214,7 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     return searchResults.map(item => item.item)
   }
 
-  // Function to highlight search terms in text
+// Function to highlight search terms in text
   const highlightSearchTerms = (text: string, searchQuery: string): string => {
     if (!searchQuery || !text) return text || ''
 
@@ -230,13 +230,21 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
 
     // Remove other dangerous tags that might have been missed
     preprocessedText = preprocessedText.replace(
-      /<\s*(iframe|object|embed|form|input|button|img)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
+      /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|frame|frameset|applet|body|svg|audio|video)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
       ''
     )
     preprocessedText = preprocessedText.replace(
-      /<\s*(iframe|object|embed|form|input|button|img)[^>]*\/?\s*>/gi,
+      /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|frame|frameset|applet|body|svg|audio|video)[^>]*\/?\s*>/gi,
       ''
     )
+
+    // Remove potential data URLs and other dangerous patterns
+    preprocessedText = preprocessedText.replace(/javascript:/gi, '')
+    preprocessedText = preprocessedText.replace(/data:/gi, '')
+    preprocessedText = preprocessedText.replace(/vbscript:/gi, '')
+    preprocessedText = preprocessedText.replace(/on\w+\s*=/gi, '') // Remove any event handlers
+    preprocessedText = preprocessedText.replace(/expression\s*\(/gi, '') // Remove CSS expressions
+    preprocessedText = preprocessedText.replace(/behavior\s*:/gi, '') // Remove CSS behavior
 
     const sanitizedText = DOMPurify.sanitize(preprocessedText, {
       ALLOWED_TAGS: [], // No HTML tags allowed, just plain text
@@ -250,6 +258,16 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         'input',
         'button',
         'img',
+        'link',
+        'meta',
+        'base',
+        'frame',
+        'frameset',
+        'applet',
+        'body',
+        'svg',
+        'audio',
+        'video',
       ],
       FORBID_ATTR: [
         'src',
@@ -262,6 +280,11 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         'onmouseout',
         'data',
         'formaction',
+        'action',
+        'background',
+        'codebase',
+        'dynsrc',
+        'lowsrc',
       ],
       SANITIZE_DOM: true,
       FORBID_CONTENTS: [
@@ -273,6 +296,16 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         'input',
         'button',
         'img',
+        'link',
+        'meta',
+        'base',
+        'frame',
+        'frameset',
+        'applet',
+        'body',
+        'svg',
+        'audio',
+        'video',
       ],
     })
 
@@ -295,6 +328,90 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         '<mark class="bg-yellow-200 text-gray-900">$1</mark>'
       )
     }
+
+    // Final sanitization to ensure only safe mark tags with allowed classes are present
+    const fullySanitized = DOMPurify.sanitize(highlighted, {
+      ALLOWED_TAGS: ['mark'],
+      ALLOWED_ATTR: ['class'],
+      FORBID_TAGS: [
+        'script',
+        'iframe',
+        'object',
+        'embed',
+        'form',
+        'input',
+        'button',
+        'img',
+        'link',
+        'meta',
+        'base',
+        'frame',
+        'frameset',
+        'applet',
+        'body',
+        'svg',
+        'audio',
+        'video',
+      ],
+      FORBID_ATTR: [
+        'src',
+        'href',
+        'style',
+        'onload',
+        'onerror',
+        'onclick',
+        'onmouseover',
+        'onmouseout',
+        'data',
+        'formaction',
+        'action',
+        'background',
+        'codebase',
+        'dynsrc',
+        'lowsrc',
+      ],
+      SANITIZE_DOM: true,
+      FORBID_CONTENTS: [
+        'script',
+        'iframe',
+        'object',
+        'embed',
+        'form',
+        'input',
+        'button',
+        'img',
+        'link',
+        'meta',
+        'base',
+        'frame',
+        'frameset',
+        'applet',
+        'body',
+        'svg',
+        'audio',
+        'video',
+      ],
+    })
+
+    // Additional check to ensure no dangerous patterns remain in the final HTML
+    // This prevents cases where the highlighted term itself could be dangerous
+    return fullySanitized
+      .replace(/javascript:/gi, '')
+      .replace(/data:/gi, '')
+      .replace(/vbscript:/gi, '')
+      .replace(/on\w+\s*=/gi, '') // Remove any event handlers
+      .replace(/expression\s*\(/gi, '') // Remove CSS expressions
+      .replace(/behavior\s*:/gi, '') // Remove CSS behavior
+      .replace(/script/gi, '') // Additional protection
+      .replace(/iframe/gi, '') // Additional protection
+      .replace(/object/gi, '') // Additional protection
+      .replace(/embed/gi, '') // Additional protection
+      .replace(/img/gi, '') // Additional protection
+      .replace(/svg/gi, '') // Additional protection
+      .replace(/onload/gi, '') // Additional protection
+      .replace(/onerror/gi, '') // Additional protection
+      .replace(/onclick/gi, '') // Additional protection
+  }
 
     // Final sanitization to ensure only safe mark tags with allowed classes are present
     const fullySanitized = DOMPurify.sanitize(highlighted, {
