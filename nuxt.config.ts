@@ -296,61 +296,30 @@ export default defineNuxtConfig({
     },
   },
 
-  // Define consistent security headers to avoid duplication
   routeRules: {
-    // Add security headers globally
-    '/**': {
-      headers: {
-        'X-Content-Type-Options': 'nosniff',
-        'X-Frame-Options': 'DENY',
-        'X-XSS-Protection': '0',
-        'Referrer-Policy': 'strict-origin-when-cross-origin',
-        'Strict-Transport-Security':
-          'max-age=31536000; includeSubDomains; preload',
-      },
-    },
-    // Main routes with prerender and additional caching
+    // Main routes with prerender
     '/': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
     '/ai-keys': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
     '/about': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
     '/search': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
     '/submit': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
-    // Add caching headers for better performance
+    // API routes
     '/api/**': {
-      headers: {
-        'cache-control': 'max-age=300, public, s-maxage=300', // 5 minutes
-      },
+      // Cache control handled by security headers plugin
     },
-    // Cache static assets
+    // Static assets
     '/_nuxt/**': {
-      headers: {
-        'cache-control': 'max-age=31536000, immutable',
-      },
+      // Cache control handled by security headers plugin
     },
   },
 
