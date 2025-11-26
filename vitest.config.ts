@@ -3,9 +3,14 @@ import { defineVitestConfig } from '@nuxt/test-utils/config'
 export default defineVitestConfig({
   test: {
     globals: true,
-    environment: 'nuxt',
+    environment: 'happy-dom', // Use happy-dom instead of nuxt for more stable tests
     setupFiles: ['./test-setup.ts'],
     environmentOptions: {
+      'happy-dom': {
+        // Configuration for happy-dom environment
+        url: 'http://localhost:3000',
+        includeRuntimeGlobals: true,
+      },
       nuxt: {
         rootDir: '.',
         overrides: {
