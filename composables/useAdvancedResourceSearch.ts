@@ -43,35 +43,47 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
       return { terms: [], operators: [], filters: {} }
     }
 
-    // Handle advanced operators like AND, OR, NOT
-    const terms: string[] = []
-    const operators: SearchOperator[] = []
+    // Check if query contains operators
+    const hasOperators = /(\bAND\b|\bOR\b|\bNOT\b)/i.test(query)
 
-    // Split query by operators while preserving them
-    const parts = query
-      .split(/(AND|OR|NOT)/gi)
-      .map(part => part.trim())
-      .filter(Boolean)
+    if (hasOperators) {
+      // Handle advanced operators like AND, OR, NOT
+      const terms: string[] = []
+      const operators: SearchOperator[] = []
 
-    for (let i = 0; i < parts.length; i++) {
-      const part = parts[i]
+      // Split query by operators while preserving them
+      const parts = query
+        .split(/(AND|OR|NOT)/gi)
+        .map(part => part.trim())
+        .filter(Boolean)
 
-      if (part.toUpperCase() === 'AND') {
-        operators.push('AND')
-      } else if (part.toUpperCase() === 'OR') {
-        operators.push('OR')
-      } else if (part.toUpperCase() === 'NOT') {
-        operators.push('NOT')
-      } else if (part) {
-        // Process the term (handle quoted phrases)
-        const cleanTerm = part.replace(/"/g, '')
-        if (cleanTerm) {
-          terms.push(cleanTerm)
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i]
+
+        if (part.toUpperCase() === 'AND') {
+          operators.push('AND')
+        } else if (part.toUpperCase() === 'OR') {
+          operators.push('OR')
+        } else if (part.toUpperCase() === 'NOT') {
+          operators.push('NOT')
+        } else if (part) {
+          // Process the term (handle quoted phrases)
+          const cleanTerm = part.replace(/"/g, '')
+          if (cleanTerm) {
+            terms.push(cleanTerm)
+          }
         }
       }
-    }
 
-    return { terms, operators, filters: {} }
+      return { terms, operators, filters: {} }
+    } else {
+      // For simple queries without operators, split by spaces
+      const simpleTerms = query
+        .trim()
+        .split(/\s+/)
+        .filter(term => term.length > 0)
+      return { terms: simpleTerms, operators: [], filters: {} }
+    }
   }
 
   // Advanced search with operators
