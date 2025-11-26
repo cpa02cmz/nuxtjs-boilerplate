@@ -3,7 +3,7 @@ import { cacheManager } from '../server/utils/cache'
 import {
   rateLimitConfigs,
   getRateLimiterForPath,
-} from '../server/utils/rate-limit'
+} from '../server/utils/enhanced-rate-limit'
 
 describe('Cache and Rate Limiting System', () => {
   beforeEach(() => {
@@ -77,23 +77,53 @@ describe('Cache and Rate Limiting System', () => {
 
   describe('Rate Limiting', () => {
     it('should get correct rate limiter for different paths', () => {
-      expect(getRateLimiterForPath('/api/v1/search')).toBe(
-        rateLimitConfigs.search
+      // Test that the correct rate limiter type is returned by checking config properties
+      const searchLimiter = getRateLimiterForPath('/api/v1/search')
+      expect(searchLimiter.config.maxRequests).toBe(
+        rateLimitConfigs.search.config.maxRequests
       )
-      expect(getRateLimiterForPath('/api/v1/export/csv')).toBe(
-        rateLimitConfigs.export
+      expect(searchLimiter.config.message).toBe(
+        rateLimitConfigs.search.config.message
       )
-      expect(getRateLimiterForPath('/api/v1/resources')).toBe(
-        rateLimitConfigs.heavy
+
+      const exportLimiter = getRateLimiterForPath('/api/v1/export/csv')
+      expect(exportLimiter.config.maxRequests).toBe(
+        rateLimitConfigs.export.config.maxRequests
       )
-      expect(getRateLimiterForPath('/api/v1/categories')).toBe(
-        rateLimitConfigs.heavy
+      expect(exportLimiter.config.message).toBe(
+        rateLimitConfigs.export.config.message
       )
-      expect(getRateLimiterForPath('/api/v1/some-other')).toBe(
-        rateLimitConfigs.api
+
+      const resourcesLimiter = getRateLimiterForPath('/api/v1/resources')
+      expect(resourcesLimiter.config.maxRequests).toBe(
+        rateLimitConfigs.heavy.config.maxRequests
       )
-      expect(getRateLimiterForPath('/other-path')).toBe(
-        rateLimitConfigs.general
+      expect(resourcesLimiter.config.message).toBe(
+        rateLimitConfigs.heavy.config.message
+      )
+
+      const categoriesLimiter = getRateLimiterForPath('/api/v1/categories')
+      expect(categoriesLimiter.config.maxRequests).toBe(
+        rateLimitConfigs.heavy.config.maxRequests
+      )
+      expect(categoriesLimiter.config.message).toBe(
+        rateLimitConfigs.heavy.config.message
+      )
+
+      const otherLimiter = getRateLimiterForPath('/api/v1/some-other')
+      expect(otherLimiter.config.maxRequests).toBe(
+        rateLimitConfigs.api.config.maxRequests
+      )
+      expect(otherLimiter.config.message).toBe(
+        rateLimitConfigs.api.config.message
+      )
+
+      const generalLimiter = getRateLimiterForPath('/other-path')
+      expect(generalLimiter.config.maxRequests).toBe(
+        rateLimitConfigs.general.config.maxRequests
+      )
+      expect(generalLimiter.config.message).toBe(
+        rateLimitConfigs.general.config.message
       )
     })
 
