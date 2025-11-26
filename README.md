@@ -108,6 +108,17 @@ We're committed to maintaining a healthy repository with:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 🔄 Project Coordination
+
+This project implements a task coordination system to manage the development of multiple features across different agents:
+
+- **Task Coordination System**: Tracks progress of multiple development agents working on different features
+- **Resource Recommendation Engine**: Implements content-based and collaborative filtering
+- **Community Features**: Provides user profiles, comments, voting, and moderation
+- **Advanced Search**: Enhanced search and filtering capabilities
+
+For more details, see the [coordination system documentation](./docs/coordination-system.md).
+
 ---
 
 Built with ❤️ for the developer community
