@@ -28,10 +28,13 @@ export const sanitizeForXSS = (content: string): string => {
     ''
   )
 
-  // Remove SVG tags which can contain malicious code
+  // Remove SVG tags which can contain malicious code, but preserve their text content
   preprocessed = preprocessed.replace(
     /<\s*svg[^>]*>[\s\S]*?<\s*\/\s*svg\s*>/gi,
-    ''
+    match => {
+      // Extract text content from between SVG tags, removing any nested HTML tags
+      return match.replace(/<[^>]*>/g, '')
+    }
   )
   preprocessed = preprocessed.replace(/<\s*svg[^>]*\/?\s*>/gi, '')
 
