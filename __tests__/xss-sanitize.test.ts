@@ -44,6 +44,7 @@ describe('XSS Sanitization Utilities', () => {
     it('preserves safe content', () => {
       const input = 'This is safe content with <strong>HTML</strong> tags'
       const result = sanitizeForXSS(input)
+      // The sanitizer removes HTML tags for security, so we expect plain text
       expect(result).toBe('This is safe content with HTML tags')
     })
 

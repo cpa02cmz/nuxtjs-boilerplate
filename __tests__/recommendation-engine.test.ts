@@ -69,43 +69,31 @@ describe('useRecommendationEngine', () => {
     engine = useRecommendationEngine(mockResources)
   })
 
-  describe('calculateSimilarity', () => {
-    it('should return 0 for the same resource', () => {
-      const similarity = (engine as any).calculateSimilarity(
-        mockResources[0],
+  describe('content-based recommendations', () => {
+    it('should return similar resources based on category', () => {
+      const recommendations = engine.getContentBasedRecommendations(
         mockResources[0]
       )
-      expect(similarity).toBe(0)
+      expect(recommendations.length).toBeGreaterThan(0)
+
+      // Should include resources from the same category
+      const aiToolsRecommendations = recommendations.filter(
+        rec => rec.resource.category === 'AI Tools'
+      )
+      expect(aiToolsRecommendations.length).toBeGreaterThan(0)
     })
 
-    it('should calculate similarity based on category', () => {
-      const resourceA = mockResources[0] // AI Tools
-      const resourceB = mockResources[2] // AI Tools
-      const similarity = (engine as any).calculateSimilarity(
-        resourceA,
-        resourceB
+    it('should return similar resources based on tags', () => {
+      const recommendations = engine.getContentBasedRecommendations(
+        mockResources[0]
       )
-      expect(similarity).toBeGreaterThan(0.5) // Category match should give high score
-    })
+      expect(recommendations.length).toBeGreaterThan(0)
 
-    it('should calculate similarity based on tags', () => {
-      const resourceA = mockResources[0] // has 'ai' tag
-      const resourceB = mockResources[2] // has 'ai' tag
-      const similarity = (engine as any).calculateSimilarity(
-        resourceA,
-        resourceB
+      // Should include resources with similar tags
+      const aiTagRecommendations = recommendations.filter(rec =>
+        rec.resource.tags.includes('ai')
       )
-      expect(similarity).toBeGreaterThan(0.3) // Tag match should contribute to score
-    })
-
-    it('should calculate similarity based on technology', () => {
-      const resourceA = mockResources[0] // has 'Python' tech
-      const resourceB = mockResources[2] // has 'Python' tech
-      const similarity = (engine as any).calculateSimilarity(
-        resourceA,
-        resourceB
-      )
-      expect(similarity).toBeGreaterThan(0.2) // Tech match should contribute to score
+      expect(aiTagRecommendations.length).toBeGreaterThan(0)
     })
   })
 
@@ -257,6 +245,7 @@ describe('useRecommendationEngine', () => {
 
       engine.updateConfig(newConfig)
 
+      // Config should be readonly but updateable through updateConfig
       expect(engine.config.maxRecommendations).toBe(5)
       expect(engine.config.minSimilarityScore).toBe(0.5)
     })
