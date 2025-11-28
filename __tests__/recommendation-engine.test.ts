@@ -71,7 +71,7 @@ describe('useRecommendationEngine', () => {
 
   describe('calculateSimilarity', () => {
     it('should return 0 for the same resource', () => {
-      const similarity = (engine as any).calculateSimilarity(
+      const similarity = engine.calculateSimilarity(
         mockResources[0],
         mockResources[0]
       )
@@ -81,30 +81,21 @@ describe('useRecommendationEngine', () => {
     it('should calculate similarity based on category', () => {
       const resourceA = mockResources[0] // AI Tools
       const resourceB = mockResources[2] // AI Tools
-      const similarity = (engine as any).calculateSimilarity(
-        resourceA,
-        resourceB
-      )
+      const similarity = engine.calculateSimilarity(resourceA, resourceB)
       expect(similarity).toBeGreaterThan(0.5) // Category match should give high score
     })
 
     it('should calculate similarity based on tags', () => {
       const resourceA = mockResources[0] // has 'ai' tag
       const resourceB = mockResources[2] // has 'ai' tag
-      const similarity = (engine as any).calculateSimilarity(
-        resourceA,
-        resourceB
-      )
+      const similarity = engine.calculateSimilarity(resourceA, resourceB)
       expect(similarity).toBeGreaterThan(0.3) // Tag match should contribute to score
     })
 
     it('should calculate similarity based on technology', () => {
       const resourceA = mockResources[0] // has 'Python' tech
       const resourceB = mockResources[2] // has 'Python' tech
-      const similarity = (engine as any).calculateSimilarity(
-        resourceA,
-        resourceB
-      )
+      const similarity = engine.calculateSimilarity(resourceA, resourceB)
       expect(similarity).toBeGreaterThan(0.2) // Tech match should contribute to score
     })
   })
