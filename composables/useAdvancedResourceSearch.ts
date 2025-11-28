@@ -2,6 +2,11 @@ import { ref, readonly } from 'vue'
 import Fuse from 'fuse.js'
 import type { Resource } from '~/types/resource'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
+import {
+  createOptimizedResourceIndex,
+  createSuggestionsIndex,
+  searchIndexManager,
+} from '~/utils/searchIndexing'
 
 // Define search operator types
 type SearchOperator = 'AND' | 'OR' | 'NOT'
@@ -16,25 +21,18 @@ interface ParsedQuery {
 
 // Composable for managing advanced resource search functionality
 export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
-  const fuse = ref<Fuse<Resource> | null>(null)
   const searchHistory = ref<string[]>([])
   const savedSearches = ref<{ name: string; query: string; createdAt: Date }[]>(
     []
   )
 
-  // Initialize Fuse.js for fuzzy search with enhanced configuration
+  // Initialize search indexes with enhanced configuration
   const initSearch = () => {
-    fuse.value = new Fuse([...resources], {
-      keys: [
-        { name: 'title', weight: 0.4 },
-        { name: 'description', weight: 0.3 },
-        { name: 'benefits', weight: 0.2 },
-        { name: 'tags', weight: 0.1 },
-      ],
-      threshold: 0.3,
-      includeScore: true,
-      useExtendedSearch: true, // Enable extended search syntax
-    })
+    // Create optimized resource index
+    createOptimizedResourceIndex(resources, 'advanced-resources')
+
+    // Create suggestions index
+    createSuggestionsIndex(resources, 'advanced-suggestions')
   }
 
   // Parse search query with operators
@@ -88,7 +86,7 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
 
   // Advanced search with operators
   const advancedSearchResources = (query: string): Resource[] => {
-    if (!query || !fuse.value) return [...resources]
+    if (!query) return [...resources]
 
     const parsed = parseQuery(query)
 
@@ -101,16 +99,22 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
       let results: Resource[] = []
 
       // Start with the first term results
-      const firstTermResults = fuse.value.search(parsed.terms[0])
-      results = firstTermResults.map(item => item.item)
+      const firstTermResults = searchIndexManager.search(
+        parsed.terms[0],
+        'advanced-resources'
+      )
+      results = [...firstTermResults]
 
       // Process each subsequent term with its operator
       for (let i = 1; i < parsed.terms.length; i++) {
         const term = parsed.terms[i]
         const operator = parsed.operators[i - 1] // operator before this term
 
-        const termResults = fuse.value.search(term)
-        const termResources = termResults.map(item => item.item)
+        const termResults = searchIndexManager.search(
+          term,
+          'advanced-resources'
+        )
+        const termResources = [...termResults]
 
         if (operator === 'AND') {
           // For AND, we want resources that match both the current results AND the new term
@@ -139,8 +143,11 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
       let results: Resource[] = []
 
       for (const term of parsed.terms) {
-        const searchResults = fuse.value.search(term)
-        const termResults = searchResults.map(item => item.item)
+        const searchResults = searchIndexManager.search(
+          term,
+          'advanced-resources'
+        )
+        const termResults = [...searchResults]
         results = [...results, ...termResults]
       }
 
@@ -208,10 +215,14 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     query: string,
     limit: number = 5
   ): Resource[] => {
-    if (!query || !fuse.value) return []
+    if (!query) return []
 
-    const searchResults = fuse.value.search(query, { limit })
-    return searchResults.map(item => item.item)
+    const searchResults = searchIndexManager.getSuggestions(
+      query,
+      'advanced-suggestions',
+      limit
+    )
+    return searchResults
   }
 
   // Function to highlight search terms in text
@@ -262,7 +273,6 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
   initSearch()
 
   return {
-    fuse: readonly(fuse),
     searchHistory: readonly(searchHistory),
     savedSearches: readonly(savedSearches),
     advancedSearchResources,
