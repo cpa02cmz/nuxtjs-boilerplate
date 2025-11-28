@@ -232,10 +232,10 @@ export default defineNuxtConfig({
       '~/server/plugins/security-headers.ts',
       '~/server/plugins/resource-validation.ts',
     ],
-    // Security headers configuration
+    // Security headers configuration - using nonce-based CSP for consistency with security-headers.ts
     headers: {
       'Content-Security-Policy':
-        "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;",
+        "default-src 'self'; script-src 'self' 'nonce-{{nonce}}' 'strict-dynamic' https:; style-src 'self' 'nonce-{{nonce}}' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;",
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'X-XSS-Protection': '0',
@@ -394,32 +394,6 @@ export default defineNuxtConfig({
   },
   // Explicitly use Vite for faster builds
   builder: 'vite',
-
-  nitro: {
-    // Optimize server-side rendering
-    minify: true,
-    // Enable compression
-    compressPublicAssets: true,
-    // Improve build performance
-    ignore: ['**/.git/**', '**/node_modules/**', '**/dist/**'],
-    // CSP headers via middleware
-    plugins: [
-      '~/server/plugins/security-headers.ts',
-      '~/server/plugins/resource-validation.ts',
-    ],
-    // Security headers configuration
-    headers: {
-      'Content-Security-Policy':
-        "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;",
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'X-XSS-Protection': '0',
-      'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Strict-Transport-Security':
-        'max-age=31536000; includeSubDomains; preload',
-      'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
-    },
-  },
 
   // Optimize bundle size
   vite: {

@@ -14,30 +14,23 @@ if (
   console.log('Validating security implementation...')
 }
 
-// Check if DOMPurify import is in ResourceCard.vue
+// Check if centralized sanitization import is in ResourceCard.vue (import from utils/sanitize)
 const resourceCardPath = path.join(__dirname, 'components/ResourceCard.vue')
 const resourceCardContent = fs.readFileSync(resourceCardPath, 'utf8')
 
-if (resourceCardContent.includes("import DOMPurify from 'dompurify'")) {
+if (
+  resourceCardContent.includes(
+    "import { sanitizeAndHighlight } from '~/utils/sanitize'"
+  )
+) {
   if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
     // eslint-disable-next-line no-console
-    console.log('✓ DOMPurify import found in ResourceCard.vue')
+    console.log('✓ Centralized sanitization import found in ResourceCard.vue')
   }
-} else {
-  if (
-    process.env.NODE_ENV !== 'production' ||
-    process.env.VALIDATION_LOGS === 'true'
-  ) {
-    // eslint-disable-next-line no-console
-    console.log('✓ DOMPurify import found in ResourceCard.vue')
-  }
-}
-
-// Check if centralized sanitization is used in ResourceCard.vue
-if (resourceCardContent.includes('sanitizeAndHighlight')) {
+} else if (resourceCardContent.includes('sanitizeAndHighlight')) {
   if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
