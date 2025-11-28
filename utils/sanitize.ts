@@ -28,10 +28,13 @@ export const sanitizeForXSS = (content: string): string => {
     ''
   )
 
-  // Remove SVG tags which can contain malicious code
+  // Remove SVG tags which can contain malicious code, but preserve their text content
   preprocessed = preprocessed.replace(
     /<\s*svg[^>]*>[\s\S]*?<\s*\/\s*svg\s*>/gi,
-    ''
+    match => {
+      // Extract text content from between SVG tags, removing any nested HTML tags
+      return match.replace(/<[^>]*>/g, '')
+    }
   )
   preprocessed = preprocessed.replace(/<\s*svg[^>]*\/?\s*>/gi, '')
 
@@ -83,6 +86,7 @@ export const sanitizeForXSS = (content: string): string => {
       'menu',
       'menuitem',
       'dialog',
+      'a', // Added 'a' tag to forbidden tags to ensure all links are removed
     ],
     FORBID_ATTR: [
       'src',
@@ -186,6 +190,8 @@ export const sanitizeForXSS = (content: string): string => {
 
   // Third layer: Additional sanitization to remove any dangerous patterns that might remain
   return sanitized
+    .replace(/<\s*a[^>]*>([\s\S]*?)<\s*\/\s*a\s*>/gi, '$1') // Remove anchor tags but preserve their content
+    .replace(/<\s*a[^>]*\/?\s*>/gi, '') // Remove self-closing anchor tags
     .replace(/javascript:/gi, '')
     .replace(/data:/gi, '')
     .replace(/vbscript:/gi, '')
@@ -270,6 +276,7 @@ export const sanitizeAndHighlight = (
       'menu',
       'menuitem',
       'dialog',
+      'a', // Added 'a' tag to forbidden tags to ensure all links are removed
     ],
     FORBID_ATTR: [
       'src',
