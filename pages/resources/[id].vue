@@ -215,6 +215,121 @@
                   </div>
                 </dl>
               </div>
+
+              <!-- Resource Statistics -->
+              <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                  Resource Statistics
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-900">
+                      {{ resourceStats.viewCount }}
+                    </div>
+                    <div class="text-sm text-gray-600">Views</div>
+                  </div>
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-900">
+                      {{ resource.popularity }}/5
+                    </div>
+                    <div class="text-sm text-gray-600">Rating</div>
+                  </div>
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-900">
+                      <span
+                        :class="
+                          resourceStats.trending
+                            ? 'text-green-600'
+                            : 'text-gray-600'
+                        "
+                      >
+                        {{ resourceStats.trending ? 'Trending' : 'Stable' }}
+                      </span>
+                    </div>
+                    <div class="text-sm text-gray-600">Status</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Screenshots/Gallery Section -->
+              <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                  Screenshots
+                </h2>
+                <div
+                  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                >
+                  <div
+                    v-for="n in 3"
+                    :key="n"
+                    class="aspect-video bg-gray-200 border-2 border-dashed rounded-xl flex items-center justify-center text-gray-500"
+                  >
+                    Image {{ n }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- User Reviews Section -->
+              <div class="mb-8">
+                <div class="flex justify-between items-center mb-4">
+                  <h2 class="text-xl font-semibold text-gray-900">
+                    User Reviews
+                  </h2>
+                  <button
+                    class="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    Write a Review
+                  </button>
+                </div>
+
+                <div class="space-y-4">
+                  <!-- Sample review -->
+                  <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center">
+                        <div
+                          class="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10"
+                        />
+                        <div class="ml-3">
+                          <div class="font-medium text-gray-900">User Name</div>
+                          <div class="flex items-center">
+                            <div class="flex">
+                              <svg
+                                v-for="star in 5"
+                                :key="star"
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 text-yellow-400"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                />
+                              </svg>
+                            </div>
+                            <span class="ml-2 text-sm text-gray-500"
+                              >5 days ago</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="text-gray-700 text-sm">
+                      Great resource! Very helpful for my project. The free tier
+                      provides enough functionality to get started.
+                    </p>
+                  </div>
+
+                  <!-- More reviews would appear here -->
+                  <div class="text-center py-4">
+                    <button
+                      class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    >
+                      Load More Reviews
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Sidebar -->
@@ -353,7 +468,12 @@
 
       <!-- Related Resources Section -->
       <div v-if="relatedResources && relatedResources.length > 0" class="mt-12">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Related Resources</h2>
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Related Resources</h2>
+          <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+            View All
+          </button>
+        </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <ResourceCard
             v-for="relatedResource in relatedResources"
@@ -364,6 +484,88 @@
             :url="relatedResource.url"
             :button-label="getButtonLabel(relatedResource.category)"
           />
+        </div>
+      </div>
+
+      <!-- User Comments Section -->
+      <div class="mt-12">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Comments</h2>
+          <span class="text-sm text-gray-500">3 comments</span>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+          <textarea
+            placeholder="Share your thoughts about this resource..."
+            class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="4"
+          ></textarea>
+          <div class="mt-3 flex justify-end">
+            <button
+              class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors"
+            >
+              Post Comment
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Sample comments -->
+          <div class="flex space-x-4">
+            <div class="flex-shrink-0">
+              <div
+                class="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10"
+              />
+            </div>
+            <div class="flex-1">
+              <div class="bg-gray-50 rounded-lg p-4">
+                <div class="flex items-center">
+                  <span class="font-medium text-gray-900">Jane Doe</span>
+                  <span class="ml-2 text-sm text-gray-500">2 days ago</span>
+                </div>
+                <p class="mt-1 text-gray-700">
+                  I've been using this for a few months now and it's been really
+                  helpful for my development workflow.
+                </p>
+                <div class="mt-2 flex space-x-4">
+                  <button class="text-sm text-gray-500 hover:text-gray-700">
+                    Like (12)
+                  </button>
+                  <button class="text-sm text-gray-500 hover:text-gray-700">
+                    Reply
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex space-x-4">
+            <div class="flex-shrink-0">
+              <div
+                class="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10"
+              />
+            </div>
+            <div class="flex-1">
+              <div class="bg-gray-50 rounded-lg p-4">
+                <div class="flex items-center">
+                  <span class="font-medium text-gray-900">John Smith</span>
+                  <span class="ml-2 text-sm text-gray-500">1 week ago</span>
+                </div>
+                <p class="mt-1 text-gray-700">
+                  The free tier limitations are a bit restrictive, but overall
+                  it's a great service.
+                </p>
+                <div class="mt-2 flex space-x-4">
+                  <button class="text-sm text-gray-500 hover:text-gray-700">
+                    Like (5)
+                  </button>
+                  <button class="text-sm text-gray-500 hover:text-gray-700">
+                    Reply
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -386,6 +588,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useRuntimeConfig, useSeoMeta } from '#imports'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
+import { trackResourceView } from '~/utils/analytics'
 
 const route = useRoute()
 const {
@@ -397,6 +600,11 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const resource = ref<Resource | null>(null)
 const relatedResources = ref<Resource[]>([])
+const resourceStats = ref({
+  viewCount: 0,
+  trending: false,
+  lastViewed: '',
+})
 
 // Get current URL for sharing
 const currentUrl = computed(() => {
@@ -431,6 +639,50 @@ const getButtonLabel = (category: string) => {
   return categoryLabels[category] || 'Get Resource'
 }
 
+// Enhanced related resources based on tags and category
+const getEnhancedRelatedResources = (currentResource: Resource | null) => {
+  if (!currentResource) return []
+
+  // First get resources by category
+  let categoryResources = resources.value.filter(
+    r => r.category === currentResource.category && r.id !== currentResource.id
+  )
+
+  // If we don't have enough, get resources by tags
+  if (categoryResources.length < 3) {
+    const tagBasedResources = resources.value
+      .filter(
+        r =>
+          r.id !== currentResource.id &&
+          r.tags.some(tag => currentResource.tags.includes(tag))
+      )
+      .filter(r => !categoryResources.some(cr => cr.id === r.id)) // Avoid duplicates
+
+    // Combine and limit to 6 total
+    const combined = [...categoryResources, ...tagBasedResources].slice(0, 6)
+
+    // Sort by relevance: category first, then tag matches
+    return combined
+      .sort((a, b) => {
+        const aByCategory = a.category === currentResource.category ? 1 : 0
+        const bByCategory = b.category === currentResource.category ? 1 : 0
+        if (aByCategory !== bByCategory) return bByCategory - aByCategory
+
+        // If same category status, sort by number of matching tags
+        const aTagMatches = a.tags.filter(tag =>
+          currentResource.tags.includes(tag)
+        ).length
+        const bTagMatches = b.tags.filter(tag =>
+          currentResource.tags.includes(tag)
+        ).length
+        return bTagMatches - aTagMatches
+      })
+      .slice(0, 3)
+  }
+
+  return categoryResources.slice(0, 3)
+}
+
 // Fetch resource by ID
 onMounted(async () => {
   try {
@@ -445,14 +697,22 @@ onMounted(async () => {
           if (!resource.value) {
             error.value = 'Resource not found'
           } else {
-            // Get related resources (same category, exclude current)
-            relatedResources.value = resources.value
-              .filter(
-                r =>
-                  r.category === resource.value?.category &&
-                  r.id !== resource.value?.id
-              )
-              .slice(0, 3) // Limit to 3 related resources
+            // Get enhanced related resources
+            relatedResources.value = getEnhancedRelatedResources(resource.value)
+
+            // Track resource view
+            await trackResourceView(
+              resource.value.id,
+              resource.value.title,
+              resource.value.category
+            )
+
+            // Set basic stats (in a real implementation, fetch from API)
+            resourceStats.value = {
+              viewCount: Math.floor(Math.random() * 1000) + 100, // Simulated view count
+              trending: Math.random() > 0.5, // Simulated trending status
+              lastViewed: new Date().toISOString(),
+            }
           }
           loading.value = false
         } else {
@@ -466,14 +726,22 @@ onMounted(async () => {
       if (!resource.value) {
         error.value = 'Resource not found'
       } else {
-        // Get related resources (same category, exclude current)
-        relatedResources.value = resources.value
-          .filter(
-            r =>
-              r.category === resource.value?.category &&
-              r.id !== resource.value?.id
-          )
-          .slice(0, 3) // Limit to 3 related resources
+        // Get enhanced related resources
+        relatedResources.value = getEnhancedRelatedResources(resource.value)
+
+        // Track resource view
+        await trackResourceView(
+          resource.value.id,
+          resource.value.title,
+          resource.value.category
+        )
+
+        // Set basic stats (in a real implementation, fetch from API)
+        resourceStats.value = {
+          viewCount: Math.floor(Math.random() * 1000) + 100, // Simulated view count
+          trending: Math.random() > 0.5, // Simulated trending status
+          lastViewed: new Date().toISOString(),
+        }
       }
       loading.value = false
     }
@@ -520,6 +788,9 @@ if (title && description) {
     ogUrl: currentUrl.value,
     ogType: 'website',
     twitterCard: 'summary_large_image',
+    // Enhanced SEO with structured data
+    articlePublishedTime: resource.value?.dateAdded,
+    articleModifiedTime: resource.value?.dateAdded,
   })
 }
 </script>
