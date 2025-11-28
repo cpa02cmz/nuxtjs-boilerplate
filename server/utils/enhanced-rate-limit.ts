@@ -17,7 +17,8 @@ interface RateLimitConfig {
 // In-memory store for token buckets
 const tokenBucketStore = new Map<string, TokenBucket>()
 
-// Admin bypass keys
+// Admin bypass keys - loaded from environment variable at startup
+// Only used when valid bypass key is provided in request headers
 const adminBypassKeys = new Set<string>()
 if (process.env.ADMIN_RATE_LIMIT_BYPASS_KEY) {
   adminBypassKeys.add(process.env.ADMIN_RATE_LIMIT_BYPASS_KEY)
@@ -256,9 +257,7 @@ export async function rateLimit(event: H3Event, key?: string): Promise<void> {
   }
 
   // Check for bypass key in header only (security: prevent bypass keys in query parameters)
-  const bypassKey =
-    (event.node.req.headers['x-admin-bypass-key'] as string) ||
-    process.env.ADMIN_RATE_LIMIT_BYPASS_KEY
+  const bypassKey = event.node.req.headers['x-admin-bypass-key'] as string
 
   // Generate rate limit key if not provided
   const rateLimitKey =
