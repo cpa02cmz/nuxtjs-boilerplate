@@ -230,6 +230,8 @@ export function getRateLimiterForPath(path: string): RateLimiter {
 /**
  * Rate limit middleware function for API endpoints
  * SECURITY: Bypass key access is restricted to headers only to prevent exposure in server logs
+ * SECURITY: Bypass keys via query parameters are explicitly prohibited and will result in 400 error
+ * SECURITY: Only 'x-admin-bypass-key' header is accepted for bypass functionality
  */
 export async function rateLimit(event: H3Event, key?: string): Promise<void> {
   // Only apply rate limiting to API routes
@@ -237,10 +239,8 @@ export async function rateLimit(event: H3Event, key?: string): Promise<void> {
     return
   }
 
-  // Check for bypass key in header only (security: prevent bypass keys in query parameters)
-  const bypassKey =
-    (event.node.req.headers['x-admin-bypass-key'] as string) ||
-    process.env.ADMIN_RATE_LIMIT_BYPASS_KEY
+  // Check for bypass key in header only (security: prevent bypass keys in query parameters or environment variable fallback)
+  const bypassKey = event.node.req.headers['x-admin-bypass-key'] as string
 
   // Generate rate limit key if not provided
   const rateLimitKey =
