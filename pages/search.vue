@@ -40,8 +40,8 @@
         </p>
         <RelatedSearches
           :query="searchQuery"
-          @search-select="handleRelatedSearch"
           class="mb-6"
+          @search-select="handleRelatedSearch"
         />
         <button
           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900"
@@ -149,6 +149,7 @@ import { useResources, type SortOption } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
 import { useUrlSync } from '~/composables/useUrlSync'
+import { trackSearch, trackFilter } from '~/utils/analytics'
 import SearchBar from '~/components/SearchBar.vue'
 import ResourceFilters from '~/components/ResourceFilters.vue'
 import ResourceSort from '~/components/ResourceSort.vue'
@@ -410,7 +411,7 @@ const selectedDateRange = computed(
   () => filterOptions.value.dateRange || 'anytime'
 )
 
-import { trackSearch, trackFilter } from '~/utils/analytics'
+// Import analytics functions
 
 // Handle search
 const handleSearch = (query: string) => {

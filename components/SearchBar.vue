@@ -274,30 +274,30 @@ if (typeof window !== 'undefined') {
   // Add event listeners
   window.addEventListener(
     'saved-search-added',
-    savedSearchAddedHandler as EventListener
+    savedSearchAddedHandler as (event: CustomEvent) => void
   )
   window.addEventListener(
     'saved-search-updated',
-    savedSearchUpdatedHandler as EventListener
+    savedSearchUpdatedHandler as (event: CustomEvent) => void
   )
   window.addEventListener(
     'saved-search-removed',
-    savedSearchRemovedHandler as EventListener
+    savedSearchRemovedHandler as (event: CustomEvent) => void
   )
 
   // Clean up event listeners on component unmount
   onUnmounted(() => {
     window.removeEventListener(
       'saved-search-added',
-      savedSearchAddedHandler as EventListener
+      savedSearchAddedHandler as (event: CustomEvent) => void
     )
     window.removeEventListener(
       'saved-search-updated',
-      savedSearchUpdatedHandler as EventListener
+      savedSearchUpdatedHandler as (event: CustomEvent) => void
     )
     window.removeEventListener(
       'saved-search-removed',
-      savedSearchRemovedHandler as EventListener
+      savedSearchRemovedHandler as (event: CustomEvent) => void
     )
   })
 }

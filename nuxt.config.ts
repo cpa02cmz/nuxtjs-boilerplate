@@ -324,33 +324,6 @@ export default defineNuxtConfig({
     },
   },
 
-  routeRules: {
-    // Main routes with prerender
-    '/': {
-      prerender: true,
-    },
-    '/ai-keys': {
-      prerender: true,
-    },
-    '/about': {
-      prerender: true,
-    },
-    '/search': {
-      prerender: true,
-    },
-    '/submit': {
-      prerender: true,
-    },
-    // API routes
-    '/api/**': {
-      // Cache control handled by security headers plugin
-    },
-    // Static assets
-    '/_nuxt/**': {
-      // Cache control handled by security headers plugin
-    },
-  },
-
   sitemap: {
     hostname:
       process.env.CANONICAL_URL ||

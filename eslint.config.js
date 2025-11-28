@@ -79,8 +79,8 @@ export default [
       'vue/max-attributes-per-line': 'off',
       'vue/no-unused-vars': 'off', // Allow unused vars in templates
       'prettier/prettier': 'error',
-      'no-console': 'warn',
-      'no-debugger': 'warn',
+      'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+      'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
       'no-unused-vars': 'off', // Disable this rule to allow unused variables in development
     },
   },
@@ -202,8 +202,8 @@ export default [
     },
     rules: {
       'comma-dangle': ['error', 'only-multiline'],
-      'no-console': 'warn',
-      'no-debugger': 'warn',
+      'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+      'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
       'prettier/prettier': 'error',
       'no-unused-vars': 'off', // Disable this rule to allow unused variables in development
     },
@@ -223,6 +223,9 @@ export default [
         onErrorCaptured: 'readonly',
         setResponseStatus: 'readonly',
       },
+    },
+    rules: {
+      'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off', // Allow logging in development
     },
   },
   {
@@ -245,6 +248,29 @@ export default [
     },
     rules: {
       'vue/one-component-per-file': 'off', // Allow multiple components in test files
+      'no-console': 'off', // Allow console statements in test files
+    },
+  },
+  {
+    // For JS test files
+    files: ['**/*.test.js', '**/*.spec.js', '**/test-*.js'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        vi: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+      },
+    },
+    rules: {
+      'no-console': 'off', // Allow console statements in test files
     },
   },
   {
