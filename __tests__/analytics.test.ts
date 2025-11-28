@@ -6,6 +6,7 @@ import {
   trackResourceView,
   trackSearch,
   trackFilter,
+  trackFeedbackSubmitted,
 } from '~/utils/analytics'
 
 // Mock the fetch API
@@ -200,6 +201,81 @@ describe('Analytics Utilities', () => {
           properties: {
             filterType: 'category',
             filterValue: 'AI Tools',
+          },
+        }),
+      })
+    })
+  })
+
+  describe('trackFeedbackSubmitted', () => {
+    it('should track feedback submission successfully', async () => {
+      mockFetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({ success: true }),
+        ok: true,
+      })
+
+      const result = await trackFeedbackSubmitted('bug_report', 'UI')
+
+      expect(result).toBe(true)
+      expect(mockFetch).toHaveBeenCalledWith('/api/analytics/events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'feedback_submitted',
+          properties: {
+            feedbackType: 'bug_report',
+            category: 'UI',
+          },
+        }),
+      })
+    })
+
+    it('should handle tracking failure', async () => {
+      mockFetch.mockResolvedValueOnce({
+        json: () =>
+          Promise.resolve({ success: false, message: 'Failed to track' }),
+        ok: true,
+      })
+
+      const result = await trackFeedbackSubmitted('feature_request')
+
+      expect(result).toBe(false)
+      expect(mockFetch).toHaveBeenCalledWith('/api/analytics/events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'feedback_submitted',
+          properties: {
+            feedbackType: 'feature_request',
+            category: undefined,
+          },
+        }),
+      })
+    })
+
+    it('should handle network error', async () => {
+      mockFetch.mockRejectedValueOnce(new Error('Network error'))
+
+      const result = await trackFeedbackSubmitted(
+        'general_feedback',
+        'Performance'
+      )
+
+      expect(result).toBe(false)
+      expect(mockFetch).toHaveBeenCalledWith('/api/analytics/events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'feedback_submitted',
+          properties: {
+            feedbackType: 'general_feedback',
+            category: 'Performance',
           },
         }),
       })
