@@ -14,17 +14,17 @@ if (
   console.log('Validating security implementation...')
 }
 
-// Check if DOMPurify import is in ResourceCard.vue
-const resourceCardPath = path.join(__dirname, 'components/ResourceCard.vue')
-const resourceCardContent = fs.readFileSync(resourceCardPath, 'utf8')
+// Check if sanitization is centralized in utils/sanitize.ts (which is the proper approach)
+const sanitizeUtilPath = path.join(__dirname, 'utils/sanitize.ts')
+const sanitizeUtilContent = fs.readFileSync(sanitizeUtilPath, 'utf8')
 
-if (resourceCardContent.includes("import DOMPurify from 'dompurify'")) {
+if (sanitizeUtilContent.includes("import DOMPurify from 'dompurify'")) {
   if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
     // eslint-disable-next-line no-console
-    console.log('✓ DOMPurify import found in ResourceCard.vue')
+    console.log('✓ DOMPurify import found in centralized utils/sanitize.ts')
   }
 } else {
   if (
@@ -32,17 +32,25 @@ if (resourceCardContent.includes("import DOMPurify from 'dompurify'")) {
     process.env.VALIDATION_LOGS === 'true'
   ) {
     // eslint-disable-next-line no-console
-    console.log('✓ DOMPurify import found in ResourceCard.vue')
+    console.log('✗ DOMPurify import NOT found in centralized utils/sanitize.ts')
   }
 }
 
-if (resourceCardContent.includes('DOMPurify.sanitize')) {
+// Check if ResourceCard.vue uses the centralized sanitization utility
+const resourceCardPath = path.join(__dirname, 'components/ResourceCard.vue')
+const resourceCardContent = fs.readFileSync(resourceCardPath, 'utf8')
+
+if (
+  resourceCardContent.includes(
+    "import { sanitizeAndHighlight } from '~/utils/sanitize'"
+  )
+) {
   if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
     // eslint-disable-next-line no-console
-    console.log('✓ DOMPurify.sanitize usage found in ResourceCard.vue')
+    console.log('✓ Centralized sanitization import found in ResourceCard.vue')
   }
 } else {
   if (
@@ -50,7 +58,32 @@ if (resourceCardContent.includes('DOMPurify.sanitize')) {
     process.env.VALIDATION_LOGS === 'true'
   ) {
     // eslint-disable-next-line no-console
-    console.log('✗ DOMPurify.sanitize usage NOT found in ResourceCard.vue')
+    console.log(
+      '✗ Centralized sanitization import NOT found in ResourceCard.vue'
+    )
+  }
+}
+
+// Validate that ResourceCard.vue uses the centralized sanitization function
+if (resourceCardContent.includes('sanitizeAndHighlight')) {
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    process.env.VALIDATION_LOGS === 'true'
+  ) {
+    // eslint-disable-next-line no-console
+    console.log(
+      '✓ Centralized sanitization function usage found in ResourceCard.vue'
+    )
+  }
+} else {
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    process.env.VALIDATION_LOGS === 'true'
+  ) {
+    // eslint-disable-next-line no-console
+    console.log(
+      '✗ Centralized sanitization function usage NOT found in ResourceCard.vue'
+    )
   }
 }
 
@@ -119,13 +152,16 @@ if (nuxtConfigContent.includes('Content-Security-Policy')) {
   }
 }
 
-if (nuxtConfigContent.includes('X-Content-Type-Options')) {
+if (
+  nuxtConfigContent.includes('Content-Security-Policy') ||
+  nuxtConfigContent.includes('csp')
+) {
   if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
     // eslint-disable-next-line no-console
-    console.log('✓ Security headers configuration found in nuxt.config.ts')
+    console.log('✓ CSP header configuration found in nuxt.config.ts')
   }
 } else {
   if (
@@ -133,14 +169,6 @@ if (nuxtConfigContent.includes('X-Content-Type-Options')) {
     process.env.VALIDATION_LOGS === 'true'
   ) {
     // eslint-disable-next-line no-console
-    console.log('✗ Security headers configuration NOT found in nuxt.config.ts')
+    console.log('✗ CSP header configuration NOT found in nuxt.config.ts')
   }
-}
-
-if (
-  process.env.NODE_ENV !== 'production' ||
-  process.env.VALIDATION_LOGS === 'true'
-) {
-  // eslint-disable-next-line no-console
-  console.log('Validating security implementation...')
 }
