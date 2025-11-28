@@ -18,25 +18,8 @@ if (
 const resourceCardPath = path.join(__dirname, 'components/ResourceCard.vue')
 const resourceCardContent = fs.readFileSync(resourceCardPath, 'utf8')
 
-if (resourceCardContent.includes("import DOMPurify from 'dompurify'")) {
-  if (
-    process.env.NODE_ENV !== 'production' ||
-    process.env.VALIDATION_LOGS === 'true'
-  ) {
-    // eslint-disable-next-line no-console
-    console.log('✓ DOMPurify import found in ResourceCard.vue')
-  }
-} else {
-  if (
-    process.env.NODE_ENV !== 'production' ||
-    process.env.VALIDATION_LOGS === 'true'
-  ) {
-    // eslint-disable-next-line no-console
-    console.log('✓ DOMPurify import found in ResourceCard.vue')
-  }
-}
-
-// Check if centralized sanitization is used in ResourceCard.vue
+// For centralized sanitization approach, we don't need direct DOMPurify import in ResourceCard.vue
+// Instead, check that the centralized sanitization utility is being used
 if (resourceCardContent.includes('sanitizeAndHighlight')) {
   if (
     process.env.NODE_ENV !== 'production' ||
