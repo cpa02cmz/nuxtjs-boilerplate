@@ -94,13 +94,67 @@ export async function trackResourceView(
 // Track a search
 export async function trackSearch(
   query: string,
-  resultsCount: number
+  resultsCount: number,
+  filters?: Record<string, any>
 ): Promise<boolean> {
   return trackEvent({
     type: 'search',
     properties: {
       query,
       resultsCount,
+      filters,
+      timestamp: new Date().toISOString(),
+    },
+  })
+}
+
+// Track advanced search with operators
+export async function trackAdvancedSearch(
+  query: string,
+  resultsCount: number,
+  operatorsUsed: string[],
+  filters?: Record<string, any>
+): Promise<boolean> {
+  return trackEvent({
+    type: 'advanced_search',
+    properties: {
+      query,
+      resultsCount,
+      operatorsUsed,
+      filters,
+      timestamp: new Date().toISOString(),
+    },
+  })
+}
+
+// Track search with zero results
+export async function trackZeroResultSearch(
+  query: string,
+  filters?: Record<string, any>
+): Promise<boolean> {
+  return trackEvent({
+    type: 'zero_result_search',
+    properties: {
+      query,
+      filters,
+      timestamp: new Date().toISOString(),
+    },
+  })
+}
+
+// Track search result click
+export async function trackSearchResultClick(
+  resourceId: string,
+  query: string,
+  position: number
+): Promise<boolean> {
+  return trackEvent({
+    type: 'search_result_click',
+    resourceId,
+    properties: {
+      query,
+      position,
+      timestamp: new Date().toISOString(),
     },
   })
 }

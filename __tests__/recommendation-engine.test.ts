@@ -69,9 +69,16 @@ describe('useRecommendationEngine', () => {
     engine = useRecommendationEngine(mockResources)
   })
 
+<<<<<<< HEAD
   describe('content-based recommendations', () => {
     it('should return similar resources based on category', () => {
       const recommendations = engine.getContentBasedRecommendations(
+=======
+  describe('calculateSimilarity', () => {
+    it('should return 0 for the same resource', () => {
+      const similarity = engine.calculateSimilarity(
+        mockResources[0],
+>>>>>>> origin/main
         mockResources[0]
       )
       expect(recommendations.length).toBeGreaterThan(0)
@@ -83,6 +90,7 @@ describe('useRecommendationEngine', () => {
       expect(aiToolsRecommendations.length).toBeGreaterThan(0)
     })
 
+<<<<<<< HEAD
     it('should return similar resources based on tags', () => {
       const recommendations = engine.getContentBasedRecommendations(
         mockResources[0]
@@ -94,6 +102,27 @@ describe('useRecommendationEngine', () => {
         rec.resource.tags.includes('ai')
       )
       expect(aiTagRecommendations.length).toBeGreaterThan(0)
+=======
+    it('should calculate similarity based on category', () => {
+      const resourceA = mockResources[0] // AI Tools
+      const resourceB = mockResources[2] // AI Tools
+      const similarity = engine.calculateSimilarity(resourceA, resourceB)
+      expect(similarity).toBeGreaterThan(0.5) // Category match should give high score
+    })
+
+    it('should calculate similarity based on tags', () => {
+      const resourceA = mockResources[0] // has 'ai' tag
+      const resourceB = mockResources[2] // has 'ai' tag
+      const similarity = engine.calculateSimilarity(resourceA, resourceB)
+      expect(similarity).toBeGreaterThan(0.3) // Tag match should contribute to score
+    })
+
+    it('should calculate similarity based on technology', () => {
+      const resourceA = mockResources[0] // has 'Python' tech
+      const resourceB = mockResources[2] // has 'Python' tech
+      const similarity = engine.calculateSimilarity(resourceA, resourceB)
+      expect(similarity).toBeGreaterThan(0.2) // Tech match should contribute to score
+>>>>>>> origin/main
     })
   })
 

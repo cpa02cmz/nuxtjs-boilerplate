@@ -114,4 +114,45 @@ describe('useAdvancedResourceSearch', () => {
     expect(highlighted).toContain('<mark')
     expect(highlighted).toContain('test')
   })
+
+  it('should manage saved searches', () => {
+    expect(advancedSearch.savedSearches.value).toEqual([])
+
+    // Save a search
+    advancedSearch.saveSearch('My AI Tools Search', 'AI tools')
+    expect(advancedSearch.savedSearches.value).toHaveLength(1)
+    expect(advancedSearch.savedSearches.value[0].name).toBe(
+      'My AI Tools Search'
+    )
+    expect(advancedSearch.savedSearches.value[0].query).toBe('AI tools')
+
+    // Save another search
+    advancedSearch.saveSearch('Web Hosting Search', 'web hosting')
+    expect(advancedSearch.savedSearches.value).toHaveLength(2)
+    expect(advancedSearch.savedSearches.value[0].name).toBe(
+      'Web Hosting Search'
+    )
+    expect(advancedSearch.savedSearches.value[1].name).toBe(
+      'My AI Tools Search'
+    )
+  })
+
+  it('should remove saved searches', () => {
+    advancedSearch.saveSearch('Test Search', 'test query')
+    expect(advancedSearch.savedSearches.value).toHaveLength(1)
+
+    advancedSearch.removeSavedSearch('test query')
+    expect(advancedSearch.savedSearches.value).toEqual([])
+  })
+
+  it('should update existing saved search', () => {
+    advancedSearch.saveSearch('Old Name', 'same query')
+    expect(advancedSearch.savedSearches.value).toHaveLength(1)
+    expect(advancedSearch.savedSearches.value[0].name).toBe('Old Name')
+
+    // Save with same query but different name
+    advancedSearch.saveSearch('New Name', 'same query')
+    expect(advancedSearch.savedSearches.value).toHaveLength(1)
+    expect(advancedSearch.savedSearches.value[0].name).toBe('New Name')
+  })
 })

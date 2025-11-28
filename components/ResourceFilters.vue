@@ -122,7 +122,7 @@
     </div>
 
     <!-- Technology Filter -->
-    <div>
+    <div class="mb-6">
       <h4 class="text-sm font-medium text-gray-900 mb-3">Technology</h4>
       <div
         role="group"
@@ -157,10 +157,49 @@
         </label>
       </div>
     </div>
+
+    <!-- Tags Filter -->
+    <div>
+      <h4 class="text-sm font-medium text-gray-900 mb-3">Tags</h4>
+      <div
+        role="group"
+        :aria-label="'Tag filters'"
+        class="space-y-2 max-h-40 overflow-y-auto"
+      >
+        <label
+          v-for="(tag, index) in tags"
+          :key="tag"
+          class="flex items-center"
+          :tabindex="0"
+          @keydown.enter.prevent="toggleTag(tag)"
+          @keydown.space.prevent="toggleTag(tag)"
+        >
+          <input
+            type="checkbox"
+            :value="tag"
+            :checked="selectedTags.includes(tag)"
+            class="h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500"
+            :aria-label="`Filter by ${tag}`"
+            @change="toggleTag(tag)"
+          />
+          <span class="ml-2 text-sm text-gray-800">{{ tag }}</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Saved Searches -->
+    <SavedSearches
+      v-if="savedSearches && savedSearches.length > 0"
+      :saved-searches="savedSearches"
+      @use-saved-search="onUseSavedSearch"
+      @remove-saved-search="onRemoveSavedSearch"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import SavedSearches from '~/components/SavedSearches.vue'
+
 interface FacetCounts {
   [key: string]: number
 }
@@ -170,12 +209,15 @@ interface Props {
   pricingModels: string[]
   difficultyLevels: string[]
   technologies: string[]
+  tags: string[]
   selectedCategories: string[]
   selectedPricingModels: string[]
   selectedDifficultyLevels: string[]
   selectedTechnologies: string[]
+  selectedTags: string[]
   searchQuery?: string
   facetCounts?: FacetCounts
+  savedSearches?: Array<{ name: string; query: string; createdAt: Date }>
 }
 
 interface Emits {
@@ -183,7 +225,13 @@ interface Emits {
   (event: 'toggle-pricing-model', pricingModel: string): void
   (event: 'toggle-difficulty-level', difficulty: string): void
   (event: 'toggle-technology', technology: string): void
+  (event: 'toggle-tag', tag: string): void
   (event: 'reset-filters'): void
+  (
+    event: 'use-saved-search',
+    search: { name: string; query: string; createdAt: Date }
+  ): void
+  (event: 'remove-saved-search', query: string): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -208,6 +256,10 @@ const toggleTechnology = (technology: string) => {
   emit('toggle-technology', technology)
 }
 
+const toggleTag = (tag: string) => {
+  emit('toggle-tag', tag)
+}
+
 const onResetFilters = () => {
   emit('reset-filters')
 }
@@ -219,5 +271,17 @@ const getCountForOption = (option: string, filterType: string): number => {
   // The facetCounts should be structured as [filterType]_[option] = count
   const key = `${filterType}_${option}`
   return props.facetCounts[key] || 0
+}
+
+const onUseSavedSearch = (search: {
+  name: string
+  query: string
+  createdAt: Date
+}) => {
+  emit('use-saved-search', search)
+}
+
+const onRemoveSavedSearch = (query: string) => {
+  emit('remove-saved-search', query)
 }
 </script>
