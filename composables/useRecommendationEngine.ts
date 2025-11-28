@@ -186,6 +186,7 @@ export const useRecommendationEngine = (allResources: readonly Resource[]) => {
 
   return {
     config: readonly(config),
+    calculateSimilarity, // Make this available for testing
     updateConfig,
     getDiverseRecommendations,
     getContentBasedRecommendations,
