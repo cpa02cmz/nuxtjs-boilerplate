@@ -1,5 +1,5 @@
 import { createError, setResponseStatus } from 'h3'
-import { Resource } from '~/types/resource'
+import type { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 import {
   cacheManager,
@@ -10,6 +10,7 @@ import {
   rateLimit,
   getRateLimiterForPath,
 } from '../../../utils/enhanced-rate-limit'
+import { convertResourcesToHierarchicalTags } from '~/utils/tags'
 
 /**
  * GET /api/v1/resources/:id
@@ -76,10 +77,16 @@ export default defineEventHandler(async event => {
       throw error
     }
 
+    // Convert resource to include hierarchical tags
+    const resourcesWithHierarchicalTags = convertResourcesToHierarchicalTags([
+      resource,
+    ])
+    const resourceWithHierarchicalTags = resourcesWithHierarchicalTags[0]
+
     // Prepare response
     const response = {
       success: true,
-      data: resource,
+      data: resourceWithHierarchicalTags,
     }
 
     // Cache the result with tags for easier invalidation
