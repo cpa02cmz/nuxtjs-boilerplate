@@ -172,3 +172,17 @@ export async function trackFilter(
     },
   })
 }
+
+// Track a feedback submission
+export async function trackFeedbackSubmitted(
+  feedbackType: string,
+  category?: string
+): Promise<boolean> {
+  return trackEvent({
+    type: 'feedback_submitted',
+    properties: {
+      feedbackType,
+      category,
+    },
+  })
+}
