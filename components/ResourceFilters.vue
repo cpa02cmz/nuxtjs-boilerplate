@@ -186,10 +186,20 @@
         </label>
       </div>
     </div>
+
+    <!-- Saved Searches -->
+    <SavedSearches
+      v-if="savedSearches && savedSearches.length > 0"
+      :saved-searches="savedSearches"
+      @use-saved-search="onUseSavedSearch"
+      @remove-saved-search="onRemoveSavedSearch"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import SavedSearches from '~/components/SavedSearches.vue'
+
 interface FacetCounts {
   [key: string]: number
 }
@@ -207,6 +217,7 @@ interface Props {
   selectedTags: string[]
   searchQuery?: string
   facetCounts?: FacetCounts
+  savedSearches?: Array<{ name: string; query: string; createdAt: Date }>
 }
 
 interface Emits {
@@ -216,6 +227,11 @@ interface Emits {
   (event: 'toggle-technology', technology: string): void
   (event: 'toggle-tag', tag: string): void
   (event: 'reset-filters'): void
+  (
+    event: 'use-saved-search',
+    search: { name: string; query: string; createdAt: Date }
+  ): void
+  (event: 'remove-saved-search', query: string): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -255,5 +271,17 @@ const getCountForOption = (option: string, filterType: string): number => {
   // The facetCounts should be structured as [filterType]_[option] = count
   const key = `${filterType}_${option}`
   return props.facetCounts[key] || 0
+}
+
+const onUseSavedSearch = (search: {
+  name: string
+  query: string
+  createdAt: Date
+}) => {
+  emit('use-saved-search', search)
+}
+
+const onRemoveSavedSearch = (query: string) => {
+  emit('remove-saved-search', query)
 }
 </script>

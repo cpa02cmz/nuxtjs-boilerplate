@@ -71,6 +71,7 @@
             :selected-technologies="selectedTechnologies"
             :search-query="searchQuery"
             :facet-counts="facetCounts"
+            :saved-searches="savedSearches"
             role="region"
             aria-label="Resource filters"
             @toggle-category="enhancedToggleCategory"
@@ -78,6 +79,8 @@
             @toggle-difficulty-level="enhancedToggleDifficultyLevel"
             @toggle-technology="enhancedToggleTechnology"
             @reset-filters="resetAllFilters"
+            @use-saved-search="onUseSavedSearch"
+            @remove-saved-search="onRemoveSavedSearch"
           />
         </div>
 
@@ -165,8 +168,13 @@ const {
 
 // Use the advanced search composable for faceted search
 const { resources } = useResourceData()
-const { calculateFacetCounts, advancedSearchResources } =
-  useAdvancedResourceSearch(resources)
+const {
+  calculateFacetCounts,
+  advancedSearchResources,
+  savedSearches,
+  saveSearch,
+  removeSavedSearch,
+} = useAdvancedResourceSearch(resources)
 
 // Compute the filtered resources using advanced search when possible
 const filteredResources = computed(() => {
@@ -305,6 +313,20 @@ const handleSearch = (query: string) => {
 const resetAllFilters = () => {
   resetFilters()
   searchQuery.value = ''
+}
+
+// Handle saved searches
+const onUseSavedSearch = (search: {
+  name: string
+  query: string
+  createdAt: Date
+}) => {
+  searchQuery.value = search.query
+  updateSearchQuery(search.query)
+}
+
+const onRemoveSavedSearch = (query: string) => {
+  removeSavedSearch(query)
 }
 
 // Helper function to get button label based on category
