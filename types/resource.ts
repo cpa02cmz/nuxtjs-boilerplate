@@ -29,6 +29,23 @@ export interface Resource {
   alternatives?: readonly string[] // IDs of alternative resources
   // Similar resources
   similarResources?: readonly string[] // IDs of similar resources
+  // Moderation fields
+  status?: 'pending' | 'approved' | 'rejected' | 'deprecated' // Default is 'approved' for existing resources
+  submittedBy?: string // User ID
+  reviewedBy?: string // Moderator ID
+  reviewedAt?: string
+  rejectionReason?: string
+  qualityScore?: number
+  flags?: Flag[]
+}
+
+export interface Flag {
+  id: string
+  resourceId: string
+  reason: string
+  reportedBy: string
+  createdAt: string
+  resolved: boolean
 }
 
 export interface FilterOptions {
