@@ -25,6 +25,9 @@ export interface Resource {
   platforms?: readonly string[] // Supported platforms
   license?: string // License type if open source
   icon?: string
+  alternatives?: string[] // Array of resource IDs that are alternatives
+  similarityScore?: number // For alternative relationships
+}
 }
 
 export interface FilterOptions {

@@ -191,32 +191,27 @@ export default defineNuxtConfig({
     componentIslands: true,
   },
 
-  // Security headers configuration
-  routeRules: {
-    // Main routes with prerender
-    '/': {
-      prerender: true,
-    },
-    '/ai-keys': {
-      prerender: true,
-    },
-    '/about': {
-      prerender: true,
-    },
-    '/search': {
-      prerender: true,
-    },
-    '/submit': {
-      prerender: true,
-    },
-    // API routes
-    '/api/**': {
-      // Cache control handled by security headers plugin
-    },
-    // Static assets
-    '/_nuxt/**': {
-      // Cache control handled by security headers plugin
-    },
+  // Security Configuration
+  // Content Security Policy (CSP) and other security headers are implemented via
+  // server plugin at server/plugins/security-headers.ts which provides:
+  // - Dynamic nonce generation per request for inline scripts/styles
+  // - Comprehensive security header protection
+  // - Route-specific cache control headers
+
+  // Security and performance configuration
+  nitro: {
+    // Optimize server-side rendering
+    minify: true,
+    // Enable compression
+    compressPublicAssets: true,
+    // Improve build performance
+    ignore: ['**/.git/**', '**/node_modules/**', '**/dist/**'],
+    // Security headers are handled via the security-headers.ts plugin
+    // to ensure proper nonce generation and dynamic header values
+    plugins: [
+      '~/server/plugins/security-headers.ts',
+      '~/server/plugins/resource-validation.ts',
+    ],
   },
 
   // Image optimization configuration
@@ -368,14 +363,25 @@ export default defineNuxtConfig({
     plugins: [
       // Add bundle analyzer for performance monitoring (only when ANALYZE_BUNDLE is true)
       ...(process.env.ANALYZE_BUNDLE === 'true'
-        ? [
-            require('rollup-plugin-visualizer').default({
-              filename: './dist/stats.html',
-              open: false,
-              gzipSize: true,
-              brotliSize: true,
-            }),
-          ]
+        ? (() => {
+            try {
+              // Safely require the visualizer plugin to avoid build failures
+              const { visualizer } = require('rollup-plugin-visualizer')
+              return [
+                visualizer({
+                  filename: './dist/stats.html',
+                  open: false,
+                  gzipSize: true,
+                  brotliSize: true,
+                }),
+              ]
+            } catch (error) {
+              console.warn(
+                'rollup-plugin-visualizer not available, skipping bundle analysis'
+              )
+              return [] // Return empty array if plugin is not available
+            }
+          })()
         : []),
     ],
     // Optimize build speed
