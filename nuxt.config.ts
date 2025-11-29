@@ -224,7 +224,6 @@ export default defineNuxtConfig({
       'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
     },
   },
-
   // Image optimization configuration
   image: {
     // Enable native lazy loading for images
