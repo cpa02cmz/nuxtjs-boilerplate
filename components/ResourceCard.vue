@@ -192,6 +192,7 @@ import ShareButton from '~/components/ShareButton.vue'
 import ResourceStatus from '~/components/ResourceStatus.vue'
 import { trackResourceView, trackResourceClick } from '~/utils/analytics'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
+import { logError } from '~/utils/errorLogger'
 
 interface Props {
   title: string
@@ -257,11 +258,12 @@ const sanitizedHighlightedDescription = computed(() => {
 // Handle image loading errors
 const handleImageError = () => {
   hasError.value = true
-  // In production, we might want to use a proper error tracking service instead of console
-  if (process.dev) {
-    // eslint-disable-next-line no-console
-    console.error(`Failed to load image for resource: ${props.title}`)
-  }
+  logError(
+    `Failed to load image for resource: ${props.title}`,
+    undefined,
+    'ResourceCard',
+    { resourceTitle: props.title, resourceUrl: props.image }
+  )
 }
 
 // Handle link clicks and validate URL
@@ -277,11 +279,12 @@ const handleLinkClick = (event: Event) => {
   } catch (err) {
     event.preventDefault()
     hasError.value = true
-    // In production, we might want to use a proper error tracking service instead of console
-    if (process.dev) {
-      // eslint-disable-next-line no-console
-      console.error(`Invalid URL for resource: ${props.url}`, err)
-    }
+    logError(
+      `Invalid URL for resource: ${props.url}`,
+      err as Error,
+      'ResourceCard',
+      { resourceTitle: props.title, resourceUrl: props.url, error: err }
+    )
   }
 }
 
