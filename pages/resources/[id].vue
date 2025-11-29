@@ -484,9 +484,10 @@
         </div>
       </div>
 
-      <!-- Alternative Resources Section -->
+      <!-- Alternative Suggestions Section -->
       <div class="mt-12">
-        <AlternativeSuggestions :current-resource="resource" />
+        <AlternativeSuggestions v-if="resource" :resource="resource" />
+      </div>
       </div>
 
       <!-- Recommendations Section -->
@@ -505,10 +506,7 @@ import { useResources, type Resource } from '~/composables/useResources'
 import ResourceCard from '~/components/ResourceCard.vue'
 import RecommendationsSection from '~/components/RecommendationsSection.vue'
 import AlternativeSuggestions from '~/components/AlternativeSuggestions.vue'
-import ResourceStatus from '~/components/ResourceStatus.vue'
-import LifecycleTimeline from '~/components/LifecycleTimeline.vue'
-import HealthMonitor from '~/components/HealthMonitor.vue'
-import DeprecationNotice from '~/components/DeprecationNotice.vue'
+
 import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useRuntimeConfig, useSeoMeta } from '#imports'
