@@ -272,32 +272,20 @@ if (typeof window !== 'undefined') {
   }
 
   // Add event listeners
-  window.addEventListener(
-    'saved-search-added',
-    savedSearchAddedHandler as EventListener
-  )
-  window.addEventListener(
-    'saved-search-updated',
-    savedSearchUpdatedHandler as EventListener
-  )
-  window.addEventListener(
-    'saved-search-removed',
-    savedSearchRemovedHandler as EventListener
-  )
+  window.addEventListener('saved-search-added', savedSearchAddedHandler)
+  window.addEventListener('saved-search-updated', savedSearchUpdatedHandler)
+  window.addEventListener('saved-search-removed', savedSearchRemovedHandler)
 
   // Clean up event listeners on component unmount
   onUnmounted(() => {
-    window.removeEventListener(
-      'saved-search-added',
-      savedSearchAddedHandler as EventListener
-    )
+    window.removeEventListener('saved-search-added', savedSearchAddedHandler)
     window.removeEventListener(
       'saved-search-updated',
-      savedSearchUpdatedHandler as EventListener
+      savedSearchUpdatedHandler
     )
     window.removeEventListener(
       'saved-search-removed',
-      savedSearchRemovedHandler as EventListener
+      savedSearchRemovedHandler
     )
   })
 }
