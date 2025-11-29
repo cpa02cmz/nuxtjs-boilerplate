@@ -28,7 +28,6 @@ export interface Resource {
   alternatives?: string[] // Array of resource IDs that are alternatives
   similarityScore?: number // For alternative relationships
 }
-}
 
 export interface FilterOptions {
   searchQuery?: string
