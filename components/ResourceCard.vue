@@ -123,7 +123,7 @@
               :description="description"
               :url="`${runtimeConfig.public.canonicalUrl}/resources/${id}`"
             />
-            <!-- Compare button -->
+            <!-- Comparison button -->
             <button
               v-if="id"
               @click="addResourceToComparison"
@@ -262,7 +262,7 @@ const handleImageError = () => {
     // eslint-disable-next-line no-console
     console.error(`Failed to load image for resource: ${props.title}`)
   }
-}
+})
 
 // Handle link clicks and validate URL
 const handleLinkClick = (event: Event) => {

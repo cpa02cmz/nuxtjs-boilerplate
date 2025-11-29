@@ -1,5 +1,4 @@
 // Comparison-related TypeScript interfaces
-
 import type { Resource } from './resource'
 
 export interface ComparisonCriteria {
