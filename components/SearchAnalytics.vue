@@ -5,8 +5,8 @@
       <div class="flex space-x-2">
         <select
           v-model="timeRange"
-          class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          @change="fetchAnalyticsData"
+          class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          @change="fetchSearchAnalytics"
         >
           <option value="7">Last 7 days</option>
           <option value="30">Last 30 days</option>
@@ -28,18 +28,18 @@
       <p class="mt-2">{{ error }}</p>
       <button
         class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-        @click="fetchAnalyticsData"
+        @click="fetchSearchAnalytics"
       >
         Retry
       </button>
     </div>
 
-    <!-- Search Overview Cards -->
+    <!-- Search Analytics Overview Cards -->
     <div
       v-else
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
     >
-      <div class="bg-gray-50 p-4 rounded-lg">
+      <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
         <div class="flex items-center">
           <div class="rounded-full bg-blue-100 p-3">
             <svg
@@ -59,13 +59,13 @@
           <div class="ml-4">
             <h3 class="text-sm font-medium text-gray-500">Total Searches</h3>
             <p class="text-2xl font-semibold text-gray-900">
-              {{ analyticsData?.data?.totalSearches || 0 }}
+              {{ searchAnalytics?.data?.totalSearches || 0 }}
             </p>
           </div>
         </div>
       </div>
 
-      <div class="bg-gray-50 p-4 rounded-lg">
+      <div class="bg-green-50 p-4 rounded-lg border border-green-100">
         <div class="flex items-center">
           <div class="rounded-full bg-green-100 p-3">
             <svg
@@ -86,8 +86,8 @@
             <h3 class="text-sm font-medium text-gray-500">Success Rate</h3>
             <p class="text-2xl font-semibold text-gray-900">
               {{
-                analyticsData?.data?.successRate
-                  ? (analyticsData.data.successRate * 100).toFixed(1) + '%'
+                searchAnalytics?.data?.successRate
+                  ? `${searchAnalytics.data.successRate}%`
                   : '0%'
               }}
             </p>
@@ -95,7 +95,7 @@
         </div>
       </div>
 
-      <div class="bg-gray-50 p-4 rounded-lg">
+      <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
         <div class="flex items-center">
           <div class="rounded-full bg-yellow-100 p-3">
             <svg
@@ -113,15 +113,15 @@
             </svg>
           </div>
           <div class="ml-4">
-            <h3 class="text-sm font-medium text-gray-500">Zero Results</h3>
+            <h3 class="text-sm font-medium text-gray-500">Zero-Result</h3>
             <p class="text-2xl font-semibold text-gray-900">
-              {{ analyticsData?.data?.zeroResultCount || 0 }}
+              {{ searchAnalytics?.data?.zeroResultCount || 0 }}
             </p>
           </div>
         </div>
       </div>
 
-      <div class="bg-gray-50 p-4 rounded-lg">
+      <div class="bg-purple-50 p-4 rounded-lg border border-purple-100">
         <div class="flex items-center">
           <div class="rounded-full bg-purple-100 p-3">
             <svg
@@ -139,13 +139,11 @@
             </svg>
           </div>
           <div class="ml-4">
-            <h3 class="text-sm font-medium text-gray-500">
-              Avg. Response Time
-            </h3>
+            <h3 class="text-sm font-medium text-gray-500">Avg Response</h3>
             <p class="text-2xl font-semibold text-gray-900">
               {{
-                analyticsData?.data?.avgResponseTime
-                  ? analyticsData.data.avgResponseTime.toFixed(2) + 'ms'
+                searchAnalytics?.data?.avgResponseTime
+                  ? `${searchAnalytics.data.avgResponseTime}ms`
                   : '0ms'
               }}
             </p>
@@ -157,27 +155,26 @@
     <!-- Charts and Data Sections -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       <!-- Search Trends Chart -->
-      <div>
+      <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Search Trends</h3>
         <div
-          v-if="!analyticsData?.data?.dailySearches?.length"
-          class="h-64 flex items-center justify-center bg-gray-50 rounded-md"
+          v-if="!searchAnalytics?.data?.searchTrends?.length"
+          class="h-64 flex items-center justify-center"
         >
           <p class="text-gray-500">No search trend data available</p>
         </div>
-        <div v-else class="h-64 bg-gray-50 rounded-md p-4">
+        <div v-else class="h-64">
+          <!-- Simple bar chart visualization -->
           <div class="flex items-end h-48 space-x-1">
             <div
-              v-for="(day, index) in analyticsData.data.dailySearches"
+              v-for="(day, index) in searchAnalytics.data.searchTrends"
               :key="index"
               class="flex flex-col items-center flex-1 min-w-0"
             >
               <div class="w-full flex justify-center">
                 <div
                   class="w-3/4 bg-blue-500 rounded-t hover:bg-blue-600 transition-colors"
-                  :style="{
-                    height: `${(day.count / maxDailySearchCount) * 100}%`,
-                  }"
+                  :style="{ height: `${(day.count / maxSearchCount) * 100}%` }"
                   :title="`${day.date}: ${day.count} searches`"
                 ></div>
               </div>
@@ -191,25 +188,27 @@
       </div>
 
       <!-- Popular Searches -->
-      <div>
+      <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Popular Searches</h3>
         <div
-          v-if="!analyticsData?.data?.popularSearches?.length"
-          class="h-64 flex items-center justify-center bg-gray-50 rounded-md"
+          v-if="!searchAnalytics?.data?.popularSearches?.length"
+          class="text-gray-500 text-center py-8"
         >
-          <p class="text-gray-500">No popular search data available</p>
+          No popular search data available
         </div>
-        <ul v-else class="h-64 overflow-y-auto bg-gray-50 rounded-md p-2">
+        <ul v-else class="space-y-3 max-h-64 overflow-y-auto">
           <li
-            v-for="(search, index) in analyticsData.data.popularSearches"
-            :key="index"
-            class="flex items-center justify-between p-3 hover:bg-gray-100 rounded-md"
+            v-for="(search, index) in searchAnalytics.data.popularSearches"
+            :key="search.query"
+            class="flex items-center justify-between p-3 bg-white rounded-md border border-gray-200"
           >
             <div class="flex items-center">
               <span class="text-gray-500 font-medium w-6"
                 >#{{ index + 1 }}</span
               >
-              <span class="ml-2 font-medium">{{ search.query }}</span>
+              <span class="ml-2 font-medium truncate max-w-xs">{{
+                search.query
+              }}</span>
             </div>
             <span class="text-gray-700 font-medium">{{ search.count }}</span>
           </li>
@@ -217,94 +216,66 @@
       </div>
     </div>
 
-    <!-- Additional Sections -->
+    <!-- Additional Search Analytics Sections -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Zero Result Queries -->
-      <div>
+      <!-- Zero-Result Queries -->
+      <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
         <h3 class="text-lg font-medium text-gray-900 mb-4">
-          Zero Result Queries
+          Zero-Result Queries
         </h3>
         <div
-          v-if="!analyticsData?.data?.zeroResultQueries?.length"
-          class="text-gray-500 text-center py-4 bg-gray-50 rounded-md"
+          v-if="!searchAnalytics?.data?.zeroResultQueries?.length"
+          class="text-gray-500 text-center py-8"
         >
-          No zero result queries available
+          No zero-result query data available
         </div>
-        <ul v-else class="bg-gray-50 rounded-md p-2 max-h-60 overflow-y-auto">
+        <ul v-else class="space-y-2 max-h-64 overflow-y-auto">
           <li
-            v-for="(query, index) in analyticsData.data.zeroResultQueries"
-            :key="index"
-            class="p-2 hover:bg-gray-100 rounded-md flex justify-between items-center"
+            v-for="(query, index) in searchAnalytics.data.zeroResultQueries"
+            :key="query.query"
+            class="flex items-center justify-between p-2 hover:bg-gray-100 rounded"
           >
-            <span>{{ query.query }}</span>
-            <span class="text-gray-500 text-sm"
-              >{{ query.count }} occurrences</span
-            >
+            <div class="flex items-center">
+              <span class="text-gray-500 w-6">#{{ index + 1 }}</span>
+              <span class="text-gray-700 ml-2">{{ query.query }}</span>
+            </div>
+            <span class="font-medium">{{ query.count }}</span>
           </li>
         </ul>
       </div>
 
       <!-- Search Performance -->
-      <div>
+      <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
         <h3 class="text-lg font-medium text-gray-900 mb-4">
           Search Performance
         </h3>
         <div
-          v-if="!analyticsData?.data?.searchPerformance"
-          class="text-gray-500 text-center py-4 bg-gray-50 rounded-md"
+          v-if="!searchAnalytics?.data?.performanceMetrics"
+          class="text-gray-500 text-center py-8"
         >
           No performance data available
         </div>
-        <div v-else class="bg-gray-50 rounded-md p-4">
-          <ul class="space-y-2">
-            <li class="flex justify-between">
-              <span class="text-gray-600">Fast Queries (&lt;100ms)</span>
-              <span class="font-medium"
-                >{{ analyticsData.data.searchPerformance.fastQueries }} ({{
-                  analyticsData.data.searchPerformance.fastQueryPercentage
-                    ? (
-                        analyticsData.data.searchPerformance
-                          .fastQueryPercentage * 100
-                      ).toFixed(1) + '%'
-                    : '0%'
-                }})</span
-              >
-            </li>
-            <li class="flex justify-between">
-              <span class="text-gray-600">Medium Queries (100-500ms)</span>
-              <span class="font-medium"
-                >{{ analyticsData.data.searchPerformance.mediumQueries }} ({{
-                  analyticsData.data.searchPerformance.mediumQueryPercentage
-                    ? (
-                        analyticsData.data.searchPerformance
-                          .mediumQueryPercentage * 100
-                      ).toFixed(1) + '%'
-                    : '0%'
-                }})</span
-              >
-            </li>
-            <li class="flex justify-between">
-              <span class="text-gray-600">Slow Queries (&gt;500ms)</span>
-              <span class="font-medium"
-                >{{ analyticsData.data.searchPerformance.slowQueries }} ({{
-                  analyticsData.data.searchPerformance.slowQueryPercentage
-                    ? (
-                        analyticsData.data.searchPerformance
-                          .slowQueryPercentage * 100
-                      ).toFixed(1) + '%'
-                    : '0%'
-                }})</span
-              >
-            </li>
-            <li class="flex justify-between pt-2 border-t border-gray-200 mt-2">
-              <span class="text-gray-600 font-medium">Avg. Query Time</span>
-              <span class="font-medium">{{
-                analyticsData.data.avgResponseTime
-                  ? analyticsData.data.avgResponseTime.toFixed(2) + 'ms'
-                  : '0ms'
-              }}</span>
-            </li>
-          </ul>
+        <div v-else class="space-y-3">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white p-3 rounded border border-gray-200">
+              <p class="text-sm text-gray-500">Fast Searches (&lt;100ms)</p>
+              <p class="text-xl font-semibold text-green-600">
+                {{ searchAnalytics.data.performanceMetrics.fastSearches }}
+              </p>
+            </div>
+            <div class="bg-white p-3 rounded border border-gray-200">
+              <p class="text-sm text-gray-500">Medium Searches (100-500ms)</p>
+              <p class="text-xl font-semibold text-yellow-600">
+                {{ searchAnalytics.data.performanceMetrics.mediumSearches }}
+              </p>
+            </div>
+          </div>
+          <div class="bg-white p-3 rounded border border-gray-200">
+            <p class="text-sm text-gray-500">Slow Searches (&gt;500ms)</p>
+            <p class="text-xl font-semibold text-red-600">
+              {{ searchAnalytics.data.performanceMetrics.slowSearches }}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -322,16 +293,13 @@ interface SearchAnalyticsData {
     successRate: number
     zeroResultCount: number
     avgResponseTime: number
-    dailySearches: Array<{ date: string; count: number }>
+    searchTrends: Array<{ date: string; count: number }>
     popularSearches: Array<{ query: string; count: number }>
     zeroResultQueries: Array<{ query: string; count: number }>
-    searchPerformance: {
-      fastQueries: number
-      mediumQueries: number
-      slowQueries: number
-      fastQueryPercentage: number
-      mediumQueryPercentage: number
-      slowQueryPercentage: number
+    performanceMetrics: {
+      fastSearches: number
+      mediumSearches: number
+      slowSearches: number
     }
   }
   dateRange: {
@@ -341,16 +309,16 @@ interface SearchAnalyticsData {
 }
 
 // State
-const analyticsData = ref<SearchAnalyticsData | null>(null)
+const searchAnalytics = ref<SearchAnalyticsData | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
-const timeRange = ref('7') // Default to 7 days
+const timeRange = ref('30') // Default to 30 days
 
-// Get the maximum daily search count for scaling the chart
-const maxDailySearchCount = computed(() => {
-  if (!analyticsData.value?.data?.dailySearches) return 1
+// Get the maximum search count for scaling the chart
+const maxSearchCount = computed(() => {
+  if (!searchAnalytics.value?.data?.searchTrends) return 1
   return Math.max(
-    ...analyticsData.value.data.dailySearches.map(day => day.count),
+    ...searchAnalytics.value.data.searchTrends.map(day => day.count),
     1
   )
 })
@@ -362,7 +330,7 @@ const formatDate = (dateString: string) => {
 }
 
 // Fetch search analytics data
-const fetchAnalyticsData = async () => {
+const fetchSearchAnalytics = async () => {
   loading.value = true
   error.value = null
 
@@ -376,7 +344,7 @@ const fetchAnalyticsData = async () => {
       throw new Error(data.message || 'Failed to fetch search analytics data')
     }
 
-    analyticsData.value = data
+    searchAnalytics.value = data
   } catch (err: any) {
     console.error('Error fetching search analytics:', err)
     error.value = err.message || 'Failed to load search analytics data'
@@ -387,6 +355,6 @@ const fetchAnalyticsData = async () => {
 
 // Initialize data on component mount
 onMounted(() => {
-  fetchAnalyticsData()
+  fetchSearchAnalytics()
 })
 </script>

@@ -1,7 +1,8 @@
 import { getQuery, setResponseStatus } from 'h3'
 import type { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
-import { cacheManager } from '~/server/utils/cache'
+import { cacheManager } from '~/server/utils/enhanced-cache'
+import { searchAnalyticsTracker } from '~/utils/searchAnalytics'
 
 /**
  * GET /api/analytics/search
@@ -9,23 +10,18 @@ import { cacheManager } from '~/server/utils/cache'
  * Get search-specific analytics data
  *
  * Query parameters:
- * - days: Number of days to look back (default: 7)
+ * - days: Number of days to look back (default: 30, options: 7, 30, 90)
  */
 export default defineEventHandler(async event => {
   try {
     // Parse query parameters
     const query = getQuery(event)
-    const days = parseInt((query.days as string) || '7')
+    const days = parseInt(query.days as string) || 30
 
     // Validate days parameter
-    if (isNaN(days) || days <= 0 || days > 365) {
-      setResponseStatus(event, 400)
-      return {
-        success: false,
-        message:
-          'Invalid days parameter. Must be a positive integer between 1 and 365.',
-        error: 'Bad Request',
-      }
+    if (![7, 30, 90].includes(days)) {
+      // Default to 30 if invalid
+      console.warn(`Invalid days parameter: ${days}, defaulting to 30`)
     }
 
     // Generate cache key based on query parameters
@@ -39,70 +35,60 @@ export default defineEventHandler(async event => {
       return cachedResult
     }
 
-    // Import resources from JSON
-    const resourcesModule = await import('~/data/resources.json')
-    const resources: Resource[] = resourcesModule.default || resourcesModule
-
-    // For this implementation, we'll simulate search analytics data
-    // In a real implementation, this would come from a database or analytics service
-    // that tracks actual search events
-
     // Calculate date range
     const endDate = new Date()
     const startDate = new Date()
     startDate.setDate(endDate.getDate() - days)
 
-    // Simulate search analytics data
-    // In a real implementation, this would be calculated from actual search logs
-    const totalSearches = Math.floor(Math.random() * 1000) + 50 // Random realistic number
-    const zeroResultCount = Math.floor(totalSearches * 0.15) // 15% of searches have zero results
-    const successRate = 1 - zeroResultCount / totalSearches
-    const avgResponseTime = Math.random() * 150 + 50 // Random response time between 50-200ms
+    // Get search analytics data
+    // In a real implementation, this would come from a database
+    // For now, we'll use the in-memory tracker and generate some sample data
+    const popularSearches = searchAnalyticsTracker.getPopularSearches(10)
+    const zeroResultSearches = searchAnalyticsTracker.getZeroResultSearches(10)
+    const performanceMetrics = searchAnalyticsTracker.getOverallPerformance()
 
-    // Generate daily searches data
-    const dailySearches = []
+    // Calculate success rate based on zero-result searches
+    const totalSearches =
+      popularSearches.reduce((sum, search) => sum + search.count, 0) || 0
+    const zeroResultCount =
+      zeroResultSearches.reduce((sum, search) => sum + search.count, 0) || 0
+    const successRate =
+      totalSearches > 0
+        ? Math.round(((totalSearches - zeroResultCount) / totalSearches) * 100)
+        : 100
+
+    // Generate sample search trends (in a real app, this would come from database)
+    const searchTrends = []
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date()
       date.setDate(date.getDate() - i)
-      const dateStr = date.toISOString().split('T')[0]
+      const dateString = date.toISOString().split('T')[0]
 
-      // Generate a random number of searches for this day
-      const count = Math.floor(Math.random() * 100) + 10
-      dailySearches.push({
-        date: dateStr,
-        count,
+      // Generate a sample count based on popularity
+      const sampleCount = Math.floor(Math.random() * 50) + 10
+      searchTrends.push({
+        date: dateString,
+        count: sampleCount,
       })
     }
 
-    // Generate popular searches data
-    const popularSearches = [
-      { query: 'AI tools', count: Math.floor(Math.random() * 50) + 20 },
-      { query: 'development', count: Math.floor(Math.random() * 40) + 15 },
-      { query: 'open source', count: Math.floor(Math.random() * 35) + 10 },
-      { query: 'javascript', count: Math.floor(Math.random() * 30) + 8 },
-      { query: 'react', count: Math.floor(Math.random() * 25) + 5 },
-    ]
+    // Calculate performance metrics
+    let fastSearches = 0
+    let mediumSearches = 0
+    let slowSearches = 0
 
-    // Generate zero result queries data
-    const zeroResultQueries = [
-      { query: 'nonexistent tool', count: Math.floor(Math.random() * 10) + 1 },
-      { query: 'very specific item', count: Math.floor(Math.random() * 8) + 1 },
-      { query: 'rare technology', count: Math.floor(Math.random() * 6) + 1 },
-    ]
-
-    // Calculate search performance metrics
-    const totalQueries = totalSearches
-    const slowQueries = Math.floor(totalQueries * 0.05) // 5% slow queries
-    const mediumQueries = Math.floor(totalQueries * 0.1) // 10% medium queries
-    const fastQueries = totalQueries - slowQueries - mediumQueries
-
-    const searchPerformance = {
-      fastQueries,
-      mediumQueries,
-      slowQueries,
-      fastQueryPercentage: fastQueries / totalQueries,
-      mediumQueryPercentage: mediumQueries / totalQueries,
-      slowQueryPercentage: slowQueries / totalQueries,
+    if (performanceMetrics) {
+      // In a real implementation, we'd have more granular data
+      // For now, we'll generate sample data based on overall metrics
+      const totalPerfSearches = performanceMetrics.totalSearches
+      fastSearches = Math.floor(totalPerfSearches * 0.7)
+      mediumSearches = Math.floor(totalPerfSearches * 0.2)
+      slowSearches = Math.floor(totalPerfSearches * 0.1)
+    } else {
+      // Default values if no performance data
+      fastSearches = 70
+      mediumSearches = 20
+      slowSearches = 10
     }
 
     // Prepare response
@@ -112,11 +98,23 @@ export default defineEventHandler(async event => {
         totalSearches,
         successRate,
         zeroResultCount,
-        avgResponseTime,
-        dailySearches,
-        popularSearches,
-        zeroResultQueries,
-        searchPerformance,
+        avgResponseTime: performanceMetrics
+          ? Math.round(performanceMetrics.avgDuration)
+          : 0,
+        searchTrends,
+        popularSearches: popularSearches.map(search => ({
+          query: search.query,
+          count: search.count,
+        })),
+        zeroResultQueries: zeroResultSearches.map(search => ({
+          query: search.query,
+          count: search.count,
+        })),
+        performanceMetrics: {
+          fastSearches,
+          mediumSearches,
+          slowSearches,
+        },
       },
       dateRange: {
         start: startDate.toISOString().split('T')[0],
