@@ -22,7 +22,19 @@ export const useResourceData = () => {
 
       // Import resources from JSON
       const resourcesModule = await import('~/data/resources.json')
-      resources.value = resourcesModule.default || resourcesModule
+      let importedResources = resourcesModule.default || resourcesModule
+
+      // Ensure all resources have default moderation status as 'approved' for backward compatibility
+      resources.value = importedResources.map((resource: Resource) => ({
+        ...resource,
+        status: resource.status || 'approved', // Default to approved for existing resources
+        submittedBy: resource.submittedBy,
+        reviewedBy: resource.reviewedBy,
+        reviewedAt: resource.reviewedAt,
+        rejectionReason: resource.rejectionReason,
+        qualityScore: resource.qualityScore,
+        flags: resource.flags,
+      }))
 
       loading.value = false
       error.value = null
