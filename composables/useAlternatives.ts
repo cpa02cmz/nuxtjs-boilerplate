@@ -19,8 +19,26 @@ export interface AlternativeSuggestion {
 }
 
 // Main composable for alternative suggestions
-export const useAlternatives = () => {
-  const { resources } = useResourceData()
+export const useAlternatives = (resources: Resource[] = []) => {
+  const { resources: resourceData } = useResourceData()
+
+  /**
+   * Calculate text similarity using a simple Jaccard similarity approach
+   */
+  const calculateTextSimilarity = (text1: string, text2: string): number => {
+    if (!text1 || !text2) return 0
+    if (text1 === text2) return 1
+
+    // Tokenize text into words
+    const words1 = text1.split(/\s+/).filter(word => word.length > 2)
+    const words2 = text2.split(/\s+/).filter(word => word.length > 2)
+
+    // Find intersection and union of words
+    const intersection = words1.filter(word => words2.includes(word)).length
+    const union = [...new Set([...words1, ...words2])].length
+
+    return union > 0 ? intersection / union : 0
+  }
 
   // Calculate similarity between two resources for alternative suggestions
   const calculateAlternativeSimilarity = (
@@ -79,13 +97,16 @@ export const useAlternatives = () => {
     targetResource: Resource,
     maxSuggestions: number = 6
   ): AlternativeSuggestion[] => {
-    if (!resources.value || resources.value.length === 0) {
+    // Use provided resources array if available, otherwise fall back to resourceData
+    const availableResources = resources.length > 0 ? resources : resourceData.value || []
+    
+    if (!availableResources || availableResources.length === 0) {
       return []
     }
 
     const alternatives: AlternativeSuggestion[] = []
 
-    for (const resource of resources.value) {
+    for (const resource of availableResources) {
       // Skip if it's the same resource
       if (resource.id === targetResource.id) continue
 
@@ -117,12 +138,12 @@ export const useAlternatives = () => {
   const getPredefinedAlternatives = (
     targetResource: Resource
   ): AlternativeSuggestion[] => {
-    if (!targetResource.alternatives || !resources.value) return []
+    if (!targetResource.alternatives || !resourceData.value) return []
 
     const alternativeSuggestions: AlternativeSuggestion[] = []
 
     for (const altId of targetResource.alternatives) {
-      const alternativeResource = resources.value.find(r => r.id === altId)
+      const alternativeResource = resourceData.value.find(r => r.id === altId)
       if (alternativeResource) {
         alternativeSuggestions.push({
           resource: alternativeResource,
@@ -158,10 +179,62 @@ export const useAlternatives = () => {
       .slice(0, maxSuggestions)
   }
 
+  /**
+   * Find alternative resources based on category, tags, and description similarity
+   */
+  const findAlternatives = (
+    currentResource: Resource,
+    limit: number = 6
+  ): AlternativeSuggestion[] => {
+    // Use provided resources array if available, otherwise fall back to resourceData
+    const availableResources = resources.length > 0 ? resources : resourceData.value || []
+    
+    if (!availableResources || availableResources.length === 0) return []
+
+    return availableResources
+      .filter(resource => resource.id !== currentResource.id) // Exclude current resource
+      .map(resource => ({
+        resource,
+        similarityScore: calculateAlternativeSimilarity(currentResource, resource).score,
+        reason: calculateAlternativeSimilarity(currentResource, resource).reason
+      }))
+      .filter(alt => alt.similarityScore > 0.1) // Filter out very low similarity
+      .sort((a, b) => b.similarityScore - a.similarityScore) // Sort by similarity
+      .slice(0, limit) // Limit results
+  }
+
+  /**
+   * Get alternatives for a resource from the API
+   */
+  const getAlternativesForResource = async (
+    resourceId: string,
+    limit: number = 6
+  ): Promise<AlternativeSuggestion[]> => {
+    try {
+      const response = await $fetch(
+        `/api/v1/resources/${resourceId}/alternatives`,
+        {
+          method: 'GET',
+          params: { limit },
+        }
+      )
+
+      if (response && response.success && response.data) {
+        return response.data
+      }
+
+      return []
+    } catch (error) {
+      return []
+    }
+  }
+
   return {
     getAlternativeSuggestions,
     getPredefinedAlternatives,
     getAllAlternatives,
     calculateAlternativeSimilarity,
+    findAlternatives,
+    getAlternativesForResource,
   }
 }

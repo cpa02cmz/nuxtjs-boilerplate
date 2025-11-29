@@ -18,6 +18,7 @@
         :button-label="getButtonLabel(alternative.resource.category)"
         :similarity-score="alternative.similarityScore"
         :similarity-reason="alternative.reason"
+        :id="alternative.resource.id"
       />
     </div>
   </div>
@@ -57,12 +58,14 @@ const getButtonLabel = (category: string) => {
   }
   return categoryLabels[category] || 'Try Alternative'
 }
+
 // Initialize alternatives
 const initAlternatives = () => {
   if (props.resource) {
     alternatives.value = getAllAlternatives(props.resource)
   }
 }
+
 // Initialize on component mount
 onMounted(() => {
   initAlternatives()
