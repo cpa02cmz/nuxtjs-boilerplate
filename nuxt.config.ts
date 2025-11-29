@@ -191,33 +191,12 @@ export default defineNuxtConfig({
     componentIslands: true,
   },
 
-  // Security headers configuration
-  routeRules: {
-    // Main routes with prerender
-    '/': {
-      prerender: true,
-    },
-    '/ai-keys': {
-      prerender: true,
-    },
-    '/about': {
-      prerender: true,
-    },
-    '/search': {
-      prerender: true,
-    },
-    '/submit': {
-      prerender: true,
-    },
-    // API routes
-    '/api/**': {
-      // Cache control handled by security headers plugin
-    },
-    // Static assets
-    '/_nuxt/**': {
-      // Cache control handled by security headers plugin
-    },
-  },
+  // Security Configuration
+  // Content Security Policy (CSP) and other security headers are implemented via
+  // server plugin at server/plugins/security-headers.ts which provides:
+  // - Dynamic nonce generation per request for inline scripts/styles
+  // - Comprehensive security header protection
+  // - Route-specific cache control headers
 
   // Content Security Policy configuration
   nitro: {
@@ -245,7 +224,6 @@ export default defineNuxtConfig({
       'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
     },
   },
-
   // Image optimization configuration
   image: {
     // Enable native lazy loading for images

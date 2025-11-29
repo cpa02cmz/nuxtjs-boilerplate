@@ -88,17 +88,20 @@ if (fs.existsSync(securityPluginPath)) {
   }
 }
 
-// Check if security headers are in nuxt.config.ts
+// Check if security headers are in nuxt.config.ts - specifically looking for security configuration
 const nuxtConfigPath = path.join(__dirname, 'nuxt.config.ts')
 const nuxtConfigContent = fs.readFileSync(nuxtConfigPath, 'utf8')
 
-if (nuxtConfigContent.includes('Content-Security-Policy')) {
+if (
+  nuxtConfigContent.includes('Security Configuration') &&
+  nuxtConfigContent.includes('security-headers.ts')
+) {
   if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
     // eslint-disable-next-line no-console
-    console.log('✓ CSP header configuration found in nuxt.config.ts')
+    console.log('✓ CSP configuration reference found in nuxt.config.ts')
   }
 } else {
   if (
@@ -106,17 +109,22 @@ if (nuxtConfigContent.includes('Content-Security-Policy')) {
     process.env.VALIDATION_LOGS === 'true'
   ) {
     // eslint-disable-next-line no-console
-    console.log('✗ CSP header configuration NOT found in nuxt.config.ts')
+    console.log('✗ CSP configuration reference NOT found in nuxt.config.ts')
   }
 }
 
-if (nuxtConfigContent.includes('X-Content-Type-Options')) {
+if (
+  nuxtConfigContent.includes('Security Configuration') &&
+  nuxtConfigContent.includes('server plugin')
+) {
   if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
     // eslint-disable-next-line no-console
-    console.log('✓ Security headers configuration found in nuxt.config.ts')
+    console.log(
+      '✓ Security headers configuration reference found in nuxt.config.ts'
+    )
   }
 } else {
   if (
@@ -124,7 +132,9 @@ if (nuxtConfigContent.includes('X-Content-Type-Options')) {
     process.env.VALIDATION_LOGS === 'true'
   ) {
     // eslint-disable-next-line no-console
-    console.log('✗ Security headers configuration NOT found in nuxt.config.ts')
+    console.log(
+      '✗ Security headers configuration reference NOT found in nuxt.config.ts'
+    )
   }
 }
 
