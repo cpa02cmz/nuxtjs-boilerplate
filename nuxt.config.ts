@@ -213,6 +213,7 @@ export default defineNuxtConfig({
       '~/server/plugins/resource-validation.ts',
     ],
   },
+
   // Image optimization configuration
   image: {
     // Enable native lazy loading for images
