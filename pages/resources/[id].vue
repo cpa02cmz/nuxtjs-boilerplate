@@ -488,7 +488,6 @@
       <div class="mt-12">
         <AlternativeSuggestions v-if="resource" :resource="resource" />
       </div>
-      </div>
 
       <!-- Recommendations Section -->
       <div class="mt-12">

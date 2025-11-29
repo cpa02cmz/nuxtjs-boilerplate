@@ -21,7 +21,6 @@
       />
     </div>
   </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -72,10 +71,6 @@ onMounted(() => {
 // Watch for changes in the resource
 watch(
   () => props.resource,
-  () => {
-    initAlternatives()
-  }
-)
   () => {
     initAlternatives()
   }
