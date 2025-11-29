@@ -1,358 +1,162 @@
-<!-- eslint-disable vue/no-v-html -->
 <template>
-  <article
-    v-if="!hasError"
-    class="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow duration-300"
-    role="article"
+  <div
+    class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-200 dark:border-gray-700"
   >
-    <div class="flex items-start">
-      <div v-if="icon" class="flex-shrink-0 mr-4">
-        <OptimizedImage
-          :src="icon"
-          :alt="title"
-          width="48"
-          height="48"
-          format="webp"
-          loading="lazy"
-          quality="80"
-          img-class="w-12 h-12 rounded object-contain"
-          @error="handleImageError"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <h3
-          id="resource-title"
-          class="text-lg font-medium text-gray-900 truncate"
-        >
-          <NuxtLink
-            v-if="id"
-            :to="`/resources/${id}`"
-            class="hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:rounded-sm"
-            :aria-label="`View details for ${title}`"
-          >
-            <span
-              v-if="highlightedTitle"
-              v-html="sanitizedHighlightedTitle"
-            ></span>
-            <!-- eslint-disable-line vue/no-v-html -->
-            <span v-else>{{ title }}</span>
-          </NuxtLink>
-          <span v-else>
-            <span
-              v-if="highlightedTitle"
-              v-html="sanitizedHighlightedTitle"
-            ></span>
-            <!-- eslint-disable-line vue/no-v-html -->
-            <span v-else>{{ title }}</span>
-          </span>
-        </h3>
-        <p id="resource-description" class="mt-1 text-gray-800 text-sm">
-          <span
-            v-if="highlightedDescription"
-            v-html="sanitizedHighlightedDescription"
-          ></span>
-          <!-- eslint-disable-line vue/no-v-html -->
-          <span v-else>{{ description }}</span>
-        </p>
-        <div
-          class="mt-3 bg-gray-50 p-3 rounded-md"
-          role="region"
-          aria-label="Free tier information"
-        >
-          <p id="free-tier-label" class="font-medium text-gray-900 text-sm">
-            Free Tier:
-          </p>
-          <ul class="mt-1 space-y-1 text-xs text-gray-800" role="list">
-            <li v-for="(benefit, index) in benefits" :key="index">
-              {{ benefit }}
-            </li>
-          </ul>
-        </div>
-        <!-- Similarity badge if provided -->
-        <div
-          v-if="showSimilarity && similarityScore !== undefined"
-          class="mt-2"
-        >
-          <SimilarityBadge
-            :score="similarityScore"
-            :show-icon="true"
-            :show-percentage="true"
-          />
-        </div>
-
-        <!-- Similarity factors if provided -->
-        <div
-          v-if="
-            showSimilarity && similarityFactors && similarityFactors.length > 0
-          "
-          class="mt-2"
-        >
-          <div class="flex flex-wrap gap-1">
-            <span
-              v-for="(factor, index) in similarityFactors"
-              :key="index"
-              class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100"
-            >
-              {{ factor }}
-            </span>
-          </div>
-        </div>
-
-        <div class="mt-4 flex items-center justify-between">
-          <a
-            :href="url"
-            :target="newTab ? '_blank' : '_self'"
-            rel="noopener noreferrer"
-            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
-            :aria-label="`Visit ${title} - opens in ${newTab ? 'new tab' : 'same window'}`"
-            @click="handleLinkClick"
-          >
-            {{ buttonLabel }}
-            <span v-if="newTab" class="ml-1 text-xs">(new tab)</span>
-          </a>
-          <div class="flex items-center space-x-2">
-            <!-- Bookmark button -->
-            <BookmarkButton
-              v-if="id"
-              :resource-id="id"
-              :title="title"
-              :description="description"
-              :url="url"
-            />
-            <!-- Share button -->
-            <ShareButton
-              v-if="id"
-              :title="title"
-              :description="description"
-              :url="`${runtimeConfig.public.canonicalUrl}/resources/${id}`"
-            />
-            <!-- Compare button -->
-            <button
-              v-if="id"
-              @click="addResourceToComparison"
-              class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              :aria-label="`Add ${title} to comparison`"
-              title="Add to comparison"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                <path
-                  fill-rule="evenodd"
-                  d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </button>
-            <!-- Slot for additional actions -->
-            <slot name="actions"></slot>
-          </div>
-        </div>
-      </div>
+    <div v-if="icon" class="p-4 flex justify-center">
+      <OptimizedImage
+        :src="icon"
+        :alt="title"
+        width="64"
+        height="64"
+        class="w-16 h-16 object-contain"
+        @error="hasError = true"
+      />
     </div>
-  </article>
-
-  <!-- Error state -->
-  <div v-else class="bg-white p-6 rounded-lg shadow border border-red-200">
-    <div class="flex items-start">
-      <div class="flex-shrink-0 mr-4">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-12 w-12 text-red-600"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+    <div class="p-6">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+        <a
+          :href="url"
+          :target="newTab ? '_blank' : '_self'"
+          class="hover:underline"
+          @click="trackResourceClick"
+          rel="noopener noreferrer"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-          />
-        </svg>
+          {{ highlightedTitle ? sanitizeAndHighlight(highlightedTitle, searchQuery) : title }}
+        </a>
+      </h3>
+      <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+        {{ highlightedDescription ? sanitizeAndHighlight(highlightedDescription, searchQuery) : description }}
+      </p>
+      <div class="mt-3">
+        <ul class="list-disc pl-5 text-sm text-gray-500 dark:text-gray-400 space-y-1 max-h-20 overflow-y-auto">
+          <li v-for="(benefit, index) in benefits" :key="index">
+            {{ benefit }}
+          </li>
+        </ul>
       </div>
-      <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-red-900">Resource Unavailable</h3>
-        <p class="mt-1 text-red-700 text-sm">
-          This resource could not be displayed due to an error.
+      
+      <!-- Similarity information (for alternative suggestions) -->
+      <div v-if="similarityScore && similarityScore > 0" class="mt-3">
+        <div class="flex items-center">
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div
+              class="bg-blue-600 h-2 rounded-full"
+              :style="{ width: similarityScore + '%' }"
+            ></div>
+          </div>
+          <span class="ml-2 text-xs font-medium text-gray-700 dark:text-gray-300">
+            {{ similarityScore }}% match
+          </span>
+        </div>
+        <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
+          {{ similarityReason }}
         </p>
+      </div>
+      
+      <div class="mt-4 flex items-center justify-between">
+        <a
+          :href="url"
+          :target="newTab ? '_blank' : '_self'"
+          :class="[
+            'inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
+            { 'cursor-pointer': !selectedResources.includes(title) }
+          ]"
+          @click="trackResourceClick"
+          rel="noopener noreferrer"
+        >
+          {{ buttonLabel }}
+          <svg
+            class="ml-1 -mr-1 h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            />
+          </svg>
+        </a>
+        <div class="flex space-x-2">
+          <BookmarkButton :resource="resourceData" />
+          <ShareButton :resource="resourceData" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
 import { useHead, useRuntimeConfig } from '#imports'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import OptimizedImage from '~/components/OptimizedImage.vue'
 import BookmarkButton from '~/components/BookmarkButton.vue'
 import ShareButton from '~/components/ShareButton.vue'
-import SimilarityBadge from '~/components/SimilarityBadge.vue'
+import ResourceStatus from '~/components/ResourceStatus.vue'
 import { trackResourceView, trackResourceClick } from '~/utils/analytics'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
 
 interface Props {
   title: string
   description: string
-  benefits: string[]
+  benefits: readonly string[]
   url: string
-  id?: string
-  category?: string // Added for analytics tracking
-  icon?: string
+  category?: string
+  pricingModel?: string
+  difficulty?: string
+  tags?: readonly string[]
+  technology?: readonly string[]
   newTab?: boolean
   buttonLabel?: string
   highlightedTitle?: string
   highlightedDescription?: string
+  icon?: string
   searchQuery?: string
-  showSimilarity?: boolean
   similarityScore?: number
-  similarityFactors?: string[]
+  similarityReason?: string
 }
 
-// Get the comparison composable
-const { addResource, selectedResources } = useResourceComparison()
-
 const props = withDefaults(defineProps<Props>(), {
-  id: undefined,
-  category: 'unknown',
-  newTab: true,
   buttonLabel: 'Get Free Access',
   highlightedTitle: undefined,
   highlightedDescription: undefined,
   icon: undefined,
   searchQuery: '',
-  showSimilarity: false,
-  similarityScore: undefined,
-  similarityFactors: () => [],
+  status: 'active',
+  healthScore: undefined,
 })
 
 const hasError = ref(false)
 
 // Track resource view when component mounts
 onMounted(() => {
-  if (props.id) {
-    trackResourceView(props.id, props.title, props.category)
-  }
+  trackResourceView(props.title)
 })
 
-// Sanitize highlighted content to prevent XSS using centralized utility
-const sanitizedHighlightedTitle = computed(() => {
-  if (!props.highlightedTitle) return ''
-  // Use the centralized sanitization utility with the actual search query
-  return sanitizeAndHighlight(
-    props.highlightedTitle,
-    props.searchQuery || props.highlightedTitle
-  )
-})
+// Get the comparison composable
+const { addResource, selectedResources } = useResourceComparison()
 
-const sanitizedHighlightedDescription = computed(() => {
-  if (!props.highlightedDescription) return ''
-  // Use the centralized sanitization utility with the actual search query
-  return sanitizeAndHighlight(
-    props.highlightedDescription,
-    props.searchQuery || props.highlightedDescription
-  )
-})
+// Create a resource data object for sharing and bookmarking
+const resourceData = computed(() => ({
+  id: `${props.title}-${props.url}`, // Create a unique ID
+  title: props.title,
+  description: props.description,
+  benefits: props.benefits,
+  url: props.url,
+  category: props.category,
+  pricingModel: props.pricingModel,
+  difficulty: props.difficulty,
+  tags: props.tags || [],
+  technology: props.technology || [],
+  icon: props.icon
+}))
 
-// Handle image loading errors
-const handleImageError = () => {
-  hasError.value = true
-  // In production, we might want to use a proper error tracking service instead of console
-  if (process.dev) {
-    // eslint-disable-next-line no-console
-    console.error(`Failed to load image for resource: ${props.title}`)
+// Add to comparison if not already added
+const addToComparison = () => {
+  if (!selectedResources.value.includes(props.title)) {
+    addResource(props.title)
   }
-}
-
-// Handle link clicks and validate URL
-const handleLinkClick = (event: Event) => {
-  // Track the resource click
-  if (props.id) {
-    trackResourceClick(props.id, props.title, props.category)
-  }
-
-  try {
-    const url = new URL(props.url)
-    // URL is valid, allow the click
-  } catch (err) {
-    event.preventDefault()
-    hasError.value = true
-    // In production, we might want to use a proper error tracking service instead of console
-    if (process.dev) {
-      // eslint-disable-next-line no-console
-      console.error(`Invalid URL for resource: ${props.url}`, err)
-    }
-  }
-}
-
-// Get runtime config for canonical URL
-const runtimeConfig = useRuntimeConfig()
-
-// Method to add resource to comparison
-const addResourceToComparison = () => {
-  if (!props.id) return
-
-  // Create a resource object with the required properties
-  const resource = {
-    id: props.id,
-    title: props.title,
-    description: props.description,
-    benefits: props.benefits,
-    url: props.url,
-    category: props.category || 'unknown',
-  }
-
-  // Add the resource to comparison
-  const added = addResource(resource as any)
-
-  if (added) {
-    // Navigate to comparison page
-    navigateTo('/compare')
-  }
-}
-
-// Add structured data for the resource
-const resourceSchema = computed(() => {
-  // Only create schema if there's no error
-  if (hasError.value) return null
-
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication', // Using SoftwareApplication as most resources are web-based tools
-    name: props.title,
-    description: props.description,
-    url: props.url,
-    offers: {
-      '@type': 'Offer',
-      availability: 'https://schema.org/InStock',
-      price: '0',
-      priceCurrency: 'USD',
-    },
-    applicationCategory: 'http://schema.org/BusinessApplication',
-    operatingSystem: 'Web',
-  }
-})
-
-// Add JSON-LD structured data to the head if no error
-// Skip useHead in test environment to avoid injection issues
-if (typeof useHead === 'function') {
-  useHead(() => {
-    if (hasError.value || !resourceSchema.value) {
-      return {}
-    }
-    return {
-      script: [
-        {
-          type: 'application/ld+json',
-          innerHTML: JSON.stringify(resourceSchema.value),
-        },
-      ],
-    }
-  })
 }
 </script>

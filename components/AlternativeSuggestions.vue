@@ -1,13 +1,11 @@
 <template>
-  <div v-if="alternatives && alternatives.length > 0" class="mt-12">
-    <div class="mb-6">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-        Alternative Resources
-      </h2>
-      <p class="text-gray-600 dark:text-gray-400 mt-1">
-        Resources that serve similar purposes or provide alternative solutions
-      </p>
-    </div>
+  <div v-if="alternatives.length > 0" class="mt-12">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+      Alternative Suggestions
+    </h2>
+    <p class="text-gray-600 mb-6">
+      Users who viewed this resource also found these alternatives useful
+    </p>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <AlternativeCard
@@ -24,7 +22,7 @@
         :technology="alternative.resource.technology"
         :show-bookmark="true"
         :show-similarity="true"
-        :similarity-score="alternative.score"
+        :similarity-score="alternative.similarityScore"
         :similarity-factors="alternative.similarityFactors"
         @bookmark="handleBookmark(alternative.resource)"
       />
@@ -53,23 +51,8 @@
       </button>
     </div>
   </div>
-
-  <!-- Empty state when no alternatives are available -->
-  <div v-else-if="!loading && currentResource" class="mt-12 text-center py-12">
-    <svg
-      class="mx-auto h-12 w-12 text-gray-400"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-      />
-    </svg>
-    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+  <div v-else-if="!isLoading" class="mt-12 text-center">
+    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
       No alternatives found
     </h3>
     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -86,8 +69,70 @@ import { useResourceData } from '~/composables/useResourceData'
 import { useBookmarks } from '~/composables/useBookmarks'
 import type { Resource } from '~/types/resource'
 import type { AlternativeSuggestion } from '~/composables/useAlternativeSuggestions'
-</script>
 
-<style scoped>
-/* Add any specific styling for the alternatives section */
-</style>
+interface Props {
+  resource: Resource
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  resource: () => ({} as Resource)
+})
+
+const { alternatives, isLoading, fetchAlternatives } = useAlternativeSuggestions()
+const { toggleBookmark } = useBookmarks()
+
+// Additional state for pagination
+const maxDisplay = ref(6)
+const displayCount = computed(() => Math.min(maxDisplay.value, alternatives.value.length))
+const hasMoreAlternatives = computed(() => alternatives.value.length > maxDisplay.value)
+
+const displayedAlternatives = computed(() => 
+  alternatives.value.slice(0, displayCount.value)
+)
+
+// Update the alternatives reference to use the sliced array
+const alternativesRef = computed(() => displayedAlternatives.value)
+
+onMounted(() => {
+  initAlternatives()
+})
+
+// Initialize alternatives when the resource prop changes
+watch(
+  () => props.resource,
+  () => {
+    initAlternatives()
+  }
+)
+
+const initAlternatives = async () => {
+  if (props.resource.id) {
+    await fetchAlternatives(props.resource.id)
+  }
+}
+
+const handleBookmark = (resource: Resource) => {
+  toggleBookmark(resource)
+}
+
+// Get appropriate button label based on category
+const getButtonLabel = (category: string) => {
+  if (!category) return 'Get Free Access'
+  
+  const categoryMap: Record<string, string> = {
+    'ai-tool': 'Try Tool',
+    'ai-model': 'Use Model',
+    'ai-platform': 'Access Platform',
+    'ai-service': 'Use Service',
+    'ai-research': 'Read Paper',
+    'ai-course': 'Start Learning',
+    'ai-book': 'Read Book'
+  }
+  
+  return categoryMap[category.toLowerCase()] || 'Get Free Access'
+}
+
+const loadMore = () => {
+  maxDisplay.value += 6 // Load 6 more items
+}
+</script>
