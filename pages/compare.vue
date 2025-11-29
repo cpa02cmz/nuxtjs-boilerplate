@@ -1,62 +1,67 @@
 <template>
-  <div class="compare-page">
-    <div class="page-header">
-      <h1>Compare Resources</h1>
-      <p>
-        Select multiple resources to compare their features, pricing, and
-        capabilities side-by-side
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+        Resource Comparison
+      </h1>
+      <p class="mt-2 text-gray-600 dark:text-gray-400">
+        Compare resources side-by-side to make informed decisions
       </p>
     </div>
 
-    <ComparisonBuilder />
+    <ComparisonBuilder
+      :selected-resources="selectedResources"
+      :max-resources="4"
+      @remove-resource="removeResource"
+      @clear-comparison="clearComparison"
+      @share-comparison="shareComparison"
+      @browse-resources="browseResources"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useResourceComparison } from '~/composables/useResourceComparison'
+import type { Resource } from '~/types/resource'
 import ComparisonBuilder from '~/components/ComparisonBuilder.vue'
 
-// Set page metadata
+// Use the comparison composable
+const { selectedResources, removeResource, clearComparison, comparisonCount } =
+  useResourceComparison()
+
+// Page metadata
 useSeoMeta({
-  title: 'Compare Resources | Nuxt.js Boilerplate',
+  title: 'Resource Comparison Tool - Compare Side-by-Side',
   description:
-    'Compare multiple resources side-by-side to make informed decisions. Evaluate features, pricing, and capabilities.',
-  ogTitle: 'Compare Resources',
+    'Compare multiple resources side-by-side to make informed decisions. Find the best alternatives and evaluate features, pricing, and more.',
+  ogTitle: 'Resource Comparison Tool',
   ogDescription:
-    'Compare multiple resources side-by-side to make informed decisions.',
+    'Compare multiple resources side-by-side to make informed decisions',
   ogType: 'website',
-  ogUrl: `${useRuntimeConfig().public.baseURL}/compare`,
+  ogUrl: '/compare',
 })
+
+// Methods
+const shareComparison = () => {
+  // Create a shareable URL with the selected resources
+  const resourceIds = selectedResources.value.map(r => r.id).join(',')
+  const shareUrl = `${window.location.origin}/compare/${resourceIds}`
+
+  // Copy to clipboard
+  navigator.clipboard
+    .writeText(shareUrl)
+    .then(() => {
+      // Show success notification using the toast client plugin
+      const nuxtApp = useNuxtApp()
+      nuxtApp.$toast.success('Comparison URL copied to clipboard!')
+    })
+    .catch(err => {
+      console.error('Failed to copy URL: ', err)
+    })
+}
+
+const browseResources = () => {
+  // Navigate to search page
+  navigateTo('/search')
+}
 </script>
-
-<style scoped>
-.compare-page {
-  padding: 2rem 1rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.page-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.page-header h1 {
-  color: #333;
-  margin-bottom: 0.5rem;
-}
-
-.page-header p {
-  color: #666;
-  margin: 0;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-@media (max-width: 768px) {
-  .compare-page {
-    padding: 1rem 0.5rem;
-  }
-}
-</style>

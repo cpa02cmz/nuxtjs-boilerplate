@@ -25,10 +25,9 @@ export interface Resource {
   platforms?: readonly string[] // Supported platforms
   license?: string // License type if open source
   icon?: string
-  // Alternative resources
-  alternatives?: readonly string[] // IDs of alternative resources
-  // Similar resources
-  similarResources?: readonly string[] // IDs of similar resources
+  alternatives?: string[] // Array of resource IDs that are alternatives
+  similarityScore?: number // For alternative relationships
+}
 }
 
 export interface FilterOptions {

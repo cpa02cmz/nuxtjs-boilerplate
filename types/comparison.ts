@@ -1,4 +1,5 @@
-// Define TypeScript interfaces for resource comparison functionality
+// Comparison-related TypeScript interfaces
+import type { Resource } from './resource'
 
 export interface ComparisonCriteria {
   id: string
@@ -20,8 +21,14 @@ export interface ResourceComparison {
 }
 
 export interface ComparisonView {
-  resource: any // Using any to match the existing Resource type
+  resource: Resource
   scores: Record<string, number>
   highlights: string[]
   missing: string[]
+}
+
+export interface ComparisonData {
+  resources: Resource[]
+  criteria: ComparisonCriteria[]
+  comparisonId?: string
 }

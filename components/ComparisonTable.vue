@@ -1,390 +1,128 @@
 <template>
-  <div class="comparison-table-container">
-    <div v-if="selectedResources.length < 2" class="no-comparison">
-      <p>Select 2-4 resources to compare them side-by-side</p>
-    </div>
-
-    <div v-else class="comparison-table-wrapper">
-      <!-- Desktop/Tablet View -->
-      <div class="comparison-table desktop-table">
-        <div class="table-header">
-          <div class="criteria-column">Criteria</div>
-          <div
-            v-for="resource in selectedResources"
-            :key="resource.id"
-            class="resource-column"
+  <div v-if="resources && resources.length >= 2" class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <thead class="bg-gray-50 dark:bg-gray-800">
+        <tr>
+          <th
+            scope="col"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
           >
-            <div class="resource-header">
-              <h3>{{ resource.title }}</h3>
-              <p class="resource-url">{{ resource.url }}</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="table-body">
-          <!-- Pricing Section -->
-          <div class="criteria-section">
-            <h4 class="section-title">Pricing</h4>
-
-            <div class="table-row">
-              <div class="criteria-cell">Pricing Model</div>
-              <div
-                v-for="resource in selectedResources"
-                :key="`${resource.id}-pricing`"
-                class="resource-cell"
-              >
-                {{ resource.pricingModel }}
+            Criteria
+          </th>
+          <th
+            v-for="(resource, index) in resources"
+            :key="`header-${index}`"
+            scope="col"
+            class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+          >
+            <div class="flex flex-col items-center">
+              <div class="font-bold text-sm">{{ resource.title }}</div>
+              <div class="text-xs text-gray-400 dark:text-gray-500">
+                {{ resource.category }}
               </div>
-            </div>
-
-            <div class="table-row">
-              <div class="criteria-cell">Free Tier</div>
-              <div
-                v-for="resource in selectedResources"
-                :key="`${resource.id}-freetier`"
-                class="resource-cell"
+              <button
+                @click="removeResource(resource.id)"
+                class="mt-1 text-red-500 hover:text-red-700 text-xs flex items-center"
               >
-                {{ resource.specifications?.freeTier || 'N/A' }}
-              </div>
+                <svg
+                  class="w-3 h-3 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+                Remove
+              </button>
             </div>
-          </div>
-
-          <!-- Features Section -->
-          <div class="criteria-section">
-            <h4 class="section-title">Features</h4>
-
-            <div class="table-row">
-              <div class="criteria-cell">Core Features</div>
-              <div
-                v-for="resource in selectedResources"
-                :key="`${resource.id}-features`"
-                class="resource-cell"
-              >
-                <ul v-if="resource.features && resource.features.length">
-                  <li
-                    v-for="(feature, idx) in resource.features.slice(0, 3)"
-                    :key="idx"
-                  >
-                    {{ feature }}
-                  </li>
-                  <li v-if="resource.features.length > 3">
-                    +{{ resource.features.length - 3 }} more
-                  </li>
-                </ul>
-                <span v-else>N/A</span>
-              </div>
-            </div>
-
-            <div class="table-row">
-              <div class="criteria-cell">Benefits</div>
-              <div
-                v-for="resource in selectedResources"
-                :key="`${resource.id}-benefits`"
-                class="resource-cell"
-              >
-                <ul v-if="resource.benefits && resource.benefits.length">
-                  <li
-                    v-for="(benefit, idx) in resource.benefits.slice(0, 3)"
-                    :key="idx"
-                  >
-                    {{ benefit }}
-                  </li>
-                  <li v-if="resource.benefits.length > 3">
-                    +{{ resource.benefits.length - 3 }} more
-                  </li>
-                </ul>
-                <span v-else>N/A</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Technical Section -->
-          <div class="criteria-section">
-            <h4 class="section-title">Technical</h4>
-
-            <div class="table-row">
-              <div class="criteria-cell">Platforms</div>
-              <div
-                v-for="resource in selectedResources"
-                :key="`${resource.id}-platforms`"
-                class="resource-cell"
-              >
-                {{ resource.platforms?.join(', ') || 'N/A' }}
-              </div>
-            </div>
-
-            <div class="table-row">
-              <div class="criteria-cell">Technologies</div>
-              <div
-                v-for="resource in selectedResources"
-                :key="`${resource.id}-tech`"
-                class="resource-cell"
-              >
-                {{ resource.technology.join(', ') }}
-              </div>
-            </div>
-          </div>
-
-          <!-- Quality Section -->
-          <div class="criteria-section">
-            <h4 class="section-title">Quality</h4>
-
-            <div class="table-row">
-              <div class="criteria-cell">Rating</div>
-              <div
-                v-for="resource in selectedResources"
-                :key="`${resource.id}-rating`"
-                class="resource-cell"
-              >
-                {{ resource.rating || 'N/A' }}
-              </div>
-            </div>
-
-            <div class="table-row">
-              <div class="criteria-cell">Popularity</div>
-              <div
-                v-for="resource in selectedResources"
-                :key="`${resource.id}-popularity`"
-                class="resource-cell"
-              >
-                {{ resource.popularity }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Mobile View -->
-      <div class="comparison-table mobile-table">
-        <div
-          v-for="resource in selectedResources"
-          :key="resource.id"
-          class="mobile-resource-card"
+          </th>
+        </tr>
+      </thead>
+      <tbody
+        class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700"
+      >
+        <tr
+          v-for="criterion in criteria"
+          :key="criterion.id"
+          class="hover:bg-gray-50 dark:hover:bg-gray-800"
         >
-          <h3>{{ resource.title }}</h3>
-          <p class="resource-url">{{ resource.url }}</p>
-
-          <div class="mobile-comparison-section">
-            <h4>Pricing</h4>
-            <p><strong>Model:</strong> {{ resource.pricingModel }}</p>
-            <p>
-              <strong>Free Tier:</strong>
-              {{ resource.specifications?.freeTier || 'N/A' }}
-            </p>
-          </div>
-
-          <div class="mobile-comparison-section">
-            <h4>Features</h4>
-            <div v-if="resource.features && resource.features.length">
-              <p
-                v-for="(feature, idx) in resource.features.slice(0, 3)"
-                :key="idx"
-              >
-                • {{ feature }}
-              </p>
-              <p v-if="resource.features.length > 3">
-                +{{ resource.features.length - 3 }} more
-              </p>
+          <td
+            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white"
+          >
+            {{ criterion.name }}
+          </td>
+          <td
+            v-for="(resource, index) in resources"
+            :key="`data-${index}-${criterion.id}`"
+            class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center"
+          >
+            <div class="flex justify-center">
+              <ComparisonValue
+                :value="getResourceValue(resource, criterion.id)"
+                :type="criterion.type"
+              />
             </div>
-            <p v-else>N/A</p>
-          </div>
-
-          <div class="mobile-comparison-section">
-            <h4>Technical</h4>
-            <p>
-              <strong>Platforms:</strong>
-              {{ resource.platforms?.join(', ') || 'N/A' }}
-            </p>
-            <p>
-              <strong>Technologies:</strong>
-              {{ resource.technology.join(', ') }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
+    <svg
+      class="mx-auto h-12 w-12 text-gray-400"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+      />
+    </svg>
+    <h3 class="mt-2 text-sm font-medium">No resources to compare</h3>
+    <p class="mt-1 text-sm">
+      Add at least 2 resources to see the comparison table.
+    </p>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Resource } from '~/types/resource'
+import type { ComparisonCriteria } from '~/types/comparison'
+import ComparisonValue from './ComparisonValue.vue'
 
 interface Props {
-  selectedResources: Resource[]
+  resources: Resource[]
+  criteria: ComparisonCriteria[]
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+const emit = defineEmits(['remove-resource'])
+
+const removeResource = (resourceId: string) => {
+  emit('remove-resource', resourceId)
+}
+
+const getResourceValue = (resource: Resource, field: string) => {
+  // Handle nested properties
+  if (field.includes('.')) {
+    const parts = field.split('.')
+    let value: any = resource
+    for (const part of parts) {
+      value = value[part]
+      if (value === undefined) break
+    }
+    return value
+  }
+
+  // Handle direct properties
+  return (resource as any)[field]
+}
 </script>
-
-<style scoped>
-.comparison-table-container {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.no-comparison {
-  text-align: center;
-  padding: 2rem;
-  color: #666;
-}
-
-.comparison-table-wrapper {
-  width: 100%;
-}
-
-.comparison-table.desktop-table {
-  display: table;
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #e0e0e0;
-}
-
-.table-header {
-  display: table-header-group;
-  background-color: #f5f5f5;
-}
-
-.table-header > div {
-  display: table-cell;
-  padding: 1rem;
-  font-weight: bold;
-  border-bottom: 2px solid #e0e0e0;
-  vertical-align: top;
-}
-
-.criteria-column {
-  width: 200px;
-  min-width: 200px;
-}
-
-.resource-column {
-  width: calc((100% - 200px) / 3); /* Adjust based on number of resources */
-  min-width: 200px;
-}
-
-.table-body {
-  display: table-row-group;
-}
-
-.criteria-section {
-  margin-bottom: 1rem;
-}
-
-.section-title {
-  background-color: #f9f9f9;
-  padding: 0.5rem 1rem;
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.table-row {
-  display: table-row;
-}
-
-.table-row:nth-child(even) {
-  background-color: #fafafa;
-}
-
-.criteria-cell {
-  display: table-cell;
-  padding: 0.75rem 1rem;
-  font-weight: 500;
-  border-right: 1px solid #e0e0e0;
-  vertical-align: top;
-  width: 200px;
-}
-
-.resource-cell {
-  display: table-cell;
-  padding: 0.75rem 1rem;
-  border-right: 1px solid #e0e0e0;
-  vertical-align: top;
-}
-
-.resource-cell:last-child {
-  border-right: none;
-}
-
-.resource-header h3 {
-  margin: 0 0 0.25rem 0;
-  font-size: 1rem;
-  color: #333;
-}
-
-.resource-url {
-  font-size: 0.85rem;
-  color: #007acc;
-  margin: 0;
-}
-
-.table-row ul {
-  margin: 0;
-  padding-left: 1rem;
-}
-
-.table-row li {
-  margin: 0.25rem 0;
-  font-size: 0.9rem;
-}
-
-/* Mobile Styles */
-.comparison-table.mobile-table {
-  display: none;
-}
-
-.mobile-resource-card {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  background-color: white;
-}
-
-.mobile-resource-card h3 {
-  margin-top: 0;
-  color: #333;
-}
-
-.mobile-comparison-section {
-  margin-bottom: 1rem;
-}
-
-.mobile-comparison-section h4 {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
-  color: #555;
-  font-size: 1rem;
-}
-
-.mobile-comparison-section p {
-  margin: 0.25rem 0;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .comparison-table.desktop-table {
-    display: none;
-  }
-
-  .comparison-table.mobile-table {
-    display: block;
-  }
-
-  .criteria-column,
-  .resource-column,
-  .criteria-cell,
-  .resource-cell {
-    display: block;
-    width: 100% !important;
-    border-right: none;
-  }
-
-  .table-row {
-    display: block;
-    border-bottom: 1px solid #e0e0e0;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
-  }
-}
-</style>
