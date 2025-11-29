@@ -300,6 +300,9 @@
       <!-- Search Analytics Section -->
       <SearchAnalytics />
     </div>
+
+    <!-- Search Analytics Section -->
+    <SearchAnalytics />
   </div>
 </template>
 
