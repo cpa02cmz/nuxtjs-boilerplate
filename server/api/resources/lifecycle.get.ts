@@ -25,7 +25,7 @@ export default defineEventHandler(async event => {
 
   resources.forEach((resource: Resource) => {
     const status = resource.status || 'active'
-    if (statusCounts.hasOwnProperty(status)) {
+    if (Object.prototype.hasOwnProperty.call(statusCounts, status)) {
       statusCounts[status]++
       resourcesByStatus[status].push(resource)
     } else {

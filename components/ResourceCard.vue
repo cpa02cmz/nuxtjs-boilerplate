@@ -51,7 +51,7 @@
           <ResourceStatus
             v-if="status"
             :status="status"
-            :healthScore="healthScore"
+            :health-score="healthScore"
           />
         </div>
         <p id="resource-description" class="mt-1 text-gray-800 text-sm">

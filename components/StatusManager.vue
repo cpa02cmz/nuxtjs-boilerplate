@@ -40,9 +40,9 @@
       </div>
 
       <button
+        class="update-button"
         @click="updateStatus"
         :disabled="isUpdating || !selectedStatus"
-        class="update-button"
       >
         {{ isUpdating ? 'Updating...' : 'Update Status' }}
       </button>
@@ -102,7 +102,7 @@ const updateStatus = async () => {
       lastUpdate.value = { success: false, error: 'Failed to update status' }
     }
   } catch (error: any) {
-    console.error('Error updating resource status:', error)
+    // Error updating resource status
     lastUpdate.value = {
       success: false,
       error: error.message || 'Unknown error',

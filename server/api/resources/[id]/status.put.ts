@@ -1,4 +1,5 @@
 import { Resource } from '~/types/resource'
+import { getRouterParam } from '#imports'
 
 // In-memory storage for resource status updates (in production, this would be a database)
 const resourceStatusHistory = new Map<string, any[]>()

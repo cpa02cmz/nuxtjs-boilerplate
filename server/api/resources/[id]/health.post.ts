@@ -1,4 +1,5 @@
 import { Resource } from '~/types/resource'
+import { getRouterParam } from '#imports'
 import {
   updateResourceHealth,
   getResourceHealthStatus,

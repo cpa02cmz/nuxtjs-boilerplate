@@ -87,7 +87,7 @@
                 <ResourceStatus
                   v-if="resource.status"
                   :status="resource.status"
-                  :healthScore="resource.healthScore"
+                  :health-score="resource.healthScore"
                 />
               </div>
             </div>

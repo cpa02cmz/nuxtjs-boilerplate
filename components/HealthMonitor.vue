@@ -3,9 +3,9 @@
     <div class="monitor-header">
       <h3>Resource Health</h3>
       <button
+        class="check-button"
         @click="triggerHealthCheck"
         :disabled="isChecking"
-        class="check-button"
       >
         {{ isChecking ? 'Checking...' : 'Check Health' }}
       </button>
@@ -127,7 +127,7 @@ const loadHealthStatus = async () => {
       healthStatus.value = response
     }
   } catch (error) {
-    console.error('Failed to load health status:', error)
+    // Failed to load health status
   }
 }
 
@@ -139,7 +139,7 @@ const triggerHealthCheck = async () => {
     })
     healthStatus.value = response.healthStatus
   } catch (error) {
-    console.error('Failed to trigger health check:', error)
+    // Failed to trigger health check
   } finally {
     isChecking.value = false
   }
