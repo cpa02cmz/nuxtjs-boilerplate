@@ -191,6 +191,13 @@ export default defineNuxtConfig({
     componentIslands: true,
   },
 
+  // Security Configuration
+  // Content Security Policy (CSP) and other security headers are implemented via
+  // server plugin at server/plugins/security-headers.ts which provides:
+  // - Dynamic nonce generation per request for inline scripts/styles
+  // - Comprehensive security header protection
+  // - Route-specific cache control headers
+
   // Content Security Policy configuration
   nitro: {
     // Optimize server-side rendering
@@ -217,7 +224,6 @@ export default defineNuxtConfig({
       'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
     },
   },
-
   // Image optimization configuration
   image: {
     // Enable native lazy loading for images
