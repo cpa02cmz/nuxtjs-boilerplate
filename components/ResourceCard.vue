@@ -96,6 +96,8 @@
               :description="description"
               :url="`${runtimeConfig.public.canonicalUrl}/resources/${id}`"
             />
+            <!-- Comparison button -->
+            <ComparisonButton v-if="id" :resource-id="id" />
             <!-- Slot for additional actions -->
             <slot name="actions"></slot>
           </div>
@@ -139,6 +141,7 @@ import { useHead, useRuntimeConfig } from '#imports'
 import OptimizedImage from '~/components/OptimizedImage.vue'
 import BookmarkButton from '~/components/BookmarkButton.vue'
 import ShareButton from '~/components/ShareButton.vue'
+import ComparisonButton from '~/components/ComparisonButton.vue'
 import { trackResourceView, trackResourceClick } from '~/utils/analytics'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
 
