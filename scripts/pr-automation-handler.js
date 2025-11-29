@@ -117,9 +117,32 @@ function analyzePR(prNumber) {
       BLOCKING_LABELS.includes(label.name)
     )
 
-    if (hasBlockingLabel) {
-      if (process.env.DEBUG)
-        console.log(`✗ PR #${prNumber} has blocking label, skipping`)
+    // Also check if there were recent automation comments to avoid processing loops
+    let hasRecentAutomationComment = false
+    if (prData.comments) {
+      const recentCommentTime = new Date()
+      recentCommentTime.setDate(recentCommentTime.getDate() - 1) // Within last 24 hours
+
+      hasRecentAutomationComment = prData.comments.some(
+        comment =>
+          comment.body &&
+          (comment.body.includes('🤖 Automated PR processing') ||
+            comment.body.includes('Automated PR handling completed')) &&
+          new Date(comment.updatedAt) > recentCommentTime
+      )
+    }
+
+    if (hasBlockingLabel || hasRecentAutomationComment) {
+      if (process.env.DEBUG) {
+        if (hasBlockingLabel) {
+          console.log(`✗ PR #${prNumber} has blocking label, skipping`)
+        }
+        if (hasRecentAutomationComment) {
+          console.log(
+            `✗ PR #${prNumber} has recent automation comment, skipping`
+          )
+        }
+      }
       return null
     }
 
@@ -753,6 +776,19 @@ function finalizePR(prNumber, success) {
           console.log(
             `⚠️ Could not add label due to permission issues: ${labelError.message}`
           )
+        // Alternative: add the label by creating a comment that mentions the need for human review
+        try {
+          const alternativeLabelComment = `⚠️ Marking for manual review - needs-human-review`
+          execSync(
+            `gh pr comment ${prNumber} --body '${alternativeLabelComment.replace(/'/g, "'\"'\"'")}'`,
+            { stdio: 'pipe' }
+          )
+        } catch (altCommentError) {
+          if (process.env.DEBUG)
+            console.log(
+              `Could not add alternative label comment: ${altCommentError.message}`
+            )
+        }
       }
 
       execSync(
