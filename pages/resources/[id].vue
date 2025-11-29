@@ -1043,16 +1043,28 @@ const fetchResourceAnalytics = async (resourceId: string) => {
 // Copy URL to clipboard
 const copyToClipboard = async () => {
   try {
+    // Use the modern Clipboard API
     await navigator.clipboard.writeText(currentUrl.value)
     // We could add a toast notification here in the future
   } catch (err) {
-    // Fallback for older browsers
-    const textArea = document.createElement('textarea')
-    textArea.value = currentUrl.value
-    document.body.appendChild(textArea)
-    textArea.select()
-    document.execCommand('copy')
-    document.body.removeChild(textArea)
+    // Fallback for browsers that don't support Clipboard API
+    try {
+      // Try to use the deprecated execCommand as a last resort
+      const textArea = document.createElement('textarea')
+      textArea.value = currentUrl.value
+      // Move textarea off-screen to avoid scrolling to bottom
+      textArea.style.position = 'fixed'
+      textArea.style.left = '-999999px'
+      textArea.style.top = '-999999px'
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+    } catch (fallbackErr) {
+      console.error('Failed to copy: ', fallbackErr)
+      // Show error notification to user
+    }
   }
 }
 
