@@ -1,3 +1,4 @@
+import { getHeader, getQuery } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 
 export default defineEventHandler(event => {

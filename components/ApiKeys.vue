@@ -118,6 +118,7 @@
 
 <script setup lang="ts">
 import type { ApiKey } from '~/types/webhook'
+import { logError } from '~/utils/errorLogger'
 
 const showCreateForm = ref(false)
 const apiKeys = ref<ApiKey[]>([])
@@ -137,7 +138,9 @@ const fetchApiKeys = async () => {
     const response = await $fetch('/api/v1/auth/api-keys')
     apiKeys.value = response.data
   } catch (error) {
-    console.error('Error fetching API keys:', error)
+    logError('Error fetching API keys', error as Error, 'ApiKeysComponent', {
+      operation: 'fetchApiKeys',
+    })
   } finally {
     loading.value = false
   }
@@ -163,7 +166,9 @@ const createApiKey = async () => {
     // Refresh list
     await fetchApiKeys()
   } catch (error) {
-    console.error('Error creating API key:', error)
+    logError('Error creating API key', error as Error, 'ApiKeysComponent', {
+      operation: 'createApiKey',
+    })
   }
 }
 
@@ -178,7 +183,10 @@ const revokeApiKey = async (id: string) => {
       // Refresh list
       await fetchApiKeys()
     } catch (error) {
-      console.error('Error revoking API key:', error)
+      logError('Error revoking API key', error as Error, 'ApiKeysComponent', {
+        operation: 'revokeApiKey',
+        keyId: id,
+      })
     }
   }
 }
@@ -190,7 +198,12 @@ const copyApiKey = async () => {
       await navigator.clipboard.writeText(createdApiKey.value.key)
       // Optional: show success message
     } catch (error) {
-      console.error('Error copying to clipboard:', error)
+      logError(
+        'Error copying API key to clipboard',
+        error as Error,
+        'ApiKeysComponent',
+        { operation: 'copyApiKey' }
+      )
     }
   }
 }
