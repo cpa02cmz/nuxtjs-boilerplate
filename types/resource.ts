@@ -27,8 +27,7 @@ export interface Resource {
   icon?: string
   // Alternative resources
   alternatives?: readonly string[] // IDs of alternative resources
-  // Similar resources
-  similarResources?: readonly string[] // IDs of similar resources
+  similarityScore?: number // For alternative relationships
   // Moderation fields
   status?: 'pending' | 'approved' | 'rejected' | 'deprecated' // Default is 'approved' for existing resources
   submittedBy?: string // User ID

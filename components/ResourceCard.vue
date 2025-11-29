@@ -20,32 +20,40 @@
         />
       </div>
       <div class="flex-1 min-w-0">
-        <h3
-          id="resource-title"
-          class="text-lg font-medium text-gray-900 truncate"
-        >
-          <NuxtLink
-            v-if="id"
-            :to="`/resources/${id}`"
-            class="hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:rounded-sm"
-            :aria-label="`View details for ${title}`"
+        <div class="flex items-center justify-between">
+          <h3
+            id="resource-title"
+            class="text-lg font-medium text-gray-900 truncate"
           >
-            <span
-              v-if="highlightedTitle"
-              v-html="sanitizedHighlightedTitle"
-            ></span>
-            <!-- eslint-disable-line vue/no-v-html -->
-            <span v-else>{{ title }}</span>
-          </NuxtLink>
-          <span v-else>
-            <span
-              v-if="highlightedTitle"
-              v-html="sanitizedHighlightedTitle"
-            ></span>
-            <!-- eslint-disable-line vue/no-v-html -->
-            <span v-else>{{ title }}</span>
-          </span>
-        </h3>
+            <NuxtLink
+              v-if="id"
+              :to="`/resources/${id}`"
+              class="hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:rounded-sm"
+              :aria-label="`View details for ${title}`"
+            >
+              <span
+                v-if="highlightedTitle"
+                v-html="sanitizedHighlightedTitle"
+              ></span>
+              <!-- eslint-disable-line vue/no-v-html -->
+              <span v-else>{{ title }}</span>
+            </NuxtLink>
+            <span v-else>
+              <span
+                v-if="highlightedTitle"
+                v-html="sanitizedHighlightedTitle"
+              ></span>
+              <!-- eslint-disable-line vue/no-v-html -->
+              <span v-else>{{ title }}</span>
+            </span>
+          </h3>
+          <!-- Resource status badge -->
+          <ResourceStatus
+            v-if="status"
+            :status="status"
+            :health-score="healthScore"
+          />
+        </div>
         <p id="resource-description" class="mt-1 text-gray-800 text-sm">
           <span
             v-if="highlightedDescription"
@@ -68,6 +76,25 @@
             </li>
           </ul>
         </div>
+
+        <!-- Similarity information (for alternative suggestions) -->
+        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
+          <div class="flex items-center">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div
+                class="bg-blue-600 h-2 rounded-full"
+                :style="{ width: `${similarityScore * 100}%` }"
+              ></div>
+            </div>
+            <span class="ml-2 text-xs font-medium text-gray-700">
+              {{ Math.round(similarityScore * 100) }}% match
+            </span>
+          </div>
+          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
+            {{ similarityReason }}
+          </p>
+        </div>
+
         <div class="mt-4 flex items-center justify-between">
           <a
             :href="url"
@@ -162,6 +189,7 @@ import { useResourceComparison } from '~/composables/useResourceComparison'
 import OptimizedImage from '~/components/OptimizedImage.vue'
 import BookmarkButton from '~/components/BookmarkButton.vue'
 import ShareButton from '~/components/ShareButton.vue'
+import ResourceStatus from '~/components/ResourceStatus.vue'
 import { trackResourceView, trackResourceClick } from '~/utils/analytics'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
 
@@ -178,6 +206,8 @@ interface Props {
   highlightedTitle?: string
   highlightedDescription?: string
   searchQuery?: string
+  similarityScore?: number
+  similarityReason?: string
 }
 
 // Get the comparison composable
@@ -192,6 +222,8 @@ const props = withDefaults(defineProps<Props>(), {
   highlightedDescription: undefined,
   icon: undefined,
   searchQuery: '',
+  status: 'active',
+  healthScore: undefined,
 })
 
 const hasError = ref(false)
