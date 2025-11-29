@@ -191,6 +191,29 @@ export default defineNuxtConfig({
     componentIslands: true,
   },
 
+  // Security Configuration
+  // Content Security Policy (CSP) and other security headers are implemented via
+  // server plugin at server/plugins/security-headers.ts which provides:
+  // - Dynamic nonce generation per request for inline scripts/styles
+  // - Comprehensive security header protection
+  // - Route-specific cache control headers
+
+  // Security and performance configuration
+  nitro: {
+    // Optimize server-side rendering
+    minify: true,
+    // Enable compression
+    compressPublicAssets: true,
+    // Improve build performance
+    ignore: ['**/.git/**', '**/node_modules/**', '**/dist/**'],
+    // Security headers are handled via the security-headers.ts plugin
+    // to ensure proper nonce generation and dynamic header values
+    plugins: [
+      '~/server/plugins/security-headers.ts',
+      '~/server/plugins/resource-validation.ts',
+    ],
+  },
+
   // Image optimization configuration
   image: {
     // Enable native lazy loading for images
@@ -346,20 +369,6 @@ export default defineNuxtConfig({
   // Explicitly use Vite for faster builds
   builder: 'vite',
 
-  nitro: {
-    // Optimize server-side rendering
-    minify: true,
-    // Enable compression
-    compressPublicAssets: true,
-    // Improve build performance
-    ignore: ['**/.git/**', '**/node_modules/**', '**/dist/**'],
-    // CSP headers via middleware
-    plugins: [
-      '~/server/plugins/security-headers.ts',
-      '~/server/plugins/resource-validation.ts',
-    ],
-  },
-
   // Optimize bundle size
   vite: {
     build: {
@@ -387,14 +396,25 @@ export default defineNuxtConfig({
     plugins: [
       // Add bundle analyzer for performance monitoring (only when ANALYZE_BUNDLE is true)
       ...(process.env.ANALYZE_BUNDLE === 'true'
-        ? [
-            require('rollup-plugin-visualizer').default({
-              filename: './dist/stats.html',
-              open: false,
-              gzipSize: true,
-              brotliSize: true,
-            }),
-          ]
+        ? (() => {
+            try {
+              // Safely require the visualizer plugin to avoid build failures
+              const { visualizer } = require('rollup-plugin-visualizer')
+              return [
+                visualizer({
+                  filename: './dist/stats.html',
+                  open: false,
+                  gzipSize: true,
+                  brotliSize: true,
+                }),
+              ]
+            } catch (error) {
+              console.warn(
+                'rollup-plugin-visualizer not available, skipping bundle analysis'
+              )
+              return [] // Return empty array if plugin is not available
+            }
+          })()
         : []),
     ],
     // Optimize build speed

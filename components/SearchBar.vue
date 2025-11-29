@@ -89,11 +89,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import SearchSuggestions from '~/components/SearchSuggestions.vue'
 import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
+
+// Define EventListener type for TypeScript
+type EventListener = (evt: Event) => void
 
 interface Props {
   modelValue: string
@@ -241,4 +244,52 @@ const handleNavigate = (direction: 'up' | 'down') => {
 defineExpose({
   focus: () => searchInputRef.value?.focus(),
 })
+
+// Listen for saved search events to show notifications
+if (typeof window !== 'undefined') {
+  const showToast = (
+    message: string,
+    type: 'success' | 'error' | 'warning' | 'info' = 'info'
+  ) => {
+    // Create a custom event to trigger toast notifications
+    window.dispatchEvent(
+      new CustomEvent('show-toast', {
+        detail: { message, type },
+      })
+    )
+  }
+
+  const savedSearchAddedHandler = (event: CustomEvent) => {
+    const { name, query } = event.detail
+    showToast(`Saved search "${name}" successfully!`, 'success')
+  }
+
+  const savedSearchUpdatedHandler = (event: CustomEvent) => {
+    const { name, query } = event.detail
+    showToast(`Updated saved search "${name}"!`, 'success')
+  }
+
+  const savedSearchRemovedHandler = (event: CustomEvent) => {
+    const { name, query } = event.detail
+    showToast(`Removed saved search "${name}".`, 'info')
+  }
+
+  // Add event listeners
+  window.addEventListener('saved-search-added', savedSearchAddedHandler)
+  window.addEventListener('saved-search-updated', savedSearchUpdatedHandler)
+  window.addEventListener('saved-search-removed', savedSearchRemovedHandler)
+
+  // Clean up event listeners on component unmount
+  onUnmounted(() => {
+    window.removeEventListener('saved-search-added', savedSearchAddedHandler)
+    window.removeEventListener(
+      'saved-search-updated',
+      savedSearchUpdatedHandler
+    )
+    window.removeEventListener(
+      'saved-search-removed',
+      savedSearchRemovedHandler
+    )
+  })
+}
 </script>

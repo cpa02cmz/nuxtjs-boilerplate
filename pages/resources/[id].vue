@@ -80,9 +80,16 @@
               <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
                 {{ resource.title }}
               </h1>
-              <p class="mt-2 text-gray-600">
-                {{ resource.category }}
-              </p>
+              <div class="flex items-center mt-2 gap-2">
+                <p class="text-gray-600">
+                  {{ resource.category }}
+                </p>
+                <ResourceStatus
+                  v-if="resource.status"
+                  :status="resource.status"
+                  :health-score="resource.healthScore"
+                />
+              </div>
             </div>
             <div class="mt-4 sm:mt-0">
               <a
@@ -113,6 +120,19 @@
 
         <!-- Resource Content -->
         <div class="p-6">
+          <!-- Deprecation notice if resource is deprecated or discontinued -->
+          <DeprecationNotice
+            v-if="
+              resource.status &&
+              (resource.status === 'deprecated' ||
+                resource.status === 'discontinued' ||
+                resource.status === 'pending')
+            "
+            :status="resource.status"
+            :migration-path="resource.migrationPath"
+            :deprecation-date="resource.deprecationDate"
+          />
+
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- Main Content -->
             <div class="md:col-span-2">
@@ -155,70 +175,167 @@
               </div>
 
               <!-- Additional Information -->
-              <div class="mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">
-                  Additional Information
-                </h2>
-                <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            </div>
+
+            <!-- Screenshots/Gallery -->
+            <div
+              v-if="resource.screenshots && resource.screenshots.length > 0"
+              class="mb-8"
+            >
+              <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                Screenshots
+              </h2>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div
+                  v-for="(screenshot, index) in resource.screenshots"
+                  :key="index"
+                  class="overflow-hidden rounded-lg border border-gray-200"
+                >
+                  <img
+                    :src="screenshot"
+                    :alt="`${resource.title} screenshot ${index + 1}`"
+                    class="w-full h-48 object-cover"
+                    @error="handleImageError"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Specifications -->
+            <div
+              v-if="
+                resource.specifications &&
+                Object.keys(resource.specifications).length > 0
+              "
+              class="mb-8"
+            >
+              <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                Specifications
+              </h2>
+              <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <template
+                  v-for="(value, key) in resource.specifications"
+                  :key="key"
+                >
                   <div>
-                    <dt class="text-sm font-medium text-gray-500">
-                      Pricing Model
+                    <dt class="text-sm font-medium text-gray-500 capitalize">
+                      {{ key.replace(/([A-Z])/g, ' $1').trim() }}
                     </dt>
-                    <dd class="mt-1 text-gray-900">
-                      {{ resource.pricingModel }}
-                    </dd>
+                    <dd class="mt-1 text-gray-900">{{ value }}</dd>
                   </div>
-                  <div>
-                    <dt class="text-sm font-medium text-gray-500">
-                      Difficulty
-                    </dt>
-                    <dd class="mt-1 text-gray-900">
-                      {{ resource.difficulty }}
-                    </dd>
+                </template>
+              </dl>
+            </div>
+
+            <!-- Features -->
+            <div
+              v-if="resource.features && resource.features.length > 0"
+              class="mb-8"
+            >
+              <h2 class="text-xl font-semibold text-gray-900 mb-4">Features</h2>
+              <ul class="space-y-2">
+                <li
+                  v-for="(feature, index) in resource.features"
+                  :key="index"
+                  class="flex items-start"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  <span class="text-gray-700">{{ feature }}</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Limitations -->
+            <div
+              v-if="resource.limitations && resource.limitations.length > 0"
+              class="mb-8"
+            >
+              <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                Limitations
+              </h2>
+              <ul class="space-y-2">
+                <li
+                  v-for="(limitation, index) in resource.limitations"
+                  :key="index"
+                  class="flex items-start"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  <span class="text-gray-700">{{ limitation }}</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Resource Analytics -->
+            <div v-if="analyticsData" class="mb-8 bg-gray-50 p-6 rounded-lg">
+              <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                Resource Analytics
+              </h2>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white p-4 rounded border">
+                  <div class="text-sm text-gray-500">Total Views</div>
+                  <div class="text-2xl font-bold text-gray-900 mt-1">
+                    {{ formatNumber(analyticsData.viewCount) }}
                   </div>
-                  <div>
-                    <dt class="text-sm font-medium text-gray-500">
-                      Date Added
-                    </dt>
-                    <dd class="mt-1 text-gray-900">
-                      {{ formatDate(resource.dateAdded) }}
-                    </dd>
+                </div>
+                <div class="bg-white p-4 rounded border">
+                  <div class="text-sm text-gray-500">Unique Visitors</div>
+                  <div class="text-2xl font-bold text-gray-900 mt-1">
+                    {{ formatNumber(analyticsData.uniqueVisitors) }}
                   </div>
-                  <div>
-                    <dt class="text-sm font-medium text-gray-500">
-                      Popularity
-                    </dt>
-                    <dd class="mt-1 text-gray-900">
-                      <div class="flex items-center">
-                        <span class="mr-2">{{ resource.popularity }}/5</span>
-                        <div class="flex">
-                          <svg
-                            v-for="star in 5"
-                            :key="star"
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="h-4 w-4"
-                            :class="
-                              star <= resource.popularity
-                                ? 'text-yellow-400'
-                                : 'text-gray-300'
-                            "
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path
-                              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                          </svg>
-                        </div>
-                      </div>
-                    </dd>
+                </div>
+                <div class="bg-white p-4 rounded border">
+                  <div class="text-sm text-gray-500">Last Viewed</div>
+                  <div class="text-lg text-gray-900 mt-1">
+                    {{ formatDate(analyticsData.lastViewed) }}
                   </div>
-                </dl>
+                </div>
               </div>
             </div>
 
             <!-- Sidebar -->
             <div class="md:col-span-1">
+              <!-- Resource Status and Lifecycle -->
+              <div
+                v-if="resource.statusHistory || resource.updateHistory"
+                class="mb-8"
+              >
+                <h3 class="text-lg font-medium text-gray-900 mb-3">
+                  Lifecycle
+                </h3>
+                <LifecycleTimeline
+                  :status-history="resource.statusHistory"
+                  :update-history="resource.updateHistory"
+                />
+              </div>
+
+              <!-- Health Monitor -->
+              <div class="mb-8">
+                <h3 class="text-lg font-medium text-gray-900 mb-3">Health</h3>
+                <HealthMonitor :resource-id="resource.id" :url="resource.url" />
+              </div>
+
               <!-- Tags -->
               <div class="mb-8">
                 <h3 class="text-lg font-medium text-gray-900 mb-3">Tags</h3>
@@ -367,6 +484,11 @@
         </div>
       </div>
 
+      <!-- Alternative Suggestions Section -->
+      <div class="mt-12">
+        <AlternativeSuggestions v-if="resource" :resource="resource" />
+      </div>
+
       <!-- Recommendations Section -->
       <div class="mt-12">
         <RecommendationsSection
@@ -382,9 +504,15 @@
 import { useResources, type Resource } from '~/composables/useResources'
 import ResourceCard from '~/components/ResourceCard.vue'
 import RecommendationsSection from '~/components/RecommendationsSection.vue'
+import AlternativeSuggestions from '~/components/AlternativeSuggestions.vue'
+
 import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useRuntimeConfig, useSeoMeta } from '#imports'
+import { useNuxtApp } from '#app'
+import { useRecommendationEngine } from '~/composables/useRecommendationEngine'
+import { useResourceAnalytics } from '~/composables/useResourceAnalytics'
+import { useHead } from '#imports'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 
 const route = useRoute()
@@ -397,6 +525,7 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const resource = ref<Resource | null>(null)
 const relatedResources = ref<Resource[]>([])
+const analyticsData = ref<any>(null) // Resource analytics data
 
 // Get current URL for sharing
 const currentUrl = computed(() => {
@@ -412,6 +541,17 @@ const formatDate = (dateString: string) => {
     day: 'numeric',
   }
   return new Date(dateString).toLocaleDateString(undefined, options)
+}
+
+// Format number with commas
+const formatNumber = (num: number) => {
+  return num.toLocaleString()
+}
+
+// Handle image error
+const handleImageError = (event: Event) => {
+  const target = event.target as HTMLImageElement
+  target.src = '/placeholder-image.jpg' // fallback image
 }
 
 // Get button label based on category
@@ -445,14 +585,20 @@ onMounted(async () => {
           if (!resource.value) {
             error.value = 'Resource not found'
           } else {
-            // Get related resources (same category, exclude current)
-            relatedResources.value = resources.value
-              .filter(
-                r =>
-                  r.category === resource.value?.category &&
-                  r.id !== resource.value?.id
-              )
+            // Use the enhanced recommendation engine to find related resources
+            const engine = useRecommendationEngine(resources.value)
+            const recommendations = engine
+              .getContentBasedRecommendations(resource.value!)
+              .filter(rec => rec.resource.id !== resource.value?.id)
               .slice(0, 3) // Limit to 3 related resources
+
+            relatedResources.value = recommendations.map(rec => rec.resource)
+
+            // Fetch analytics data for this resource
+            fetchResourceAnalytics(resourceId)
+
+            // Fetch resource history (status and update history)
+            fetchResourceHistory(resourceId)
           }
           loading.value = false
         } else {
@@ -466,14 +612,20 @@ onMounted(async () => {
       if (!resource.value) {
         error.value = 'Resource not found'
       } else {
-        // Get related resources (same category, exclude current)
-        relatedResources.value = resources.value
-          .filter(
-            r =>
-              r.category === resource.value?.category &&
-              r.id !== resource.value?.id
-          )
+        // Use the enhanced recommendation engine to find related resources
+        const engine = useRecommendationEngine(resources.value)
+        const recommendations = engine
+          .getContentBasedRecommendations(resource.value!)
+          .filter(rec => rec.resource.id !== resource.value?.id)
           .slice(0, 3) // Limit to 3 related resources
+
+        relatedResources.value = recommendations.map(rec => rec.resource)
+
+        // Fetch analytics data for this resource
+        fetchResourceAnalytics(resourceId)
+
+        // Fetch resource history (status and update history)
+        fetchResourceHistory(resourceId)
       }
       loading.value = false
     }
@@ -482,6 +634,44 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+// Fetch resource history (status and update history)
+const fetchResourceHistory = async (resourceId: string) => {
+  try {
+    const history = await $fetch(`/api/resources/${resourceId}/history`)
+    if (history) {
+      // Update resource with history data
+      if (resource.value) {
+        resource.value.statusHistory = history.statusHistory
+        resource.value.updateHistory = history.updateHistory
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching resource history:', err)
+    // If history fetch fails, continue without history data
+  }
+}
+
+// Fetch analytics data for the resource
+const fetchResourceAnalytics = async (resourceId: string) => {
+  try {
+    const response = await $fetch(`/api/analytics/resource/${resourceId}`)
+    if (response && response.data) {
+      analyticsData.value = response.data
+    }
+  } catch (err) {
+    console.error('Error fetching resource analytics:', err)
+    // Set default values if analytics fetch fails
+    analyticsData.value = {
+      resourceId,
+      viewCount: resource.value?.viewCount || 0,
+      uniqueVisitors: 0,
+      avgTimeOnPage: 0,
+      bounceRate: 0,
+      lastViewed: new Date().toISOString(),
+    }
+  }
+}
 
 // Copy URL to clipboard
 const copyToClipboard = async () => {
@@ -509,6 +699,24 @@ const shareUrls = computed(() => {
   )
 })
 
+// Track resource view when the resource is loaded and update analytics data
+if (resource.value) {
+  // Use the analytics plugin to track the resource view
+  const { $analytics } = useNuxtApp()
+  if ($analytics && $analytics.trackResourceView) {
+    $analytics.trackResourceView(
+      resource.value.id,
+      resource.value.title,
+      resource.value.category
+    )
+
+    // Update the view count in the resource analytics data
+    if (analyticsData.value) {
+      analyticsData.value.viewCount = (analyticsData.value.viewCount || 0) + 1
+    }
+  }
+}
+
 // Set dynamic meta tags for the resource
 const { title, description } = resource.value || {}
 if (title && description) {
@@ -520,6 +728,56 @@ if (title && description) {
     ogUrl: currentUrl.value,
     ogType: 'website',
     twitterCard: 'summary_large_image',
+  })
+
+  // Add JSON-LD structured data for better SEO
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication', // or 'WebSite' depending on the resource type
+    name: resource.value.title,
+    description: resource.value.description,
+    url: resource.value.url,
+    applicationCategory: resource.value.category,
+    isBasedOn: resource.value.url,
+    datePublished: resource.value.dateAdded,
+    offers: {
+      '@type': 'Offer',
+      price: '0', // Free tier
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+    },
+    aggregateRating: resource.value.rating
+      ? {
+          '@type': 'AggregateRating',
+          ratingValue: resource.value.rating,
+          bestRating: 5,
+          worstRating: 1,
+          ratingCount: resource.value.viewCount || 10, // Use view count as rating count if available
+        }
+      : undefined,
+    keywords: resource.value.tags.join(', '),
+    thumbnailUrl: resource.value.icon || undefined,
+    operatingSystem: resource.value.platforms
+      ? resource.value.platforms.join(', ')
+      : undefined,
+    softwareVersion: undefined, // Add version if available
+  }
+
+  // Remove undefined properties
+  Object.keys(structuredData).forEach(key => {
+    if (structuredData[key] === undefined) {
+      delete structuredData[key]
+    }
+  })
+
+  // Add the structured data to the page
+  useHead({
+    script: [
+      {
+        type: 'application/ld+json',
+        children: JSON.stringify(structuredData),
+      },
+    ],
   })
 }
 </script>
