@@ -76,6 +76,25 @@
             </li>
           </ul>
         </div>
+
+        <!-- Similarity information (for alternative suggestions) -->
+        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
+          <div class="flex items-center">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div
+                class="bg-blue-600 h-2 rounded-full"
+                :style="{ width: `${similarityScore * 100}%` }"
+              ></div>
+            </div>
+            <span class="ml-2 text-xs font-medium text-gray-700">
+              {{ Math.round(similarityScore * 100) }}% match
+            </span>
+          </div>
+          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
+            {{ similarityReason }}
+          </p>
+        </div>
+
         <div class="mt-4 flex items-center justify-between">
           <a
             :href="url"
@@ -187,14 +206,8 @@ interface Props {
   highlightedTitle?: string
   highlightedDescription?: string
   searchQuery?: string
-  status?:
-    | 'active'
-    | 'deprecated'
-    | 'discontinued'
-    | 'updated'
-    | 'pending'
-    | string
-  healthScore?: number
+  similarityScore?: number
+  similarityReason?: string
 }
 
 // Get the comparison composable
