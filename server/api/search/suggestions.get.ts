@@ -2,16 +2,16 @@ import { getQuery, setResponseStatus } from 'h3'
 import Fuse from 'fuse.js'
 import type { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
-import { cacheManager, cacheSetWithTags } from '~/utils/cache'
+import { cacheManager, cacheSetWithTags } from '~/utils/enhanced-cache'
 import { rateLimit } from '~/utils/enhanced-rate-limit'
 
 /**
  * GET /api/search/suggestions
  *
- * Get search suggestions based on input query
+ * Generate search suggestions based on query
  *
  * Query parameters:
- * - q: Search query term (required)
+ * - q: Search query term
  * - limit: Number of suggestions to return (default: 5, max: 10)
  */
 export default defineEventHandler(async event => {
@@ -21,23 +21,25 @@ export default defineEventHandler(async event => {
 
     // Get query parameters
     const query = getQuery(event)
-    const searchQuery = query.q as string | undefined
-    const limitParam = query.limit as string | undefined
 
-    // Validate required parameters
-    if (!searchQuery) {
-      setResponseStatus(event, 400)
-      return {
-        success: false,
-        message: 'Search query (q) parameter is required',
-        error: 'Bad Request',
+    // Validate and parse query parameter
+    let searchQuery = ''
+    if (query.q !== undefined) {
+      searchQuery = query.q as string
+      if (typeof searchQuery !== 'string') {
+        setResponseStatus(event, 400)
+        return {
+          success: false,
+          message: 'Invalid search query parameter. Must be a string.',
+          error: 'Bad Request',
+        }
       }
     }
 
     // Validate and parse limit parameter
     let limit = 5 // default
-    if (limitParam !== undefined) {
-      const parsedLimit = parseInt(limitParam)
+    if (query.limit !== undefined) {
+      const parsedLimit = parseInt(query.limit as string)
       if (!isNaN(parsedLimit) && parsedLimit > 0) {
         limit = Math.min(parsedLimit, 10) // max 10 suggestions
       } else {
@@ -51,7 +53,7 @@ export default defineEventHandler(async event => {
       }
     }
 
-    // Generate cache key based on query and limit
+    // Generate cache key based on query parameters
     const cacheKey = `suggestions:${searchQuery}:${limit}`
 
     // Try to get from cache first
@@ -100,14 +102,15 @@ export default defineEventHandler(async event => {
       data: suggestions,
       query: searchQuery,
       limit: limit,
-      total: suggestions.length,
+      timestamp: new Date().toISOString(),
     }
 
-    // Cache the result (shorter TTL for suggestions)
+    // Cache the result with tags for easier invalidation
+    // Use shorter TTL for suggestions since they change more frequently
     await cacheSetWithTags(cacheKey, response, 60, [
-      'search-suggestions',
-      'api',
+      'search',
       'suggestions',
+      'api',
     ])
 
     // Set cache miss header
@@ -120,7 +123,7 @@ export default defineEventHandler(async event => {
   } catch (error: any) {
     // Log error using our error logging service
     logError(
-      `Error getting search suggestions: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      `Error in search suggestions API: ${error instanceof Error ? error.message : 'Unknown error'}`,
       error as Error,
       'api-search-suggestions',
       {
@@ -133,7 +136,7 @@ export default defineEventHandler(async event => {
     setResponseStatus(event, 500)
     return {
       success: false,
-      message: 'An error occurred while getting search suggestions',
+      message: 'An error occurred while generating search suggestions',
       error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     }
   }

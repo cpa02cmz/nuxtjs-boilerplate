@@ -14,8 +14,20 @@ export interface Resource {
   hierarchicalTags?: readonly HierarchicalTag[] // New hierarchical tags support
   technology: readonly string[]
   dateAdded: string
+  lastUpdated?: string // When the resource was last updated
   popularity: number
+  viewCount?: number // Number of views for analytics
+  rating?: number // Average user rating
+  screenshots?: readonly string[] // URLs to screenshots/images
+  specifications?: Record<string, string> // Detailed specifications
+  features?: readonly string[] // Additional features beyond benefits
+  limitations?: readonly string[] // Known limitations
+  platforms?: readonly string[] // Supported platforms
+  license?: string // License type if open source
   icon?: string
+  alternatives?: string[] // Array of resource IDs that are alternatives
+  similarityScore?: number // For alternative relationships
+}
 }
 
 export interface FilterOptions {

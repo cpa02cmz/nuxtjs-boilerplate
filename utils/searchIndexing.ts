@@ -11,6 +11,9 @@ interface SearchIndex {
     indexedFields: string[]
     lastQueryTime: number
   }
+  tags: Set<string>
+  categories: Set<string>
+  popularSearches: Map<string, number>
 }
 
 // Search index manager for efficient search operations
@@ -34,12 +37,26 @@ class SearchIndexManager {
       threshold: 0.3,
       includeScore: true,
       useExtendedSearch: true,
+      minMatchCharLength: 1,
     }
 
     // Merge provided options with defaults
     const finalOptions = { ...defaultOptions, ...options }
 
     const fuse = new Fuse([...resources], finalOptions)
+
+    // Extract unique tags and categories
+    const tags = new Set<string>()
+    const categories = new Set<string>()
+
+    resources.forEach(resource => {
+      if (resource.tags) {
+        resource.tags.forEach(tag => tags.add(tag))
+      }
+      if (resource.category) {
+        categories.add(resource.category)
+      }
+    })
 
     const index: SearchIndex = {
       fuse,
@@ -53,6 +70,9 @@ class SearchIndexManager {
           ) || [],
         lastQueryTime: 0,
       },
+      tags,
+      categories,
+      popularSearches: new Map<string, number>(),
     }
 
     this.indexes.set(name, index)
@@ -146,6 +166,118 @@ class SearchIndexManager {
   // Check if an index exists
   hasIndex(name: string): boolean {
     return this.indexes.has(name)
+  }
+
+  // Add a single resource to the index
+  addResource(resource: Resource, indexName: string = this.defaultIndexName) {
+    const index = this.indexes.get(indexName)
+    if (!index) {
+      throw new Error(`Search index '${indexName}' not found`)
+    }
+
+    // Update tags and categories
+    if (resource.tags) {
+      resource.tags.forEach(tag => index.tags.add(tag))
+    }
+    if (resource.category) {
+      index.categories.add(resource.category)
+    }
+
+    // Rebuild the fuse index with the new resource
+    const updatedResources = [...index.resources, resource]
+    const fuse = new Fuse(updatedResources, index.fuse.options)
+    
+    // Update index
+    index.fuse = fuse
+    index.resources = updatedResources
+    index.lastUpdated = new Date()
+    index.stats.totalResources = updatedResources.length
+  }
+
+  // Remove a resource from the index
+  removeResource(
+    resourceId: string,
+    indexName: string = this.defaultIndexName
+  ) {
+    const index = this.indexes.get(indexName)
+    if (!index) {
+      throw new Error(`Search index '${indexName}' not found`)
+    }
+
+    // Filter out the resource
+    const updatedResources = index.resources.filter(
+      resource => resource.id !== resourceId
+    )
+
+    // Update tags and categories by reprocessing all resources
+    const tags = new Set<string>()
+    const categories = new Set<string>()
+
+    updatedResources.forEach(resource => {
+      if (resource.tags) {
+        resource.tags.forEach(tag => tags.add(tag))
+      }
+      if (resource.category) {
+        categories.add(resource.category)
+      }
+    })
+
+    const fuse = new Fuse(updatedResources, index.fuse.options)
+    
+    // Update index
+    index.fuse = fuse
+    index.resources = updatedResources
+    index.tags = tags
+    index.categories = categories
+    index.lastUpdated = new Date()
+    index.stats.totalResources = updatedResources.length
+  }
+
+  // Get all available tags
+  getTags(indexName: string = this.defaultIndexName): string[] {
+    const index = this.indexes.get(indexName)
+    if (!index) {
+      throw new Error(`Search index '${indexName}' not found`)
+    }
+    return Array.from(index.tags)
+  }
+
+  // Get all available categories
+  getCategories(indexName: string = this.defaultIndexName): string[] {
+    const index = this.indexes.get(indexName)
+    if (!index) {
+      throw new Error(`Search index '${indexName}' not found`)
+    }
+    return Array.from(index.categories)
+  }
+
+  // Track a search query for popularity
+  trackSearchQuery(query: string, indexName: string = this.defaultIndexName) {
+    const index = this.indexes.get(indexName)
+    if (!index) {
+      throw new Error(`Search index '${indexName}' not found`)
+    }
+
+    const currentCount = index.popularSearches.get(query) || 0
+    index.popularSearches.set(query, currentCount + 1)
+  }
+
+  // Get popular searches
+  getPopularSearches(
+    limit: number = 10,
+    indexName: string = this.defaultIndexName
+  ): { query: string; count: number }[] {
+    const index = this.indexes.get(indexName)
+    if (!index) {
+      throw new Error(`Search index '${indexName}' not found`)
+    }
+
+    // Convert map to array and sort by count
+    const popularSearches = Array.from(index.popularSearches.entries())
+      .map(([query, count]) => ({ query, count }))
+      .sort((a, b) => b.count - a.count)
+
+    return popularSearches.slice(0, limit)
   }
 }
 
