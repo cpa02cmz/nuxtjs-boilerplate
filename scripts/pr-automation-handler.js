@@ -776,6 +776,19 @@ function finalizePR(prNumber, success) {
           console.log(
             `⚠️ Could not add label due to permission issues: ${labelError.message}`
           )
+        // Alternative: add the label by creating a comment that mentions the need for human review
+        try {
+          const alternativeLabelComment = `⚠️ Marking for manual review - needs-human-review`
+          execSync(
+            `gh pr comment ${prNumber} --body '${alternativeLabelComment.replace(/'/g, "'\"'\"'")}'`,
+            { stdio: 'pipe' }
+          )
+        } catch (altCommentError) {
+          if (process.env.DEBUG)
+            console.log(
+              `Could not add alternative label comment: ${altCommentError.message}`
+            )
+        }
       }
 
       execSync(
