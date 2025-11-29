@@ -6,6 +6,9 @@ import type { SuggestionResult } from '~/types/search'
 // Composable for managing search suggestions engine
 export const useSearchSuggestions = (resources: readonly Resource[]) => {
   const fuse = ref<Fuse<Resource> | null>(null)
+  const suggestions = ref<SuggestionResult[]>([])
+  const loading = ref(false)
+  const error = ref<string | null>(null)
   const searchHistory = ref<string[]>([])
   const popularSearches = ref<{ query: string; count: number }[]>([])
 
@@ -30,6 +33,74 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
     // This would normally be pre-computed for better performance
     // For now, we'll use the existing resources to create suggestions
     return resources
+  }
+
+  // Get suggestions from API
+  const fetchSuggestions = async (
+    query: string,
+    limit: number = 5
+  ): Promise<SuggestionResult[]> => {
+    if (!query.trim()) {
+      suggestions.value = []
+      return []
+    }
+
+    loading.value = true
+    error.value = null
+
+    try {
+      // Use the API endpoint we created
+      const response = await $fetch(`/api/search/suggestions`, {
+        params: {
+          q: query,
+          limit: limit.toString(),
+        },
+      })
+
+      if (response.success) {
+        suggestions.value = response.data
+        return response.data
+      } else {
+        throw new Error(response.message || 'Failed to fetch suggestions')
+      }
+    } catch (err: any) {
+      error.value =
+        err.message || 'An error occurred while fetching suggestions'
+      console.error('Error fetching search suggestions:', err)
+      
+      // Fallback to local suggestions if API fails
+      return getLocalSuggestions(query, resources, limit)
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Get suggestions from local resources for client-side fallback
+  const getLocalSuggestions = (
+    query: string,
+    resources: readonly Resource[],
+    limit: number = 5
+  ): SuggestionResult[] => {
+    if (!query.trim() || !fuse.value) {
+      return []
+    }
+
+    // Perform search
+    const results = fuse.value.search(query, { limit })
+
+    // Format results as suggestions
+    return results.map(item => ({
+      id: item.item.id,
+      text: item.item.title,
+      type: 'resource',
+      score: item.score || 0,
+      resourceId: item.item.id,
+      metadata: {
+        description: item.item.description,
+        category: item.item.category,
+        tags: item.item.tags,
+      },
+    }))
   }
 
   // Generate suggestions based on search query
@@ -208,10 +279,15 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
 
   return {
     // Reactive references (readonly to prevent direct modification)
+    suggestions: readonly(suggestions),
+    loading: readonly(loading),
+    error: readonly(error),
     searchHistory: readonly(searchHistory),
     popularSearches: readonly(popularSearches),
 
     // Methods
+    fetchSuggestions,
+    getLocalSuggestions,
     getSearchSuggestions,
     getPopularSuggestions,
     getRecentSearches,

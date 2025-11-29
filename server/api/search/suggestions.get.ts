@@ -1,4 +1,5 @@
 import { getQuery, setResponseStatus } from 'h3'
+import Fuse from 'fuse.js'
 import type { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 import { cacheManager, cacheSetWithTags } from '~/utils/enhanced-cache'
@@ -67,17 +68,35 @@ export default defineEventHandler(async event => {
     const resourcesModule = await import('~/data/resources.json')
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
-    // Import the suggestions composable
-    const { useSearchSuggestions } = await import(
-      '~/composables/useSearchSuggestions'
-    )
+    // Create Fuse.js instance for search suggestions
+    const fuse = new Fuse(resources, {
+      keys: [
+        { name: 'title', weight: 0.4 },
+        { name: 'description', weight: 0.3 },
+        { name: 'benefits', weight: 0.2 },
+        { name: 'tags', weight: 0.1 },
+      ],
+      threshold: 0.3,
+      includeScore: true,
+    })
 
-    // Create suggestions engine
-    const { getSearchSuggestions } = useSearchSuggestions(resources)
+    // Perform search with limit
+    const searchResults = fuse.search(searchQuery, { limit })
 
-    // Generate suggestions
-    const suggestions = getSearchSuggestions(searchQuery, limit)
+    // Format suggestions
+    const suggestions = searchResults.map(item => ({
+      id: item.item.id,
+      text: item.item.title,
+      type: 'resource' as const,
+      score: item.score || 0,
+      metadata: {
+        description: item.item.description,
+        category: item.item.category,
+        tags: item.item.tags,
+      },
+    }))
 
+    // Prepare response
     const response = {
       success: true,
       data: suggestions,
