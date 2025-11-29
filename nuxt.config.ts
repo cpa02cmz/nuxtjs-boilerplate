@@ -191,34 +191,6 @@ export default defineNuxtConfig({
     componentIslands: true,
   },
 
-  // Security headers configuration
-  routeRules: {
-    // Main routes with prerender
-    '/': {
-      prerender: true,
-    },
-    '/ai-keys': {
-      prerender: true,
-    },
-    '/about': {
-      prerender: true,
-    },
-    '/search': {
-      prerender: true,
-    },
-    '/submit': {
-      prerender: true,
-    },
-    // API routes
-    '/api/**': {
-      // Cache control handled by security headers plugin
-    },
-    // Static assets
-    '/_nuxt/**': {
-      // Cache control handled by security headers plugin
-    },
-  },
-
   // Content Security Policy configuration
   nitro: {
     // Optimize server-side rendering
