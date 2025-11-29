@@ -215,16 +215,6 @@ const {
   createSearchSnippet,
 } = useAdvancedResourceSearch(resources)
 
-// Use the advanced search composable for faceted search
-const { resources } = useResourceData()
-const {
-  calculateFacetCounts,
-  advancedSearchResources,
-  savedSearches,
-  saveSearch,
-  removeSavedSearch,
-} = useAdvancedResourceSearch(resources)
-
 // Compute the filtered resources using advanced search when possible
 const filteredResources = computed(() => {
   if (filterOptions.value.searchQuery) {

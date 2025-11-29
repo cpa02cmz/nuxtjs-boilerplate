@@ -18,19 +18,14 @@ if (
 const resourceCardPath = path.join(__dirname, 'components/ResourceCard.vue')
 const resourceCardContent = fs.readFileSync(resourceCardPath, 'utf8')
 
+// For centralized sanitization approach, we don't need direct DOMPurify import in ResourceCard.vue
+// Instead, check that the centralized sanitization utility is being used
 if (
   resourceCardContent.includes(
     "import { sanitizeAndHighlight } from '~/utils/sanitize'"
-  )
+  ) ||
+  resourceCardContent.includes('sanitizeAndHighlight')
 ) {
-  if (
-    process.env.NODE_ENV !== 'production' ||
-    process.env.VALIDATION_LOGS === 'true'
-  ) {
-    // eslint-disable-next-line no-console
-    console.log('✓ Centralized sanitization import found in ResourceCard.vue')
-  }
-} else if (resourceCardContent.includes('sanitizeAndHighlight')) {
   if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
