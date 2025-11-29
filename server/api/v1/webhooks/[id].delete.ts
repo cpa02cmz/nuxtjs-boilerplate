@@ -1,14 +1,14 @@
 import { webhookStorage } from '~/server/utils/webhookStorage'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async event => {
   const id = event.context.params?.id
-  
+
   // Find webhook by ID
   const webhook = webhookStorage.getWebhookById(id)
   if (!webhook) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Webhook not found'
+      statusMessage: 'Webhook not found',
     })
   }
 
@@ -17,19 +17,9 @@ export default defineEventHandler(async (event) => {
   if (!deleted) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Webhook not found'
+      statusMessage: 'Webhook not found',
     })
   }
-
-  return {
-    success: true,
-    message: 'Webhook deleted successfully'
-  }
-})
-  }
-
-  // Remove the webhook
-  webhooks.splice(webhookIndex, 1)
 
   return {
     success: true,
