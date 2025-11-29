@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
   <article
-    v-if="!hasError"
+    v-if="!hasError && status !== 'rejected' && status !== 'deprecated'"
     class="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow duration-300"
     role="article"
   >
@@ -20,32 +20,42 @@
         />
       </div>
       <div class="flex-1 min-w-0">
-        <h3
-          id="resource-title"
-          class="text-lg font-medium text-gray-900 truncate"
-        >
-          <NuxtLink
-            v-if="id"
-            :to="`/resources/${id}`"
-            class="hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:rounded-sm"
-            :aria-label="`View details for ${title}`"
+        <div class="flex items-center gap-2">
+          <h3
+            id="resource-title"
+            class="text-lg font-medium text-gray-900 truncate"
           >
-            <span
-              v-if="highlightedTitle"
-              v-html="sanitizedHighlightedTitle"
-            ></span>
-            <!-- eslint-disable-line vue/no-v-html -->
-            <span v-else>{{ title }}</span>
-          </NuxtLink>
-          <span v-else>
-            <span
-              v-if="highlightedTitle"
-              v-html="sanitizedHighlightedTitle"
-            ></span>
-            <!-- eslint-disable-line vue/no-v-html -->
-            <span v-else>{{ title }}</span>
+            <NuxtLink
+              v-if="id"
+              :to="`/resources/${id}`"
+              class="hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:rounded-sm"
+              :aria-label="`View details for ${title}`"
+            >
+              <span
+                v-if="highlightedTitle"
+                v-html="sanitizedHighlightedTitle"
+              ></span>
+              <!-- eslint-disable-line vue/no-v-html -->
+              <span v-else>{{ title }}</span>
+            </NuxtLink>
+            <span v-else>
+              <span
+                v-if="highlightedTitle"
+                v-html="sanitizedHighlightedTitle"
+              ></span>
+              <!-- eslint-disable-line vue/no-v-html -->
+              <span v-else>{{ title }}</span>
+            </span>
+          </h3>
+          <!-- Moderation status indicator -->
+          <span
+            v-if="status && status !== 'approved'"
+            class="status-badge"
+            :class="`status-${status}`"
+          >
+            {{ status }}
           </span>
-        </h3>
+        </div>
         <p id="resource-description" class="mt-1 text-gray-800 text-sm">
           <span
             v-if="highlightedDescription"
@@ -96,10 +106,67 @@
               :description="description"
               :url="`${runtimeConfig.public.canonicalUrl}/resources/${id}`"
             />
+            <!-- Flag button for users to report content -->
+            <button
+              v-if="id && status === 'approved'"
+              @click="flagResource"
+              class="text-gray-400 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-full p-1"
+              aria-label="Report this resource"
+              title="Report this resource"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
             <!-- Slot for additional actions -->
             <slot name="actions"></slot>
           </div>
         </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Pending status notification -->
+  <article
+    v-else-if="status === 'pending'"
+    class="bg-blue-50 p-6 rounded-lg border border-blue-200"
+    role="article"
+  >
+    <div class="flex items-start">
+      <div class="flex-shrink-0 mr-4">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 text-blue-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 class="text-lg font-medium text-blue-900">
+          <span class="status-badge status-pending">Pending Review</span>
+          {{ title }}
+        </h3>
+        <p class="mt-1 text-blue-700 text-sm">
+          This resource is under review and will be available once approved by
+          our moderation team.
+        </p>
       </div>
     </div>
   </article>
@@ -155,6 +222,8 @@ interface Props {
   highlightedTitle?: string
   highlightedDescription?: string
   searchQuery?: string
+  // Moderation fields
+  status?: 'pending' | 'approved' | 'rejected' | 'deprecated'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -166,6 +235,7 @@ const props = withDefaults(defineProps<Props>(), {
   highlightedDescription: undefined,
   icon: undefined,
   searchQuery: '',
+  status: 'approved', // Default to approved for backward compatibility
 })
 
 const hasError = ref(false)
@@ -227,13 +297,39 @@ const handleLinkClick = (event: Event) => {
   }
 }
 
+// Handle flagging a resource
+const flagResource = async () => {
+  if (!props.id) return
+
+  try {
+    // Show a simple confirmation before flagging
+    if (confirm(`Are you sure you want to report this resource?`)) {
+      const response = await $fetch('/api/moderation/flag', {
+        method: 'PUT',
+        body: {
+          resourceId: props.id,
+          reason: 'user-report', // Default reason for user reports
+          reportedBy: 'current-user', // In real app, get from auth context
+        },
+      })
+
+      if (response.success) {
+        alert('Resource has been reported for review.')
+      }
+    }
+  } catch (error) {
+    console.error('Error flagging resource:', error)
+    alert('Failed to report resource. Please try again.')
+  }
+}
+
 // Get runtime config for canonical URL
 const runtimeConfig = useRuntimeConfig()
 
 // Add structured data for the resource
 const resourceSchema = computed(() => {
-  // Only create schema if there's no error
-  if (hasError.value) return null
+  // Only create schema if there's no error and resource is approved
+  if (hasError.value || props.status !== 'approved') return null
 
   return {
     '@context': 'https://schema.org',
@@ -270,3 +366,34 @@ if (typeof useHead === 'function') {
   })
 }
 </script>
+
+<style scoped>
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-pending {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.status-approved {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-rejected {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-deprecated {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+</style>

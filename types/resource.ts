@@ -25,6 +25,23 @@ export interface Resource {
   platforms?: readonly string[] // Supported platforms
   license?: string // License type if open source
   icon?: string
+  // Moderation fields
+  status?: 'pending' | 'approved' | 'rejected' | 'deprecated' // Default to 'approved' for existing resources
+  submittedBy?: string // User ID
+  reviewedBy?: string // Moderator ID
+  reviewedAt?: string
+  rejectionReason?: string
+  qualityScore?: number
+  flags?: readonly Flag[]
+}
+
+export interface Flag {
+  readonly id: string
+  readonly resourceId: string
+  readonly reason: string
+  readonly reportedBy: string
+  readonly createdAt: string
+  readonly resolved: boolean
 }
 
 export interface FilterOptions {

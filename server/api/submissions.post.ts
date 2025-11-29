@@ -1,5 +1,5 @@
-// For Nuxt 3, we'll use the built-in storage system instead of file system directly
 import { defineEventHandler, readBody } from 'h3'
+import type { Submission } from '~/types/moderation'
 
 export default defineEventHandler(async event => {
   try {
@@ -79,29 +79,31 @@ export default defineEventHandler(async event => {
       })
     }
 
-    // Create a submission object with metadata
-    const submission = {
+    // Create a submission object with metadata following the moderation system
+    const newSubmission: Submission = {
       id: `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, // Generate a unique ID
-      title: body.title.trim(),
-      description: body.description.trim(),
-      url: body.url.trim(),
-      category: body.category.trim(),
-      tags: Array.isArray(body.tags) ? body.tags : [],
+      resourceData: {
+        title: body.title.trim(),
+        description: body.description.trim(),
+        url: body.url.trim(),
+        category: body.category.trim(),
+        tags: Array.isArray(body.tags) ? body.tags : [],
+        status: 'pending', // Default status for moderation
+      },
       status: 'pending', // Default status
+      submittedBy: body.submittedBy || 'anonymous', // In a real app, this would be the user ID
       submittedAt: new Date().toISOString(),
-      submittedBy: 'anonymous', // In a real app, this would be the user ID
-      approvedAt: null,
-      approvedBy: null,
-      source: body.source || 'community',
+      notes: body.notes || '',
     }
 
     // For now, we'll log the submission (in a real app, this would go to a database)
-    // console.log('New submission received:', submission) // Commented for production
+    // console.log('New submission received:', newSubmission) // Commented for production
 
     return {
       success: true,
-      message: 'Resource submitted successfully',
-      submissionId: submission.id,
+      message: 'Resource submitted successfully for moderation',
+      submissionId: newSubmission.id,
+      submission: newSubmission,
     }
   } catch (error: any) {
     // In production, we might want to use a proper error tracking service instead of console
