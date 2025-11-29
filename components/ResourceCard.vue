@@ -344,7 +344,7 @@ if (typeof useHead === 'function') {
       script: [
         {
           type: 'application/ld+json',
-          innerHTML: JSON.stringify(resourceSchema.value),
+          children: JSON.stringify(resourceSchema.value),
         },
       ],
     }
