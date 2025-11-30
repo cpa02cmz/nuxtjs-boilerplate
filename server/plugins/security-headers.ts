@@ -16,24 +16,26 @@ export default defineNitroPlugin(nitroApp => {
         return
       }
 
+      // Generate a unique nonce for each request
+      const nonce = randomBytes(16).toString('base64')
+
       // Only apply security headers if not already set to avoid duplication
       if (
         event.node.res.hasHeader &&
         event.node.res.getHeader('Content-Security-Policy')
       ) {
+        // Store nonce in locals for potential use in HTML templates
+        event.context.nonce = nonce
         return // Headers already set in render:html hook
       }
 
-      // Generate a unique nonce for each request
-      const nonce = randomBytes(16).toString('base64')
-
-      // Set Content Security Policy
+      // Set Content Security Policy with enhanced security
       if (event.node.res.setHeader) {
         event.node.res.setHeader(
           'Content-Security-Policy',
           `default-src 'self'; ` +
             `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https:; ` +
-            `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com; ` +
+            `style-src 'self' 'nonce-${nonce}' 'unsafe-inline' https://fonts.googleapis.com; ` +
             `font-src 'self' https://fonts.gstatic.com; ` +
             `img-src 'self' data: blob: https:; ` +
             `connect-src 'self' https:; ` +
@@ -41,7 +43,8 @@ export default defineNitroPlugin(nitroApp => {
             `object-src 'none'; ` +
             `base-uri 'self'; ` +
             `form-action 'self'; ` +
-            `upgrade-insecure-requests;`
+            `upgrade-insecure-requests; ` +
+            `block-all-mixed-content;`
         )
 
         // Additional security headers
@@ -55,20 +58,28 @@ export default defineNitroPlugin(nitroApp => {
         // Add HSTS header for transport security
         event.node.res.setHeader(
           'Strict-Transport-Security',
-          'max-age=31536000; includeSubDomains; preload'
+          'max-age=63072000; includeSubDomains; preload' // 2 years
         )
         event.node.res.setHeader(
           'Permissions-Policy',
-          'geolocation=(), microphone=(), camera=()'
+          'geolocation=(), microphone=(), camera=(), usb=(), serial=(), accelerometer=(), gyroscope=(), payment=(), midi=(), interest-cohort=()'
+        )
+        event.node.res.setHeader(
+          'Access-Control-Allow-Origin',
+          process.env.NODE_ENV === 'production'
+            ? process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+            : '*'
         )
         event.node.res.setHeader(
           'Access-Control-Allow-Methods',
-          'GET, HEAD, POST, OPTIONS'
+          'GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS'
         )
         event.node.res.setHeader(
           'Access-Control-Allow-Headers',
-          'Content-Type, Authorization'
+          'Content-Type, Authorization, X-Requested-With'
         )
+        event.node.res.setHeader('Access-Control-Allow-Credentials', 'true')
+        event.node.res.setHeader('X-Permitted-Cross-Domain-Policies', 'none')
       }
 
       // Apply cache control headers based on route patterns
@@ -83,7 +94,7 @@ export default defineNitroPlugin(nitroApp => {
         ) {
           event.node.res.setHeader(
             'cache-control',
-            'max-age=300, public, s-maxage=300' // 5 minutes
+            'no-cache, no-store, must-revalidate' // More secure for API responses
           )
         }
       }
@@ -115,10 +126,22 @@ export default defineNitroPlugin(nitroApp => {
           )
         }
       }
+
+      // Store nonce in locals for potential use in HTML templates
+      event.context.nonce = nonce
     } catch (error) {
       // In production, we might want to log this properly
       if (process.env.NODE_ENV !== 'production') {
         console.warn('Failed to set security headers in afterResponse:', error)
+      }
+      // Even if CSP fails, ensure basic security headers are set
+      try {
+        if (event.node.res.setHeader) {
+          event.node.res.setHeader('X-Content-Type-Options', 'nosniff')
+          event.node.res.setHeader('X-Frame-Options', 'DENY')
+        }
+      } catch (fallbackError) {
+        console.error('Failed to set fallback security headers:', fallbackError)
       }
     }
   })
