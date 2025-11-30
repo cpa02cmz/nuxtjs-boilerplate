@@ -300,8 +300,8 @@ interface Props {
   selectedDifficultyLevels: string[]
   selectedTechnologies: string[]
   selectedTags: string[]
-  selectedBenefits: string[]
-  selectedDateRange: string
+  selectedBenefits?: string[]
+  selectedDateRange?: string
   searchQuery?: string
   facetCounts?: FacetCounts
   savedSearches?: Array<{ name: string; query: string; createdAt: Date }>
@@ -328,6 +328,7 @@ const props = withDefaults(defineProps<Props>(), {
   facetCounts: () => ({}),
   selectedBenefits: () => [],
   selectedDateRange: 'anytime',
+  savedSearches: () => [],
 })
 const emit = defineEmits<Emits>()
 
