@@ -427,6 +427,121 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Resource Statistics -->
+              <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                  Resource Statistics
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-900">
+                      {{ resourceStats.viewCount }}
+                    </div>
+                    <div class="text-sm text-gray-600">Views</div>
+                  </div>
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-900">
+                      {{ resource.popularity }}/5
+                    </div>
+                    <div class="text-sm text-gray-600">Rating</div>
+                  </div>
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-gray-900">
+                      <span
+                        :class="
+                          resourceStats.trending
+                            ? 'text-green-600'
+                            : 'text-gray-600'
+                        "
+                      >
+                        {{ resourceStats.trending ? 'Trending' : 'Stable' }}
+                      </span>
+                    </div>
+                    <div class="text-sm text-gray-600">Status</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Screenshots/Gallery Section -->
+              <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">
+                  Screenshots
+                </h2>
+                <div
+                  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                >
+                  <div
+                    v-for="n in 3"
+                    :key="n"
+                    class="aspect-video bg-gray-200 border-2 border-dashed rounded-xl flex items-center justify-center text-gray-500"
+                  >
+                    Image {{ n }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- User Reviews Section -->
+              <div class="mb-8">
+                <div class="flex justify-between items-center mb-4">
+                  <h2 class="text-xl font-semibold text-gray-900">
+                    User Reviews
+                  </h2>
+                  <button
+                    class="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    Write a Review
+                  </button>
+                </div>
+
+                <div class="space-y-4">
+                  <!-- Sample review -->
+                  <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center">
+                        <div
+                          class="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10"
+                        />
+                        <div class="ml-3">
+                          <div class="font-medium text-gray-900">User Name</div>
+                          <div class="flex items-center">
+                            <div class="flex">
+                              <svg
+                                v-for="star in 5"
+                                :key="star"
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4 text-yellow-400"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                                />
+                              </svg>
+                            </div>
+                            <span class="ml-2 text-sm text-gray-500"
+                              >5 days ago</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="text-gray-700 text-sm">
+                      Great resource! Very helpful for my project. The free tier
+                      provides enough functionality to get started.
+                    </p>
+                  </div>
+
+                  <!-- More reviews would appear here -->
+                  <div class="text-center py-4">
+                    <button
+                      class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    >
+                      Load More Reviews
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- Sidebar -->
@@ -728,8 +843,8 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const resource = ref<Resource | null>(null)
 const relatedResources = ref<Resource[]>([])
-const analyticsData = ref<any>(null) // Resource analytics data
-const resourceStats = ref({
+ const analyticsData = ref<any>(null) // Resource analytics data
+ const resourceStats = ref({
   viewCount: 0,
   trending: false,
   lastViewed: '',
@@ -871,15 +986,15 @@ onMounted(async () => {
     if (resourcesLoading.value) {
       // We need to wait until resources are loaded
       const checkResources = () => {
-        if (!resourcesLoading.value) {
-          loadResource()
-        } else {
-          setTimeout(checkResources, 100)
-        }
-      }
-      checkResources()
-    } else {
-      loadResource()
+if (!resourcesLoading.value) {
+           loadResource()
+         } else {
+           setTimeout(checkResources, 100)
+         }
+       }
+       checkResources()
+     } else {
+       loadResource()
     }
   } catch (err) {
     error.value = 'Failed to load resource'
@@ -982,8 +1097,59 @@ if (title && description) {
     twitterCard: 'summary_large_image',
     // Enhanced SEO with structured data
     articlePublishedTime: resource.value?.dateAdded,
-    articleModifiedTime: resource.value?.dateAdded,
-  })
+articleModifiedTime: resource.value?.dateAdded,
+   })
+
+   // Add JSON-LD structured data for better SEO
+   const structuredData = {
+     '@context': 'https://schema.org',
+     '@type': 'SoftwareApplication', // or 'WebSite' depending on the resource type
+     name: resource.value.title,
+     description: resource.value.description,
+     url: resource.value.url,
+     applicationCategory: resource.value.category,
+     isBasedOn: resource.value.url,
+     datePublished: resource.value.dateAdded,
+     offers: {
+       '@type': 'Offer',
+       price: '0', // Free tier
+       priceCurrency: 'USD',
+       availability: 'https://schema.org/InStock',
+     },
+     aggregateRating: resource.value.rating
+       ? {
+           '@type': 'AggregateRating',
+           ratingValue: resource.value.rating,
+           bestRating: 5,
+           worstRating: 1,
+           ratingCount: resource.value.viewCount || 10, // Use view count as rating count if available
+         }
+       : undefined,
+     keywords: resource.value.tags.join(', '),
+     thumbnailUrl: resource.value.icon || undefined,
+     operatingSystem: resource.value.platforms
+       ? resource.value.platforms.join(', ')
+       : undefined,
+     softwareVersion: undefined, // Add version if available
+   }
+
+   // Remove undefined properties
+   Object.keys(structuredData).forEach(key => {
+     if (structuredData[key] === undefined) {
+       delete structuredData[key]
+     }
+   })
+
+   // Add the structured data to the page
+   useHead({
+     script: [
+       {
+         type: 'application/ld+json',
+         children: JSON.stringify(structuredData),
+       },
+     ],
+   })
+   })
 
   // Add JSON-LD structured data for better SEO
   const structuredData = {
