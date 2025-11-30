@@ -80,7 +80,7 @@ export default [
       'vue/max-attributes-per-line': 'off',
       'vue/no-unused-vars': 'off', // Allow unused vars in templates
       'prettier/prettier': 'error',
-      'no-console': 'warn',
+      'no-console': 'off', // Allow console statements in Vue components for error handling
       'no-debugger': 'warn',
       'no-unused-vars': 'off', // Disable this rule to allow unused variables in development
     },
@@ -227,6 +227,70 @@ export default [
         setResponseStatus: 'readonly',
       },
     },
+    rules: {
+      'no-console': 'off', // Allow console statements in server-side code for error logging
+    },
+  },
+  {
+    // For composable files
+    files: ['composables/**/*.ts'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        // Nuxt 3 composables and utilities
+        definePageMeta: 'readonly',
+        defineNuxtConfig: 'readonly',
+        defineNuxtRouteMiddleware: 'readonly',
+        defineNuxtPlugin: 'readonly',
+        useRuntimeConfig: 'readonly',
+        useState: 'readonly',
+        useFetch: 'readonly',
+        useAsyncData: 'readonly',
+        navigateTo: 'readonly',
+        $fetch: 'readonly',
+        useHead: 'readonly',
+        useSeoMeta: 'readonly',
+        useRoute: 'readonly',
+        computed: 'readonly',
+        ref: 'readonly',
+        reactive: 'readonly',
+        defineEventHandler: 'readonly',
+        setResponseHeader: 'readonly',
+        createError: 'readonly',
+        vi: 'readonly',
+        window: 'readonly',
+        process: 'readonly',
+        console: 'readonly',
+        performance: 'readonly',
+        // Vue 3 composition API
+        watch: 'readonly',
+        onMounted: 'readonly',
+        onUnmounted: 'readonly',
+        nextTick: 'readonly',
+        defineProps: 'readonly',
+        defineEmits: 'readonly',
+        withDefaults: 'readonly',
+      },
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 2024,
+        sourceType: 'module',
+      },
+    },
+    plugins: {
+      prettier: pluginPrettier,
+      nuxt: nuxtPlugin,
+    },
+    rules: {
+      'comma-dangle': ['error', 'only-multiline'],
+      'no-console': 'off', // Allow console statements in composables for error logging
+      'no-debugger': 'warn',
+      'prettier/prettier': 'error',
+      'no-unused-vars': 'off', // Disable this rule to allow unused variables in development
+    },
   },
   {
     // For test files
@@ -251,7 +315,22 @@ export default [
     },
   },
   {
-    // For error logger utility
+    // For utility files
+    files: ['utils/**/*.ts'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
+    rules: {
+      'no-console': 'off', // Allow console statements in utility files for error logging
+    },
+  },
+  {
+    // For error logger utility (specific rule)
     files: ['utils/errorLogger.ts'],
     languageOptions: {
       ecmaVersion: 2024,
@@ -263,6 +342,50 @@ export default [
     },
     rules: {
       'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn', // Allow console in development for error logger
+    },
+  },
+  // For Nuxt configuration file
+  {
+    files: ['nuxt.config.ts'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'no-console': 'off', // Allow console statements in nuxt config for build-time logging
+    },
+  },
+  // For test files and validation scripts
+  {
+    files: [
+      '**/*.spec.ts',
+      '**/*.test.ts',
+      'test-setup.ts',
+      'test-*.js',
+      '**/*.test.js',
+      'validate-*.js',
+    ],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        vi: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+      },
+    },
+    rules: {
+      'vue/one-component-per-file': 'off', // Allow multiple components in test files
+      'no-console': 'off', // Allow console statements in test and validation files for debugging
     },
   },
   // Apply prettier config to disable conflicting rules
