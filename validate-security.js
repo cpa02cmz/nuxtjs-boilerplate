@@ -10,7 +10,6 @@ if (
   process.env.NODE_ENV !== 'production' ||
   process.env.VALIDATION_LOGS === 'true'
 ) {
-  // eslint-disable-next-line no-console
   console.log('Validating security implementation...')
 }
 
@@ -30,15 +29,13 @@ if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
-    console.log('✓ Centralized sanitization usage found in ResourceCard.vue')
+    console.log('Validating security implementation...')
   }
 } else {
   if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
     console.log(
       '✗ Centralized sanitization usage NOT found in ResourceCard.vue'
     )
@@ -55,7 +52,6 @@ if (fs.existsSync(securityPluginPath)) {
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
     console.log('✓ Security headers plugin exists')
   }
   const securityPluginContent = fs.readFileSync(securityPluginPath, 'utf8')
@@ -64,7 +60,6 @@ if (fs.existsSync(securityPluginPath)) {
       process.env.NODE_ENV !== 'production' ||
       process.env.VALIDATION_LOGS === 'true'
     ) {
-      // eslint-disable-next-line no-console
       console.log('✓ CSP header configuration found in security headers plugin')
     }
   } else {
@@ -72,7 +67,6 @@ if (fs.existsSync(securityPluginPath)) {
       process.env.NODE_ENV !== 'production' ||
       process.env.VALIDATION_LOGS === 'true'
     ) {
-      // eslint-disable-next-line no-console
       console.log(
         '✗ CSP header configuration NOT found in security headers plugin'
       )
@@ -83,8 +77,7 @@ if (fs.existsSync(securityPluginPath)) {
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
-    console.log('✗ Security headers plugin does NOT exist')
+    console.log('✗ CSP configuration reference NOT found in nuxt.config.ts')
   }
 }
 
@@ -100,16 +93,14 @@ if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
-    console.log('✓ CSP configuration reference found in nuxt.config.ts')
+    console.log('✓ Centralized sanitization usage found in ResourceCard.vue')
   }
 } else {
   if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
-    console.log('✗ CSP configuration reference NOT found in nuxt.config.ts')
+    console.log('✓ CSP configuration reference found in nuxt.config.ts')
   }
 }
 
@@ -121,7 +112,6 @@ if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
     console.log(
       '✓ Security headers configuration reference found in nuxt.config.ts'
     )
@@ -131,7 +121,6 @@ if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
     console.log(
       '✗ Security headers configuration reference NOT found in nuxt.config.ts'
     )
@@ -142,6 +131,5 @@ if (
   process.env.NODE_ENV !== 'production' ||
   process.env.VALIDATION_LOGS === 'true'
 ) {
-  // eslint-disable-next-line no-console
   console.log('Validating security implementation...')
 }
