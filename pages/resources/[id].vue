@@ -1163,12 +1163,18 @@ if (title && description) {
     }
   })
 
+  // Safely serialize JSON-LD to prevent XSS by escaping special characters
+  const safeJsonLd = JSON.stringify(structuredData)
+    .replace(/</g, '\\u003c') // Escape < to prevent script tags
+    .replace(/>/g, '\\u003e') // Escape > to prevent script tags
+    .replace(/\//g, '\\u002f') // Escape / to prevent closing script tags
+
   // Add the structured data to the page
   useHead({
     script: [
       {
         type: 'application/ld+json',
-        children: JSON.stringify(structuredData),
+        innerHTML: safeJsonLd,
       },
     ],
   })
