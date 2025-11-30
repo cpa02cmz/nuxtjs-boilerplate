@@ -149,6 +149,7 @@ import { useResources, type SortOption } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
 import { useUrlSync } from '~/composables/useUrlSync'
+import { trackSearch, trackFilter } from '~/utils/analytics'
 import SearchBar from '~/components/SearchBar.vue'
 import ResourceFilters from '~/components/ResourceFilters.vue'
 import ResourceSort from '~/components/ResourceSort.vue'
@@ -410,7 +411,7 @@ const selectedDateRange = computed(
   () => filterOptions.value.dateRange || 'anytime'
 )
 
-import { trackSearch, trackFilter } from '~/utils/analytics'
+// Import analytics functions
 
 // Handle search
 const handleSearch = (query: string) => {

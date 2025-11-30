@@ -259,7 +259,6 @@ const handleImageError = () => {
   hasError.value = true
   // In production, we might want to use a proper error tracking service instead of console
   if (process.dev) {
-    // eslint-disable-next-line no-console
     console.error(`Failed to load image for resource: ${props.title}`)
   }
 }
@@ -279,7 +278,6 @@ const handleLinkClick = (event: Event) => {
     hasError.value = true
     // In production, we might want to use a proper error tracking service instead of console
     if (process.dev) {
-      // eslint-disable-next-line no-console
       console.error(`Invalid URL for resource: ${props.url}`, err)
     }
   }
