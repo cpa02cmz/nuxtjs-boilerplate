@@ -604,92 +604,91 @@
         </div>
       </div>
 
-       <!-- Alternative Suggestions Section -->
-       <div class="mt-12">
-         <AlternativeSuggestions v-if="resource" :resource="resource" />
-       </div>
+      <!-- Alternative Suggestions Section -->
+      <div class="mt-12">
+        <AlternativeSuggestions v-if="resource" :resource="resource" />
+      </div>
 
-       <!-- User Comments Section -->
-       <div class="mt-12">
-         <div class="flex justify-between items-center mb-6">
-           <h2 class="text-2xl font-bold text-gray-900">Comments</h2>
-           <span class="text-sm text-gray-500">3 comments</span>
-         </div>
+      <!-- User Comments Section -->
+      <div class="mt-12">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Comments</h2>
+          <span class="text-sm text-gray-500">3 comments</span>
+        </div>
 
-         <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-           <textarea
-             placeholder="Share your thoughts about this resource..."
-             class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-             rows="4"
-           ></textarea>
-           <div class="mt-3 flex justify-end">
-             <button
-               class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors"
-             >
-               Post Comment
-             </button>
-           </div>
-         </div>
+        <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+          <textarea
+            placeholder="Share your thoughts about this resource..."
+            class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            rows="4"
+          ></textarea>
+          <div class="mt-3 flex justify-end">
+            <button
+              class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors"
+            >
+              Post Comment
+            </button>
+          </div>
+        </div>
 
-         <div class="space-y-4">
-           <!-- Sample comments -->
-           <div class="flex space-x-4">
-             <div class="flex-shrink-0">
-               <div
-                 class="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10"
-               />
-             </div>
-             <div class="flex-1">
-               <div class="bg-gray-50 rounded-lg p-4">
-                 <div class="flex items-center">
-                   <span class="font-medium text-gray-900">Jane Doe</span>
-                   <span class="ml-2 text-sm text-gray-500">2 days ago</span>
-                 </div>
-                 <p class="mt-1 text-gray-700">
-                   I've been using this for a few months now and it's been really
-                   helpful for my development workflow.
-                 </p>
-                 <div class="mt-2 flex space-x-4">
-                   <button class="text-sm text-gray-500 hover:text-gray-700">
-                     Like (12)
-                   </button>
-                   <button class="text-sm text-gray-500 hover:text-gray-700">
-                     Reply
-                   </button>
-                 </div>
-               </div>
-             </div>
-           </div>
+        <div class="space-y-4">
+          <!-- Sample comments -->
+          <div class="flex space-x-4">
+            <div class="flex-shrink-0">
+              <div
+                class="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10"
+              />
+            </div>
+            <div class="flex-1">
+              <div class="bg-gray-50 rounded-lg p-4">
+                <div class="flex items-center">
+                  <span class="font-medium text-gray-900">Jane Doe</span>
+                  <span class="ml-2 text-sm text-gray-500">2 days ago</span>
+                </div>
+                <p class="mt-1 text-gray-700">
+                  I've been using this for a few months now and it's been really
+                  helpful for my development workflow.
+                </p>
+                <div class="mt-2 flex space-x-4">
+                  <button class="text-sm text-gray-500 hover:text-gray-700">
+                    Like (12)
+                  </button>
+                  <button class="text-sm text-gray-500 hover:text-gray-700">
+                    Reply
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
 
-           <div class="flex space-x-4">
-             <div class="flex-shrink-0">
-               <div
-                 class="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10"
-               />
-             </div>
-             <div class="flex-1">
-               <div class="bg-gray-50 rounded-lg p-4">
-                 <div class="flex items-center">
-                   <span class="font-medium text-gray-900">John Smith</span>
-                   <span class="ml-2 text-sm text-gray-500">1 week ago</span>
-                 </div>
-                 <p class="mt-1 text-gray-700">
-                   The free tier limitations are a bit restrictive, but overall
-                   it's a great service.
-                 </p>
-                 <div class="mt-2 flex space-x-4">
-                   <button class="text-sm text-gray-500 hover:text-gray-700">
-                     Like (5)
-                   </button>
-                   <button class="text-sm text-gray-500 hover:text-gray-700">
-                     Reply
-                   </button>
-                 </div>
-               </div>
-             </div>
-           </div>
-         </div>
-       </div>
+          <div class="flex space-x-4">
+            <div class="flex-shrink-0">
+              <div
+                class="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10"
+              />
+            </div>
+            <div class="flex-1">
+              <div class="bg-gray-50 rounded-lg p-4">
+                <div class="flex items-center">
+                  <span class="font-medium text-gray-900">John Smith</span>
+                  <span class="ml-2 text-sm text-gray-500">1 week ago</span>
+                </div>
+                <p class="mt-1 text-gray-700">
+                  The free tier limitations are a bit restrictive, but overall
+                  it's a great service.
+                </p>
+                <div class="mt-2 flex space-x-4">
+                  <button class="text-sm text-gray-500 hover:text-gray-700">
+                    Like (5)
+                  </button>
+                  <button class="text-sm text-gray-500 hover:text-gray-700">
+                    Reply
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Recommendations Section -->
@@ -729,12 +728,12 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const resource = ref<Resource | null>(null)
 const relatedResources = ref<Resource[]>([])
- const analyticsData = ref<any>(null) // Resource analytics data
- const resourceStats = ref({
-   viewCount: 0,
-   trending: false,
-   lastViewed: '',
- })
+const analyticsData = ref<any>(null) // Resource analytics data
+const resourceStats = ref({
+  viewCount: 0,
+  trending: false,
+  lastViewed: '',
+})
 
 // Get current URL for sharing
 const currentUrl = computed(() => {
@@ -828,93 +827,59 @@ const getEnhancedRelatedResources = (currentResource: Resource | null) => {
 onMounted(async () => {
   try {
     // Wait for resources to load
+    const loadResource = async () => {
+      const resourceId = route.params.id as string
+      resource.value = resources.value.find(r => r.id === resourceId) || null
+      if (!resource.value) {
+        error.value = 'Resource not found'
+      } else {
+        // Use the enhanced recommendation engine to find related resources
+        const engine = useRecommendationEngine(resources.value)
+        const recommendations = engine
+          .getContentBasedRecommendations(resource.value!)
+          .filter(rec => rec.resource.id !== resource.value?.id)
+          .slice(0, 3) // Limit to 3 related resources
+
+        relatedResources.value = recommendations.map(rec => rec.resource)
+
+        // Get enhanced related resources
+        relatedResources.value = getEnhancedRelatedResources(resource.value)
+
+        // Fetch analytics data for this resource
+        fetchResourceAnalytics(resourceId)
+
+        // Fetch resource history (status and update history)
+        fetchResourceHistory(resourceId)
+
+        // Track resource view
+        await trackResourceView(
+          resource.value.id,
+          resource.value.title,
+          resource.value.category
+        )
+
+        // Set basic stats (in a real implementation, fetch from API)
+        resourceStats.value = {
+          viewCount: Math.floor(Math.random() * 1000) + 100, // Simulated view count
+          trending: Math.random() > 0.5, // Simulated trending status
+          lastViewed: new Date().toISOString(),
+        }
+      }
+      loading.value = false
+    }
+
     if (resourcesLoading.value) {
       // We need to wait until resources are loaded
       const checkResources = () => {
         if (!resourcesLoading.value) {
-          const resourceId = route.params.id as string
-          resource.value =
-            resources.value.find(r => r.id === resourceId) || null
-          if (!resource.value) {
-            error.value = 'Resource not found'
-          } else {
-             // Use the enhanced recommendation engine to find related resources
-             const engine = useRecommendationEngine(resources.value)
-             const recommendations = engine
-               .getContentBasedRecommendations(resource.value!)
-               .filter(rec => rec.resource.id !== resource.value?.id)
-               .slice(0, 3) // Limit to 3 related resources
-
-             relatedResources.value = recommendations.map(rec => rec.resource)
-
-             // Get enhanced related resources
-             relatedResources.value = getEnhancedRelatedResources(resource.value)
-
-             // Fetch analytics data for this resource
-             fetchResourceAnalytics(resourceId)
-
-             // Fetch resource history (status and update history)
-             fetchResourceHistory(resourceId)
-
-             // Track resource view
-             await trackResourceView(
-               resource.value.id,
-               resource.value.title,
-               resource.value.category
-             )
-
-             // Set basic stats (in a real implementation, fetch from API)
-             resourceStats.value = {
-               viewCount: Math.floor(Math.random() * 1000) + 100, // Simulated view count
-               trending: Math.random() > 0.5, // Simulated trending status
-               lastViewed: new Date().toISOString(),
-             }
-          }
-          loading.value = false
+          loadResource()
         } else {
           setTimeout(checkResources, 100)
         }
       }
       checkResources()
     } else {
-      const resourceId = route.params.id as string
-      resource.value = resources.value.find(r => r.id === resourceId) || null
-      if (!resource.value) {
-        error.value = 'Resource not found'
-      } else {
-         // Use the enhanced recommendation engine to find related resources
-         const engine = useRecommendationEngine(resources.value)
-         const recommendations = engine
-           .getContentBasedRecommendations(resource.value!)
-           .filter(rec => rec.resource.id !== resource.value?.id)
-           .slice(0, 3) // Limit to 3 related resources
-
-         relatedResources.value = recommendations.map(rec => rec.resource)
-
-         // Get enhanced related resources
-         relatedResources.value = getEnhancedRelatedResources(resource.value)
-
-         // Fetch analytics data for this resource
-         fetchResourceAnalytics(resourceId)
-
-         // Fetch resource history (status and update history)
-         fetchResourceHistory(resourceId)
-
-         // Track resource view
-         await trackResourceView(
-           resource.value.id,
-           resource.value.title,
-           resource.value.category
-         )
-
-         // Set basic stats (in a real implementation, fetch from API)
-         resourceStats.value = {
-           viewCount: Math.floor(Math.random() * 1000) + 100, // Simulated view count
-           trending: Math.random() > 0.5, // Simulated trending status
-           lastViewed: new Date().toISOString(),
-         }
-      }
-      loading.value = false
+      loadResource()
     }
   } catch (err) {
     error.value = 'Failed to load resource'
