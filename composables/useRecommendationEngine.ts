@@ -30,7 +30,7 @@ export const useRecommendationEngine = (allResources: readonly Resource[]) => {
     resourceA: Resource,
     resourceB: Resource
   ): number => {
-    if (resourceA.id === resourceB.id) return 0 // Don't recommend the same resource
+    if (resourceA.id === resourceB.id) return 1 // Same resource should have maximum similarity for testing
 
     let score = 0
     const totalFactors = 3 // category, tags, technology
@@ -71,6 +71,9 @@ export const useRecommendationEngine = (allResources: readonly Resource[]) => {
     const similarities: RecommendationResult[] = []
 
     for (const resource of allResources) {
+      // Skip the same resource to avoid recommending it to the user
+      if (resource.id === targetResource.id) continue
+
       const similarity = calculateSimilarity(targetResource, resource)
       if (similarity >= config.value.minSimilarityScore) {
         similarities.push({
@@ -185,7 +188,9 @@ export const useRecommendationEngine = (allResources: readonly Resource[]) => {
   }
 
   return {
-    config: readonly(config),
+    get config() {
+      return config.value
+    },
     calculateSimilarity, // Make this available for testing
     updateConfig,
     getDiverseRecommendations,
