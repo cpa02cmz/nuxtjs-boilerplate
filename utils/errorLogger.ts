@@ -28,9 +28,14 @@ class ErrorLogger {
       timestamp: new Date(),
       message,
       stack: error?.stack,
-      url: typeof window !== 'undefined' ? window.location.href : undefined,
+      url:
+        typeof window !== 'undefined' && typeof window.location !== 'undefined'
+          ? window.location.href
+          : undefined,
       userAgent:
-        typeof window !== 'undefined' ? navigator.userAgent : undefined,
+        typeof window !== 'undefined' && typeof navigator !== 'undefined'
+          ? navigator.userAgent
+          : undefined,
       component,
       severity,
       additionalInfo,
