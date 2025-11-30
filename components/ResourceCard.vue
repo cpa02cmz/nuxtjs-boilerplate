@@ -225,6 +225,8 @@ const props = withDefaults(defineProps<Props>(), {
   searchQuery: '',
   status: 'active',
   healthScore: undefined,
+  similarityScore: undefined,
+  similarityReason: undefined,
 })
 
 const hasError = ref(false)
