@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import type { MockedFunction } from 'vitest'
 import {
   runQualityChecks,
   calculateQualityScore,

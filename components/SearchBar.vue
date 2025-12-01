@@ -117,7 +117,7 @@ const emit = defineEmits<Emits>()
 
 // Reactive variables
 const searchInputRef = ref<HTMLInputElement>()
-const inputTimeout = ref<number>()
+const inputTimeout = ref<NodeJS.Timeout | number>()
 const debouncedQuery = ref('')
 const suggestions = ref<any[]>([])
 const showSuggestions = ref(false)
@@ -138,11 +138,6 @@ const {
   addSearchToHistory: addBasicSearchToHistory,
   clearSearchHistory: clearBasicSearchHistory,
 } = useResources()
-
-// Load search history on component mount
-onMounted(() => {
-  searchHistory.value = advancedSearchHistory.value
-})
 
 // Handle input with debounce
 const handleInput = (event: Event) => {
@@ -194,7 +189,7 @@ const clearSearch = () => {
 
 const handleFocus = () => {
   // Update search history when input is focused
-  searchHistory.value = advancedSearchHistory.value
+  searchHistory.value = [...advancedSearchHistory.value]
   showSuggestions.value = true
 }
 

@@ -35,7 +35,7 @@ export interface Resource {
   reviewedAt?: string
   rejectionReason?: string
   qualityScore?: number
-  flags?: Flag[]
+  flags?: Flag[] | readonly Flag[]
 }
 
 export interface Flag {
@@ -45,6 +45,71 @@ export interface Flag {
   reportedBy: string
   createdAt: string
   resolved: boolean
+}
+
+export interface StatusChange {
+  id: string
+  fromStatus: string
+  toStatus: string
+  changedAt: string
+  changedBy: string
+  reason?: string
+  notes?: string
+}
+
+export interface ResourceUpdate {
+  id: string
+  version: string
+  updatedAt: string
+  changelog?: string
+  changes?: string[]
+}
+
+export interface User {
+  id: string
+  name: string
+  email: string
+  role: string
+  joinedAt: string
+  contributions?: number
+  reputation?: number
+}
+
+export interface Comment {
+  id: string
+  userId: string
+  targetType: string
+  targetId: string
+  content: string
+  createdAt: string
+  updatedAt?: string
+  isEdited?: boolean
+  editedAt?: string
+  parentId?: string
+  replies?: Comment[]
+  likes?: number
+}
+
+export interface Vote {
+  id: string
+  userId: string
+  targetType: string
+  targetId: string
+  voteType: 'up' | 'down'
+  timestamp: string
+}
+
+export interface Flag {
+  id: string
+  targetId: string
+  targetType: string
+  userId: string
+  reason: string
+  description?: string
+  status: 'pending' | 'resolved' | 'dismissed'
+  createdAt: string
+  resolvedAt?: string
+  resolvedBy?: string
 }
 
 export interface FilterOptions {
