@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { defineNitroPlugin } from 'nitropack/runtime'
 import { createApp, createError, toNodeListener } from 'h3'
-import { createCall } from 'h3'
 import {
   securityConfig,
   getSecurityHeaders,

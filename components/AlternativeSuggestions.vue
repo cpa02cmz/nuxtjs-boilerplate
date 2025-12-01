@@ -13,7 +13,7 @@
         :key="alternative.resource.id"
         :title="alternative.resource.title"
         :description="alternative.resource.description"
-        :benefits="alternative.resource.benefits"
+        :benefits="[...alternative.resource.benefits]"
         :url="alternative.resource.url"
         :button-label="getButtonLabel(alternative.resource.category)"
         :similarity-score="alternative.similarityScore"
