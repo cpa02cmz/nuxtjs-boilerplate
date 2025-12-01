@@ -1,61 +1,131 @@
-// Test setup file for Vitest
-import { vi, expect } from 'vitest'
-import '@testing-library/jest-dom'
+// Test setup file for Vitest with Nuxt
+import { vi } from 'vitest'
 
-// Mock window.matchMedia
-if (typeof window !== 'undefined' && !window.matchMedia) {
-  Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: vi.fn().mockImplementation(query => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: vi.fn(), // deprecated
-      removeListener: vi.fn(), // deprecated
+// Mock the nuxt-vitest-app-entry that causes the original error
+vi.mock('#app/nuxt-vitest-app-entry', () => ({}))
+
+// Define missing DOM APIs that Vue/Nuxt might expect
+if (typeof window !== 'undefined') {
+  // Mock Intersection Observer if not present
+  if (typeof window.IntersectionObserver === 'undefined') {
+    Object.defineProperty(window, 'IntersectionObserver', {
+      writable: true,
+      value: vi.fn(() => ({
+        observe: vi.fn(),
+        unobserve: vi.fn(),
+        disconnect: vi.fn(),
+      })),
+    })
+  }
+
+  // Mock ResizeObserver if not present
+  if (typeof window.ResizeObserver === 'undefined') {
+    Object.defineProperty(window, 'ResizeObserver', {
+      writable: true,
+      value: vi.fn(() => ({
+        observe: vi.fn(),
+        unobserve: vi.fn(),
+        disconnect: vi.fn(),
+      })),
+    })
+  }
+}
+
+// Mock DOM APIs that may be needed by components
+if (typeof global !== 'undefined') {
+  if (typeof global.window === 'undefined') {
+    global.window = global.window || {}
+  }
+
+  if (typeof global.document === 'undefined') {
+    global.document = {
+      createElement: vi.fn(() => ({
+        style: {},
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        getContext: vi.fn(),
+        setAttribute: vi.fn(),
+        getAttribute: vi.fn(),
+        appendChild: vi.fn(),
+        removeChild: vi.fn(),
+        querySelector: vi.fn(),
+        querySelectorAll: vi.fn(() => []),
+        body: {},
+      })),
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
-  })
-}
-
-// Mock ResizeObserver if it doesn't exist
-if (
-  typeof window !== 'undefined' &&
-  typeof window.ResizeObserver === 'undefined'
-) {
-  class VitestResizeObserver {
-    observe = vi.fn()
-    unobserve = vi.fn()
-    disconnect = vi.fn()
+      querySelector: vi.fn(),
+      querySelectorAll: vi.fn(() => []),
+      getElementById: vi.fn(),
+      cookie: '',
+      readyState: 'complete',
+    }
   }
 
-  // @ts-ignore
-  window.ResizeObserver = VitestResizeObserver
-}
-
-// Mock IntersectionObserver if it doesn't exist
-if (
-  typeof window !== 'undefined' &&
-  typeof window.IntersectionObserver === 'undefined'
-) {
-  class VitestIntersectionObserver {
-    observe = vi.fn()
-    unobserve = vi.fn()
-    disconnect = vi.fn()
+  if (typeof global.navigator === 'undefined') {
+    global.navigator = {
+      clipboard: {
+        writeText: vi.fn(() => Promise.resolve()),
+      },
+      userAgent: 'test-agent',
+      platform: 'test-platform',
+    }
   }
 
-  // @ts-ignore
-  window.IntersectionObserver = VitestIntersectionObserver
+  if (typeof global.HTMLElement === 'undefined') {
+    global.HTMLElement = class HTMLElement {}
+  }
+
+  if (typeof global.SVGElement === 'undefined') {
+    global.SVGElement = class SVGElement {}
+  }
+
+  if (typeof global.requestAnimationFrame === 'undefined') {
+    global.requestAnimationFrame = vi.fn(callback => {
+      return setTimeout(callback, 0)
+    })
+    global.cancelAnimationFrame = vi.fn(clearTimeout)
+  }
+
+  if (typeof global.matchMedia === 'undefined') {
+    global.matchMedia = vi.fn(() => ({
+      matches: false,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    }))
+  }
+
+  if (typeof global.localStorage === 'undefined') {
+    global.localStorage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+      key: vi.fn(),
+      length: 0,
+    }
+  }
+
+  if (typeof global.sessionStorage === 'undefined') {
+    global.sessionStorage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+      key: vi.fn(),
+      length: 0,
+    }
+  }
 }
 
 // Mock DOMPurify
-vi.mock('dompurify', () => {
+vi.mock('dompurify', async importOriginal => {
+  const actual = await importOriginal()
   return {
+    ...actual,
     default: {
-      sanitize: (html: string) => {
-        // Basic sanitization for testing - just return the input for now
-        // In real tests you'd want proper sanitization
+      sanitize: html => {
+        // Basic sanitization for testing
         return html
           .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
           .replace(/javascript:/gi, '')
@@ -65,77 +135,7 @@ vi.mock('dompurify', () => {
   }
 })
 
-// Mock process for Node environment
-if (typeof global !== 'undefined') {
-  Object.defineProperty(global, 'process', {
-    value: {
-      ...process,
-      env: {
-        ...process.env,
-        NODE_ENV: 'test',
-      },
-    },
-    writable: true,
-  })
-}
-
-// Mock console to prevent test errors from console logs
-if (typeof global !== 'undefined') {
-  Object.defineProperty(global, 'console', {
-    value: {
-      ...console,
-      error: vi.fn(),
-      warn: vi.fn(),
-      log: vi.fn(),
-      info: vi.fn(),
-      debug: vi.fn(),
-    },
-    writable: true,
-  })
-}
-
-// Mock fetch API if needed
-if (typeof global !== 'undefined' && !global.fetch) {
-  global.fetch = vi.fn(() =>
-    Promise.resolve({
-      json: () => Promise.resolve({}),
-      text: () => Promise.resolve(''),
-      ok: true,
-      status: 200,
-    })
-  ) as any
-}
-
-// Mock URL constructor
-if (typeof vi !== 'undefined') {
-  vi.stubGlobal('URL', {
-    prototype: {
-      href: '',
-      origin: '',
-      protocol: '',
-      host: '',
-      hostname: '',
-      port: '',
-      pathname: '',
-      search: '',
-      hash: '',
-    },
-    createObjectURL: vi.fn(),
-    revokeObjectURL: vi.fn(),
-  })
-}
-
-// Mock localStorage if needed
-if (typeof window !== 'undefined') {
-  const vitestLocalStorageMock = {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn(),
-    clear: vi.fn(),
-    length: 0,
-    key: vi.fn(),
-  }
-  Object.defineProperty(window, 'localStorage', {
-    value: vitestLocalStorageMock,
-  })
+// Set test environment
+if (typeof process !== 'undefined' && process.env) {
+  process.env.NODE_ENV = 'test'
 }

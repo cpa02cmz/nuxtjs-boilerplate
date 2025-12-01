@@ -3,16 +3,9 @@ import { defineVitestConfig } from '@nuxt/test-utils/config'
 export default defineVitestConfig({
   test: {
     globals: true,
-    environment: 'nuxt',
+    environment: 'node', // Use node to avoid the nuxt-vitest-app-entry import issue
+    testTimeout: 10000,
     setupFiles: ['./test-setup.ts'],
-    environmentOptions: {
-      nuxt: {
-        rootDir: '.',
-        overrides: {
-          // Add any necessary nuxt config overrides for testing
-        },
-      },
-    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],

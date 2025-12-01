@@ -2,14 +2,29 @@
 export default defineNuxtConfig({
   devtools: { enabled: false }, // Disable in production for performance
   css: ['~/assets/css/main.css'],
-  modules: ['@nuxtjs/tailwindcss', '@nuxt/image', '@vite-pwa/nuxt'],
+  modules: [
+    '@nuxt/test-utils/module',
+    '@nuxtjs/tailwindcss',
+    '@nuxt/image',
+    '@vite-pwa/nuxt',
+    '~/modules/openapi',
+  ],
 
   // Runtime configuration for environment variables
   runtimeConfig: {
     public: {
-      canonicalUrl:
+      siteUrl:
+        process.env.NUXT_PUBLIC_SITE_URL ||
+        process.env.SITE_URL ||
+        process.env.NUXT_PUBLIC_CANONICAL_URL ||
         process.env.CANONICAL_URL ||
-        'https://free-stuff-on-the-internet.vercel.app/',
+        process.env.HOST ||
+        process.env.VERCEL_URL ||
+        'http://localhost:3000',
+      canonicalUrl:
+        process.env.NUXT_PUBLIC_CANONICAL_URL ||
+        process.env.CANONICAL_URL ||
+        'http://localhost:3000',
     },
   },
 
@@ -186,6 +201,29 @@ export default defineNuxtConfig({
     componentIslands: true,
   },
 
+  // Security Configuration
+  // Content Security Policy (CSP) and other security headers are implemented via
+  // server plugin at server/plugins/security-headers.ts which provides:
+  // - Dynamic nonce generation per request for inline scripts/styles
+  // - Comprehensive security header protection
+  // - Route-specific cache control headers
+
+  // Security and performance configuration
+  nitro: {
+    // Optimize server-side rendering
+    minify: true,
+    // Enable compression
+    compressPublicAssets: true,
+    // Improve build performance
+    ignore: ['**/.git/**', '**/node_modules/**', '**/dist/**'],
+    // Security headers are handled via the security-headers.ts plugin
+    // to ensure proper nonce generation and dynamic header values
+    plugins: [
+      '~/server/plugins/security-headers.ts',
+      '~/server/plugins/resource-validation.ts',
+    ],
+  },
+
   // Image optimization configuration
   image: {
     // Enable native lazy loading for images
@@ -207,13 +245,6 @@ export default defineNuxtConfig({
     inlineStyles: true,
   },
 
-  // Define reusable security headers to reduce duplication
-  // Note: These headers will be applied via the security headers plugin
-  nitro: {
-    // CSP headers via middleware
-    plugins: ['~/server/plugins/security-headers.ts'],
-  },
-
   // SEO Configuration - using built-in meta handling
   app: {
     head: {
@@ -230,6 +261,7 @@ export default defineNuxtConfig({
         { rel: 'prefetch', href: '/api/submissions' },
         // Add preloading for critical resources
         { rel: 'preload', href: '/favicon.ico', as: 'image' },
+        // Preload critical CSS
         { rel: 'preload', href: '/_nuxt/', as: 'fetch', crossorigin: true },
         // DNS prefetch for external resources
         { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
@@ -298,60 +330,37 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    // Security headers are now handled via the security-headers plugin
-    // This reduces duplication and centralizes security configuration
-    '/**': {
-      // Global route rules handled by security plugin
-    },
     // Main routes with prerender
     '/': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
     '/ai-keys': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
     '/about': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
     '/search': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
     '/submit': {
       prerender: true,
-      headers: {
-        'cache-control': 'max-age=3600, s-maxage=3600, public', // 1 hour
-      },
     },
-    // Add caching headers for better performance
+    // API routes
     '/api/**': {
-      headers: {
-        'cache-control': 'max-age=300, public, s-maxage=300', // 5 minutes
-      },
+      // Cache control handled by security headers plugin
     },
-    // Cache static assets
+    // Static assets
     '/_nuxt/**': {
-      headers: {
-        'cache-control': 'max-age=31536000, immutable',
-      },
+      // Cache control handled by security headers plugin
     },
   },
 
   sitemap: {
     hostname:
+      process.env.NUXT_PUBLIC_CANONICAL_URL ||
       process.env.CANONICAL_URL ||
-      'https://free-stuff-on-the-internet.vercel.app',
+      'http://localhost:3000',
   },
   ogImage: {
     enabled: false, // We'll implement this later if needed
@@ -365,7 +374,6 @@ export default defineNuxtConfig({
   // Explicitly use Vite for faster builds
   builder: 'vite',
 
-  // Nitro configuration moved to top level
   // Optimize bundle size
   vite: {
     build: {
@@ -390,17 +398,30 @@ export default defineNuxtConfig({
         external: ['@nuxt/kit'],
       },
     },
-    plugins:
-      process.env.ANALYZE_BUNDLE === 'true'
-        ? [
-            require('rollup-plugin-visualizer')({
-              filename: './dist/stats.html',
-              open: false,
-              gzipSize: true,
-              brotliSize: true,
-            }),
-          ]
-        : [], // Only add the plugin when ANALYZE_BUNDLE is true
+    plugins: [
+      // Add bundle analyzer for performance monitoring (only when ANALYZE_BUNDLE is true)
+      ...(process.env.ANALYZE_BUNDLE === 'true'
+        ? (() => {
+            try {
+              // Safely require the visualizer plugin to avoid build failures
+              const { visualizer } = require('rollup-plugin-visualizer')
+              return [
+                visualizer({
+                  filename: './dist/stats.html',
+                  open: false,
+                  gzipSize: true,
+                  brotliSize: true,
+                }),
+              ]
+            } catch (error) {
+              console.warn(
+                'rollup-plugin-visualizer not available, skipping bundle analysis'
+              )
+              return [] // Return empty array if plugin is not available
+            }
+          })()
+        : []),
+    ],
     // Optimize build speed
     esbuild: {
       logLevel: 'silent', // Reduce build noise

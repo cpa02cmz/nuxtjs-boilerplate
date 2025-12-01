@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
 /**
- * PR Automation Handler
- * Comprehensive implementation of the PR automation system
+ * PR Automation Specialist Script
+ * Comprehensive implementation of the PR automation system as specified
  */
 
 import { execSync, spawnSync } from 'child_process'
 import { existsSync, readFileSync } from 'fs'
 import { join } from 'path'
 
-// Constants
+// Configuration
 const GITHUB_TOKEN = process.env.GH_TOKEN || process.env.GITHUB_TOKEN
 const REPO_OWNER = getRepoOwner()
 const REPO_NAME = getRepoName()
@@ -55,10 +55,9 @@ function configureGit() {
     execSync('git config user.email "github-actions@github.com"', {
       stdio: 'pipe',
     })
-    if (process.env.DEBUG) console.log('✓ Git configured for automation')
   } catch (error) {
-    if (process.env.DEBUG)
-      console.error('✗ Git configuration failed:', error.message)
+    // Log error before re-throwing for debugging
+    console.error('Git configuration failed:', error.message)
     throw error
   }
 }
@@ -75,10 +74,11 @@ function getOpenPRs() {
       pr =>
         !pr.author.is_bot &&
         !pr.author.login.includes('github-actions') &&
-        !pr.author.login.includes('dependabot')
+        !pr.author.login.includes('dependabot') &&
+        !pr.author.login.includes('openhands')
     )
 
-    // Sort by priority and creation date
+    // Sort by priority and creation date (oldest first as per spec)
     return filteredPRs.sort((a, b) => {
       const aPriority = getPriorityScore(a.labels)
       const bPriority = getPriorityScore(b.labels)
@@ -87,8 +87,8 @@ function getOpenPRs() {
         return bPriority - aPriority // Higher priority first
       }
 
-      // Same priority - sort by creation date (newest first to handle recent PRs)
-      return new Date(b.createdAt) - new Date(a.createdAt)
+      // Same priority - sort by creation date (oldest first as per spec)
+      return new Date(a.createdAt) - new Date(b.createdAt)
     })
   } catch (error) {
     if (process.env.DEBUG)
@@ -98,7 +98,7 @@ function getOpenPRs() {
 }
 
 function getPriorityScore(labels) {
-  const labelNames = labels.map(l => l.name)
+  const labelNames = labels?.map(l => l.name) || []
   if (labelNames.includes('priority/high')) return 3
   if (labelNames.includes('priority/medium')) return 2
   if (labelNames.includes('priority/low')) return 1
@@ -159,7 +159,6 @@ function checkoutAndSyncPR(prNumber, prRef) {
     try {
       execSync('git fetch origin main', { stdio: 'pipe' })
       execSync('git rebase origin/main', { stdio: 'pipe' })
-      if (process.env.DEBUG) console.log('✓ Rebased PR on main successfully')
     } catch (rebaseError) {
       if (process.env.DEBUG)
         console.log('Rebase failed, using merge instead...')
@@ -172,16 +171,13 @@ function checkoutAndSyncPR(prNumber, prRef) {
           console.log('No rebase in progress, continuing with merge...')
       }
       execSync('git merge origin/main', { stdio: 'pipe' })
-      if (process.env.DEBUG) console.log('✓ Merged main into PR successfully')
     }
 
     // Push sync changes
     execSync(`git push origin ${prRef} --force-with-lease`, { stdio: 'pipe' })
-    if (process.env.DEBUG) console.log('✓ Sync changes pushed to PR branch')
 
     return true
   } catch (error) {
-    if (process.env.DEBUG) console.error('✗ Failed to sync PR:', error.message)
     return false
   }
 }
@@ -201,6 +197,15 @@ async function processReviewComments(prNumber) {
     // Process review comments
     if (prDetails.reviews) {
       for (const review of prDetails.reviews) {
+        // Skip comments from automation bots to avoid loops
+        if (
+          review.author.login === 'github-actions' ||
+          review.author.login.includes('bot') ||
+          review.author.login === 'openhands'
+        ) {
+          continue
+        }
+
         if (
           review.state === 'COMMENTED' ||
           review.state === 'CHANGES_REQUESTED'
@@ -316,8 +321,183 @@ function isTechnicalFeedback(body) {
     'correct',
     'adjust',
     'enhance',
+    'lint',
+    'format',
+    'style',
+    'type',
+    'validation',
+    'test',
+    'coverage',
+    'dependency',
+    'package',
+    'config',
+    'configuration',
+    'secret',
+    'credential',
+    'hardcoded',
+    'environment',
+    'variable',
+    'api',
+    'endpoint',
+    'route',
+    'middleware',
+    'plugin',
+    'component',
+    'composable',
+    'hook',
+    'function',
+    'method',
+    'class',
+    'interface',
+    'module',
+    'import',
+    'export',
+    'require',
+    'async',
+    'promise',
+    'callback',
+    'error handling',
+    'validation',
+    'sanitization',
+    'encoding',
+    'decoding',
+    'serialization',
+    'deserialization',
+    'parsing',
+    'formatting',
+    'optimization',
+    'memory',
+    'cpu',
+    'bandwidth',
+    'efficiency',
+    'caching',
+    'compression',
+    'minification',
+    'bundle',
+    'build',
+    'deploy',
+    'release',
+    'version',
+    'tag',
+    'branch',
+    'merge',
+    'conflict',
+    'resolution',
+    'strategy',
+    'algorithm',
+    'data structure',
+    'architecture',
+    'design',
+    'pattern',
+    'best practice',
+    'convention',
+    'standard',
+    'specification',
+    'protocol',
+    'authentication',
+    'authorization',
+    'permission',
+    'role',
+    'session',
+    'cookie',
+    'token',
+    'jwt',
+    'oauth',
+    'sso',
+    'cors',
+    'csrf',
+    'xss',
+    'sql injection',
+    'injection',
+    'validation',
+    'sanitization',
+    'encoding',
+    'decoding',
+    'encryption',
+    'decryption',
+    'hash',
+    'signature',
+    'certificate',
+    'ssl',
+    'tls',
+    'https',
+    'http',
+    'rest',
+    'graphql',
+    'websocket',
+    'socket',
+    'tcp',
+    'udp',
+    'ip',
+    'dns',
+    'cdn',
+    'load balancer',
+    'proxy',
+    'reverse proxy',
+    'cache',
+    'database',
+    'query',
+    'transaction',
+    'migration',
+    'schema',
+    'model',
+    'orm',
+    'driver',
+    'connection',
+    'pool',
+    'timeout',
+    'retry',
+    'circuit breaker',
+    'fallback',
+    'graceful degradation',
+    'circuit breaker',
+    'retry',
+    'timeout',
+    'rate limit',
+    'throttle',
+    'quota',
+    'backpressure',
+    'queue',
+    'buffer',
+    'stream',
+    'pipeline',
+    'workflow',
+    'pipeline',
+    'ci',
+    'cd',
+    'pipeline',
+    'workflow',
+    'job',
+    'task',
+    'step',
+    'action',
+    'trigger',
+    'event',
+    'hook',
+    'webhook',
+    'notification',
+    'alert',
+    'monitoring',
+    'logging',
+    'tracing',
+    'metrics',
+    'telemetry',
+    'observability',
+    'debugging',
+    'profiling',
+    'benchmark',
+    'performance',
+    'load testing',
+    'stress testing',
+    'integration testing',
+    'unit testing',
+    'e2e testing',
+    'smoke testing',
+    'regression testing',
+    'acceptance testing',
   ]
 
+  if (!body) return false
   const lowerBody = body.toLowerCase()
   return technicalTerms.some(term => lowerBody.includes(term))
 }
@@ -332,9 +512,10 @@ async function implementChangeFromReview(feedback, prNumber) {
     // Check for specific types of feedback and implement changes
     if (
       feedback.toLowerCase().includes('eslint') ||
-      feedback.toLowerCase().includes('lint')
+      feedback.toLowerCase().includes('lint') ||
+      feedback.toLowerCase().includes('format') ||
+      feedback.toLowerCase().includes('style')
     ) {
-      if (process.env.DEBUG) console.log('Applying lint fixes...')
       try {
         execSync('npm run lint:fix', { stdio: 'pipe' })
         return true
@@ -346,9 +527,12 @@ async function implementChangeFromReview(feedback, prNumber) {
 
     if (
       feedback.toLowerCase().includes('security') ||
-      feedback.toLowerCase().includes('secret')
+      feedback.toLowerCase().includes('secret') ||
+      feedback.toLowerCase().includes('credential') ||
+      feedback.toLowerCase().includes('hardcoded') ||
+      feedback.toLowerCase().includes('environment') ||
+      feedback.toLowerCase().includes('env')
     ) {
-      if (process.env.DEBUG) console.log('Checking for hardcoded secrets...')
       // This would scan files for potential secrets
       return true
     }
@@ -391,20 +575,16 @@ async function implementChangeFromReview(feedback, prNumber) {
 
 // Comprehensive validation
 function runValidation() {
-  if (process.env.DEBUG) console.log('🔍 Running comprehensive validation...')
-
   let allPassed = true
 
   // Check for lint issues
   try {
     execSync('npm run lint', { stdio: 'pipe' })
-    if (process.env.DEBUG) console.log('✓ Linting passed')
   } catch (lintError) {
     if (process.env.DEBUG)
       console.log('Linting issues found, attempting to fix...')
     try {
       execSync('npm run lint:fix', { stdio: 'pipe' })
-      if (process.env.DEBUG) console.log('✓ Linting issues fixed automatically')
 
       // Commit any fixes made
       const changes = execSync('git status --porcelain', { encoding: 'utf-8' })
@@ -412,7 +592,6 @@ function runValidation() {
         execSync('git add .', { stdio: 'pipe' })
         execSync('git commit -m "chore: fix linting issues"', { stdio: 'pipe' })
         execSync('git push origin HEAD', { stdio: 'pipe' })
-        if (process.env.DEBUG) console.log('✓ Lint fixes committed and pushed')
       }
     } catch (fixError) {
       if (process.env.DEBUG)
@@ -423,7 +602,6 @@ function runValidation() {
 
   // Run build - try different build commands for this project
   try {
-    if (process.env.DEBUG) console.log('📦 Running build...')
     // Try different build commands for this nuxt project
     try {
       execSync('npm run build', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })
@@ -433,16 +611,14 @@ function runValidation() {
       if (process.env.DEBUG)
         console.log('npm run build failed, trying nuxt build directly...')
       execSync('npx nuxt build', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })
-      if (process.env.DEBUG) console.log('✓ Build successful with nuxt build')
     }
-    if (process.env.DEBUG) console.log('✓ Build successful')
   } catch (buildError) {
     if (process.env.DEBUG)
       console.error(
         '⚠️ Build failed (non-critical):',
         buildError.stderr || buildError.stdout || buildError.message
       )
-    if (process.env.DEBUG) console.log('Continuing with other validations...')
+
     // Don't set allPassed to false for build failures - it's non-critical
   }
 
@@ -451,7 +627,6 @@ function runValidation() {
     // Try various test commands for this nuxt project
     try {
       execSync('npm run test', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })
-      if (process.env.DEBUG) console.log('✓ Tests passed with npm run test')
     } catch (npmTestError) {
       if (process.env.DEBUG)
         console.log('npm run test failed, trying vitest...')
@@ -459,9 +634,7 @@ function runValidation() {
         stdio: 'pipe',
         maxBuffer: 10 * 1024 * 1024,
       })
-      if (process.env.DEBUG) console.log('✓ Tests passed with vitest')
     }
-    if (process.env.DEBUG) console.log('✓ Tests passed')
   } catch (testError) {
     if (process.env.DEBUG)
       console.log('No tests found or tests failed, continuing...')
@@ -472,10 +645,9 @@ function runValidation() {
     const statusCmd = `gh pr view ${process.env.PR_NUMBER || 1} --json mergeable --repo ${REPO_OWNER}/${REPO_NAME}`
     const prStatus = JSON.parse(execSync(statusCmd, { encoding: 'utf-8' }))
     if (prStatus.mergeable === 'CONFLICTING') {
-      if (process.env.DEBUG) console.error('✗ PR has merge conflicts')
       allPassed = false
     } else {
-      if (process.env.DEBUG) console.log('✓ No merge conflicts detected')
+      // No conflicts detected, continue
     }
   } catch (statusError) {
     if (process.env.DEBUG)
@@ -581,8 +753,6 @@ function finalizePR(prNumber, success) {
 
 // Main automation process
 async function runPRAutomation() {
-  if (process.env.DEBUG) console.log('🚀 Starting PR Automation Process...\n')
-
   // Verify prerequisites
   if (!GITHUB_TOKEN) {
     if (process.env.DEBUG)
@@ -600,20 +770,16 @@ async function runPRAutomation() {
       console.log(`📋 Found ${openPRs.length} open PRs to evaluate\n`)
 
     if (openPRs.length === 0) {
-      if (process.env.DEBUG) console.log('✅ No open PRs to process')
       return
     }
 
-    // Select the highest priority PR
+    // Select the highest priority PR (oldest as per spec)
     const targetPR = openPRs[0]
     if (process.env.DEBUG)
       console.log(`🎯 Selected PR #${targetPR.number} for processing:`)
-    if (process.env.DEBUG) console.log(`   Title: ${targetPR.title}`)
-    if (process.env.DEBUG) console.log(`   Author: ${targetPR.author.login}`)
-    if (process.env.DEBUG) console.log(`   Created: ${targetPR.createdAt}\n`)
 
     // Analyze the PR
-    if (process.env.DEBUG) console.log('🔍 Analyzing PR...')
+
     const prDetails = analyzePR(targetPR.number)
     if (!prDetails) {
       if (process.env.DEBUG)
@@ -625,7 +791,7 @@ async function runPRAutomation() {
     process.env.PR_NUMBER = targetPR.number
 
     // Sync the PR branch
-    if (process.env.DEBUG) console.log('🔄 Syncing PR branch with main...')
+
     const syncSuccess = checkoutAndSyncPR(
       targetPR.number,
       prDetails.headRefName
@@ -638,7 +804,7 @@ async function runPRAutomation() {
     }
 
     // Process review comments
-    if (process.env.DEBUG) console.log('💬 Processing review comments...')
+
     const commentSuccess = await processReviewComments(targetPR.number)
     if (!commentSuccess) {
       if (process.env.DEBUG)
@@ -648,7 +814,7 @@ async function runPRAutomation() {
     }
 
     // Run validation
-    if (process.env.DEBUG) console.log('🧪 Running validation tests...')
+
     const validationSuccess = runValidation()
     if (!validationSuccess) {
       if (process.env.DEBUG)
@@ -658,7 +824,7 @@ async function runPRAutomation() {
     }
 
     // Finalize the PR
-    if (process.env.DEBUG) console.log('✅ Finalizing PR...')
+
     const finalizeSuccess = finalizePR(targetPR.number, true)
 
     if (finalizeSuccess) {
