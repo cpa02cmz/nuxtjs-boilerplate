@@ -1,4 +1,7 @@
-import { getQuery } from 'h3'
+import { getQuery, setResponseStatus } from 'h3'
+import type { Resource } from '~/types/resource'
+import { logError } from '~/utils/errorLogger'
+import { cacheManager } from '~/server/utils/enhanced-cache'
 import { searchAnalyticsTracker } from '~/utils/searchAnalytics'
 
 /**
@@ -19,6 +22,17 @@ export default defineEventHandler(async event => {
     if (![7, 30, 90].includes(days)) {
       // Default to 30 if invalid
       console.warn(`Invalid days parameter: ${days}, defaulting to 30`)
+    }
+
+    // Generate cache key based on query parameters
+    const cacheKey = `search-analytics:${days}`
+
+    // Try to get from cache first
+    const cachedResult = await cacheManager.get(cacheKey)
+    if (cachedResult) {
+      event.node.res?.setHeader('X-Cache', 'HIT')
+      event.node.res?.setHeader('X-Cache-Key', cacheKey)
+      return cachedResult
     }
 
     // Calculate date range
@@ -108,11 +122,30 @@ export default defineEventHandler(async event => {
       },
     }
 
+    // Cache the result for 15 minutes (900 seconds)
+    await cacheManager.set(cacheKey, response, 900)
+
+    // Set cache miss header
+    event.node.res?.setHeader('X-Cache', 'MISS')
+    event.node.res?.setHeader('X-Cache-Key', cacheKey)
+
+    // Set success response status
+    setResponseStatus(event, 200)
     return response
   } catch (error: any) {
-    console.error('Error fetching search analytics:', error)
+    // Log error using our error logging service
+    logError(
+      `Error fetching search analytics: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      error as Error,
+      'api-analytics-search',
+      {
+        query: getQuery(event),
+        errorType: error?.constructor?.name,
+      }
+    )
 
-    // Return error response
+    // Set error response status
+    setResponseStatus(event, 500)
     return {
       success: false,
       message: 'An error occurred while fetching search analytics',
