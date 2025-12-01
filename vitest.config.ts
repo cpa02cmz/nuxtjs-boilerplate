@@ -1,9 +1,20 @@
-import { defineVitestConfig } from '@nuxt/test-utils/config'
+import { defineConfig } from 'vitest/config'
+import { resolve } from 'path'
+import vue from '@vitejs/plugin-vue'
 
-export default defineVitestConfig({
+export default defineConfig({
+  plugins: [vue()], // Add Vue plugin to handle .vue files
+  resolve: {
+    alias: {
+      '~': resolve(__dirname),
+      '@': resolve(__dirname),
+      '~~': resolve(__dirname),
+      '@@': resolve(__dirname),
+    },
+  },
   test: {
     globals: true,
-    environment: 'node', // Use node to avoid the nuxt-vitest-app-entry import issue
+    environment: 'node', // Use node environment with proper mocking
     testTimeout: 10000,
     setupFiles: ['./test-setup.ts'],
     coverage: {
