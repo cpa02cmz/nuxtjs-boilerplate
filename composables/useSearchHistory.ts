@@ -1,5 +1,6 @@
 // Composable for managing search history
 import { ref, computed } from 'vue'
+import { logger } from '~/utils/logger'
 
 export const useSearchHistory = () => {
   const SEARCH_HISTORY_KEY = 'resource_search_history'
@@ -16,10 +17,7 @@ export const useSearchHistory = () => {
       searchHistory.value = parsedHistory
       return parsedHistory
     } catch (e) {
-      // In production, we might want to use a proper error tracking service instead of console
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error reading search history:', e)
-      }
+      logger.error('Error reading search history:', e)
       searchHistory.value = []
       return []
     }
@@ -38,10 +36,7 @@ export const useSearchHistory = () => {
     try {
       localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history))
     } catch (e) {
-      // In production, we might want to use a proper error tracking service instead of console
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error saving search history:', e)
-      }
+      logger.error('Error saving search history:', e)
     }
   }
 
@@ -54,10 +49,7 @@ export const useSearchHistory = () => {
     try {
       localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history))
     } catch (e) {
-      // In production, we might want to use a proper error tracking service instead of console
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error removing search from history:', e)
-      }
+      logger.error('Error removing search from history:', e)
     }
   }
 
@@ -67,10 +59,7 @@ export const useSearchHistory = () => {
     try {
       localStorage.removeItem(SEARCH_HISTORY_KEY)
     } catch (e) {
-      // In production, we might want to use a proper error tracking service instead of console
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Error clearing search history:', e)
-      }
+      logger.error('Error clearing search history:', e)
     }
   }
 
