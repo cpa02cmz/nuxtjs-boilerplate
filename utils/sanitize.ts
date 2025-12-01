@@ -18,7 +18,7 @@ export const sanitizeForXSS = (content: string): string => {
   )
   preprocessed = preprocessed.replace(/<\s*script[^>]*\/?\s*>/gi, '')
 
-  // Remove other dangerous tags that might have been missed
+  // Remove other dangerous tags that might have been missed, preserving their content
   preprocessed = preprocessed.replace(
     /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|basefont|frame|frameset|ilayer|layer|bgsound|title|style)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
     ''
@@ -27,6 +27,19 @@ export const sanitizeForXSS = (content: string): string => {
     /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|basefont|frame|frameset|ilayer|layer|bgsound|title|style)[^>]*\/?\s*>/gi,
     ''
   )
+
+  // Remove formatting tags but preserve their content
+  preprocessed = preprocessed.replace(
+    /<\s*(strong|b|i|em|u|span|div|p|h1|h2|h3|h4|h5|h6|ul|ol|li|a|small|big|code|pre|blockquote|cite|q|dfn|abbr|acronym|sub|sup|tt|var|samp|kbd|del|ins|mark|ruby|rt|rp|bdi|bdo|wbr)[^>]*>([\s\S]*?)<\s*\/\s*\1\s*>/gi,
+    '$2'
+  )
+  preprocessed = preprocessed.replace(
+    /<\s*(strong|b|i|em|u|span|div|p|h1|h2|h3|h4|h5|h6|ul|ol|li|a|small|big|code|pre|blockquote|cite|q|dfn|abbr|acronym|sub|sup|tt|var|samp|kbd|del|ins|mark|ruby|rt|rp|bdi|bdo|wbr)[^>]*\/?\s*>/gi,
+    ''
+  )
+
+  // Remove self-closing tags
+  preprocessed = preprocessed.replace(/<\s*(br|hr)[^>]*\/?\s*>/gi, '')
 
   // Remove SVG tags which can contain malicious code, but preserve their text content
   preprocessed = preprocessed.replace(

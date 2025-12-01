@@ -23,14 +23,30 @@ describe('useSearchHistory', () => {
     { query: 'test query 3', timestamp: Date.now() - 3000 },
   ]
 
+  const mockLocalStorageGetItem = (returnValue: string | null) => {
+    localStorageMock.getItem.mockImplementation(key => {
+      if (key === 'resource_search_history') {
+        return returnValue
+      }
+      return null
+    })
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
     localStorageMock.getItem.mockClear()
     localStorageMock.setItem.mockClear()
+    mockLocalStorageGetItem(null)
+
+    // Ensure window is defined for the composable
+    Object.defineProperty(global, 'window', {
+      value: window,
+      writable: true,
+    })
   })
 
   it('should initialize with empty history when localStorage is empty', () => {
-    localStorageMock.getItem.mockReturnValue(null)
+    mockLocalStorageGetItem(null)
 
     const { searchHistory } = useSearchHistory()
 
@@ -38,7 +54,13 @@ describe('useSearchHistory', () => {
   })
 
   it('should initialize with existing history from localStorage', () => {
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(mockSearchHistory))
+    // Set up the mock BEFORE creating the composable
+    localStorageMock.getItem.mockImplementation(key => {
+      if (key === 'resource_search_history') {
+        return JSON.stringify(mockSearchHistory)
+      }
+      return null
+    })
 
     const { searchHistory } = useSearchHistory()
 
@@ -46,7 +68,7 @@ describe('useSearchHistory', () => {
   })
 
   it('should add a new search query to history', () => {
-    localStorageMock.getItem.mockReturnValue(JSON.stringify([]))
+    mockLocalStorageGetItem(JSON.stringify([]))
 
     const { searchHistory, addSearch } = useSearchHistory()
     addSearch('new search query')
@@ -60,7 +82,7 @@ describe('useSearchHistory', () => {
     const existingHistory = [
       { query: 'existing query', timestamp: Date.now() - 1000 },
     ]
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(existingHistory))
+    mockLocalStorageGetItem(JSON.stringify(existingHistory))
 
     const { searchHistory, addSearch } = useSearchHistory()
     addSearch('existing query') // Adding the same query
@@ -74,9 +96,13 @@ describe('useSearchHistory', () => {
       query: `old query ${i}`,
       timestamp: Date.now() - (10000 + i),
     }))
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(oldHistory))
+    mockLocalStorageGetItem(JSON.stringify(oldHistory))
 
     const { searchHistory, addSearch } = useSearchHistory()
+
+    // Verify initial state
+    expect(searchHistory.value).toHaveLength(10)
+
     addSearch('new query') // This should push out the oldest item
 
     expect(searchHistory.value).toHaveLength(10) // Still 10 items
@@ -86,7 +112,7 @@ describe('useSearchHistory', () => {
   })
 
   it('should clear all search history', () => {
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(mockSearchHistory))
+    mockLocalStorageGetItem(JSON.stringify(mockSearchHistory))
 
     const { searchHistory, clearHistory } = useSearchHistory()
     clearHistory()
@@ -100,7 +126,7 @@ describe('useSearchHistory', () => {
       { query: 'query 2', timestamp: Date.now() - 2000 },
       { query: 'query 3', timestamp: Date.now() - 3000 },
     ]
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(initialHistory))
+    mockLocalStorageGetItem(JSON.stringify(initialHistory))
 
     const { searchHistory, removeSearch } = useSearchHistory()
     removeSearch('query 2')
@@ -114,13 +140,19 @@ describe('useSearchHistory', () => {
   })
 
   it('should save history to localStorage when adding a query', () => {
-    localStorageMock.getItem.mockReturnValue(JSON.stringify([]))
+    mockLocalStorageGetItem(JSON.stringify([]))
+
+    // Ensure window is defined for the test
+    Object.defineProperty(global, 'window', {
+      value: window,
+      writable: true,
+    })
 
     const { addSearch } = useSearchHistory()
     addSearch('test query')
 
     expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      'searchHistory',
+      'resource_search_history',
       expect.any(String)
     )
 
@@ -131,12 +163,15 @@ describe('useSearchHistory', () => {
   })
 
   it('should save history to localStorage when clearing history', () => {
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(mockSearchHistory))
+    mockLocalStorageGetItem(JSON.stringify(mockSearchHistory))
 
     const { clearHistory } = useSearchHistory()
     clearHistory()
 
-    expect(localStorageMock.setItem).toHaveBeenCalledWith('searchHistory', '[]')
+    expect(localStorageMock.setItem).toHaveBeenCalledWith(
+      'resource_search_history',
+      '[]'
+    )
   })
 
   it('should save history to localStorage when removing a query', () => {
@@ -144,13 +179,13 @@ describe('useSearchHistory', () => {
       { query: 'query 1', timestamp: Date.now() - 1000 },
       { query: 'query 2', timestamp: Date.now() - 2000 },
     ]
-    localStorageMock.getItem.mockReturnValue(JSON.stringify(initialHistory))
+    mockLocalStorageGetItem(JSON.stringify(initialHistory))
 
     const { removeSearch } = useSearchHistory()
     removeSearch('query 1')
 
     expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      'searchHistory',
+      'resource_search_history',
       expect.any(String)
     )
 
@@ -178,7 +213,7 @@ describe('useSearchHistory', () => {
   })
 
   it('should parse invalid JSON from localStorage safely', () => {
-    localStorageMock.getItem.mockReturnValue('invalid json')
+    mockLocalStorageGetItem('invalid json')
 
     const { searchHistory } = useSearchHistory()
 
@@ -186,7 +221,7 @@ describe('useSearchHistory', () => {
   })
 
   it('should handle null query when adding to history', () => {
-    localStorageMock.getItem.mockReturnValue(JSON.stringify([]))
+    mockLocalStorageGetItem(JSON.stringify([]))
 
     const { searchHistory, addSearch } = useSearchHistory()
     // @ts-expect-error - Testing invalid input
@@ -196,7 +231,7 @@ describe('useSearchHistory', () => {
   })
 
   it('should handle empty string query when adding to history', () => {
-    localStorageMock.getItem.mockReturnValue(JSON.stringify([]))
+    mockLocalStorageGetItem(JSON.stringify([]))
 
     const { searchHistory, addSearch } = useSearchHistory()
     addSearch('')
