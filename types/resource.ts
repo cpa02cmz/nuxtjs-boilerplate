@@ -99,19 +99,6 @@ export interface Vote {
   timestamp: string
 }
 
-export interface Flag {
-  id: string
-  targetId: string
-  targetType: string
-  userId: string
-  reason: string
-  description?: string
-  status: 'pending' | 'resolved' | 'dismissed'
-  createdAt: string
-  resolvedAt?: string
-  resolvedBy?: string
-}
-
 export interface FilterOptions {
   searchQuery?: string
   categories?: string[]

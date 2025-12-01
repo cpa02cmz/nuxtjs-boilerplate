@@ -117,7 +117,7 @@ const emit = defineEmits<Emits>()
 
 // Reactive variables
 const searchInputRef = ref<HTMLInputElement>()
-const inputTimeout = ref<NodeJS.Timeout | number>()
+const inputTimeout = ref<ReturnType<typeof setTimeout> | number>()
 const debouncedQuery = ref('')
 const suggestions = ref<any[]>([])
 const showSuggestions = ref(false)
