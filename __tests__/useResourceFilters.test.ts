@@ -12,9 +12,11 @@ describe('useResourceFilters', () => {
       url: 'https://example.com',
       category: 'Testing',
       tags: ['test', 'resource'],
-      pricing: 'Free',
+      pricingModel: 'Free',
       difficulty: 'Beginner',
-      lastUpdated: '2023-01-01',
+      technology: ['Vue.js'],
+      dateAdded: '2023-01-01',
+      popularity: 10,
     },
     {
       id: '2',
@@ -24,9 +26,11 @@ describe('useResourceFilters', () => {
       url: 'https://example2.com',
       category: 'Development',
       tags: ['dev', 'tool'],
-      pricing: 'Paid',
+      pricingModel: 'Paid',
       difficulty: 'Intermediate',
-      lastUpdated: '2023-01-02',
+      technology: ['React'],
+      dateAdded: '2023-01-02',
+      popularity: 8,
     },
     {
       id: '3',
@@ -36,9 +40,11 @@ describe('useResourceFilters', () => {
       url: 'https://example3.com',
       category: 'Testing',
       tags: ['advanced', 'tool'],
-      pricing: 'Free',
+      pricingModel: 'Free',
       difficulty: 'Advanced',
-      lastUpdated: '2023-01-03',
+      technology: ['Angular'],
+      dateAdded: '2023-01-03',
+      popularity: 5,
     },
   ]
 
@@ -48,157 +54,156 @@ describe('useResourceFilters', () => {
     filtersComposable = useResourceFilters(mockResources)
   })
 
-  describe('filterByCategory', () => {
+  describe('category filtering', () => {
     it('should return resources matching the specified category', () => {
-      const results = filtersComposable.filterByCategory('Testing')
+      filtersComposable.toggleCategory('Testing')
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(2)
       expect(results[0].category).toBe('Testing')
       expect(results[1].category).toBe('Testing')
     })
 
     it('should return empty array for non-existent category', () => {
-      const results = filtersComposable.filterByCategory('NonExistent')
+      filtersComposable.toggleCategory('NonExistent')
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(0)
     })
 
-    it('should return all resources when category is empty', () => {
-      const results = filtersComposable.filterByCategory('')
+    it('should return all resources when no category filter is applied', () => {
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(3)
     })
   })
 
-  describe('filterByPricing', () => {
-    it('should return resources matching the specified pricing', () => {
-      const results = filtersComposable.filterByPricing('Free')
+  describe('pricing model filtering', () => {
+    it('should return resources matching the specified pricing model', () => {
+      filtersComposable.togglePricingModel('Free')
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(2)
-      results.forEach(resource => expect(resource.pricing).toBe('Free'))
+      results.forEach(resource => expect(resource.pricingModel).toBe('Free'))
     })
 
-    it('should return resources with specified pricing when multiple options provided', () => {
-      const results = filtersComposable.filterByPricing('Paid')
+    it('should return resources with specified pricing model when multiple options provided', () => {
+      filtersComposable.togglePricingModel('Paid')
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(1)
-      expect(results[0].pricing).toBe('Paid')
+      expect(results[0].pricingModel).toBe('Paid')
     })
 
-    it('should return all resources when pricing is empty', () => {
-      const results = filtersComposable.filterByPricing('')
+    it('should return all resources when no pricing model filter is applied', () => {
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(3)
     })
   })
 
-  describe('filterByDifficulty', () => {
+  describe('difficulty level filtering', () => {
     it('should return resources matching the specified difficulty', () => {
-      const results = filtersComposable.filterByDifficulty('Beginner')
+      filtersComposable.toggleDifficultyLevel('Beginner')
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(1)
       expect(results[0].difficulty).toBe('Beginner')
     })
 
     it('should return resources with multiple difficulty levels', () => {
-      const results = filtersComposable.filterByDifficulty('Advanced')
+      filtersComposable.toggleDifficultyLevel('Advanced')
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(1)
       expect(results[0].difficulty).toBe('Advanced')
     })
 
-    it('should return all resources when difficulty is empty', () => {
-      const results = filtersComposable.filterByDifficulty('')
+    it('should return all resources when no difficulty filter is applied', () => {
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(3)
     })
   })
 
-  describe('filterByTags', () => {
+  describe('tag filtering', () => {
     it('should return resources containing specified tags', () => {
-      const results = filtersComposable.filterByTags(['test'])
+      filtersComposable.toggleTag('test')
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(1)
       expect(results[0].tags).toContain('test')
     })
 
     it('should return resources containing any of the specified tags', () => {
-      const results = filtersComposable.filterByTags(['test', 'advanced'])
+      filtersComposable.toggleTag('test')
+      filtersComposable.toggleTag('advanced')
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(2)
       expect(results.some(r => r.tags.includes('test'))).toBe(true)
       expect(results.some(r => r.tags.includes('advanced'))).toBe(true)
     })
 
-    it('should return all resources when no tags specified', () => {
-      const results = filtersComposable.filterByTags([])
+    it('should return all resources when no tag filter is applied', () => {
+      // Ensure no tags are selected
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(3)
     })
   })
 
-  describe('filterResources', () => {
+  describe('multiple filter combination', () => {
     it('should apply multiple filters simultaneously', () => {
-      const results = filtersComposable.filterResources({
-        category: 'Testing',
-        pricing: 'Free',
-        difficulty: 'Advanced',
-        tags: [],
-      })
+      filtersComposable.toggleCategory('Testing')
+      filtersComposable.togglePricingModel('Free')
+      filtersComposable.toggleDifficultyLevel('Advanced')
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(1)
       expect(results[0].category).toBe('Testing')
-      expect(results[0].pricing).toBe('Free')
+      expect(results[0].pricingModel).toBe('Free')
       expect(results[0].difficulty).toBe('Advanced')
     })
 
     it('should return resources matching all filter criteria', () => {
-      const results = filtersComposable.filterResources({
-        category: '',
-        pricing: 'Free',
-        difficulty: '',
-        tags: [],
-      })
+      filtersComposable.togglePricingModel('Free')
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(2)
-      results.forEach(resource => expect(resource.pricing).toBe('Free'))
+      results.forEach(resource => expect(resource.pricingModel).toBe('Free'))
     })
 
     it('should return empty array when no resources match all criteria', () => {
-      const results = filtersComposable.filterResources({
-        category: 'Testing',
-        pricing: 'Paid',
-        difficulty: 'Beginner',
-        tags: [],
-      })
+      filtersComposable.toggleCategory('Testing')
+      filtersComposable.togglePricingModel('Paid')
+      filtersComposable.toggleDifficultyLevel('Beginner')
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(0)
     })
 
     it('should return all resources when no filters are applied', () => {
-      const results = filtersComposable.filterResources({
-        category: '',
-        pricing: '',
-        difficulty: '',
-        tags: [],
-      })
+      // Ensure no filters are applied
+      const results = filtersComposable.filteredResources.value
       expect(results).toHaveLength(3)
     })
   })
 
-  describe('getFilterOptions', () => {
-    it('should return unique categories', () => {
-      const options = filtersComposable.getFilterOptions()
-      expect(options.categories).toContain('Testing')
-      expect(options.categories).toContain('Development')
-      expect(options.categories).not.toContain('NonExistent')
+  describe('filter options state', () => {
+    it('should have initial filter options state', () => {
+      expect(filtersComposable.filterOptions.value).toBeDefined()
+      expect(filtersComposable.filterOptions.value.categories).toEqual([])
+      expect(filtersComposable.filterOptions.value.pricingModels).toEqual([])
+      expect(filtersComposable.filterOptions.value.difficultyLevels).toEqual([])
+      expect(filtersComposable.filterOptions.value.technologies).toEqual([])
+      expect(filtersComposable.filterOptions.value.tags).toEqual([])
+      expect(filtersComposable.filterOptions.value.searchQuery).toBe('')
     })
 
-    it('should return unique pricing options', () => {
-      const options = filtersComposable.getFilterOptions()
-      expect(options.pricingOptions).toContain('Free')
-      expect(options.pricingOptions).toContain('Paid')
-    })
+    it('should update filter options when toggling filters', () => {
+      filtersComposable.toggleCategory('Testing')
+      expect(filtersComposable.filterOptions.value.categories).toContain(
+        'Testing'
+      )
 
-    it('should return unique difficulty levels', () => {
-      const options = filtersComposable.getFilterOptions()
-      expect(options.difficultyLevels).toContain('Beginner')
-      expect(options.difficultyLevels).toContain('Intermediate')
-      expect(options.difficultyLevels).toContain('Advanced')
-    })
+      filtersComposable.togglePricingModel('Free')
+      expect(filtersComposable.filterOptions.value.pricingModels).toContain(
+        'Free'
+      )
 
-    it('should return unique tags', () => {
-      const options = filtersComposable.getFilterOptions()
-      expect(options.tags).toContain('test')
-      expect(options.tags).toContain('resource')
-      expect(options.tags).toContain('dev')
-      expect(options.tags).toContain('tool')
-      expect(options.tags).toContain('advanced')
+      filtersComposable.toggleDifficultyLevel('Beginner')
+      expect(filtersComposable.filterOptions.value.difficultyLevels).toContain(
+        'Beginner'
+      )
+
+      filtersComposable.toggleTag('test')
+      expect(filtersComposable.filterOptions.value.tags).toContain('test')
     })
   })
 })

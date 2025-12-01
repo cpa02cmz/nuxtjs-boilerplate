@@ -21,8 +21,8 @@
                 {{ resource.category }}
               </div>
               <button
-                @click="removeResource(resource.id)"
                 class="mt-1 text-red-500 hover:text-red-700 text-xs flex items-center"
+                @click="removeResource(resource.id)"
               >
                 <svg
                   class="w-3 h-3 mr-1"
@@ -99,11 +99,14 @@ import type { ComparisonCriteria } from '~/types/comparison'
 import ComparisonValue from './ComparisonValue.vue'
 
 interface Props {
-  resources: Resource[]
-  criteria: ComparisonCriteria[]
+  resources?: Resource[]
+  criteria?: ComparisonCriteria[]
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  resources: () => [],
+  criteria: () => [],
+})
 const emit = defineEmits(['remove-resource'])
 
 const removeResource = (resourceId: string) => {
