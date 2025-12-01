@@ -3,7 +3,7 @@ import { defineVitestConfig } from '@nuxt/test-utils/config'
 export default defineVitestConfig({
   test: {
     globals: true,
-    environment: 'node', // Use node to avoid the nuxt-vitest-app-entry import issue
+    environment: 'node',
     testTimeout: 10000,
     setupFiles: ['./test-setup.ts'],
     coverage: {
