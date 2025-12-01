@@ -16,12 +16,52 @@ export default defineNitroPlugin(nitroApp => {
         return
       }
 
-      // Only apply security headers if not already set to avoid duplication
-      if (
-        event.node.res.hasHeader &&
-        event.node.res.getHeader('Content-Security-Policy')
-      ) {
-        return // Headers already set in render:html hook
+      // Generate a unique nonce for each request
+      const nonce = randomBytes(16).toString('base64')
+
+      // Set Content Security Policy and other headers together
+      if (event.node.res.setHeader) {
+        // Additional security headers
+        event.node.res.setHeader('X-Content-Type-Options', 'nosniff')
+        event.node.res.setHeader('X-Frame-Options', 'DENY')
+        event.node.res.setHeader('X-XSS-Protection', '0') // Modern CSP makes this redundant
+        event.node.res.setHeader(
+          'Referrer-Policy',
+          'strict-origin-when-cross-origin'
+        )
+        // Add HSTS header for transport security
+        event.node.res.setHeader(
+          'Strict-Transport-Security',
+          'max-age=31536000; includeSubDomains; preload'
+        )
+        event.node.res.setHeader(
+          'Permissions-Policy',
+          'geolocation=(), microphone=(), camera=()'
+        )
+        event.node.res.setHeader(
+          'Access-Control-Allow-Methods',
+          'GET, HEAD, POST, OPTIONS'
+        )
+        event.node.res.setHeader(
+          'Access-Control-Allow-Headers',
+          'Content-Type, Authorization'
+        )
+
+        // Set Content Security Policy
+        event.node.res.setHeader(
+          'Content-Security-Policy',
+          `default-src 'self'; ` +
+            `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https:; ` +
+            `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com; ` +
+            `font-src 'self' https://fonts.gstatic.com; ` +
+            `img-src 'self' data: blob: https:; ` +
+            `connect-src 'self' https:; ` +
+            `frame-ancestors 'none'; ` +
+            `object-src 'none'; ` +
+            `base-uri 'self'; ` +
+            `form-action 'self'; ` +
+            `upgrade-insecure-requests;`
+        )
       }
 
       // Generate a unique nonce for each request
