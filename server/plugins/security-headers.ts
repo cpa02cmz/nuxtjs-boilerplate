@@ -42,20 +42,6 @@ export default defineNitroPlugin(nitroApp => {
           event.node.res.setHeader(headerName, headerValue)
         })
       }
-      }
-
-      // Generate a unique nonce for each request
-      const nonce = randomBytes(16).toString('base64')
-
-      // Get security headers with nonce
-      const securityHeaders = getSecurityHeaders(nonce)
-
-      // Set all security headers
-      if (event.node.res.setHeader) {
-        Object.entries(securityHeaders).forEach(([headerName, headerValue]) => {
-          event.node.res.setHeader(headerName, headerValue)
-        })
-      }
 
       // Apply cache control headers based on route patterns
       const path = event.path || ''
