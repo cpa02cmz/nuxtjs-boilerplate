@@ -77,7 +77,15 @@ npm run dev
 
 # Build for production
 npm run build
+
+# Run tests
+npm run test
+
+# Lint code
+npm run lint
 ```
+
+> **Note**: After running `npm install`, the postinstall script (`nuxt prepare`) ensures all necessary build files and type definitions are generated for proper ESLint and Vitest functionality.
 
 ## 📚 Documentation
 
