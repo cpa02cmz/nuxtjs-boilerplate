@@ -218,7 +218,7 @@ useSeoMeta({
   ogUrl:
     runtimeConfig.public.siteUrl ||
     runtimeConfig.public.canonicalUrl ||
-    'https://free-stuff-on-the-internet.vercel.app/',
+    'http://localhost:3000',
   twitterCard: 'summary_large_image',
 })
 

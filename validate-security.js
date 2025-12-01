@@ -10,7 +10,6 @@ if (
   process.env.NODE_ENV !== 'production' ||
   process.env.VALIDATION_LOGS === 'true'
 ) {
-  // eslint-disable-next-line no-console
   console.log('Validating security implementation...')
 }
 
@@ -30,7 +29,6 @@ if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
     console.log('✓ Centralized sanitization usage found in ResourceCard.vue')
   }
 } else {
@@ -38,7 +36,6 @@ if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
     console.log(
       '✗ Centralized sanitization usage NOT found in ResourceCard.vue'
     )
@@ -55,16 +52,23 @@ if (fs.existsSync(securityPluginPath)) {
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
     console.log('✓ Security headers plugin exists')
   }
   const securityPluginContent = fs.readFileSync(securityPluginPath, 'utf8')
-  if (securityPluginContent.includes('Content-Security-Policy')) {
+  if (securityPluginContent.includes('getSecurityHeaders')) {
     if (
       process.env.NODE_ENV !== 'production' ||
       process.env.VALIDATION_LOGS === 'true'
     ) {
-      // eslint-disable-next-line no-console
+      console.log(
+        '✓ CSP header configuration found in security headers plugin (using centralized config)'
+      )
+    }
+  } else if (securityPluginContent.includes('Content-Security-Policy')) {
+    if (
+      process.env.NODE_ENV !== 'production' ||
+      process.env.VALIDATION_LOGS === 'true'
+    ) {
       console.log('✓ CSP header configuration found in security headers plugin')
     }
   } else {
@@ -72,7 +76,6 @@ if (fs.existsSync(securityPluginPath)) {
       process.env.NODE_ENV !== 'production' ||
       process.env.VALIDATION_LOGS === 'true'
     ) {
-      // eslint-disable-next-line no-console
       console.log(
         '✗ CSP header configuration NOT found in security headers plugin'
       )
@@ -83,8 +86,44 @@ if (fs.existsSync(securityPluginPath)) {
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
     console.log('✗ Security headers plugin does NOT exist')
+  }
+}
+
+// Check if security config file exists
+const securityConfigPath = path.join(
+  __dirname,
+  'server/utils/security-config.ts'
+)
+if (fs.existsSync(securityConfigPath)) {
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    process.env.VALIDATION_LOGS === 'true'
+  ) {
+    console.log('✓ Security configuration file exists')
+  }
+  const securityConfigContent = fs.readFileSync(securityConfigPath, 'utf8')
+  if (securityConfigContent.includes('Content-Security-Policy')) {
+    if (
+      process.env.NODE_ENV !== 'production' ||
+      process.env.VALIDATION_LOGS === 'true'
+    ) {
+      console.log('✓ CSP configuration found in security config file')
+    }
+  } else {
+    if (
+      process.env.NODE_ENV !== 'production' ||
+      process.env.VALIDATION_LOGS === 'true'
+    ) {
+      console.log('✗ CSP configuration NOT found in security config file')
+    }
+  }
+} else {
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    process.env.VALIDATION_LOGS === 'true'
+  ) {
+    console.log('✗ Security configuration file does NOT exist')
   }
 }
 
@@ -100,7 +139,6 @@ if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
     console.log('✓ CSP configuration reference found in nuxt.config.ts')
   }
 } else {
@@ -108,7 +146,6 @@ if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
     console.log('✗ CSP configuration reference NOT found in nuxt.config.ts')
   }
 }
@@ -121,7 +158,6 @@ if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
     console.log(
       '✓ Security headers configuration reference found in nuxt.config.ts'
     )
@@ -131,7 +167,6 @@ if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    // eslint-disable-next-line no-console
     console.log(
       '✗ Security headers configuration reference NOT found in nuxt.config.ts'
     )
@@ -142,6 +177,5 @@ if (
   process.env.NODE_ENV !== 'production' ||
   process.env.VALIDATION_LOGS === 'true'
 ) {
-  // eslint-disable-next-line no-console
   console.log('Validating security implementation...')
 }

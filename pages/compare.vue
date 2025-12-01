@@ -22,6 +22,7 @@
 
 <script setup lang="ts">
 import { useResourceComparison } from '~/composables/useResourceComparison'
+import { useNuxtApp } from '#app'
 import type { Resource } from '~/types/resource'
 import ComparisonBuilder from '~/components/ComparisonBuilder.vue'
 

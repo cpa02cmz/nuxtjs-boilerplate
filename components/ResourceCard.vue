@@ -126,10 +126,10 @@
             <!-- Compare button -->
             <button
               v-if="id"
-              @click="addResourceToComparison"
               class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
               :aria-label="`Add ${title} to comparison`"
               title="Add to comparison"
+              @click="addResourceToComparison"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -192,6 +192,7 @@ import ShareButton from '~/components/ShareButton.vue'
 import ResourceStatus from '~/components/ResourceStatus.vue'
 import { trackResourceView, trackResourceClick } from '~/utils/analytics'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
+import { logError } from '~/utils/errorLogger'
 
 interface Props {
   title: string
@@ -224,6 +225,8 @@ const props = withDefaults(defineProps<Props>(), {
   searchQuery: '',
   status: 'active',
   healthScore: undefined,
+  similarityScore: undefined,
+  similarityReason: undefined,
 })
 
 const hasError = ref(false)
@@ -257,11 +260,12 @@ const sanitizedHighlightedDescription = computed(() => {
 // Handle image loading errors
 const handleImageError = () => {
   hasError.value = true
-  // In production, we might want to use a proper error tracking service instead of console
-  if (process.dev) {
-    // eslint-disable-next-line no-console
-    console.error(`Failed to load image for resource: ${props.title}`)
-  }
+  logError(
+    `Failed to load image for resource: ${props.title}`,
+    undefined,
+    'ResourceCard',
+    { resourceTitle: props.title, resourceUrl: props.image }
+  )
 }
 
 // Handle link clicks and validate URL
@@ -277,11 +281,12 @@ const handleLinkClick = (event: Event) => {
   } catch (err) {
     event.preventDefault()
     hasError.value = true
-    // In production, we might want to use a proper error tracking service instead of console
-    if (process.dev) {
-      // eslint-disable-next-line no-console
-      console.error(`Invalid URL for resource: ${props.url}`, err)
-    }
+    logError(
+      `Invalid URL for resource: ${props.url}`,
+      err as Error,
+      'ResourceCard',
+      { resourceTitle: props.title, resourceUrl: props.url, error: err }
+    )
   }
 }
 
@@ -340,11 +345,16 @@ if (typeof useHead === 'function') {
     if (hasError.value || !resourceSchema.value) {
       return {}
     }
+    // Safely serialize JSON-LD to prevent XSS by escaping special characters
+    const safeJsonLd = JSON.stringify(resourceSchema.value)
+      .replace(/</g, '\\u003c') // Escape < to prevent script tags
+      .replace(/>/g, '\\u003e') // Escape > to prevent script tags
+      .replace(/\//g, '\\u002f') // Escape / to prevent closing script tags
     return {
       script: [
         {
           type: 'application/ld+json',
-          innerHTML: JSON.stringify(resourceSchema.value),
+          innerHTML: safeJsonLd,
         },
       ],
     }

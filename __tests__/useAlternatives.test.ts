@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { ref } from 'vue'
 import { useAlternatives } from '~/composables/useAlternatives'
-import { Resource } from '~/types/resource'
+import type { Resource } from '~/types/resource'
 
 // Mock the useResourceData composable
 vi.mock('~/composables/useResourceData', () => ({

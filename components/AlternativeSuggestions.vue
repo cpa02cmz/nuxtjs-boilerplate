@@ -13,7 +13,7 @@
         :key="alternative.resource.id"
         :title="alternative.resource.title"
         :description="alternative.resource.description"
-        :benefits="alternative.resource.benefits"
+        :benefits="[...alternative.resource.benefits]"
         :url="alternative.resource.url"
         :button-label="getButtonLabel(alternative.resource.category)"
         :similarity-score="alternative.similarityScore"
@@ -33,10 +33,12 @@ import {
 import type { Resource } from '~/types/resource'
 
 interface Props {
-  resource: Resource
+  resource?: Resource
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  resource: () => ({}) as Resource,
+})
 
 const alternatives = ref<AlternativeSuggestion[]>([])
 const { getAllAlternatives } = useAlternatives()
