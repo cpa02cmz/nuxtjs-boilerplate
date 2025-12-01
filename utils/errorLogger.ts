@@ -1,4 +1,6 @@
 // Error logging service for consistent error tracking
+import { logger } from './logger'
+
 export interface ErrorLog {
   id: string
   timestamp: Date
