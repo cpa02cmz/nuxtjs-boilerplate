@@ -108,6 +108,12 @@ export interface FilterOptions {
   tags?: string[]
 }
 
+export interface AlternativeSuggestion {
+  resource: Resource
+  similarityScore: number
+  reason: string
+}
+
 export type SortOption =
   | 'alphabetical-asc'
   | 'alphabetical-desc'
