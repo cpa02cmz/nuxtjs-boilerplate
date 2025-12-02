@@ -7,14 +7,24 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxt/image',
     '@vite-pwa/nuxt',
+    '~/modules/openapi',
   ],
 
   // Runtime configuration for environment variables
   runtimeConfig: {
     public: {
-      canonicalUrl:
+      siteUrl:
+        process.env.NUXT_PUBLIC_SITE_URL ||
+        process.env.SITE_URL ||
+        process.env.NUXT_PUBLIC_CANONICAL_URL ||
         process.env.CANONICAL_URL ||
-        'https://free-stuff-on-the-internet.vercel.app/',
+        process.env.HOST ||
+        process.env.VERCEL_URL ||
+        'http://localhost:3000',
+      canonicalUrl:
+        process.env.NUXT_PUBLIC_CANONICAL_URL ||
+        process.env.CANONICAL_URL ||
+        'http://localhost:3000',
     },
   },
 
@@ -206,10 +216,11 @@ export default defineNuxtConfig({
     compressPublicAssets: true,
     // Improve build performance
     ignore: ['**/.git/**', '**/node_modules/**', '**/dist/**'],
-    // Security headers are handled via the security-headers.ts plugin
+    // Security headers are handled via the security plugins
     // to ensure proper nonce generation and dynamic header values
     plugins: [
       '~/server/plugins/security-headers.ts',
+      '~/server/plugins/html-security.ts',
       '~/server/plugins/resource-validation.ts',
     ],
   },
@@ -348,8 +359,9 @@ export default defineNuxtConfig({
 
   sitemap: {
     hostname:
+      process.env.NUXT_PUBLIC_CANONICAL_URL ||
       process.env.CANONICAL_URL ||
-      'https://free-stuff-on-the-internet.vercel.app',
+      'http://localhost:3000',
   },
   ogImage: {
     enabled: false, // We'll implement this later if needed

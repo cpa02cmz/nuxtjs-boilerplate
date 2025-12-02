@@ -14,8 +14,8 @@ const vueRecommendedConfig = vuePlugin.configs['flat/recommended']
 export default [
   js.configs.recommended,
   ...vueRecommendedConfig,
+  // Base configuration for Vue files
   {
-    // For Vue files
     files: ['**/*.vue'],
     languageOptions: {
       ecmaVersion: 2024,
@@ -36,6 +36,7 @@ export default [
         $fetch: 'readonly',
         useHead: 'readonly',
         useSeoMeta: 'readonly',
+        useRoute: 'readonly',
         computed: 'readonly',
         ref: 'readonly',
         reactive: 'readonly',
@@ -78,14 +79,16 @@ export default [
       'vue/html-self-closing': 'off',
       'vue/max-attributes-per-line': 'off',
       'vue/no-unused-vars': 'off', // Allow unused vars in templates
+      'vue/require-default-prop': 'off', // Allow optional props without defaults
+      'vue/no-required-prop-with-default': 'off', // Allow required props with defaults
       'prettier/prettier': 'error',
-      'no-console': 'warn',
+      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }], // Allow only specific console methods, prefer using logger
       'no-debugger': 'warn',
       'no-unused-vars': 'off', // Disable this rule to allow unused variables in development
     },
   },
+  // Base configuration for JS files
   {
-    // For JS files
     files: ['**/*.js', '**/*.mjs'],
     languageOptions: {
       ecmaVersion: 2024,
@@ -105,6 +108,7 @@ export default [
         $fetch: 'readonly',
         useHead: 'readonly',
         useSeoMeta: 'readonly',
+        useRoute: 'readonly',
         computed: 'readonly',
         ref: 'readonly',
         reactive: 'readonly',
@@ -128,28 +132,17 @@ export default [
     },
     rules: {
       'comma-dangle': ['error', 'only-multiline'],
-      'no-console': 'warn',
+      'no-console':
+        process.env.NODE_ENV === 'production'
+          ? 'error'
+          : ['warn', { allow: ['warn', 'error', 'info'] }], // Allow only specific console methods, prefer using logger
       'no-debugger': 'warn',
       'prettier/prettier': 'error',
       'no-unused-vars': 'off', // Disable this rule to allow unused variables in development
     },
   },
+  // Configuration for TS files
   {
-    // For script files
-    files: ['scripts/**/*.js'],
-    languageOptions: {
-      ecmaVersion: 2024,
-      sourceType: 'module',
-      globals: {
-        ...globals.node,
-      },
-    },
-    rules: {
-      'no-console': 'off', // Allow console statements in script files
-    },
-  },
-  {
-    // For TS files
     files: ['**/*.ts'],
     languageOptions: {
       ecmaVersion: 2024,
@@ -170,6 +163,7 @@ export default [
         $fetch: 'readonly',
         useHead: 'readonly',
         useSeoMeta: 'readonly',
+        useRoute: 'readonly',
         computed: 'readonly',
         ref: 'readonly',
         reactive: 'readonly',
@@ -202,14 +196,17 @@ export default [
     },
     rules: {
       'comma-dangle': ['error', 'only-multiline'],
-      'no-console': 'warn',
+      'no-console':
+        process.env.NODE_ENV === 'production'
+          ? 'error'
+          : ['warn', { allow: ['warn', 'error', 'info'] }], // Allow only specific console methods, prefer using logger
       'no-debugger': 'warn',
       'prettier/prettier': 'error',
       'no-unused-vars': 'off', // Disable this rule to allow unused variables in development
     },
   },
+  // Configuration for server files
   {
-    // For server files
     files: ['server/**/*.ts'],
     languageOptions: {
       ecmaVersion: 2024,
@@ -224,10 +221,20 @@ export default [
         setResponseStatus: 'readonly',
       },
     },
+    rules: {
+      'no-console': ['warn', { allow: ['warn', 'error'] }], // Allow only specific console methods, prefer using logger
+    },
   },
+  // Configuration for test files
   {
-    // For test files
-    files: ['**/*.spec.ts', '**/*.test.ts', 'test-setup.ts'],
+    files: [
+      '**/*.spec.ts',
+      '**/*.test.ts',
+      'test-setup.ts',
+      'test-*.js',
+      '**/*.test.js',
+      'validate-*.js',
+    ],
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: 'module',
@@ -245,10 +252,40 @@ export default [
     },
     rules: {
       'vue/one-component-per-file': 'off', // Allow multiple components in test files
+      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }], // Allow only specific console methods, prefer using logger
     },
   },
+  // Configuration for script files
   {
-    // For error logger utility
+    files: ['scripts/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }], // Allow only specific console methods, prefer using logger
+    },
+  },
+  // Configuration for utility files
+  {
+    files: ['utils/**/*.ts'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
+    rules: {
+      'no-console': ['warn', { allow: ['warn', 'error'] }], // Allow only specific console methods, prefer using logger
+    },
+  },
+  // Special configuration for error logger
+  {
     files: ['utils/errorLogger.ts'],
     languageOptions: {
       ecmaVersion: 2024,
@@ -262,10 +299,24 @@ export default [
       'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'warn', // Allow console in development for error logger
     },
   },
+  // Configuration for Nuxt config file
+  {
+    files: ['nuxt.config.ts'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      'no-console': ['warn', { allow: ['warn', 'error', 'info'] }], // Allow only specific console methods, prefer using logger
+    },
+  },
   // Apply prettier config to disable conflicting rules
   configPrettier,
+  // Global ignores
   {
-    // Global ignores
     ignores: [
       'dist/**',
       '.nuxt/**',
@@ -273,7 +324,6 @@ export default [
       '.output/**',
       'coverage/**',
       'public/**',
-      '.nuxt/**/*',
       'nuxt.d.ts',
       'app.config.ts',
     ],

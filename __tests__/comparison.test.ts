@@ -20,9 +20,7 @@ describe('Comparison Feature', () => {
 
   it('should have comparison API endpoints', () => {
     // Check that the comparison API endpoint exists
-    expect(
-      () => import('~/server/api/v1/comparisons/index.get.ts')
-    ).toBeTruthy()
+    expect(() => import('~/server/api/v1/comparisons/index.get')).toBeTruthy()
   })
 
   it('should have comparison pages', () => {
