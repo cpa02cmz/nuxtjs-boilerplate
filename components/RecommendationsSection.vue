@@ -96,7 +96,6 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { onMounted, ref, watch } from 'vue'
 import logger from '~/utils/logger'
 import RecommendationCard from './RecommendationCard.vue'
 import { useRecommendationEngine } from '~/composables/useRecommendationEngine'

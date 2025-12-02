@@ -1,7 +1,5 @@
 import { ref, computed, readonly } from 'vue'
 import { logError } from '~/utils/errorLogger'
-import { ref, computed, readonly } from 'vue'
-import { logError } from '~/utils/errorLogger'
 import logger from '~/utils/logger'
 import type { Resource } from '~/types/resource'
 
