@@ -246,7 +246,7 @@ describe('useSearchSuggestions', () => {
       search: vi.fn().mockReturnValue([
         { item: mockResources[0], score: 0.1 },
         { item: mockResources[1], score: 0.2 },
-      ])
+      ]),
     }
 
     // Generate suggestions based on search query
@@ -262,7 +262,7 @@ describe('useSearchSuggestions', () => {
           tags: ['test', 'resource', 'ai'],
           url: 'https://example.com',
         },
-      }
+      },
     ])
 
     // Get search suggestions with debouncing consideration

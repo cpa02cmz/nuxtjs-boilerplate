@@ -67,7 +67,7 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
       error.value =
         err.message || 'An error occurred while fetching suggestions'
       console.error('Error fetching search suggestions:', err)
-      
+
       // Fallback to local suggestions if API fails
       return getLocalSuggestions(query, resources, limit)
     } finally {

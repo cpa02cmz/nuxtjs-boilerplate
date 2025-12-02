@@ -186,7 +186,7 @@ class SearchIndexManager {
     // Rebuild the fuse index with the new resource
     const updatedResources = [...index.resources, resource]
     const fuse = new Fuse(updatedResources, index.fuse.options)
-    
+
     // Update index
     index.fuse = fuse
     index.resources = updatedResources
@@ -223,7 +223,7 @@ class SearchIndexManager {
     })
 
     const fuse = new Fuse(updatedResources, index.fuse.options)
-    
+
     // Update index
     index.fuse = fuse
     index.resources = updatedResources
