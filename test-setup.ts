@@ -39,6 +39,45 @@ vi.mock('#app', async importOriginal => {
     useError: vi.fn(() => ({ value: null })),
     showError: vi.fn(),
     clearError: vi.fn(),
+<<<<<<< HEAD
+=======
+  }
+})
+
+// Mock #app/composables specifically
+vi.mock('#app/composables/router', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    go: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+  })),
+  useRoute: vi.fn(() => ({
+    path: '/',
+    params: {},
+    query: {},
+    fullPath: '/',
+    hash: '',
+    redirectedFrom: undefined,
+  })),
+}))
+
+// Mock vue composables
+vi.mock('vue', async importOriginal => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    getCurrentInstance: vi.fn(() => ({
+      appContext: {
+        app: {
+          config: {
+            globalProperties: {},
+          },
+        },
+      },
+    })),
+>>>>>>> 2d2b99d (fix(pr#461): resolve build system instability by updating test configuration)
   }
 })
 
