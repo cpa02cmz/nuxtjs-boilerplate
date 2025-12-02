@@ -108,15 +108,14 @@ export interface FilterOptions {
   tags?: string[]
 }
 
-export type SortOption =
-  | 'alphabetical-asc'
-  | 'alphabetical-desc'
-  | 'popularity-desc'
-  | 'date-added-desc'
-
-// Alternative suggestion interfaces
 export interface AlternativeSuggestion {
   resource: Resource
   similarityScore: number
   reason: string
 }
+
+export type SortOption =
+  | 'alphabetical-asc'
+  | 'alphabetical-desc'
+  | 'popularity-desc'
+  | 'date-added-desc'
