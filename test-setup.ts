@@ -1,9 +1,6 @@
 // Test setup file for Vitest with Nuxt
 import { vi } from 'vitest'
 
-// Mock the nuxt-vitest-app-entry that causes the original error
-vi.mock('#app/nuxt-vitest-app-entry', () => ({}))
-
 // Create a basic DOM environment for Vue components
 // This is needed because Vue components expect certain browser APIs
 if (typeof global !== 'undefined') {
@@ -20,12 +17,17 @@ if (typeof global !== 'undefined') {
           getAttribute: vi.fn(),
           appendChild: vi.fn(),
           removeChild: vi.fn(),
+          insertBefore: vi.fn(),
           querySelector: vi.fn(),
           querySelectorAll: vi.fn(() => []),
           getElementById: vi.fn(),
           createComment: vi.fn(() => ({})), // This was the missing function
           createTextNode: vi.fn(() => ({})),
-          body: { appendChild: vi.fn(), removeChild: vi.fn() },
+          body: {
+            appendChild: vi.fn(),
+            removeChild: vi.fn(),
+            insertBefore: vi.fn(),
+          },
         }),
         addEventListener: vi.fn(),
         removeEventListener: vi.fn(),
@@ -135,6 +137,9 @@ if (typeof global !== 'undefined') {
     global.navigator = global.window.navigator
   }
 
+  if (typeof global.Element === 'undefined') {
+    global.Element = class Element {}
+  }
   if (typeof global.HTMLElement === 'undefined') {
     global.HTMLElement = class HTMLElement {}
   }
