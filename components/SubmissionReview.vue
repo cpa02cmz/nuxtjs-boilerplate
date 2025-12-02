@@ -153,7 +153,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { logger } from '~/utils/logger'
+import { ref, onMounted } from 'vue'
+import logger from '~/utils/logger'
 import type { Submission } from '~/types/submission'
 
 interface Props {

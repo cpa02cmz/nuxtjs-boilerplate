@@ -141,7 +141,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { logger } from '~/utils/logger'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import logger from '~/utils/logger'
 import { useRuntimeConfig } from '#imports'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 
