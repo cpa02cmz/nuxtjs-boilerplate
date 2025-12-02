@@ -1,6 +1,122 @@
 // Test setup file for Vitest with Nuxt
 import { vi } from 'vitest'
 
+// Mock Nuxt composables and utilities
+vi.mock('#app', async importOriginal => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    useNuxtApp: vi.fn(() => ({
+      $pinia: null,
+      $router: null,
+      $route: null,
+      $config: {},
+      isHydrating: false,
+    })),
+    useRuntimeConfig: vi.fn(() => ({})),
+    useState: vi.fn((key, init) => {
+      const states = {}
+      if (!states[key]) {
+        states[key] = init ? init() : null
+      }
+      return states[key]
+    }),
+    useRequestHeaders: vi.fn(() => ({})),
+    useCookie: vi.fn(() => null),
+    useAsyncData: vi.fn(() => ({
+      data: { value: null },
+      pending: { value: false },
+      error: { value: null },
+    })),
+    useFetch: vi.fn(() => ({
+      data: { value: null },
+      pending: { value: false },
+      error: { value: null },
+    })),
+    navigateTo: vi.fn(to => Promise.resolve(to)),
+    definePageMeta: vi.fn(() => ({})),
+    useHead: vi.fn(),
+    useError: vi.fn(() => ({ value: null })),
+    showError: vi.fn(),
+    clearError: vi.fn(),
+<<<<<<< HEAD
+=======
+  }
+})
+
+// Mock #app/composables specifically
+vi.mock('#app/composables/router', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    go: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+  })),
+  useRoute: vi.fn(() => ({
+    path: '/',
+    params: {},
+    query: {},
+    fullPath: '/',
+    hash: '',
+    redirectedFrom: undefined,
+  })),
+}))
+
+// Mock vue composables
+vi.mock('vue', async importOriginal => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    getCurrentInstance: vi.fn(() => ({
+      appContext: {
+        app: {
+          config: {
+            globalProperties: {},
+          },
+        },
+      },
+    })),
+>>>>>>> 2d2b99d (fix(pr#461): resolve build system instability by updating test configuration)
+  }
+})
+
+// Mock #app/composables specifically
+vi.mock('#app/composables/router', () => ({
+  useRouter: vi.fn(() => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    go: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+  })),
+  useRoute: vi.fn(() => ({
+    path: '/',
+    params: {},
+    query: {},
+    fullPath: '/',
+    hash: '',
+    redirectedFrom: undefined,
+  })),
+}))
+
+// Mock vue composables
+vi.mock('vue', async importOriginal => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    getCurrentInstance: vi.fn(() => ({
+      appContext: {
+        app: {
+          config: {
+            globalProperties: {},
+          },
+        },
+      },
+    })),
+  }
+})
+
 // Create a basic DOM environment for Vue components
 // This is needed because Vue components expect certain browser APIs
 if (typeof global !== 'undefined') {
@@ -145,15 +261,11 @@ if (typeof global !== 'undefined') {
   }
 
   if (typeof global.HTMLInputElement === 'undefined') {
-    global.HTMLInputElement = class HTMLInputElement extends (
-      global.HTMLElement
-    ) {}
+    global.HTMLInputElement = class HTMLInputElement {}
   }
 
   if (typeof global.HTMLTextAreaElement === 'undefined') {
-    global.HTMLTextAreaElement = class HTMLTextAreaElement extends (
-      global.HTMLElement
-    ) {}
+    global.HTMLTextAreaElement = class HTMLTextAreaElement {}
   }
 
   if (typeof global.SVGElement === 'undefined') {
