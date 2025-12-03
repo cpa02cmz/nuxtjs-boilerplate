@@ -27,7 +27,7 @@ useSeoMeta({
   ogImage: `${runtimeConfig.public.canonicalUrl}/og-image.jpg`,
   ogImageWidth: '1200',
   ogImageHeight: '630',
-  ogImageType: 'image/jpg',
+  ogImageType: 'image/jpeg',
   ogUrl: runtimeConfig.public.canonicalUrl,
   ogType: 'website',
   twitterCard: 'summary_large_image',
@@ -58,7 +58,7 @@ useHead({
       rel: 'preload',
       as: 'font',
       href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-      crossorigin: true,
+      crossorigin: 'anonymous',
     },
     // Add resource hints for performance
     { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
@@ -79,7 +79,7 @@ useHead({
   script: [
     {
       type: 'application/ld+json',
-      children: JSON.stringify(websiteSchema),
+      innerHTML: JSON.stringify(websiteSchema),
     },
   ],
   // Add accessibility-related meta tags and attributes
@@ -115,16 +115,12 @@ onMounted(() => {
     // Stash the event so it can be triggered later
     deferredPrompt = e
     // Show the install button or notification
-    // console.log('PWA installation prompt available')
   })
 
   // Handle online/offline status
-  window.addEventListener('online', () => {
-    // console.log('Back online')
-  })
+  window.addEventListener('online', () => {})
 
   window.addEventListener('offline', () => {
-    // console.log('Offline')
     // Optionally redirect to offline page or show notification
   })
 

@@ -148,7 +148,7 @@ export const useAlternatives = () => {
 
     // Sort by similarity score and return top suggestions
     return uniqueAlternatives
-      .sort((a, b) => b.similarityScore - a.similarityScore)
+      .sort((a, b) => b.score - a.score)
       .slice(0, maxSuggestions)
   }
 

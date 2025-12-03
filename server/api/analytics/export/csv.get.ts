@@ -1,18 +1,7 @@
 // server/api/analytics/export/csv.get.ts
 // API endpoint for exporting analytics data as CSV
 import { getQuery, setResponseHeader, setResponseStatus } from 'h3'
-
-// Note: This is the same in-memory storage as in events.post.ts
-// In a real application, you'd use a shared database or file
-declare const global: {
-  analyticsEvents?: any[]
-  ipEventTimes?: Map<string, number>
-}
-
-// Initialize global analytics storage if it doesn't exist
-if (!global.analyticsEvents) {
-  global.analyticsEvents = []
-}
+import { exportAnalyticsToCsv } from '~/server/utils/analytics-db'
 
 export default defineEventHandler(async event => {
   try {
@@ -26,34 +15,8 @@ export default defineEventHandler(async event => {
       ? new Date(query.endDate as string)
       : new Date()
 
-    // Filter events by date range
-    const filteredEvents = global.analyticsEvents.filter(event => {
-      const eventDate = new Date(event.timestamp)
-      return eventDate >= startDate && eventDate <= endDate
-    })
-
-    // Create CSV content
-    let csvContent =
-      'Type,Resource ID,Category,URL,IP Address,Timestamp,Properties\n'
-
-    for (const event of filteredEvents) {
-      const timestamp = new Date(event.timestamp).toISOString()
-      const properties = JSON.stringify(event.properties || {}).replace(
-        /"/g,
-        '""'
-      ) // Escape quotes for CSV
-
-      csvContent +=
-        [
-          `"${event.type || ''}"`,
-          `"${event.resourceId || ''}"`,
-          `"${event.category || ''}"`,
-          `"${event.url || ''}"`,
-          `"${event.ip || ''}"`,
-          `"${timestamp}"`,
-          `"${properties}"`,
-        ].join(',') + '\n'
-    }
+    // Export analytics to CSV from database
+    const csvContent = exportAnalyticsToCsv(startDate, endDate)
 
     // Set response headers for CSV download
     setResponseHeader(event, 'Content-Type', 'text/csv')

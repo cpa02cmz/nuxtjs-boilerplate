@@ -141,16 +141,21 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import logger from '~/utils/logger'
 import { useRuntimeConfig } from '#imports'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 
 interface Props {
-  title: string
+  title?: string
   description?: string
-  url: string
+  url?: string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  title: '',
+  description: '',
+  url: '',
+})
 
 const showShareMenu = ref(false)
 const shareButtonRef = ref<HTMLElement | null>(null)
@@ -222,10 +227,10 @@ const copyToClipboard = async () => {
       document.body.removeChild(textArea)
       if (!successful) {
         // If even execCommand fails, we can't copy to clipboard
-        console.warn('Failed to copy to clipboard')
+        logger.warn('Failed to copy to clipboard')
       }
     } catch (fallbackErr) {
-      console.warn('Clipboard API and execCommand both failed:', fallbackErr)
+      logger.warn('Clipboard API and execCommand both failed:', fallbackErr)
     }
     // Close the menu after attempting to copy
     showShareMenu.value = false
