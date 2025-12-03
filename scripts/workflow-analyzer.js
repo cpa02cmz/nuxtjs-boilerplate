@@ -5,11 +5,11 @@
  * This helps address issue #391: Over-Engineered GitHub Workflows Causing CI/CD Bottlenecks
  */
 
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
 
 function analyzeWorkflows() {
-  const workflowsDir = path.join(__dirname, '../.github/workflows')
+  const workflowsDir = path.join(process.cwd(), '.github', 'workflows')
 
   if (!fs.existsSync(workflowsDir)) {
     console.error('Workflows directory does not exist')
