@@ -1,7 +1,9 @@
 // server/api/analytics/data.get.ts
 // API endpoint for retrieving analytics data for the dashboard
 import { getQuery, setResponseStatus } from 'h3'
+import { getQuery, setResponseStatus } from 'h3'
 import { getAggregatedAnalytics } from '~/server/utils/analytics-db'
+import { logError } from '~/utils/errorLogger'
 
 export default defineEventHandler(async event => {
   try {
@@ -50,7 +52,7 @@ export default defineEventHandler(async event => {
       },
     }
   } catch (error: any) {
-    console.error('Analytics data error:', error)
+    logError('Analytics data error:', error, 'analytics/data.get')
     setResponseStatus(event, 500)
     return {
       success: false,

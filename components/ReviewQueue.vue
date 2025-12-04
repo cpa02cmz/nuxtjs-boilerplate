@@ -83,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import logger from '~/utils/logger'
+import { logError } from '~/utils/errorLogger'
 import type { Submission } from '~/types/submission'
 
 interface Props {
@@ -120,7 +120,11 @@ const fetchSubmissions = async () => {
     }
   } catch (err) {
     error.value = 'An error occurred while fetching submissions'
-    logger.error('Error fetching submissions:', err)
+    logError(
+      'Error fetching submissions in ReviewQueue:',
+      err as Error,
+      'ReviewQueue'
+    )
   } finally {
     loading.value = false
   }
