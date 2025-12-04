@@ -78,6 +78,7 @@
             :selected-technologies="selectedTechnologies"
             :selected-tags="selectedTags"
             :selected-benefits="selectedBenefits"
+            :selected-popularity-range="selectedPopularityRange"
             :selected-date-range="selectedDateRange"
             :search-query="searchQuery"
             :facet-counts="facetCounts"
@@ -90,7 +91,8 @@
             @toggle-technology="enhancedToggleTechnology"
             @toggle-tag="enhancedToggleTag"
             @toggle-benefit="enhancedToggleBenefit"
-            @date-range-change="onDateRangeChange"
+            @set-popularity-range="handlePopularityRange"
+            @set-date-range="handleDateRange"
             @reset-filters="resetAllFilters"
             @use-saved-search="onUseSavedSearch"
             @remove-saved-search="onRemoveSavedSearch"
@@ -195,8 +197,9 @@ const {
   toggleTechnology,
   toggleTag,
   toggleBenefit,
-  setDateRange,
   setSortOption,
+  setPopularityRange,
+  setDateRange,
   resetFilters,
   highlightSearchTerms,
 } = useResources()
@@ -380,9 +383,14 @@ const enhancedToggleBenefit = (benefit: string) => {
   trackFilter('benefit', benefit)
 }
 
-const onDateRangeChange = (dateRange: string) => {
-  setDateRange(dateRange)
-  trackFilter('dateRange', dateRange)
+const handlePopularityRange = (range: [number, number]) => {
+  setPopularityRange(range[0], range[1])
+  trackFilter('popularity', `range-${range[0]}-${range[1]}`)
+}
+
+const handleDateRange = (range: { start?: string; end?: string }) => {
+  setDateRange(range.start, range.end)
+  trackFilter('date', `range-${range.start || 'start'}-${range.end || 'end'}`)
 }
 
 // Set up URL synchronization
@@ -406,9 +414,10 @@ const selectedTechnologies = computed(
 )
 const selectedTags = computed(() => filterOptions.value.tags || [])
 const selectedBenefits = computed(() => filterOptions.value.benefits || [])
-const selectedDateRange = computed(
-  () => filterOptions.value.dateRange || 'anytime'
+const selectedPopularityRange = computed(
+  () => filterOptions.value.popularityRange || [0, 100]
 )
+const selectedDateRange = computed(() => filterOptions.value.dateRange || {})
 
 import { trackSearch, trackFilter } from '~/utils/analytics'
 
