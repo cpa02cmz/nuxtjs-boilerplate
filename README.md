@@ -14,17 +14,16 @@ A production-ready Nuxt.js 3 template with authentication, search, analytics, an
 ## 🚀 Features
 
 - ⚡ **Modern, responsive design** with Nuxt.js 3
-- 🔍 **Advanced search and filtering** capabilities with faceted search
+  +- 🔍 **Advanced search and filtering** capabilities with faceted search
 - 🎨 **Performance-optimized** with Tailwind CSS
 - 📱 **SEO-friendly and accessible**
-- 👥 **Community features** with user profiles, comments, and voting
+  +- 👥 **Community features** with user profiles, comments, and voting
 - 🛠️ **Nuxt 3** with Vue 3 and TypeScript
 - 🔒 **Security scanning** with CodeQL and dependency review
-  <<<<<<< HEAD
-- 📊 **Analytics and monitoring** with comprehensive tracking
-- 🔗 **Resource management** with submission and moderation system
-- ⚖️ **Comparison tools** for resource evaluation
-- 🔔 **Webhook integration** for external service communication
+  +- 📊 **Analytics and monitoring** with comprehensive tracking
+  +- 🔗 **Resource management** with submission and moderation system
+  +- ⚖️ **Comparison tools** for resource evaluation
+  +- 🔔 **Webhook integration** for external service communication
 - 🏗️ **Stable infrastructure** with resolved build and dependency issues
 
 ## 📋 Core Features
