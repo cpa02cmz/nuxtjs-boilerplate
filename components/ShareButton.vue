@@ -201,17 +201,18 @@ const handleClickOutside = (event: Event) => {
 // Copy URL to clipboard
 const copyToClipboard = async () => {
   try {
-    // Use the modern Clipboard API
+    // Modern clipboard API approach
     await navigator.clipboard.writeText(props.url)
     // Close the menu after copying
     showShareMenu.value = false
     // Optionally show a toast notification here
   } catch (err) {
-    // Fallback for older browsers - improved implementation without deprecated execCommand
+    // Fallback for older browsers that don't support Clipboard API
     try {
-      // Use the deprecated execCommand only as a last resort for very old browsers
+      // Try to use the deprecated execCommand as a last resort
       const textArea = document.createElement('textarea')
       textArea.value = props.url
+      // Avoid scrolling to the bottom
       textArea.setAttribute('readonly', '')
       textArea.style.cssText = `
          position: absolute;
@@ -225,14 +226,15 @@ const copyToClipboard = async () => {
       textArea.setSelectionRange(0, 99999) // For mobile devices
       const successful = document.execCommand('copy')
       document.body.removeChild(textArea)
+
       if (!successful) {
-        // If even execCommand fails, we can't copy to clipboard
-        logger.warn('Failed to copy to clipboard')
+        throw new Error('execCommand copy failed')
       }
     } catch (fallbackErr) {
-      logger.warn('Clipboard API and execCommand both failed:', fallbackErr)
+      console.error('Failed to copy to clipboard:', fallbackErr)
+      // Optionally show an error message to the user
     }
-    // Close the menu after attempting to copy
+    // Close the menu after copying attempt
     showShareMenu.value = false
   }
 }
