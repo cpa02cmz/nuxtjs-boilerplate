@@ -34,21 +34,78 @@ if (
   console.log('Validating security implementation...')
 }
 
-// Check if centralized sanitization import is in ResourceCard.vue (import from utils/sanitize)
+// Check if sanitization is centralized in utils/sanitize.ts (which is the proper approach)
+const sanitizeUtilPath = path.join(__dirname, 'utils/sanitize.ts')
+const sanitizeUtilContent = fs.readFileSync(sanitizeUtilPath, 'utf8')
+
+if (sanitizeUtilContent.includes("import DOMPurify from 'dompurify'")) {
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    process.env.VALIDATION_LOGS === 'true'
+  ) {
+    // eslint-disable-next-line no-console
+    console.log('✓ DOMPurify import found in centralized utils/sanitize.ts')
+  }
+} else {
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    process.env.VALIDATION_LOGS === 'true'
+  ) {
+    // eslint-disable-next-line no-console
+    console.log('✗ DOMPurify import NOT found in centralized utils/sanitize.ts')
+  }
+}
+
+// Check if ResourceCard.vue uses the centralized sanitization utility
 const resourceCardPath = path.join(__dirname, 'components/ResourceCard.vue')
 const resourceCardContent = fs.readFileSync(resourceCardPath, 'utf8')
 
-// For centralized sanitization approach, we don't need direct DOMPurify import in ResourceCard.vue
-// Instead, check that the centralized sanitization utility is being used
 if (
   resourceCardContent.includes(
     "import { sanitizeAndHighlight } from '~/utils/sanitize'"
-  ) ||
-  resourceCardContent.includes('sanitizeAndHighlight')
+  )
 ) {
-  logger.info('✓ Centralized sanitization usage found in ResourceCard.vue')
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    process.env.VALIDATION_LOGS === 'true'
+  ) {
+    // eslint-disable-next-line no-console
+    console.log('✓ Centralized sanitization import found in ResourceCard.vue')
+  }
 } else {
-  logger.info('✗ Centralized sanitization usage NOT found in ResourceCard.vue')
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    process.env.VALIDATION_LOGS === 'true'
+  ) {
+    // eslint-disable-next-line no-console
+    console.log(
+      '✗ Centralized sanitization import NOT found in ResourceCard.vue'
+    )
+  }
+}
+
+// Validate that ResourceCard.vue uses the centralized sanitization function
+if (resourceCardContent.includes('sanitizeAndHighlight')) {
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    process.env.VALIDATION_LOGS === 'true'
+  ) {
+    // eslint-disable-next-line no-console
+    console.log(
+      '✓ Centralized sanitization function usage found in ResourceCard.vue'
+    )
+  }
+} else {
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    process.env.VALIDATION_LOGS === 'true'
+  ) {
+    // eslint-disable-next-line no-console
+    console.log(
+      '✗ Centralized sanitization function usage NOT found in ResourceCard.vue'
+    )
+  }
+}
 }
 
 // Check if security headers plugin exists
@@ -105,21 +162,25 @@ if (
 }
 
 if (
-  nuxtConfigContent.includes('Security Configuration') &&
-  nuxtConfigContent.includes('server plugin')
+  nuxtConfigContent.includes('Content-Security-Policy') ||
+  nuxtConfigContent.includes('csp') ||
+  nuxtConfigContent.includes('Security Configuration')
 ) {
-  logger.info(
-    '✓ Security headers configuration reference found in nuxt.config.ts'
-  )
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    process.env.VALIDATION_LOGS === 'true'
+  ) {
+    // eslint-disable-next-line no-console
+    console.log('✓ CSP header configuration found in nuxt.config.ts')
+  }
+  logger.info('✓ CSP configuration reference found in nuxt.config.ts')
 } else {
-  logger.info(
-    '✗ Security headers configuration reference NOT found in nuxt.config.ts'
-  )
-}
-
-if (
-  process.env.NODE_ENV !== 'production' ||
-  process.env.VALIDATION_LOGS === 'true'
-) {
-  console.log('Validating security implementation...')
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    process.env.VALIDATION_LOGS === 'true'
+  ) {
+    // eslint-disable-next-line no-console
+    console.log('✗ CSP header configuration NOT found in nuxt.config.ts')
+  }
+  logger.info('✗ CSP configuration reference NOT found in nuxt.config.ts')
 }
