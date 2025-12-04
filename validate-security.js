@@ -6,10 +6,10 @@ import { fileURLToPath } from 'url'
 // Simple logger for Node.js scripts
 const logger = {
   info: (message, data) => {
-    logger.info('Validating security implementation...')
+    console.log(message, data || '')
   },
   warn: (message, data) => {
-    logger.info('Validating security implementation...')
+    console.warn(message, data || '')
   },
   error: (message, data) => {
     console.error(message, data || '')
@@ -105,7 +105,6 @@ if (resourceCardContent.includes('sanitizeAndHighlight')) {
       '✗ Centralized sanitization function usage NOT found in ResourceCard.vue'
     )
   }
-}
 }
 
 // Check if security headers plugin exists
