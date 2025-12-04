@@ -8,6 +8,8 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from '#app'
+
 const route = useRoute()
 const submissionId = computed(() => route.params.id as string)
 
