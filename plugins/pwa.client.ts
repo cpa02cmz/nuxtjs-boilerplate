@@ -1,11 +1,6 @@
 import { ref, readonly } from 'vue'
 
-export default defineNuxtPlugin(nuxtApp => {
-  // Check if $pwa is already provided
-  if (nuxtApp.provide && 'pwa' in nuxtApp) {
-    return
-  }
-
+export default defineNuxtPlugin(() => {
   const showInstallPrompt = ref(false)
   const deferredPrompt: any = ref(null)
 
@@ -46,8 +41,12 @@ export default defineNuxtPlugin(nuxtApp => {
   }
 
   // Expose the PWA functions
-  nuxtApp.provide('pwa', {
-    showInstallPrompt: readonly(showInstallPrompt),
-    installPWA,
-  })
+  return {
+    provide: {
+      pwa: {
+        showInstallPrompt: readonly(showInstallPrompt),
+        installPWA,
+      },
+    },
+  }
 })

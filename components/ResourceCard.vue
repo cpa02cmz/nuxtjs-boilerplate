@@ -101,7 +101,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useHead } from '#imports'
+import { useHead } from '@unhead/vue'
 import DOMPurify from 'dompurify'
 import OptimizedImage from '~/components/OptimizedImage.vue'
 

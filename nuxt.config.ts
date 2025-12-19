@@ -399,11 +399,6 @@ export default defineNuxtConfig({
     enabled: false, // We'll implement this later if needed
   },
   // Performance optimizations are included in the experimental section above
-  // Test configuration
-  test: {
-    // Enable testing features
-    setupFiles: ['./test-setup.ts'],
-  },
   // Explicitly use Vite for faster builds
   builder: 'vite',
 
@@ -431,6 +426,7 @@ export default defineNuxtConfig({
             // Split vendor chunks to improve caching
             'vendor-vue': ['vue', '@vue/reactivity', 'vue-router'],
             'vendor-search': ['fuse.js'],
+            'vendor-utils': ['zod'],
             'vendor-security': ['dompurify', 'xss'],
             'vendor-web-vitals': ['web-vitals'],
           },
