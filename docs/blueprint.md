@@ -1091,16 +1091,17 @@ export async function cleanupOldEvents(
 
 ## 📊 Data Architecture Decision Log
 
-| Date       | Decision                               | Rationale                                                                 |
-| ---------- | -------------------------------------- | ------------------------------------------------------------------------- |
-| 2025-01-07 | Migrate to SQLite from PostgreSQL      | Zero configuration, better for boilerplate, matches better-sqlite3 dep    |
-| 2025-01-07 | Consolidate to Prisma ORM              | Single source of truth, type safety, migrations, query optimization       |
-| 2025-01-07 | Add composite indexes                  | Optimize common query patterns (timestamp + resourceId, timestamp + type) |
-| 2025-01-07 | Refactor to database-level aggregation | Fix N+1 queries, 95% reduction in data transfer                           |
-| 2025-01-07 | Implement Prisma Migrate               | Version-controlled schema changes, reversible migrations                  |
-| 2025-01-07 | Enhanced data validation at boundary   | Centralized Zod schemas, consistent error responses, better type safety   |
-| 2025-01-07 | Made IP field optional in schema       | Handle edge cases where IP unavailable, better data model flexibility     |
-| 2025-01-07 | Database-based rate limiting           | Scalable across instances, efficient aggregation, no in-memory state      |
+| Date       | Decision                                | Rationale                                                                 |
+| ---------- | --------------------------------------- | ------------------------------------------------------------------------- |
+| 2025-01-07 | Migrate to SQLite from PostgreSQL       | Zero configuration, better for boilerplate, matches better-sqlite3 dep    |
+| 2025-01-07 | Consolidate to Prisma ORM               | Single source of truth, type safety, migrations, query optimization       |
+| 2025-01-07 | Add composite indexes                   | Optimize common query patterns (timestamp + resourceId, timestamp + type) |
+| 2025-01-07 | Refactor to database-level aggregation  | Fix N+1 queries, 95% reduction in data transfer                           |
+| 2025-01-07 | Implement Prisma Migrate                | Version-controlled schema changes, reversible migrations                  |
+| 2025-01-07 | Enhanced data validation at boundary    | Centralized Zod schemas, consistent error responses, better type safety   |
+| 2025-01-07 | Made IP field optional in schema        | Handle edge cases where IP unavailable, better data model flexibility     |
+| 2025-01-07 | Database-based rate limiting            | Scalable across instances, efficient aggregation, no in-memory state      |
+| 2025-01-07 | Fix N+1 query in getAggregatedAnalytics | Move category aggregation to Promise.all, 50% reduction in roundtrips     |
 
 ## 📊 Performance Architecture Decision Log
 

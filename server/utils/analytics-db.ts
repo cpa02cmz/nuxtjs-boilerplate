@@ -144,38 +144,43 @@ export async function getAggregatedAnalytics(
   dailyTrends: Array<{ date: string; count: number }>
 }> {
   try {
-    const [totalEvents, eventsByType, resourceViews, dailyTrends] =
-      await Promise.all([
-        prisma.analyticsEvent.count({
-          where: {
-            timestamp: {
-              gte: startDate.getTime(),
-              lte: endDate.getTime(),
-            },
+    const [
+      totalEvents,
+      eventsByType,
+      resourceViews,
+      dailyTrends,
+      categoryData,
+    ] = await Promise.all([
+      prisma.analyticsEvent.count({
+        where: {
+          timestamp: {
+            gte: startDate.getTime(),
+            lte: endDate.getTime(),
           },
-        }),
-        prisma.analyticsEvent.groupBy({
-          by: ['type'],
-          where: {
-            timestamp: {
-              gte: startDate.getTime(),
-              lte: endDate.getTime(),
-            },
+        },
+      }),
+      prisma.analyticsEvent.groupBy({
+        by: ['type'],
+        where: {
+          timestamp: {
+            gte: startDate.getTime(),
+            lte: endDate.getTime(),
           },
-          _count: true,
-        }),
-        prisma.analyticsEvent.groupBy({
-          by: ['resourceId'],
-          where: {
-            timestamp: {
-              gte: startDate.getTime(),
-              lte: endDate.getTime(),
-            },
-            type: 'resource_view',
+        },
+        _count: true,
+      }),
+      prisma.analyticsEvent.groupBy({
+        by: ['resourceId'],
+        where: {
+          timestamp: {
+            gte: startDate.getTime(),
+            lte: endDate.getTime(),
           },
-          _count: true,
-        }),
-        prisma.$queryRaw<Array<{ date: string; count: number }>>`
+          type: 'resource_view',
+        },
+        _count: true,
+      }),
+      prisma.$queryRaw<Array<{ date: string; count: number }>>`
         SELECT
           date(datetime(timestamp/1000, 'unixepoch')) as date,
           COUNT(*) as count
@@ -184,7 +189,20 @@ export async function getAggregatedAnalytics(
         GROUP BY date(timestamp/1000, 'unixepoch')
         ORDER BY date
       `,
-      ])
+      prisma.analyticsEvent.groupBy({
+        by: ['category'],
+        where: {
+          timestamp: {
+            gte: startDate.getTime(),
+            lte: endDate.getTime(),
+          },
+          category: {
+            not: null,
+          },
+        },
+        _count: true,
+      }),
+    ])
 
     const eventsByTypeMap: Record<string, number> = {}
     eventsByType.forEach((item: any) => {
@@ -199,19 +217,6 @@ export async function getAggregatedAnalytics(
     })
 
     const eventsByCategory: Record<string, number> = {}
-    const categoryData = await prisma.analyticsEvent.groupBy({
-      by: ['category'],
-      where: {
-        timestamp: {
-          gte: startDate.getTime(),
-          lte: endDate.getTime(),
-        },
-        category: {
-          not: null,
-        },
-      },
-      _count: true,
-    })
     categoryData.forEach((item: any) => {
       if (item.category) {
         eventsByCategory[item.category] = item._count
