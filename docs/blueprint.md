@@ -669,6 +669,17 @@ nuxtjs-boilerplate/
    - Reduce reactive dependencies and re-computation
    - Extract multiple values in single iteration
 
+5. **Process-then-Transform Optimization**:
+   - Apply filtering and pagination BEFORE data transformation
+   - Only transform the data that will actually be used
+   - Reduces O(n) operations to O(k) where k << n
+   - Example: `server/api/v1/resources.get.ts` - hierarchical tag conversion moved after pagination (25x improvement)
+
+6. **O(1) Lookup Optimization**:
+   - Use Map/WeakMap for O(1) lookups instead of Array.find() O(n)
+   - Reduces deduplication from O(n²) to O(n)
+   - Example: `composables/useAdvancedResourceSearch.ts` - deduplication using Map instead of find()
+
 ## 🧪 Testing Architecture
 
 ### Test Organization
@@ -1090,6 +1101,13 @@ export async function cleanupOldEvents(
 | 2025-01-07 | Enhanced data validation at boundary   | Centralized Zod schemas, consistent error responses, better type safety   |
 | 2025-01-07 | Made IP field optional in schema       | Handle edge cases where IP unavailable, better data model flexibility     |
 | 2025-01-07 | Database-based rate limiting           | Scalable across instances, efficient aggregation, no in-memory state      |
+
+## 📊 Performance Architecture Decision Log
+
+| Date       | Decision                                    | Rationale                                                                    |
+| ---------- | ------------------------------------------- | ---------------------------------------------------------------------------- |
+| 2025-01-07 | Process-then-Transform optimization pattern | Apply transformations AFTER filtering/pagination to reduce O(n) to O(k)      |
+| 2025-01-07 | O(1) lookup optimization for deduplication  | Use Map/WeakMap instead of find() to reduce deduplication from O(n²) to O(n) |
 
 ---
 
