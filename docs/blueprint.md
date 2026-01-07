@@ -343,6 +343,7 @@ Logger (console/output)
 ```
 High-Level (Orchestrators)
 ├── useResources.ts (main orchestrator)
+├── useSearchPage.ts (search page orchestrator)
 └── useAlternativeSuggestions.ts
 
 Mid-Level (Feature-Specific)
@@ -609,13 +610,15 @@ tests/
 
 ## 🔄 Decision Log
 
-| Date       | Category     | Decision                                                        | Impact                                                                    |
-| ---------- | ------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| 2025-01-07 | Code Quality | Removed duplicate Google Fonts caching in nuxt.config.ts        | Eliminated code duplication, reduced config size                          |
-| 2025-01-07 | Build System | Created separate nuxt.config.analyze.ts for bundle analysis     | Removed dynamic import anti-pattern, improved build predictability        |
-| 2025-01-07 | Security     | Removed static CSP meta tag from nuxt.config.ts                 | Centralized CSP in server plugin with nonce support, improved security    |
-| 2025-01-07 | Architecture | Verified no circular dependencies exist in composables          | Confirmed clean dependency hierarchy                                      |
-| 2025-01-07 | Code Quality | Extracted shared DOMPurify configuration from utils/sanitize.ts | Eliminated 158 lines of duplicate configuration, improved maintainability |
+| Date       | Category     | Decision                                                        | Impact                                                                             |
+| ---------- | ------------ | --------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| 2025-01-07 | Code Quality | Removed duplicate Google Fonts caching in nuxt.config.ts        | Eliminated code duplication, reduced config size                                   |
+| 2025-01-07 | Build System | Created separate nuxt.config.analyze.ts for bundle analysis     | Removed dynamic import anti-pattern, improved build predictability                 |
+| 2025-01-07 | Security     | Removed static CSP meta tag from nuxt.config.ts                 | Centralized CSP in server plugin with nonce support, improved security             |
+| 2025-01-07 | Architecture | Verified no circular dependencies exist in composables          | Confirmed clean dependency hierarchy                                               |
+| 2025-01-07 | Code Quality | Extracted shared DOMPurify configuration from utils/sanitize.ts | Eliminated 158 lines of duplicate configuration, improved maintainability          |
+| 2025-01-07 | Architecture | Created useSearchPage orchestrator composable for search page   | Implemented Layer Separation pattern, moved business logic from page to composable |
+| 2025-01-07 | Architecture | Refactored pages/search.vue to use orchestrator pattern         | Eliminated 200+ lines of inline filtering logic, improved maintainability          |
 
 ## 🎓 Design Principles Applied
 

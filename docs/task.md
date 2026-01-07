@@ -8,6 +8,173 @@
 
 ---
 
+## [ARCHITECTURE] Layer Separation in search.vue ✅ COMPLETED (2025-01-07)
+
+### Issue
+
+**Location**: pages/search.vue (474 lines)
+
+**Problem**: Page component violated Separation of Concerns principle by implementing business logic inline:
+
+- Filtering logic (lines 227-298) duplicated useResourceFilters functionality
+- Facet counting aggregation (lines 306-350) manually combined counts
+- "Enhanced" toggle wrappers (lines 352-381) just added analytics tracking
+- Multiple mixed responsibilities: presentation, filtering, search, analytics
+
+**Impact**: MEDIUM - Violates architectural principles, reduces maintainability
+
+### Solution
+
+#### 1. Created useSearchPage Orchestrator Composable ✅
+
+**File**: composables/useSearchPage.ts (new file, 235 lines)
+
+**Purpose**: High-level orchestrator combining filtering, search, and analytics for search page
+
+**Features**:
+
+- **Extended Filter Options**: Added `benefits` and `dateRange` to standard FilterOptions
+- **Unified Filtering Logic**: Combines advanced search with basic filtering in single place
+- **Integrated Analytics**: All toggle functions include analytics tracking
+- **Facet Count Aggregation**: Combines facet counts from multiple categories into single object
+- **Computed Tags/Benefits**: Extracts unique tags and benefits from resources
+- **Orchestration**: Combines useResourceData, useAdvancedResourceSearch, and analytics
+
+**Responsibilities Separated**:
+
+| Layer          | Responsibility                    | Moved To                                 |
+| -------------- | --------------------------------- | ---------------------------------------- |
+| Presentation   | UI rendering, user interaction    | pages/search.vue                         |
+| Business Logic | Filtering, search, analytics      | composables/useSearchPage.ts             |
+| Data Access    | Resource loading, data management | composables/useResourceData.ts           |
+| Search Logic   | Advanced search, fuzzy matching   | composables/useAdvancedResourceSearch.ts |
+| Cross-Cutting  | Analytics tracking                | utils/analytics.ts                       |
+
+#### 2. Refactored search.vue ✅
+
+**Changes**: Removed 200+ lines of inline business logic
+
+**Before** (474 lines):
+
+- Multiple composable imports (useResources, useAdvancedResourceSearch, useResourceData)
+- Inline filtering logic (lines 227-298)
+- Manual facet count aggregation (lines 306-350)
+- "Enhanced" toggle wrapper functions (lines 352-381)
+- Mixed concerns in single component
+
+**After** (268 lines):
+
+- Single composable import (useSearchPage)
+- All filtering logic delegated to composable
+- All facet counting delegated to composable
+- Analytics tracking integrated in composable
+- Clear separation: presentation only in page
+
+**Lines Reduced**: 206 lines (43% reduction)
+
+### Architecture Improvements
+
+#### Separation of Concerns
+
+**Before**: search.vue mixed presentation with business logic
+
+- Template: Rendering
+- Script: Business logic, filtering, analytics, state management
+- **Violation**: Single component had multiple responsibilities
+
+**After**: Clean layer separation
+
+- **Page Component**: Presentation only, delegates to orchestrator
+- **Orchestrator Composable**: Business logic, coordinates multiple composables
+- **Low-Level Composables**: Single-responsibility functions
+- **Benefit**: Each layer has clear, focused responsibility
+
+#### Dependency Flow
+
+**Before**: Page directly imported and orchestrated multiple composables
+
+```
+pages/search.vue
+    ├── useResources
+    ├── useAdvancedResourceSearch
+    └── useResourceData
+```
+
+**After**: Page uses single orchestrator that manages dependencies
+
+```
+pages/search.vue
+    └── useSearchPage
+            ├── useResourceData (data access)
+            ├── useAdvancedResourceSearch (search logic)
+            ├── useFilterUtils (filter utilities)
+            └── utils/analytics (cross-cutting concern)
+```
+
+**Benefit**: Clear dependency flow, page doesn't need to know implementation details
+
+#### Code Reusability
+
+**Before**: Filtering logic was duplicated in search.vue and couldn't be reused
+
+```typescript
+// Inline filtering logic in search.vue (not reusable)
+const filteredResources = computed(() => {
+  // 70+ lines of filtering logic
+})
+```
+
+**After**: Logic is in composable, reusable across components
+
+```typescript
+// In useSearchPage.ts (reusable)
+const filteredResources = computed(() => {
+  // Filtering logic centralized
+})
+```
+
+**Benefit**: Other pages/components can now use search functionality without duplication
+
+### Success Criteria
+
+- [x] Layer separation achieved - Page is presentation only
+- [x] Business logic extracted - All logic in composables
+- [x] Code reuse improved - Orchestrator pattern for reusability
+- [x] Dependencies simplified - Page uses single composable
+- [x] Build passes successfully - Compilation and bundling successful
+- [x] Type safety maintained - TypeScript strict mode throughout
+- [x] Zero regressions - No breaking changes to existing functionality
+
+### Files Created
+
+- `composables/useSearchPage.ts` (235 lines) - Search page orchestrator
+
+### Files Modified
+
+- `pages/search.vue` (268 lines, reduced from 474 lines, -206 lines)
+- `server/api/moderation/reject.post.ts` (fixed import syntax, pre-existing issue)
+- `server/api/v1/alternatives/[id].post.ts` (fixed import syntax, pre-existing issue)
+- `server/api/v1/alternatives/[id].get.ts` (fixed import syntax, pre-existing issue)
+- `server/api/v1/comparisons/index.get.ts` (fixed import syntax, pre-existing issue)
+- `docs/blueprint.md` (added useSearchPage to hierarchy, added decision log entries)
+
+### Additional Fixes (Pre-existing Issues)
+
+Fixed 3 syntax errors in API files that were blocking builds:
+
+- `server/api/moderation/reject.post.ts`: Fixed missing import statement closing
+- `server/api/v1/alternatives/[id].post.ts`: Fixed missing import statement closing
+- `server/api/v1/alternatives/[id].get.ts`: Fixed missing import statement closing
+- `server/api/v1/comparisons/index.get.ts`: Fixed missing import statement closing
+
+These were pre-existing issues unrelated to architectural refactoring but prevented successful builds.
+
+---
+
+## QA Engineer Testing Results ✅ COMPLETED
+
+---
+
 ## QA Engineer Testing Results ✅ COMPLETED
 
 ### Summary
@@ -2361,11 +2528,13 @@ Based on bundle analysis, the following optimizations could provide additional b
 ### Initial State ❌ CRITICAL
 
 **Lint Errors Blocking CI**:
+
 - Total errors: 599 (434 errors, 166 warnings)
 - Non-test errors: 401
 - Test infrastructure broken (pre-existing issue)
 
 **Critical Issues Identified**:
+
 1. **45 `createError` undefined errors** - Missing h3 imports in API files
 2. **40 `defineEventHandler` undefined errors** - Missing h3 imports in API files
 3. **5 `readBody` undefined errors** - Missing h3 imports
@@ -2384,6 +2553,7 @@ Based on bundle analysis, the following optimizations could provide additional b
 **Solution**: Systematic import fixes across all API endpoint files
 
 **Files Fixed**:
+
 - `server/api/v1/resources/[id].get.ts` - Added `defineEventHandler` import
 - 27+ API files via automated script
 - Removed unused imports: `invalidateCacheByTag`, `getRateLimiterForPath`
@@ -2397,6 +2567,7 @@ Based on bundle analysis, the following optimizations could provide additional b
 **Solution**: Changed interface to use rest parameters `...data: any[]`
 
 **Files Fixed**:
+
 - `utils/logger.ts` - Updated Logger interface to accept variable arguments
 
 **Impact**: Fixed logger compatibility with error handler calls
@@ -2404,6 +2575,7 @@ Based on bundle analysis, the following optimizations could provide additional b
 ### 3. Unused Variable Cleanup (Priority: HIGH)
 
 **Fixed Files**:
+
 - `types/submission.ts` - Removed unused `Flag` import
 - `utils/errorLogger.ts` - Prefixed unused `log` parameter with `_`
 - `utils/memoize.ts` - Fixed unused parameters in memoize functions
@@ -2418,12 +2590,12 @@ Based on bundle analysis, the following optimizations could provide additional b
 
 ### Lint Error Progress
 
-| Metric                | Initial | Current | Improvement |
-| --------------------- | ------- | ------- | ----------- |
-| Total Errors          | 599     | 387     | -212 (35%) |
-| Non-Test Errors      | 401     | 353     | -48 (12%)  |
-| defineEventHandler    | 45       | 16      | -29 (64%)  |
-| createError           | 45       | 22      | -23 (51%)  |
+| Metric             | Initial | Current | Improvement |
+| ------------------ | ------- | ------- | ----------- |
+| Total Errors       | 599     | 387     | -212 (35%)  |
+| Non-Test Errors    | 401     | 353     | -48 (12%)   |
+| defineEventHandler | 45      | 16      | -29 (64%)   |
+| createError        | 45      | 22      | -23 (51%)   |
 
 ### Remaining Error Categories
 
@@ -2488,17 +2660,20 @@ Based on bundle analysis, the following optimizations could provide additional b
 ## Next Steps
 
 ### Immediate (Priority 1)
+
 1. Complete h3 import fixes for remaining ~20 API files
 2. Fix critical lint errors down to <100
 3. Verify build succeeds locally
 4. Run tests where infrastructure allows
 
 ### Short-term (Priority 2)
+
 5. Fix Vue component naming violations
 6. Remove major unused variables
 7. Optimize build time with caching
 
 ### Medium-term (Priority 3)
+
 8. Implement comprehensive test infrastructure redesign (Issue #485)
 9. Set up automated deployment pipeline
 10. Add monitoring and alerting
@@ -2508,6 +2683,7 @@ Based on bundle analysis, the following optimizations could provide additional b
 ## Files Modified
 
 ### Fixed:
+
 - `types/submission.ts` - Removed unused `Flag` import
 - `utils/logger.ts` - Updated interface for rest parameters
 - `utils/errorLogger.ts` - Prefixed unused parameter
@@ -2518,6 +2694,7 @@ Based on bundle analysis, the following optimizations could provide additional b
 - `server/api/v1/resources.get.ts` - Added h3 imports, removed unused
 
 ### Created:
+
 - `fix-imports.cjs` - Automated import fixing script
 - `fix-h3-imports.cjs` - Comprehensive h3 import fixer
 
@@ -2552,7 +2729,6 @@ Successfully reduced CI lint errors by 35% (212 errors fixed). Critical h3 impor
 
 ---
 
-
 ---
 
 ## [DOCUMENTATION] Documentation Fix Task
@@ -2584,6 +2760,7 @@ Fixed critical documentation issues including broken links, duplicate content, a
 #### 2. Broken Links to Missing Deployment Guides
 
 **Missing Files** (referenced but didn't exist):
+
 - `docs/deployment/vercel.md`
 - `docs/deployment/netlify.md`
 - `docs/deployment/docker.md`
@@ -2608,6 +2785,7 @@ Fixed critical documentation issues including broken links, duplicate content, a
 **File**: `docs/deployment/vercel.md` (5.8K, 330+ lines)
 
 **Content**:
+
 - Quick deploy button
 - Step-by-step deployment instructions
 - Custom domain setup with DNS configuration
@@ -2618,6 +2796,7 @@ Fixed critical documentation issues including broken links, duplicate content, a
 - Best practices for production deployment
 
 **Key Features**:
+
 - Complete Vercel-specific configuration
 - Security headers and SSL setup
 - Preview deployments and branch protection
@@ -2628,6 +2807,7 @@ Fixed critical documentation issues including broken links, duplicate content, a
 **File**: `docs/deployment/netlify.md` (7.6K, 430+ lines)
 
 **Content**:
+
 - Quick deploy button
 - Build configuration for Netlify
 - `netlify.toml` configuration examples
@@ -2639,6 +2819,7 @@ Fixed critical documentation issues including broken links, duplicate content, a
 - Troubleshooting Netlify-specific issues
 
 **Key Features**:
+
 - Complete Netlify.toml configuration
 - Redirect and cache rules
 - Preview deployments setup
@@ -2649,6 +2830,7 @@ Fixed critical documentation issues including broken links, duplicate content, a
 **File**: `docs/deployment/docker.md` (11K, 680+ lines)
 
 **Content**:
+
 - Multi-stage Dockerfile for production
 - Docker Compose configuration
 - Environment variables management
@@ -2661,6 +2843,7 @@ Fixed critical documentation issues including broken links, duplicate content, a
 - Maintenance and cleanup procedures
 
 **Key Features**:
+
 - Production-ready Dockerfile with optimization
 - Multiple scaling strategies (Compose, Swarm, Kubernetes)
 - Security hardening recommendations
@@ -2672,6 +2855,7 @@ Fixed critical documentation issues including broken links, duplicate content, a
 **File**: `docs/deployment/static.md` (11K, 670+ lines)
 
 **Content**:
+
 - Static site generation configuration
 - GitHub Pages deployment (automatic and manual)
 - Cloudflare Pages deployment
@@ -2684,6 +2868,7 @@ Fixed critical documentation issues including broken links, duplicate content, a
 - CI/CD pipelines for static hosting
 
 **Key Features**:
+
 - Multiple static hosting platform options
 - Complete GitHub Actions workflow
 - SEO best practices
@@ -2695,6 +2880,7 @@ Fixed critical documentation issues including broken links, duplicate content, a
 **File**: `docs/maintenance/troubleshooting.md` (15K, 880+ lines)
 
 **Content**:
+
 - Installation issues (Node.js version, dependencies, network)
 - Development server issues (port conflicts, HMR, server startup)
 - Build issues (compilation, type errors, linting)
@@ -2707,6 +2893,7 @@ Fixed critical documentation issues including broken links, duplicate content, a
 - Security issues (vulnerabilities, CSP violations, XSS)
 
 **Key Features**:
+
 - Symptom-based problem identification
 - Multiple solution options per issue
 - Code examples for fixes
@@ -2738,12 +2925,14 @@ Fixed critical documentation issues including broken links, duplicate content, a
 ### User Experience Improvements
 
 **Before Documentation Fixes**:
+
 - ❌ Broken links to deployment guides (4 broken links)
 - ❌ Missing troubleshooting guide (referenced but nonexistent)
 - ❌ Duplicate content looked unprofessional
 - ❌ No comprehensive deployment options
 
 **After Documentation Fixes**:
+
 - ✅ All documentation links working
 - ✅ 4 comprehensive deployment guides (Vercel, Netlify, Docker, Static)
 - ✅ Complete troubleshooting guide covering all common issues
@@ -2756,20 +2945,20 @@ Fixed critical documentation issues including broken links, duplicate content, a
 
 ### Files Created
 
-| File                                      | Lines | Size  | Sections     |
-| ----------------------------------------- | ------ | ------ | ------------ |
-| docs/deployment/vercel.md                | 330+   | 5.8K  | 12 sections  |
-| docs/deployment/netlify.md               | 430+   | 7.6K  | 14 sections  |
-| docs/deployment/docker.md                | 680+   | 11K   | 16 sections  |
-| docs/deployment/static.md                | 670+   | 11K   | 15 sections  |
-| docs/maintenance/troubleshooting.md       | 880+   | 15K   | 11 sections  |
-| **Total**                                | **2,990+** | **50.4K** | **68 sections** |
+| File                                | Lines      | Size      | Sections        |
+| ----------------------------------- | ---------- | --------- | --------------- |
+| docs/deployment/vercel.md           | 330+       | 5.8K      | 12 sections     |
+| docs/deployment/netlify.md          | 430+       | 7.6K      | 14 sections     |
+| docs/deployment/docker.md           | 680+       | 11K       | 16 sections     |
+| docs/deployment/static.md           | 670+       | 11K       | 15 sections     |
+| docs/maintenance/troubleshooting.md | 880+       | 15K       | 11 sections     |
+| **Total**                           | **2,990+** | **50.4K** | **68 sections** |
 
 ### Files Modified
 
-| File                           | Lines Changed | Impact         |
-| ------------------------------ | ------------ | -------------- |
-| docs/deployment/README.md       | -20          | Removed duplicate |
+| File                      | Lines Changed | Impact            |
+| ------------------------- | ------------- | ----------------- |
+| docs/deployment/README.md | -20           | Removed duplicate |
 
 ### Total Documentation Count
 
@@ -2894,6 +3083,7 @@ The documentation fix task successfully resolved all critical documentation issu
 **Documentation Quality**: The project now has comprehensive, professional documentation covering all deployment platforms, a complete troubleshooting guide, and no broken links. All documentation follows best practices with clear structure, working examples, and progressive disclosure.
 
 **User Impact**: Users can now:
+
 - Deploy to 4 different platforms with detailed guides
 - Troubleshoot common issues with comprehensive guide
 - Find all documentation without encountering broken links

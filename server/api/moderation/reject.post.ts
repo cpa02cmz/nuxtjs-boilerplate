@@ -1,4 +1,4 @@
-{ createError, defineEventHandler, readBody 
+import { createError, defineEventHandler, readBody } from 'h3'
 import type { Submission } from '~/types/submission'
 
 // Mock data for demonstration - in a real application, this would come from a database

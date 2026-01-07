@@ -2,7 +2,7 @@ import type { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 import { cacheManager, cacheSetWithTags } from '~/server/utils/enhanced-cache'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
-{ createError, defineEventHandler, getRouterParam 
+import { createError, defineEventHandler, getRouterParam } from 'h3'
 
 export default defineEventHandler(async event => {
   try {
