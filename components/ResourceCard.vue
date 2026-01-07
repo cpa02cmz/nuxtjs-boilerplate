@@ -80,7 +80,14 @@
         <!-- Similarity information (for alternative suggestions) -->
         <div v-if="similarityScore && similarityScore > 0" class="mt-3">
           <div class="flex items-center">
-            <div class="w-full bg-gray-200 rounded-full h-2">
+            <div
+              class="w-full bg-gray-200 rounded-full h-2"
+              role="progressbar"
+              :aria-valuenow="Math.round(similarityScore * 100)"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              :aria-label="`Similarity score: ${Math.round(similarityScore * 100)}%`"
+            >
               <div
                 class="bg-blue-600 h-2 rounded-full"
                 :style="{ width: `${similarityScore * 100}%` }"
