@@ -96,7 +96,6 @@ describe('Memoization Utilities', () => {
       let callCount = 0
       const fn = (x: number) => {
         callCount++
-        console.log(x)
       }
 
       const memoizedFn = memoize(fn)
