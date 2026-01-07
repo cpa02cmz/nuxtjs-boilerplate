@@ -1,5 +1,5 @@
 import { setResponseHeader } from 'h3'
-import { Resource } from '~/types/resource'
+import type { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 
 /**
@@ -18,7 +18,7 @@ export default defineEventHandler(async event => {
     const baseUrl =
       config.public.siteUrl ||
       config.public.canonicalUrl ||
-      'https://nuxtjs-boilerplate.com' // Using a placeholder since this isn't defined in the project
+      'http://localhost:3000' // Fallback to localhost for development
 
     // Define the static pages
     const staticPages = [

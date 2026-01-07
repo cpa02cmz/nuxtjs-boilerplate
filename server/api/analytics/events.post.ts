@@ -1,6 +1,10 @@
 // server/api/analytics/events.post.ts
 // API endpoint for collecting analytics events from the client
 import { readBody, getHeaders, getRequestIP, setResponseStatus } from 'h3'
+import {
+  insertAnalyticsEvent,
+  getAnalyticsEventsByDateRange,
+} from '~/server/utils/analytics-db'
 
 export interface AnalyticsEvent {
   type: string
@@ -12,9 +16,6 @@ export interface AnalyticsEvent {
   timestamp: number
   properties?: Record<string, any>
 }
-
-// In-memory storage for analytics events (in production, use a database)
-const analyticsEvents: AnalyticsEvent[] = []
 
 // Rate limiting: store last event time per IP
 const ipEventTimes = new Map<string, number>()
@@ -30,9 +31,15 @@ export default defineEventHandler(async event => {
     const lastEventTime = ipEventTimes.get(clientIP) || 0
     if (now - lastEventTime < 60000) {
       // 60 seconds
-      const recentEvents = analyticsEvents.filter(
-        e => e.ip === clientIP && now - e.timestamp < 60000
-      )
+      // For rate limiting, we still need to check recent events from the database
+      // Get events from the last minute for this IP
+      const oneMinuteAgo = new Date(now - 60000)
+      const recentEvents = getAnalyticsEventsByDateRange(
+        oneMinuteAgo,
+        new Date(),
+        1000
+      ).filter(e => e.ip === clientIP)
+
       if (recentEvents.length >= 10) {
         setResponseStatus(event, 429)
         return {
@@ -63,12 +70,14 @@ export default defineEventHandler(async event => {
       properties: body.properties || {},
     }
 
-    // Store the event
-    analyticsEvents.push(analyticsEvent)
-
-    // Keep only last 10000 events to prevent memory issues
-    if (analyticsEvents.length > 10000) {
-      analyticsEvents.splice(0, analyticsEvents.length - 10000)
+    // Store the event in the database
+    const success = insertAnalyticsEvent(analyticsEvent)
+    if (!success) {
+      setResponseStatus(event, 500)
+      return {
+        success: false,
+        message: 'Failed to store analytics event',
+      }
     }
 
     // Update IP event time
@@ -84,7 +93,7 @@ export default defineEventHandler(async event => {
 
     return {
       success: true,
-      eventId: analyticsEvent.timestamp,
+      eventId: analyticsEvent.timestamp, // Using timestamp as a unique identifier since we don't have a DB ID
     }
   } catch (error: any) {
     console.error('Analytics event error:', error)

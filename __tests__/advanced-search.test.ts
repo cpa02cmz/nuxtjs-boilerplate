@@ -114,4 +114,79 @@ describe('useAdvancedResourceSearch', () => {
     expect(highlighted).toContain('<mark')
     expect(highlighted).toContain('test')
   })
+
+  it('should manage saved searches', () => {
+    expect(advancedSearch.savedSearches.value).toEqual([])
+
+    // Save a search
+    advancedSearch.saveSearch('My AI Tools Search', 'AI tools')
+    expect(advancedSearch.savedSearches.value).toHaveLength(1)
+    expect(advancedSearch.savedSearches.value[0].name).toBe(
+      'My AI Tools Search'
+    )
+    expect(advancedSearch.savedSearches.value[0].query).toBe('AI tools')
+
+    // Save another search
+    advancedSearch.saveSearch('Web Hosting Search', 'web hosting')
+    expect(advancedSearch.savedSearches.value).toHaveLength(2)
+    expect(advancedSearch.savedSearches.value[0].name).toBe(
+      'Web Hosting Search'
+    )
+    expect(advancedSearch.savedSearches.value[1].name).toBe(
+      'My AI Tools Search'
+    )
+  })
+
+  it('should remove saved searches', () => {
+    advancedSearch.saveSearch('Test Search', 'test query')
+    expect(advancedSearch.savedSearches.value).toHaveLength(1)
+
+    advancedSearch.removeSavedSearch('test query')
+    expect(advancedSearch.savedSearches.value).toEqual([])
+  })
+
+  it('should update existing saved search', () => {
+    advancedSearch.saveSearch('Old Name', 'same query')
+    expect(advancedSearch.savedSearches.value).toHaveLength(1)
+    expect(advancedSearch.savedSearches.value[0].name).toBe('Old Name')
+
+    // Save with same query but different name
+    advancedSearch.saveSearch('New Name', 'same query')
+    expect(advancedSearch.savedSearches.value).toHaveLength(1)
+    expect(advancedSearch.savedSearches.value[0].name).toBe('New Name')
+  })
+
+  it('should get popular searches', () => {
+    // Track some searches to make them popular
+    advancedSearch.advancedSearchResources('AI tools')
+    advancedSearch.advancedSearchResources('AI tools')
+    advancedSearch.advancedSearchResources('web hosting')
+
+    const popularSearches = advancedSearch.getPopularSearches(5)
+    expect(popularSearches).toBeDefined()
+    expect(popularSearches.length).toBeGreaterThan(0)
+    expect(popularSearches[0].query).toBe('ai tools') // Should be normalized to lowercase
+  })
+
+  it('should get related searches', () => {
+    // Track some searches to establish relationships
+    advancedSearch.advancedSearchResources('AI tools')
+    advancedSearch.advancedSearchResources('AI development')
+    advancedSearch.advancedSearchResources('web hosting')
+
+    const relatedSearches = advancedSearch.getRelatedSearches('AI', 5)
+    expect(relatedSearches).toBeDefined()
+    expect(relatedSearches.length).toBeGreaterThanOrEqual(0)
+  })
+
+  it('should create search snippets', () => {
+    const text =
+      'This is a sample description for testing search snippets functionality.'
+    const query = 'testing'
+    const snippet = advancedSearch.createSearchSnippet(text, query, 80)
+
+    expect(snippet).toContain('testing')
+    expect(snippet).toContain('...')
+    expect(snippet.length).toBeLessThanOrEqual(80)
+  })
 })

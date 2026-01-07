@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3'
+import { getQuery } from 'h3'
 
 interface TokenBucket {
   tokens: number
@@ -16,7 +17,8 @@ interface RateLimitConfig {
 // In-memory store for token buckets
 const tokenBucketStore = new Map<string, TokenBucket>()
 
-// Admin bypass keys
+// Admin bypass keys - loaded from environment variable at startup
+// Only used when valid bypass key is provided in request headers
 const adminBypassKeys = new Set<string>()
 if (process.env.ADMIN_RATE_LIMIT_BYPASS_KEY) {
   adminBypassKeys.add(process.env.ADMIN_RATE_LIMIT_BYPASS_KEY)
@@ -27,6 +29,13 @@ class RateLimiter {
 
   constructor(config: RateLimitConfig) {
     this.config = config
+  }
+
+  /**
+   * Get the rate limit configuration (for testing purposes)
+   */
+  getConfig(): RateLimitConfig {
+    return this.config
   }
 
   /**
@@ -239,7 +248,24 @@ export async function rateLimit(event: H3Event, key?: string): Promise<void> {
     return
   }
 
-  // Check for bypass key in header only (security: prevent bypass keys in query parameters or environment variable fallback)
+  // SECURITY: Check for bypass key in query parameters and block if present
+  // This prevents bypass keys from appearing in server logs
+  const query = getQuery(event)
+  if (
+    query['bypass-key'] ||
+    query['bypassKey'] ||
+    query['admin-key'] ||
+    query['adminKey']
+  ) {
+    const { createError } = await import('h3')
+    throw createError({
+      statusCode: 400,
+      statusMessage:
+        'Bypass keys are not allowed in query parameters for security reasons',
+    })
+  }
+
+  // Check for bypass key in header only (security: prevent bypass keys in query parameters)
   const bypassKey = event.node.req.headers['x-admin-bypass-key'] as string
 
   // Generate rate limit key if not provided
@@ -275,7 +301,7 @@ export async function rateLimit(event: H3Event, key?: string): Promise<void> {
   event.node.res?.setHeader('X-RateLimit-Reset', status.resetTime.toString())
   event.node.res?.setHeader(
     'X-RateLimit-Window',
-    Math.floor(rateLimiter['config'].windowMs / 1000).toString()
+    Math.floor(rateLimiter.getConfig().windowMs / 1000).toString()
   )
 
   // If this was a bypassed request, let it through regardless

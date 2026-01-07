@@ -141,16 +141,21 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import logger from '~/utils/logger'
 import { useRuntimeConfig } from '#imports'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 
 interface Props {
-  title: string
+  title?: string
   description?: string
-  url: string
+  url?: string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  title: '',
+  description: '',
+  url: '',
+})
 
 const showShareMenu = ref(false)
 const shareButtonRef = ref<HTMLElement | null>(null)
@@ -196,19 +201,40 @@ const handleClickOutside = (event: Event) => {
 // Copy URL to clipboard
 const copyToClipboard = async () => {
   try {
+    // Modern clipboard API approach
     await navigator.clipboard.writeText(props.url)
     // Close the menu after copying
     showShareMenu.value = false
     // Optionally show a toast notification here
   } catch (err) {
-    // Fallback for older browsers
-    const textArea = document.createElement('textarea')
-    textArea.value = props.url
-    document.body.appendChild(textArea)
-    textArea.select()
-    document.execCommand('copy')
-    document.body.removeChild(textArea)
-    // Close the menu after copying
+    // Fallback for older browsers that don't support Clipboard API
+    try {
+      // Try to use the deprecated execCommand as a last resort
+      const textArea = document.createElement('textarea')
+      textArea.value = props.url
+      // Avoid scrolling to the bottom
+      textArea.setAttribute('readonly', '')
+      textArea.style.cssText = `
+         position: absolute;
+         left: -9999px;
+         top: -9999px;
+         opacity: 0;
+         pointer-events: none;
+       `
+      document.body.appendChild(textArea)
+      textArea.select()
+      textArea.setSelectionRange(0, 99999) // For mobile devices
+      const successful = document.execCommand('copy')
+      document.body.removeChild(textArea)
+
+      if (!successful) {
+        throw new Error('execCommand copy failed')
+      }
+    } catch (fallbackErr) {
+      console.error('Failed to copy to clipboard:', fallbackErr)
+      // Optionally show an error message to the user
+    }
+    // Close the menu after copying attempt
     showShareMenu.value = false
   }
 }

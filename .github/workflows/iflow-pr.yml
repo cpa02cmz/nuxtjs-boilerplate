@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   gather_pr_data:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
         with:
@@ -42,7 +42,7 @@ jobs:
 
       - name: Upload PR intel
         if: env.skip_jobs == 'false'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: pr-intel-data-${{ github.run_id }}
           path: pr_intel/
@@ -50,7 +50,7 @@ jobs:
   smart_pr_agent:
     needs: gather_pr_data
     if: needs.gather_pr_data.outputs.skip_jobs != 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     steps:
       - uses: actions/checkout@v6
@@ -58,13 +58,13 @@ jobs:
           fetch-depth: 0
 
       - name: Download PR intel
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: pr-intel-data-${{ github.run_id }}
           path: ./pr_intel
 
       - name: Run iFlow CLI to handle problematic PRs
-        uses: iflow-ai/iflow-cli-action@v2.1.0
+        uses: iflow-ai/iflow-cli-action@v2.2.1
         with:
           api_key: ${{ secrets.IFLOW_API_KEY }}
           timeout: "5400"
@@ -128,13 +128,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}
-
-      - name: Upload summary
-        if: success()
-        uses: actions/upload-artifact@v5
-        with:
-          name: pr-action-summary-${{ github.run_id }}
-          path: pr_intel/action_summary.json
 
       - name: Optional summary comment
         if: success()

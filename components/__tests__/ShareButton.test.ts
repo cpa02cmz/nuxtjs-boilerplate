@@ -28,6 +28,18 @@ describe('ShareButton', () => {
   it('renders correctly with props', () => {
     const wrapper = mount(ShareButton, {
       props: defaultProps,
+      global: {
+        // Add the same global configuration as other component tests
+        config: {
+          globalProperties: {
+            $config: {
+              public: {
+                canonicalUrl: 'http://localhost:3000',
+              },
+            },
+          },
+        },
+      },
     })
 
     expect(wrapper.exists()).toBe(true)
@@ -39,6 +51,18 @@ describe('ShareButton', () => {
   it('toggles share menu when clicked', async () => {
     const wrapper = mount(ShareButton, {
       props: defaultProps,
+      global: {
+        // Add the same global configuration as other component tests
+        config: {
+          globalProperties: {
+            $config: {
+              public: {
+                canonicalUrl: 'http://localhost:3000',
+              },
+            },
+          },
+        },
+      },
     })
 
     // Initially, the share menu should not be visible
@@ -60,6 +84,18 @@ describe('ShareButton', () => {
   it('contains all social media links', async () => {
     const wrapper = mount(ShareButton, {
       props: defaultProps,
+      global: {
+        // Add the same global configuration as other component tests
+        config: {
+          globalProperties: {
+            $config: {
+              public: {
+                canonicalUrl: 'http://localhost:3000',
+              },
+            },
+          },
+        },
+      },
     })
 
     // Open the share menu
@@ -77,6 +113,18 @@ describe('ShareButton', () => {
   it('has copy link button', async () => {
     const wrapper = mount(ShareButton, {
       props: defaultProps,
+      global: {
+        // Add the same global configuration as other component tests
+        config: {
+          globalProperties: {
+            $config: {
+              public: {
+                canonicalUrl: 'http://localhost:3000',
+              },
+            },
+          },
+        },
+      },
     })
 
     // Open the share menu
@@ -104,6 +152,18 @@ describe('ShareButton', () => {
 
     const wrapper = mount(ShareButton, {
       props: defaultProps,
+      global: {
+        // Add the same global configuration as other component tests
+        config: {
+          globalProperties: {
+            $config: {
+              public: {
+                canonicalUrl: 'http://localhost:3000',
+              },
+            },
+          },
+        },
+      },
     })
 
     // Open the share menu

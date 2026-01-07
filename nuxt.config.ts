@@ -7,14 +7,24 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxt/image',
     '@vite-pwa/nuxt',
+    '~/modules/openapi',
   ],
 
   // Runtime configuration for environment variables
   runtimeConfig: {
     public: {
-      canonicalUrl:
+      siteUrl:
+        process.env.NUXT_PUBLIC_SITE_URL ||
+        process.env.SITE_URL ||
+        process.env.NUXT_PUBLIC_CANONICAL_URL ||
         process.env.CANONICAL_URL ||
-        'https://free-stuff-on-the-internet.vercel.app/',
+        process.env.HOST ||
+        process.env.VERCEL_URL ||
+        'http://localhost:3000',
+      canonicalUrl:
+        process.env.NUXT_PUBLIC_CANONICAL_URL ||
+        process.env.CANONICAL_URL ||
+        'http://localhost:3000',
     },
   },
 
@@ -128,34 +138,6 @@ export default defineNuxtConfig({
           },
         },
         {
-          urlPattern: 'https://fonts.googleapis.com/.*',
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'google-fonts-cache',
-            expiration: {
-              maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-            },
-            cacheableResponse: {
-              statuses: [0, 200],
-            },
-          },
-        },
-        {
-          urlPattern: 'https://fonts.gstatic.com/.*',
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'font-files-cache',
-            expiration: {
-              maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-            },
-            cacheableResponse: {
-              statuses: [0, 200],
-            },
-          },
-        },
-        {
           urlPattern: '^https://.*\\.(png|jpe?g|gif|svg|webp)$',
           handler: 'CacheFirst',
           options: {
@@ -180,7 +162,7 @@ export default defineNuxtConfig({
     },
   },
 
-  // Security and CSP configuration
+  // Security and performance configuration
   experimental: {
     // Enable nonce-based CSP support
     inlineSSRStyles: false,
@@ -189,6 +171,23 @@ export default defineNuxtConfig({
     respectNoExternal: true,
     // Enable component islands for better performance
     componentIslands: true,
+  },
+
+  // Nitro configuration for security and performance
+  nitro: {
+    // Optimize server-side rendering
+    minify: true,
+    // Enable compression
+    compressPublicAssets: true,
+    // Improve build performance
+    ignore: ['**/.git/**', '**/node_modules/**', '**/dist/**'],
+    // Security headers are handled via the security plugins
+    // to ensure proper nonce generation and dynamic header values
+    plugins: [
+      '~/server/plugins/security-headers.ts',
+      '~/server/plugins/html-security.ts',
+      '~/server/plugins/resource-validation.ts',
+    ],
   },
 
   // Image optimization configuration
@@ -212,7 +211,7 @@ export default defineNuxtConfig({
     inlineStyles: true,
   },
 
-  // SEO Configuration - using built-in meta handling
+  // SEO and Security Configuration - using built-in meta handling
   app: {
     head: {
       link: [
@@ -239,9 +238,10 @@ export default defineNuxtConfig({
         // Add script for performance monitoring if needed
         // Preload important scripts
       ],
-      // Add performance-related meta tags
+      // Add performance-related and security meta tags
       meta: [
-        // This approach is more secure and allows for nonces
+        // Note: CSP is implemented via server plugin (server/plugins/security-headers.ts)
+        // with dynamic nonce generation for proper security
         { name: 'referrer', content: 'no-referrer' },
         { name: 'theme-color', content: '#ffffff' },
         { name: 'msapplication-TileColor', content: '#ffffff' },
@@ -325,8 +325,9 @@ export default defineNuxtConfig({
 
   sitemap: {
     hostname:
+      process.env.NUXT_PUBLIC_CANONICAL_URL ||
       process.env.CANONICAL_URL ||
-      'https://free-stuff-on-the-internet.vercel.app',
+      'http://localhost:3000',
   },
   ogImage: {
     enabled: false, // We'll implement this later if needed
@@ -339,20 +340,6 @@ export default defineNuxtConfig({
   },
   // Explicitly use Vite for faster builds
   builder: 'vite',
-
-  nitro: {
-    // Optimize server-side rendering
-    minify: true,
-    // Enable compression
-    compressPublicAssets: true,
-    // Improve build performance
-    ignore: ['**/.git/**', '**/node_modules/**', '**/dist/**'],
-    // CSP headers via middleware
-    plugins: [
-      '~/server/plugins/security-headers.ts',
-      '~/server/plugins/resource-validation.ts',
-    ],
-  },
 
   // Optimize bundle size
   vite: {
@@ -378,19 +365,6 @@ export default defineNuxtConfig({
         external: ['@nuxt/kit'],
       },
     },
-    plugins: [
-      // Add bundle analyzer for performance monitoring (only when ANALYZE_BUNDLE is true)
-      ...(process.env.ANALYZE_BUNDLE === 'true'
-        ? [
-            require('rollup-plugin-visualizer').default({
-              filename: './dist/stats.html',
-              open: false,
-              gzipSize: true,
-              brotliSize: true,
-            }),
-          ]
-        : []),
-    ],
     // Optimize build speed
     esbuild: {
       logLevel: 'silent', // Reduce build noise

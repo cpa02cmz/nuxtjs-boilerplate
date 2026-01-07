@@ -1,5 +1,7 @@
 // For Nuxt 3, we'll use the built-in storage system instead of file system directly
 import { defineEventHandler, readBody } from 'h3'
+import { logger } from '~/utils/logger'
+import type { Submission } from '~/types/submission'
 
 export default defineEventHandler(async event => {
   try {
@@ -80,23 +82,25 @@ export default defineEventHandler(async event => {
     }
 
     // Create a submission object with metadata
-    const submission = {
+    const submission: Submission = {
       id: `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, // Generate a unique ID
-      title: body.title.trim(),
-      description: body.description.trim(),
-      url: body.url.trim(),
-      category: body.category.trim(),
-      tags: Array.isArray(body.tags) ? body.tags : [],
+      resourceData: {
+        title: body.title.trim(),
+        description: body.description.trim(),
+        url: body.url.trim(),
+        category: body.category.trim(),
+        tags: Array.isArray(body.tags) ? body.tags : [],
+        pricingModel: body.pricingModel || 'Free',
+        difficulty: body.difficulty || 'Beginner',
+        technology: Array.isArray(body.technology) ? body.technology : [],
+        benefits: Array.isArray(body.benefits) ? body.benefits : [],
+      },
       status: 'pending', // Default status
       submittedAt: new Date().toISOString(),
       submittedBy: 'anonymous', // In a real app, this would be the user ID
-      approvedAt: null,
-      approvedBy: null,
-      source: body.source || 'community',
     }
 
     // For now, we'll log the submission (in a real app, this would go to a database)
-    // console.log('New submission received:', submission) // Commented for production
 
     return {
       success: true,
@@ -104,11 +108,7 @@ export default defineEventHandler(async event => {
       submissionId: submission.id,
     }
   } catch (error: any) {
-    // In production, we might want to use a proper error tracking service instead of console
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.error('Error processing submission:', error)
-    }
+    logger.error('Error processing submission:', error)
 
     // Return proper error response
     if (error.statusCode) {

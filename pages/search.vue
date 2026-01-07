@@ -38,6 +38,11 @@
         <p class="text-gray-500 mb-6">
           Try adjusting your search or filter criteria
         </p>
+        <RelatedSearches
+          :query="searchQuery"
+          class="mb-6"
+          @search-select="handleRelatedSearch"
+        />
         <button
           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900"
           @click="resetAllFilters"
@@ -65,19 +70,44 @@
             :pricing-models="pricingModels"
             :difficulty-levels="difficultyLevels"
             :technologies="technologies"
+            :tags="tags"
+            :benefits="benefits"
             :selected-categories="selectedCategories"
             :selected-pricing-models="selectedPricingModels"
             :selected-difficulty-levels="selectedDifficultyLevels"
             :selected-technologies="selectedTechnologies"
+            :selected-tags="selectedTags"
+            :selected-benefits="selectedBenefits"
+            :selected-date-range="selectedDateRange"
             :search-query="searchQuery"
             :facet-counts="facetCounts"
+            :saved-searches="savedSearches"
             role="region"
             aria-label="Resource filters"
             @toggle-category="enhancedToggleCategory"
             @toggle-pricing-model="enhancedTogglePricingModel"
             @toggle-difficulty-level="enhancedToggleDifficultyLevel"
             @toggle-technology="enhancedToggleTechnology"
+            @toggle-tag="enhancedToggleTag"
+            @toggle-benefit="enhancedToggleBenefit"
+            @date-range-change="onDateRangeChange"
             @reset-filters="resetAllFilters"
+            @use-saved-search="onUseSavedSearch"
+            @remove-saved-search="onRemoveSavedSearch"
+          />
+
+          <!-- Show popular searches when there's no active search -->
+          <PopularSearches
+            v-if="!searchQuery"
+            class="mt-6"
+            @search-select="handlePopularSearch"
+          />
+
+          <!-- Show zero-result searches when there are no results -->
+          <ZeroResultSearches
+            v-if="searchQuery && !filteredResources.length && !loading"
+            class="mt-6"
+            @search-select="handlePopularSearch"
           />
         </div>
 
@@ -103,8 +133,9 @@
                 highlightSearchTerms(resource.title, searchQuery)
               "
               :highlighted-description="
-                highlightSearchTerms(resource.description, searchQuery)
+                createSearchSnippet(resource.description, searchQuery)
               "
+              :search-query="searchQuery"
             />
           </div>
         </div>
@@ -122,6 +153,9 @@ import SearchBar from '~/components/SearchBar.vue'
 import ResourceFilters from '~/components/ResourceFilters.vue'
 import ResourceSort from '~/components/ResourceSort.vue'
 import ResourceCard from '~/components/ResourceCard.vue'
+import RelatedSearches from '~/components/RelatedSearches.vue'
+import PopularSearches from '~/components/PopularSearches.vue'
+import ZeroResultSearches from '~/components/ZeroResultSearches.vue'
 
 definePageMeta({
   layout: 'default',
@@ -137,7 +171,7 @@ useSeoMeta({
   ogDescription:
     'Search and filter through our collection of free resources including AI tools, hosting services, databases, and more for developers.',
   ogImage: '/og-image.jpg',
-  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'https://free-stuff-on-the-internet.vercel.app'}/search`,
+  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000'}/search`,
   twitterCard: 'summary_large_image',
 })
 
@@ -150,6 +184,8 @@ const {
   pricingModels,
   difficultyLevels,
   technologies,
+  tags,
+  benefits,
   filterOptions,
   sortOption,
   updateSearchQuery,
@@ -157,6 +193,9 @@ const {
   togglePricingModel,
   toggleDifficultyLevel,
   toggleTechnology,
+  toggleTag,
+  toggleBenefit,
+  setDateRange,
   setSortOption,
   resetFilters,
   highlightSearchTerms,
@@ -164,8 +203,17 @@ const {
 
 // Use the advanced search composable for faceted search
 const { resources } = useResourceData()
-const { calculateFacetCounts, advancedSearchResources } =
-  useAdvancedResourceSearch(resources)
+const {
+  calculateFacetCounts,
+  advancedSearchResources,
+  savedSearches,
+  saveSearch,
+  removeSavedSearch,
+  getPopularSearches,
+  getZeroResultSearches,
+  getRelatedSearches,
+  createSearchSnippet,
+} = useAdvancedResourceSearch(resources)
 
 // Compute the filtered resources using advanced search when possible
 const filteredResources = computed(() => {
@@ -199,11 +247,53 @@ const filteredResources = computed(() => {
           filterOptions.value.technologies.includes(tech)
         )
 
+      const matchesTag =
+        !filterOptions.value.tags ||
+        filterOptions.value.tags.length === 0 ||
+        resource.tags?.some((tag: string) =>
+          filterOptions.value.tags.includes(tag)
+        )
+
+      const matchesBenefit =
+        !filterOptions.value.benefits ||
+        filterOptions.value.benefits.length === 0 ||
+        resource.benefits?.some((benefit: string) =>
+          filterOptions.value.benefits.includes(benefit)
+        )
+
+      // Date range filter
+      const now = new Date()
+      let matchesDateRange = true
+      if (filterOptions.value.dateRange) {
+        const resourceDate = new Date(
+          resource.createdAt || resource.addedAt || now
+        )
+        const timeDiff = now.getTime() - resourceDate.getTime()
+        const daysDiff = timeDiff / (1000 * 60 * 60 * 24)
+
+        switch (filterOptions.value.dateRange) {
+          case 'lastWeek':
+            matchesDateRange = daysDiff <= 7
+            break
+          case 'lastMonth':
+            matchesDateRange = daysDiff <= 30
+            break
+          case 'lastYear':
+            matchesDateRange = daysDiff <= 365
+            break
+          default:
+            matchesDateRange = true
+        }
+      }
+
       return (
         matchesCategory &&
         matchesPricing &&
         matchesDifficulty &&
-        matchesTechnology
+        matchesTechnology &&
+        matchesTag &&
+        matchesBenefit &&
+        matchesDateRange
       )
     })
   } else {
@@ -220,6 +310,8 @@ const facetCounts = computed(() => {
   const pricingCounts = calculateFacetCounts(searchQuery, 'pricingModel')
   const difficultyCounts = calculateFacetCounts(searchQuery, 'difficultyLevel')
   const technologyCounts = calculateFacetCounts(searchQuery, 'technologies')
+  const tagCounts = calculateFacetCounts(searchQuery, 'tags')
+  const benefitCounts = calculateFacetCounts(searchQuery, 'benefits')
 
   // Combine all counts into a single object with appropriate keys
   const allCounts: Record<string, number> = {}
@@ -242,6 +334,16 @@ const facetCounts = computed(() => {
   // Add technology counts
   Object.entries(technologyCounts).forEach(([key, value]) => {
     allCounts[`technology_${key}`] = value
+  })
+
+  // Add tag counts
+  Object.entries(tagCounts).forEach(([key, value]) => {
+    allCounts[`tag_${key}`] = value
+  })
+
+  // Add benefit counts
+  Object.entries(benefitCounts).forEach(([key, value]) => {
+    allCounts[`benefits_${key}`] = value
   })
 
   return allCounts
@@ -268,6 +370,21 @@ const enhancedToggleTechnology = (technology: string) => {
   trackFilter('technology', technology)
 }
 
+const enhancedToggleTag = (tag: string) => {
+  toggleTag(tag)
+  trackFilter('tag', tag)
+}
+
+const enhancedToggleBenefit = (benefit: string) => {
+  toggleBenefit(benefit)
+  trackFilter('benefit', benefit)
+}
+
+const onDateRangeChange = (dateRange: string) => {
+  setDateRange(dateRange)
+  trackFilter('dateRange', dateRange)
+}
+
 // Set up URL synchronization
 useUrlSync(filterOptions, sortOption)
 
@@ -287,6 +404,11 @@ const selectedDifficultyLevels = computed(
 const selectedTechnologies = computed(
   () => filterOptions.value.technologies || []
 )
+const selectedTags = computed(() => filterOptions.value.tags || [])
+const selectedBenefits = computed(() => filterOptions.value.benefits || [])
+const selectedDateRange = computed(
+  () => filterOptions.value.dateRange || 'anytime'
+)
 
 import { trackSearch, trackFilter } from '~/utils/analytics'
 
@@ -304,6 +426,32 @@ const handleSearch = (query: string) => {
 const resetAllFilters = () => {
   resetFilters()
   searchQuery.value = ''
+}
+
+// Handle related searches
+const handleRelatedSearch = (query: string) => {
+  searchQuery.value = query
+  updateSearchQuery(query)
+}
+
+// Handle popular searches
+const handlePopularSearch = (query: string) => {
+  searchQuery.value = query
+  updateSearchQuery(query)
+}
+
+// Handle saved searches
+const onUseSavedSearch = (search: {
+  name: string
+  query: string
+  createdAt: Date
+}) => {
+  searchQuery.value = search.query
+  updateSearchQuery(search.query)
+}
+
+const onRemoveSavedSearch = (query: string) => {
+  removeSavedSearch(query)
 }
 
 // Helper function to get button label based on category

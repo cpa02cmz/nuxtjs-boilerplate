@@ -22,15 +22,29 @@ describe('ResourceCard', () => {
     description: 'Test description',
     benefits: ['Benefit 1', 'Benefit 2'],
     url: 'https://example.com',
+    category: 'Test Category', // Add the required category prop
   }
 
   it('renders correctly with required props', () => {
     const wrapper = mount(ResourceCard, {
-      props: defaultProps,
+      props: {
+        ...defaultProps,
+        category: 'Test Category', // Add required prop that was missing
+      },
       global: {
         components: {
           NuxtLink: mockNuxtLink,
           SocialShare: mockSocialShare,
+        },
+        // Provide the Nuxt composables through provide
+        provide: {
+          nuxtApp: {
+            $config: {
+              public: {
+                canonicalUrl: 'http://localhost:3000',
+              },
+            },
+          },
         },
       },
     })

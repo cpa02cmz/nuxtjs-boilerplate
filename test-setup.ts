@@ -1,88 +1,73 @@
-// Minimal test setup file for Vitest - avoids interfering with Nuxt environment
 import { vi } from 'vitest'
 
-// Mock DOMPurify
-vi.mock('dompurify', async importOriginal => {
+vi.mock('#app', async () => {
+  return {
+    useNuxtApp: vi.fn(),
+    useRuntimeConfig: vi.fn(),
+    useState: vi.fn(),
+    useRequestHeaders: vi.fn(),
+    useCookie: vi.fn(),
+    useAsyncData: vi.fn(),
+    useFetch: vi.fn(),
+    navigateTo: vi.fn(),
+    definePageMeta: vi.fn(),
+    useHead: vi.fn(),
+    useError: vi.fn(),
+    showError: vi.fn(),
+    clearError: vi.fn(),
+  }
+})
+
+vi.mock('#app/composables/router', () => {
+  return {
+    useRouter: vi.fn(),
+    useRoute: vi.fn(),
+  }
+})
+
+vi.mock('vue', async importOriginal => {
   const actual = await importOriginal()
   return {
     ...actual,
-    default: {
-      sanitize: html => {
-        // Basic sanitization for testing - just return the input for now
-        // In real tests you'd want proper sanitization
-        return html
-          .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-          .replace(/javascript:/gi, '')
-          .replace(/on\w+\s*=/gi, '')
-      },
-    },
+    getCurrentInstance: vi.fn(),
   }
 })
 
-// Only set process.env.NODE_ENV if it's not already set by Nuxt
-if (typeof process !== 'undefined' && process.env) {
-  process.env.NODE_ENV = process.env.NODE_ENV || 'test'
-}
-
-// Mock Nuxt composables to prevent "nuxt instance unavailable" errors
-vi.mock('#app', async () => {
-  const actual = await vi.importActual('#app')
-  return {
-    ...actual,
-    useRuntimeConfig: () => ({
-      public: {
-        canonicalUrl: 'http://localhost:3000',
+if (typeof global !== 'undefined') {
+  if (typeof global.window === 'undefined') {
+    global.window = {
+      document: {
+        createElement: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        setAttribute: vi.fn(),
+        getAttribute: vi.fn(),
+        appendChild: vi.fn(),
+        removeChild: vi.fn(),
+        querySelector: vi.fn(),
+        querySelectorAll: vi.fn(() => []),
+        getElementById: vi.fn(),
+        createComment: vi.fn(),
+        createTextNode: vi.fn(),
       },
-    }),
-    useNuxtApp: () => ({
-      $pinia: null,
-      isHydrating: false,
-      payload: {
-        data: {},
-        state: {},
-        once: new Set(),
+      localStorage: {
+        getItem: vi.fn(),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn(),
       },
-      static: {
-        data: {},
+      sessionStorage: {
+        getItem: vi.fn(),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn(),
       },
-      provide: () => {},
-    }),
-    useState: (key: string) => vi.fn(() => vi.fn()),
-    useFetch: vi.fn(),
-    useAsyncData: vi.fn(),
-  }
-})
-
-// Mock #imports specifically for useRuntimeConfig and useHead
-vi.mock('#imports', async () => {
-  const actual = await vi.importActual('#imports')
-  return {
-    ...actual,
-    useRuntimeConfig: () => ({
-      public: {
-        canonicalUrl: 'http://localhost:3000',
+      location: {
+        href: 'http://localhost',
       },
-    }),
-    useHead: vi.fn(),
-  }
-})
-
-// Create a basic Nuxt app mock to handle useNuxtApp calls
-if (typeof window !== 'undefined') {
-  // @ts-ignore
-  window.__NUXT__ = {
-    serverRendered: false,
-    config: {
-      public: {
-        canonicalUrl: 'http://localhost:3000',
+      navigator: {
+        userAgent: 'test-agent',
       },
-      app: {
-        baseURL: '/',
-        buildAssetsDir: '/_nuxt/',
-        cdnURL: '',
-      },
-    },
-    data: {},
-    state: {},
+    }
   }
 }

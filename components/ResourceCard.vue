@@ -20,32 +20,40 @@
         />
       </div>
       <div class="flex-1 min-w-0">
-        <h3
-          id="resource-title"
-          class="text-lg font-medium text-gray-900 truncate"
-        >
-          <NuxtLink
-            v-if="id"
-            :to="`/resources/${id}`"
-            class="hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:rounded-sm"
-            :aria-label="`View details for ${title}`"
+        <div class="flex items-center justify-between">
+          <h3
+            id="resource-title"
+            class="text-lg font-medium text-gray-900 truncate"
           >
-            <span
-              v-if="highlightedTitle"
-              v-html="sanitizedHighlightedTitle"
-            ></span>
-            <!-- eslint-disable-line vue/no-v-html -->
-            <span v-else>{{ title }}</span>
-          </NuxtLink>
-          <span v-else>
-            <span
-              v-if="highlightedTitle"
-              v-html="sanitizedHighlightedTitle"
-            ></span>
-            <!-- eslint-disable-line vue/no-v-html -->
-            <span v-else>{{ title }}</span>
-          </span>
-        </h3>
+            <NuxtLink
+              v-if="id"
+              :to="`/resources/${id}`"
+              class="hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:rounded-sm"
+              :aria-label="`View details for ${title}`"
+            >
+              <span
+                v-if="highlightedTitle"
+                v-html="sanitizedHighlightedTitle"
+              ></span>
+              <!-- eslint-disable-line vue/no-v-html -->
+              <span v-else>{{ title }}</span>
+            </NuxtLink>
+            <span v-else>
+              <span
+                v-if="highlightedTitle"
+                v-html="sanitizedHighlightedTitle"
+              ></span>
+              <!-- eslint-disable-line vue/no-v-html -->
+              <span v-else>{{ title }}</span>
+            </span>
+          </h3>
+          <!-- Resource status badge -->
+          <ResourceStatus
+            v-if="status"
+            :status="status"
+            :health-score="healthScore"
+          />
+        </div>
         <p id="resource-description" class="mt-1 text-gray-800 text-sm">
           <span
             v-if="highlightedDescription"
@@ -68,6 +76,25 @@
             </li>
           </ul>
         </div>
+
+        <!-- Similarity information (for alternative suggestions) -->
+        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
+          <div class="flex items-center">
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div
+                class="bg-blue-600 h-2 rounded-full"
+                :style="{ width: `${similarityScore * 100}%` }"
+              ></div>
+            </div>
+            <span class="ml-2 text-xs font-medium text-gray-700">
+              {{ Math.round(similarityScore * 100) }}% match
+            </span>
+          </div>
+          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
+            {{ similarityReason }}
+          </p>
+        </div>
+
         <div class="mt-4 flex items-center justify-between">
           <a
             :href="url"
@@ -96,6 +123,28 @@
               :description="description"
               :url="`${runtimeConfig.public.canonicalUrl}/resources/${id}`"
             />
+            <!-- Compare button -->
+            <button
+              v-if="id"
+              class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              :aria-label="`Add ${title} to comparison`"
+              title="Add to comparison"
+              @click="addResourceToComparison"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                <path
+                  fill-rule="evenodd"
+                  d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
             <!-- Slot for additional actions -->
             <slot name="actions"></slot>
           </div>
@@ -136,11 +185,15 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
 import { useHead, useRuntimeConfig } from '#imports'
-import DOMPurify from 'dompurify'
+import { useResourceComparison } from '~/composables/useResourceComparison'
 import OptimizedImage from '~/components/OptimizedImage.vue'
 import BookmarkButton from '~/components/BookmarkButton.vue'
 import ShareButton from '~/components/ShareButton.vue'
+import ResourceStatus from '~/components/ResourceStatus.vue'
 import { trackResourceView, trackResourceClick } from '~/utils/analytics'
+import { sanitizeAndHighlight } from '~/utils/sanitize'
+import { memoizeHighlight } from '~/utils/memoize'
+import { logError } from '~/utils/errorLogger'
 
 interface Props {
   title: string
@@ -148,13 +201,19 @@ interface Props {
   benefits: string[]
   url: string
   id?: string
-  category: string // Added for analytics tracking
+  category?: string // Added for analytics tracking
   icon?: string
   newTab?: boolean
   buttonLabel?: string
   highlightedTitle?: string
   highlightedDescription?: string
+  searchQuery?: string
+  similarityScore?: number
+  similarityReason?: string
 }
+
+// Get the comparison composable
+const { addResource, selectedResources } = useResourceComparison()
 
 const props = withDefaults(defineProps<Props>(), {
   id: undefined,
@@ -164,9 +223,17 @@ const props = withDefaults(defineProps<Props>(), {
   highlightedTitle: undefined,
   highlightedDescription: undefined,
   icon: undefined,
+  searchQuery: '',
+  status: 'active',
+  healthScore: undefined,
+  similarityScore: undefined,
+  similarityReason: undefined,
 })
 
 const hasError = ref(false)
+
+// Memoized highlight function to prevent recomputation
+const memoizedHighlight = memoizeHighlight(sanitizeAndHighlight)
 
 // Track resource view when component mounts
 onMounted(() => {
@@ -175,163 +242,32 @@ onMounted(() => {
   }
 })
 
-// Sanitize highlighted content to prevent XSS using DOMPurify
+// Sanitize highlighted content to prevent XSS using centralized utility with memoization
 const sanitizedHighlightedTitle = computed(() => {
   if (!props.highlightedTitle) return ''
-
-  // First, remove any script-related tags/content before sanitizing with DOMPurify
-  // This handles the case where malicious content exists outside of allowed tags
-  let preprocessed = props.highlightedTitle
-
-  // Remove script tags and their content (including self-closing tags)
-  preprocessed = preprocessed.replace(
-    /<\s*script[^>]*>[\s\S]*?<\s*\/\s*script\s*>/gi,
-    ''
+  return memoizedHighlight(
+    props.highlightedTitle,
+    props.searchQuery || props.highlightedTitle
   )
-  preprocessed = preprocessed.replace(/<\s*script[^>]*\/?\s*>/gi, '')
-
-  // Remove other dangerous tags that might have been missed
-  preprocessed = preprocessed.replace(
-    /<\s*(iframe|object|embed|form|input|button)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
-    ''
-  )
-  preprocessed = preprocessed.replace(
-    /<\s*(iframe|object|embed|form|input|button)[^>]*\/?\s*>/gi,
-    ''
-  )
-
-  // Use DOMPurify to sanitize the preprocessed content, allowing only mark tags for highlighting
-  const sanitized = DOMPurify.sanitize(preprocessed, {
-    ALLOWED_TAGS: ['mark'],
-    ALLOWED_ATTR: ['class'],
-    FORBID_TAGS: [
-      'script',
-      'iframe',
-      'object',
-      'embed',
-      'form',
-      'input',
-      'button',
-    ],
-    FORBID_ATTR: [
-      'src',
-      'href',
-      'style',
-      'onload',
-      'onerror',
-      'onclick',
-      'onmouseover',
-      'onmouseout',
-      'data',
-      'formaction',
-    ],
-    // Additional security options
-    SANITIZE_DOM: true,
-    FORBID_CONTENTS: [
-      'script',
-      'iframe',
-      'object',
-      'embed',
-      'form',
-      'input',
-      'button',
-    ],
-  })
-
-  // Additional sanitization to remove dangerous patterns that might remain
-  return sanitized
-    .replace(/javascript:/gi, '')
-    .replace(/data:/gi, '')
-    .replace(/vbscript:/gi, '')
-    .replace(/on\w+\s*=/gi, '') // Remove any event handlers
-    .replace(/script/gi, '') // Remove 'script' substrings to pass tests
-    .replace(/iframe/gi, '') // Additional protection
-    .replace(/object/gi, '') // Additional protection
-    .replace(/embed/gi, '') // Additional protection
 })
 
 const sanitizedHighlightedDescription = computed(() => {
   if (!props.highlightedDescription) return ''
-
-  // First, remove any script-related tags/content before sanitizing with DOMPurify
-  // This handles the case where malicious content exists outside of allowed tags
-  let preprocessed = props.highlightedDescription
-
-  // Remove script tags and their content (including self-closing tags)
-  preprocessed = preprocessed.replace(
-    /<\s*script[^>]*>[\s\S]*?<\s*\/\s*script\s*>/gi,
-    ''
+  return memoizedHighlight(
+    props.highlightedDescription,
+    props.searchQuery || props.highlightedDescription
   )
-  preprocessed = preprocessed.replace(/<\s*script[^>]*\/?\s*>/gi, '')
-
-  // Remove other dangerous tags that might have been missed
-  preprocessed = preprocessed.replace(
-    /<\s*(iframe|object|embed|form|input|button)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
-    ''
-  )
-  preprocessed = preprocessed.replace(
-    /<\s*(iframe|object|embed|form|input|button)[^>]*\/?\s*>/gi,
-    ''
-  )
-
-  // Use DOMPurify to sanitize the preprocessed content, allowing only mark tags for highlighting
-  const sanitized = DOMPurify.sanitize(preprocessed, {
-    ALLOWED_TAGS: ['mark'],
-    ALLOWED_ATTR: ['class'],
-    FORBID_TAGS: [
-      'script',
-      'iframe',
-      'object',
-      'embed',
-      'form',
-      'input',
-      'button',
-    ],
-    FORBID_ATTR: [
-      'src',
-      'href',
-      'style',
-      'onload',
-      'onerror',
-      'onclick',
-      'onmouseover',
-      'onmouseout',
-      'data',
-      'formaction',
-    ],
-    // Additional security options
-    SANITIZE_DOM: true,
-    FORBID_CONTENTS: [
-      'script',
-      'iframe',
-      'object',
-      'embed',
-      'form',
-      'input',
-      'button',
-    ],
-  })
-
-  // Additional sanitization to remove dangerous patterns that might remain
-  return sanitized
-    .replace(/javascript:/gi, '')
-    .replace(/data:/gi, '')
-    .replace(/vbscript:/gi, '')
-    .replace(/on\w+\s*=/gi, '') // Remove any event handlers
-    .replace(/script/gi, '') // Remove 'script' substrings to pass tests
-    .replace(/iframe/gi, '') // Additional protection
-    .replace(/object/gi, '') // Additional protection
-    .replace(/embed/gi, '') // Additional protection
 })
 
 // Handle image loading errors
 const handleImageError = () => {
   hasError.value = true
-  // In production, we might want to use a proper error tracking service instead of console
-  if (process.dev) {
-    // eslint-disable-next-line no-console
-    console.error(`Failed to load image for resource: ${props.title}`)
-  }
+  logError(
+    `Failed to load image for resource: ${props.title}`,
+    undefined,
+    'ResourceCard',
+    { resourceTitle: props.title, resourceUrl: props.icon }
+  )
 }
 
 // Handle link clicks and validate URL
@@ -347,37 +283,75 @@ const handleLinkClick = (event: Event) => {
   } catch (err) {
     event.preventDefault()
     hasError.value = true
-    // In production, we might want to use a proper error tracking service instead of console
-    if (process.dev) {
-      // eslint-disable-next-line no-console
-      console.error(`Invalid URL for resource: ${props.url}`, err)
-    }
+    logError(
+      `Invalid URL for resource: ${props.url}`,
+      err as Error,
+      'ResourceCard',
+      { resourceTitle: props.title, resourceUrl: props.url, error: err }
+    )
   }
 }
 
 // Get runtime config for canonical URL
 const runtimeConfig = useRuntimeConfig()
 
+// Method to add resource to comparison
+const addResourceToComparison = () => {
+  if (!props.id) return
+
+  // Create a resource object with the required properties
+  const resource = {
+    id: props.id,
+    title: props.title,
+    description: props.description,
+    benefits: props.benefits,
+    url: props.url,
+    category: props.category || 'unknown',
+  }
+
+  // Add the resource to comparison
+  const added = addResource(resource as any)
+
+  if (added) {
+    // Navigate to comparison page
+    navigateTo('/compare')
+  }
+}
+
 // Add structured data for the resource
 const resourceSchema = computed(() => {
   // Only create schema if there's no error
   if (hasError.value) return null
 
-  return {
+  const schema: Record<string, any> = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication', // Using SoftwareApplication as most resources are web-based tools
     name: props.title,
     description: props.description,
     url: props.url,
-    offers: {
-      '@type': 'Offer',
-      availability: 'https://schema.org/InStock',
-      price: '0',
-      priceCurrency: 'USD',
-    },
-    applicationCategory: 'http://schema.org/BusinessApplication',
-    operatingSystem: 'Web',
   }
+
+  // Add icon if available
+  if (props.icon) {
+    schema.image = props.icon
+  }
+
+  // Add offers information
+  schema.offers = {
+    '@type': 'Offer',
+    availability: 'https://schema.org/InStock',
+    price: '0',
+    priceCurrency: 'USD',
+  }
+
+  // Add category information
+  if (props.category) {
+    schema.applicationCategory = props.category
+  }
+
+  schema.operatingSystem = 'Web'
+
+  return schema
 })
 
 // Add JSON-LD structured data to the head if no error
@@ -387,11 +361,16 @@ if (typeof useHead === 'function') {
     if (hasError.value || !resourceSchema.value) {
       return {}
     }
+    // Safely serialize JSON-LD data to prevent XSS
+    const serializedSchema = JSON.stringify(resourceSchema.value)
+      .replace(new RegExp('<', 'g'), '\\u003c') // Escape < to prevent script tag breaking
+      .replace(new RegExp('>', 'g'), '\\u003e') // Escape > to prevent script tag breaking
+      .replace(new RegExp('/', 'g'), '\\u002f') // Escape / to prevent closing script tags
     return {
       script: [
         {
           type: 'application/ld+json',
-          innerHTML: JSON.stringify(resourceSchema.value),
+          innerHTML: serializedSchema,
         },
       ],
     }

@@ -13,7 +13,7 @@ permissions:
 # global lock: only 1 instance of this workflow running across events
 concurrency:
   group: global-workflow-lock
- cancel-in-progress: false
+  cancel-in-progress: false
 
 env:
   IFLOW_MODEL: iflowcn/qwen3-coder-plus
@@ -57,7 +57,25 @@ jobs:
         timeout-minutes: 20
         run: |
           opencode run "$(cat <<'PROMPT'
-          Anda adalah Orchestrator utama untuk repositori Github ini. Anda hidup di lingkungan github actions.
+            ========================================
+            BRANCH MANAGEMENT
+            ========================================
+            Di awal setiap tugas (SEBELUM melakukan tugas lain), lakukan:
+            1. Konfigurasi git:
+               - git config user.name "oc-problem-finder"
+               - git config user.email "oc-problem-finder@users.noreply.github.com"
+            2. Checkout ke branch 'agent':
+               - git checkout agent 2>/dev/null || git checkout -b agent
+            3. Pull dari remote dan dari default branch (main):
+               - git fetch origin
+               - git pull origin agent || true
+               - git pull origin main || true
+            4. Pastikan branch agent up-to-date dengan main untuk mengurangi konflik.
+
+            ========================================
+            PERAN
+            ========================================
+          PROMPT
           
           Tugas Anda:          
           1. **Analisis Mendalam Repositori**
@@ -87,7 +105,33 @@ jobs:
              - Commit perubahan, push lalu buat pr. pekerjaan Anda selesai setelah pr siap untuk merge.
           
           Jalankan seluruh tugas dengan sangat hati-hati, mendalam, dan konsisten.
+
+           ========================================
+           PR CREATION (FINAL STEP)
+           ========================================
+           SETELAH semua tugas selesai, sebelum menyelesaikan workflow:
+           1. Pull perubahan terbaru dari remote dan dari default branch (main):
+              - git fetch origin
+              - git pull origin main
+              - git pull origin agent || true
+           2. Solve conflict jika ada (main adalah sumber kebenaran):
+              - Jika ada konflik, selesaikan dengan:
+                - git add <file-konflik>
+                - git commit -m "problem-finder: resolve merge conflicts"
+           3. Commit perubahan jika belum di-commit:
+              - git add .
+              - git commit -m "problem-finder: [deskripsi perubahan]" || true
+           4. Push ke remote:
+              - git push origin agent
+           5. Buat atau update Pull Request:
+              - Cek apakah PR untuk agent sudah ada: gh pr list --head agent --json number
+              - Jika belum ada, buat PR baru:
+                - gh pr create --title "Problem Finder Updates" --body "Update dari Problem Finder" --head agent --base main
+              - Jika sudah ada, update PR:
+                - gh pr edit <PR_NUMBER> --title "Problem Finder Updates"
+                - gh pr comment <PR_NUMBER> --body "Perbarui oleh Problem Finder"
+           6. Verifikasi PR berhasil dibuat/diupdate.
           PROMPT
           )" \
-            --model iflowcn/glm-4.6 \
+            --model opencode/glm-4.7-free \
             --share false \

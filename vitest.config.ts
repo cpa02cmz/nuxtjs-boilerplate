@@ -3,15 +3,9 @@ import { defineVitestConfig } from '@nuxt/test-utils/config'
 export default defineVitestConfig({
   test: {
     globals: true,
-    environment: 'happy-dom', // Use happy-dom instead of nuxt for more stable tests
+    environment: 'nuxt',
+    testTimeout: 10000,
     setupFiles: ['./test-setup.ts'],
-    environmentOptions: {
-      'happy-dom': {
-        // Configuration for happy-dom environment
-        url: 'http://localhost:3000',
-        includeRuntimeGlobals: true,
-      },
-    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -27,10 +21,10 @@ export default defineVitestConfig({
       ],
       thresholds: {
         global: {
-          branches: 70, // Reduced temporarily to get tests running
-          functions: 70,
-          lines: 70,
-          statements: 70,
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80,
         },
       },
     },

@@ -1,7 +1,8 @@
 import { ref, readonly } from 'vue'
 import Fuse from 'fuse.js'
-import DOMPurify from 'dompurify'
 import type { Resource } from '~/types/resource'
+import { sanitizeAndHighlight } from '~/utils/sanitize'
+import { searchAnalyticsTracker } from '~/utils/searchAnalytics'
 
 // Define search operator types
 type SearchOperator = 'AND' | 'OR' | 'NOT'
@@ -86,20 +87,27 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     }
   }
 
-  // Advanced search with operators
+  // Advanced search with operators and performance tracking
   const advancedSearchResources = (query: string): Resource[] => {
-    if (!query || !fuse.value) return [...resources]
+    const startTime = performance.now()
+
+    if (!query || !fuse.value) {
+      // Track empty query
+      searchAnalyticsTracker.trackSearch(query, [...resources], 0)
+      return [...resources]
+    }
 
     const parsed = parseQuery(query)
 
     if (parsed.terms.length === 0) {
+      searchAnalyticsTracker.trackSearch(query, [...resources], 0)
       return [...resources]
     }
 
+    let results: Resource[] = []
+
     // If we have operators, process them according to the operator sequence
     if (parsed.operators.length > 0) {
-      let results: Resource[] = []
-
       // Start with the first term results
       const firstTermResults = fuse.value.search(parsed.terms[0])
       results = firstTermResults.map(item => item.item)
@@ -132,12 +140,8 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
           )
         }
       }
-
-      return results
     } else {
       // If no operators, just search for each term with OR behavior
-      let results: Resource[] = []
-
       for (const term of parsed.terms) {
         const searchResults = fuse.value.search(term)
         const termResults = searchResults.map(item => item.item)
@@ -146,8 +150,16 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
 
       // Remove duplicates
       const uniqueIds = new Set(results.map(r => r.id))
-      return Array.from(uniqueIds).map(id => results.find(r => r.id === id)!)
+      results = Array.from(uniqueIds).map(id => results.find(r => r.id === id)!)
     }
+
+    const endTime = performance.now()
+    const duration = endTime - startTime
+
+    // Track the search with analytics
+    searchAnalyticsTracker.trackSearch(query, results, duration)
+
+    return results
   }
 
   // Calculate facet counts for filters
@@ -218,135 +230,124 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
   const highlightSearchTerms = (text: string, searchQuery: string): string => {
     if (!searchQuery || !text) return text || ''
 
-    // First sanitize the input text to prevent XSS - pre-process to remove dangerous content
-    let preprocessedText = text
+    // Use the centralized sanitization utility
+    return sanitizeAndHighlight(text, searchQuery)
+  }
 
-    // Remove script tags and their content (including self-closing tags)
-    preprocessedText = preprocessedText.replace(
-      /<\s*script[^>]*>[\s\S]*?<\s*\/\s*script\s*>/gi,
-      ''
-    )
-    preprocessedText = preprocessedText.replace(/<\s*script[^>]*\/?\s*>/gi, '')
+  // Function to create a search result snippet with highlighted terms
+  const createSearchSnippet = (
+    text: string,
+    searchQuery: string,
+    maxLength: number = 160
+  ): string => {
+    if (!searchQuery || !text) return text?.substring(0, maxLength) || ''
 
-    // Remove other dangerous tags that might have been missed
-    preprocessedText = preprocessedText.replace(
-      /<\s*(iframe|object|embed|form|input|button|img)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
-      ''
-    )
-    preprocessedText = preprocessedText.replace(
-      /<\s*(iframe|object|embed|form|input|button|img)[^>]*\/?\s*>/gi,
-      ''
-    )
+    // Find the position of the search query in the text (case insensitive)
+    const lowerText = text.toLowerCase()
+    const lowerQuery = searchQuery.toLowerCase()
 
-    const sanitizedText = DOMPurify.sanitize(preprocessedText, {
-      ALLOWED_TAGS: [], // No HTML tags allowed, just plain text
-      ALLOWED_ATTR: [],
-      FORBID_TAGS: [
-        'script',
-        'iframe',
-        'object',
-        'embed',
-        'form',
-        'input',
-        'button',
-        'img',
-      ],
-      FORBID_ATTR: [
-        'src',
-        'href',
-        'style',
-        'onload',
-        'onerror',
-        'onclick',
-        'onmouseover',
-        'onmouseout',
-        'data',
-        'formaction',
-      ],
-      SANITIZE_DOM: true,
-      FORBID_CONTENTS: [
-        'script',
-        'iframe',
-        'object',
-        'embed',
-        'form',
-        'input',
-        'button',
-        'img',
-      ],
-    })
+    // Find all occurrences of the search terms
+    const queryTerms = lowerQuery.split(/\s+/).filter(term => term.length > 0)
+    let bestStart = -1
+    let bestEnd = -1
+    let bestScore = -1
 
-    // Parse the query to handle operators
-    const parsed = parseQuery(searchQuery)
-    const allTerms = [...parsed.terms, searchQuery] // Include original query as fallback
+    // Look for the best position to create the snippet
+    for (const term of queryTerms) {
+      let pos = 0
+      while ((pos = lowerText.indexOf(term, pos)) !== -1) {
+        // Calculate a window around this match
+        let start = Math.max(0, pos - Math.floor(maxLength / 4))
+        let end = Math.min(
+          text.length,
+          pos + term.length + Math.floor(maxLength / 4)
+        )
 
-    let highlighted = sanitizedText
+        // Expand the window to include full words
+        while (
+          start > 0 &&
+          text[start] !== ' ' &&
+          text[start] !== '.' &&
+          text[start] !== ','
+        ) {
+          start--
+        }
+        start = Math.max(0, start)
 
-    // Highlight each search term
-    for (const term of allTerms) {
-      if (!term.trim()) continue
+        while (
+          end < text.length &&
+          text[end] !== ' ' &&
+          text[end] !== '.' &&
+          text[end] !== ','
+        ) {
+          end++
+        }
+        end = Math.min(text.length, end)
 
-      // Escape special regex characters in search query
-      const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      const regex = new RegExp(`(${escapedTerm})`, 'gi')
+        // Score this window based on how many query terms it contains
+        const windowText = text.substring(start, end).toLowerCase()
+        let score = 0
+        for (const queryTerm of queryTerms) {
+          if (windowText.includes(queryTerm)) {
+            score++
+          }
+        }
 
-      highlighted = highlighted.replace(
-        regex,
-        '<mark class="bg-yellow-200 text-gray-900">$1</mark>'
-      )
+        // Prefer windows that are not too far from the current best
+        if (
+          score > bestScore ||
+          (score === bestScore &&
+            Math.abs(start - (bestStart === -1 ? 0 : bestStart)) <
+              maxLength / 2)
+        ) {
+          bestScore = score
+          bestStart = start
+          bestEnd = end
+        }
+
+        pos++
+      }
     }
 
-    // Final sanitization to ensure only safe mark tags with allowed classes are present
-    const fullySanitized = DOMPurify.sanitize(highlighted, {
-      ALLOWED_TAGS: ['mark'],
-      ALLOWED_ATTR: ['class'],
-      FORBID_TAGS: [
-        'script',
-        'iframe',
-        'object',
-        'embed',
-        'form',
-        'input',
-        'button',
-        'img',
-      ],
-      FORBID_ATTR: [
-        'src',
-        'href',
-        'style',
-        'onload',
-        'onerror',
-        'onclick',
-        'onmouseover',
-        'onmouseout',
-        'data',
-        'formaction',
-      ],
-      SANITIZE_DOM: true,
-      FORBID_CONTENTS: [
-        'script',
-        'iframe',
-        'object',
-        'embed',
-        'form',
-        'input',
-        'button',
-        'img',
-      ],
-    })
+    // If we found a good position, create the snippet
+    if (bestStart !== -1 && bestEnd !== -1) {
+      let snippet = text.substring(bestStart, bestEnd).trim()
 
-    // Additional check to ensure no dangerous patterns remain in the final HTML
-    // This prevents cases where the highlighted term itself could be dangerous
-    return fullySanitized
-      .replace(/javascript:/gi, '')
-      .replace(/data:/gi, '')
-      .replace(/vbscript:/gi, '')
-      .replace(/on\w+\s*=/gi, '') // Remove any event handlers
-      .replace(/script/gi, '') // Additional protection
-      .replace(/iframe/gi, '') // Additional protection
-      .replace(/object/gi, '') // Additional protection
-      .replace(/embed/gi, '') // Additional protection
-      .replace(/img/gi, '') // Additional protection
+      // Add ellipses if the snippet was truncated
+      if (bestStart > 0) {
+        snippet = '...' + snippet
+      }
+      if (bestEnd < text.length) {
+        snippet = snippet + '...'
+      }
+
+      // Now highlight the search terms in the snippet
+      let highlighted = snippet
+      for (const term of queryTerms) {
+        const regex = new RegExp(`(${term})`, 'gi')
+        highlighted = highlighted.replace(
+          regex,
+          '<mark class="bg-yellow-200">$1</mark>'
+        )
+      }
+
+      // Sanitize the result to prevent XSS
+      return sanitizeAndHighlight(highlighted, searchQuery)
+    } else {
+      // If we couldn't find a good match, just return the beginning of the text with highlights
+      const plainText = text.substring(0, maxLength)
+      let highlighted = plainText
+      for (const term of queryTerms) {
+        const regex = new RegExp(`(${term})`, 'gi')
+        highlighted = highlighted.replace(
+          regex,
+          '<mark class="bg-yellow-200">$1</mark>'
+        )
+      }
+
+      // Sanitize the result to prevent XSS
+      return sanitizeAndHighlight(highlighted, searchQuery)
+    }
   }
 
   // Manage search history
@@ -360,7 +361,7 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     }
   }
 
-  // Manage saved searches
+  // Manage saved searches with notifications
   const saveSearch = (name: string, query: string) => {
     const existingIndex = savedSearches.value.findIndex(s => s.query === query)
 
@@ -371,6 +372,12 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         name,
         createdAt: new Date(),
       }
+      // Emit notification for update
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('saved-search-updated', { detail: { query, name } })
+        )
+      }
     } else {
       // Add new search
       savedSearches.value.unshift({
@@ -378,11 +385,42 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         query,
         createdAt: new Date(),
       })
+      // Emit notification for new save
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(
+          new CustomEvent('saved-search-added', { detail: { query, name } })
+        )
+      }
     }
   }
 
   const removeSavedSearch = (query: string) => {
+    const removedSearch = savedSearches.value.find(s => s.query === query)
     savedSearches.value = savedSearches.value.filter(s => s.query !== query)
+
+    // Emit notification for removal
+    if (removedSearch && typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('saved-search-removed', {
+          detail: { query, name: removedSearch.name },
+        })
+      )
+    }
+  }
+
+  // Get popular searches
+  const getPopularSearches = (limit: number = 10) => {
+    return searchAnalyticsTracker.getPopularSearches(limit)
+  }
+
+  // Get zero-result searches
+  const getZeroResultSearches = (limit: number = 10) => {
+    return searchAnalyticsTracker.getZeroResultSearches(limit)
+  }
+
+  // Get related searches
+  const getRelatedSearches = (query: string, limit: number = 5) => {
+    return searchAnalyticsTracker.getRelatedSearches(query, limit)
   }
 
   // Initialize search when composable is created
@@ -397,9 +435,13 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     getFacetedResults,
     getAdvancedSuggestions,
     highlightSearchTerms,
+    createSearchSnippet,
     parseQuery,
     addToSearchHistory,
     saveSearch,
     removeSavedSearch,
+    getPopularSearches,
+    getZeroResultSearches,
+    getRelatedSearches,
   }
 }

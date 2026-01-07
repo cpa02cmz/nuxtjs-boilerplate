@@ -1,5 +1,5 @@
 import { setResponseHeader } from 'h3'
-import { Resource } from '~/types/resource'
+import type { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 
 /**
@@ -49,7 +49,11 @@ export default defineEventHandler(async event => {
 })
 
 function generateRssFeed(resources: Resource[]): string {
-  const siteUrl = 'https://nuxtjs-boilerplate.com' // This should be configurable
+  const config = useRuntimeConfig()
+  const siteUrl =
+    config.public.siteUrl ||
+    config.public.canonicalUrl ||
+    'http://localhost:3000' // Fallback to localhost for development
   const title = 'Free Developer Resources'
   const description = 'A collection of free resources for developers'
   const date = new Date().toUTCString()
