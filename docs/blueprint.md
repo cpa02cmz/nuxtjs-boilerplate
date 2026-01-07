@@ -609,22 +609,13 @@ tests/
 
 ## 🔄 Decision Log
 
-<<<<<<< HEAD
-| Date | Category | Decision | Impact |
-| ---------- | ------------ | ------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| 2025-01-07 | Code Quality | Removed duplicate Google Fonts caching in nuxt.config.ts | Eliminated code duplication, reduced config size |
-| 2025-01-07 | Build System | Created separate nuxt.config.analyze.ts for bundle analysis | Removed dynamic import anti-pattern, improved build predictability |
-| 2025-01-07 | Security | Removed static CSP meta tag from nuxt.config.ts | Centralized CSP in server plugin with nonce support, improved security |
-| 2025-01-07 | Architecture | Verified no circular dependencies exist in composables | Confirmed clean dependency hierarchy |
-| 2025-01-07 | Architecture | Created useErrorHandler composable for centralized error management | Standardized error handling, improved debugging and user feedback |
-| Date | Category | Decision | Impact |
-| ---------- | ------------ | ----------------------------------------------------------- | ---------------------------------------------------------------------- |
-| 2025-01-07 | Code Quality | Removed duplicate Google Fonts caching in nuxt.config.ts | Eliminated code duplication, reduced config size |
-| 2025-01-07 | Build System | Created separate nuxt.config.analyze.ts for bundle analysis | Removed dynamic import anti-pattern, improved build predictability |
-| 2025-01-07 | Security | Removed static CSP meta tag from nuxt.config.ts | Centralized CSP in server plugin with nonce support, improved security |
-| 2025-01-07 | Architecture | Verified no circular dependencies exist in composables | Confirmed clean dependency hierarchy |
-
-> > > > > > > f02fc3a (Refactor architecture: Eliminate code duplication and anti-patterns)
+| Date       | Category     | Decision                                                        | Impact                                                                    |
+| ---------- | ------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 2025-01-07 | Code Quality | Removed duplicate Google Fonts caching in nuxt.config.ts        | Eliminated code duplication, reduced config size                          |
+| 2025-01-07 | Build System | Created separate nuxt.config.analyze.ts for bundle analysis     | Removed dynamic import anti-pattern, improved build predictability        |
+| 2025-01-07 | Security     | Removed static CSP meta tag from nuxt.config.ts                 | Centralized CSP in server plugin with nonce support, improved security    |
+| 2025-01-07 | Architecture | Verified no circular dependencies exist in composables          | Confirmed clean dependency hierarchy                                      |
+| 2025-01-07 | Code Quality | Extracted shared DOMPurify configuration from utils/sanitize.ts | Eliminated 158 lines of duplicate configuration, improved maintainability |
 
 ## 🎓 Design Principles Applied
 
