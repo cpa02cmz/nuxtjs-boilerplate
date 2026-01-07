@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import visualizer from 'rollup-plugin-visualizer'
 
