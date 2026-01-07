@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { AIInferenceOptimizer } from './optimizer'
 
 describe('AI Inference Optimizer', () => {
@@ -7,7 +8,7 @@ describe('AI Inference Optimizer', () => {
     optimizer = new AIInferenceOptimizer()
   })
 
-  test('should load and optimize model successfully', async () => {
+  it('should load and optimize model successfully', async () => {
     // Mock model data
     const mockModel = {
       weights: { values: [1.2, -0.5, 3.8, -2.1] },
@@ -22,7 +23,7 @@ describe('AI Inference Optimizer', () => {
     }
 
     // Mock model loading
-    jest.spyOn(optimizer as any, 'loadModel').mockImplementation(async () => {
+    vi.spyOn(optimizer as any, 'loadModel').mockImplementation(async () => {
       ;(optimizer as any).model = mockModel
     })
 
@@ -53,9 +54,9 @@ describe('AI Inference Optimizer', () => {
     )
   })
 
-  test('should execute inference with optimized model', async () => {
+  it('should execute inference with optimized model', async () => {
     // Mock optimized model
-    jest.spyOn(optimizer as any, 'optimizeModel').mockImplementation(() => {
+    vi.spyOn(optimizer as any, 'optimizeModel').mockImplementation(() => {
       ;(optimizer as any).optimizedModel = {
         execute: async (input: any) => {
           return { prediction: input.value * 2 }
