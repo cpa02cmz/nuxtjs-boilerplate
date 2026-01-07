@@ -1,8 +1,8 @@
 import Fuse from 'fuse.js'
-import type { FuseIndex, FuseOptions } from 'fuse.js'
+import type { FuseIndex, IFuseOptions } from 'fuse.js'
 import type { Resource } from '~/types/resource'
 
-const DEFAULT_FUSE_CONFIG: FuseOptions<Resource> = {
+const DEFAULT_FUSE_CONFIG: IFuseOptions<Resource> = {
   keys: [
     { name: 'title', weight: 0.4 },
     { name: 'description', weight: 0.3 },
@@ -14,7 +14,7 @@ const DEFAULT_FUSE_CONFIG: FuseOptions<Resource> = {
   useExtendedSearch: true,
 }
 
-const FUSE_CONFIG_FOR_SUGGESTIONS: FuseOptions<Resource> = {
+const FUSE_CONFIG_FOR_SUGGESTIONS: IFuseOptions<Resource> = {
   ...DEFAULT_FUSE_CONFIG,
   minMatchCharLength: 1,
 }
@@ -23,7 +23,7 @@ const fuseCache = new WeakMap<readonly Resource[], Fuse<Resource>>()
 
 export const createFuseInstance = (
   resources: readonly Resource[],
-  config?: Partial<FuseOptions<Resource>>
+  config?: Partial<IFuseOptions<Resource>>
 ): Fuse<Resource> => {
   if (fuseCache.has(resources)) {
     return fuseCache.get(resources)!
