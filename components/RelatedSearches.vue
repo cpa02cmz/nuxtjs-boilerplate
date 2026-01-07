@@ -15,6 +15,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
 
@@ -23,15 +24,13 @@ interface Props {
   limit?: number
 }
 
-interface Emits {
-  (event: 'search-select', query: string): void
-}
+const emit = defineEmits<{
+  'search-select': [query: string]
+}>()
 
 const props = withDefaults(defineProps<Props>(), {
   limit: 5,
 })
-
-const emit = defineEmits<Emits>()
 
 const { resources } = useResourceData()
 const { getRelatedSearches } = useAdvancedResourceSearch(resources)

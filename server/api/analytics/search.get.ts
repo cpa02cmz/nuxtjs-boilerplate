@@ -1,6 +1,7 @@
 import { defineEventHandler, getQuery } from 'h3'
 import { searchAnalyticsTracker } from '~/utils/searchAnalytics'
 import { logger } from '~/utils/logger'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 /**
  * GET /api/analytics/search
@@ -11,6 +12,8 @@ import { logger } from '~/utils/logger'
  * - days: Number of days to look back (default: 30, options: 7, 30, 90)
  */
 export default defineEventHandler(async event => {
+  await rateLimit(event)
+
   try {
     // Parse query parameters
     const query = getQuery(event)

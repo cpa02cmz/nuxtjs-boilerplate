@@ -311,12 +311,10 @@ describe('Enhanced Rate Limiting', () => {
       const limiter = rateLimitConfigs.general
       const key = 'non-existent-key'
 
-      const result = await limiter.isAllowed(key)
-
       await limiter.reset(key)
 
-      const result2 = await limiter.isAllowed(key)
-      const remainingAfter = result2.remaining!
+      const result = await limiter.isAllowed(key)
+      const remainingAfter = result.remaining!
 
       expect(remainingAfter).toBeGreaterThan(0)
     })

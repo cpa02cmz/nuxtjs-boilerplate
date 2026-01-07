@@ -278,8 +278,8 @@ const handleLinkClick = (event: Event) => {
   }
 
   try {
-    const url = new URL(props.url)
-    // URL is valid, allow the click
+    new URL(props.url)
+    // URL is valid, allow click
   } catch (err) {
     event.preventDefault()
     hasError.value = true

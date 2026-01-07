@@ -1,10 +1,13 @@
 import { createError, defineEventHandler, readBody } from 'h3'
 import type { Submission } from '~/types/submission'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 // Mock data for demonstration - in a real application, this would come from a database
 let mockSubmissions: Submission[] = []
 
 export default defineEventHandler(async event => {
+  await rateLimit(event)
+
   try {
     const body = await readBody(event)
 

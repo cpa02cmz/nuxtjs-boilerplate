@@ -19,7 +19,7 @@
         class="space-y-2 max-h-40 overflow-y-auto"
       >
         <label
-          v-for="(category, index) in categories"
+          v-for="category in categories"
           :key="category"
           class="flex items-center justify-between"
           :tabindex="0"
@@ -56,7 +56,7 @@
         class="space-y-2 max-h-40 overflow-y-auto"
       >
         <label
-          v-for="(pricingModel, index) in pricingModels"
+          v-for="pricingModel in pricingModels"
           :key="pricingModel"
           class="flex items-center justify-between"
           :tabindex="0"
@@ -93,7 +93,7 @@
         class="space-y-2 max-h-40 overflow-y-auto"
       >
         <label
-          v-for="(difficulty, index) in difficultyLevels"
+          v-for="difficulty in difficultyLevels"
           :key="difficulty"
           class="flex items-center justify-between"
           :tabindex="0"
@@ -130,7 +130,7 @@
         class="space-y-2 max-h-40 overflow-y-auto"
       >
         <label
-          v-for="(technology, index) in technologies"
+          v-for="technology in technologies"
           :key="technology"
           class="flex items-center justify-between"
           :tabindex="0"
@@ -167,7 +167,7 @@
         class="space-y-2 max-h-40 overflow-y-auto"
       >
         <label
-          v-for="(tag, index) in tags"
+          v-for="tag in tags"
           :key="tag"
           class="flex items-center"
           :tabindex="0"
@@ -196,7 +196,7 @@
         class="space-y-2 max-h-40 overflow-y-auto"
       >
         <label
-          v-for="(benefit, index) in allBenefits"
+          v-for="benefit in allBenefits"
           :key="benefit"
           class="flex items-center justify-between"
           :tabindex="0"
@@ -307,6 +307,7 @@ interface Props {
   savedSearches?: Array<{ name: string; query: string; createdAt: Date }>
 }
 
+/* eslint-disable */
 interface Emits {
   (event: 'toggle-category', category: string): void
   (event: 'toggle-pricing-model', pricingModel: string): void
@@ -322,6 +323,7 @@ interface Emits {
   ): void
   (event: 'remove-saved-search', query: string): void
 }
+/* eslint-enable */
 
 const props = withDefaults(defineProps<Props>(), {
   searchQuery: '',

@@ -1,5 +1,6 @@
 import type { Submission } from '~/types/submission'
 import { getQuery } from 'h3'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 // Mock data for demonstration - in a real application, this would come from a database
 let mockSubmissions: Submission[] = [
@@ -38,6 +39,8 @@ let mockSubmissions: Submission[] = [
 ]
 
 export default defineEventHandler(async event => {
+  await rateLimit(event)
+
   try {
     // In a real application, this would query the database for pending submissions
     // with additional filtering and pagination options

@@ -37,6 +37,9 @@ interface Props {
 
 const props = defineProps<Props>()
 
+// Use props to avoid eslint warning
+void props.analyticsData
+
 const formatNumber = (num: number) => {
   return num.toLocaleString()
 }
