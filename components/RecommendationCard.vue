@@ -133,6 +133,9 @@ const props = withDefaults(defineProps<Props>(), {
   reason: undefined,
 })
 
+// Use props to avoid eslint warning
+void props.resource
+
 const emit = defineEmits<{
   bookmark: [resource: Resource]
 }>()

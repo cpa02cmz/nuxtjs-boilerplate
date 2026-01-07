@@ -1,9 +1,17 @@
 // server/api/analytics/export/csv.get.ts
 // API endpoint for exporting analytics data as CSV
-import { defineEventHandler, getQuery, setResponseHeader, setResponseStatus } from 'h3'
+import {
+  defineEventHandler,
+  getQuery,
+  setResponseHeader,
+  setResponseStatus,
+} from 'h3'
 import { exportAnalyticsToCsv } from '~/server/utils/analytics-db'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 export default defineEventHandler(async event => {
+  await rateLimit(event)
+
   try {
     const query = getQuery(event)
 

@@ -1,6 +1,7 @@
 import type { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 import { cacheManager } from '~/server/utils/enhanced-cache'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 /**
  * GET /api/v1/categories
@@ -8,6 +9,8 @@ import { cacheManager } from '~/server/utils/enhanced-cache'
  * Retrieve a list of all available categories with counts
  */
 export default defineEventHandler(async event => {
+  await rateLimit(event)
+
   try {
     // Try to get from cache first
     const cacheKey = 'categories:all'

@@ -24,6 +24,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
 
@@ -35,7 +36,7 @@ const props = withDefaults(defineProps<Props>(), {
   limit: 10,
 })
 
-defineEmits<{
+const emit = defineEmits<{
   'search-select': [query: string]
 }>()
 

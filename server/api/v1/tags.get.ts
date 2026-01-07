@@ -2,6 +2,7 @@ import { defineEventHandler, getQuery, setResponseStatus } from 'h3'
 import { logError } from '~/utils/errorLogger'
 import { getAllHierarchicalTags } from '~/utils/tags'
 import type { Resource } from '~/types/resource'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 /**
  * GET /api/v1/tags
@@ -14,6 +15,8 @@ import type { Resource } from '~/types/resource'
  * - rootOnly: Return only root level tags (default: false)
  */
 export default defineEventHandler(async event => {
+  await rateLimit(event)
+
   try {
     // Import resources from JSON to get actual tag data
     const resourcesModule = await import('~/data/resources.json')

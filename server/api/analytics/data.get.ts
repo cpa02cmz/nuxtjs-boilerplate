@@ -1,10 +1,13 @@
 // server/api/analytics/data.get.ts
-// API endpoint for retrieving analytics data for the dashboard
+// API endpoint for retrieving analytics data for dashboard
 import { defineEventHandler, getQuery } from 'h3'
 import { getAggregatedAnalytics } from '~/server/utils/analytics-db'
 import { logError } from '~/utils/errorLogger'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 export default defineEventHandler(async event => {
+  await rateLimit(event)
+
   try {
     const query = getQuery(event)
 

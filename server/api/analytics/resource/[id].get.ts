@@ -2,8 +2,11 @@
 // API endpoint for retrieving analytics data for a specific resource
 import { defineEventHandler, getQuery, setResponseStatus } from 'h3'
 import { getResourceAnalytics } from '~/server/utils/analytics-db'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 export default defineEventHandler(async event => {
+  await rateLimit(event)
+
   try {
     const resourceId = event.context.params?.id
 

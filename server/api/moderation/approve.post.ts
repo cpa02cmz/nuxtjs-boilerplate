@@ -5,12 +5,15 @@ import {
   calculateQualityScore,
 } from '~/server/utils/quality-checks'
 import { logError, logInfo } from '~/utils/errorLogger'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 // Mock data for demonstration - in a real application, this would come from a database
 let mockSubmissions: Submission[] = []
 let mockResources: any[] = []
 
 export default defineEventHandler(async event => {
+  await rateLimit(event)
+
   try {
     const body = await readBody(event)
 
