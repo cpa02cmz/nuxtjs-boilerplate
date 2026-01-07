@@ -1,28 +1,18 @@
 import { ref, readonly, computed } from 'vue'
-import Fuse from 'fuse.js'
 import type { Resource } from '~/types/resource'
 import type { SuggestionResult } from '~/types/search'
+import { useSearchHistory } from '~/composables/useSearchHistory'
+import { createFuseForSuggestions } from '~/utils/fuseHelper'
 
 // Composable for managing search suggestions engine
 export const useSearchSuggestions = (resources: readonly Resource[]) => {
-  const fuse = ref<Fuse<Resource> | null>(null)
-  const searchHistory = ref<string[]>([])
+  const { addSearchToHistory, getSearchHistory } = useSearchHistory()
+  const fuse = createFuseForSuggestions(resources)
   const popularSearches = ref<{ query: string; count: number }[]>([])
 
   // Initialize Fuse.js with optimized configuration for suggestions
   const initSearch = () => {
-    fuse.value = new Fuse([...resources], {
-      keys: [
-        { name: 'title', weight: 0.4 },
-        { name: 'description', weight: 0.3 },
-        { name: 'benefits', weight: 0.2 },
-        { name: 'tags', weight: 0.1 },
-      ],
-      threshold: 0.3,
-      includeScore: true,
-      useExtendedSearch: true, // Enable extended search syntax for better suggestions
-      minMatchCharLength: 1, // Allow single character matches for suggestions
-    })
+    // Fuse instance already created by createFuseForSuggestions
   }
 
   // Create optimized search indices for suggestions
@@ -152,7 +142,8 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
 
   // Get recent search history suggestions
   const getRecentSearches = (limit: number = 5) => {
-    return searchHistory.value.slice(0, limit).map((query, index) => ({
+    const history = getSearchHistory()
+    return history.slice(0, limit).map((query, index) => ({
       text: query,
       type: 'popular' as const, // Using 'popular' type for recent searches too
       score: 0.8 - index * 0.1,
@@ -160,16 +151,8 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
     }))
   }
 
-  // Add to search history
-  const addToSearchHistory = (query: string) => {
-    if (query && !searchHistory.value.includes(query)) {
-      searchHistory.value.unshift(query)
-      // Limit to 10 most recent searches
-      if (searchHistory.value.length > 10) {
-        searchHistory.value = searchHistory.value.slice(0, 10)
-      }
-    }
-  }
+  // Add to search history (delegated to useSearchHistory composable)
+  const addToSearchHistory = addSearchToHistory
 
   // Add to popular searches
   const addToPopularSearches = (query: string) => {
@@ -177,47 +160,26 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
       p => p.query === query
     )
     if (existingIndex >= 0) {
-      // Increment count if already exists
       popularSearches.value[existingIndex].count++
-      // Re-sort by count
       popularSearches.value.sort((a, b) => b.count - a.count)
     } else {
-      // Add new popular search
       popularSearches.value.push({ query, count: 1 })
-      // Re-sort by count
       popularSearches.value.sort((a, b) => b.count - a.count)
-      // Limit to 20 popular searches
       if (popularSearches.value.length > 20) {
         popularSearches.value = popularSearches.value.slice(0, 20)
       }
     }
   }
 
-  // Clear search history
-  const clearSearchHistory = () => {
-    searchHistory.value = []
-  }
-
-  // Get all search history
-  const getSearchHistory = () => {
-    return [...searchHistory.value]
-  }
-
   // Initialize search when composable is created
   initSearch()
 
   return {
-    // Reactive references (readonly to prevent direct modification)
-    searchHistory: readonly(searchHistory),
     popularSearches: readonly(popularSearches),
-
-    // Methods
     getSearchSuggestions,
     getPopularSuggestions,
     getRecentSearches,
     addToSearchHistory,
     addToPopularSearches,
-    clearSearchHistory,
-    getSearchHistory,
   }
 }

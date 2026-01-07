@@ -344,7 +344,9 @@ Logger (console/output)
 High-Level (Orchestrators)
 ├── useResources.ts (main orchestrator)
 ├── useSearchPage.ts (search page orchestrator)
-└── useAlternativeSuggestions.ts
+├── useAlternativeSuggestions.ts
+├── useAdvancedResourceSearch.ts (advanced search with operators)
+└── useSearchSuggestions.ts (search suggestions)
 
 Mid-Level (Feature-Specific)
 ├── useResourceFilters.ts
@@ -357,11 +359,18 @@ Low-Level (Core Functionality)
 ├── useResourceSearch.ts
 ├── useResourceSort.ts
 ├── useSearchHistory.ts
+├── useSavedSearches.ts (saved search management)
 ├── useUserPreferences.ts
 ├── useBookmarks.ts
 ├── useLoading.ts
 ├── useFocusManagement.ts
 └── useCommunityFeatures.ts
+
+Utilities (Pure Functions)
+├── utils/queryParser.ts (query parsing with operators)
+├── utils/searchHighlighting.ts (search term highlighting)
+├── utils/fuseHelper.ts (Fuse.js initialization)
+└── [other utilities...]
 ```
 
 ### Dependency Rules
@@ -619,6 +628,7 @@ tests/
 | 2025-01-07 | Code Quality | Extracted shared DOMPurify configuration from utils/sanitize.ts | Eliminated 158 lines of duplicate configuration, improved maintainability          |
 | 2025-01-07 | Architecture | Created useSearchPage orchestrator composable for search page   | Implemented Layer Separation pattern, moved business logic from page to composable |
 | 2025-01-07 | Architecture | Refactored pages/search.vue to use orchestrator pattern         | Eliminated 200+ lines of inline filtering logic, improved maintainability          |
+| 2025-01-07 | Architecture | Search module refactoring to eliminate code duplication         | Eliminated 315 lines of duplicate code, created 4 single-responsibility utilities  |
 
 ## 🎓 Design Principles Applied
 
