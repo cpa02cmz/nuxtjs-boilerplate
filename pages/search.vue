@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -186,22 +187,11 @@ const {
   filteredResources,
   facetCounts,
   updateSearchQuery,
-  toggleCategory,
-  togglePricingModel,
-  toggleDifficultyLevel,
-  toggleTechnology,
-  toggleTag,
-  toggleBenefit,
-  setDateRange,
   setSortOption,
   resetFilters,
   handleSearch,
   savedSearches,
-  saveSearch,
   removeSavedSearch,
-  getPopularSearches,
-  getZeroResultSearches,
-  getRelatedSearches,
   createSearchSnippet,
   highlightSearchTerms,
   loading,
