@@ -226,7 +226,7 @@ jobs:
           persist-credentials: true
 
       - name: Download build log
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: build-log
           path: ./artifacts
