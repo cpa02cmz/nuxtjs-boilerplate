@@ -30,7 +30,7 @@ concurrency:
 jobs:
   # STEP 1 – Pilih PR dulu (PR event / dispatch / schedule).
   select_pr:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     outputs:
       pr_number: ${{ steps.select.outputs.pr_number }}
       pr_title: ${{ steps.select.outputs.pr_title }}
@@ -103,7 +103,7 @@ jobs:
     needs: [select_pr]
     # Hanya jalan kalau ada PR terpilih
     if: needs.select_pr.outputs.pr_number != ''
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     outputs:
       build_result: ${{ steps.set_result.outputs.result }}
 
@@ -210,7 +210,7 @@ jobs:
   # STEP 3–7 – Auto-fix dengan iFlow + Serena.
   autofix:
     needs: [select_pr, build]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     # Jalan hanya kalau:
     # - Ada PR terpilih
@@ -258,7 +258,7 @@ jobs:
 
         with:
           api_key: ${{ secrets.IFLOW_API_KEY }}
-          model: 'Qwen3-Coder'
+          model: 'opencode/glm-4.7-free'
           timeout: '3600'
           debug: 'true'
           settings_json: |
@@ -266,7 +266,7 @@ jobs:
               "selectedAuthType": "iflow",
               "apiKey": "${{ secrets.IFLOW_API_KEY }}",
               "baseUrl": "https://apis.iflow.cn/v1",
-              "modelName": "Qwen3-Coder",
+              "modelName": "opencode/glm-4.7-free",
               "searchApiKey": "${{ secrets.IFLOW_API_KEY }}",
               "mcpServers": {
                 "serena": {
