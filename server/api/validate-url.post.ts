@@ -12,6 +12,8 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 
+export {}
+
 export default defineEventHandler(async event => {
   try {
     const body = await readBody(event)

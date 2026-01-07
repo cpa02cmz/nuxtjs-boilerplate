@@ -36,7 +36,7 @@ export async function validateUrl(
   // Basic URL format validation
   try {
     new URL(url)
-  } catch (error) {
+  } catch {
     return {
       url,
       status: null,
@@ -199,32 +199,27 @@ async function fetchUrlWithTimeout(
       responseTime,
       timestamp: new Date().toISOString(),
     }
-  } catch (headError: any) {
-    // If HEAD fails, try GET request
-    try {
-      const getResponse = await Promise.race([
-        fetch(url, {
-          method: 'GET',
-          redirect: 'follow',
-          headers: {
-            'User-Agent': 'NuxtResourceValidator/1.0',
-          },
-        }),
-        timeoutPromise,
-      ])
+  } catch {
+    const getResponse = await Promise.race([
+      fetch(url, {
+        method: 'GET',
+        redirect: 'follow',
+        headers: {
+          'User-Agent': 'NuxtResourceValidator/1.0',
+        },
+      }),
+      timeoutPromise,
+    ])
 
-      const responseTime = Date.now() - startTime
+    const responseTime = Date.now() - startTime
 
-      return {
-        url,
-        status: getResponse.status,
-        statusText: getResponse.statusText,
-        isAccessible: getResponse.status >= 200 && getResponse.status < 400,
-        responseTime,
-        timestamp: new Date().toISOString(),
-      }
-    } catch (error: any) {
-      throw error
+    return {
+      url,
+      status: getResponse.status,
+      statusText: getResponse.statusText,
+      isAccessible: getResponse.status >= 200 && getResponse.status < 400,
+      responseTime,
+      timestamp: new Date().toISOString(),
     }
   }
 }

@@ -95,7 +95,6 @@ export async function retryWithBackoff<T>(
   }
 
   const errors: RetryAttempt[] = []
-  let totalDelayMs = 0
 
   for (let attempt = 0; attempt <= finalConfig.maxRetries; attempt++) {
     try {
@@ -120,7 +119,6 @@ export async function retryWithBackoff<T>(
       }
 
       const delay = calculateDelay(attempt, finalConfig)
-      totalDelayMs += delay
       errors[errors.length - 1].delayMs = delay
 
       await new Promise(resolve => setTimeout(resolve, delay))

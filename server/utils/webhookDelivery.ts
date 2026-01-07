@@ -3,10 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { webhookStorage } from './webhookStorage'
 import { getCircuitBreaker, getAllCircuitBreakerStats } from './circuit-breaker'
 import { retryWithResult, retryPresets } from './retry'
-import {
-  createCircuitBreakerError,
-  createExternalServiceError,
-} from './api-error'
+import { createCircuitBreakerError } from './api-error'
 
 export class WebhookDeliveryService {
   async deliverWebhook(
@@ -31,7 +28,7 @@ export class WebhookDeliveryService {
         let success = false
 
         try {
-          const response = await $fetch(webhook.url, {
+          await $fetch(webhook.url, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -110,7 +107,7 @@ export class WebhookDeliveryService {
             let success = false
 
             try {
-              const response = await $fetch(webhook.url, {
+              await $fetch(webhook.url, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

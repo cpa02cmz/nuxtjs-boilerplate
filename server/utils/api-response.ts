@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3'
+import { setResponseStatus } from 'h3'
 import {
   ApiError,
   ErrorCode,
