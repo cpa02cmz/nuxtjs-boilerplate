@@ -118,7 +118,7 @@ describe('retryWithBackoff', () => {
       global.setTimeout = vi.fn((cb, delay) => {
         delays.push(delay as number)
         return originalSetTimeout(cb, delay)
-      } as any)
+      }) as any
       
       await retryWithBackoff(failFn, {
         maxRetries: 3,
@@ -212,7 +212,7 @@ describe('retryWithBackoff', () => {
       global.setTimeout = vi.fn((cb, delay) => {
         delays.push(delay as number)
         return originalSetTimeout(cb, delay)
-      } as any)
+      }) as any
       
       await retryWithBackoff(failFn, {
         maxRetries: 3,
@@ -241,7 +241,7 @@ describe('retryWithBackoff', () => {
       global.setTimeout = vi.fn((cb, delay) => {
         delays.push(delay as number)
         return originalSetTimeout(cb, delay)
-      } as any)
+      }) as any
       
       await retryWithBackoff(failFn, {
         maxRetries: 3,
@@ -270,7 +270,7 @@ describe('retryWithBackoff', () => {
       global.setTimeout = vi.fn((cb, delay) => {
         delays.push(delay as number)
         return originalSetTimeout(cb, delay)
-      } as any)
+      }) as any
       
       await retryWithBackoff(failFn, {
         maxRetries: 5,

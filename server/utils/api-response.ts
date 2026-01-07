@@ -130,7 +130,8 @@ function generateRequestId(): string {
   return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 }
 
-export function wrapApiHandler<T>(handler: (event: H3Event) => Promise<T>) {
+// eslint-disable-next-line no-unused-vars
+export function wrapApiHandler<T>(handler: (_: H3Event) => Promise<T>) {
   return async (event: H3Event): Promise<T> => {
     try {
       return await handler(event)
