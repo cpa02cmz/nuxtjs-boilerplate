@@ -43,9 +43,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { isBookmarked, toggleBookmark } = useBookmarks()
 
-// Check if the current resource is bookmarked
-const isBookmarkedComputed = computed(() => isBookmarked(props.resourceId))
-
 // Handle bookmark toggle
 const handleBookmarkToggle = () => {
   toggleBookmark({

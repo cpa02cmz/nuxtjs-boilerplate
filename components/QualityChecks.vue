@@ -50,7 +50,7 @@ const qualityChecks = computed<QualityCheck[]>(() => {
 
   // URL validation check
   try {
-    const url = new URL(props.resource.url)
+    new URL(props.resource.url)
     checks.push({
       id: 'url-validation',
       title: 'URL Validation',

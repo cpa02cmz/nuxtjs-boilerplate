@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest'
-import { setup } from '@nuxt/test-utils/e2e'
 
 describe('Alternative API Endpoints', () => {
   // Note: This is a template for API tests

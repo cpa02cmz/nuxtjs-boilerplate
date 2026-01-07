@@ -29,16 +29,7 @@ interface Props {
   provider?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  width: undefined,
-  height: undefined,
-  format: 'webp',
-  loading: 'lazy',
-  sizes: '100vw',
-  quality: 80,
-  imgClass: '',
-  provider: 'ipx',
-})
+defineProps<Props>()
 
 // Emit events for handling load and error states
 const emit = defineEmits<{

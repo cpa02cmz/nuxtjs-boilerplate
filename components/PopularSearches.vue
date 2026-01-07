@@ -31,15 +31,13 @@ interface Props {
   limit?: number
 }
 
-interface Emits {
-  (event: 'search-select', query: string): void
-}
-
 const props = withDefaults(defineProps<Props>(), {
   limit: 10,
 })
 
-const emit = defineEmits<Emits>()
+defineEmits<{
+  'search-select': [query: string]
+}>()
 
 const { resources } = useResourceData()
 const { getPopularSearches } = useAdvancedResourceSearch(resources)

@@ -39,3 +39,10 @@ export interface SearchConfig {
   enableFacetedSearch?: boolean
   maxResults?: number
 }
+
+// Saved search interface
+export interface SavedSearch {
+  name: string
+  query: string
+  createdAt: Date
+}

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useSearchHistory } from '~/composables/useSearchHistory'
 
 // Mock localStorage
@@ -17,12 +17,6 @@ Object.defineProperty(window, 'localStorage', {
 })
 
 describe('useSearchHistory', () => {
-  const mockSearchHistory = [
-    { query: 'test query 1', timestamp: Date.now() - 1000 },
-    { query: 'test query 2', timestamp: Date.now() - 2000 },
-    { query: 'test query 3', timestamp: Date.now() - 3000 },
-  ]
-
   beforeEach(() => {
     vi.clearAllMocks()
     localStorageMock.getItem.mockClear()

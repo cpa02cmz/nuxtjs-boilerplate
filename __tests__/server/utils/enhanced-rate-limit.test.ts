@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import {
   rateLimitConfigs,
   getRateLimiterForPath,
@@ -58,7 +58,7 @@ describe('Enhanced Rate Limiting', () => {
       const originalNow = Date.now
       Date.now = vi.fn(() => 1000000)
 
-      const result1 = await limiter.isAllowed(key)
+      await limiter.isAllowed(key)
 
       Date.now = vi.fn(() => 1000000 + 120000)
 
@@ -312,7 +312,6 @@ describe('Enhanced Rate Limiting', () => {
       const key = 'non-existent-key'
 
       const result = await limiter.isAllowed(key)
-      const remainingBefore = result.remaining!
 
       await limiter.reset(key)
 

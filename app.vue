@@ -128,7 +128,7 @@ onMounted(() => {
   onUnmounted(() => {
     window.removeEventListener('keydown', handleKeyDown)
     window.removeEventListener('mousedown', handleMouseDown)
-    window.removeEventListener('beforeinstallprompt', e => {
+    window.removeEventListener('beforeinstallprompt', () => {
       // We can't remove the specific deferredPrompt function since it's in a closure
     })
   })

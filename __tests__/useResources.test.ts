@@ -2,11 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ref } from 'vue'
 import { useResources } from '~/composables/useResources'
 import { useResourceData } from '~/composables/useResourceData'
-import { useResourceFilters } from '~/composables/useResourceFilters'
-import { useResourceSearch } from '~/composables/useResourceSearch'
-import { useResourceSort } from '~/composables/useResourceSort'
-import { useSearchHistory } from '~/composables/useSearchHistory'
-import { useResourceSearchFilter } from '~/composables/useResourceSearchFilter'
 import type { Resource } from '~/types/resource'
 
 // Mock the dependent composables

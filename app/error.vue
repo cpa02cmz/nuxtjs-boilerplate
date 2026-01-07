@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="min-h-screen bg-gray-50 flex flex-col">
     <div
@@ -73,22 +74,9 @@
 </template>
 
 <script setup lang="ts">
-interface ErrorProps {
-  error: {
-    statusCode: number
-    message: string
-    url: string
-  }
-}
-
-const props = defineProps<ErrorProps>()
-
 const handleRetry = () => {
   if (process.client) {
     window.history.back()
   }
 }
-
-// Clear the error so the page can render
-const handleError = () => clearError({ redirect: '/' })
 </script>
