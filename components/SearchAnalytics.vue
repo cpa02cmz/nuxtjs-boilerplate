@@ -284,6 +284,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { logError } from '~/utils/errorLogger'
 
 // Define types
 interface SearchAnalyticsData {
@@ -346,7 +347,7 @@ const fetchSearchAnalytics = async () => {
 
     searchAnalytics.value = data
   } catch (err: any) {
-    console.error('Error fetching search analytics:', err)
+    logError('Error fetching search analytics:', err, 'SearchAnalytics')
     error.value = err.message || 'Failed to load search analytics data'
   } finally {
     loading.value = false

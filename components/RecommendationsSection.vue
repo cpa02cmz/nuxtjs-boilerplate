@@ -101,6 +101,7 @@ import { useRecommendationEngine } from '~/composables/useRecommendationEngine'
 import { useResourceData } from '~/composables/useResourceData'
 import { useBookmarks } from '~/composables/useBookmarks'
 import { useUserPreferences } from '~/composables/useUserPreferences'
+import { logError } from '~/utils/errorLogger'
 import type { RecommendationResult } from '~/composables/useRecommendationEngine'
 import type { Resource } from '~/types/resource'
 
@@ -159,7 +160,11 @@ const initRecommendations = async () => {
     }
   } catch (err) {
     error.value = 'Failed to load recommendations'
-    console.error('Error loading recommendations:', err)
+    logError(
+      'Error loading recommendations:',
+      err as Error,
+      'RecommendationsSection'
+    )
   } finally {
     loading.value = false
   }

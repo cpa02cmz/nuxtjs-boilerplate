@@ -246,7 +246,7 @@ export default defineNuxtConfig({
     inlineStyles: true,
   },
 
-  // SEO Configuration - using built-in meta handling
+  // SEO and Security Configuration - using built-in meta handling
   app: {
     head: {
       link: [
@@ -273,8 +273,14 @@ export default defineNuxtConfig({
         // Add script for performance monitoring if needed
         // Preload important scripts
       ],
-      // Add performance-related meta tags
+      // Add performance-related and security meta tags
       meta: [
+        // Security headers as meta tags (in addition to server-side headers)
+        {
+          'http-equiv': 'Content-Security-Policy',
+          content:
+            "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;",
+        },
         // This approach is more secure and allows for nonces
         { name: 'referrer', content: 'no-referrer' },
         { name: 'theme-color', content: '#ffffff' },

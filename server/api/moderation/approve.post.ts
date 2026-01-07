@@ -4,6 +4,7 @@ import {
   runQualityChecks,
   calculateQualityScore,
 } from '~/server/utils/quality-checks'
+import { logError, logInfo } from '~/utils/errorLogger'
 
 // Mock data for demonstration - in a real application, this would come from a database
 let mockSubmissions: Submission[] = []
@@ -71,8 +72,10 @@ export default defineEventHandler(async event => {
 
     // In a real application, we would notify the submitter about approval
     // For now, we'll just log it
-    console.log(
-      `Notification: Submission ${submission.id} approved for user ${submission.submittedBy}`
+    logInfo(
+      `Notification: Submission ${submission.id} approved for user ${submission.submittedBy}`,
+      undefined,
+      'moderation/approve.post'
     )
 
     return {
@@ -83,7 +86,7 @@ export default defineEventHandler(async event => {
       qualityScore,
     }
   } catch (error: any) {
-    console.error('Error approving submission:', error)
+    logError('Error approving submission:', error, 'moderation/approve.post')
 
     if (error.statusCode) {
       return {

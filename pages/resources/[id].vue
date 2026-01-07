@@ -822,6 +822,7 @@ import { useResources, type Resource } from '~/composables/useResources'
 import ResourceCard from '~/components/ResourceCard.vue'
 import RecommendationsSection from '~/components/RecommendationsSection.vue'
 import AlternativeSuggestions from '~/components/AlternativeSuggestions.vue'
+import logger from '~/utils/logger'
 
 import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
@@ -1014,7 +1015,7 @@ const fetchResourceHistory = async (resourceId: string) => {
       }
     }
   } catch (err) {
-    console.error('Error fetching resource history:', err)
+    logger.error('Error fetching resource history:', err)
     // If history fetch fails, continue without history data
   }
 }
@@ -1027,7 +1028,7 @@ const fetchResourceAnalytics = async (resourceId: string) => {
       analyticsData.value = response.data
     }
   } catch (err) {
-    console.error('Error fetching resource analytics:', err)
+    logger.error('Error fetching resource analytics:', err)
     // Set default values if analytics fetch fails
     analyticsData.value = {
       resourceId,
@@ -1043,15 +1044,16 @@ const fetchResourceAnalytics = async (resourceId: string) => {
 // Copy URL to clipboard
 const copyToClipboard = async () => {
   try {
-    // Use the modern Clipboard API
+    // Modern clipboard API approach
     await navigator.clipboard.writeText(currentUrl.value)
     // We could add a toast notification here in the future
   } catch (err) {
-    // Fallback for older browsers - improved implementation without deprecated execCommand
+    // Fallback for older browsers that don't support Clipboard API
     try {
-      // Use the deprecated execCommand only as a last resort for very old browsers
+      // Try to use the deprecated execCommand as a last resort
       const textArea = document.createElement('textarea')
       textArea.value = currentUrl.value
+      // Avoid scrolling to the bottom
       textArea.setAttribute('readonly', '')
       textArea.style.cssText = `
          position: absolute;
@@ -1065,12 +1067,13 @@ const copyToClipboard = async () => {
       textArea.setSelectionRange(0, 99999) // For mobile devices
       const successful = document.execCommand('copy')
       document.body.removeChild(textArea)
+
       if (!successful) {
-        // If even execCommand fails, we can't copy to clipboard
-        console.warn('Failed to copy to clipboard')
+        throw new Error('execCommand copy failed')
       }
     } catch (fallbackErr) {
-      console.warn('Clipboard API and execCommand both failed:', fallbackErr)
+      console.error('Failed to copy to clipboard:', fallbackErr)
+      // Optionally show an error message to the user
     }
   }
 }
