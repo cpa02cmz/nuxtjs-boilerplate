@@ -119,24 +119,31 @@
             @update-sort-option="setSortOption"
           />
 
-          <div class="mt-6 grid grid-cols-1 gap-6">
-            <ResourceCard
-              v-for="resource in filteredResources"
-              :id="resource.id"
-              :key="resource.id"
-              :title="resource.title"
-              :description="resource.description"
-              :benefits="resource.benefits"
-              :url="resource.url"
-              :button-label="getButtonLabel(resource.category)"
-              :highlighted-title="
-                highlightSearchTerms(resource.title, searchQuery)
-              "
-              :highlighted-description="
-                createSearchSnippet(resource.description, searchQuery)
-              "
-              :search-query="searchQuery"
-            />
+          <div class="mt-6">
+            <VirtualResourceList
+              :items="filteredResources"
+              :item-height="340"
+              :overscan="3"
+            >
+              <template #default="{ item: resource }">
+                <ResourceCard
+                  :id="resource.id"
+                  :key="resource.id"
+                  :title="resource.title"
+                  :description="resource.description"
+                  :benefits="resource.benefits"
+                  :url="resource.url"
+                  :button-label="getButtonLabel(resource.category)"
+                  :highlighted-title="
+                    highlightSearchTerms(resource.title, searchQuery)
+                  "
+                  :highlighted-description="
+                    createSearchSnippet(resource.description, searchQuery)
+                  "
+                  :search-query="searchQuery"
+                />
+              </template>
+            </VirtualResourceList>
           </div>
         </div>
       </div>
@@ -151,6 +158,7 @@ import SearchBar from '~/components/SearchBar.vue'
 import ResourceFilters from '~/components/ResourceFilters.vue'
 import ResourceSort from '~/components/ResourceSort.vue'
 import ResourceCard from '~/components/ResourceCard.vue'
+import VirtualResourceList from '~/components/VirtualResourceList.vue'
 import RelatedSearches from '~/components/RelatedSearches.vue'
 import PopularSearches from '~/components/PopularSearches.vue'
 import ZeroResultSearches from '~/components/ZeroResultSearches.vue'
