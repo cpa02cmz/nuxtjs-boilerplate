@@ -78,10 +78,7 @@ interface Props {
   updateHistory?: ResourceUpdate[]
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  statusHistory: () => [],
-  updateHistory: () => [],
-})
+defineProps<Props>()
 
 const getMarkerClass = (status: string) => {
   switch (status) {

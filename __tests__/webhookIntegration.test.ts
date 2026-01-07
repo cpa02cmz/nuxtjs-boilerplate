@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { $fetch, setup, createPage, url } from '@nuxt/test-utils'
+import { $fetch, createPage } from '@nuxt/test-utils'
 
 describe('Webhook Integration', () => {
   it('should have webhook API endpoints', async () => {

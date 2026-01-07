@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { ref } from 'vue'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import type { Resource } from '~/types/resource'
 

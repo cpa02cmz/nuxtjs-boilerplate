@@ -131,7 +131,7 @@ const loadHealthStatus = async () => {
     if (response) {
       healthStatus.value = response
     }
-  } catch (error) {
+  } catch {
     // Failed to load health status
   }
 }
@@ -143,7 +143,7 @@ const triggerHealthCheck = async () => {
       method: 'POST',
     })
     healthStatus.value = response.healthStatus
-  } catch (error) {
+  } catch {
     // Failed to trigger health check
   } finally {
     isChecking.value = false

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { useErrorHandler } from '~/composables/useErrorHandler'
 
 describe('useErrorHandler', () => {

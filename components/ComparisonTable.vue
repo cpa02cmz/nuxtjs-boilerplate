@@ -103,10 +103,7 @@ interface Props {
   criteria?: ComparisonCriteria[]
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  resources: () => [],
-  criteria: () => [],
-})
+defineProps<Props>()
 const emit = defineEmits(['remove-resource'])
 
 const removeResource = (resourceId: string) => {

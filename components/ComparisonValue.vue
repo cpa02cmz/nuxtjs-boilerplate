@@ -58,8 +58,5 @@ interface Props {
   type?: 'text' | 'number' | 'boolean' | 'list'
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  value: undefined,
-  type: 'text',
-})
+defineProps<Props>()
 </script>

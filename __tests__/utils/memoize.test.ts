@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { memoize, memoizeHighlight, clearMemoCache } from '~/utils/memoize'
 
 describe('Memoization Utilities', () => {
@@ -94,7 +94,7 @@ describe('Memoization Utilities', () => {
 
     it('should handle functions with return type void', () => {
       let callCount = 0
-      const fn = (x: number) => {
+      const fn = () => {
         callCount++
       }
 
@@ -178,7 +178,7 @@ describe('Memoization Utilities', () => {
 
     it('should generate cache key from text and query', () => {
       let callCount = 0
-      const highlightFn = (text: string, query: string) => {
+      const highlightFn = (text: string) => {
         callCount++
         return text
       }
@@ -218,7 +218,7 @@ describe('Memoization Utilities', () => {
       const memoizedHighlight = memoizeHighlight(highlightFn)
 
       const result1 = memoizedHighlight('hello world', '')
-      const result2 = memoizedHighlight('hello world', '')
+      memoizedHighlight('hello world', '')
 
       expect(result1).toBe('hello world')
       expect(callCount).toBe(1)
@@ -226,7 +226,7 @@ describe('Memoization Utilities', () => {
 
     it('should handle empty text', () => {
       let callCount = 0
-      const highlightFn = (text: string, query: string) => {
+      const highlightFn = (text: string) => {
         callCount++
         return text
       }
@@ -234,7 +234,7 @@ describe('Memoization Utilities', () => {
       const memoizedHighlight = memoizeHighlight(highlightFn)
 
       const result1 = memoizedHighlight('', 'query')
-      const result2 = memoizedHighlight('', 'query')
+      memoizedHighlight('', 'query')
 
       expect(result1).toBe('')
       expect(callCount).toBe(1)
@@ -348,7 +348,7 @@ describe('Memoization Utilities', () => {
       const memoizedFn = memoize(fn)
 
       const result1 = memoizedFn()
-      const result2 = memoizedFn()
+      memoizedFn()
 
       expect(result1).toBe('result')
       expect(callCount).toBe(1)

@@ -11,6 +11,7 @@ import {
   handleApiRouteError,
   wrapApiHandler,
 } from '~/server/utils/api-response'
+import type { ApiError } from '~/server/utils/api-error'
 import type { H3Event } from 'h3'
 
 describe('sendApiError', () => {

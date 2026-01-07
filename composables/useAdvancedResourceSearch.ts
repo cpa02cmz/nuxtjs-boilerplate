@@ -20,7 +20,7 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
   const advancedSearchResources = (query: string): Resource[] => {
     const startTime = performance.now()
 
-    if (!query || !fuse.value) {
+    if (!query || !fuse) {
       searchAnalyticsTracker.trackSearch(query, [...resources], 0)
       return [...resources]
     }
@@ -35,14 +35,14 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     let results: Resource[] = []
 
     if (parsed.operators.length > 0) {
-      const firstTermResults = fuse.value.search(parsed.terms[0])
+      const firstTermResults = fuse.search(parsed.terms[0])
       results = firstTermResults.map(item => item.item)
 
       for (let i = 1; i < parsed.terms.length; i++) {
         const term = parsed.terms[i]
         const operator = parsed.operators[i - 1]
 
-        const termResults = fuse.value.search(term)
+        const termResults = fuse.search(term)
         const termResources = termResults.map(item => item.item)
 
         if (operator === 'AND') {
@@ -63,7 +63,7 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
       }
     } else {
       for (const term of parsed.terms) {
-        const searchResults = fuse.value.search(term)
+        const searchResults = fuse.search(term)
         const termResults = searchResults.map(item => item.item)
         results = [...results, ...termResults]
       }
@@ -132,9 +132,9 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     query: string,
     limit: number = 5
   ): Resource[] => {
-    if (!query || !fuse.value) return []
+    if (!query || !fuse) return []
 
-    const searchResults = fuse.value.search(query, { limit })
+    const searchResults = fuse.search(query, { limit })
     return searchResults.map(item => item.item)
   }
 

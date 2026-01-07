@@ -127,16 +127,15 @@ interface Props {
   reason?: string
 }
 
-interface Emits {
-  (e: 'bookmark', resource: Resource): void
-}
-
 const props = withDefaults(defineProps<Props>(), {
   resource: () => ({}) as Resource,
   explanation: undefined,
   reason: undefined,
 })
-const emit = defineEmits<Emits>()
+
+const emit = defineEmits<{
+  bookmark: [resource: Resource]
+}>()
 </script>
 
 <style scoped>
