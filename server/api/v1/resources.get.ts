@@ -154,16 +154,13 @@ export default defineEventHandler(async event => {
         break
     }
 
-    // Convert resources to include hierarchical tags
-    const resourcesWithHierarchicalTags =
-      convertResourcesToHierarchicalTags(resources)
+    // Apply pagination BEFORE hierarchical tag conversion for performance
+    const total = resources.length
+    const paginatedResources = resources.slice(offset, offset + limit)
 
-    // Apply pagination
-    const total = resourcesWithHierarchicalTags.length
-    const paginatedResources = resourcesWithHierarchicalTags.slice(
-      offset,
-      offset + limit
-    )
+    // Convert only paginated resources to include hierarchical tags
+    const resourcesWithHierarchicalTags =
+      convertResourcesToHierarchicalTags(paginatedResources)
 
     // Prepare response
     const response = {

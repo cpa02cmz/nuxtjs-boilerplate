@@ -51,10 +51,8 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
           )
         } else if (operator === 'OR') {
           const allResults = [...results, ...termResources]
-          const uniqueResults = new Set(allResults.map(r => r.id))
-          results = Array.from(uniqueResults).map(
-            id => [...results, ...termResources].find(r => r.id === id)!
-          )
+          const resultMap = new Map(allResults.map(r => [r.id, r]))
+          results = Array.from(resultMap.values())
         } else if (operator === 'NOT') {
           results = results.filter(
             resource => !termResources.some(result => result.id === resource.id)
@@ -68,8 +66,8 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         results = [...results, ...termResults]
       }
 
-      const uniqueIds = new Set(results.map(r => r.id))
-      results = Array.from(uniqueIds).map(id => results.find(r => r.id === id)!)
+      const resultMap = new Map(results.map(r => [r.id, r]))
+      results = Array.from(resultMap.values())
     }
 
     const endTime = performance.now()
