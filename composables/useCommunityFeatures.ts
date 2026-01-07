@@ -47,7 +47,7 @@ export const useCommunityFeatures = (
     return profile
   }
 
-  const updateProfile = (userId, updates) => {
+  const updateProfile = (userId: string, updates: Partial<User>) => {
     // Use a for loop instead of findIndex to avoid compatibility issues
     for (let i = 0; i < users.length; i++) {
       if (users[i].id === userId) {

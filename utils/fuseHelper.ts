@@ -1,5 +1,5 @@
 import Fuse from 'fuse.js'
-import type { FuseIndex, IFuseOptions } from 'fuse.js'
+import type { IFuseOptions } from 'fuse.js'
 import type { Resource } from '~/types/resource'
 
 const DEFAULT_FUSE_CONFIG: IFuseOptions<Resource> = {

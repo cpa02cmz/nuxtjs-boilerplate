@@ -94,7 +94,7 @@ describe('Memoization Utilities', () => {
 
     it('should handle functions with return type void', () => {
       let callCount = 0
-      const fn = () => {
+      const fn = (_value: number) => {
         callCount++
       }
 
