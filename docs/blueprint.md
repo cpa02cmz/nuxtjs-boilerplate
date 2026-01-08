@@ -1099,6 +1099,19 @@ export async function cleanupOldEvents(
 
 ---
 
+## 🎨 Form Accessibility Decision Log
+
+| Date       | Decision                                     | Rationale                                                   |
+| ---------- | -------------------------------------------- | ----------------------------------------------------------- |
+| 2025-01-08 | Implemented comprehensive ARIA support       | Ensure all forms are WCAG 2.1 AA compliant                  |
+| 2025-01-08 | Added live regions for status messages       | Screen readers announce changes without explicit navigation |
+| 2025-01-08 | Implemented focus trap for modals            | Keyboard users stay contained within modal boundaries       |
+| 2025-01-08 | Added validation error announcements         | Screen readers announce all validation errors immediately   |
+| 2025-01-08 | Used semantic form elements                  | Proper HTML5 structure improves accessibility               |
+| 2025-01-08 | Standardized form patterns across components | Consistent UX for all forms in the application              |
+
+---
+
 ## 📊 Data Architecture Decision Log
 
 | Date       | Decision                                | Rationale                                                                 |
@@ -1120,6 +1133,254 @@ export async function cleanupOldEvents(
 | 2025-01-07 | Process-then-Transform optimization pattern | Apply transformations AFTER filtering/pagination to reduce O(n) to O(k)                 |
 | 2025-01-07 | O(1) lookup optimization for deduplication  | Use Map/WeakMap instead of find() to reduce deduplication from O(n²) to O(n)            |
 | 2025-01-08 | Map-based indexing for useCommunityFeatures | O(1) lookups for all data access, 134x faster performance (76ms→0.57ms for 10k lookups) |
+
+---
+
+## 🎨 Form Accessibility Architecture
+
+### WCAG 2.1 AA Compliance Patterns
+
+Implemented comprehensive form accessibility following WCAG 2.1 Level AA guidelines:
+
+#### 1. ARIA Attribute Pattern
+
+**Location**: Applied across all form components
+
+**Implementation**:
+
+```vue
+<!-- Required field with proper ARIA -->
+<label for="email">
+  Email <span aria-hidden="true">*</span>
+  <span class="sr-only">(required)</span>
+</label>
+<input
+  id="email"
+  type="email"
+  aria-required="true"
+  aria-describedby="email-description email-error"
+  :aria-invalid="errors.email ? 'true' : 'false'"
+/>
+<p id="email-description" class="sr-only">
+  Enter your email address
+</p>
+<div v-if="errors.email" id="email-error" role="alert">
+  {{ errors.email }}
+</div>
+```
+
+**Benefits**:
+
+- Screen readers identify required fields
+- Error states are programmatically associated
+- Field descriptions linked for assistive technology
+- Clear validation state communication
+
+#### 2. Live Region Pattern
+
+**Location**: `pages/submit.vue`, `components/ApiKeys.vue`
+
+**Implementation**:
+
+```vue
+<!-- Success message with live region -->
+<div v-if="success" role="alert" aria-live="polite">
+  <p>Your submission was successful!</p>
+</div>
+
+<!-- Error message with immediate announcement -->
+<div v-if="error" role="alert" aria-live="assertive">
+  <p>{{ error }}</p>
+</div>
+```
+
+**Benefits**:
+
+- Success messages announced when they appear
+- Error messages announced immediately and prominently
+- Non-intrusive status updates for screen readers
+- `aria-live="polite"` for informational messages
+- `aria-live="assertive"` for urgent error messages
+
+#### 3. Focus Management Pattern
+
+**Location**: `components/ApiKeys.vue`
+
+**Implementation**:
+
+```typescript
+// Focus trap for modal
+const trapFocus = (event: KeyboardEvent) => {
+  const focusableContent = getFocusableElements(modalContent.value)
+  const firstElement = focusableContent[0]
+  const lastElement = focusableContent[focusableContent.length - 1]
+
+  if (event.key === 'Tab') {
+    if (event.shiftKey) {
+      if (document.activeElement === firstElement) {
+        event.preventDefault()
+        lastElement.focus()
+      }
+    } else {
+      if (document.activeElement === lastElement) {
+        event.preventDefault()
+        firstElement.focus()
+      }
+    }
+  }
+}
+
+// Store and restore focus
+const previousActiveElement = document.activeElement as HTMLElement
+// ... open modal ...
+previousActiveElement?.focus() // Restore focus on close
+```
+
+**Benefits**:
+
+- Keyboard users stay trapped within modal boundaries
+- Focus properly restored after modal interactions
+- Predictable focus behavior for keyboard navigation
+- Improved accessibility for modal dialogs
+- Better experience for keyboard-only users
+
+#### 4. Form Validation Announcement Pattern
+
+**Location**: `pages/submit.vue`
+
+**Implementation**:
+
+```typescript
+const announceErrors = () => {
+  const errorList = Object.values(errors.value).join('. ')
+  const announcement = document.createElement('div')
+  announcement.setAttribute('role', 'alert')
+  announcement.setAttribute('aria-live', 'assertive')
+  announcement.className = 'sr-only'
+  announcement.textContent = `Form validation failed: ${errorList}`
+
+  document.body.appendChild(announcement)
+
+  setTimeout(() => {
+    document.body.removeChild(announcement)
+  }, 5000)
+}
+```
+
+**Benefits**:
+
+- Screen readers announce all validation errors immediately
+- Users understand what needs to be corrected
+- No need to navigate to find errors manually
+- Better form submission experience for assistive technology users
+- Temporary announcements removed after 5 seconds
+
+#### 5. Semantic Form Structure Pattern
+
+**Location**: `components/WebhookManager.vue`
+
+**Implementation**:
+
+```vue
+<!-- Checkbox group with proper semantics -->
+<fieldset>
+  <legend class="font-medium mb-2">Events</legend>
+  <div
+    role="group"
+    aria-label="Select webhook events"
+    class="event-checkboxes"
+  >
+    <label v-for="event in events" :key="event">
+      <input
+        v-model="selectedEvents"
+        type="checkbox"
+        :value="event"
+        :aria-label="`Subscribe to ${event} event`"
+      />
+      {{ event }}
+    </label>
+  </div>
+</fieldset>
+```
+
+**Benefits**:
+
+- Proper semantic structure for checkbox groups
+- Screen readers understand related checkbox relationship
+- Clear label for entire group
+- Individual checkboxes have contextual labels
+- Better navigation for keyboard and screen reader users
+
+#### 6. Modal Dialog Pattern
+
+**Location**: `components/ApiKeys.vue`
+
+**Implementation**:
+
+```vue
+<div
+  v-if="showModal"
+  class="modal-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modal-title"
+  @click="closeModal"
+  @keydown.esc="closeModal"
+>
+  <div
+    ref="modalContent"
+    class="modal-content"
+    tabindex="-1"
+    @click.stop
+  >
+    <h2 id="modal-title">Modal Title</h2>
+    <!-- Modal content -->
+  </div>
+</div>
+```
+
+**Benefits**:
+
+- Modal properly announced as dialog to screen readers
+- ESC key handler for keyboard users
+- Click outside to close for mouse users
+- Focus trap keeps keyboard navigation contained
+- Focus returns to previous element on close
+- Full keyboard accessibility support
+
+### Form Accessibility Best Practices
+
+#### DO:
+
+✅ Use ARIA attributes for all form fields (`aria-required`, `aria-invalid`, `aria-describedby`)
+✅ Implement live regions for status messages (`role="alert"`, `aria-live`)
+✅ Provide keyboard alternatives for all interactive elements
+✅ Ensure form validation errors are announced to screen readers
+✅ Use semantic HTML elements (`fieldset`, `legend`, `label`)
+✅ Implement focus management for modals and dynamic content
+✅ Test with screen readers (NVDA, JAWS, VoiceOver)
+✅ Test with keyboard-only navigation
+
+#### DO NOT:
+
+❌ Use color alone to indicate form validation state
+❌ Rely on visual cues only for error messages
+❌ Forget focus management for modals and dynamic content
+❌ Leave form validation errors silent for screen readers
+❌ Use `placeholder` as a substitute for `label`
+❌ Create forms without proper keyboard navigation support
+❌ Ignore focus indicators and focus states
+
+### Form Accessibility Decision Log
+
+| Date       | Decision                                     | Rationale                                                   |
+| ---------- | -------------------------------------------- | ----------------------------------------------------------- |
+| 2025-01-08 | Implemented comprehensive ARIA support       | Ensure all forms are WCAG 2.1 AA compliant                  |
+| 2025-01-08 | Added live regions for status messages       | Screen readers announce changes without explicit navigation |
+| 2025-01-08 | Implemented focus trap for modals            | Keyboard users stay contained within modal boundaries       |
+| 2025-01-08 | Added validation error announcements         | Screen readers announce all validation errors immediately   |
+| 2025-01-08 | Used semantic form elements                  | Proper HTML5 structure improves accessibility               |
+| 2025-01-08 | Standardized form patterns across components | Consistent UX for all forms in the application              |
 
 ---
 

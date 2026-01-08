@@ -11,27 +11,37 @@
       </div>
 
       <div class="bg-white shadow-xl rounded-lg p-6 sm:p-8">
-        <form class="space-y-6" @submit.prevent="submitResource">
+        <form class="space-y-6" novalidate @submit.prevent="submitResource">
           <div>
             <label
               for="title"
               class="block text-sm font-medium text-gray-700 mb-1"
             >
-              Resource Title *
+              Resource Title <span aria-hidden="true">*</span>
+              <span class="sr-only">(required)</span>
             </label>
             <input
               id="title"
+              ref="titleInput"
               v-model="formData.title"
               type="text"
               required
               maxlength="200"
+              aria-required="true"
+              aria-describedby="title-description title-error"
+              :aria-invalid="errors.title ? 'true' : 'false'"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
               placeholder="e.g., OpenAI API"
             />
-            <p class="mt-1 text-sm text-gray-500">
+            <p id="title-description" class="mt-1 text-sm text-gray-500">
               The name of the resource or service
             </p>
-            <div v-if="errors.title" class="mt-1 text-sm text-red-600">
+            <div
+              v-if="errors.title"
+              id="title-error"
+              class="mt-1 text-sm text-red-600"
+              role="alert"
+            >
               {{ errors.title }}
             </div>
           </div>
@@ -41,7 +51,8 @@
               for="description"
               class="block text-sm font-medium text-gray-700 mb-1"
             >
-              Description *
+              Description <span aria-hidden="true">*</span>
+              <span class="sr-only">(required)</span>
             </label>
             <textarea
               id="description"
@@ -49,14 +60,22 @@
               required
               rows="4"
               maxlength="1000"
+              aria-required="true"
+              aria-describedby="description-description description-error"
+              :aria-invalid="errors.description ? 'true' : 'false'"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
               placeholder="Describe the resource and its benefits..."
             ></textarea>
-            <p class="mt-1 text-sm text-gray-500">
+            <p id="description-description" class="mt-1 text-sm text-gray-500">
               At least 10 characters. Explain what this resource offers and why
               it's valuable.
             </p>
-            <div v-if="errors.description" class="mt-1 text-sm text-red-600">
+            <div
+              v-if="errors.description"
+              id="description-error"
+              class="mt-1 text-sm text-red-600"
+              role="alert"
+            >
               {{ errors.description }}
             </div>
           </div>
@@ -66,20 +85,29 @@
               for="url"
               class="block text-sm font-medium text-gray-700 mb-1"
             >
-              URL *
+              URL <span aria-hidden="true">*</span>
+              <span class="sr-only">(required)</span>
             </label>
             <input
               id="url"
               v-model="formData.url"
               type="url"
               required
+              aria-required="true"
+              aria-describedby="url-description url-error"
+              :aria-invalid="errors.url ? 'true' : 'false'"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
               placeholder="https://example.com"
             />
-            <p class="mt-1 text-sm text-gray-500">
+            <p id="url-description" class="mt-1 text-sm text-gray-500">
               The official website or page for this resource
             </p>
-            <div v-if="errors.url" class="mt-1 text-sm text-red-600">
+            <div
+              v-if="errors.url"
+              id="url-error"
+              class="mt-1 text-sm text-red-600"
+              role="alert"
+            >
               {{ errors.url }}
             </div>
           </div>
@@ -89,12 +117,16 @@
               for="category"
               class="block text-sm font-medium text-gray-700 mb-1"
             >
-              Category *
+              Category <span aria-hidden="true">*</span>
+              <span class="sr-only">(required)</span>
             </label>
             <select
               id="category"
               v-model="formData.category"
               required
+              aria-required="true"
+              aria-describedby="category-description category-error"
+              :aria-invalid="errors.category ? 'true' : 'false'"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
             >
               <option value="" disabled>Select a category</option>
@@ -111,10 +143,15 @@
               </option>
               <option value="Other">Other</option>
             </select>
-            <p class="mt-1 text-sm text-gray-500">
+            <p id="category-description" class="mt-1 text-sm text-gray-500">
               Choose the most appropriate category for this resource
             </p>
-            <div v-if="errors.category" class="mt-1 text-sm text-red-600">
+            <div
+              v-if="errors.category"
+              id="category-error"
+              class="mt-1 text-sm text-red-600"
+              role="alert"
+            >
               {{ errors.category }}
             </div>
           </div>
@@ -130,10 +167,11 @@
               id="tags"
               v-model="tagsInput"
               type="text"
+              aria-describedby="tags-description"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
               placeholder="Enter tags separated by commas"
             />
-            <p class="mt-1 text-sm text-gray-500">
+            <p id="tags-description" class="mt-1 text-sm text-gray-500">
               Add relevant tags to help categorize this resource (e.g., "api,
               free-tier, openai")
             </p>
@@ -143,6 +181,8 @@
             <button
               type="submit"
               :disabled="isSubmitting"
+              :aria-busy="isSubmitting"
+              aria-live="polite"
               class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span v-if="!isSubmitting">Submit Resource</span>
@@ -152,6 +192,7 @@
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <circle
                     class="opacity-25"
@@ -174,7 +215,12 @@
         </form>
 
         <!-- Success message -->
-        <div v-if="submitSuccess" class="mt-8 p-4 bg-green-50 rounded-md">
+        <div
+          v-if="submitSuccess"
+          class="mt-8 p-4 bg-green-50 rounded-md"
+          role="alert"
+          aria-live="polite"
+        >
           <div class="flex">
             <div class="flex-shrink-0">
               <svg
@@ -182,6 +228,7 @@
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
+                aria-hidden="true"
               >
                 <path
                   fill-rule="evenodd"
@@ -205,7 +252,12 @@
         </div>
 
         <!-- Error message -->
-        <div v-if="submitError" class="mt-8 p-4 bg-red-50 rounded-md">
+        <div
+          v-if="submitError"
+          class="mt-8 p-4 bg-red-50 rounded-md"
+          role="alert"
+          aria-live="assertive"
+        >
           <div class="flex">
             <div class="flex-shrink-0">
               <svg
@@ -213,6 +265,7 @@
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
                 fill="currentColor"
+                aria-hidden="true"
               >
                 <path
                   fill-rule="evenodd"
@@ -251,6 +304,14 @@ const isSubmitting = ref(false)
 const submitSuccess = ref(false)
 const submitError = ref('')
 
+// Focus management for form
+const titleInput = ref<HTMLInputElement | null>(null)
+
+// Focus first input on mount
+onMounted(() => {
+  titleInput.value?.focus()
+})
+
 const validateForm = (): boolean => {
   errors.value = {}
 
@@ -282,7 +343,28 @@ const validateForm = (): boolean => {
     errors.value.category = 'Category is required'
   }
 
+  // Announce errors to screen readers
+  if (Object.keys(errors.value).length > 0) {
+    announceErrors()
+  }
+
   return Object.keys(errors.value).length === 0
+}
+
+// Announce form errors to screen readers
+const announceErrors = () => {
+  const errorList = Object.values(errors.value).join('. ')
+  const announcement = document.createElement('div')
+  announcement.setAttribute('role', 'alert')
+  announcement.setAttribute('aria-live', 'assertive')
+  announcement.className = 'sr-only'
+  announcement.textContent = `Form validation failed: ${errorList}`
+
+  document.body.appendChild(announcement)
+
+  setTimeout(() => {
+    document.body.removeChild(announcement)
+  }, 5000)
 }
 
 const submitResource = async () => {
