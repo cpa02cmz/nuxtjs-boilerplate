@@ -91,25 +91,26 @@
     </div>
 
     <!-- API Key Created Modal -->
-    <div
-      v-if="showKeyCreatedModal"
-      class="modal-overlay"
-      @click="showKeyCreatedModal = false"
-    >
-      <div class="modal-content" @click.stop>
-        <h3>New API Key Created</h3>
+    <div ref="modalContent" class="modal-content" tabindex="-1" @click.stop>
+      <div ref="modalContent" class="modal-content" tabindex="-1" @click.stop>
+        <h3 id="modal-title">New API Key Created</h3>
         <p><strong>Key:</strong> {{ createdApiKey?.key }}</p>
         <p class="warning">
           Make sure to copy this key now. You won't be able to see it again.
         </p>
         <div class="form-actions">
-          <button class="btn btn-primary" @click="copyApiKey">Copy Key</button>
           <button
-            class="btn btn-secondary"
-            @click="showKeyCreatedModal = false"
+            class="btn btn-primary"
+            :aria-label="
+              copySuccess
+                ? 'API key copied to clipboard'
+                : 'Copy API key to clipboard'
+            "
+            @click="copyApiKey"
           >
-            Close
+            {{ copySuccess ? 'Copied!' : 'Copy Key' }}
           </button>
+          <button class="btn btn-secondary" @click="closeModal">Close</button>
         </div>
       </div>
     </div>
@@ -125,6 +126,68 @@ const apiKeys = ref<ApiKey[]>([])
 const loading = ref(true)
 const showKeyCreatedModal = ref(false)
 const createdApiKey = ref<ApiKey | null>(null)
+const modalContent = ref<HTMLElement | null>(null)
+const copySuccess = ref(false)
+
+// Store previously focused element
+let previousActiveElement: HTMLElement | null = null
+
+// Focus trap for modal
+const focusableElementsString =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
+const getFocusableElements = (element: HTMLElement) => {
+  return element.querySelectorAll<HTMLElement>(focusableElementsString)
+}
+
+const trapFocus = (event: KeyboardEvent) => {
+  if (!modalContent.value) return
+
+  const focusableContent = getFocusableElements(modalContent.value)
+  if (focusableContent.length === 0) return
+
+  const firstElement = focusableContent[0]
+  const lastElement = focusableContent[focusableContent.length - 1]
+
+  if (event.key === 'Tab') {
+    if (event.shiftKey) {
+      if (document.activeElement === firstElement) {
+        event.preventDefault()
+        lastElement.focus()
+      }
+    } else {
+      if (document.activeElement === lastElement) {
+        event.preventDefault()
+        firstElement.focus()
+      }
+    }
+  }
+}
+
+// Modal open/close handlers
+const openModal = () => {
+  previousActiveElement = document.activeElement as HTMLElement
+  showKeyCreatedModal.value = true
+
+  nextTick(() => {
+    if (modalContent.value) {
+      modalContent.value.focus()
+      modalContent.value.addEventListener('keydown', trapFocus)
+    }
+  })
+}
+
+const closeModal = () => {
+  showKeyCreatedModal.value = false
+
+  if (modalContent.value) {
+    modalContent.value.removeEventListener('keydown', trapFocus)
+  }
+
+  nextTick(() => {
+    previousActiveElement?.focus()
+  })
+}
 
 const newApiKey = reactive({
   name: '',
@@ -156,7 +219,7 @@ const createApiKey = async () => {
 
     // Show the created key in a modal
     createdApiKey.value = response.data
-    showKeyCreatedModal.value = true
+    openModal()
 
     // Reset form
     newApiKey.name = ''
@@ -196,7 +259,12 @@ const copyApiKey = async () => {
   if (createdApiKey.value?.key) {
     try {
       await navigator.clipboard.writeText(createdApiKey.value.key)
-      // Optional: show success message
+      copySuccess.value = true
+
+      // Reset button text after 2 seconds
+      setTimeout(() => {
+        copySuccess.value = false
+      }, 2000)
     } catch (error) {
       logError(
         'Error copying API key to clipboard',
