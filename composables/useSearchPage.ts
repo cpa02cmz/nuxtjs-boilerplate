@@ -1,7 +1,6 @@
 import { computed, ref, readonly } from 'vue'
 import type { Resource, SortOption } from '~/types/resource'
 import { useResourceData } from './useResourceData'
-import { useResourceFilters } from './useResourceFilters'
 import { useAdvancedResourceSearch } from './useAdvancedResourceSearch'
 import { useFilterUtils } from './useFilterUtils'
 import { trackSearch, trackFilter } from '~/utils/analytics'
@@ -47,7 +46,7 @@ export const useSearchPage = () => {
     })
     return Array.from(benefitsSet).sort()
   })
-  const { filterByAllCriteria, parseDate } = useFilterUtils()
+  const { parseDate } = useFilterUtils()
 
   const filterOptions = ref<SearchPageFilterOptions>({
     searchQuery: '',
@@ -91,12 +90,12 @@ export const useSearchPage = () => {
       const matchesDifficulty =
         !filterOptions.value.difficultyLevels ||
         filterOptions.value.difficultyLevels.length === 0 ||
-        filterOptions.value.difficultyLevels.includes(resource.difficultyLevel)
+        filterOptions.value.difficultyLevels.includes(resource.difficulty)
 
       const matchesTechnology =
         !filterOptions.value.technologies ||
         filterOptions.value.technologies.length === 0 ||
-        resource.technologies?.some(tech =>
+        resource.technology?.some((tech: string) =>
           filterOptions.value.technologies?.includes(tech)
         )
 
@@ -118,9 +117,7 @@ export const useSearchPage = () => {
         filterOptions.value.dateRange &&
         filterOptions.value.dateRange !== 'anytime'
       ) {
-        const resourceDate = new Date(
-          resource.createdAt || resource.addedAt || now
-        )
+        const resourceDate = new Date(resource.dateAdded || now)
         const timeDiff = now.getTime() - resourceDate.getTime()
         const daysDiff = timeDiff / (1000 * 60 * 60 * 24)
 
