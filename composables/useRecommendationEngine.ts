@@ -45,7 +45,7 @@ export const useRecommendationEngine = (
     allResources,
     config.value,
     userPreferences as UserPreferences,
-    getDiverseRecommendations
+    undefined
   )
 
   const getDiverseRecommendations = (

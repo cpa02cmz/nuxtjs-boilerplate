@@ -34,14 +34,14 @@ export const logger: Logger = {
       process.env.NODE_ENV !== 'production' ||
       process.env.LOG_WARNINGS === 'true'
     ) {
-      // eslint-disable-next-line no-console
+       
       console.warn(`[WARN] ${_message}`, ..._data)
     }
   },
   error: (_message: string, ..._data: any[]) => {
     // Always log errors unless specifically disabled
     if (process.env.LOG_ERRORS !== 'false') {
-      // eslint-disable-next-line no-console
+       
       console.error(`[ERROR] ${_message}`, ..._data)
     }
   },

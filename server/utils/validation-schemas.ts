@@ -152,5 +152,5 @@ export const analyticsEventSchema = z.object({
     .int('Timestamp must be an integer')
     .positive('Timestamp must be positive')
     .optional(),
-  properties: z.record(z.any()).optional(),
+  properties: z.record(z.string(), z.any()).optional(),
 })
