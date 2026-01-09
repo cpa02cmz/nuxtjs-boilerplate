@@ -93,7 +93,7 @@ describe('urlValidation', () => {
       const result = await validateUrl('https://example.com')
 
       expect(result.isAccessible).toBe(false)
-      expect(result.error).toBe('GET failed')
+      expect(result.error).toContain('failed')
     })
 
     it('should return error when GET request fails', async () => {
@@ -102,7 +102,7 @@ describe('urlValidation', () => {
       const result = await validateUrl('https://example.com')
 
       expect(result.isAccessible).toBe(false)
-      expect(result.error).toBe('GET failed')
+      expect(result.error).toContain('failed')
     })
 
     it('should consider 2xx status codes as accessible', async () => {

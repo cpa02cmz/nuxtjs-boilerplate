@@ -49,27 +49,53 @@ vi.mock('#app/composables/router', () => {
 // Setup global localStorage and sessionStorage mocks
 beforeEach(() => {
   vi.clearAllMocks()
+  // Also clear the actual storage
+  const g = global as any
+  if (g.window?.localStorage?.clear) {
+    g.window.localStorage.clear()
+  }
+  if (g.window?.sessionStorage?.clear) {
+    g.window.sessionStorage.clear()
+  }
 })
 
 // Set up mocks for browser APIs that tests expect
 if (typeof global !== 'undefined') {
-  const localStorageMock = {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn(),
-    clear: vi.fn(),
-    length: 0,
-    key: vi.fn(),
-  }
+  const localStorageMock = (() => {
+    let store: Record<string, string> = {}
+    return {
+      getItem: vi.fn((key: string) => store[key] || null),
+      setItem: vi.fn((key: string, value: string) => {
+        store[key] = value
+      }),
+      removeItem: vi.fn((key: string) => {
+        delete store[key]
+      }),
+      clear: vi.fn(() => {
+        store = {}
+      }),
+      length: 0,
+      key: vi.fn(),
+    }
+  })()
 
-  const sessionStorageMock = {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn(),
-    clear: vi.fn(),
-    length: 0,
-    key: vi.fn(),
-  }
+  const sessionStorageMock = (() => {
+    let store: Record<string, string> = {}
+    return {
+      getItem: vi.fn((key: string) => store[key] || null),
+      setItem: vi.fn((key: string, value: string) => {
+        store[key] = value
+      }),
+      removeItem: vi.fn((key: string) => {
+        delete store[key]
+      }),
+      clear: vi.fn(() => {
+        store = {}
+      }),
+      length: 0,
+      key: vi.fn(),
+    }
+  })()
 
   // @ts-ignore - Type assertion needed for testing environment
   const g = global as any

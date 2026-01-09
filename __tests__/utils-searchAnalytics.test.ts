@@ -9,10 +9,11 @@ describe('SearchAnalyticsTracker', () => {
   let tracker: SearchAnalyticsTracker
 
   beforeEach(() => {
-    // Clear all mocks
+    // Clear all mocks and storage
     vi.clearAllMocks()
     localStorageMock.getItem.mockClear()
     localStorageMock.setItem.mockClear()
+    localStorageMock.clear()
 
     // Create a new instance for each test
     tracker = new SearchAnalyticsTracker()
