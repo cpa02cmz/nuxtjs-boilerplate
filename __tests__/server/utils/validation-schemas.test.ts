@@ -793,7 +793,7 @@ describe('Validation Schemas', () => {
 
     it('should handle null values in optional properties', () => {
       const result = analyticsEventSchema.safeParse({
-        type: 'test',
+        type: 'search',
         properties: {
           field1: 'value',
           field2: null as any,
