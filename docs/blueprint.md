@@ -450,6 +450,7 @@ High-Level (Orchestrators)
 ├── useRecommendationEngine.ts (recommendation orchestrator)
 ├── useAlternativeSuggestions.ts
 ├── useAdvancedResourceSearch.ts (advanced search with operators)
+├── useAIResources.ts (AI-specific resource filtering)
 └── useSearchSuggestions.ts (search suggestions)
 
 Mid-Level (Feature-Specific)
@@ -867,6 +868,7 @@ tests/
 | 2025-01-09 | Architecture | Layer Separation in API keys page                               | Extracted business logic from page to dedicated composable (useApiKeysPage), 60 lines removed from page component (188→128, 32% reduction)                                                              |
 | 2025-01-09 | Build System | Added Nuxt 3 globals to TypeScript ESLint config                | Fixed 'no-undef' errors for Nuxt globals ($fetch, ref, computed, etc.) in TypeScript files                                                                                                              |
 | 2026-01-09 | Architecture | Refactored useCommunityFeatures to modular composables          | Eliminated God Class anti-pattern (432→~170 lines orchestrator), created 4 single-responsibility composables, replaced O(n) linear searches with O(1) Map-based indexing, full Vue 3 reactivity support |
+| 2026-01-09 | Architecture | Layer Separation in AI keys page                                | Extracted AI-specific filtering logic from page template to dedicated composable (useAIResources), eliminated business logic in presentation layer                                                      |
 
 ## 🎓 Design Principles Applied
 

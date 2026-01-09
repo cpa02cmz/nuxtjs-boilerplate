@@ -58,9 +58,7 @@
         <!-- AI Resources Only -->
         <div class="space-y-8">
           <ResourceCard
-            v-for="resource in filteredResources.filter(r =>
-              r.category.includes('AI')
-            )"
+            v-for="resource in aiResources"
             :id="resource.id"
             :key="resource.id"
             :title="resource.title"
@@ -72,13 +70,7 @@
         </div>
 
         <!-- No Results Message -->
-        <div
-          v-if="
-            filteredResources.filter(r => r.category.includes('AI')).length ===
-              0 && !loading
-          "
-          class="text-center py-12"
-        >
+        <div v-if="!hasAIResources && !loading" class="text-center py-12">
           <h3 class="text-xl font-medium text-gray-900 mb-2">
             No AI resources found
           </h3>
@@ -98,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { useResources } from '~/composables/useResources'
+import { useAIResources } from '~/composables/useAIResources'
 import { useUrlSync } from '~/composables/useUrlSync'
 import ResourceCard from '~/components/ResourceCard.vue'
 import SearchBar from '~/components/SearchBar.vue'
@@ -108,10 +100,9 @@ definePageMeta({
   layout: 'default',
 })
 
-// Set page-specific meta tags
 const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
-  title: 'Free AI API Keys - Free Stuff on the Internet',
+  title: 'Free AI API Keys - Free Stuff on Internet',
   ogTitle: 'Free AI API Keys - Free Stuff on the Internet',
   description:
     'Access powerful AI models with these free API keys and tools. Discover OpenAI, Hugging Face, Google AI Studio, and more free AI resources.',
@@ -122,9 +113,9 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 
-// Use the resources composable
 const {
-  filteredResources,
+  aiResources,
+  hasAIResources,
   loading,
   error,
   categories,
@@ -134,12 +125,10 @@ const {
   toggleCategory,
   setSortOption,
   resetFilters,
-} = useResources()
+} = useAIResources()
 
-// Set up URL synchronization
 useUrlSync(filterOptions, sortOption)
 
-// Reactive references for filters
 const searchQuery = computed({
   get: () => filterOptions.value.searchQuery || '',
   set: value => updateSearchQuery(value),
@@ -147,18 +136,15 @@ const searchQuery = computed({
 
 const selectedCategories = computed(() => filterOptions.value.categories || [])
 
-// Handle search
 const handleSearch = (query: string) => {
   updateSearchQuery(query)
 }
 
-// Reset all filters
 const resetAllFilters = () => {
   resetFilters()
   searchQuery.value = ''
 }
 
-// Helper function to get button label based on category
 const getButtonLabel = (category: string) => {
   switch (category.toLowerCase()) {
     case 'ai tools':
