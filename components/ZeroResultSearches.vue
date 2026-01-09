@@ -32,7 +32,7 @@ interface Props {
 }
 
 interface Emits {
-  (event: 'search-select', query: string): void
+  (_event: 'search-select', query: string): void
 }
 
 const props = withDefaults(defineProps<Props>(), {

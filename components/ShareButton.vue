@@ -141,8 +141,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import logger from '~/utils/logger'
-import { useRuntimeConfig } from '#imports'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 
 interface Props {
@@ -160,9 +158,6 @@ const props = withDefaults(defineProps<Props>(), {
 const showShareMenu = ref(false)
 const shareButtonRef = ref<HTMLElement | null>(null)
 const shareMenuRef = ref<HTMLElement | null>(null)
-
-// Get runtime config for canonical URL
-const runtimeConfig = useRuntimeConfig()
 
 // Calculate position class based on available space
 const positionClass = computed(() => {
@@ -203,16 +198,16 @@ const copyToClipboard = async () => {
   try {
     // Modern clipboard API approach
     await navigator.clipboard.writeText(props.url)
-    // Close the menu after copying
+    // Close menu after copying
     showShareMenu.value = false
     // Optionally show a toast notification here
-  } catch (err) {
+  } catch {
     // Fallback for older browsers that don't support Clipboard API
     try {
       // Try to use the deprecated execCommand as a last resort
       const textArea = document.createElement('textarea')
       textArea.value = props.url
-      // Avoid scrolling to the bottom
+      // Avoid scrolling to bottom
       textArea.setAttribute('readonly', '')
       textArea.style.cssText = `
          position: absolute;
@@ -220,7 +215,7 @@ const copyToClipboard = async () => {
          top: -9999px;
          opacity: 0;
          pointer-events: none;
-       `
+        `
       document.body.appendChild(textArea)
       textArea.select()
       textArea.setSelectionRange(0, 99999) // For mobile devices

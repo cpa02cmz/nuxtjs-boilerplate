@@ -251,9 +251,9 @@ describe('Memoization Utilities', () => {
 
       const memoizedHighlight = memoizeHighlight(highlightFn)
 
-      const result = memoizedHighlight('Test Text', 'test')
+      const result = memoizedHighlight('Test test text', 'test')
 
-      expect(result).toBe('**Test** **Text**')
+      expect(result).toBe('**Test** **test** text')
     })
   })
 

@@ -33,7 +33,7 @@ export const useBookmarks = () => {
           addedAt: new Date(bookmark.addedAt),
         }))
       }
-    } catch (error) {
+    } catch {
       // Silently handle error - user will have empty bookmarks
       bookmarks.value = []
     }
@@ -55,7 +55,7 @@ export const useBookmarks = () => {
       )
       // Trigger custom event to notify other tabs
       window.dispatchEvent(new Event('bookmarksUpdated'))
-    } catch (error) {
+    } catch {
       // Silently handle error - bookmarks won't be saved to storage
     }
   }
@@ -188,7 +188,7 @@ export const useBookmarks = () => {
       bookmarks.value = uniqueBookmarks
       saveBookmarks()
       return true
-    } catch (error) {
+    } catch {
       // Silently handle error - import will fail gracefully
       return false
     }

@@ -140,16 +140,15 @@ interface Props {
 }
 
 interface Emits {
-  (event: 'select-suggestion', suggestion: SuggestionItem): void
-  (event: 'select-history', history: string): void
-  (event: 'clear-history'): void
-  (event: 'navigate', direction: 'up' | 'down'): void
+  (_event: 'select-suggestion', suggestion: SuggestionItem): void
+  (_event: 'select-history', history: string): void
+  (_event: 'clear-history'): void
+  (_event: 'navigate', direction: 'up' | 'down'): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
   suggestions: () => [],
   searchHistory: () => [],
-  visible: false,
 })
 const emit = defineEmits<Emits>()
 

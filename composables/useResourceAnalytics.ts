@@ -1,6 +1,5 @@
 import { ref, computed } from 'vue'
 import logger from '~/utils/logger'
-import type { Resource } from '~/types/resource'
 
 export interface ResourceAnalytics {
   resourceId: string

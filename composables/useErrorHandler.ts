@@ -101,7 +101,7 @@ export const useErrorHandler = () => {
     }
   }
 
-  const getGlobalErrors = computed(() => [...globalErrors.value])
+  const getGlobalErrors = computed(() => globalErrors.value.slice())
 
   const clearGlobalErrors = () => {
     globalErrors.value = []
