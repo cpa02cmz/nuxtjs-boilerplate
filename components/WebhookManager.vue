@@ -11,9 +11,29 @@
       </button>
     </div>
 
+    <div
+      id="webhook-announcement"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >
+      {{ announcement }}
+    </div>
+
     <!-- Create Webhook Form -->
     <div v-if="showCreateForm" class="webhook-form">
       <h3>Create New Webhook</h3>
+
+      <div
+        v-if="errorMessage"
+        class="error-message"
+        role="alert"
+        aria-live="assertive"
+      >
+        {{ errorMessage }}
+      </div>
+
       <form novalidate @submit.prevent="createWebhook">
         <div class="form-group">
           <label for="webhook-url"
@@ -169,6 +189,8 @@ import type { Webhook } from '~/types/webhook'
 const showCreateForm = ref(false)
 const webhooks = ref<Webhook[]>([])
 const loading = ref(true)
+const errorMessage = ref('')
+const announcement = ref('')
 
 const newWebhook = reactive({
   url: '',
@@ -189,10 +211,12 @@ const availableEvents = [
 const fetchWebhooks = async () => {
   try {
     loading.value = true
+    errorMessage.value = ''
     const response = await $fetch('/api/v1/webhooks')
     webhooks.value = response.data
   } catch (error) {
     logger.error('Error fetching webhooks:', error)
+    errorMessage.value = 'Failed to fetch webhooks. Please try again.'
   } finally {
     loading.value = false
   }
@@ -200,11 +224,29 @@ const fetchWebhooks = async () => {
 
 // Create new webhook
 const createWebhook = async () => {
+  errorMessage.value = ''
+
+  if (!newWebhook.url) {
+    errorMessage.value = 'Webhook URL is required.'
+    return
+  }
+
+  if (!newWebhook.events || newWebhook.events.length === 0) {
+    errorMessage.value = 'At least one event must be selected.'
+    return
+  }
+
   try {
     await $fetch('/api/v1/webhooks', {
       method: 'POST',
       body: newWebhook,
     })
+
+    announcement.value = 'Webhook created successfully'
+
+    setTimeout(() => {
+      announcement.value = ''
+    }, 3000)
 
     // Reset form
     newWebhook.url = ''
@@ -216,21 +258,30 @@ const createWebhook = async () => {
     await fetchWebhooks()
   } catch (error) {
     logger.error('Error creating webhook:', error)
+    errorMessage.value = 'Failed to create webhook. Please try again.'
   }
 }
 
 // Toggle webhook active status
 const toggleWebhook = async (webhook: Webhook) => {
   try {
+    const newStatus = !webhook.active
     await $fetch(`/api/v1/webhooks/${webhook.id}`, {
       method: 'PUT',
-      body: { active: !webhook.active },
+      body: { active: newStatus },
     })
+
+    announcement.value = newStatus ? 'Webhook activated' : 'Webhook deactivated'
+
+    setTimeout(() => {
+      announcement.value = ''
+    }, 3000)
 
     // Refresh list
     await fetchWebhooks()
   } catch (error) {
     logger.error('Error toggling webhook:', error)
+    errorMessage.value = 'Failed to update webhook status. Please try again.'
   }
 }
 
@@ -242,10 +293,17 @@ const deleteWebhook = async (id: string) => {
         method: 'DELETE',
       })
 
+      announcement.value = 'Webhook deleted successfully'
+
+      setTimeout(() => {
+        announcement.value = ''
+      }, 3000)
+
       // Refresh list
       await fetchWebhooks()
     } catch (error) {
       logger.error('Error deleting webhook:', error)
+      errorMessage.value = 'Failed to delete webhook. Please try again.'
     }
   }
 }
@@ -440,5 +498,13 @@ onMounted(() => {
 
 .btn-danger:hover {
   background: #dc2626;
+}
+
+.error-message {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
 }
 </style>

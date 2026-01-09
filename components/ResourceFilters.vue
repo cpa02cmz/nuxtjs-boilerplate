@@ -21,10 +21,7 @@
         <label
           v-for="category in categories"
           :key="category"
-          class="flex items-center justify-between"
-          :tabindex="0"
-          @keydown.enter.prevent="toggleCategory(category)"
-          @keydown.space.prevent="toggleCategory(category)"
+          class="flex items-center justify-between cursor-pointer"
         >
           <div class="flex items-center">
             <input
@@ -58,10 +55,7 @@
         <label
           v-for="pricingModel in pricingModels"
           :key="pricingModel"
-          class="flex items-center justify-between"
-          :tabindex="0"
-          @keydown.enter.prevent="togglePricingModel(pricingModel)"
-          @keydown.space.prevent="togglePricingModel(pricingModel)"
+          class="flex items-center justify-between cursor-pointer"
         >
           <div class="flex items-center">
             <input
@@ -95,10 +89,7 @@
         <label
           v-for="difficulty in difficultyLevels"
           :key="difficulty"
-          class="flex items-center justify-between"
-          :tabindex="0"
-          @keydown.enter.prevent="toggleDifficultyLevel(difficulty)"
-          @keydown.space.prevent="toggleDifficultyLevel(difficulty)"
+          class="flex items-center justify-between cursor-pointer"
         >
           <div class="flex items-center">
             <input
@@ -132,10 +123,7 @@
         <label
           v-for="technology in technologies"
           :key="technology"
-          class="flex items-center justify-between"
-          :tabindex="0"
-          @keydown.enter.prevent="toggleTechnology(technology)"
-          @keydown.space.prevent="toggleTechnology(technology)"
+          class="flex items-center justify-between cursor-pointer"
         >
           <div class="flex items-center">
             <input
@@ -169,10 +157,7 @@
         <label
           v-for="tag in tags"
           :key="tag"
-          class="flex items-center"
-          :tabindex="0"
-          @keydown.enter.prevent="toggleTag(tag)"
-          @keydown.space.prevent="toggleTag(tag)"
+          class="flex items-center cursor-pointer"
         >
           <input
             type="checkbox"
@@ -198,10 +183,7 @@
         <label
           v-for="benefit in allBenefits"
           :key="benefit"
-          class="flex items-center justify-between"
-          :tabindex="0"
-          @keydown.enter.prevent="toggleBenefit(benefit)"
-          @keydown.space.prevent="toggleBenefit(benefit)"
+          class="flex items-center justify-between cursor-pointer"
         >
           <div class="flex items-center">
             <input
