@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { isValidCategory, isValidEventType } from './constants'
 
 export const validateUrlSchema = z.object({
   url: z.string().url('Invalid URL format'),
@@ -122,8 +123,8 @@ export const analyticsEventSchema = z.object({
     .min(1, 'Event type is required')
     .max(50, 'Event type too long')
     .refine(
-      val => /^[a-z_]+$/.test(val),
-      'Event type must contain only lowercase letters and underscores'
+      val => isValidEventType(val),
+      'Invalid event type. Must be one of: resource_view, search, filter_change, bookmark, comparison, submission'
     ),
   resourceId: z
     .string()
@@ -133,7 +134,14 @@ export const analyticsEventSchema = z.object({
       'Resource ID contains invalid characters'
     )
     .optional(),
-  category: z.string().max(100, 'Category too long').optional(),
+  category: z
+    .string()
+    .max(100, 'Category too long')
+    .refine(
+      val => isValidCategory(val),
+      'Invalid category. Must be one of: Development, Design, Productivity, Marketing, Analytics, Security, AI/ML, DevOps, Testing, Education'
+    )
+    .optional(),
   url: z.string().url('Invalid URL format').optional(),
   userAgent: z.string().max(500, 'User agent too long').optional(),
   ip: z

@@ -987,10 +987,71 @@ export async function insertAnalyticsEvent(event: AnalyticsEvent): Promise<boole
 
 - Type safety via TypeScript
 - Zod schemas for API input validation (`server/utils/validation-schemas.ts`)
+- Shared constants for valid values (`server/utils/constants.ts`)
 - Input sanitization (DOMPurify for XSS prevention)
 - Rate limiting for abuse prevention (database-level aggregation)
-- Event type validation (lowercase letters and underscores only)
+- Event type validation (strict check against VALID_EVENT_TYPES constant)
+- Category validation (strict check against VALID_CATEGORIES constant)
 - IP address format validation (IPv4/IPv6)
+
+#### Validation Constants Architecture
+
+**Location**: `server/utils/constants.ts`
+
+**Purpose**: Single source of truth for valid categories and event types
+
+**Implementation**:
+
+```typescript
+// Valid categories for resources and analytics
+export const VALID_CATEGORIES = [
+  'Development',
+  'Design',
+  'Productivity',
+  'Marketing',
+  'Analytics',
+  'Security',
+  'AI/ML',
+  'DevOps',
+  'Testing',
+  'Education',
+] as const
+
+// Type-safe validation function
+export function isValidCategory(category: string): category is ValidCategory {
+  return VALID_CATEGORIES.includes(category as ValidCategory)
+}
+
+// Valid event types for analytics
+export const VALID_EVENT_TYPES = [
+  'resource_view',
+  'search',
+  'filter_change',
+  'bookmark',
+  'comparison',
+  'submission',
+] as const
+
+// Type-safe validation function
+export function isValidEventType(type: string): type is ValidEventType {
+  return VALID_EVENT_TYPES.includes(type as ValidEventType)
+}
+```
+
+**Usage Points**:
+
+1. **API Validation** (`validation-schemas.ts`): Zod schemas use `isValidCategory()` and `isValidEventType()` to reject invalid data at API boundary
+2. **Quality Checks** (`quality-checks.ts`: Resource submissions validated against `VALID_CATEGORIES`
+3. **Type Safety**: TypeScript type guards ensure compile-time checking
+4. **Error Messages**: Validation errors include list of all valid values for user guidance
+
+**Benefits**:
+
+- Single source of truth eliminates duplication
+- Type-safe validation with TypeScript
+- Consistent validation across all modules
+- Easy to update when adding new categories or event types
+- Clear error messages guide users to correct values
 
 #### Rate Limiting Implementation
 
@@ -1127,17 +1188,19 @@ export async function cleanupOldEvents(
 
 ## 📊 Data Architecture Decision Log
 
-| Date       | Decision                                | Rationale                                                                 |
-| ---------- | --------------------------------------- | ------------------------------------------------------------------------- |
-| 2025-01-07 | Migrate to SQLite from PostgreSQL       | Zero configuration, better for boilerplate, matches better-sqlite3 dep    |
-| 2025-01-07 | Consolidate to Prisma ORM               | Single source of truth, type safety, migrations, query optimization       |
-| 2025-01-07 | Add composite indexes                   | Optimize common query patterns (timestamp + resourceId, timestamp + type) |
-| 2025-01-07 | Refactor to database-level aggregation  | Fix N+1 queries, 95% reduction in data transfer                           |
-| 2025-01-07 | Implement Prisma Migrate                | Version-controlled schema changes, reversible migrations                  |
-| 2025-01-07 | Enhanced data validation at boundary    | Centralized Zod schemas, consistent error responses, better type safety   |
-| 2025-01-07 | Made IP field optional in schema        | Handle edge cases where IP unavailable, better data model flexibility     |
-| 2025-01-07 | Database-based rate limiting            | Scalable across instances, efficient aggregation, no in-memory state      |
-| 2025-01-07 | Fix N+1 query in getAggregatedAnalytics | Move category aggregation to Promise.all, 50% reduction in roundtrips     |
+| Date       | Decision                                        | Rationale                                                                   |
+| ---------- | ----------------------------------------------- | --------------------------------------------------------------------------- |
+| 2025-01-07 | Migrate to SQLite from PostgreSQL               | Zero configuration, better for boilerplate, matches better-sqlite3 dep      |
+| 2025-01-07 | Consolidate to Prisma ORM                       | Single source of truth, type safety, migrations, query optimization         |
+| 2025-01-07 | Add composite indexes                           | Optimize common query patterns (timestamp + resourceId, timestamp + type)   |
+| 2025-01-07 | Refactor to database-level aggregation          | Fix N+1 queries, 95% reduction in data transfer                             |
+| 2025-01-07 | Implement Prisma Migrate                        | Version-controlled schema changes, reversible migrations                    |
+| 2025-01-07 | Enhanced data validation at boundary            | Centralized Zod schemas, consistent error responses, better type safety     |
+| 2025-01-07 | Made IP field optional in schema                | Handle edge cases where IP unavailable, better data model flexibility       |
+| 2025-01-07 | Database-based rate limiting                    | Scalable across instances, efficient aggregation, no in-memory state        |
+| 2025-01-07 | Fix N+1 query in getAggregatedAnalytics         | Move category aggregation to Promise.all, 50% reduction in roundtrips       |
+| 2025-01-09 | Added strict category and event type validation | Prevent invalid data from entering system, establish single source of truth |
+| 2025-01-09 | Created shared constants for validation         | Eliminate data duplication, ensure consistency across validation layers     |
 
 ## 📊 Performance Architecture Decision Log
 
