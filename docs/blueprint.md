@@ -359,16 +359,20 @@ Mid-Level (Feature-Specific)
 └── useUrlSync.ts
 
 Low-Level (Core Functionality)
-├── useResourceData.ts
-├── useResourceSearch.ts
-├── useResourceSort.ts
-├── useSearchHistory.ts
-├── useSavedSearches.ts (saved search management)
-├── useUserPreferences.ts
-├── useBookmarks.ts
-├── useLoading.ts
-├── useFocusManagement.ts
-└── useCommunityFeatures.ts
+ ├── useResourceData.ts
+ ├── useResourceSearch.ts
+ ├── useResourceSort.ts
+ ├── useSearchHistory.ts
+ ├── useSavedSearches.ts (saved search management)
+ ├── useUserPreferences.ts
+ ├── useBookmarks.ts
+ ├── useLoading.ts
+ ├── useFocusManagement.ts
+ ├── community/useCommunityFeatures.ts (orchestrator)
+ │   ├── community/useUserProfiles.ts (user profile management)
+ │   ├── community/useComments.ts (comment and reply management)
+ │   ├── community/useVoting.ts (voting system)
+ │   └── community/useModeration.ts (content moderation and flagging)
 
 Utilities (Pure Functions)
 ├── utils/queryParser.ts (query parsing with operators)
@@ -742,22 +746,23 @@ tests/
 
 ## 🔄 Decision Log
 
-| Date       | Category     | Decision                                                        | Impact                                                                                                                                     |
-| ---------- | ------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| 2025-01-07 | Code Quality | Removed duplicate Google Fonts caching in nuxt.config.ts        | Eliminated code duplication, reduced config size                                                                                           |
-| 2025-01-07 | Build System | Created separate nuxt.config.analyze.ts for bundle analysis     | Removed dynamic import anti-pattern, improved build predictability                                                                         |
-| 2025-01-07 | Security     | Removed static CSP meta tag from nuxt.config.ts                 | Centralized CSP in server plugin with nonce support, improved security                                                                     |
-| 2025-01-07 | Architecture | Verified no circular dependencies exist in composables          | Confirmed clean dependency hierarchy                                                                                                       |
-| 2025-01-07 | Code Quality | Extracted shared DOMPurify configuration from utils/sanitize.ts | Eliminated 158 lines of duplicate configuration, improved maintainability                                                                  |
-| 2025-01-07 | Architecture | Created useSearchPage orchestrator composable for search page   | Implemented Layer Separation pattern, moved business logic from page to composable                                                         |
-| 2025-01-07 | Architecture | Refactored pages/search.vue to use orchestrator pattern         | Eliminated 200+ lines of inline filtering logic, improved maintainability                                                                  |
-| 2025-01-07 | Architecture | Search module refactoring to eliminate code duplication         | Eliminated 315 lines of duplicate code, created 4 single-responsibility utilities                                                          |
-| 2025-01-07 | Architecture | Refactored useRecommendationEngine to Strategy Pattern          | Eliminated God Class anti-pattern (437→~80 lines orchestrator), 5 single-responsibility strategies, improved testability                   |
-| 2025-01-07 | Architecture | Layer Separation in analytics and home pages                    | Extracted business logic from page components to dedicated composables, 31% code reduction, improved maintainability                       |
-| 2025-01-07 | Type Safety  | Fixed `any` types in useUrlSync and useCommunityFeatures        | Replaced all `any` types with proper TypeScript interfaces and types, enhanced type checking and IDE support                               |
-| 2025-01-09 | Architecture | Layer Separation in submit page                                 | Extracted business logic from page to dedicated composable (useSubmitPage), 137 lines removed from page component (449→312, 31% reduction) |
-| 2025-01-09 | Architecture | Layer Separation in API keys page                               | Extracted business logic from page to dedicated composable (useApiKeysPage), 60 lines removed from page component (188→128, 32% reduction) |
-| 2025-01-09 | Build System | Added Nuxt 3 globals to TypeScript ESLint config                | Fixed 'no-undef' errors for Nuxt globals ($fetch, ref, computed, etc.) in TypeScript files                                                 |
+| Date       | Category     | Decision                                                        | Impact                                                                                                                                                                                                  |
+| ---------- | ------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2025-01-07 | Code Quality | Removed duplicate Google Fonts caching in nuxt.config.ts        | Eliminated code duplication, reduced config size                                                                                                                                                        |
+| 2025-01-07 | Build System | Created separate nuxt.config.analyze.ts for bundle analysis     | Removed dynamic import anti-pattern, improved build predictability                                                                                                                                      |
+| 2025-01-07 | Security     | Removed static CSP meta tag from nuxt.config.ts                 | Centralized CSP in server plugin with nonce support, improved security                                                                                                                                  |
+| 2025-01-07 | Architecture | Verified no circular dependencies exist in composables          | Confirmed clean dependency hierarchy                                                                                                                                                                    |
+| 2025-01-07 | Code Quality | Extracted shared DOMPurify configuration from utils/sanitize.ts | Eliminated 158 lines of duplicate configuration, improved maintainability                                                                                                                               |
+| 2025-01-07 | Architecture | Created useSearchPage orchestrator composable for search page   | Implemented Layer Separation pattern, moved business logic from page to composable                                                                                                                      |
+| 2025-01-07 | Architecture | Refactored pages/search.vue to use orchestrator pattern         | Eliminated 200+ lines of inline filtering logic, improved maintainability                                                                                                                               |
+| 2025-01-07 | Architecture | Search module refactoring to eliminate code duplication         | Eliminated 315 lines of duplicate code, created 4 single-responsibility utilities                                                                                                                       |
+| 2025-01-07 | Architecture | Refactored useRecommendationEngine to Strategy Pattern          | Eliminated God Class anti-pattern (437→~80 lines orchestrator), 5 single-responsibility strategies, improved testability                                                                                |
+| 2025-01-07 | Architecture | Layer Separation in analytics and home pages                    | Extracted business logic from page components to dedicated composables, 31% code reduction, improved maintainability                                                                                    |
+| 2025-01-07 | Type Safety  | Fixed `any` types in useUrlSync and useCommunityFeatures        | Replaced all `any` types with proper TypeScript interfaces and types, enhanced type checking and IDE support                                                                                            |
+| 2025-01-09 | Architecture | Layer Separation in submit page                                 | Extracted business logic from page to dedicated composable (useSubmitPage), 137 lines removed from page component (449→312, 31% reduction)                                                              |
+| 2025-01-09 | Architecture | Layer Separation in API keys page                               | Extracted business logic from page to dedicated composable (useApiKeysPage), 60 lines removed from page component (188→128, 32% reduction)                                                              |
+| 2025-01-09 | Build System | Added Nuxt 3 globals to TypeScript ESLint config                | Fixed 'no-undef' errors for Nuxt globals ($fetch, ref, computed, etc.) in TypeScript files                                                                                                              |
+| 2026-01-09 | Architecture | Refactored useCommunityFeatures to modular composables          | Eliminated God Class anti-pattern (432→~170 lines orchestrator), created 4 single-responsibility composables, replaced O(n) linear searches with O(1) Map-based indexing, full Vue 3 reactivity support |
 
 ## 🎓 Design Principles Applied
 
@@ -1837,13 +1842,13 @@ All endpoints use standardized error response format:
 
 ## 🚀 DevOps Architecture Decision Log
 
-| Date       | Category     | Decision                                              | Rationale                                                                             |
-| ---------- | ------------ | ----------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| 2026-01-09 | DevOps        | Add TypeScript ESLint plugin and rule configuration            | Fixed 335 lint errors by adding proper TypeScript linting support with underscore-prefixed parameter handling |
-| 2026-01-09 | DevOps        | Configure @typescript-eslint/no-unused-vars rule          | Allow intentionally unused parameters with underscore prefix for type signatures              |
-| 2026-01-09 | Code Quality   | Fix all component Emits interface lint errors       | Vue components now properly declare event type signatures without lint warnings                |
-| 2026-01-09 | Code Quality   | Remove unused imports and variables across codebase      | Reduced technical debt and improved type safety                                         |
-| 2026-01-09 | DevOps        | Update ESLint configuration for flat config format       | Removed tseslint.configs.recommended (not supported in flat config)                 |
+| Date       | Category     | Decision                                            | Rationale                                                                                                     |
+| ---------- | ------------ | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| 2026-01-09 | DevOps       | Add TypeScript ESLint plugin and rule configuration | Fixed 335 lint errors by adding proper TypeScript linting support with underscore-prefixed parameter handling |
+| 2026-01-09 | DevOps       | Configure @typescript-eslint/no-unused-vars rule    | Allow intentionally unused parameters with underscore prefix for type signatures                              |
+| 2026-01-09 | Code Quality | Fix all component Emits interface lint errors       | Vue components now properly declare event type signatures without lint warnings                               |
+| 2026-01-09 | Code Quality | Remove unused imports and variables across codebase | Reduced technical debt and improved type safety                                                               |
+| 2026-01-09 | DevOps       | Update ESLint configuration for flat config format  | Removed tseslint.configs.recommended (not supported in flat config)                                           |
 
 ---
 
@@ -1875,6 +1880,7 @@ export default [
 **`@typescript-eslint/no-unused-vars` Rule**:
 
 Applied to all relevant file types:
+
 - Vue files (`**/*.vue`)
 - Test files (`**/*.test.ts`, `**/*.spec.ts`)
 - Script files (`scripts/**/*.js`)
@@ -1884,11 +1890,13 @@ Applied to all relevant file types:
 - Nuxt plugins (`plugins/**/*.ts`)
 
 **Configuration**:
+
 ```javascript
 '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
 ```
 
 **Rationale**:
+
 - Emits interface parameters (event, value, etc.) are type signatures, not actual variables
 - Underscore prefix (`_`) indicates intentionally unused parameters
 - Prevents false positives for function type definitions
@@ -1896,11 +1904,13 @@ Applied to all relevant file types:
 ### Build Health Metrics
 
 **Before Fix**:
+
 - Lint Errors: 335
 - CI Status: Failing
 - Build Time: ~2-3 minutes
 
 **After Fix**:
+
 - Lint Errors: 0
 - CI Status: Passing
 - Build Time: ~2-3 minutes
@@ -1911,11 +1921,13 @@ Applied to all relevant file types:
 #### 1. Automated Lint Configuration
 
 **Before**: Inline `eslint-disable` comments scattered across files
+
 - Difficult to maintain
 - Inconsistent suppression reasons
 - Global rules not enforced
 
 **After**: Centralized ESLint configuration
+
 - Single source of truth for linting rules
 - Consistent application across all file types
 - Easy to update and maintain
@@ -1923,6 +1935,7 @@ Applied to all relevant file types:
 #### 2. Type Safety Enforcement
 
 **Improvements**:
+
 - All unused imports identified and removed
 - All unused variables identified and removed
 - Proper TypeScript error handling
@@ -1931,6 +1944,7 @@ Applied to all relevant file types:
 #### 3. Code Quality Metrics
 
 **Files Fixed**: 16 files
+
 - Component files: 5
 - Composable files: 1
 - Page files: 3
@@ -1941,9 +1955,9 @@ Applied to all relevant file types:
 - Test files: 1
 
 **Errors Resolved**: 335 total
+
 - TypeScript errors: ~250
 - ESLint configuration errors: ~50
 - Unused variables/imports: ~35
 
 ---
-
