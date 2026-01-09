@@ -27,7 +27,6 @@ export default [
         ...globals.browser,
         ...globals.node,
         $fetch: 'readonly',
-        $fetch: 'readonly',
         useFetch: 'readonly',
         useAsyncData: 'readonly',
         navigateTo: 'readonly',
@@ -254,6 +253,33 @@ export default [
       globals: {
         ...globals.node,
         process: 'readonly',
+        defineNuxtConfig: 'readonly',
+      },
+    },
+  },
+  // Configuration for Nuxt config files
+  {
+    files: ['nuxt.config.ts', 'nuxt.config.analyze.ts'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        process: 'readonly',
+        defineNuxtConfig: 'readonly',
+      },
+    },
+  },
+  // Configuration for Nuxt plugins
+  {
+    files: ['plugins/**/*.ts'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        process: 'readonly',
+        defineNuxtPlugin: 'readonly',
       },
     },
   },

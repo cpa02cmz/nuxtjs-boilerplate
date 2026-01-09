@@ -29,7 +29,7 @@ interface Props {
 }
 
 interface Emits {
-  (event: 'update-sort-option', option: string): void
+  (_event: 'update-sort-option', _option: string): void
 }
 
 const props = withDefaults(defineProps<Props>(), {

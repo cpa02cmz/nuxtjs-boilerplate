@@ -56,11 +56,11 @@ interface Props {
 }
 
 interface Emits {
-  (event: 'use-saved-search', search: SavedSearch): void
-  (event: 'remove-saved-search', query: string): void
+  (_event: 'use-saved-search', search: SavedSearch): void
+  (_event: 'remove-saved-search', query: string): void
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   savedSearches: () => [],
 })
 const emit = defineEmits<Emits>()

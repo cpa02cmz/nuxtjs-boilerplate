@@ -89,14 +89,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import SearchSuggestions from '~/components/SearchSuggestions.vue'
 import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
-
-// Define EventListener type for TypeScript
-type EventListener = (evt: Event) => void
 
 interface Props {
   modelValue: string
@@ -105,8 +102,8 @@ interface Props {
 }
 
 interface Emits {
-  (event: 'update:modelValue', value: string): void
-  (event: 'search', value: string): void
+  (_event: 'update:modelValue', value: string): void
+  (_event: 'search', value: string): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -132,12 +129,7 @@ const {
 } = useAdvancedResourceSearch(resources)
 
 // Use the basic resources composable for fallback
-const {
-  getSuggestions: getBasicSuggestions,
-  getSearchHistory: getBasicSearchHistory,
-  addSearchToHistory: addBasicSearchToHistory,
-  clearSearchHistory: clearBasicSearchHistory,
-} = useResources()
+const { getSuggestions: getBasicSuggestions } = useResources()
 
 // Handle input with debounce
 const handleInput = (event: Event) => {
@@ -230,8 +222,8 @@ const handleClearHistory = () => {
   searchHistory.value = []
 }
 
-const handleNavigate = (direction: 'up' | 'down') => {
-  // This is handled by the SearchSuggestions component
+const handleNavigate = () => {
+  // This is handled by SearchSuggestions component
   // but we can add additional logic here if needed
 }
 
@@ -255,17 +247,17 @@ if (typeof window !== 'undefined') {
   }
 
   const savedSearchAddedHandler = (event: CustomEvent) => {
-    const { name, query } = event.detail
+    const { name } = event.detail
     showToast(`Saved search "${name}" successfully!`, 'success')
   }
 
   const savedSearchUpdatedHandler = (event: CustomEvent) => {
-    const { name, query } = event.detail
+    const { name } = event.detail
     showToast(`Updated saved search "${name}"!`, 'success')
   }
 
   const savedSearchRemovedHandler = (event: CustomEvent) => {
-    const { name, query } = event.detail
+    const { name } = event.detail
     showToast(`Removed saved search "${name}".`, 'info')
   }
 
