@@ -1,7 +1,7 @@
 import { retryWithResult, retryPresets } from '~/server/utils/retry'
 import { getCircuitBreaker } from '~/server/utils/circuit-breaker'
 
-interface UrlValidationResult {
+export interface UrlValidationResult {
   url: string
   status: number | null
   statusText: string | null
