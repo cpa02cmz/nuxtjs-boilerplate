@@ -91,11 +91,19 @@
     </div>
 
     <!-- API Key Created Modal -->
-    <div ref="modalContent" class="modal-content" tabindex="-1" @click.stop>
-      <div ref="modalContent" class="modal-content" tabindex="-1" @click.stop>
+    <div v-if="showKeyCreatedModal" class="modal-overlay" @click="closeModal">
+      <div
+        ref="modalContent"
+        class="modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        tabindex="-1"
+        @click.stop
+      >
         <h3 id="modal-title">New API Key Created</h3>
         <p><strong>Key:</strong> {{ createdApiKey?.key }}</p>
-        <p class="warning">
+        <p class="warning" role="alert">
           Make sure to copy this key now. You won't be able to see it again.
         </p>
         <div class="form-actions">

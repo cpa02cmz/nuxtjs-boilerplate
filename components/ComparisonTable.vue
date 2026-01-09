@@ -1,6 +1,9 @@
 <template>
   <div v-if="resources && resources.length >= 2" class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+    <table
+      class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
+      :aria-label="`Comparison of ${resources.length} resources`"
+    >
       <thead class="bg-gray-50 dark:bg-gray-800">
         <tr>
           <th
@@ -21,7 +24,8 @@
                 {{ resource.category }}
               </div>
               <button
-                class="mt-1 text-red-500 hover:text-red-700 text-xs flex items-center"
+                class="mt-1 text-red-500 hover:text-red-700 text-xs flex items-center focus:outline-none focus:ring-2 focus:ring-red-500 focus:rounded"
+                :aria-label="`Remove ${resource.title} from comparison`"
                 @click="removeResource(resource.id)"
               >
                 <svg
@@ -29,6 +33,7 @@
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     stroke-linecap="round"
