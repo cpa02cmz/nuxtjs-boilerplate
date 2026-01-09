@@ -1,9 +1,18 @@
-import type { Webhook, WebhookDelivery, ApiKey } from '~/types/webhook'
+import type {
+  Webhook,
+  WebhookDelivery,
+  ApiKey,
+  WebhookQueueItem,
+  DeadLetterWebhook,
+} from '~/types/webhook'
 
 // In-memory storage for webhooks (in production, use a database)
 let webhooks: Webhook[] = []
 let webhookDeliveries: WebhookDelivery[] = []
 let apiKeys: ApiKey[] = []
+let webhookQueue: WebhookQueueItem[] = []
+let deadLetterWebhooks: DeadLetterWebhook[] = []
+let idempotencyKeys = new Map<string, WebhookDelivery>()
 
 export const webhookStorage = {
   // Webhook methods
@@ -111,5 +120,68 @@ export const webhookStorage = {
       return true
     }
     return false
+  },
+
+  // Webhook Queue methods
+  getQueue() {
+    return [...webhookQueue].sort(
+      (a, b) =>
+        new Date(a.scheduledFor).getTime() - new Date(b.scheduledFor).getTime()
+    )
+  },
+
+  getQueueItemById(id: string) {
+    return webhookQueue.find(q => q.id === id)
+  },
+
+  addToQueue(item: WebhookQueueItem) {
+    webhookQueue.push(item)
+    return item
+  },
+
+  removeFromQueue(id: string) {
+    const index = webhookQueue.findIndex(q => q.id === id)
+    if (index !== -1) {
+      webhookQueue.splice(index, 1)
+      return true
+    }
+    return false
+  },
+
+  // Dead Letter Queue methods
+  getDeadLetterQueue() {
+    return [...deadLetterWebhooks]
+  },
+
+  getDeadLetterWebhookById(id: string) {
+    return deadLetterWebhooks.find(dl => dl.id === id)
+  },
+
+  addToDeadLetterQueue(item: DeadLetterWebhook) {
+    deadLetterWebhooks.push(item)
+    return item
+  },
+
+  removeFromDeadLetterQueue(id: string) {
+    const index = deadLetterWebhooks.findIndex(dl => dl.id === id)
+    if (index !== -1) {
+      deadLetterWebhooks.splice(index, 1)
+      return true
+    }
+    return false
+  },
+
+  // Idempotency methods
+  getDeliveryByIdempotencyKey(key: string) {
+    return idempotencyKeys.get(key)
+  },
+
+  setDeliveryByIdempotencyKey(key: string, delivery: WebhookDelivery) {
+    idempotencyKeys.set(key, delivery)
+    return delivery
+  },
+
+  hasDeliveryWithIdempotencyKey(key: string) {
+    return idempotencyKeys.has(key)
   },
 }

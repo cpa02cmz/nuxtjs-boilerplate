@@ -1,6 +1,6 @@
 import type { WebhookEvent, WebhookPayload } from '~/types/webhook'
 import { webhookStorage } from '~/server/utils/webhookStorage'
-import { webhookDeliveryService } from '~/server/utils/webhookDelivery'
+import { webhookQueueSystem } from '~/server/utils/webhookQueue'
 import {
   sendBadRequestError,
   sendSuccessResponse,
@@ -12,6 +12,7 @@ export default defineEventHandler(async event => {
     const body = await readBody<{
       event: WebhookEvent
       data: any
+      idempotencyKey?: string
     }>(event)
 
     if (!body.event) {
@@ -19,40 +20,65 @@ export default defineEventHandler(async event => {
       return
     }
 
-    // Find active webhooks that listen to this event
+    const idempotencyKey =
+      body.idempotencyKey ||
+      `evt_${Date.now()}_${Math.random().toString(36).substring(7)}`
+
+    const existingDelivery =
+      webhookStorage.getDeliveryByIdempotencyKey(idempotencyKey)
+    if (existingDelivery) {
+      sendSuccessResponse(event, {
+        message: 'Webhook already delivered (idempotent request)',
+        triggered: 0,
+        queued: 0,
+        existingDelivery: {
+          id: existingDelivery.id,
+          status: existingDelivery.status,
+          createdAt: existingDelivery.createdAt,
+        },
+      })
+      return
+    }
+
     const webhooks = webhookStorage.getWebhooksByEvent(body.event)
 
     if (webhooks.length === 0) {
       sendSuccessResponse(event, {
         message: 'No webhooks to trigger',
         triggered: 0,
+        queued: 0,
       })
       return
     }
 
-    // Create payload
     const payload: WebhookPayload = {
       event: body.event,
       data: body.data,
       timestamp: new Date().toISOString(),
+      idempotencyKey,
     }
 
-    // Trigger webhooks in background
-    let successfulDeliveries = 0
+    let queuedWebhooks = 0
     for (const webhook of webhooks) {
-      const success = await webhookDeliveryService.deliverWebhookWithRetry(
-        webhook,
-        payload
-      )
-      if (success) {
-        successfulDeliveries++
-      }
+      await webhookQueueSystem.deliverWebhook(webhook, payload, {
+        async: true,
+        maxRetries: 3,
+        priority: 0,
+      })
+      queuedWebhooks++
     }
+
+    const queueStats = webhookQueueSystem.getQueueStats()
 
     sendSuccessResponse(event, {
-      message: `Triggered ${webhooks.length} webhooks for event: ${body.event}, ${successfulDeliveries} successful`,
+      message: `Queued ${queuedWebhooks} webhooks for async delivery for event: ${body.event}`,
       triggered: webhooks.length,
-      successful: successfulDeliveries,
+      queued: queuedWebhooks,
+      idempotencyKey,
+      queueStats: {
+        pending: queueStats.pending,
+        nextScheduled: queueStats.nextScheduled,
+      },
     })
   } catch (error) {
     handleApiRouteError(event, error)
