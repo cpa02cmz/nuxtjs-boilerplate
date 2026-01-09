@@ -10,15 +10,13 @@ import {
 
 export default defineEventHandler(async event => {
   try {
-    // Parse the request body
+    // Parse request body
     const body = await readBody(event)
 
     // Basic validation
     if (!body || typeof body !== 'object') {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Invalid request body',
-      })
+      sendBadRequestError(event, 'Invalid request body')
+      return
     }
 
     // Required fields validation
