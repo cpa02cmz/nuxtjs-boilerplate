@@ -37,6 +37,7 @@
 
 <script setup lang="ts">
 import { useBookmarks } from '~/composables/useBookmarks'
+import { computed, ref } from 'vue'
 
 interface Props {
   resourceId?: string
@@ -52,7 +53,11 @@ const props = withDefaults(defineProps<Props>(), {
   url: '',
 })
 
-const { isBookmarked, toggleBookmark } = useBookmarks()
+const { isBookmarked: checkBookmarked, toggleBookmark } = useBookmarks()
+
+const isBookmarked = computed(() =>
+  props.resourceId ? checkBookmarked(props.resourceId) : false
+)
 
 const bookmarkStatus = ref('')
 

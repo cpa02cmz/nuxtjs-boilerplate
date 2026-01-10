@@ -206,8 +206,10 @@ const newApiKey = reactive({
 const fetchApiKeys = async () => {
   try {
     loading.value = true
-    const response = await $fetch('/api/v1/auth/api-keys')
-    apiKeys.value = response.data
+    const response = await $fetch<{ apiKeys: ApiKey[] }>(
+      '/api/v1/auth/api-keys'
+    )
+    apiKeys.value = response.apiKeys ?? response.data ?? []
   } catch (error) {
     logError('Error fetching API keys', error as Error, 'ApiKeysComponent', {
       operation: 'fetchApiKeys',
@@ -220,13 +222,13 @@ const fetchApiKeys = async () => {
 // Create new API key
 const createApiKey = async () => {
   try {
-    const response = await $fetch('/api/v1/auth/api-keys', {
+    const response = await $fetch<{ apiKey: ApiKey }>('/api/v1/auth/api-keys', {
       method: 'POST',
       body: newApiKey,
     })
 
     // Show the created key in a modal
-    createdApiKey.value = response.data
+    createdApiKey.value = response.apiKey ?? response.data
     openModal()
 
     // Reset form
