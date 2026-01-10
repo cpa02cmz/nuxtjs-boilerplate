@@ -147,6 +147,119 @@ const userResponse = await apiClient.get<User>('/api/v1/user')
 | 2026-01-10 | Create ApiClient interface | Define contract for HTTP operations, improve testability, support multiple implementations |
 | 2026-01-10 | Implement FetchApiClient   | Default implementation using Nuxt's built-in $fetch for production use                     |
 
+## 🧑 Community Types Architecture
+
+### Unified Type System
+
+**Location**: `types/community.ts`
+
+### Interface Definition Pattern
+
+The application defines a unified type system for all community features, ensuring type consistency and eliminating type coercion across modules.
+
+### Type Definitions
+
+```typescript
+export interface UserProfile {
+  id: string
+  name: string
+  email: string
+  username?: string
+  role: string
+  isModerator?: boolean
+  joinDate: string
+  joinedAt?: string
+  contributions?: number
+  reputation?: number
+  contributionsDetail?: UserContributions
+  privacy?: UserPrivacy
+}
+
+export interface Comment {
+  id: string
+  resourceId: string
+  content: string
+  userId: string
+  userName: string
+  timestamp: string
+  votes: number
+  replies: Comment[]
+  isEdited: boolean
+  editedAt?: string
+  status: 'active' | 'removed' | 'flagged'
+}
+
+export interface Vote {
+  id: string
+  targetType: string
+  targetId: string
+  userId: string
+  voteType: 'up' | 'down'
+  timestamp: string
+}
+
+export interface Flag {
+  id: string
+  targetType: string
+  targetId: string
+  userId: string
+  reason: string
+  details: string
+  reportedAt: string
+  status: 'pending' | 'reviewed' | 'resolved'
+}
+```
+
+### Callback Interfaces
+
+```typescript
+export interface UpdateVoteCountCallback {
+  (
+    targetType: string,
+    targetId: string,
+    voteType: 'up' | 'down',
+    change: number
+  ): void
+}
+
+export interface UpdateUserContributionsCallback {
+  (userId: string, change: number): void
+}
+
+export interface RemoveCommentByModeratorCallback {
+  (commentId: string): boolean
+}
+
+export interface ModerationActionCallback {
+  (flagId: string, action: string, moderatorNote: string): boolean
+}
+```
+
+### Module Usage
+
+**Community Composables Using Unified Types**:
+
+- `composables/community/useUserProfiles.ts` - User profile management
+- `composables/community/useComments.ts` - Comment system
+- `composables/community/useVoting.ts` - Voting system
+- `composables/community/useModeration.ts` - Content moderation
+- `composables/useCommunityFeatures.ts` - Orchestrator (consumes all above modules)
+
+### Architectural Benefits
+
+✅ **Interface Segregation**: Clean type definitions for each domain
+✅ **Single Source of Truth**: All community types in one file
+✅ **Type Safety**: Eliminates `as any` casts across all modules
+✅ **Dependency Inversion**: Modules depend on type abstractions, not concrete implementations
+✅ **Cross-Module Contracts**: Callback interfaces enable clean inter-module communication
+✅ **Maintainability**: Type changes propagate automatically from single source
+
+### Community Types Decision Log
+
+| Date       | Category    | Decision                       | Rationale                                                                                                 |
+| ---------- | ----------- | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| 2026-01-10 | Type Safety | Create unified community types | Eliminated 11 `as any` casts from useCommunityFeatures, ensuring type safety across all community modules |
+
 ## 🔐 Security Architecture
 
 ### Layered Security Approach
@@ -987,6 +1100,7 @@ tests/
 | 2026-01-10 | Data Architecture | Added composite index (category, timestamp)                     | Optimized analytics queries filtering by category and date, improves getAggregatedAnalytics performance                                                                                                 |
 | 2026-01-10 | Data Architecture | Extracted event mapping helper function                         | Eliminated code duplication in analytics-db.ts, single source of truth for database-to-application event transformation                                                                                 |
 | 2026-01-10 | Architecture      | Module Extraction - Centralized filtering in useFilterUtils     | Eliminated 70+ lines of duplicate filtering logic in useSearchPage, added date range filtering as reusable utility function                                                                             |
+| 2026-01-10 | Type Safety       | Interface Definition - Unified community types                  | Created types/community.ts with unified type definitions, eliminated 11 `as any` casts from useCommunityFeatures.ts, ensured type-safe contracts across all community modules                           |
 
 ## 🎓 Design Principles Applied
 

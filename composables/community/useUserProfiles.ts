@@ -3,47 +3,13 @@
  * Handles user creation, updates, and queries with O(1) lookups
  */
 import { ref, computed } from 'vue'
-
-interface UserContributions {
-  comments: number
-  resources: number
-  votes: number
-}
-
-interface UserPrivacy {
-  showEmail: boolean
-  showActivity: boolean
-}
-
-interface UserProfile {
-  id: string
-  name: string
-  email: string
-  username?: string
-  role: string
-  isModerator?: boolean
-  joinDate: string
-  joinedAt?: string
-  contributions?: number
-  reputation?: number
-  contributionsDetail: UserContributions
-  privacy: UserPrivacy
-}
-
-interface CreateUserData {
-  name: string
-  email: string
-  username?: string
-  role?: string
-}
-
-interface UpdateUserData {
-  name?: string
-  email?: string
-  username?: string
-  role?: string
-  privacy?: Partial<UserPrivacy>
-}
+import type {
+  UserProfile,
+  UserContributions,
+  UserPrivacy,
+  CreateUserData,
+  UpdateUserData,
+} from '~/types/community'
 
 export const useUserProfiles = (initialUsers: UserProfile[] = []) => {
   // Reactive state

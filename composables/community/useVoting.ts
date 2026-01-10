@@ -3,32 +3,12 @@
  * Handles upvote/downvote on comments, resources, etc. with O(1) lookups
  */
 import { ref } from 'vue'
-
-interface Vote {
-  id: string
-  targetType: string
-  targetId: string
-  userId: string
-  voteType: 'up' | 'down'
-  timestamp: string
-}
-
-interface UserProfile {
-  id: string
-}
-
-interface UpdateVoteCountCallback {
-  (
-    targetType: string,
-    targetId: string,
-    voteType: 'up' | 'down',
-    change: number
-  ): void
-}
-
-interface UpdateUserContributionsCallback {
-  (userId: string, change: number): void
-}
+import type {
+  Vote,
+  UserProfile,
+  UpdateVoteCountCallback,
+  UpdateUserContributionsCallback,
+} from '~/types/community'
 
 export const useVoting = (
   initialVotes: Vote[] = [],

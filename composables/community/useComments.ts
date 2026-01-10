@@ -2,36 +2,13 @@
  * Composable for comment management
  * Handles comment creation, updates, deletion, and queries with O(1) lookups
  */
-import { ref, computed } from 'vue'
-
-interface ReplyData {
-  content: string
-}
-
-interface CommentData {
-  resourceId: string
-  content: string
-}
-
-interface Comment {
-  id: string
-  resourceId: string
-  content: string
-  userId: string
-  userName: string
-  timestamp: string
-  votes: number
-  replies: Comment[]
-  isEdited: boolean
-  editedAt?: string
-  status: 'active' | 'removed' | 'flagged'
-}
-
-interface UserProfile {
-  id: string
-  name: string
-  username?: string
-}
+import { ref } from 'vue'
+import type {
+  Comment,
+  CommentData,
+  ReplyData,
+  UserProfile,
+} from '~/types/community'
 
 export const useComments = (initialComments: Comment[] = []) => {
   // Reactive state

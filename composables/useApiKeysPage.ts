@@ -19,7 +19,7 @@ export const useApiKeysPage = () => {
 
       const response = await $fetch<{ data: ApiKey[] }>('/api/v1/auth/api-keys')
 
-      if (response?.data) {
+      if (response && response.data) {
         apiKeys.value = response.data.map(key => ({
           ...key,
           showFullKey: false,

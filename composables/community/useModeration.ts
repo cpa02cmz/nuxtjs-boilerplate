@@ -3,33 +3,17 @@
  * Handles flagging, content removal, and moderation actions with O(1) lookups
  */
 import { ref, computed } from 'vue'
-
-interface Flag {
-  id: string
-  targetType: string
-  targetId: string
-  flaggedBy: string
-  reason: string
-  details: string
-  timestamp: string
-  status: 'pending' | 'reviewed' | 'resolved'
-  moderator?: string
-  moderatorNote?: string
-  actionTaken?: string
-}
-
-interface UserProfile {
-  id: string
-  isModerator?: boolean
-}
-
-interface RemoveCommentByModeratorCallback {
-  (commentId: string): boolean
-}
+import type {
+  Flag,
+  FlagData,
+  UserProfile,
+  RemoveCommentByModeratorCallback,
+} from '~/types/community'
 
 export const useModeration = (
   initialFlags: Flag[] = [],
-  removeCommentByModerator?: RemoveCommentByModeratorCallback
+  removeCommentByModerator?: RemoveCommentByModeratorCallback,
+  moderateContentCallback?: ModerationActionCallback
 ) => {
   // Reactive state
   const flags = ref<Flag[]>([...initialFlags])
@@ -59,10 +43,10 @@ export const useModeration = (
       id: generateId(),
       targetType,
       targetId,
-      flaggedBy: currentUser.id,
+      userId: currentUser.id,
       reason,
       details,
-      timestamp: new Date().toISOString(),
+      reportedAt: new Date().toISOString(),
       status: 'pending',
     }
 
@@ -83,6 +67,37 @@ export const useModeration = (
     if (!currentUser || !currentUser.isModerator) {
       throw new Error('User must be a moderator to moderate content')
     }
+
+    // O(1) map lookup
+    const flag = flagMap.value.get(flagId)
+    if (!flag) return false
+
+    const updatedFlag: Flag = {
+      ...flag,
+      status: 'reviewed' as const,
+      moderator: currentUser.id,
+      moderatorNote,
+      actionTaken: action,
+    }
+
+    // O(1) map update
+    flagMap.value.set(flagId, updatedFlag)
+
+    // Update in array (maintains reactive state)
+    const index = flags.value.findIndex(f => f.id === flagId)
+    if (index !== -1) {
+      flags.value[index] = updatedFlag
+    }
+
+    // Take action on flagged content
+    if (flag.targetType === 'comment' && action === 'removed') {
+      if (removeCommentByModerator) {
+        removeCommentByModerator(flag.targetId)
+      }
+    }
+
+    return true
+  }
 
     // O(1) map lookup
     const flag = flagMap.value.get(flagId)
