@@ -53,40 +53,38 @@ export const useRecommendationEngine = (
     currentCategory?: string
   ): RecommendationResult[] => {
     const recommendations: RecommendationResult[] = []
+    const seenResourceIds = new Set<string>()
 
     if (currentResource) {
       const contentBasedRecs =
         contentBased.getContentBasedRecommendations(currentResource)
       recommendations.push(...contentBasedRecs)
+      contentBasedRecs.forEach(rec => seenResourceIds.add(rec.resource.id))
     }
 
     if (currentCategory) {
       const categoryBasedRecs =
         categoryBased.getCategoryBasedRecommendations(currentCategory)
-      recommendations.push(
-        ...categoryBasedRecs.filter(
-          rec => !recommendations.some(r => r.resource.id === rec.resource.id)
-        )
+      const uniqueCategoryRecs = categoryBasedRecs.filter(
+        rec => !seenResourceIds.has(rec.resource.id)
       )
+      recommendations.push(...uniqueCategoryRecs)
+      uniqueCategoryRecs.forEach(rec => seenResourceIds.add(rec.resource.id))
     }
 
     const trendingRecs = trending.getTrendingRecommendations()
-    recommendations.push(
-      ...trendingRecs
-        .filter(
-          rec => !recommendations.some(r => r.resource.id === rec.resource.id)
-        )
-        .slice(0, Math.min(3, trendingRecs.length))
-    )
+    const uniqueTrendingRecs = trendingRecs
+      .filter(rec => !seenResourceIds.has(rec.resource.id))
+      .slice(0, Math.min(3, trendingRecs.length))
+    recommendations.push(...uniqueTrendingRecs)
+    uniqueTrendingRecs.forEach(rec => seenResourceIds.add(rec.resource.id))
 
     const popularRecs = popular.getPopularRecommendations()
-    recommendations.push(
-      ...popularRecs
-        .filter(
-          rec => !recommendations.some(r => r.resource.id === rec.resource.id)
-        )
-        .slice(0, Math.min(3, popularRecs.length))
-    )
+    const uniquePopularRecs = popularRecs
+      .filter(rec => !seenResourceIds.has(rec.resource.id))
+      .slice(0, Math.min(3, popularRecs.length))
+    recommendations.push(...uniquePopularRecs)
+    uniquePopularRecs.forEach(rec => seenResourceIds.add(rec.resource.id))
 
     return recommendations
       .sort((a, b) => b.score - a.score)
