@@ -93,61 +93,38 @@ export default defineEventHandler(async event => {
     const tagsParam = query.tags as string | undefined
     const hierarchicalTagsParam = query.hierarchicalTags as string | undefined
 
-    // Apply filters
-    if (category) {
-      resources = resources.filter(
-        resource => resource.category.toLowerCase() === category.toLowerCase()
-      )
-    }
+    // Pre-process filter values for single-pass filtering
+    const categoryLower = category?.toLowerCase()
+    const pricingLower = pricing?.toLowerCase()
+    const difficultyLower = difficulty?.toLowerCase()
 
-    if (pricing) {
-      resources = resources.filter(
-        resource =>
-          resource.pricingModel.toLowerCase() === pricing.toLowerCase()
-      )
-    }
-
-    if (difficulty) {
-      resources = resources.filter(
-        resource =>
-          resource.difficulty.toLowerCase() === difficulty.toLowerCase()
-      )
-    }
-
+    let tagsSet: Set<string> | undefined
     if (tagsParam) {
-      // Validate tags parameter - ensure it's a string before splitting
-      if (typeof tagsParam === 'string') {
-        const tags = tagsParam.split(',').map(tag => tag.trim().toLowerCase())
-        resources = resources.filter(resource =>
-          resource.tags.some(tag => tags.includes(tag.toLowerCase()))
-        )
-      } else {
+      if (typeof tagsParam !== 'string') {
         return sendBadRequestError(
           event,
           'Invalid tags parameter. Must be a comma-separated string.'
         )
       }
+      tagsSet = new Set(
+        tagsParam.split(',').map(tag => tag.trim().toLowerCase())
+      )
     }
 
-    // Apply hierarchical tags filter if provided
+    let hierarchicalTagIds: string[] | undefined
     if (hierarchicalTagsParam) {
-      if (typeof hierarchicalTagsParam === 'string') {
-        const hierarchicalTagIds = hierarchicalTagsParam
-          .split(',')
-          .map(tagId => tagId.trim())
-        resources = filterResourcesByHierarchicalTags(
-          resources,
-          hierarchicalTagIds
-        )
-      } else {
+      if (typeof hierarchicalTagsParam !== 'string') {
         return sendBadRequestError(
           event,
           'Invalid hierarchicalTags parameter. Must be a comma-separated string.'
         )
       }
+      hierarchicalTagIds = hierarchicalTagsParam
+        .split(',')
+        .map(tagId => tagId.trim())
     }
 
-    // Apply search if query exists
+    let searchTerm: string | undefined
     if (searchQuery) {
       if (typeof searchQuery !== 'string') {
         return sendBadRequestError(
@@ -155,7 +132,64 @@ export default defineEventHandler(async event => {
           'Invalid search query parameter. Must be a string.'
         )
       }
-      const searchTerm = searchQuery.toLowerCase()
+      searchTerm = searchQuery.toLowerCase()
+    }
+
+    // Combine category, pricing, difficulty, and flat tags into single-pass filter
+    // This reduces from 4 iterations to 1 iteration
+    const basicFiltersActive =
+      categoryLower || pricingLower || difficultyLower || tagsSet !== undefined
+
+    if (basicFiltersActive) {
+      resources = resources.filter(resource => {
+        // Category filter
+        if (
+          categoryLower &&
+          resource.category.toLowerCase() !== categoryLower
+        ) {
+          return false
+        }
+
+        // Pricing filter
+        if (
+          pricingLower &&
+          resource.pricingModel.toLowerCase() !== pricingLower
+        ) {
+          return false
+        }
+
+        // Difficulty filter
+        if (
+          difficultyLower &&
+          resource.difficulty.toLowerCase() !== difficultyLower
+        ) {
+          return false
+        }
+
+        // Tags filter - use Set for O(1) lookup
+        if (tagsSet !== undefined) {
+          const hasMatchingTag = resource.tags.some(tag =>
+            tagsSet!.has(tag.toLowerCase())
+          )
+          if (!hasMatchingTag) {
+            return false
+          }
+        }
+
+        return true
+      })
+    }
+
+    // Apply hierarchical tags filter if provided
+    if (hierarchicalTagIds !== undefined) {
+      resources = filterResourcesByHierarchicalTags(
+        resources,
+        hierarchicalTagIds
+      )
+    }
+
+    // Apply search query filter if provided (last to minimize string matching)
+    if (searchTerm !== undefined) {
       resources = resources.filter(
         resource =>
           resource.title.toLowerCase().includes(searchTerm) ||
