@@ -41,6 +41,7 @@ export default defineEventHandler(async () => {
       { name: 'Submissions', description: 'Resource submissions' },
       { name: 'Validation', description: 'URL validation' },
       { name: 'Export', description: 'Data export' },
+      { name: 'User', description: 'User preferences and settings' },
     ],
     paths: {
       '/api/v1/resources': {
@@ -2038,6 +2039,101 @@ export default defineEventHandler(async () => {
           },
         },
       },
+      '/api/analytics/export/csv': {
+        get: {
+          summary: 'Export analytics as CSV',
+          description:
+            'Export analytics data in CSV format with optional date range filtering. ' +
+            'Rate limited to prevent abuse.',
+          operationId: 'exportAnalyticsCsv',
+          tags: ['Analytics', 'Export'],
+          parameters: [
+            {
+              name: 'startDate',
+              in: 'query',
+              description: 'Start date for analytics export (ISO 8601 format)',
+              required: false,
+              schema: {
+                type: 'string',
+                format: 'date-time',
+              },
+            },
+            {
+              name: 'endDate',
+              in: 'query',
+              description: 'End date for analytics export (ISO 8601 format)',
+              required: false,
+              schema: {
+                type: 'string',
+                format: 'date-time',
+              },
+            },
+          ],
+          responses: {
+            '200': {
+              description: 'CSV file with analytics data',
+              content: {
+                'text/csv': {
+                  schema: {
+                    type: 'string',
+                    format: 'binary',
+                  },
+                },
+              },
+              headers: {
+                'Content-Disposition': {
+                  description: 'Filename for download',
+                  schema: {
+                    type: 'string',
+                    example:
+                      'attachment; filename="analytics-2025-01-01-to-2025-01-10.csv"',
+                  },
+                },
+                'Content-Length': {
+                  description: 'Size of CSV file in bytes',
+                  schema: { type: 'integer' },
+                },
+              },
+            },
+            '400': {
+              description: 'Invalid date range',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/ErrorResponse',
+                  },
+                },
+              },
+            },
+            '429': {
+              description: 'Rate limit exceeded',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/ErrorResponse',
+                  },
+                },
+              },
+              headers: {
+                'Retry-After': {
+                  description: 'Seconds until retry is allowed',
+                  schema: { type: 'integer' },
+                },
+              },
+            },
+            '500': {
+              description: 'Internal server error',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/ErrorResponse',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       '/api/v1/alternatives/{id}': {
         get: {
           summary: 'Get alternatives for resource',
@@ -2912,6 +3008,335 @@ export default defineEventHandler(async () => {
                   schema: {
                     $ref: '#/components/schemas/ErrorResponse',
                   },
+                },
+              },
+            },
+          },
+        },
+      },
+      '/api/user/preferences': {
+        get: {
+          summary: 'Get user preferences',
+          description:
+            'Retrieve user preferences including categories, technologies, skill level, ' +
+            'interests, notification settings, and privacy settings. ' +
+            'In this implementation, returns mock data. Rate limited.',
+          operationId: 'getUserPreferences',
+          tags: ['User'],
+          parameters: [
+            {
+              name: 'userId',
+              in: 'query',
+              description: 'User ID (defaults to default-user if not provided)',
+              required: false,
+              schema: { type: 'string', default: 'default-user' },
+            },
+          ],
+          responses: {
+            '200': {
+              description: 'User preferences',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean', example: true },
+                      preferences: {
+                        type: 'object',
+                        properties: {
+                          id: { type: 'string', description: 'User ID' },
+                          categories: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'Preferred resource categories',
+                          },
+                          technologies: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'Preferred technologies',
+                          },
+                          skillLevel: {
+                            type: 'string',
+                            enum: [
+                              'beginner',
+                              'intermediate',
+                              'advanced',
+                              'expert',
+                            ],
+                            description: 'User skill level',
+                          },
+                          interests: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'User interests',
+                          },
+                          notificationSettings: {
+                            type: 'object',
+                            properties: {
+                              resourceUpdates: {
+                                type: 'boolean',
+                                description: 'Resource update notifications',
+                              },
+                              newContent: {
+                                type: 'boolean',
+                                description: 'New content notifications',
+                              },
+                              weeklyDigest: {
+                                type: 'boolean',
+                                description: 'Weekly digest email',
+                              },
+                            },
+                          },
+                          privacySettings: {
+                            type: 'object',
+                            properties: {
+                              allowPersonalization: {
+                                type: 'boolean',
+                                description:
+                                  'Allow personalized recommendations',
+                              },
+                              allowDataCollection: {
+                                type: 'boolean',
+                                description: 'Allow data collection',
+                              },
+                              allowRecommendationExplanations: {
+                                type: 'boolean',
+                                description: 'Show recommendation explanations',
+                              },
+                            },
+                          },
+                          createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'When preferences were created',
+                          },
+                          lastUpdated: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'When preferences were last updated',
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            '429': {
+              description: 'Rate limit exceeded',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/ErrorResponse',
+                  },
+                },
+              },
+              headers: {
+                'Retry-After': {
+                  description: 'Seconds until retry is allowed',
+                  schema: { type: 'integer' },
+                },
+              },
+            },
+          },
+        },
+        post: {
+          summary: 'Update user preferences',
+          description:
+            'Update user preferences. Supports partial updates - only provided fields will be updated. ' +
+            'In this implementation, returns mock data. Rate limited.',
+          operationId: 'updateUserPreferences',
+          tags: ['User'],
+          parameters: [
+            {
+              name: 'userId',
+              in: 'query',
+              description: 'User ID (defaults to default-user if not provided)',
+              required: false,
+              schema: { type: 'string', default: 'default-user' },
+            },
+          ],
+          requestBody: {
+            required: true,
+            description: 'Preferences to update (partial updates supported)',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    categories: {
+                      type: 'array',
+                      items: { type: 'string' },
+                      description: 'Preferred resource categories',
+                    },
+                    technologies: {
+                      type: 'array',
+                      items: { type: 'string' },
+                      description: 'Preferred technologies',
+                    },
+                    skillLevel: {
+                      type: 'string',
+                      enum: ['beginner', 'intermediate', 'advanced', 'expert'],
+                      description: 'User skill level',
+                    },
+                    interests: {
+                      type: 'array',
+                      items: { type: 'string' },
+                      description: 'User interests',
+                    },
+                    notificationSettings: {
+                      type: 'object',
+                      properties: {
+                        resourceUpdates: {
+                          type: 'boolean',
+                          description: 'Resource update notifications',
+                        },
+                        newContent: {
+                          type: 'boolean',
+                          description: 'New content notifications',
+                        },
+                        weeklyDigest: {
+                          type: 'boolean',
+                          description: 'Weekly digest email',
+                        },
+                      },
+                    },
+                    privacySettings: {
+                      type: 'object',
+                      properties: {
+                        allowPersonalization: {
+                          type: 'boolean',
+                          description: 'Allow personalized recommendations',
+                        },
+                        allowDataCollection: {
+                          type: 'boolean',
+                          description: 'Allow data collection',
+                        },
+                        allowRecommendationExplanations: {
+                          type: 'boolean',
+                          description: 'Show recommendation explanations',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            '200': {
+              description: 'Updated user preferences',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean', example: true },
+                      preferences: {
+                        type: 'object',
+                        properties: {
+                          id: { type: 'string', description: 'User ID' },
+                          categories: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description:
+                              'Updated preferred resource categories',
+                          },
+                          technologies: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'Updated preferred technologies',
+                          },
+                          skillLevel: {
+                            type: 'string',
+                            enum: [
+                              'beginner',
+                              'intermediate',
+                              'advanced',
+                              'expert',
+                            ],
+                            description: 'Updated user skill level',
+                          },
+                          interests: {
+                            type: 'array',
+                            items: { type: 'string' },
+                            description: 'Updated user interests',
+                          },
+                          notificationSettings: {
+                            type: 'object',
+                            properties: {
+                              resourceUpdates: {
+                                type: 'boolean',
+                                description: 'Resource update notifications',
+                              },
+                              newContent: {
+                                type: 'boolean',
+                                description: 'New content notifications',
+                              },
+                              weeklyDigest: {
+                                type: 'boolean',
+                                description: 'Weekly digest email',
+                              },
+                            },
+                          },
+                          privacySettings: {
+                            type: 'object',
+                            properties: {
+                              allowPersonalization: {
+                                type: 'boolean',
+                                description:
+                                  'Allow personalized recommendations',
+                              },
+                              allowDataCollection: {
+                                type: 'boolean',
+                                description: 'Allow data collection',
+                              },
+                              allowRecommendationExplanations: {
+                                type: 'boolean',
+                                description: 'Show recommendation explanations',
+                              },
+                            },
+                          },
+                          createdAt: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'When preferences were created',
+                          },
+                          lastUpdated: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'When preferences were last updated',
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            '400': {
+              description: 'Invalid request body',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/ErrorResponse',
+                  },
+                },
+              },
+            },
+            '429': {
+              description: 'Rate limit exceeded',
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/ErrorResponse',
+                  },
+                },
+              },
+              headers: {
+                'Retry-After': {
+                  description: 'Seconds until retry is allowed',
+                  schema: { type: 'integer' },
                 },
               },
             },
