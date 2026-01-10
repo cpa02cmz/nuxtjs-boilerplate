@@ -33,6 +33,13 @@ const matchesTechnology = (
 const matchesTag = (resource: Resource, tags: string[] | undefined): boolean =>
   !hasActiveFilter(tags) || resource.tags.some(tag => tags!.includes(tag))
 
+const matchesBenefit = (
+  resource: Resource,
+  benefits: string[] | undefined
+): boolean =>
+  !hasActiveFilter(benefits) ||
+  (resource.benefits || []).some(benefit => benefits!.includes(benefit))
+
 const filterByAllCriteria = (
   resources: Resource[],
   filterOptions: FilterOptions
@@ -59,8 +66,61 @@ const parseDate = (dateString: string): number => {
   return isNaN(date.getTime()) ? 0 : date.getTime()
 }
 
+const matchesDateRange = (
+  resource: Resource,
+  dateRange: string | undefined
+): boolean => {
+  if (!dateRange || dateRange === 'anytime') return true
+
+  const now = new Date()
+  const resourceDate = new Date(resource.dateAdded || now)
+  const timeDiff = now.getTime() - resourceDate.getTime()
+  const daysDiff = timeDiff / (1000 * 60 * 60 * 24)
+
+  switch (dateRange) {
+    case 'lastWeek':
+      return daysDiff <= 7
+    case 'lastMonth':
+      return daysDiff <= 30
+    case 'lastYear':
+      return daysDiff <= 365
+    default:
+      return true
+  }
+}
+
+const filterByAllCriteriaWithDateRange = (
+  resources: Resource[],
+  filterOptions: FilterOptions & { dateRange?: string; benefits?: string[] }
+): Resource[] => {
+  const {
+    categories,
+    pricingModels,
+    difficultyLevels,
+    technologies,
+    tags,
+    benefits,
+    dateRange,
+  } = filterOptions
+
+  return resources.filter(
+    resource =>
+      matchesCategory(resource, categories as string[] | undefined) &&
+      matchesPricingModel(resource, pricingModels as string[] | undefined) &&
+      matchesDifficultyLevel(
+        resource,
+        difficultyLevels as string[] | undefined
+      ) &&
+      matchesTechnology(resource, technologies as string[] | undefined) &&
+      matchesTag(resource, tags as string[] | undefined) &&
+      matchesBenefit(resource, benefits as string[] | undefined) &&
+      matchesDateRange(resource, dateRange)
+  )
+}
+
 export const useFilterUtils = () => ({
   filterByAllCriteria,
+  filterByAllCriteriaWithDateRange,
   parseDate,
   hasActiveFilter,
   matchesCategory,
@@ -68,4 +128,6 @@ export const useFilterUtils = () => ({
   matchesDifficultyLevel,
   matchesTechnology,
   matchesTag,
+  matchesBenefit,
+  matchesDateRange,
 })

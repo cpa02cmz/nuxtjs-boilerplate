@@ -3,6 +3,7 @@ import type { SortOption } from '~/types/resource'
 import { useResourceData } from './useResourceData'
 import { useAdvancedResourceSearch } from './useAdvancedResourceSearch'
 import { useFilterUtils } from './useFilterUtils'
+import { useResourceSort } from './useResourceSort'
 import { trackSearch, trackFilter } from '~/utils/analytics'
 
 // Extended filter options for search page
@@ -46,7 +47,7 @@ export const useSearchPage = () => {
     })
     return Array.from(benefitsSet).sort()
   })
-  const { parseDate } = useFilterUtils()
+  const { parseDate, filterByAllCriteriaWithDateRange } = useFilterUtils()
 
   const filterOptions = ref<SearchPageFilterOptions>({
     searchQuery: '',
@@ -63,6 +64,11 @@ export const useSearchPage = () => {
 
   const advancedSearch = useAdvancedResourceSearch(resources.value)
 
+  const { sortResources } = useResourceSort(
+    computed(() => resources.value),
+    sortOption
+  )
+
   const filteredResources = computed(() => {
     if (!resources.value.length) {
       return []
@@ -76,95 +82,16 @@ export const useSearchPage = () => {
       )
     }
 
-    result = result.filter(resource => {
-      const matchesCategory =
-        !filterOptions.value.categories ||
-        filterOptions.value.categories.length === 0 ||
-        filterOptions.value.categories.includes(resource.category)
+    result = result.filter(
+      resource =>
+        filterByAllCriteriaWithDateRange([resource], {
+          ...filterOptions.value,
+          benefits: filterOptions.value.benefits,
+          dateRange: filterOptions.value.dateRange,
+        }).length > 0
+    )
 
-      const matchesPricing =
-        !filterOptions.value.pricingModels ||
-        filterOptions.value.pricingModels.length === 0 ||
-        filterOptions.value.pricingModels.includes(resource.pricingModel)
-
-      const matchesDifficulty =
-        !filterOptions.value.difficultyLevels ||
-        filterOptions.value.difficultyLevels.length === 0 ||
-        filterOptions.value.difficultyLevels.includes(resource.difficulty)
-
-      const matchesTechnology =
-        !filterOptions.value.technologies ||
-        filterOptions.value.technologies.length === 0 ||
-        resource.technology?.some((tech: string) =>
-          filterOptions.value.technologies?.includes(tech)
-        )
-
-      const matchesTag =
-        !filterOptions.value.tags ||
-        filterOptions.value.tags.length === 0 ||
-        resource.tags?.some(tag => filterOptions.value.tags?.includes(tag))
-
-      const matchesBenefit =
-        !filterOptions.value.benefits ||
-        filterOptions.value.benefits.length === 0 ||
-        resource.benefits?.some(benefit =>
-          filterOptions.value.benefits?.includes(benefit)
-        )
-
-      const now = new Date()
-      let matchesDateRange = true
-      if (
-        filterOptions.value.dateRange &&
-        filterOptions.value.dateRange !== 'anytime'
-      ) {
-        const resourceDate = new Date(resource.dateAdded || now)
-        const timeDiff = now.getTime() - resourceDate.getTime()
-        const daysDiff = timeDiff / (1000 * 60 * 60 * 24)
-
-        switch (filterOptions.value.dateRange) {
-          case 'lastWeek':
-            matchesDateRange = daysDiff <= 7
-            break
-          case 'lastMonth':
-            matchesDateRange = daysDiff <= 30
-            break
-          case 'lastYear':
-            matchesDateRange = daysDiff <= 365
-            break
-          default:
-            matchesDateRange = true
-        }
-      }
-
-      return (
-        matchesCategory &&
-        matchesPricing &&
-        matchesDifficulty &&
-        matchesTechnology &&
-        matchesTag &&
-        matchesBenefit &&
-        matchesDateRange
-      )
-    })
-
-    if (sortOption.value !== 'relevance') {
-      result.sort((a, b) => {
-        switch (sortOption.value) {
-          case 'alphabetical-asc':
-            return a.title.localeCompare(b.title)
-          case 'alphabetical-desc':
-            return b.title.localeCompare(a.title)
-          case 'popularity-desc':
-            return b.popularity - a.popularity
-          case 'date-added-desc':
-            return parseDate(b.dateAdded) - parseDate(a.dateAdded)
-          default:
-            return 0
-        }
-      })
-    }
-
-    return result
+    return sortResources(result, sortOption.value)
   })
 
   const facetCounts = computed(() => {
