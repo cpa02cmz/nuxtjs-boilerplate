@@ -556,7 +556,7 @@ describe('useComments', () => {
 
   describe('getUserComments', () => {
     it('should return comments for specific user', () => {
-      const comment1 = commentsManager.addComment(
+      commentsManager.addComment(
         { resourceId: 'resource-1', content: 'Comment 1' },
         mockCurrentUser
       )
@@ -564,7 +564,7 @@ describe('useComments', () => {
         { resourceId: 'resource-1', content: 'Comment 2' },
         mockCurrentUser2
       )
-      const comment3 = commentsManager.addComment(
+      commentsManager.addComment(
         { resourceId: 'resource-2', content: 'Comment 3' },
         mockCurrentUser
       )
