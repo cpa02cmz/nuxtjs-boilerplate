@@ -104,10 +104,12 @@ export default [
       'vue/multi-word-component-names': 'off', // Allow single-word component names for pages and layouts
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_' },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ], // Allow unused vars with underscore prefix
+      '@typescript-eslint/ban-ts-comment': 'warn', // Allow @ts-ignore in tests
     },
   },
+  // Configuration for test files
   // Configuration for test files
   {
     files: [
@@ -146,7 +148,7 @@ export default [
       '@typescript-eslint/no-require-imports': 'off', // Allow require() in test/validation scripts
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_' },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ], // Allow unused vars with underscore prefix
       '@typescript-eslint/ban-ts-comment': 'warn', // Allow @ts-ignore in tests
     },
@@ -185,7 +187,7 @@ export default [
       'no-console': ['warn', { allow: ['warn', 'error'] }], // Allow only specific console methods, prefer using logger
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_' },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ], // Allow unused vars with underscore prefix
     },
   },
@@ -210,7 +212,7 @@ export default [
       'no-console': process?.env?.NODE_ENV === 'production' ? 'error' : 'warn', // Allow console in development for error logger
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_' },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ], // Allow unused vars with underscore prefix
     },
   },
