@@ -85,7 +85,7 @@ export async function getAnalyticsEventsByDateRange(
   includeDeleted: boolean = false
 ): Promise<AnalyticsEvent[]> {
   try {
-    const where: any = {
+    const where: Record<string, unknown> = {
       timestamp: {
         gte: startDate.getTime(),
         lte: endDate.getTime(),
@@ -119,7 +119,7 @@ export async function getAnalyticsEventsForResource(
   includeDeleted: boolean = false
 ): Promise<AnalyticsEvent[]> {
   try {
-    const where: any = {
+    const where: Record<string, unknown> = {
       resourceId,
       timestamp: {
         gte: startDate.getTime(),
@@ -227,23 +227,27 @@ export async function getAggregatedAnalytics(
     ])
 
     const eventsByTypeMap: Record<string, number> = {}
-    eventsByType.forEach((item: any) => {
+    eventsByType.forEach((item: { type: string; _count: number }) => {
       eventsByTypeMap[item.type] = item._count
     })
 
     const resourceViewsMap: Record<string, number> = {}
-    resourceViews.forEach((item: any) => {
-      if (item.resourceId) {
-        resourceViewsMap[item.resourceId] = item._count
+    resourceViews.forEach(
+      (item: { resourceId: string | null; _count: number }) => {
+        if (item.resourceId) {
+          resourceViewsMap[item.resourceId] = item._count
+        }
       }
-    })
+    )
 
     const eventsByCategory: Record<string, number> = {}
-    categoryData.forEach((item: any) => {
-      if (item.category) {
-        eventsByCategory[item.category] = item._count
+    categoryData.forEach(
+      (item: { category: string | null; _count: number }) => {
+        if (item.category) {
+          eventsByCategory[item.category] = item._count
+        }
       }
-    })
+    )
 
     return {
       totalEvents,

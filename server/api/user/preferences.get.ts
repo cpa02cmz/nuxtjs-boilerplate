@@ -40,11 +40,12 @@ export default defineEventHandler(async event => {
       success: true,
       preferences: mockPreferences,
     }
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as { statusCode?: number; statusMessage?: string }
     console.error('Error getting user preferences:', error)
     throw createError({
-      statusCode: error.statusCode || 500,
-      statusMessage: error.statusMessage || 'Failed to get user preferences',
+      statusCode: err.statusCode || 500,
+      statusMessage: err.statusMessage || 'Failed to get user preferences',
     })
   }
 })

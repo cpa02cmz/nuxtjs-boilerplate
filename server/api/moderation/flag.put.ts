@@ -1,9 +1,8 @@
 import { readBody } from 'h3'
 import type { Flag } from '~/types/resource'
 
-// Mock data for demonstration - in a real application, this would come from a database
 let mockFlags: Flag[] = []
-let mockResources: any[] = []
+let mockResources: unknown[] = []
 
 import {
   sendBadRequestError,
@@ -36,8 +35,13 @@ export default defineEventHandler(async event => {
       return
     }
 
-    // Check if resource exists
-    const resourceExists = mockResources.some(res => res.id === body.resourceId)
+    const resourceExists = mockResources.some(
+      res =>
+        res &&
+        typeof res === 'object' &&
+        'id' in res &&
+        (res as { id: string }).id === body.resourceId
+    )
 
     if (!resourceExists) {
       sendNotFoundError(event, 'Resource', body.resourceId)

@@ -24,7 +24,7 @@ export default defineEventHandler(async event => {
       : new Date()
 
     // Export analytics to CSV from database
-    const csvContent = exportAnalyticsToCsv(startDate, endDate)
+    const csvContent = await exportAnalyticsToCsv(startDate, endDate)
 
     // Set response headers for CSV download
     setResponseHeader(event, 'Content-Type', 'text/csv')
@@ -33,20 +33,18 @@ export default defineEventHandler(async event => {
       'Content-Disposition',
       `attachment; filename="analytics-${startDate.toISOString().split('T')[0]}-to-${endDate.toISOString().split('T')[0]}.csv"`
     )
-    setResponseHeader(
-      event,
-      'Content-Length',
-      Buffer.byteLength(csvContent).toString()
-    )
+
+    setResponseHeader(event, 'Content-Length', Buffer.byteLength(csvContent))
+    setResponseHeader(event, 'Content-Length', Buffer.byteLength(csvContent))
 
     setResponseStatus(event, 200)
     return csvContent
-  } catch (error: any) {
+  } catch (error) {
     console.error('Analytics CSV export error:', error)
     setResponseStatus(event, 500)
     return {
       success: false,
-      message: error.message || 'Internal server error',
+      message: error instanceof Error ? error.message : 'Internal server error',
     }
   }
 })
