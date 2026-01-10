@@ -5,7 +5,7 @@ import type {
   WebhookQueueItem,
   DeadLetterWebhook,
 } from '~/types/webhook'
-import { randomUUID } from 'node:crypto'
+import { randomUUID, createHmac } from 'node:crypto'
 import { webhookStorage } from './webhookStorage'
 import { getCircuitBreaker } from './circuit-breaker'
 import { retryWithResult, retryPresets, calculateBackoff } from './retry'
@@ -126,11 +126,11 @@ export class WebhookQueueSystem {
       responseCode = 200
       responseMessage = 'OK'
       success = true
-    } catch (error: any) {
-      responseCode = error.status || 0
-      responseMessage = error.message || 'Unknown error'
+    } catch (error: unknown) {
+      const err = error as { status?: number; message?: string }
+      responseCode = err.status || 0
+      responseMessage = err.message || 'Unknown error'
       success = false
-      throw error
     }
 
     const delivery: WebhookDelivery = {
@@ -204,7 +204,7 @@ export class WebhookQueueSystem {
     })
 
     let success = false
-    let lastError: Error | null = null
+    let lastError: unknown | null = null
 
     try {
       success = await circuitBreaker.execute(
@@ -219,8 +219,8 @@ export class WebhookQueueSystem {
           throw createCircuitBreakerError(webhook.url, lastFailureTimeIso)
         }
       )
-    } catch (error: any) {
-      lastError = error
+    } catch (error: unknown) {
+      lastError = (error as Error) || null
       success = false
     }
 
@@ -359,10 +359,8 @@ export class WebhookQueueSystem {
   }
 
   private generateSignature(payload: WebhookPayload, secret: string): string {
-    const crypto = require('node:crypto')
     const payloadString = JSON.stringify(payload)
-    const signature = crypto
-      .createHmac('sha256', secret)
+    const signature = createHmac('sha256', secret)
       .update(payloadString)
       .digest('hex')
 
