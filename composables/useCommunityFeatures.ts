@@ -20,11 +20,6 @@ import type {
   ReplyData,
   Vote,
   Flag,
-  FlagData,
-  UpdateVoteCountCallback,
-  UpdateUserContributionsCallback,
-  RemoveCommentByModeratorCallback,
-  ModerationActionCallback,
   CreateUserData,
   UpdateUserData,
 } from '~/types/community'
@@ -60,7 +55,7 @@ export const useCommunityFeatures = (
     },
     // Callback to update user contribution counts
     (userId: string, change: number) => {
-      userProfilesComposable.incrementContributions('votes', change)
+      userProfilesComposable.incrementContributions(userId, 'votes', change)
     }
   )
 
@@ -71,15 +66,14 @@ export const useCommunityFeatures = (
       return commentsComposable.removeCommentByModerator(commentId)
     },
     // Callback for moderation actions
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     (flagId: string, action: string, moderatorNote: string) => {
-      // This callback is handled inline in the orchestator methods
+      // This callback is handled inline in the orchestrator methods
       // (flagContent, moderateContent) which use the moderation composable
       return true
     }
+    /* eslint-enable @typescript-eslint/no-unused-vars */
   )
-
-  // Helper to bridge type compatibility between old and new interfaces
-  const currentUser = userProfilesComposable.currentUser
 
   // Set current user
   const setCurrentUser = (user: UserProfile) => {
@@ -109,7 +103,7 @@ export const useCommunityFeatures = (
     const comment = commentsComposable.addComment(commentData, user)
 
     // Update user contributions
-    userProfilesComposable.incrementContributions('comments', 1)
+    userProfilesComposable.incrementContributions(user.id, 'comments', 1)
 
     return comment
   }
@@ -125,11 +119,17 @@ export const useCommunityFeatures = (
 
   const editComment = (commentId: string, newContent: string) => {
     const user = userProfilesComposable.currentUser.value
+    if (!user) {
+      throw new Error('User must be logged in')
+    }
     return commentsComposable.editComment(commentId, newContent, user)
   }
 
   const deleteComment = (commentId: string) => {
     const user = userProfilesComposable.currentUser.value
+    if (!user) {
+      throw new Error('User must be logged in')
+    }
     return commentsComposable.deleteComment(commentId, user)
   }
 
@@ -144,6 +144,9 @@ export const useCommunityFeatures = (
     voteType: 'up' | 'down'
   ) => {
     const user = userProfilesComposable.currentUser.value
+    if (!user) {
+      throw new Error('User must be logged in to vote')
+    }
     return votingComposable.vote(targetType, targetId, voteType, user)
   }
 
@@ -197,7 +200,8 @@ export const useCommunityFeatures = (
   }
 
   const getTopContributors = (limit?: number) => {
-    return userProfilesComposable.getTopContributors(limit || 10)
+    const getContributorsFunc = userProfilesComposable.getTopContributors.value
+    return getContributorsFunc(limit || 10)
   }
 
   // Return composable functions (maintaining backward compatibility)
