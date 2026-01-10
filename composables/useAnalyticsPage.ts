@@ -52,7 +52,9 @@ export const useAnalyticsPage = () => {
   }
 
   const maxDailyCount = computed(() => {
-    if (!analyticsData.value?.dailyTrends) return 1
+    if (!analyticsData.value?.dailyTrends) {
+      return 1
+    }
     return Math.max(...analyticsData.value.dailyTrends.map(day => day.count), 1)
   })
 

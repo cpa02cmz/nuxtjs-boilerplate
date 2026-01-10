@@ -11,21 +11,25 @@
  * - O(1) lookups using Map-based indexing
  * - Reactive state with Vue 3 Composition API
  * - Eliminated N+1 linear searches
+ * - Type-safe: Uses unified community types, no 'as any' casts
  */
-import type { User, Comment, Vote, Flag } from '~/types/resource'
+import type {
+  UserProfile,
+  Comment,
+  CommentData,
+  ReplyData,
+  Vote,
+  Flag,
+  FlagData,
+  UpdateVoteCountCallback,
+  UpdateUserContributionsCallback,
+  RemoveCommentByModeratorCallback,
+  ModerationActionCallback,
+} from '~/types/community'
 import { useUserProfiles } from './community/useUserProfiles'
 import { useComments } from './community/useComments'
 import { useVoting } from './community/useVoting'
 import { useModeration } from './community/useModeration'
-
-interface CommentData {
-  resourceId: string
-  content: string
-}
-
-interface ReplyData {
-  content: string
-}
 
 export const useCommunityFeatures = (
   initialUsers: User[] = [],
@@ -63,6 +67,12 @@ export const useCommunityFeatures = (
     // Callback to remove comments by moderator
     (commentId: string) => {
       return commentsComposable.removeCommentByModerator(commentId)
+    },
+    // Callback for moderation actions
+    (flagId: string, action: string, moderatorNote: string) => {
+      // This callback is handled inline in the orchestator methods
+      // (flagContent, moderateContent) which use the moderation composable
+      return true
     }
   )
 
@@ -70,17 +80,17 @@ export const useCommunityFeatures = (
   const currentUser = userProfilesComposable.currentUser
 
   // Set current user
-  const setCurrentUser = (user: User) => {
-    userProfilesComposable.setCurrentUser(user as any)
+  const setCurrentUser = (user: UserProfile) => {
+    userProfilesComposable.setCurrentUser(user)
   }
 
   // User profile management
-  const createProfile = (userData: Partial<User>) => {
-    return userProfilesComposable.createProfile(userData as any)
+  const createProfile = (userData: CreateUserData) => {
+    return userProfilesComposable.createProfile(userData)
   }
 
-  const updateProfile = (userId: string, updates: Partial<User>) => {
-    return userProfilesComposable.updateProfile(userId, updates as any)
+  const updateProfile = (userId: string, updates: UpdateUserData) => {
+    return userProfilesComposable.updateProfile(userId, updates)
   }
 
   const getUserProfile = (userId: string) => {
@@ -94,7 +104,7 @@ export const useCommunityFeatures = (
       throw new Error('User must be logged in to comment')
     }
 
-    const comment = commentsComposable.addComment(commentData, user as any)
+    const comment = commentsComposable.addComment(commentData, user)
 
     // Update user contributions
     userProfilesComposable.incrementContributions('comments', 1)
@@ -108,17 +118,17 @@ export const useCommunityFeatures = (
       throw new Error('User must be logged in to reply')
     }
 
-    return commentsComposable.addReply(commentId, replyData, user as any)
+    return commentsComposable.addReply(commentId, replyData, user)
   }
 
   const editComment = (commentId: string, newContent: string) => {
     const user = userProfilesComposable.currentUser.value
-    return commentsComposable.editComment(commentId, newContent, user as any)
+    return commentsComposable.editComment(commentId, newContent, user)
   }
 
   const deleteComment = (commentId: string) => {
     const user = userProfilesComposable.currentUser.value
-    return commentsComposable.deleteComment(commentId, user as any)
+    return commentsComposable.deleteComment(commentId, user)
   }
 
   const getCommentsForResource = (resourceId: string) => {
@@ -132,7 +142,7 @@ export const useCommunityFeatures = (
     voteType: 'up' | 'down'
   ) => {
     const user = userProfilesComposable.currentUser.value
-    return votingComposable.vote(targetType, targetId, voteType, user as any)
+    return votingComposable.vote(targetType, targetId, voteType, user)
   }
 
   // Moderation system
@@ -143,11 +153,14 @@ export const useCommunityFeatures = (
     details: string = ''
   ) => {
     const user = userProfilesComposable.currentUser.value
+    if (!user) {
+      throw new Error('User must be logged in to flag content')
+    }
     return moderationComposable.flagContent(
       targetType,
       targetId,
       reason,
-      user as any,
+      user,
       details
     )
   }
@@ -158,10 +171,13 @@ export const useCommunityFeatures = (
     moderatorNote: string = ''
   ) => {
     const user = userProfilesComposable.currentUser.value
+    if (!user) {
+      throw new Error('User must be logged in to moderate content')
+    }
     return moderationComposable.moderateContent(
       flagId,
       action,
-      user as any,
+      user,
       moderatorNote
     )
   }
