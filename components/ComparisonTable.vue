@@ -119,15 +119,18 @@ const getResourceValue = (resource: Resource, field: string) => {
   // Handle nested properties
   if (field.includes('.')) {
     const parts = field.split('.')
-    let value: any = resource
+    let value: unknown = resource
     for (const part of parts) {
-      value = value[part]
+      value = (value as Record<string, unknown>)[part]
       if (value === undefined) break
     }
-    return value
+    return value as string | number | boolean
   }
 
   // Handle direct properties
-  return (resource as any)[field]
+  return (resource as Record<string, unknown>)[field] as
+    | string
+    | number
+    | boolean
 }
 </script>

@@ -74,6 +74,13 @@
 </template>
 
 <script setup lang="ts">
+const props = defineProps<{ statusCode?: number; message?: string }>()
+
+const error = computed(() => ({
+  statusCode: props.statusCode || 500,
+  message: props.message || 'An error occurred',
+}))
+
 const handleRetry = () => {
   if (process.client) {
     window.history.back()
