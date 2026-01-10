@@ -1,5 +1,6 @@
 import type {
   Webhook,
+  WebhookEvent,
   WebhookDelivery,
   ApiKey,
   WebhookQueueItem,
@@ -7,12 +8,12 @@ import type {
 } from '~/types/webhook'
 
 // In-memory storage for webhooks (in production, use a database)
-let webhooks: Webhook[] = []
-let webhookDeliveries: WebhookDelivery[] = []
-let apiKeys: ApiKey[] = []
-let webhookQueue: WebhookQueueItem[] = []
-let deadLetterWebhooks: DeadLetterWebhook[] = []
-let idempotencyKeys = new Map<string, WebhookDelivery>()
+const webhooks: Webhook[] = []
+const webhookDeliveries: WebhookDelivery[] = []
+const apiKeys: ApiKey[] = []
+const webhookQueue: WebhookQueueItem[] = []
+const deadLetterWebhooks: DeadLetterWebhook[] = []
+const idempotencyKeys = new Map<string, WebhookDelivery>()
 
 export const webhookStorage = {
   // Webhook methods
@@ -52,7 +53,9 @@ export const webhookStorage = {
   },
 
   getWebhooksByEvent(event: string) {
-    return webhooks.filter(w => w.events.includes(event as any) && w.active)
+    return webhooks.filter(
+      w => w.events.includes(event as WebhookEvent) && w.active
+    )
   },
 
   // Delivery methods

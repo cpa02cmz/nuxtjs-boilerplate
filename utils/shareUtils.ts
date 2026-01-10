@@ -23,7 +23,7 @@ export const addUTMParams = (
     if (content) urlObj.searchParams.set('utm_content', content)
 
     return urlObj.toString()
-  } catch (_error) {
+  } catch {
     // If URL parsing fails, return the original URL
     return url
   }
