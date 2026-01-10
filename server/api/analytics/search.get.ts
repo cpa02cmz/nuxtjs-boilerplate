@@ -113,14 +113,16 @@ export default defineEventHandler(async event => {
     }
 
     return response
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching search analytics:', error)
 
-    // Return error response
     return {
       success: false,
       message: 'An error occurred while fetching search analytics',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      error:
+        process.env.NODE_ENV === 'development' && error instanceof Error
+          ? error.message
+          : undefined,
     }
   }
 })

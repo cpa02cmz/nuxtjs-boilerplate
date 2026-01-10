@@ -54,11 +54,15 @@ export default defineEventHandler(async event => {
         end: endDate.toISOString(),
       },
     }
-  } catch (error: any) {
-    logError('Analytics data error:', error, 'analytics/data.get')
+  } catch (error) {
+    logError(
+      'Analytics data error:',
+      error instanceof Error ? error : undefined,
+      'analytics/data.get'
+    )
     return {
       success: false,
-      message: error.message || 'Internal server error',
+      message: error instanceof Error ? error.message : 'Internal server error',
     }
   }
 })

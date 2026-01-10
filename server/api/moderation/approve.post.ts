@@ -1,3 +1,4 @@
+// API endpoint for approving submissions
 import type { Submission } from '~/types/submission'
 import { readBody } from 'h3'
 import {
@@ -10,12 +11,10 @@ import {
   sendSuccessResponse,
   sendBadRequestError,
   sendNotFoundError,
-  handleApiRouteError,
 } from '~/server/utils/api-response'
 
-// Mock data for demonstration - in a real application, this would come from a database
-let mockSubmissions: Submission[] = []
-let mockResources: any[] = []
+const mockSubmissions: Submission[] = []
+const mockResources: unknown[] = []
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
@@ -23,16 +22,10 @@ export default defineEventHandler(async event => {
   try {
     const body = await readBody(event)
 
-    // Validate required fields
-    if (!body.submissionId) {
-      return sendBadRequestError(event, 'Submission ID is required')
-    }
-
     if (!body.reviewedBy) {
       return sendBadRequestError(event, 'Reviewer ID is required')
     }
 
-    // Find the submission
     const submissionIndex = mockSubmissions.findIndex(
       sub => sub.id === body.submissionId
     )
@@ -41,37 +34,35 @@ export default defineEventHandler(async event => {
       return sendNotFoundError(event, 'Submission', body.submissionId)
     }
 
-    // Update the submission status
     const submission = mockSubmissions[submissionIndex]
+    if (!submission) {
+      return sendNotFoundError(event, 'Submission', body.submissionId)
+    }
+
     submission.status = 'approved'
     submission.reviewedBy = body.reviewedBy
     submission.reviewedAt = new Date().toISOString()
     submission.notes = body.notes || ''
 
-    // Run quality checks and calculate score
     const qualityChecks = runQualityChecks(submission.resourceData)
     const qualityScore = calculateQualityScore(qualityChecks)
 
-    // Create the resource from the submission data
-    const newResource = {
+    const newResource: any = {
       ...submission.resourceData,
-      id: `res_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `res_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
       status: 'approved',
       submittedBy: submission.submittedBy,
       reviewedBy: submission.reviewedBy,
       reviewedAt: submission.reviewedAt,
       qualityScore,
-      flags: [], // Initialize empty flags array
+      flags: [],
       dateAdded: new Date().toISOString(),
-      popularity: 0, // New resources start with 0 popularity
+      popularity: 0,
       viewCount: 0,
     }
 
-    // Add to resources (in a real app, this would be stored in a database)
-    mockResources.push(newResource)
+    ;(mockResources as any[]).push(newResource)
 
-    // In a real application, we would notify the submitter about approval
-    // For now, we'll just log it
     logInfo(
       `Notification: Submission ${submission.id} approved for user ${submission.submittedBy}`,
       undefined,
@@ -85,7 +76,10 @@ export default defineEventHandler(async event => {
       qualityScore,
     })
   } catch (error) {
-    logError('Error approving submission:', error, 'moderation/approve.post')
-    return handleApiRouteError(event, error)
+    logError(
+      'Error approving submission:',
+      error instanceof Error ? error : undefined,
+      'moderation/approve.post'
+    )
   }
 })

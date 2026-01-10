@@ -66,11 +66,12 @@ export default defineEventHandler(async event => {
       success: true,
       preferences: updatedPreferences,
     }
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as { statusCode?: number; statusMessage?: string }
     console.error('Error updating user preferences:', error)
     throw createError({
-      statusCode: error.statusCode || 500,
-      statusMessage: error.statusMessage || 'Failed to update user preferences',
+      statusCode: err.statusCode || 500,
+      statusMessage: err.statusMessage || 'Failed to update user preferences',
     })
   }
 })
