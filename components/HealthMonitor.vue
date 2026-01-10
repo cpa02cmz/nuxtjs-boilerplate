@@ -101,6 +101,14 @@ interface Props {
   url?: string
 }
 
+interface ValidationHistoryItem {
+  isAccessible: boolean
+  timestamp: string
+  status?: number
+  statusText?: string
+  responseTime?: number
+}
+
 interface HealthStatus {
   id: string
   url: string
@@ -110,7 +118,7 @@ interface HealthStatus {
   lastStatusText: string | null
   responseTime: number | null
   error?: string
-  validationHistory: any[]
+  validationHistory: ValidationHistoryItem[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
