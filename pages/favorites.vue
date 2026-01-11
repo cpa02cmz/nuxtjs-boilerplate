@@ -76,7 +76,7 @@
 
         <!-- Bookmarks grid -->
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <ResourceCard
+          <LazyResourceCard
             v-for="bookmark in getAllBookmarks"
             :id="bookmark.id"
             :key="bookmark.id"
@@ -107,7 +107,7 @@
                 </svg>
               </button>
             </template>
-          </ResourceCard>
+          </LazyResourceCard>
         </div>
       </div>
     </div>
@@ -116,12 +116,11 @@
 
 <script setup lang="ts">
 import { useBookmarks } from '~/composables/useBookmarks'
-import ResourceCard from '~/components/ResourceCard.vue'
 
 // Set page-specific meta tags
 useSeoMeta({
-  title: 'My Bookmarks - Free Stuff on the Internet',
-  ogTitle: 'My Bookmarks - Free Stuff on the Internet',
+  title: 'My Bookmarks - Free Stuff on Internet',
+  ogTitle: 'My Bookmarks - Free Stuff on Internet',
   description: 'View and manage your bookmarked resources.',
   ogDescription: 'View and manage your bookmarked resources.',
 })

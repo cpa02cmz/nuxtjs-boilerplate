@@ -120,7 +120,7 @@
 
             <!-- Resources Grid -->
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              <ResourceCard
+              <LazyResourceCard
                 v-for="resource in filteredResources"
                 :id="resource.id"
                 :key="resource.id"
@@ -164,7 +164,7 @@
               Trending Resources
             </h2>
             <div class="grid grid-cols-1 gap-6">
-              <ResourceCard
+              <LazyResourceCard
                 v-for="resource in trendingResources"
                 :key="resource.id"
                 :title="resource.title"
@@ -199,7 +199,6 @@ import { useResources } from '~/composables/useResources'
 import { useUrlSync } from '~/composables/useUrlSync'
 import { useHomePage } from '~/composables/useHomePage'
 import { getButtonLabel } from '~/utils/resourceHelper'
-import ResourceCard from '~/components/ResourceCard.vue'
 import SearchBar from '~/components/SearchBar.vue'
 import ResourceSort from '~/components/ResourceSort.vue'
 import ResourceFilters from '~/components/ResourceFilters.vue'

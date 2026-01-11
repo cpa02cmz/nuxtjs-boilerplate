@@ -129,7 +129,7 @@
               :overscan="3"
             >
               <template #default="{ item: resource }">
-                <ResourceCard
+                <LazyResourceCard
                   :id="resource.id"
                   :key="resource.id"
                   :title="resource.title"
@@ -160,7 +160,6 @@ import { useSearchPage } from '~/composables/useSearchPage'
 import SearchBar from '~/components/SearchBar.vue'
 import ResourceFilters from '~/components/ResourceFilters.vue'
 import ResourceSort from '~/components/ResourceSort.vue'
-import ResourceCard from '~/components/ResourceCard.vue'
 import VirtualResourceList from '~/components/VirtualResourceList.vue'
 import PopularSearches from '~/components/PopularSearches.vue'
 import ZeroResultSearches from '~/components/ZeroResultSearches.vue'

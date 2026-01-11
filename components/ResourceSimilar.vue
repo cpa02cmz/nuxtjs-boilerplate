@@ -10,7 +10,7 @@
       </NuxtLink>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <ResourceCard
+      <LazyResourceCard
         v-for="resource in resources"
         :key="resource.id"
         :title="resource.title"
@@ -25,7 +25,6 @@
 
 <script setup lang="ts">
 import type { Resource } from '~/composables/useResources'
-import ResourceCard from '~/components/ResourceCard.vue'
 
 interface Props {
   resources: Resource[]

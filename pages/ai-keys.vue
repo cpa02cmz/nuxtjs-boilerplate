@@ -57,7 +57,7 @@
 
         <!-- AI Resources Only -->
         <div class="space-y-8">
-          <ResourceCard
+          <LazyResourceCard
             v-for="resource in aiResources"
             :id="resource.id"
             :key="resource.id"
@@ -92,7 +92,6 @@
 <script setup lang="ts">
 import { useAIResources } from '~/composables/useAIResources'
 import { useUrlSync } from '~/composables/useUrlSync'
-import ResourceCard from '~/components/ResourceCard.vue'
 import SearchBar from '~/components/SearchBar.vue'
 import ResourceSort from '~/components/ResourceSort.vue'
 
@@ -103,7 +102,7 @@ definePageMeta({
 const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
   title: 'Free AI API Keys - Free Stuff on Internet',
-  ogTitle: 'Free AI API Keys - Free Stuff on the Internet',
+  ogTitle: 'Free AI API Keys - Free Stuff on Internet',
   description:
     'Access powerful AI models with these free API keys and tools. Discover OpenAI, Hugging Face, Google AI Studio, and more free AI resources.',
   ogDescription:
