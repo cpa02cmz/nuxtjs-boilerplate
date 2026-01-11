@@ -97,51 +97,31 @@ export const useSearchPage = () => {
   const facetCounts = computed(() => {
     const searchQuery = filterOptions.value.searchQuery || ''
 
-    const categoryCounts = advancedSearch.calculateFacetCounts(
-      searchQuery,
-      'category'
-    )
-    const pricingCounts = advancedSearch.calculateFacetCounts(
-      searchQuery,
-      'pricingModel'
-    )
-    const difficultyCounts = advancedSearch.calculateFacetCounts(
-      searchQuery,
-      'difficultyLevel'
-    )
-    const technologyCounts = advancedSearch.calculateFacetCounts(
-      searchQuery,
-      'technologies'
-    )
-    const tagCounts = advancedSearch.calculateFacetCounts(searchQuery, 'tags')
-    const benefitCounts = advancedSearch.calculateFacetCounts(
-      searchQuery,
-      'benefits'
-    )
+    const allFacets = advancedSearch.calculateAllFacetCounts(searchQuery)
 
     const allCounts: Record<string, number> = {}
 
-    Object.entries(categoryCounts).forEach(([key, value]) => {
+    Object.entries(allFacets.category).forEach(([key, value]) => {
       allCounts[`category_${key}`] = value
     })
 
-    Object.entries(pricingCounts).forEach(([key, value]) => {
+    Object.entries(allFacets.pricingModel).forEach(([key, value]) => {
       allCounts[`pricing_${key}`] = value
     })
 
-    Object.entries(difficultyCounts).forEach(([key, value]) => {
+    Object.entries(allFacets.difficulty).forEach(([key, value]) => {
       allCounts[`difficulty_${key}`] = value
     })
 
-    Object.entries(technologyCounts).forEach(([key, value]) => {
+    Object.entries(allFacets.technology).forEach(([key, value]) => {
       allCounts[`technology_${key}`] = value
     })
 
-    Object.entries(tagCounts).forEach(([key, value]) => {
+    Object.entries(allFacets.tags).forEach(([key, value]) => {
       allCounts[`tag_${key}`] = value
     })
 
-    Object.entries(benefitCounts).forEach(([key, value]) => {
+    Object.entries(allFacets.benefits).forEach(([key, value]) => {
       allCounts[`benefits_${key}`] = value
     })
 

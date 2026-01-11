@@ -80,7 +80,7 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
 
   const calculateFacetCounts = (
     query: string,
-    filterKey: string
+    filterKey: keyof Resource
   ): FacetCounts => {
     const allResources = query ? advancedSearchResources(query) : [...resources]
     const counts: FacetCounts = {}
@@ -89,16 +89,80 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
       const value = resource[filterKey] as unknown
       if (value) {
         if (Array.isArray(value)) {
-          const itemKey = item as string
-          counts[itemKey] = (counts[itemKey] || 0) + 1
+          value.forEach((item: string) => {
+            counts[item] = (counts[item] || 0) + 1
+          })
         } else if (typeof value === 'string') {
-          const valueKey = value as string
-          counts[valueKey] = (counts[valueKey] || 0) + 1
+          counts[value] = (counts[value] || 0) + 1
         }
       }
     })
 
     return counts
+  }
+
+  const calculateAllFacetCounts = (
+    query: string
+  ): {
+    category: FacetCounts
+    pricingModel: FacetCounts
+    difficulty: FacetCounts
+    technology: FacetCounts
+    tags: FacetCounts
+    benefits: FacetCounts
+  } => {
+    const allResources = query ? advancedSearchResources(query) : [...resources]
+
+    const categoryCounts: FacetCounts = {}
+    const pricingCounts: FacetCounts = {}
+    const difficultyCounts: FacetCounts = {}
+    const technologyCounts: FacetCounts = {}
+    const tagCounts: FacetCounts = {}
+    const benefitCounts: FacetCounts = {}
+
+    allResources.forEach(resource => {
+      if (resource.category) {
+        categoryCounts[resource.category] =
+          (categoryCounts[resource.category] || 0) + 1
+      }
+
+      if (resource.pricingModel) {
+        pricingCounts[resource.pricingModel] =
+          (pricingCounts[resource.pricingModel] || 0) + 1
+      }
+
+      if (resource.difficulty) {
+        difficultyCounts[resource.difficulty] =
+          (difficultyCounts[resource.difficulty] || 0) + 1
+      }
+
+      if (Array.isArray(resource.technology)) {
+        resource.technology.forEach((tech: string) => {
+          technologyCounts[tech] = (technologyCounts[tech] || 0) + 1
+        })
+      }
+
+      if (Array.isArray(resource.tags)) {
+        resource.tags.forEach((tag: string) => {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1
+        })
+      }
+
+      if (Array.isArray(resource.benefits)) {
+        resource.benefits.forEach((benefit: string) => {
+          benefitCounts[benefit] = (benefitCounts[benefit] || 0) + 1
+        })
+      }
+    })
+
+    return {
+      category: categoryCounts,
+      pricingModel: pricingCounts,
+      difficulty: difficultyCounts,
+      technology: technologyCounts,
+      tags: tagCounts,
+      benefits: benefitCounts,
+    }
   }
 
   const getFacetedResults = (
@@ -110,7 +174,7 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     Object.entries(filters).forEach(([key, values]) => {
       if (values.length > 0) {
         results = results.filter(resource => {
-          const resourceValue = resource[key] as unknown
+          const resourceValue = resource[key as keyof Resource] as unknown
 
           if (Array.isArray(resourceValue)) {
             return resourceValue.some((item: string) => values.includes(item))
@@ -122,8 +186,6 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         })
       }
     })
-
-    return results
 
     return results
   }
@@ -157,6 +219,7 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     savedSearches,
     advancedSearchResources,
     calculateFacetCounts,
+    calculateAllFacetCounts,
     getFacetedResults,
     getAdvancedSuggestions,
     highlightSearchTerms,
