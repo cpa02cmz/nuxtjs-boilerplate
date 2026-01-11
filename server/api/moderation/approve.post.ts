@@ -47,7 +47,7 @@ export default defineEventHandler(async event => {
     const qualityChecks = runQualityChecks(submission.resourceData)
     const qualityScore = calculateQualityScore(qualityChecks)
 
-    const newResource: any = {
+    const newResource = {
       ...submission.resourceData,
       id: `res_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
       status: 'approved',
@@ -59,9 +59,9 @@ export default defineEventHandler(async event => {
       dateAdded: new Date().toISOString(),
       popularity: 0,
       viewCount: 0,
-    }
+    } as Record<string, unknown>
 
-    ;(mockResources as any[]).push(newResource)
+    ;(mockResources as unknown[]).push(newResource)
 
     logInfo(
       `Notification: Submission ${submission.id} approved for user ${submission.submittedBy}`,

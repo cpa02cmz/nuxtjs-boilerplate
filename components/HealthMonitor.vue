@@ -94,10 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  ValidationHistoryItem,
-  HealthStatus,
-} from '~/composables/useResourceHealth'
+import { useResourceHealth } from '~/composables/useResourceHealth'
 
 interface Props {
   resourceId?: string

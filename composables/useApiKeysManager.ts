@@ -1,4 +1,4 @@
-import { readonly, ref } from 'vue'
+import { ref } from 'vue'
 import { logError } from '~/utils/errorLogger'
 import type { ApiKey } from '~/types/webhook'
 

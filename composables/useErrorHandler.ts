@@ -86,7 +86,7 @@ export const useErrorHandler = () => {
       severity?: ErrorSeverity
       component?: string
       fallbackValue?: T
-      onError?: any
+      onError?: (error: Error) => void
     } = {}
   ): Promise<T | null> => {
     const { severity = 'error', component, fallbackValue, onError } = options

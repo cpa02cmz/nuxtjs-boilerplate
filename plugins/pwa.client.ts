@@ -38,8 +38,11 @@ export default defineNuxtPlugin(() => {
     if (deferredPrompt.value) {
       deferredPrompt.value.prompt()
       deferredPrompt.value.userChoice.then(choiceResult => {
+        // Handle user choice silently - prompt was shown and user responded
         if (choiceResult.outcome === 'accepted') {
+          // PWA was installed
         } else {
+          // PWA installation was dismissed
         }
         deferredPrompt.value = null
         showInstallPrompt.value = false

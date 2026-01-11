@@ -316,7 +316,7 @@ const setupFocusTrap = () => {
 
     const focusableElements = mobileMenuRef.value.querySelectorAll(
       'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled])'
-    ) as NodeListOf<HTMLElement>
+    ) as unknown as NodeListOf<HTMLElement>
 
     if (focusableElements.length > 0) {
       firstFocusableElement.value = focusableElements[0]

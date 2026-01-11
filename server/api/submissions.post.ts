@@ -23,7 +23,7 @@ export default defineEventHandler(async event => {
         event,
         firstError.path[0] as string,
         firstError.message,
-        (firstError as any).received
+        (body as Record<string, unknown>)[firstError.path[0] as string]
       )
     }
 
