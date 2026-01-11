@@ -8,10 +8,7 @@
       Skip to main content
     </a>
 
-    <header
-      class="bg-white shadow"
-      role="banner"
-    >
+    <header class="bg-white shadow" role="banner">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
           <div class="flex items-center">
@@ -229,24 +226,16 @@
         </div>
       </div>
     </header>
-    <main
-      id="main-content"
-      role="main"
-    >
+    <main id="main-content" role="main">
       <slot />
     </main>
-    <footer
-      class="bg-white mt-8 py-6 border-t"
-      role="contentinfo"
-    >
+    <footer class="bg-white mt-8 py-6 border-t" role="contentinfo">
       <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 text-sm"
       >
         © {{ new Date().getFullYear() }} Free Stuff on the Internet. All rights
         reserved.
-        <p class="sr-only">
-          Footer content ends
-        </p>
+        <p class="sr-only">Footer content ends</p>
       </div>
     </footer>
 
@@ -263,6 +252,7 @@
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, navigateTo } from '#app'
 import { useResources } from '~/composables/useResources'
+import type { NodeListOf } from 'dom'
 import SearchBar from '~/components/SearchBar.vue'
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
 

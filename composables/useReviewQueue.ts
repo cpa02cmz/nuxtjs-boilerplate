@@ -2,14 +2,6 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { logError } from '~/utils/errorLogger'
 import type { Submission } from '~/types/submission'
 
-interface ReviewQueueState {
-  submissions: Submission[]
-  loading: boolean
-  error: string
-  statusFilter: string
-  categoryFilter: string
-}
-
 export function useReviewQueue(initialSubmissions: Submission[] = []) {
   const submissions = ref<Submission[]>(initialSubmissions)
   const loading = ref(true)

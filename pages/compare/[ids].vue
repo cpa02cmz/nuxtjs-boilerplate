@@ -9,10 +9,7 @@
       </p>
     </div>
 
-    <div
-      v-if="loading"
-      class="flex justify-center items-center py-12"
-    >
+    <div v-if="loading" class="flex justify-center items-center py-12">
       <div
         class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"
       />
@@ -159,7 +156,7 @@ const fetchComparison = async () => {
     })
 
     resources.value = response.resources || []
-  } catch (err: any) {
+  } catch (err) {
     logger.error('Error fetching comparison:', err)
     error.value =
       err.data?.statusMessage || err.message || 'Failed to load comparison'
