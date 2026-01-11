@@ -83,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import { logError } from '~/utils/errorLogger'
+import { useReviewQueue } from '~/composables/useReviewQueue'
 import type { Submission } from '~/types/submission'
 
 interface Props {
@@ -94,75 +94,16 @@ const props = withDefaults(defineProps<Props>(), {
   initialSubmissions: () => [],
 })
 
-const statusFilter = ref('')
-const categoryFilter = ref('')
-const loading = ref(true)
-const error = ref('')
-const submissions = ref<Submission[]>(props.initialSubmissions)
-
-// Fetch submissions from API
-const fetchSubmissions = async () => {
-  try {
-    loading.value = true
-    error.value = ''
-
-    const response = await $fetch('/api/moderation/queue', {
-      params: {
-        status: statusFilter.value,
-        category: categoryFilter.value,
-      },
-    })
-
-    if (response.success) {
-      submissions.value = response.queue || []
-    } else {
-      error.value = response.message || 'Failed to load submissions'
-    }
-  } catch (err) {
-    error.value = 'An error occurred while fetching submissions'
-    logError(
-      'Error fetching submissions in ReviewQueue:',
-      err as Error,
-      'ReviewQueue'
-    )
-  } finally {
-    loading.value = false
-  }
-}
-
-// Computed filtered submissions based on filters
-const filteredSubmissions = computed(() => {
-  let result = [...submissions.value]
-
-  if (statusFilter.value) {
-    result = result.filter(sub => sub.status === statusFilter.value)
-  }
-
-  if (categoryFilter.value) {
-    result = result.filter(sub =>
-      sub.resourceData?.category
-        ?.toLowerCase()
-        .includes(categoryFilter.value.toLowerCase())
-    )
-  }
-
-  return result
-})
-
-// Watch filters and fetch updated data
-watch([statusFilter, categoryFilter], () => {
-  fetchSubmissions()
-})
-
-// Initialize data
-onMounted(() => {
-  fetchSubmissions()
-})
-
-// Helper function to format date
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString()
-}
+const {
+  submissions,
+  loading,
+  error,
+  statusFilter,
+  categoryFilter,
+  filteredSubmissions,
+  formatDate,
+  fetchSubmissions,
+} = useReviewQueue(props.initialSubmissions)
 </script>
 
 <style scoped>
