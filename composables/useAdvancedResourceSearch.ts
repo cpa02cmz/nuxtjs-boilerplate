@@ -62,8 +62,8 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     } else {
       for (const term of parsed.terms) {
         const searchResults = fuse.search(term)
-        const termResults = searchResults.map(item => item.item)
-        results = [...results, ...termResults]
+        const termResources = searchResults.map(item => item.item)
+        results = [...results, ...termResources]
       }
 
       const resultMap = new Map(results.map(r => [r.id, r]))
@@ -86,14 +86,14 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     const counts: FacetCounts = {}
 
     allResources.forEach(resource => {
-      const value = (resource as any)[filterKey]
+      const value = resource[filterKey] as unknown
       if (value) {
         if (Array.isArray(value)) {
-          value.forEach(item => {
-            counts[item] = (counts[item] || 0) + 1
-          })
-        } else {
-          counts[value] = (counts[value] || 0) + 1
+          const itemKey = item as string
+          counts[itemKey] = (counts[itemKey] || 0) + 1
+        } else if (typeof value === 'string') {
+          const valueKey = value as string
+          counts[valueKey] = (counts[valueKey] || 0) + 1
         }
       }
     })
@@ -110,7 +110,7 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     Object.entries(filters).forEach(([key, values]) => {
       if (values.length > 0) {
         results = results.filter(resource => {
-          const resourceValue = (resource as any)[key]
+          const resourceValue = resource[key] as unknown
 
           if (Array.isArray(resourceValue)) {
             return resourceValue.some((item: string) => values.includes(item))
@@ -122,6 +122,8 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
         })
       }
     })
+
+    return results
 
     return results
   }

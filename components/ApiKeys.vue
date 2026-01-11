@@ -132,8 +132,6 @@ import { useApiKeysManager } from '~/composables/useApiKeysManager'
 
 const {
   apiKeys,
-  loading,
-  error,
   fetchApiKeys,
   createApiKey: createApiKeys,
   revokeApiKey: revokeApiKeys,

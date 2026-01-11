@@ -28,10 +28,12 @@ export const useBookmarks = () => {
       if (storedBookmarks) {
         const parsedBookmarks = JSON.parse(storedBookmarks)
         // Convert date strings back to Date objects
-        bookmarks.value = parsedBookmarks.map((bookmark: any) => ({
-          ...bookmark,
-          addedAt: new Date(bookmark.addedAt),
-        }))
+        bookmarks.value = parsedBookmarks.map(
+          (bookmark: Bookmark & { addedAt: string }) => ({
+            ...bookmark,
+            addedAt: new Date(bookmark.addedAt),
+          })
+        )
       }
     } catch {
       // Silently handle error - user will have empty bookmarks
