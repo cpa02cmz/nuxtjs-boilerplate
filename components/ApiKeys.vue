@@ -127,11 +127,19 @@
 
 <script setup lang="ts">
 import type { ApiKey } from '~/types/webhook'
-import { logError } from '~/utils/errorLogger'
+import type { NewApiKey } from '~/composables/useApiKeysManager'
+import { useApiKeysManager } from '~/composables/useApiKeysManager'
+
+const {
+  apiKeys,
+  loading,
+  error,
+  fetchApiKeys,
+  createApiKey: createApiKeys,
+  revokeApiKey: revokeApiKeys,
+} = useApiKeysManager()
 
 const showCreateForm = ref(false)
-const apiKeys = ref<ApiKey[]>([])
-const loading = ref(true)
 const showKeyCreatedModal = ref(false)
 const createdApiKey = ref<ApiKey | null>(null)
 const modalContent = ref<HTMLElement | null>(null)
@@ -197,69 +205,34 @@ const closeModal = () => {
   })
 }
 
-const newApiKey = reactive({
+const newApiKey = reactive<NewApiKey>({
   name: '',
-  permissions: ['read'] as string[],
+  permissions: ['read'],
 })
-
-// Fetch API keys
-const fetchApiKeys = async () => {
-  try {
-    loading.value = true
-    const response = await $fetch<{ apiKeys: ApiKey[] }>(
-      '/api/v1/auth/api-keys'
-    )
-    apiKeys.value = response.apiKeys ?? response.data ?? []
-  } catch (error) {
-    logError('Error fetching API keys', error as Error, 'ApiKeysComponent', {
-      operation: 'fetchApiKeys',
-    })
-  } finally {
-    loading.value = false
-  }
-}
 
 // Create new API key
 const createApiKey = async () => {
-  try {
-    const response = await $fetch<{ apiKey: ApiKey }>('/api/v1/auth/api-keys', {
-      method: 'POST',
-      body: newApiKey,
-    })
+  const key = await createApiKeys(newApiKey)
 
+  if (key) {
     // Show the created key in a modal
-    createdApiKey.value = response.apiKey ?? response.data
+    createdApiKey.value = key
     openModal()
 
     // Reset form
     newApiKey.name = ''
     newApiKey.permissions = ['read']
     showCreateForm.value = false
-
-    // Refresh list
-    await fetchApiKeys()
-  } catch (error) {
-    logError('Error creating API key', error as Error, 'ApiKeysComponent', {
-      operation: 'createApiKey',
-    })
   }
 }
 
 // Revoke API key
 const revokeApiKey = async (id: string) => {
   if (confirm('Are you sure you want to revoke this API key?')) {
-    try {
-      await $fetch(`/api/v1/auth/api-keys/${id}`, {
-        method: 'DELETE',
-      })
-
-      // Refresh list
-      await fetchApiKeys()
-    } catch (error) {
-      logError('Error revoking API key', error as Error, 'ApiKeysComponent', {
-        operation: 'revokeApiKey',
-        keyId: id,
-      })
+    const success = await revokeApiKeys(id)
+    if (!success) {
+      // Error handled by composable
+      console.error('Failed to revoke API key')
     }
   }
 }
@@ -276,12 +249,7 @@ const copyApiKey = async () => {
         copySuccess.value = false
       }, 2000)
     } catch (error) {
-      logError(
-        'Error copying API key to clipboard',
-        error as Error,
-        'ApiKeysComponent',
-        { operation: 'copyApiKey' }
-      )
+      console.error('Error copying API key to clipboard', error)
     }
   }
 }
