@@ -1151,6 +1151,7 @@ tests/
 | 2026-01-11 | Architecture | Layer Separation - compare page refactoring | Extracted business logic from pages/compare/[ids].vue to dedicated composable (useComparisonPage), eliminated duplicate defaultCriteria (now uses useResourceComparison config), removed API calls and state management from presentation layer, page now handles UI only (reduced from 211 to 80 lines, 62% reduction) |
 | 2026-01-11 | Performance | Batch facet calculation optimization | Reduced search operations from 6 to 1 in useSearchPage facet calculation, implemented calculateAllFacetCounts for single-pass facet counting (83% reduction in search operations, O(6n log n) → O(n log n)) |
 | 2026-01-11 | Architecture | Layer Separation - resources/[id].vue page refactoring | Extracted business logic from pages/resources/[id].vue to dedicated composable (useResourceDetailPage), eliminated API calls, state management, analytics fetching, history fetching, SEO metadata, JSON-LD structured data, and related resource logic from presentation layer, page now handles UI only (reduced from 522 to 197 lines, 62% reduction) |
+| 2026-01-12 | Architecture | Layer Separation - SearchAnalytics component refactoring | Extracted business logic from components/SearchAnalytics.vue to dedicated composable (useSearchAnalytics), centralized type definitions to types/analytics.ts, eliminated API calls, state management, error handling, and date formatting from presentation layer, component now handles UI only (reduced from 413 to 299 lines, 28% reduction) |
 
 ## 🎓 Design Principles Applied
 
