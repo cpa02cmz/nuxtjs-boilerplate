@@ -95,7 +95,7 @@ export default defineEventHandler(async event => {
       'api-v1-alternatives-post',
       {
         resourceId: getRouterParam(event, 'id'),
-        errorType: (error as any)?.constructor?.name,
+        errorType: error instanceof Error ? error.constructor.name : 'Unknown',
       }
     )
 

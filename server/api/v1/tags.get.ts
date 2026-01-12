@@ -57,7 +57,7 @@ export default defineEventHandler(async event => {
       'api-v1-tags',
       {
         query: getQuery(event),
-        errorType: (error as any)?.constructor?.name,
+        errorType: error instanceof Error ? error.constructor.name : 'Unknown',
       }
     )
 

@@ -1,6 +1,5 @@
 import type { Submission } from '~/types/submission'
 import { getQuery } from 'h3'
-import { logger } from '~/utils/logger'
 import {
   sendSuccessResponse,
   handleApiRouteError,

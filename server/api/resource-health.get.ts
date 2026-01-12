@@ -10,7 +10,7 @@ import {
 } from '../utils/resourceHealth'
 import { logger } from '~/utils/logger'
 
-export default defineEventHandler(async event => {
+export default defineEventHandler(async () => {
   try {
     const healthStatuses = getAllResourceHealthStatuses()
     const stats = getResourceHealthStats()

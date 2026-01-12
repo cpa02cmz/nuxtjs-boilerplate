@@ -5,7 +5,6 @@ import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendBadRequestError,
   sendNotFoundError,
-  sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { defineEventHandler, getRouterParam } from 'h3'
@@ -99,10 +98,10 @@ export default defineEventHandler(async event => {
       'api-v1-alternatives',
       {
         resourceId: getRouterParam(event, 'id'),
-        errorType: (error as any)?.constructor?.name,
+        errorType: error instanceof Error ? error.constructor.name : 'Unknown',
       }
     )
 
-    handleApiRouteError(event, error)
+    return handleApiRouteError(event, error)
   }
 })

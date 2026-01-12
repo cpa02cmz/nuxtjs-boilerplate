@@ -100,11 +100,11 @@ export default defineEventHandler(async event => {
       error as Error,
       'api-v1-comparisons',
       {
-        errorType: (error as any)?.constructor?.name,
+        errorType: error instanceof Error ? error.constructor.name : 'Unknown',
         resourceIds: getQuery(event).ids,
       }
     )
 
-    handleApiRouteError(event, error)
+    return handleApiRouteError(event, error)
   }
 })

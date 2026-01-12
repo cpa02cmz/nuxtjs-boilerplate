@@ -10,7 +10,7 @@ import {
 export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
-    const { resourceIds, status, reason, notes } = await readBody(event)
+    const { resourceIds, status } = await readBody(event)
 
     // Validate required fields
     if (!Array.isArray(resourceIds) || !status) {

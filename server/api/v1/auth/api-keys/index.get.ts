@@ -5,7 +5,7 @@ export default defineEventHandler(async event => {
   // This would typically filter by user in a real implementation
   // For now, return all keys
   const apiKeys = webhookStorage.getAllApiKeys()
-  const keysWithoutSecrets = apiKeys.map(({ key: _key, ...key }) => key)
+  const keysWithoutSecrets = apiKeys.map(({ key, ...rest }) => rest)
 
   return sendSuccessResponse(event, {
     data: keysWithoutSecrets,

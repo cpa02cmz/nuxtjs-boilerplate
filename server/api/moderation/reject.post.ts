@@ -1,4 +1,4 @@
-import { createError, defineEventHandler, readBody } from 'h3'
+import { defineEventHandler, readBody } from 'h3'
 import type { Submission } from '~/types/submission'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {

@@ -5,9 +5,7 @@
  * Comprehensive implementation of the PR automation system as specified
  */
 
-import { execSync, spawnSync } from 'child_process'
-import { existsSync, readFileSync } from 'fs'
-import { join } from 'path'
+import { execSync } from 'child_process'
 
 // Configuration
 const GITHUB_TOKEN = process.env.GH_TOKEN || process.env.GITHUB_TOKEN
@@ -161,13 +159,13 @@ function checkoutAndSyncPR(prNumber, prRef) {
       execSync('git fetch origin main', { stdio: 'pipe' })
       execSync('git rebase origin/main', { stdio: 'pipe' })
       if (process.env.DEBUG) console.log('✓ Rebased PR on main successfully')
-    } catch (rebaseError) {
+    } catch (_rebaseError) {
       if (process.env.DEBUG)
         console.log('Rebase failed, using merge instead...')
       try {
         // Check if there's an active rebase to abort
         execSync('git rebase --abort', { stdio: 'pipe' })
-      } catch (abortError) {
+      } catch (_abortError) {
         // If no rebase in progress, ignore the error
         if (process.env.DEBUG)
           console.log('No rebase in progress, continuing with merge...')
@@ -589,13 +587,14 @@ function runValidation() {
   // Check for lint issues
   try {
     execSync('npm run lint', { stdio: 'pipe' })
-    if (process.env.DEBUG) console.log('✓ Linting passed')
-  } catch (lintError) {
+    if (process.env.DEBUG) console.info('✓ Linting passed')
+  } catch (_lintError) {
     if (process.env.DEBUG)
-      console.log('Linting issues found, attempting to fix...')
+      console.info('Linting issues found, attempting to fix...')
     try {
       execSync('npm run lint:fix', { stdio: 'pipe' })
-      if (process.env.DEBUG) console.log('✓ Linting issues fixed automatically')
+      if (process.env.DEBUG)
+        console.info('✓ Linting issues fixed automatically')
 
       // Commit any fixes made
       const changes = execSync('git status --porcelain', { encoding: 'utf-8' })
@@ -605,7 +604,7 @@ function runValidation() {
         execSync('git push origin HEAD', { stdio: 'pipe' })
         if (process.env.DEBUG) console.log('✓ Lint fixes committed and pushed')
       }
-    } catch (fixError) {
+    } catch (_buildError) {
       if (process.env.DEBUG)
         console.log('Could not fix all linting issues automatically')
       allPassed = false
@@ -620,7 +619,7 @@ function runValidation() {
       execSync('npm run build', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })
       if (process.env.DEBUG)
         console.log('✓ Build successful with npm run build')
-    } catch (npmBuildError) {
+    } catch (_npmBuildError) {
       if (process.env.DEBUG)
         console.log('npm run build failed, trying nuxt build directly...')
       execSync('npx nuxt build', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })
@@ -643,7 +642,7 @@ function runValidation() {
     try {
       execSync('npm run test', { stdio: 'pipe', maxBuffer: 10 * 1024 * 1024 })
       if (process.env.DEBUG) console.log('✓ Tests passed with npm run test')
-    } catch (npmTestError) {
+    } catch (_npmTestError) {
       if (process.env.DEBUG)
         console.log('npm run test failed, trying vitest...')
       execSync('npx vitest --run', {
@@ -653,7 +652,7 @@ function runValidation() {
       if (process.env.DEBUG) console.log('✓ Tests passed with vitest')
     }
     if (process.env.DEBUG) console.log('✓ Tests passed')
-  } catch (testError) {
+  } catch (_testError) {
     if (process.env.DEBUG)
       console.log('No tests found or tests failed, continuing...')
   }
