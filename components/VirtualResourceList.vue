@@ -23,14 +23,17 @@
           transform: `translateY(${virtualRow.start}px)`,
         }"
       >
-        <slot :item="items[virtualRow.index]" :index="virtualRow.index" />
+        <slot
+          :item="items[virtualRow.index]"
+          :index="virtualRow.index"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts" generic="T">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 
 interface Props {

@@ -145,6 +145,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
+import logger from '~/utils/logger'
 
 interface Props {
   title?: string
@@ -229,7 +230,7 @@ const copyToClipboard = async () => {
         throw new Error('execCommand copy failed')
       }
     } catch (fallbackErr) {
-      console.error('Failed to copy to clipboard:', fallbackErr)
+      logger.error('Failed to copy to clipboard:', fallbackErr)
       // Optionally show an error message to the user
     }
     // Close the menu after copying attempt

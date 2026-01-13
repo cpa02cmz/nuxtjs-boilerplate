@@ -1,7 +1,9 @@
 <template>
   <div class="mt-12">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold text-gray-900">Comments</h2>
+      <h2 class="text-2xl font-bold text-gray-900">
+        Comments
+      </h2>
       <span class="text-sm text-gray-500">{{ commentCount }} comments</span>
     </div>
 

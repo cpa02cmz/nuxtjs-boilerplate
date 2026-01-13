@@ -181,6 +181,7 @@
 import type { ApiKey } from '~/types/webhook'
 import type { NewApiKey } from '~/composables/useApiKeysManager'
 import { useApiKeysManager } from '~/composables/useApiKeysManager'
+import logger from '~/utils/logger'
 
 const {
   apiKeys,
@@ -281,8 +282,7 @@ const revokeApiKey = async (id: string) => {
   if (confirm('Are you sure you want to revoke this API key?')) {
     const success = await revokeApiKeys(id)
     if (!success) {
-      // Error handled by composable
-      console.error('Failed to revoke API key')
+      logger.error('Failed to revoke API key')
     }
   }
 }
@@ -299,7 +299,7 @@ const copyApiKey = async () => {
         copySuccess.value = false
       }, 2000)
     } catch (error) {
-      console.error('Error copying API key to clipboard', error)
+      logger.error('Error copying API key to clipboard', error)
     }
   }
 }
