@@ -14,15 +14,12 @@
             {{ resource.description }}
           </p>
         </div>
-        <div
-          v-if="resource.icon"
-          class="ml-3 flex-shrink-0"
-        >
+        <div v-if="resource.icon" class="ml-3 flex-shrink-0">
           <img
             :src="resource.icon"
             :alt="resource.title"
             class="w-8 h-8 rounded object-contain"
-          >
+          />
         </div>
       </div>
 
@@ -33,14 +30,14 @@
           {{ resource.category }}
         </span>
         <span
-          v-for="tag in resource.tags.slice(0, 3)"
+          v-for="tag in displayTags"
           :key="tag"
           class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
         >
           {{ tag }}
         </span>
         <span
-          v-if="resource.tags.length > 3"
+          v-if="hasMoreTags"
           class="text-xs text-gray-500 dark:text-gray-400"
         >
           +{{ resource.tags.length - 3 }} more
@@ -49,11 +46,7 @@
 
       <div class="mt-3 flex items-center justify-between">
         <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-          <svg
-            class="w-4 h-4 mr-1"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
             <path
               fill-rule="evenodd"
@@ -126,6 +119,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Resource } from '~/types/resource'
 
 interface Props {
@@ -146,6 +140,15 @@ void props.resource
 const emit = defineEmits<{
   bookmark: [resource: Resource]
 }>()
+
+const displayTags = computed(() => {
+  if (!props.resource?.tags) return []
+  return props.resource.tags.slice(0, 3)
+})
+
+const hasMoreTags = computed(() => {
+  return (props.resource?.tags?.length || 0) > 3
+})
 </script>
 
 <style scoped>

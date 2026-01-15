@@ -1,27 +1,15 @@
 <template>
   <div class="text-center">
     <template v-if="type === 'text'">
-      <span
-        v-if="value"
-        class="text-sm"
-      >{{ value }}</span>
-      <span
-        v-else
-        class="text-gray-400 dark:text-gray-500 text-sm"
-      >-</span>
+      <span v-if="value" class="text-sm">{{ value }}</span>
+      <span v-else class="text-gray-400 dark:text-gray-500 text-sm">-</span>
     </template>
 
     <template v-else-if="type === 'number'">
-      <span
-        v-if="value !== undefined && value !== null"
-        class="text-sm"
-      >{{
+      <span v-if="value !== undefined && value !== null" class="text-sm">{{
         value
       }}</span>
-      <span
-        v-else
-        class="text-gray-400 dark:text-gray-500 text-sm"
-      >-</span>
+      <span v-else class="text-gray-400 dark:text-gray-500 text-sm">-</span>
     </template>
 
     <template v-else-if="type === 'boolean'">
@@ -37,10 +25,7 @@
       >
         No
       </span>
-      <span
-        v-else
-        class="text-gray-400 dark:text-gray-500 text-sm"
-      >-</span>
+      <span v-else class="text-gray-400 dark:text-gray-500 text-sm">-</span>
     </template>
 
     <template v-else-if="type === 'list'">
@@ -49,32 +34,42 @@
         class="flex flex-wrap justify-center gap-1"
       >
         <span
-          v-for="(item, index) in value.slice(0, 3)"
+          v-for="(item, index) in displayItems"
           :key="index"
           class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
         >
           {{ item }}
         </span>
         <span
-          v-if="value.length > 3"
+          v-if="hasMoreItems"
           class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
         >
           +{{ value.length - 3 }} more
         </span>
       </div>
-      <span
-        v-else
-        class="text-gray-400 dark:text-gray-500 text-sm"
-      >-</span>
+      <span v-else class="text-gray-400 dark:text-gray-500 text-sm">-</span>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 interface Props {
   value?: string | number | boolean | string[]
   type?: 'text' | 'number' | 'boolean' | 'list'
 }
 
-defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  type: 'text',
+})
+
+const displayItems = computed(() => {
+  if (!Array.isArray(props.value)) return []
+  return props.value.slice(0, 3)
+})
+
+const hasMoreItems = computed(() => {
+  return Array.isArray(props.value) && props.value.length > 3
+})
 </script>

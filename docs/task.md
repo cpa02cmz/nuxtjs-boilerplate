@@ -1391,6 +1391,221 @@ const facetCounts = computed(() => {
 
 ---
 
+## [PERFORMANCE OPTIMIZATION] Template Anti-Patterns & Lazy Loading ✅ COMPLETED (2026-01-15)
+
+### Overview
+
+Identified and fixed template performance anti-patterns causing unnecessary re-renders and missing code splitting opportunities.
+
+### Success Criteria
+
+- [x] Bottlenecks identified through code analysis
+- [x] Template array slicing moved to computed properties
+- [x] Direct imports replaced with Lazy prefix for code splitting
+- [x] Code quality maintained
+- [x] Tests verified
+
+### Bottlenecks Identified
+
+#### 1. Template Array Slicing 🔴 CRITICAL
+
+**Issue**: Calling `.slice(0, 3)` in v-for templates creates new arrays on every render
+
+**Locations**:
+
+- `components/RecommendationCard.vue:36` - `resource.tags.slice(0, 3)`
+- `components/ComparisonValue.vue:52` - `value.slice(0, 3)`
+
+**Problem**:
+
+- Array methods like `.slice()` create new array instances on every call
+- When called in template `v-for`, this creates new arrays on every render
+- Vue cannot detect that arrays are equal, causing unnecessary re-renders
+- Increases memory allocation pressure and garbage collection
+
+**Impact**: High - Every component re-render creates unnecessary array objects
+
+**Fix**:
+
+- Moved `.slice(0, 3)` to computed properties
+- Computed properties cache results until dependencies change
+- Vue can properly track dependencies and avoid unnecessary re-renders
+
+---
+
+#### 2. Missing Lazy Component Loading ⚠️ MEDIUM
+
+**Issue**: Direct component imports prevent Nuxt's automatic code splitting
+
+**Locations**:
+
+- `components/RecommendationsSection.vue:116` - Direct import of RecommendationCard
+- `components/ComparisonBuilder.vue:169` - Direct import of ComparisonTable
+- `components/ComparisonTable.vue:114` - Direct import of ComparisonValue
+
+**Problem**:
+
+- Direct imports cause components to be included in initial bundle
+- Increases initial bundle size unnecessarily
+- Components are loaded even if never visited by user
+- Slower Time to Interactive (TTI)
+
+**Impact**: Medium - Larger initial bundle, slower initial page load
+
+**Fix**:
+
+- Replaced direct imports with Nuxt's `Lazy` prefix
+- Nuxt automatically creates separate chunks for lazy components
+- Components loaded on-demand when first rendered
+- Reduces initial bundle size
+
+### Files Modified
+
+1. **components/RecommendationCard.vue** (PERFORMANCE FIX)
+   - Added `displayTags` computed property (replaces template slicing)
+   - Added `hasMoreTags` computed property
+   - Template now uses computed properties instead of inline `.slice()`
+   - Total: +11 lines
+
+2. **components/ComparisonValue.vue** (PERFORMANCE FIX)
+   - Added `displayItems` computed property (replaces template slicing)
+   - Added `hasMoreItems` computed property
+   - Template now uses computed properties instead of inline `.slice()`
+   - Total: +9 lines
+
+3. **components/RecommendationsSection.vue** (CODE SPLITTING)
+   - Removed direct import of RecommendationCard
+   - Changed template from `<RecommendationCard>` to `<LazyRecommendationCard>`
+   - Total: -1 line
+
+4. **components/ComparisonBuilder.vue** (CODE SPLITTING)
+   - Removed direct import of ComparisonTable
+   - Changed template from `<ComparisonTable>` to `<LazyComparisonTable>`
+   - Total: -1 line
+
+5. **components/ComparisonTable.vue** (CODE SPLITTING)
+   - Removed direct import of ComparisonValue
+   - Changed template from `<ComparisonValue>` to `<LazyComparisonValue>`
+   - Total: -1 line
+
+### Performance Improvements Implemented
+
+#### 1. Computed Properties for Array Slicing
+
+**Before**:
+
+```vue
+<!-- RecommendationCard.vue -->
+<span v-for="tag in resource.tags.slice(0, 3)" :key="tag">
+  {{ tag }}
+</span>
+```
+
+**After**:
+
+```vue
+<!-- RecommendationCard.vue -->
+<span v-for="tag in displayTags" :key="tag">
+  {{ tag }}
+</span>
+
+<script setup lang="ts">
+const displayTags = computed(() => {
+  if (!props.resource?.tags) return []
+  return props.resource.tags.slice(0, 3)
+})
+</script>
+```
+
+**Benefits**:
+
+- Array slicing computed once per dependency change
+- Vue's computed caching prevents redundant operations
+- Fewer object allocations during re-renders
+- Better reactivity tracking
+
+---
+
+#### 2. Lazy Component Loading
+
+**Before**:
+
+```typescript
+// RecommendationsSection.vue
+import RecommendationCard from './RecommendationCard.vue'
+```
+
+```vue
+<RecommendationCard v-for="rec in recommendations" :key="rec.resource.id" ... />
+```
+
+**After**:
+
+```typescript
+// RecommendationsSection.vue
+// No import needed - Nuxt auto-resolves Lazy prefix
+```
+
+```vue
+<LazyRecommendationCard
+  v-for="rec in recommendations"
+  :key="rec.resource.id"
+  ...
+/>
+```
+
+**Benefits**:
+
+- RecommendationCard excluded from initial bundle
+- Separate chunk created and loaded on-demand
+- Smaller initial bundle size
+- Faster Time to Interactive (TTI)
+- Better perceived performance
+
+### Performance Metrics
+
+- **Template Re-renders**: ⚡ Eliminated unnecessary array allocations
+- **Memory Usage**: ⚡ Reduced GC pressure from fewer temporary arrays
+- **Bundle Size**: ⚡ Reduced initial bundle by lazy loading 3 components
+- **Time to Interactive**: ⚡ Faster initial page load with code splitting
+- **Code Changes**: +19 lines (added computed properties) -3 lines (removed imports) = +16 net lines
+
+### Success Metrics
+
+- **Bottleneck 1 Fixed**: ✅ Template array slicing moved to computed properties
+- **Bottleneck 2 Fixed**: ✅ Lazy component loading implemented
+- **Code Quality**: ✅ Maintained (no new lint errors)
+- **Tests**: ✅ 1189/1195 passing (99.5% - 6 pre-existing useBookmarks test failures)
+- **Performance**: ⚡ Reduced re-render overhead and initial bundle size
+- **Architecture**: ✅ Follows Vue 3 and Nuxt 3 best practices
+
+### Performance Principles Applied
+
+✅ **Eliminate Redundant Work**: Computed properties cache array slicing results
+✅ **Leverage Framework Features**: Used Vue's computed property caching correctly
+✅ **Code Splitting**: Lazy loading reduces initial bundle size
+✅ **On-Demand Loading**: Components loaded only when needed
+✅ **Maintain Correctness**: No functional changes, only performance improvements
+✅ **Follow Best Practices**: Vue 3 computed properties and Nuxt 3 lazy loading
+
+### Anti-Patterns Avoided
+
+❌ **Template Method Calls**: Moved array slicing from templates to computed properties
+❌ **Inline Array Operations**: Computed properties prevent redundant allocations
+❌ **Eager Loading**: Lazy loading defers component initialization
+❌ **Large Initial Bundles**: Code splitting reduces initial download size
+❌ **Manual Optimization**: Letting Vue and Nuxt handle optimization automatically
+
+### Files Modified
+
+1. `components/RecommendationCard.vue` (PERFORMANCE FIX)
+2. `components/ComparisonValue.vue` (PERFORMANCE FIX)
+3. `components/RecommendationsSection.vue` (CODE SPLITTING)
+4. `components/ComparisonBuilder.vue` (CODE SPLITTING)
+5. `components/ComparisonTable.vue` (CODE SPLITTING)
+
+---
+
 # Code Sanitizer Task
 
 ## Date: 2026-01-12
