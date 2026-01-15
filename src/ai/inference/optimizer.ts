@@ -1,3 +1,5 @@
+import { logger } from '~/utils/logger'
+
 // AI Inference Optimization Implementation
 
 interface ModelLayer {
@@ -30,7 +32,7 @@ export class AIInferenceOptimizer {
 
   async loadModel(modelPath: string): Promise<void> {
     this.model = (await import(modelPath)) as AIModel
-    console.log(`Model loaded from ${modelPath}`)
+    logger.info(`Model loaded from ${modelPath}`)
   }
 
   optimizeModel(): void {
@@ -44,7 +46,7 @@ export class AIInferenceOptimizer {
       architecture: this.optimizeArchitecture(this.model.architecture),
     }
 
-    console.log('Model optimization completed')
+    logger.info('Model optimization completed')
   }
 
   private quantizeWeights(weights: ModelWeights): ModelWeights {
@@ -75,7 +77,7 @@ export class AIInferenceOptimizer {
     const result = await this.optimizedModel.execute(input)
     const duration = performance.now() - startTime
 
-    console.log(`Inference completed in ${duration.toFixed(2)}ms`)
+    logger.info(`Inference completed in ${duration.toFixed(2)}ms`)
     return result
   }
 }
