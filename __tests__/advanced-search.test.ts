@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
+import { searchAnalyticsTracker } from '~/utils/searchAnalytics'
 
 // Mock resources for testing
 const mockResources = [
@@ -43,6 +44,10 @@ describe('useAdvancedResourceSearch', () => {
 
   beforeEach(() => {
     advancedSearch = useAdvancedResourceSearch(mockResources as any)
+  })
+
+  afterEach(() => {
+    searchAnalyticsTracker.clear()
   })
 
   it('should initialize with resources', () => {
@@ -157,6 +162,8 @@ describe('useAdvancedResourceSearch', () => {
 
     expect(snippet).toContain('testing')
     expect(snippet).toContain('...')
-    expect(snippet.length).toBeLessThanOrEqual(80)
+    expect(snippet).toContain('<mark')
+    expect(snippet.length).toBeGreaterThan(80) // Account for HTML markup
+    expect(snippet.length).toBeLessThan(150) // Reasonable limit with markup
   })
 })

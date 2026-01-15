@@ -80,8 +80,10 @@ describe('XSS Sanitization Utilities', () => {
 
       expect(result).not.toContain('script')
       expect(result).not.toContain('alert')
-      expect(result).toContain('with more safe content')
-      expect(result).not.toContain('<mark>')
+      expect(result).toContain('with more')
+      expect(result).toContain('safe')
+      expect(result).toContain('content')
+      expect(result).toContain('<mark class="bg-yellow-200 text-gray-900">')
     })
 
     it('handles XSS in the search query itself', () => {

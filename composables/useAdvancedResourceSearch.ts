@@ -73,6 +73,7 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     const endTime = performance.now()
     const duration = endTime - startTime
 
+    // Track the original query, not individual terms
     searchAnalyticsTracker.trackSearch(query, results, duration)
 
     return results
