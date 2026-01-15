@@ -25,6 +25,26 @@ vi.mock('#app', async () => {
   }
 })
 
+vi.mock('#imports', async () => {
+  return {
+    useNuxtApp: vi.fn(),
+    useRuntimeConfig: vi.fn(),
+    useState: vi.fn(),
+    useRequestHeaders: vi.fn(),
+    useCookie: vi.fn(),
+    useAsyncData: vi.fn(),
+    useFetch: vi.fn(),
+    navigateTo: vi.fn(),
+    definePageMeta: vi.fn(),
+    useHead: vi.fn(),
+    useError: vi.fn(),
+    showError: vi.fn(),
+    clearError: vi.fn(),
+    useRouter: vi.fn(),
+    useRoute: vi.fn(),
+  }
+})
+
 vi.mock('#app/composables/router', () => {
   return {
     useRouter: vi.fn(),
