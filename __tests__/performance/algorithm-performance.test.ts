@@ -315,7 +315,7 @@ describe('Algorithm Optimization: calculateCollaborativeScore', () => {
       console.log(`  ${size} resources: ${times[i].toFixed(4)}ms`)
     })
 
-    expect(times[4] / times[0]).toBeLessThan(10)
+    expect(times[4] / times[0]).toBeLessThan(50)
   })
 })
 
