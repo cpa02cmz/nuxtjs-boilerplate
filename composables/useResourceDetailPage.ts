@@ -17,7 +17,6 @@ import {
 } from '#app'
 import logger from '~/utils/logger'
 import type { Resource } from '~/types/resource'
-import type { Comment } from '~/types/community'
 import { useResources } from '~/composables/useResources'
 import { useRecommendationEngine } from '~/composables/useRecommendationEngine'
 import { generateResourceShareUrls } from '~/utils/shareUtils'

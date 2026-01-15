@@ -745,9 +745,10 @@ if (response.success) {
 - [x] Migrate useReviewQueue.ts
 - [x] Migrate useSubmitPage.ts
 - [x] Migrate useSubmissionReview.ts
-- [ ] Test all migrations
-- [ ] Update blueprint.md
-- [ ] Run lint and typecheck
+- [x] Test all migrations
+- [x] Update blueprint.md
+- [x] Run lint and typecheck
+- [x] Fix lint error (remove unused Comment import)
 
 ### Architectural Principles Applied
 
