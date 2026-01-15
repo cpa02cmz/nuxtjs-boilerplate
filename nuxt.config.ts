@@ -7,7 +7,7 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxt/image',
     '@vite-pwa/nuxt',
-    '~/modules/openapi',
+    './modules/openapi',
   ],
 
   // Runtime configuration for environment variables
