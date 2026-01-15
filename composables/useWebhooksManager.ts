@@ -4,12 +4,14 @@
  *
  * Architecture:
  * - Business logic layer: Manages webhook operations and state
- * - Data access layer: Communicates with API endpoints
+ * - Data access layer: Communicates with API endpoints via ApiClient
  * - Separation of concerns: Components handle presentation only
  */
 import { ref, reactive } from 'vue'
+import { useNuxtApp } from '#app'
 import logger from '~/utils/logger'
 import type { Webhook } from '~/types/webhook'
+import type { ApiResponse, Webhook as WebhookResponse } from '~/types/webhook'
 
 export interface WebhookFormData {
   url: string
@@ -42,8 +44,17 @@ export const useWebhooksManager = () => {
     try {
       loading.value = true
       errorMessage.value = ''
-      const response = await $fetch('/api/v1/webhooks')
-      webhooks.value = response.data
+
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.get<{ data: Webhook[] }>(
+        '/api/v1/webhooks'
+      )
+
+      if (response.success && response.data) {
+        webhooks.value = response.data
+      } else {
+        errorMessage.value = 'Failed to fetch webhooks. Please try again.'
+      }
     } catch (error) {
       logger.error('Error fetching webhooks:', error)
       errorMessage.value = 'Failed to fetch webhooks. Please try again.'
@@ -66,10 +77,15 @@ export const useWebhooksManager = () => {
     }
 
     try {
-      await $fetch('/api/v1/webhooks', {
-        method: 'POST',
-        body: webhookData,
-      })
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.post('/api/v1/webhooks', webhookData)
+
+      if (!response.success) {
+        errorMessage.value =
+          response.error?.message ||
+          'Failed to create webhook. Please try again.'
+        return false
+      }
 
       announcement.value = 'Webhook created successfully'
 
@@ -89,10 +105,17 @@ export const useWebhooksManager = () => {
   const toggleWebhook = async (webhook: Webhook) => {
     try {
       const newStatus = !webhook.active
-      await $fetch(`/api/v1/webhooks/${webhook.id}`, {
-        method: 'PUT',
-        body: { active: newStatus },
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.put(`/api/v1/webhooks/${webhook.id}`, {
+        active: newStatus,
       })
+
+      if (!response.success) {
+        errorMessage.value =
+          response.error?.message ||
+          'Failed to update webhook status. Please try again.'
+        return
+      }
 
       announcement.value = newStatus
         ? 'Webhook activated'
@@ -115,9 +138,15 @@ export const useWebhooksManager = () => {
     }
 
     try {
-      await $fetch(`/api/v1/webhooks/${webhook.id}`, {
-        method: 'DELETE',
-      })
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.delete(`/api/v1/webhooks/${webhook.id}`)
+
+      if (!response.success) {
+        errorMessage.value =
+          response.error?.message ||
+          'Failed to delete webhook. Please try again.'
+        return
+      }
 
       announcement.value = 'Webhook deleted successfully'
 

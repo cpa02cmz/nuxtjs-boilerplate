@@ -58,9 +58,9 @@ Each module is atomic, replaceable, and has a single responsibility:
 
 ### Interface Definition Pattern
 
-**Location**: `types/api-client.ts`
+**Location**: `utils/api-client.ts` (interface + implementation)
 
-**Implementation**: `utils/api-client.ts`
+**Plugin**: `plugins/api-client.ts`
 
 The application defines a clear contract for API client operations using the **Interface Definition Pattern**. This allows for:
 
@@ -110,26 +110,49 @@ The default implementation uses Nuxt's built-in `$fetch`:
 - Provides consistent error handling
 - Supports query parameters and request configuration
 
-### Usage Example
+### ApiClient Plugin
+
+**Location**: `plugins/api-client.ts`
+
+Provides ApiClient instance globally to all composables via Nuxt plugin system:
 
 ```typescript
 import { createFetchApiClient } from '~/utils/api-client'
-import type { ApiClient } from '~/types/api-client'
 
-// Create API client
-const apiClient = createFetchApiClient(globalThis.fetch)
+export default defineNuxtPlugin(() => {
+  const apiClient = createFetchApiClient(globalThis.fetch)
 
-// Use in application
-const response = await apiClient.get<Resource[]>('/api/v1/resources')
+  return {
+    provide: {
+      apiClient,
+    },
+  }
+})
+```
+
+### Usage Example
+
+```typescript
+// In composable
+const { $apiClient } = useNuxtApp()
+
+// GET request
+const response = await $apiClient.get<Resource[]>('/api/v1/resources')
 if (response.success) {
   console.log(response.data)
 }
 
+// POST request
+const newResource = await $apiClient.post<Resource>('/api/v1/resources', {
+  title: 'New Resource',
+  description: 'Description',
+})
+
 // Set auth token
-apiClient.setAuthToken('your-auth-token')
+$apiClient.setAuthToken('your-auth-token')
 
 // Make authenticated request
-const userResponse = await apiClient.get<User>('/api/v1/user')
+const userResponse = await $apiClient.get<User>('/api/v1/user')
 ```
 
 ### API Client Principles
@@ -139,13 +162,16 @@ const userResponse = await apiClient.get<User>('/api/v1/user')
 ✅ **Single Responsibility**: Only handles HTTP communication
 ✅ **Open/Closed**: New implementations can be added without modifying existing code
 ✅ **Testability**: Interface allows for easy mocking in unit tests
+✅ **Global Availability**: Provided via Nuxt plugin for easy access throughout application
 
 ### API Client Decision Log
 
-| Date       | Decision                   | Rationale                                                                                  |
-| ---------- | -------------------------- | ------------------------------------------------------------------------------------------ |
-| 2026-01-10 | Create ApiClient interface | Define contract for HTTP operations, improve testability, support multiple implementations |
-| 2026-01-10 | Implement FetchApiClient   | Default implementation using Nuxt's built-in $fetch for production use                     |
+| Date       | Decision                         | Rationale                                                                                            |
+| ---------- | -------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 2026-01-10 | Create ApiClient interface       | Define contract for HTTP operations, improve testability, support multiple implementations           |
+| 2026-01-10 | Implement FetchApiClient         | Default implementation using Nuxt's built-in $fetch for production use                               |
+| 2026-01-15 | Create ApiClient plugin          | Provide ApiClient globally via Nuxt plugin system for consistent access across all composables       |
+| 2026-01-15 | Migrate composables to ApiClient | Replace all direct $fetch calls with ApiClient abstraction (0 remaining $fetch calls in composables) |
 
 ## 🧑 Community Types Architecture
 
@@ -1046,35 +1072,29 @@ nuxtjs-boilerplate/
     - Example: `composables/useSearchPage.ts` - Facet counts calculated in single pass (83% faster)
 
 12. **Cached Search Results**:
-
-
-     - Cache search results in computed property to avoid duplicate searches
-     - Vue's computed caching automatically reuses results when dependencies unchanged
-     - Eliminates redundant search API calls across multiple computed properties
-     - Example: `composables/useSearchPage.ts` - Search results cached and reused for filteredResources and facetCounts (50% faster)
+    - Cache search results in computed property to avoid duplicate searches
+    - Vue's computed caching automatically reuses results when dependencies unchanged
+    - Eliminates redundant search API calls across multiple computed properties
+    - Example: `composables/useSearchPage.ts` - Search results cached and reused for filteredResources and facetCounts (50% faster)
 
 13. **Correct Virtual Scroll Event Handling**:
-
-
-     - Avoid manually adding scroll event listeners to virtual scroll containers
-     - Virtual scroll libraries automatically handle scroll events through ref binding
-     - Incorrect event handlers cause performance degradation and wasted CPU cycles
-     - Example: `components/VirtualResourceList.vue` - Removed incorrect scroll event listener, virtualizer handles events automatically
+    - Avoid manually adding scroll event listeners to virtual scroll containers
+    - Virtual scroll libraries automatically handle scroll events through ref binding
+    - Incorrect event handlers cause performance degradation and wasted CPU cycles
+    - Example: `components/VirtualResourceList.vue` - Removed incorrect scroll event listener, virtualizer handles events automatically
 
 14. **Batch Filter Optimization**:
-
-
-     - Filter all resources at once instead of iterating one-by-one
-     - Eliminates repeated filter function calls
+    - Filter all resources at once instead of iterating one-by-one
+    - Eliminates repeated filter function calls
     - Example: `composables/useSearchPage.ts` - Filter all resources together instead of per-resource checks
 
-13. **O(n²) to O(n) Deduplication**:
+15. **O(n²) to O(n) Deduplication**:
     - Replace `Array.some()` with Set for deduplication
     - Track seen IDs in Set for O(1) lookup
     - Transforms quadratic complexity to linear
     - Example: `composables/useRecommendationEngine.ts` - Recommendation deduplication (O(n²) → O(n))
 
-14. **Lazy Component Loading**:
+16. **Lazy Component Loading**:
     - Use Nuxt 3 `Lazy` prefix for on-demand component loading
     - Remove direct imports for components not needed immediately
     - Reduces initial bundle size by excluding large components from main chunk

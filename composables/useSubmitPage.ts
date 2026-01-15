@@ -1,4 +1,5 @@
 import { ref, readonly } from 'vue'
+import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import logger from '~/utils/logger'
 
@@ -107,15 +108,13 @@ export const useSubmitPage = () => {
     submitSuccess.value = false
 
     try {
-      const response = await $fetch('/api/submissions', {
-        method: 'POST',
-        body: {
-          title: formData.value.title.trim(),
-          description: formData.value.description.trim(),
-          url: formData.value.url.trim(),
-          category: formData.value.category,
-          tags: formData.value.tags,
-        },
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.post('/api/submissions', {
+        title: formData.value.title.trim(),
+        description: formData.value.description.trim(),
+        url: formData.value.url.trim(),
+        category: formData.value.category,
+        tags: formData.value.tags,
       })
 
       if (response.success) {
@@ -131,13 +130,17 @@ export const useSubmitPage = () => {
           submitSuccess.value = false
         }, 5000)
       } else {
-        if (response.errors && Array.isArray(response.errors)) {
-          response.errors.forEach((err: { field: string; message: string }) => {
-            errors.value[err.field] = err.message
-          })
+        if (response.data?.errors && Array.isArray(response.data.errors)) {
+          response.data.errors.forEach(
+            (err: { field: string; message: string }) => {
+              errors.value[err.field] = err.message
+            }
+          )
         }
         submitError.value =
-          response.message || 'An error occurred while submitting resource'
+          response.data?.message ||
+          response.error?.message ||
+          'An error occurred while submitting resource'
       }
     } catch (error: { data?: { message?: string }; message?: string }) {
       submitError.value =

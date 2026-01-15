@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import type { ApiKey } from '~/types/webhook'
 
@@ -17,11 +18,20 @@ export const useApiKeysManager = () => {
       loading.value = true
       error.value = null
 
-      const response = await $fetch<{ apiKeys: ApiKey[]; data?: ApiKey[] }>(
-        '/api/v1/auth/api-keys'
-      )
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.get<{
+        apiKeys: ApiKey[]
+        data?: ApiKey[]
+      }>('/api/v1/auth/api-keys')
 
-      apiKeys.value = response.apiKeys ?? response.data ?? []
+      if (response.success) {
+        apiKeys.value = response.data?.apiKeys ?? response.data?.data ?? []
+      } else {
+        error.value =
+          response.error?.message ||
+          'Failed to load API keys. Please try again.'
+        apiKeys.value = []
+      }
     } catch (err) {
       error.value = 'Failed to load API keys. Please try again.'
       logError('Error fetching API keys', err as Error, 'useApiKeysManager', {
@@ -39,15 +49,20 @@ export const useApiKeysManager = () => {
       loading.value = true
       error.value = null
 
-      const response = await $fetch<{ apiKey: ApiKey; data?: ApiKey }>(
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.post<{ apiKey: ApiKey; data?: ApiKey }>(
         '/api/v1/auth/api-keys',
-        {
-          method: 'POST',
-          body: newApiKey,
-        }
+        newApiKey
       )
 
-      const createdKey = response.apiKey ?? response.data
+      if (!response.success) {
+        error.value =
+          response.error?.message ||
+          'Failed to create API key. Please try again.'
+        return null
+      }
+
+      const createdKey = response.data?.apiKey ?? response.data?.data
 
       if (createdKey) {
         apiKeys.value.unshift(createdKey)
@@ -72,9 +87,15 @@ export const useApiKeysManager = () => {
       loading.value = true
       error.value = null
 
-      await $fetch(`/api/v1/auth/api-keys/${keyId}`, {
-        method: 'DELETE',
-      })
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.delete(`/api/v1/auth/api-keys/${keyId}`)
+
+      if (!response.success) {
+        error.value =
+          response.error?.message ||
+          'Failed to revoke API key. Please try again.'
+        return false
+      }
 
       apiKeys.value = apiKeys.value.filter(key => key.id !== keyId)
 

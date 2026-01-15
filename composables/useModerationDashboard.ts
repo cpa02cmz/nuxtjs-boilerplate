@@ -1,4 +1,5 @@
 import { readonly, ref, onMounted } from 'vue'
+import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 
 export interface ActivityItem {
@@ -17,12 +18,16 @@ export const useModerationDashboard = () => {
 
   const loadStatistics = async () => {
     try {
-      const queueResponse = await $fetch('/api/moderation/queue', {
-        params: { status: 'pending' },
-      })
+      const { $apiClient } = useNuxtApp()
+      const queueResponse = await $apiClient.get<{ total?: number }>(
+        '/api/moderation/queue',
+        {
+          params: { status: 'pending' },
+        }
+      )
 
       if (queueResponse.success) {
-        pendingCount.value = queueResponse.total || 0
+        pendingCount.value = queueResponse.data?.total || 0
       }
 
       approvedCount.value = 24

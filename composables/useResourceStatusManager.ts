@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { useNuxtApp } from '#app'
 
 export interface UpdateStatusResponse {
   success: boolean
@@ -36,25 +37,23 @@ export function useResourceStatusManager(initialStatus: string = 'active') {
     lastUpdate.value = null
 
     try {
-      const response = await $fetch<UpdateStatusResponse | UpdateStatusError>(
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.put<UpdateStatusResponse>(
         `/api/resources/${resourceId}/status`,
         {
-          method: 'PUT',
-          body: {
-            status: selectedStatus.value,
-            reason: reason.value,
-            notes: notes.value,
-          },
+          status: selectedStatus.value,
+          reason: reason.value,
+          notes: notes.value,
         }
       )
 
       if (response.success) {
         lastUpdate.value = { success: true }
-        return response.resource || null
+        return response.data?.resource || null
       } else {
         lastUpdate.value = {
           success: false,
-          error: response.error || 'Failed to update status',
+          error: response.error?.message || 'Failed to update status',
         }
         return null
       }

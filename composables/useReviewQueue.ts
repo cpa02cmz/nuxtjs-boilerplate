@@ -1,4 +1,5 @@
 import { ref, computed, watch, onMounted } from 'vue'
+import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import type { Submission } from '~/types/submission'
 
@@ -14,8 +15,8 @@ export function useReviewQueue(initialSubmissions: Submission[] = []) {
       loading.value = true
       error.value = ''
 
-      const response = await $fetch<{
-        success: boolean
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.get<{
         queue?: Submission[]
         message?: string
       }>('/api/moderation/queue', {
@@ -25,10 +26,13 @@ export function useReviewQueue(initialSubmissions: Submission[] = []) {
         },
       })
 
-      if (response.success) {
-        submissions.value = response.queue || []
+      if (response.success && response.data) {
+        submissions.value = response.data.queue || []
       } else {
-        error.value = response.message || 'Failed to load submissions'
+        error.value =
+          response.data?.message ||
+          response.error?.message ||
+          'Failed to load submissions'
       }
     } catch (err) {
       error.value = 'An error occurred while fetching submissions'

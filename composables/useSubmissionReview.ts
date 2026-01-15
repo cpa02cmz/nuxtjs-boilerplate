@@ -4,10 +4,11 @@
  *
  * Architecture:
  * - Business logic layer: Manages submission moderation operations
- * - Data access layer: Communicates with API endpoints
+ * - Data access layer: Communicates with API endpoints via ApiClient
  * - Separation of concerns: Components handle presentation only
  */
 import { ref } from 'vue'
+import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import type { Submission } from '~/types/submission'
 
@@ -29,12 +30,18 @@ export const useSubmissionReview = (options: SubmissionReviewOptions) => {
       loading.value = true
       error.value = ''
 
-      const response = await $fetch(`/api/submissions/${submissionId}`)
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.get<{ submission?: Submission }>(
+        `/api/submissions/${submissionId}`
+      )
 
-      if (response.success) {
-        submission.value = response.submission
+      if (response.success && response.data) {
+        submission.value = response.data.submission || null
       } else {
-        error.value = response.message || 'Failed to load submission'
+        error.value =
+          response.data?.message ||
+          response.error?.message ||
+          'Failed to load submission'
       }
     } catch (err) {
       error.value = 'An error occurred while fetching submission'
@@ -52,13 +59,11 @@ export const useSubmissionReview = (options: SubmissionReviewOptions) => {
     if (!submission.value) return false
 
     try {
-      const response = await $fetch('/api/moderation/approve', {
-        method: 'POST',
-        body: {
-          submissionId,
-          reviewedBy,
-          notes: 'Approved via moderation interface',
-        },
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.post('/api/moderation/approve', {
+        submissionId,
+        reviewedBy,
+        notes: 'Approved via moderation interface',
       })
 
       if (response.success) {
@@ -67,7 +72,10 @@ export const useSubmissionReview = (options: SubmissionReviewOptions) => {
         submission.value.reviewedAt = new Date().toISOString()
         return true
       } else {
-        error.value = response.message || 'Failed to approve submission'
+        error.value =
+          response.data?.message ||
+          response.error?.message ||
+          'Failed to approve submission'
         return false
       }
     } catch (err) {
@@ -90,14 +98,12 @@ export const useSubmissionReview = (options: SubmissionReviewOptions) => {
     }
 
     try {
-      const response = await $fetch('/api/moderation/reject', {
-        method: 'POST',
-        body: {
-          submissionId,
-          reviewedBy,
-          rejectionReason: reason,
-          notes: 'Rejected via moderation interface',
-        },
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.post('/api/moderation/reject', {
+        submissionId,
+        reviewedBy,
+        rejectionReason: reason,
+        notes: 'Rejected via moderation interface',
       })
 
       if (response.success) {
@@ -107,7 +113,10 @@ export const useSubmissionReview = (options: SubmissionReviewOptions) => {
         submission.value.rejectionReason = reason
         return true
       } else {
-        error.value = response.message || 'Failed to reject submission'
+        error.value =
+          response.data?.message ||
+          response.error?.message ||
+          'Failed to reject submission'
         return false
       }
     } catch (err) {

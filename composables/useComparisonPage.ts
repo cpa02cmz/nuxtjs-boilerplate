@@ -1,5 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, navigateTo } from '#app'
+import { useNuxtApp } from '#app'
 import logger from '~/utils/logger'
 import type { Resource } from '~/types/resource'
 import type { ComparisonCriteria } from '~/types/comparison'
@@ -37,13 +38,21 @@ export const useComparisonPage = (options?: UseComparisonPageOptions) => {
       loading.value = true
       error.value = null
 
-      const response = await $fetch(`/api/v1/comparisons`, {
-        params: {
-          ids: resourceIds.value,
-        },
-      })
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.get<{ resources: Resource[] }>(
+        '/api/v1/comparisons',
+        {
+          params: {
+            ids: resourceIds.value.join(','),
+          },
+        }
+      )
 
-      resources.value = response.resources || []
+      if (response.success && response.data) {
+        resources.value = response.data.resources || []
+      } else {
+        error.value = response.error?.message || 'Failed to load comparison'
+      }
     } catch (err) {
       logger.error('Error fetching comparison:', err)
       error.value =

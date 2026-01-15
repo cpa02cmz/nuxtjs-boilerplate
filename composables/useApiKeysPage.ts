@@ -1,4 +1,5 @@
 import { computed, readonly, ref } from 'vue'
+import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import type { ApiKey } from '~/types/webhook'
 
@@ -17,16 +18,37 @@ export const useApiKeysPage = () => {
       loading.value = true
       error.value = null
 
-      const response = await $fetch<{ data: ApiKey[] }>('/api/v1/auth/api-keys')
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.get<{ data: ApiKey[] }>(
+        '/api/v1/auth/api-keys'
+      )
 
-      if (response && response.data) {
-        apiKeys.value = response.data.map(key => ({
+      if (response.success && response.data?.data) {
+        apiKeys.value = response.data.data.map(key => ({
           ...key,
           showFullKey: false,
         }))
       } else {
         apiKeys.value = []
       }
+    } catch (err) {
+      error.value = 'Failed to load API keys. Please try again.'
+      logError('Error fetching API keys', err as Error, 'useApiKeysPage', {
+        operation: 'fetchApiKeys',
+      })
+
+      apiKeys.value = []
+    } finally {
+      loading.value = false
+    }
+  }
+    } catch (err) {
+      error.value = 'Failed to load API keys'
+      console.error('Error fetching API keys:', err)
+    } finally {
+      loading.value = false
+    }
+  }
     } catch (err) {
       error.value = 'Failed to load API keys. Please try again.'
       logError('Error fetching API keys', err as Error, 'useApiKeysPage', {
@@ -48,26 +70,29 @@ export const useApiKeysPage = () => {
       loading.value = true
       error.value = null
 
-      const response = await $fetch<{ data: ApiKey } & { key?: string }>(
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.post<{ data: ApiKey } & { key?: string }>(
         '/api/v1/auth/api-keys',
         {
-          method: 'POST',
-          body: {
-            name: newKeyName.value.trim(),
-            permissions: ['read'],
-          },
+          name: newKeyName.value.trim(),
+          permissions: ['read'],
         }
       )
 
-      const newKey: ApiKeyDisplay = {
-        ...(response.data || response),
-        showFullKey: true,
+      if (response.success) {
+        const newKey: ApiKeyDisplay = {
+          ...(response.data?.data || response.data),
+          showFullKey: true,
+        }
+
+        apiKeys.value.unshift(newKey)
+        newKeyName.value = ''
+
+        return true
+      } else {
+        error.value = response.error?.message || 'Failed to create API key. Please try again.'
+        return false
       }
-
-      apiKeys.value.unshift(newKey)
-      newKeyName.value = ''
-
-      return true
     } catch (err) {
       error.value = 'Failed to create API key. Please try again.'
       logError('Error creating API key', err as Error, 'useApiKeysPage', {
@@ -84,12 +109,18 @@ export const useApiKeysPage = () => {
       loading.value = true
       error.value = null
 
-      await $fetch(`/api/v1/auth/api-keys/${keyId}`, {
-        method: 'DELETE',
-      })
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.delete(
+        `/api/v1/auth/api-keys/${keyId}`
+      )
 
-      apiKeys.value = apiKeys.value.filter(key => key.id !== keyId)
-      return true
+      if (response.success) {
+        apiKeys.value = apiKeys.value.filter(key => key.id !== keyId)
+        return true
+      } else {
+        error.value = response.error?.message || 'Failed to revoke API key. Please try again.'
+        return false
+      }
     } catch (err) {
       error.value = 'Failed to revoke API key. Please try again.'
       logError('Error revoking API key', err as Error, 'useApiKeysPage', {

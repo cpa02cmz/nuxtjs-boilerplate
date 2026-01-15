@@ -1,4 +1,5 @@
 import { readonly, ref, computed, onMounted } from 'vue'
+import { useNuxtApp } from '#app'
 
 export interface ValidationHistoryItem {
   isAccessible: boolean
@@ -31,11 +32,12 @@ export const useResourceHealth = (props: Props) => {
 
   const loadHealthStatus = async () => {
     try {
-      const response = await $fetch<HealthStatus>(
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.get<HealthStatus>(
         `/api/resource-health/${props.resourceId}`
       )
-      if (response) {
-        healthStatus.value = response
+      if (response.success && response.data) {
+        healthStatus.value = response.data
       }
     } catch {
       // Failed to load health status
@@ -45,13 +47,13 @@ export const useResourceHealth = (props: Props) => {
   const triggerHealthCheck = async () => {
     isChecking.value = true
     try {
-      const response = await $fetch<{ healthStatus: HealthStatus }>(
-        `/api/resources/${props.resourceId}/health`,
-        {
-          method: 'POST',
-        }
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.post<{ healthStatus: HealthStatus }>(
+        `/api/resources/${props.resourceId}/health`
       )
-      healthStatus.value = response.healthStatus
+      if (response.success && response.data) {
+        healthStatus.value = response.data.healthStatus
+      }
     } catch {
       // Failed to trigger health check
     } finally {

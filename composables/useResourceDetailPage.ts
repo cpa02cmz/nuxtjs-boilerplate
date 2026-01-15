@@ -91,10 +91,15 @@ export const useResourceDetailPage = () => {
   // Fetch resource history (status and update history)
   const fetchResourceHistory = async (id: string) => {
     try {
-      const history = await $fetch(`/api/resources/${id}/history`)
-      if (history && resource.value) {
-        resource.value.statusHistory = history.statusHistory
-        resource.value.updateHistory = history.updateHistory
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.get<{
+        statusHistory: unknown[]
+        updateHistory: unknown[]
+      }>(`/api/resources/${id}/history`)
+
+      if (response.success && response.data && resource.value) {
+        resource.value.statusHistory = response.data.statusHistory
+        resource.value.updateHistory = response.data.updateHistory
       }
     } catch (err) {
       logger.error('Error fetching resource history:', err)
@@ -104,8 +109,12 @@ export const useResourceDetailPage = () => {
   // Fetch analytics data for the resource
   const fetchResourceAnalytics = async (id: string) => {
     try {
-      const response = await $fetch(`/api/analytics/resource/${id}`)
-      if (response && response.data) {
+      const { $apiClient } = useNuxtApp()
+      const response = await $apiClient.get<Record<string, unknown>>(
+        `/api/analytics/resource/${id}`
+      )
+
+      if (response.success && response.data) {
         analyticsData.value = response.data
       }
     } catch (err) {

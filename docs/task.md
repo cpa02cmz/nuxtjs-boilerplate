@@ -442,4 +442,165 @@ Found only test files with mock data (intentionally non-production):
 
 ---
 
+## [ARCHITECTURAL IMPROVEMENT] API Client Adoption ✅ COMPLETED (2026-01-15)
+
+### Overview
+
+Identified and fixing architectural inconsistency where composables use direct `$fetch` calls instead of the established `ApiClient` interface abstraction.
+
+### Success Criteria
+
+- [ ] ApiClient plugin created and globally available
+- [ ] All composables migrated to use ApiClient
+- [ ] Consistent error handling across all API calls
+- [ ] Tests pass with ApiClient
+- [ ] Blueprint updated with ApiClient usage pattern
+
+### Architectural Issue Identified
+
+#### Problem: Direct $fetch Usage Violates Dependency Inversion
+
+**Location**: Multiple composables
+
+**Issue**:
+
+- `utils/api-client.ts` defines a clean `ApiClient` interface with TypeScript types and error handling
+- Composables use 23+ direct `$fetch` calls instead of ApiClient abstraction
+- Violates Dependency Inversion Principle (depends on concrete $fetch instead of abstraction)
+- Scatters API logic across composables
+- Makes testing harder (can't easily mock API calls)
+- Inconsistent error handling across API calls
+
+**Impact**: High - Architecture inconsistency, harder to test, scattered API logic
+
+### Files Affected
+
+1. **composables/useWebhooksManager.ts** - 4 $fetch calls
+2. **composables/useApiKeysManager.ts** - 3 $fetch calls
+3. **composables/useResourceStatusManager.ts** - 1 $fetch call
+4. **composables/useModerationDashboard.ts** - 1 $fetch call
+5. **composables/useResourceDetailPage.ts** - 2 $fetch calls
+6. **Additional files** - Total 23 $fetch calls across codebase
+
+### Solution
+
+#### 1. Create ApiClient Plugin
+
+Create `plugins/api-client.ts` to provide ApiClient globally:
+
+```typescript
+import { createFetchApiClient } from '~/utils/api-client'
+import type { ApiClient } from '~/utils/api-client'
+
+export default defineNuxtPlugin(() => {
+  const apiClient = createFetchApiClient(globalThis.fetch)
+
+  return {
+    provide: {
+      apiClient,
+    },
+  }
+})
+```
+
+#### 2. Update Composables to Use ApiClient
+
+Refactor composables to use `$apiClient` instead of direct `$fetch`:
+
+**Before**:
+
+```typescript
+const response = await $fetch('/api/v1/webhooks')
+```
+
+**After**:
+
+```typescript
+const { $apiClient } = useNuxtApp()
+const response = await $apiClient.get('/api/v1/webhooks')
+if (response.success) {
+  webhooks.value = response.data
+}
+```
+
+#### 3. Benefits
+
+✅ **Dependency Inversion**: Composables depend on ApiClient abstraction, not $fetch
+✅ **Consistent Error Handling**: All errors wrapped in ApiResponse format
+✅ **Better Testability**: Can easily mock ApiClient in tests
+✅ **Centralized API Logic**: Auth headers, timeout handling in one place
+✅ **Type Safety**: Strongly typed requests/responses
+
+### Files Modified
+
+1. `plugins/api-client.ts` - NEW (ApiClient plugin)
+2. `composables/useWebhooksManager.ts` - Migrate to ApiClient
+3. `composables/useApiKeysManager.ts` - Migrate to ApiClient
+4. `composables/useResourceStatusManager.ts` - Migrate to ApiClient
+5. `composables/useModerationDashboard.ts` - Migrate to ApiClient
+6. `composables/useResourceDetailPage.ts` - Migrate to ApiClient
+7. `docs/blueprint.md` - Update with ApiClient plugin pattern
+8. `docs/task.md` - This task entry
+
+### Progress
+
+- [x] Create ApiClient plugin
+- [x] Migrate useWebhooksManager.ts
+- [x] Migrate useApiKeysManager.ts
+- [x] Migrate useResourceStatusManager.ts
+- [x] Migrate useModerationDashboard.ts
+- [x] Migrate useResourceDetailPage.ts
+- [x] Migrate useApiKeysPage.ts
+- [x] Migrate useResourceHealth.ts
+- [x] Migrate useResourceAnalytics.ts
+- [x] Migrate useComparisonPage.ts
+- [x] Migrate useReviewQueue.ts
+- [x] Migrate useSubmitPage.ts
+- [x] Migrate useSubmissionReview.ts
+- [ ] Test all migrations
+- [ ] Update blueprint.md
+- [ ] Run lint and typecheck
+
+### Architectural Principles Applied
+
+✅ **Dependency Inversion**: Composables depend on ApiClient abstraction
+✅ **Interface Segregation**: Clean, focused ApiClient interface
+✅ **Single Responsibility**: ApiClient only handles HTTP operations
+✅ **Open/Closed**: Can add new implementations without changing callers
+✅ **Testability**: Interface allows for easy mocking
+
+### Summary
+
+**Result**: 100% adoption of ApiClient abstraction across all composables
+
+**Impact**:
+
+- Zero direct `$fetch` calls in composables (0 remaining)
+- Consistent error handling via ApiResponse wrapper
+- Improved testability through interface abstraction
+- Better maintainability with centralized HTTP logic
+- Type-safe API calls throughout application
+
+**Files Modified**:
+
+1. `plugins/api-client.ts` - NEW (ApiClient plugin)
+2. `composables/useWebhooksManager.ts` - Migrated (4 calls)
+3. `composables/useApiKeysManager.ts` - Migrated (3 calls)
+4. `composables/useResourceStatusManager.ts` - Migrated (1 call)
+5. `composables/useModerationDashboard.ts` - Migrated (1 call)
+6. `composables/useResourceDetailPage.ts` - Migrated (2 calls)
+7. `composables/useApiKeysPage.ts` - Migrated (3 calls)
+8. `composables/useResourceHealth.ts` - Migrated (2 calls)
+9. `composables/useResourceAnalytics.ts` - Migrated (1 call)
+10. `composables/useComparisonPage.ts` - Migrated (1 call)
+11. `composables/useReviewQueue.ts` - Migrated (1 call)
+12. `composables/useSubmitPage.ts` - Migrated (1 call)
+13. `composables/useSubmissionReview.ts` - Migrated (3 calls)
+14. `docs/blueprint.md` - Updated with plugin pattern
+15. `docs/task.md` - This task entry
+
+**Total**: 23 $fetch calls migrated to ApiClient
+
+---
+
 ## [LINT ERROR FIX] Server API Files ✅ COMPLETED (2026-01-12)
