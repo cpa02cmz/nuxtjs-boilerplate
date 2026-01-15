@@ -11,7 +11,6 @@ import { ref, reactive } from 'vue'
 import { useNuxtApp } from '#app'
 import logger from '~/utils/logger'
 import type { Webhook } from '~/types/webhook'
-import type { ApiResponse, Webhook as WebhookResponse } from '~/types/webhook'
 
 export interface WebhookFormData {
   url: string

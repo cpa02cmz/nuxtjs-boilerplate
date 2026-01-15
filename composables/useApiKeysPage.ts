@@ -42,24 +42,6 @@ export const useApiKeysPage = () => {
       loading.value = false
     }
   }
-    } catch (err) {
-      error.value = 'Failed to load API keys'
-      console.error('Error fetching API keys:', err)
-    } finally {
-      loading.value = false
-    }
-  }
-    } catch (err) {
-      error.value = 'Failed to load API keys. Please try again.'
-      logError('Error fetching API keys', err as Error, 'useApiKeysPage', {
-        operation: 'fetchApiKeys',
-      })
-
-      apiKeys.value = []
-    } finally {
-      loading.value = false
-    }
-  }
 
   const createApiKey = async () => {
     if (!newKeyName.value.trim()) {
@@ -71,13 +53,12 @@ export const useApiKeysPage = () => {
       error.value = null
 
       const { $apiClient } = useNuxtApp()
-      const response = await $apiClient.post<{ data: ApiKey } & { key?: string }>(
-        '/api/v1/auth/api-keys',
-        {
-          name: newKeyName.value.trim(),
-          permissions: ['read'],
-        }
-      )
+      const response = await $apiClient.post<
+        { data: ApiKey } & { key?: string }
+      >('/api/v1/auth/api-keys', {
+        name: newKeyName.value.trim(),
+        permissions: ['read'],
+      })
 
       if (response.success) {
         const newKey: ApiKeyDisplay = {
@@ -90,7 +71,9 @@ export const useApiKeysPage = () => {
 
         return true
       } else {
-        error.value = response.error?.message || 'Failed to create API key. Please try again.'
+        error.value =
+          response.error?.message ||
+          'Failed to create API key. Please try again.'
         return false
       }
     } catch (err) {
@@ -110,15 +93,15 @@ export const useApiKeysPage = () => {
       error.value = null
 
       const { $apiClient } = useNuxtApp()
-      const response = await $apiClient.delete(
-        `/api/v1/auth/api-keys/${keyId}`
-      )
+      const response = await $apiClient.delete(`/api/v1/auth/api-keys/${keyId}`)
 
       if (response.success) {
         apiKeys.value = apiKeys.value.filter(key => key.id !== keyId)
         return true
       } else {
-        error.value = response.error?.message || 'Failed to revoke API key. Please try again.'
+        error.value =
+          response.error?.message ||
+          'Failed to revoke API key. Please try again.'
         return false
       }
     } catch (err) {
