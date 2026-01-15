@@ -1,6 +1,11 @@
 <template>
-  <div v-if="savedSearches.length > 0" class="mb-6">
-    <h4 class="text-sm font-medium text-gray-900 mb-3">Saved Searches</h4>
+  <div
+    v-if="savedSearches.length > 0"
+    class="mb-6"
+  >
+    <h4 class="text-sm font-medium text-gray-900 mb-3">
+      Saved Searches
+    </h4>
     <div class="space-y-2">
       <div
         v-for="search in savedSearches"
