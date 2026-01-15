@@ -1,6 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: false }, // Disable in production for performance
+  srcDir: '.',
+  dir: {
+    assets: 'assets',
+    public: 'public',
+  },
   css: ['~/assets/css/main.css'],
   modules: [
     '@nuxt/test-utils/module',
