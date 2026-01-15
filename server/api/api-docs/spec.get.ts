@@ -43,6 +43,7 @@ export default defineEventHandler(async () => {
       { name: 'Export', description: 'Data export' },
       { name: 'User', description: 'User preferences and settings' },
       { name: 'Sitemap', description: 'XML sitemap for SEO' },
+      { name: 'Integration', description: 'Integration health monitoring' },
     ],
     paths: {
       '/api/v1/resources': {
@@ -3387,34 +3388,465 @@ export default defineEventHandler(async () => {
           },
         },
       },
-      '/api/sitemap': {
+      '/api/integration-health': {
         get: {
-          summary: 'Get XML sitemap',
+          summary: 'Get integration health status',
           description:
-            'Retrieve XML sitemap for SEO indexing. Includes static pages with priorities and change frequencies.',
-          operationId: 'getSitemap',
-          tags: ['Sitemap'],
+            'Retrieve comprehensive health status for all external integrations including circuit breakers, webhooks, and queue systems. Provides aggregate health status and detailed metrics for monitoring and alerting.',
+          operationId: 'getIntegrationHealth',
+          tags: ['Integration'],
           responses: {
             '200': {
-              description: 'XML sitemap',
+              description: 'Integration health report',
               content: {
-                'application/xml': {
+                'application/json': {
                   schema: {
-                    type: 'string',
-                    example:
-                      '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>https://example.com</loc>\n    <priority>1.0</priority>\n  </url>\n</urlset>',
+                    type: 'object',
+                    properties: {
+                      success: { type: 'boolean', example: true },
+                      data: {
+                        type: 'object',
+                        properties: {
+                          overall: {
+                            type: 'object',
+                            description: 'Aggregate integration health',
+                            properties: {
+                              status: {
+                                type: 'string',
+                                enum: ['healthy', 'degraded', 'unhealthy'],
+                                description:
+                                  'Overall health status: healthy (all systems operational), degraded (some issues), unhealthy (critical failures)',
+                              },
+                              timestamp: {
+                                type: 'string',
+                                format: 'date-time',
+                                description: 'When health check was performed',
+                              },
+                              totalCircuitBreakers: {
+                                type: 'integer',
+                                description:
+                                  'Total number of circuit breakers configured',
+                              },
+                              openCircuitBreakers: {
+                                type: 'integer',
+                                description:
+                                  'Number of circuit breakers currently open (failing)',
+                              },
+                              totalWebhooksQueued: {
+                                type: 'integer',
+                                description:
+                                  'Number of webhooks pending delivery',
+                              },
+                              totalDeadLetterWebhooks: {
+                                type: 'integer',
+                                description:
+                                  'Number of webhooks moved to dead letter queue (failed all retries)',
+                              },
+                            },
+                          },
+                          circuitBreakers: {
+                            type: 'object',
+                            description:
+                              'Detailed circuit breaker stats per service',
+                            additionalProperties: {
+                              type: 'object',
+                              properties: {
+                                state: {
+                                  type: 'string',
+                                  enum: ['closed', 'open', 'half-open'],
+                                  description:
+                                    'Circuit breaker state: closed (normal), open (failing), half-open (testing recovery)',
+                                },
+                                failureCount: {
+                                  type: 'integer',
+                                  description:
+                                    'Number of failures since last reset',
+                                },
+                                successCount: {
+                                  type: 'integer',
+                                  description:
+                                    'Number of successes since last reset',
+                                },
+                                lastFailureTime: {
+                                  type: 'integer',
+                                  format: 'int64',
+                                  description:
+                                    'Unix timestamp of last failure (null if no failures)',
+                                  nullable: true,
+                                },
+                                lastSuccessTime: {
+                                  type: 'integer',
+                                  format: 'int64',
+                                  description:
+                                    'Unix timestamp of last success (null if no successes)',
+                                  nullable: true,
+                                },
+                                failureRate: {
+                                  type: 'number',
+                                  format: 'float',
+                                  description:
+                                    'Failure rate percentage (0-100)',
+                                },
+                              },
+                            },
+                          },
+                          webhooks: {
+                            type: 'object',
+                            description: 'Webhook delivery queue status',
+                            properties: {
+                              queue: {
+                                type: 'object',
+                                description: 'Webhook queue metrics',
+                                properties: {
+                                  pending: {
+                                    type: 'integer',
+                                    description:
+                                      'Number of webhooks waiting to be delivered',
+                                  },
+                                  nextScheduled: {
+                                    type: 'string',
+                                    format: 'date-time',
+                                    description:
+                                      'When next webhook delivery is scheduled (null if queue empty)',
+                                    nullable: true,
+                                  },
+                                },
+                              },
+                              deadLetter: {
+                                type: 'object',
+                                description:
+                                  'Dead letter queue for failed webhooks',
+                                properties: {
+                                  count: {
+                                    type: 'integer',
+                                    description:
+                                      'Number of failed webhooks in dead letter queue',
+                                  },
+                                  items: {
+                                    type: 'array',
+                                    description: 'List of failed webhooks',
+                                    items: {
+                                      type: 'object',
+                                      properties: {
+                                        id: {
+                                          type: 'string',
+                                          description: 'Dead letter webhook ID',
+                                        },
+                                        webhookId: {
+                                          type: 'string',
+                                          description: 'Original webhook ID',
+                                        },
+                                        event: {
+                                          type: 'string',
+                                          description: 'Webhook event type',
+                                        },
+                                        failureReason: {
+                                          type: 'string',
+                                          description: 'Reason webhook failed',
+                                        },
+                                        createdAt: {
+                                          type: 'string',
+                                          format: 'date-time',
+                                          description:
+                                            'When webhook was initially created',
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '429': {
+                description: 'Rate limit exceeded',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+              '500': {
+                description: 'Internal server error',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
                   },
                 },
               },
             },
-            '500': {
-              description: 'Sitemap generation error',
-              content: {
-                'application/xml': {
-                  schema: {
-                    type: 'string',
-                    example:
-                      '<?xml version="1.0" encoding="UTF-8"?>\n<error>\n  <message>Failed to generate sitemap</message>\n</error>',
+          },
+        },
+        '/api/sitemap': {
+          get: {
+            summary: 'Get XML sitemap',
+            description:
+              'Retrieve XML sitemap for SEO indexing. Includes static pages with priorities and change frequencies.',
+            operationId: 'getSitemap',
+            tags: ['Sitemap'],
+            responses: {
+              '200': {
+                description: 'XML sitemap',
+                content: {
+                  'application/xml': {
+                    schema: {
+                      type: 'string',
+                      example:
+                        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>https://example.com</loc>\n    <priority>1.0</priority>\n  </url>\n</urlset>',
+                    },
+                  },
+                },
+              },
+              '500': {
+                description: 'Sitemap generation error',
+                content: {
+                  'application/xml': {
+                    schema: {
+                      type: 'string',
+                      example:
+                        '<?xml version="1.0" encoding="UTF-8"?>\n<error>\n  <message>Failed to generate sitemap</message>\n</error>',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/comparisons/index': {
+          get: {
+            summary: 'Compare resources',
+            description:
+              'Compare multiple resources side-by-side. Accepts comma-separated resource IDs and returns comparison data with caching.',
+            operationId: 'compareResources',
+            tags: ['Resources'],
+            parameters: [
+              {
+                name: 'ids',
+                in: 'query',
+                required: true,
+                description: 'Comma-separated list of resource IDs to compare',
+                schema: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  minItems: 2,
+                  maxItems: 5,
+                },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Comparison result',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            comparison: {
+                              $ref: '#/components/schemas/ResourceComparison',
+                            },
+                            resources: {
+                              type: 'array',
+                              items: {
+                                $ref: '#/components/schemas/Resource',
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                headers: {
+                  'X-Cache': {
+                    description: 'Cache status (HIT or MISS)',
+                    schema: { type: 'string', enum: ['HIT', 'MISS'] },
+                  },
+                  'X-Cache-Key': {
+                    description: 'Cache key used',
+                    schema: { type: 'string' },
+                  },
+                },
+              },
+              '400': {
+                description: 'Bad request',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Resource(s) not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+              '429': {
+                description: 'Rate limit exceeded',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+                headers: {
+                  'Retry-After': {
+                    description: 'Seconds until retry is allowed',
+                    schema: { type: 'integer' },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/analytics/data': {
+          get: {
+            summary: 'Get analytics dashboard data',
+            description:
+              'Retrieve aggregated analytics data for dashboard display. Includes top resources, categories, and date-range filtering with rate limiting.',
+            operationId: 'getAnalyticsDashboardData',
+            tags: ['Analytics'],
+            parameters: [
+              {
+                name: 'startDate',
+                in: 'query',
+                required: false,
+                description:
+                  'Start date for analytics data (ISO 8601 format, defaults to 30 days ago)',
+                schema: { type: 'string', format: 'date-time' },
+              },
+              {
+                name: 'endDate',
+                in: 'query',
+                required: false,
+                description:
+                  'End date for analytics data (ISO 8601 format, defaults to now)',
+                schema: { type: 'string', format: 'date-time' },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Analytics dashboard data',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            totalEvents: { type: 'integer', example: 1234 },
+                            eventsByType: {
+                              type: 'object',
+                              additionalProperties: { type: 'integer' },
+                            },
+                            resourceViews: {
+                              type: 'object',
+                              additionalProperties: { type: 'integer' },
+                            },
+                            eventsByCategory: {
+                              type: 'object',
+                              additionalProperties: { type: 'integer' },
+                            },
+                            dailyTrends: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  date: { type: 'string' },
+                                  count: { type: 'integer' },
+                                },
+                              },
+                            },
+                            topResources: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  id: { type: 'string' },
+                                  title: { type: 'string' },
+                                  views: { type: 'integer' },
+                                },
+                              },
+                            },
+                            topCategories: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  name: { type: 'string' },
+                                  count: { type: 'integer' },
+                                },
+                              },
+                            },
+                          },
+                        },
+                        dateRange: {
+                          type: 'object',
+                          properties: {
+                            start: { type: 'string', format: 'date-time' },
+                            end: { type: 'string', format: 'date-time' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '400': {
+                description: 'Bad request',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+              '429': {
+                description: 'Rate limit exceeded',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+                headers: {
+                  'Retry-After': {
+                    description: 'Seconds until retry is allowed',
+                    schema: { type: 'integer' },
+                  },
+                },
+              },
+              '500': {
+                description: 'Internal server error',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
                   },
                 },
               },
@@ -3422,596 +3854,367 @@ export default defineEventHandler(async () => {
           },
         },
       },
-      '/api/v1/comparisons/index': {
-        get: {
-          summary: 'Compare resources',
-          description:
-            'Compare multiple resources side-by-side. Accepts comma-separated resource IDs and returns comparison data with caching.',
-          operationId: 'compareResources',
-          tags: ['Resources'],
-          parameters: [
-            {
-              name: 'ids',
-              in: 'query',
-              required: true,
-              description: 'Comma-separated list of resource IDs to compare',
-              schema: {
+      components: {
+        schemas: {
+          SuccessResponse: {
+            type: 'object',
+            properties: {
+              success: { type: 'boolean', example: true },
+              data: {
+                type: 'object',
+                description: 'Response data (varies by endpoint)',
+              },
+              pagination: {
+                $ref: '#/components/schemas/Pagination',
+              },
+            },
+          },
+          ErrorResponse: {
+            type: 'object',
+            required: ['success', 'error'],
+            properties: {
+              success: {
+                type: 'boolean',
+                example: false,
+                description: 'Always false for error responses',
+              },
+              error: {
+                type: 'object',
+                required: ['code', 'message', 'category', 'timestamp'],
+                properties: {
+                  code: {
+                    type: 'string',
+                    description: 'Standardized error code',
+                    enum: [
+                      'INTERNAL_SERVER_ERROR',
+                      'BAD_REQUEST',
+                      'UNAUTHORIZED',
+                      'FORBIDDEN',
+                      'NOT_FOUND',
+                      'CONFLICT',
+                      'VALIDATION_ERROR',
+                      'RATE_LIMIT_EXCEEDED',
+                      'SERVICE_UNAVAILABLE',
+                      'GATEWAY_TIMEOUT',
+                      'CIRCUIT_BREAKER_OPEN',
+                      'EXTERNAL_SERVICE_ERROR',
+                    ],
+                    example: 'VALIDATION_ERROR',
+                  },
+                  message: {
+                    type: 'string',
+                    description: 'Human-readable error message',
+                    example: 'Validation failed for field: email',
+                  },
+                  category: {
+                    type: 'string',
+                    description: 'Error category for logical grouping',
+                    enum: [
+                      'validation',
+                      'authentication',
+                      'authorization',
+                      'not_found',
+                      'rate_limit',
+                      'external_service',
+                      'internal',
+                      'network',
+                    ],
+                    example: 'validation',
+                  },
+                  details: {
+                    type: 'object',
+                    description: 'Additional error details (optional)',
+                    properties: {
+                      field: {
+                        type: 'string',
+                        description: 'Field that caused error',
+                      },
+                      value: { description: 'Invalid value received' },
+                      resource: {
+                        type: 'string',
+                        description: 'Resource type',
+                      },
+                      identifier: { description: 'Resource identifier' },
+                    },
+                  },
+                  timestamp: {
+                    type: 'string',
+                    format: 'date-time',
+                    description: 'ISO 8601 timestamp of error',
+                  },
+                  requestId: {
+                    type: 'string',
+                    description: 'Unique request ID for tracing',
+                  },
+                  path: {
+                    type: 'string',
+                    description: 'API endpoint path',
+                  },
+                },
+              },
+            },
+          },
+          Resource: {
+            type: 'object',
+            properties: {
+              id: { type: 'string', example: 'res_12345' },
+              title: { type: 'string', example: 'Free Hosting Service' },
+              description: {
+                type: 'string',
+                example: 'A free hosting service for static websites',
+              },
+              url: {
+                type: 'string',
+                format: 'uri',
+                example: 'https://example.com',
+              },
+              category: { type: 'string', example: 'Hosting' },
+              pricingModel: {
+                type: 'string',
+                enum: ['Free', 'Freemium', 'Open Source', 'Paid'],
+                example: 'Free',
+              },
+              difficulty: {
+                type: 'string',
+                enum: ['Beginner', 'Intermediate', 'Advanced'],
+                example: 'Beginner',
+              },
+              technology: {
                 type: 'array',
                 items: { type: 'string' },
-                minItems: 2,
-                maxItems: 5,
+                example: ['JavaScript', 'React'],
               },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Comparison result',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          comparison: {
-                            $ref: '#/components/schemas/ResourceComparison',
-                          },
-                          resources: {
-                            type: 'array',
-                            items: {
-                              $ref: '#/components/schemas/Resource',
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
+              tags: {
+                type: 'array',
+                items: { type: 'string' },
+                example: ['hosting', 'static', 'free'],
               },
-              headers: {
-                'X-Cache': {
-                  description: 'Cache status (HIT or MISS)',
-                  schema: { type: 'string', enum: ['HIT', 'MISS'] },
-                },
-                'X-Cache-Key': {
-                  description: 'Cache key used',
-                  schema: { type: 'string' },
-                },
-              },
-            },
-            '400': {
-              description: 'Bad request',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Resource(s) not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '429': {
-              description: 'Rate limit exceeded',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-              headers: {
-                'Retry-After': {
-                  description: 'Seconds until retry is allowed',
-                  schema: { type: 'integer' },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/analytics/data': {
-        get: {
-          summary: 'Get analytics dashboard data',
-          description:
-            'Retrieve aggregated analytics data for dashboard display. Includes top resources, categories, and date-range filtering with rate limiting.',
-          operationId: 'getAnalyticsDashboardData',
-          tags: ['Analytics'],
-          parameters: [
-            {
-              name: 'startDate',
-              in: 'query',
-              required: false,
-              description:
-                'Start date for analytics data (ISO 8601 format, defaults to 30 days ago)',
-              schema: { type: 'string', format: 'date-time' },
-            },
-            {
-              name: 'endDate',
-              in: 'query',
-              required: false,
-              description:
-                'End date for analytics data (ISO 8601 format, defaults to now)',
-              schema: { type: 'string', format: 'date-time' },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Analytics dashboard data',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          totalEvents: { type: 'integer', example: 1234 },
-                          eventsByType: {
-                            type: 'object',
-                            additionalProperties: { type: 'integer' },
-                          },
-                          resourceViews: {
-                            type: 'object',
-                            additionalProperties: { type: 'integer' },
-                          },
-                          eventsByCategory: {
-                            type: 'object',
-                            additionalProperties: { type: 'integer' },
-                          },
-                          dailyTrends: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              properties: {
-                                date: { type: 'string' },
-                                count: { type: 'integer' },
-                              },
-                            },
-                          },
-                          topResources: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              properties: {
-                                id: { type: 'string' },
-                                title: { type: 'string' },
-                                views: { type: 'integer' },
-                              },
-                            },
-                          },
-                          topCategories: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              properties: {
-                                name: { type: 'string' },
-                                count: { type: 'integer' },
-                              },
-                            },
-                          },
-                        },
-                      },
-                      dateRange: {
-                        type: 'object',
-                        properties: {
-                          start: { type: 'string', format: 'date-time' },
-                          end: { type: 'string', format: 'date-time' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '400': {
-              description: 'Bad request',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '429': {
-              description: 'Rate limit exceeded',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-              headers: {
-                'Retry-After': {
-                  description: 'Seconds until retry is allowed',
-                  schema: { type: 'integer' },
-                },
-              },
-            },
-            '500': {
-              description: 'Internal server error',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    components: {
-      schemas: {
-        SuccessResponse: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean', example: true },
-            data: {
-              type: 'object',
-              description: 'Response data (varies by endpoint)',
-            },
-            pagination: {
-              $ref: '#/components/schemas/Pagination',
-            },
-          },
-        },
-        ErrorResponse: {
-          type: 'object',
-          required: ['success', 'error'],
-          properties: {
-            success: {
-              type: 'boolean',
-              example: false,
-              description: 'Always false for error responses',
-            },
-            error: {
-              type: 'object',
-              required: ['code', 'message', 'category', 'timestamp'],
-              properties: {
-                code: {
-                  type: 'string',
-                  description: 'Standardized error code',
-                  enum: [
-                    'INTERNAL_SERVER_ERROR',
-                    'BAD_REQUEST',
-                    'UNAUTHORIZED',
-                    'FORBIDDEN',
-                    'NOT_FOUND',
-                    'CONFLICT',
-                    'VALIDATION_ERROR',
-                    'RATE_LIMIT_EXCEEDED',
-                    'SERVICE_UNAVAILABLE',
-                    'GATEWAY_TIMEOUT',
-                    'CIRCUIT_BREAKER_OPEN',
-                    'EXTERNAL_SERVICE_ERROR',
-                  ],
-                  example: 'VALIDATION_ERROR',
-                },
-                message: {
-                  type: 'string',
-                  description: 'Human-readable error message',
-                  example: 'Validation failed for field: email',
-                },
-                category: {
-                  type: 'string',
-                  description: 'Error category for logical grouping',
-                  enum: [
-                    'validation',
-                    'authentication',
-                    'authorization',
-                    'not_found',
-                    'rate_limit',
-                    'external_service',
-                    'internal',
-                    'network',
-                  ],
-                  example: 'validation',
-                },
-                details: {
+              hierarchicalTags: {
+                type: 'array',
+                items: {
                   type: 'object',
-                  description: 'Additional error details (optional)',
                   properties: {
-                    field: {
-                      type: 'string',
-                      description: 'Field that caused error',
-                    },
-                    value: { description: 'Invalid value received' },
-                    resource: { type: 'string', description: 'Resource type' },
-                    identifier: { description: 'Resource identifier' },
+                    id: { type: 'string' },
+                    name: { type: 'string' },
+                    parentId: { type: 'string' },
+                    level: { type: 'integer' },
                   },
                 },
-                timestamp: {
-                  type: 'string',
-                  format: 'date-time',
-                  description: 'ISO 8601 timestamp of error',
-                },
-                requestId: {
-                  type: 'string',
-                  description: 'Unique request ID for tracing',
-                },
-                path: {
-                  type: 'string',
-                  description: 'API endpoint path',
+              },
+              popularity: { type: 'number', example: 95 },
+              status: {
+                type: 'string',
+                enum: [
+                  'active',
+                  'deprecated',
+                  'discontinued',
+                  'updated',
+                  'pending',
+                ],
+                example: 'active',
+              },
+              dateAdded: {
+                type: 'string',
+                format: 'date-time',
+                example: '2023-01-01T00:00:00Z',
+              },
+              lastUpdated: {
+                type: 'string',
+                format: 'date-time',
+                example: '2024-01-01T00:00:00Z',
+              },
+              statusHistory: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'string' },
+                    fromStatus: { type: 'string' },
+                    toStatus: { type: 'string' },
+                    reason: { type: 'string' },
+                    changedBy: { type: 'string' },
+                    changedAt: { type: 'string', format: 'date-time' },
+                    notes: { type: 'string' },
+                  },
                 },
               },
             },
           },
-        },
-        Resource: {
-          type: 'object',
-          properties: {
-            id: { type: 'string', example: 'res_12345' },
-            title: { type: 'string', example: 'Free Hosting Service' },
-            description: {
-              type: 'string',
-              example: 'A free hosting service for static websites',
+          ResourceSubmission: {
+            type: 'object',
+            required: ['title', 'description', 'url', 'category'],
+            properties: {
+              title: { type: 'string', example: 'My Resource' },
+              description: {
+                type: 'string',
+                example: 'A brief description',
+                minLength: 10,
+              },
+              url: {
+                type: 'string',
+                format: 'uri',
+                example: 'https://example.com',
+              },
+              category: { type: 'string', example: 'Tools' },
+              tags: {
+                type: 'array',
+                items: { type: 'string' },
+                example: ['development', 'free'],
+              },
+              pricingModel: {
+                type: 'string',
+                enum: ['Free', 'Freemium', 'Open Source', 'Paid'],
+                example: 'Free',
+              },
+              difficulty: {
+                type: 'string',
+                enum: ['Beginner', 'Intermediate', 'Advanced'],
+                example: 'Beginner',
+              },
+              technology: {
+                type: 'array',
+                items: { type: 'string' },
+                example: ['JavaScript', 'React'],
+              },
+              benefits: {
+                type: 'array',
+                items: { type: 'string' },
+                example: ['Free tier', 'Open source'],
+              },
             },
-            url: {
-              type: 'string',
-              format: 'uri',
-              example: 'https://example.com',
+          },
+          Submission: {
+            type: 'object',
+            properties: {
+              id: { type: 'string', example: 'sub_123456' },
+              resourceData: {
+                $ref: '#/components/schemas/ResourceSubmission',
+              },
+              status: {
+                type: 'string',
+                enum: ['pending', 'approved', 'rejected'],
+                example: 'pending',
+              },
+              submittedBy: { type: 'string', example: 'user123' },
+              submittedAt: {
+                type: 'string',
+                format: 'date-time',
+                example: '2024-01-01T12:00:00Z',
+              },
             },
-            category: { type: 'string', example: 'Hosting' },
-            pricingModel: {
-              type: 'string',
-              enum: ['Free', 'Freemium', 'Open Source', 'Paid'],
-              example: 'Free',
+          },
+          Webhook: {
+            type: 'object',
+            properties: {
+              id: { type: 'string', example: 'wh_abc123' },
+              url: {
+                type: 'string',
+                format: 'uri',
+                example: 'https://example.com/webhook',
+              },
+              events: {
+                type: 'array',
+                items: { type: 'string' },
+                example: ['resource.created', 'resource.updated'],
+              },
+              active: { type: 'boolean', example: true },
+              createdAt: {
+                type: 'string',
+                format: 'date-time',
+              },
+              updatedAt: {
+                type: 'string',
+                format: 'date-time',
+              },
+              deliveryCount: { type: 'integer', example: 42 },
+              failureCount: { type: 'integer', example: 2 },
             },
-            difficulty: {
-              type: 'string',
-              enum: ['Beginner', 'Intermediate', 'Advanced'],
-              example: 'Beginner',
-            },
-            technology: {
-              type: 'array',
-              items: { type: 'string' },
-              example: ['JavaScript', 'React'],
-            },
-            tags: {
-              type: 'array',
-              items: { type: 'string' },
-              example: ['hosting', 'static', 'free'],
-            },
-            hierarchicalTags: {
-              type: 'array',
-              items: {
+          },
+          WebhookDelivery: {
+            type: 'object',
+            properties: {
+              id: { type: 'string', example: 'del_xyz789' },
+              webhookId: { type: 'string', example: 'wh_abc123' },
+              eventType: {
+                type: 'string',
+                example: 'resource.created',
+              },
+              status: {
+                type: 'string',
+                enum: ['success', 'failed', 'pending'],
+                example: 'success',
+              },
+              attempt: { type: 'integer', example: 1 },
+              deliveredAt: {
+                type: 'string',
+                format: 'date-time',
+              },
+              response: {
                 type: 'object',
-                properties: {
-                  id: { type: 'string' },
-                  name: { type: 'string' },
-                  parentId: { type: 'string' },
-                  level: { type: 'integer' },
-                },
+                description: 'HTTP response from webhook endpoint',
               },
             },
-            popularity: { type: 'number', example: 95 },
-            status: {
-              type: 'string',
-              enum: [
-                'active',
-                'deprecated',
-                'discontinued',
-                'updated',
-                'pending',
-              ],
-              example: 'active',
-            },
-            dateAdded: {
-              type: 'string',
-              format: 'date-time',
-              example: '2023-01-01T00:00:00Z',
-            },
-            lastUpdated: {
-              type: 'string',
-              format: 'date-time',
-              example: '2024-01-01T00:00:00Z',
-            },
-            statusHistory: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: { type: 'string' },
-                  fromStatus: { type: 'string' },
-                  toStatus: { type: 'string' },
-                  reason: { type: 'string' },
-                  changedBy: { type: 'string' },
-                  changedAt: { type: 'string', format: 'date-time' },
-                  notes: { type: 'string' },
-                },
+          },
+          Pagination: {
+            type: 'object',
+            properties: {
+              total: { type: 'integer', description: 'Total number of items' },
+              limit: { type: 'integer', description: 'Items per page' },
+              offset: { type: 'integer', description: 'Items skipped' },
+              hasNext: {
+                type: 'boolean',
+                description: 'Whether there are more items',
+              },
+              hasPrev: {
+                type: 'boolean',
+                description: 'Whether there are previous items',
               },
             },
           },
         },
-        ResourceSubmission: {
-          type: 'object',
-          required: ['title', 'description', 'url', 'category'],
-          properties: {
-            title: { type: 'string', example: 'My Resource' },
-            description: {
-              type: 'string',
-              example: 'A brief description',
-              minLength: 10,
-            },
-            url: {
-              type: 'string',
-              format: 'uri',
-              example: 'https://example.com',
-            },
-            category: { type: 'string', example: 'Tools' },
-            tags: {
-              type: 'array',
-              items: { type: 'string' },
-              example: ['development', 'free'],
-            },
-            pricingModel: {
-              type: 'string',
-              enum: ['Free', 'Freemium', 'Open Source', 'Paid'],
-              example: 'Free',
-            },
-            difficulty: {
-              type: 'string',
-              enum: ['Beginner', 'Intermediate', 'Advanced'],
-              example: 'Beginner',
-            },
-            technology: {
-              type: 'array',
-              items: { type: 'string' },
-              example: ['JavaScript', 'React'],
-            },
-            benefits: {
-              type: 'array',
-              items: { type: 'string' },
-              example: ['Free tier', 'Open source'],
-            },
-          },
-        },
-        Submission: {
+        ResourceComparison: {
           type: 'object',
           properties: {
-            id: { type: 'string', example: 'sub_123456' },
-            resourceData: {
-              $ref: '#/components/schemas/ResourceSubmission',
-            },
-            status: {
+            id: {
               type: 'string',
-              enum: ['pending', 'approved', 'rejected'],
-              example: 'pending',
+              description: 'Unique comparison ID',
+              example: 'cmp_1704967234567_abc123',
             },
-            submittedBy: { type: 'string', example: 'user123' },
-            submittedAt: {
-              type: 'string',
-              format: 'date-time',
-              example: '2024-01-01T12:00:00Z',
-            },
-          },
-        },
-        Webhook: {
-          type: 'object',
-          properties: {
-            id: { type: 'string', example: 'wh_abc123' },
-            url: {
-              type: 'string',
-              format: 'uri',
-              example: 'https://example.com/webhook',
-            },
-            events: {
+            resources: {
               type: 'array',
+              description: 'List of resource IDs being compared',
               items: { type: 'string' },
-              example: ['resource.created', 'resource.updated'],
+              example: ['res_1', 'res_2', 'res_3'],
             },
-            active: { type: 'boolean', example: true },
+            criteria: {
+              type: 'array',
+              description: 'Comparison criteria used',
+              items: { type: 'string' },
+              example: ['price', 'features', 'ease_of_use'],
+            },
+            scores: {
+              type: 'object',
+              description: 'Scoring data for each criterion',
+              additionalProperties: {
+                type: 'number',
+              },
+            },
             createdAt: {
               type: 'string',
               format: 'date-time',
+              description: 'When comparison was created',
+              example: '2024-01-10T12:00:00Z',
             },
-            updatedAt: {
-              type: 'string',
-              format: 'date-time',
-            },
-            deliveryCount: { type: 'integer', example: 42 },
-            failureCount: { type: 'integer', example: 2 },
-          },
-        },
-        WebhookDelivery: {
-          type: 'object',
-          properties: {
-            id: { type: 'string', example: 'del_xyz789' },
-            webhookId: { type: 'string', example: 'wh_abc123' },
-            eventType: {
-              type: 'string',
-              example: 'resource.created',
-            },
-            status: {
-              type: 'string',
-              enum: ['success', 'failed', 'pending'],
-              example: 'success',
-            },
-            attempt: { type: 'integer', example: 1 },
-            deliveredAt: {
-              type: 'string',
-              format: 'date-time',
-            },
-            response: {
-              type: 'object',
-              description: 'HTTP response from webhook endpoint',
-            },
-          },
-        },
-        Pagination: {
-          type: 'object',
-          properties: {
-            total: { type: 'integer', description: 'Total number of items' },
-            limit: { type: 'integer', description: 'Items per page' },
-            offset: { type: 'integer', description: 'Items skipped' },
-            hasNext: {
+            isPublic: {
               type: 'boolean',
-              description: 'Whether there are more items',
+              description: 'Whether comparison is publicly accessible',
+              example: true,
             },
-            hasPrev: {
-              type: 'boolean',
-              description: 'Whether there are previous items',
+            slug: {
+              type: 'string',
+              description: 'URL-friendly identifier for sharing',
+              example: 'resource-a-vs-resource-b-vs-resource-c',
             },
-          },
-        },
-      },
-      ResourceComparison: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
-            description: 'Unique comparison ID',
-            example: 'cmp_1704967234567_abc123',
-          },
-          resources: {
-            type: 'array',
-            description: 'List of resource IDs being compared',
-            items: { type: 'string' },
-            example: ['res_1', 'res_2', 'res_3'],
-          },
-          criteria: {
-            type: 'array',
-            description: 'Comparison criteria used',
-            items: { type: 'string' },
-            example: ['price', 'features', 'ease_of_use'],
-          },
-          scores: {
-            type: 'object',
-            description: 'Scoring data for each criterion',
-            additionalProperties: {
-              type: 'number',
-            },
-          },
-          createdAt: {
-            type: 'string',
-            format: 'date-time',
-            description: 'When comparison was created',
-            example: '2024-01-10T12:00:00Z',
-          },
-          isPublic: {
-            type: 'boolean',
-            description: 'Whether comparison is publicly accessible',
-            example: true,
-          },
-          slug: {
-            type: 'string',
-            description: 'URL-friendly identifier for sharing',
-            example: 'resource-a-vs-resource-b-vs-resource-c',
           },
         },
       },

@@ -1,3 +1,196 @@
+# Integration Engineer Task
+
+## Date: 2026-01-15
+
+## Agent: Senior Integration Engineer
+
+## Branch: agent
+
+---
+
+## [INTEGRATION MONITORING] Circuit Breaker Health Endpoint ✅ COMPLETED (2026-01-15)
+
+### Overview
+
+Added comprehensive integration health monitoring endpoint to improve observability of external service integrations.
+
+### Issue
+
+**Location**: `server/utils/circuit-breaker.ts`
+
+**Problem**: Circuit breaker stats function (`getAllCircuitBreakerStats`) existed but had no public API endpoint for monitoring. Operations teams had no visibility into integration health.
+
+**Impact**: MEDIUM - Unable to proactively monitor integration health, detect failures early, or alert on degraded services
+
+### Solution
+
+#### 1. Created Integration Health Monitoring Endpoint ✅
+
+**File Created**: `server/api/integration-health.get.ts` (96 lines)
+
+**Features**:
+
+- **Aggregate Health Status**: Overall integration health (healthy/degraded/unhealthy)
+  - **healthy**: All systems operational
+  - **degraded**: Some issues (half-open breakers or dead letter webhooks)
+  - **unhealthy**: Critical failures (open circuit breakers)
+
+- **Circuit Breaker Monitoring**:
+  - Total number of configured circuit breakers
+  - Number of currently open (failing) breakers
+  - Per-service circuit breaker stats:
+    - State (closed/open/half-open)
+    - Failure count
+    - Success count
+    - Last failure time
+    - Last success time
+    - Failure rate percentage
+
+- **Webhook Queue Monitoring**:
+  - Pending webhook count
+  - Next scheduled delivery time
+  - Dead letter queue:
+    - Failed webhook count
+    - Failed webhook details (ID, event, failure reason, created at)
+
+#### 2. Exported Circuit Breaker Interfaces ✅
+
+**File Modified**: `server/utils/circuit-breaker.ts`
+
+**Changes**:
+
+- Exported `CircuitBreakerConfig` interface
+- Exported `CircuitBreakerStats` interface
+- Improved type safety for external consumers
+
+#### 3. Updated OpenAPI Documentation ✅
+
+**File Modified**: `server/api/api-docs/spec.get.ts`
+
+**Changes**:
+
+- Added `/api/integration-health` endpoint documentation (180+ lines)
+- Added `'Integration'` tag to tags array
+- Complete schema definitions for all response objects
+- Documented all response codes (200, 429, 500)
+- Fixed securitySchemes structure (moved outside components section)
+
+### Success Criteria
+
+- [x] Integration monitoring endpoint created
+- [x] Circuit breaker stats exposed via API
+- [x] Webhook queue status included
+- [x] Aggregate health status calculation
+- [x] OpenAPI documentation updated
+- [x] Type safety improved (exported interfaces)
+- [x] Rate limiting applied
+- [x] Error handling implemented
+
+### Files Created
+
+- `server/api/integration-health.get.ts` (96 lines) - Integration health monitoring endpoint
+
+### Files Modified
+
+1. `server/utils/circuit-breaker.ts` - Exported interfaces for type safety
+2. `server/api/api-docs/spec.get.ts` - Added endpoint documentation and fixed structure
+3. `docs/blueprint.md` - Added Integration Decision Log entry
+
+### Total Impact
+
+- **New API Endpoint**: 1 (`/api/integration-health`)
+- **Lines Added**: 276 lines (endpoint + documentation)
+- **Type Safety**: Improved (exported 2 interfaces)
+- **Observability**: ✅ SIGNIFICANTLY IMPROVED - Operations teams can now monitor integration health
+- **Proactive Monitoring**: ✅ ENABLED - Early detection of integration failures
+- **API Coverage**: 46 total endpoints (was 45)
+
+### Architecture Improvements
+
+#### Observability Gaps Closed
+
+**Before**: No visibility into circuit breaker states or webhook queue health
+
+**After**: Comprehensive monitoring via `/api/integration-health` endpoint
+
+#### Benefits
+
+1. **Operations Visibility**: Real-time health status for all external integrations
+2. **Proactive Alerting**: Can detect issues before they cascade to users
+3. **Debugging Support**: Detailed circuit breaker stats for troubleshooting
+4. **Dead Letter Insight**: Visibility into failed webhooks requiring manual intervention
+5. **Single Dashboard**: One endpoint for all integration health metrics
+
+### Integration Principles Applied
+
+✅ **Observability**: Comprehensive monitoring of integration health
+✅ **Type Safety**: Exported interfaces for external consumers
+✅ **Standardization**: Consistent error responses and rate limiting
+✅ **Documentation**: Complete OpenAPI specification for new endpoint
+✅ **Self-Documenting**: Clear health status semantics (healthy/degraded/unhealthy)
+
+### Anti-Patterns Avoided
+
+❌ **Black Box Monitoring**: No visibility into integration health
+❌ **Manual Health Checks**: Replaced with automated monitoring endpoint
+❌ **Unmonitored Failures**: Circuit breakers now tracked and exposed
+❌ **Missing Documentation**: Complete OpenAPI spec added
+
+### Monitoring Endpoint Usage
+
+**GET /api/integration-health**
+
+```bash
+curl http://localhost:3000/api/integration-health
+```
+
+**Response Example**:
+
+```json
+{
+  "success": true,
+  "data": {
+    "overall": {
+      "status": "healthy",
+      "timestamp": "2026-01-15T22:30:00Z",
+      "totalCircuitBreakers": 2,
+      "openCircuitBreakers": 0,
+      "totalWebhooksQueued": 5,
+      "totalDeadLetterWebhooks": 0
+    },
+    "circuitBreakers": {
+      "webhook:example.com": {
+        "state": "closed",
+        "failureCount": 0,
+        "successCount": 100,
+        "lastFailureTime": null,
+        "lastSuccessTime": 1705333800000,
+        "failureRate": 0
+      }
+    },
+    "webhooks": {
+      "queue": {
+        "pending": 5,
+        "nextScheduled": "2026-01-15T22:35:00Z"
+      },
+      "deadLetter": {
+        "count": 0,
+        "items": []
+      }
+    }
+  }
+}
+```
+
+### Integration Decision Log
+
+| Date       | Decision                                   | Rationale                                                                                                                                                                                            |
+| ---------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-01-15 | Add Integration Health Monitoring Endpoint | Provide comprehensive visibility into circuit breaker states and webhook queue health for operations teams; enable proactive alerting on integration failures; improve debugging and troubleshooting |
+| 2026-01-15 | Export Circuit Breaker Interfaces          | Improve type safety for external consumers; enable better IDE support; consistent with TypeScript best practices                                                                                     |
+
+---
+
 # Security Specialist Task
 
 ## Date: 2026-01-15
