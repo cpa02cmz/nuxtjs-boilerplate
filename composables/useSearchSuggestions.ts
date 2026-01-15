@@ -1,4 +1,4 @@
-import { ref, readonly } from 'vue'
+import { ref, readonly, computed } from 'vue'
 import type { Resource } from '~/types/resource'
 import type { SuggestionResult } from '~/types/search'
 import { useSearchHistory } from '~/composables/useSearchHistory'

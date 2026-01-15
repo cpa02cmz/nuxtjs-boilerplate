@@ -199,27 +199,39 @@ async function fetchUrlWithTimeout(
       responseTime,
       timestamp: new Date().toISOString(),
     }
-  } catch {
-    const getResponse = await Promise.race([
-      fetch(url, {
-        method: 'GET',
-        redirect: 'follow',
-        headers: {
-          'User-Agent': 'NuxtResourceValidator/1.0',
-        },
-      }),
-      timeoutPromise,
-    ])
+  } catch (error) {
+    try {
+      const getResponse = await Promise.race([
+        fetch(url, {
+          method: 'GET',
+          redirect: 'follow',
+          headers: {
+            'User-Agent': 'NuxtResourceValidator/1.0',
+          },
+        }),
+        timeoutPromise,
+      ])
 
-    const responseTime = Date.now() - startTime
+      const responseTime = Date.now() - startTime
 
-    return {
-      url,
-      status: getResponse.status,
-      statusText: getResponse.statusText,
-      isAccessible: getResponse.status >= 200 && getResponse.status < 400,
-      responseTime,
-      timestamp: new Date().toISOString(),
+      return {
+        url,
+        status: getResponse.status,
+        statusText: getResponse.statusText,
+        isAccessible: getResponse.status >= 200 && getResponse.status < 400,
+        responseTime,
+        timestamp: new Date().toISOString(),
+      }
+    } catch (getError) {
+      return {
+        url,
+        status: null,
+        statusText: null,
+        isAccessible: false,
+        responseTime: null,
+        error: getError instanceof Error ? getError.message : String(getError),
+        timestamp: new Date().toISOString(),
+      }
     }
   }
 }

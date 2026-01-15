@@ -227,7 +227,7 @@ describe('SearchBar', () => {
 
     // The suggestions component should not be rendered when input is empty
     const searchSuggestions = wrapper.findComponent(mockSearchSuggestions)
-    expect(searchSuggestions.exists()).toBe(true) // Component is still there but with empty suggestions
+    expect(searchSuggestions.exists()).toBe(false)
   })
 
   it('handles Enter key press', async () => {
