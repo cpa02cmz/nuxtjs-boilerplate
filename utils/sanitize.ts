@@ -60,7 +60,7 @@ const FORBID_TAGS = [
   'li',
   'br',
   'hr',
-] as const
+]
 
 const FORBID_ATTR = [
   'src',
@@ -136,7 +136,7 @@ const FORBID_ATTR = [
   'standby',
   'id',
   'name',
-] as const
+]
 
 const FORBID_CONTENTS = [
   'script',
@@ -159,14 +159,14 @@ const FORBID_CONTENTS = [
   'title',
   'style',
   'svg',
-] as const
+]
 
 const SANITIZE_CONFIG = {
   FORBID_TAGS,
   FORBID_ATTR,
   FORBID_CONTENTS,
   SANITIZE_DOM: true,
-} as const
+}
 
 /**
  * Sanitizes content to prevent XSS attacks using multiple layers of protection
@@ -179,22 +179,24 @@ export const sanitizeForXSS = (content: string): string => {
   // First layer: Preprocessing to remove dangerous content
   let preprocessed = content
 
-  // Remove script tags and their content while preserving whitespace
-  // Match <script>content</script> or <script/> and replace with same whitespace
+  // Remove script tags and their content while preserving surrounding whitespace properly
+  // Match <script>content</script> and replace with single space to avoid double spaces
   preprocessed = preprocessed.replace(
-    /(\s*)<\s*script[^>]*>[\s\S]*?<\s*\/\s*script\s*>/gi,
+    /(\s*)<\s*script[^>]*>[\s\S]*?<\s*\/\s*script\s*>(\s*)/gi,
     '$1'
   )
   preprocessed = preprocessed.replace(/<\s*script[^>]*\/?\s*>/gi, '')
 
   // Remove other dangerous tags that might have been missed
+  // For paired tags, replace with single space to avoid double spaces
   preprocessed = preprocessed.replace(
-    /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|basefont|frame|frameset|ilayer|layer|bgsound|title|style)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi,
-    ''
+    /(\s*)<\s*(iframe|object|embed|form|input|button|img|link|meta|base|basefont|frame|frameset|ilayer|layer|bgsound|title|style)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>(\s*)/gi,
+    '$1'
   )
+  // For self-closing tags, replace with single space
   preprocessed = preprocessed.replace(
-    /<\s*(iframe|object|embed|form|input|button|img|link|meta|base|basefont|frame|frameset|ilayer|layer|bgsound|title|style)[^>]*\/?\s*>/gi,
-    ''
+    /(\s*)<\s*(iframe|object|embed|form|input|button|img|link|meta|base|basefont|frame|frameset|ilayer|layer|bgsound|title|style)[^>]*\/?\s*>(\s*)/gi,
+    '$1'
   )
 
   // Remove SVG tags which can contain malicious code, but preserve their text content
@@ -225,15 +227,9 @@ export const sanitizeForXSS = (content: string): string => {
     .replace(/data:/gi, '')
     .replace(/vbscript:/gi, '')
     .replace(/on\w+\s*=/gi, '') // Remove any event handlers
-    .replace(/script/gi, '') // Additional protection against script substrings
-    .replace(/iframe/gi, '') // Additional protection
-    .replace(/object/gi, '') // Additional protection
-    .replace(/embed/gi, '') // Additional protection
-    .replace(/img/gi, '') // Additional protection
-    .replace(/svg/gi, '') // Additional protection
-    .replace(/vbs/gi, '') // Additional protection
     .replace(/&#(\d+);?/g, '') // Remove HTML entities that might be used for encoding
     .replace(/&#[xX]([0-9a-fA-F]+);?/g, '') // Remove hex HTML entities
+    .replace(/\s+/g, ' ') // Normalize whitespace - replace multiple spaces with single space
 }
 
 /**

@@ -6,7 +6,7 @@ describe('XSS Sanitization Utilities', () => {
     it('removes script tags', () => {
       const input = 'Hello <script>alert("XSS")</script> world'
       const result = sanitizeForXSS(input)
-      expect(result).toBe('Hello  world')
+      expect(result).toBe('Hello world')
       expect(result).not.toContain('script')
       expect(result).not.toContain('alert')
     })
@@ -15,14 +15,14 @@ describe('XSS Sanitization Utilities', () => {
       const input =
         'Content <iframe src="javascript:alert(1)"></iframe> more content'
       const result = sanitizeForXSS(input)
-      expect(result).toBe('Content  more content')
+      expect(result).toBe('Content more content')
       expect(result).not.toContain('iframe')
     })
 
     it('removes event handlers', () => {
       const input = 'Text <img src="x" onerror="alert(1)" /> more text'
       const result = sanitizeForXSS(input)
-      expect(result).toBe('Text  more text')
+      expect(result).toBe('Text more text')
       expect(result).not.toContain('onerror')
       expect(result).not.toContain('alert')
     })
