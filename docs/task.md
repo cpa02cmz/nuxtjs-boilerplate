@@ -8,6 +8,230 @@
 
 ---
 
+## [ARCHITECTURE] Extract Map-Array Synchronization Utility (DRY Principle) ✅ COMPLETED (2026-01-16)
+
+### Overview
+
+Eliminated code duplication in community composables by extracting Map-Array synchronization patterns to reusable utility functions.
+
+### Issue
+
+**Location**: composables/community/useUserProfiles.ts, composables/community/useModeration.ts, composables/community/useVoting.ts
+
+**Problem**: Map-Array synchronization pattern was duplicated 8 times across 3 composables:
+
+- **useUserProfiles.ts**: 4 occurrences (updateProfile, incrementContributions, updateReputation, setModeratorStatus)
+- **useModeration.ts**: 3 occurrences (moderateContent, resolveFlag, updateFlagStatus)
+- **useVoting.ts**: 1 occurrence (vote when changing vote type)
+
+Each occurrence followed the exact same pattern:
+
+1. Get item from Map
+2. Update item
+3. Set item back in Map
+4. Find index in array with `findIndex`
+5. Update array at that index
+
+**Impact**: MEDIUM - Code duplication makes bug fixes harder, increases file size, and violates DRY principle.
+
+### Solution
+
+#### 1. Created Collection Utilities ✅
+
+**File Created**: utils/collection-utils.ts (132 lines)
+
+**Features**:
+
+- `updateInArrayMap()` - Synchronizes a Map update with its corresponding Array
+  - Updates item in both Map (O(1)) and Array (O(n) for index lookup)
+  - Type-safe with generic type parameter `T extends { id: string }`
+  - Returns boolean indicating success/failure
+  - Full JSDoc documentation with examples
+
+- `addToArrayMap()` - Adds item to both Map and Array
+  - Inserts item in both Map (O(1)) and Array (O(1) push)
+  - Type-safe with generic type parameter
+  - Full JSDoc documentation with examples
+
+- `removeInArrayMap()` - Removes item from both Map and Array
+  - Removes item from both Map (O(1)) and Array (O(n) for index lookup)
+  - Type-safe with generic type parameter
+  - Full JSDoc documentation with examples
+
+- `initializeMapFromArray()` - Initializes a Map from an array of items
+  - Creates Map with item IDs as keys
+  - Used for initial index creation
+  - Type-safe with generic type parameter
+  - Full JSDoc documentation with examples
+
+**Benefits**:
+
+- Single source of truth for Map-Array synchronization
+- Type-safe operations with generics
+- Comprehensive JSDoc documentation
+- Reusable across all composables maintaining Map+Array state
+- Consistent error handling and return types
+- Easy to test in isolation
+
+#### 2. Refactored useUserProfiles Composable ✅
+
+**File Modified**: composables/community/useUserProfiles.ts (169 → 144 lines, -25 lines, 15% reduction)
+
+**Changes**:
+
+- Added imports for collection utilities (addToArrayMap, updateInArrayMap, initializeMapFromArray)
+- Replaced manual Map initialization with `initializeMapFromArray` (lines 19-21 → line 20-21)
+- Refactored `createProfile` to use `addToArrayMap` (lines 52-55 → line 53)
+- Refactored `updateProfile` to use `updateInArrayMap` (lines 76-83 → line 73)
+- Refactored `incrementContributions` to use `updateInArrayMap` (lines 100-104 → line 89)
+- Refactored `updateReputation` to use `updateInArrayMap` (lines 114-118 → line 98)
+- Refactored `setModeratorStatus` to use `updateInArrayMap` (lines 136-140 → line 115)
+
+**Benefits**:
+
+- Cleaner, more maintainable code
+- Consistent Map-Array synchronization pattern
+- Reduced file size by 15%
+- Easier to understand with descriptive utility names
+
+#### 3. Refactored useModeration Composable ✅
+
+**File Modified**: composables/community/useModeration.ts (211 → 181 lines, -30 lines, 14% reduction)
+
+**Changes**:
+
+- Added imports for collection utilities (addToArrayMap, updateInArrayMap, initializeMapFromArray)
+- Replaced manual Map initialization with `initializeMapFromArray` (lines 17-24 → line 19-20)
+- Refactored `flagContent` to use `addToArrayMap` (lines 48-51 → line 50)
+- Refactored `moderateContent` to use `updateInArrayMap` (lines 78-85 → line 76)
+- Refactored `resolveFlag` to use `updateInArrayMap` (lines 157-164 → line 152)
+- Refactored `updateFlagStatus` to use `updateInArrayMap` (lines 182-189 → line 174)
+
+**Benefits**:
+
+- Cleaner, more maintainable code
+- Consistent Map-Array synchronization pattern
+- Reduced file size by 14%
+- Easier to understand with descriptive utility names
+
+#### 4. Refactored useVoting Composable ✅
+
+**File Modified**: composables/community/useVoting.ts (199 → 178 lines, -21 lines, 11% reduction)
+
+**Changes**:
+
+- Added imports for collection utilities (addToArrayMap, updateInArrayMap, initializeMapFromArray, removeInArrayMap)
+- Replaced manual Map initialization with `initializeMapFromArray` (lines 18-23 → line 20-21)
+- Refactored `vote` to use `updateInArrayMap` when changing vote type (lines 70-76 → line 68)
+- Refactored `vote` to use `addToArrayMap` when adding new vote (lines 98-100 → line 97)
+- Simplified `removeVote` to use Map operations (removed manual index lookup)
+
+**Benefits**:
+
+- Cleaner, more maintainable code
+- Consistent Map-Array synchronization pattern
+- Reduced file size by 11%
+- Simplified removal logic
+
+### Architecture Improvements
+
+#### DRY Principle Compliance
+
+**Before**: Duplicate synchronization logic scattered across 3 composables
+
+```
+useUserProfiles.ts (169 lines)
+├── updateProfile (lines 76-83) - Duplicate #1
+├── incrementContributions (lines 100-104) - Duplicate #2
+├── updateReputation (lines 114-118) - Duplicate #3
+└── setModeratorStatus (lines 136-140) - Duplicate #4
+
+useModeration.ts (211 lines)
+├── moderateContent (lines 78-85) - Duplicate #5
+├── resolveFlag (lines 157-164) - Duplicate #6
+└── updateFlagStatus (lines 182-189) - Duplicate #7
+
+useVoting.ts (199 lines)
+└── vote (lines 70-76) - Duplicate #8
+```
+
+**After**: Single reusable utility for all Map-Array operations
+
+```
+utils/collection-utils.ts (132 lines)
+├── updateInArrayMap() - Single source of truth for updates
+├── addToArrayMap() - Single source of truth for additions
+├── removeInArrayMap() - Single source of truth for removals
+└── initializeMapFromArray() - Single source of truth for initialization
+
+useUserProfiles.ts (144 lines)
+├── createProfile → addToArrayMap()
+├── updateProfile → updateInArrayMap()
+├── incrementContributions → updateInArrayMap()
+├── updateReputation → updateInArrayMap()
+└── setModeratorStatus → updateInArrayMap()
+
+useModeration.ts (181 lines)
+├── flagContent → addToArrayMap()
+├── moderateContent → updateInArrayMap()
+├── resolveFlag → updateInArrayMap()
+└── updateFlagStatus → updateInArrayMap()
+
+useVoting.ts (178 lines)
+├── vote (new) → addToArrayMap()
+├── vote (change) → updateInArrayMap()
+└── removeVote → map operations
+```
+
+### Success Criteria
+
+- [x] More modular than before - Extracted reusable collection utilities
+- [x] Dependencies flow correctly - Composables import from utils
+- [x] Simplest solution that works - Pure functions, minimal surface area
+- [x] Zero regressions - No functional changes
+- [x] DRY principle - Single source of truth for Map-Array synchronization
+- [x] Code reduction - 76 lines removed from composables (13% total reduction)
+- [x] Maintainability - Changes only needed in one place
+
+### Files Created
+
+- `utils/collection-utils.ts` (132 lines) - Map-Array synchronization utilities
+
+### Files Modified
+
+1. `composables/community/useUserProfiles.ts` - Refactored to use collection utilities (25 lines removed, 4 lines added)
+2. `composables/community/useModeration.ts` - Refactored to use collection utilities (30 lines removed, 4 lines added)
+3. `composables/community/useVoting.ts` - Refactored to use collection utilities (21 lines removed, 4 lines added)
+
+### Total Impact
+
+- **Lines Reduced**: 76 lines from composables (useUserProfiles: -25, useModeration: -30, useVoting: -21)
+- **New Utility**: 1 reusable module (132 lines)
+- **Net Lines**: +56 (76 removed from composables + 132 added to utils)
+- **Duplication**: 8 → 0 occurrences of Map-Array synchronization pattern
+- **Type Safety**: Improved with generic type parameters `T extends { id: string }`
+- **Maintainability**: Single point of change for Map-Array synchronization behavior
+- **Consistency**: All Map-Array operations now use same utilities
+
+### Architectural Principles Applied
+
+✅ **DRY Principle**: Single source of truth for Map-Array synchronization operations
+✅ **Single Responsibility**: Collection utilities focused on one concern (Map-Array sync)
+✅ **Modularity**: Atomic, replaceable utility functions
+✅ **Simplicity**: Pure functions, minimal surface area
+✅ **Type Safety**: Generic types with constraints `T extends { id: string }`
+✅ **Testability**: Utilities can be tested in isolation
+✅ **Documentation**: Comprehensive JSDoc with examples
+
+### Anti-Patterns Avoided
+
+❌ **Code Duplication**: Eliminated 8 duplicate synchronization patterns
+❌ **Scattered Logic**: Single source of truth for Map-Array operations
+❌ **Maintenance Burden**: Changes only needed in one place
+❌ **Large Composables**: Reduced file sizes (13-15% reduction)
+
+---
+
 ## [ARCHITECTURE] Extract Event Emitter Utility (DRY Principle) ✅ COMPLETED (2026-01-16)
 
 ### Overview
@@ -19,6 +243,7 @@ Eliminated code duplication in event emission and listening patterns across comp
 **Location**: composables/useBookmarks.ts, composables/useSavedSearches.ts
 
 **Problem**: Event emission and listening patterns were duplicated across composables with inconsistent implementations:
+
 - `useBookmarks.ts` used direct `window.dispatchEvent(new Event('bookmarksUpdated'))`
 - `useBookmarks.ts` had manual event listener management with `addEventListener/removeEventListener`
 - `useSavedSearches.ts` had a helper function `emitSavedSearchEvent` that used `window.dispatchEvent(new CustomEvent(...))`
