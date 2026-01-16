@@ -9,7 +9,6 @@
     :sizes="sizes"
     :quality="quality"
     :class="imgClass"
-    :provider="provider"
     @error="handleError"
     @load="handleLoad"
   />
@@ -26,7 +25,6 @@ interface Props {
   sizes?: string
   quality?: number | string
   imgClass?: string
-  provider?: string
 }
 
 defineProps<Props>()
