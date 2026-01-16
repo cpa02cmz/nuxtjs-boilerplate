@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 
 declare global {
   var prisma: PrismaClient | undefined
@@ -7,11 +8,9 @@ declare global {
 export const prisma =
   global.prisma ??
   new PrismaClient({
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL || 'file:./data/dev.db',
-      },
-    },
+    adapter: new PrismaBetterSqlite3({
+      url: process.env.DATABASE_URL || './data/dev.db',
+    }),
   })
 
 if (process.env.NODE_ENV !== 'production') {

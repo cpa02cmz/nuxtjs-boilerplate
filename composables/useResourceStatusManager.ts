@@ -57,10 +57,10 @@ export function useResourceStatusManager(initialStatus: string = 'active') {
         }
         return null
       }
-    } catch (error: { message?: string }) {
+    } catch (error) {
       lastUpdate.value = {
         success: false,
-        error: error.message || 'Unknown error',
+        error: error instanceof Error ? error.message : 'Unknown error',
       }
       return null
     } finally {

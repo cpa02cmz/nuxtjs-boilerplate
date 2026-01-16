@@ -13,12 +13,13 @@ export async function cleanupOldAnalyticsEvents(daysToKeep: number = 90) {
 
   const cutoffDate = new Date()
   cutoffDate.setDate(cutoffDate.getDate() - daysToKeep)
+  const cutoffTimestamp = cutoffDate.getTime()
 
   try {
     const deletedCount = await db.analyticsEvent.deleteMany({
       where: {
         timestamp: {
-          lt: cutoffDate,
+          lt: cutoffTimestamp,
         },
       },
     })

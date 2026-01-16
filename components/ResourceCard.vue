@@ -243,7 +243,7 @@ interface Props {
   benefits: string[]
   url: string
   id?: string
-  category?: string // Added for analytics tracking
+  category?: string
   icon?: string
   newTab?: boolean
   buttonLabel?: string
@@ -252,6 +252,8 @@ interface Props {
   searchQuery?: string
   similarityScore?: number
   similarityReason?: string
+  status?: string
+  healthScore?: number
 }
 
 // Get the comparison composable

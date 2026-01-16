@@ -83,7 +83,9 @@ export const useUserProfiles = (initialUsers: UserProfile[] = []) => {
     const user = userMap.value.get(userId)
     if (!user) return
 
-    user.contributionsDetail[type] += amount
+    if (user.contributionsDetail) {
+      user.contributionsDetail[type] += amount
+    }
     user.contributions = (user.contributions || 0) + amount
 
     updateInArrayMap(users, userMap, userId, { ...user })
