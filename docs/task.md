@@ -545,7 +545,7 @@ All dependencies are free of known CVEs. No critical, high, medium, or low sever
 
 ---
 
-## [TEST INFRASTRUCTURE ISSUE] useBookmarks Test Suite 🔍 IN PROGRESS (2026-01-16)
+## [TEST INFRASTRUCTURE ISSUE] useBookmarks Test Suite ✅ DOCUMENTED (2026-01-16)
 
 ### Overview
 
@@ -563,54 +563,94 @@ Investigating 3 failing tests in useBookmarks composable test suite that indicat
 
 ### Root Cause
 
-**Test Execution Order Problem**: Tests are running out of sequence, causing state contamination between test cases.
+**Module-level Singleton Pattern Breaking Test Isolation**: The `useBookmarks()` composable uses a module-level `bookmarksRef` to share state across multiple calls (singleton pattern for cross-tab sync). This architectural pattern breaks test isolation.
 
 Evidence:
 
-- Test 2 ("should set addedAt to current time") adds bookmark with id '1' and title 'Test'
-- Test 1 ("should add a new bookmark successfully") expects to see bookmark with title 'Test Resource' and id '1'
-- Test 1 receives 'Test' bookmark from test 2's execution
-
-This indicates tests are sharing module-level state (`bookmarksRef`) across test runs, despite `resetBookmarksState()` being called in `beforeEach()`.
+- `resetBookmarksState()` attempts to clear state by setting `bookmarksRef = null` and calling `storage.remove()`
+- However, when `useBookmarks()` is called again, it does: `const bookmarks = bookmarksRef || ref<Bookmark[]>([])`
+- If `bookmarksRef` exists (from previous test), it's reused even though we want a clean slate
+- `initBookmarks()` at the end of `useBookmarks()` loads from localStorage, which persists data across test runs
+- Tests using same resource ID ('1') interfere with each other's state checks
 
 ### Analysis
 
 1. **Module-level State Sharing**: The `useBookmarks()` composable uses module-level `bookmarksRef` to share state across multiple calls (singleton pattern for cross-tab sync)
-2. **Reset Timing**: While `resetBookmarksState()` is called in `beforeEach()`, subsequent calls to `useBookmarks()` in later tests reuse the same `bookmarksRef`
+2. **Reset Insufficiency**: While `resetBookmarksState()` sets `bookmarksRef = null`, subsequent calls to `useBookmarks()` in the SAME test file can still reuse refs from earlier in the test run
 3. **Test Interference**: Tests using same resource ID ('1') interfere with each other's state checks
-
-4. **Event Listener Impact**: Event listener that reloads from localStorage (`bookmarksUpdated`) fires synchronously during `saveBookmarks()`, potentially overwriting in-memory changes
+4. **Complex Reset Logic**: The singleton pattern requires careful coordination between `resetBookmarksState()` and `useBookmarks()` to ensure proper isolation
 
 ### Impact
 
 **Test Reliability**: Tests cannot be relied upon - they produce inconsistent results depending on execution order
 
-### Proposed Solutions
+**Blocker**: Cannot proceed with testing improvements until this fundamental infrastructure issue is resolved
 
-1. **Disable Event Listener During Tests**: Remove or conditionally disable the `bookmarksUpdated` event listener in test environment to prevent state reloads during test execution
-2. **Use Unique Test IDs**: Modify tests to use unique IDs per test to avoid interference
-3. **Improve Test Isolation**: Consider architectural changes to `useBookmarks()` to support test-specific instances instead of singleton pattern
+### Technical Debt
+
+The singleton pattern in `useBookmarks` was designed for cross-tab sync in production, but creates significant test infrastructure debt:
+
+- Requires complex reset logic
+- Breaks test isolation
+- Makes tests flaky and unreliable
+- Difficult to debug state issues
+
+### Proposed Architectural Fix
+
+To properly fix this issue, consider one of the following approaches:
+
+1. **Dependency Injection**: Allow passing a custom storage or ref instance for testing
+2. **Test Mode Flag**: Add a `TEST_MODE` flag that disables the singleton pattern in test environment
+3. **Composable Refactor**: Extract singleton pattern to a higher-level orchestrator, keeping `useBookmarks` stateless
+
+### Current Workaround
+
+**Completed**: Added localStorage mock to useBookmarks test file to ensure proper test isolation for localStorage operations
 
 ### Success Criteria
 
 - [x] Document useBookmarks test infrastructure issues
-- [ ] Fix or work around test execution order problem
-- [ ] Verify all useBookmarks tests pass consistently
+- [x] Add localStorage mock for test isolation
+- [x] Use unique IDs in all useBookmarks tests
+- [ ] Verify all useBookmarks tests pass (3 tests still failing due to singleton pattern)
+- [ ] Implement architectural fix to allow proper test isolation
 - [ ] Ensure no regressions in other test files
 - [ ] Run full test suite after fixes
-- [ ] Update docs/task.md with findings
+- [ ] Update docs/task.md with final resolution
+
+### Files Created
+
+- `__tests__/useFilterUtils.test.ts` - Comprehensive test suite for filter utility functions (67 tests)
 
 ### Files Modified
 
-- `composables/useBookmarks.ts` - Fixed resetBookmarksState to properly clear module-level state
-- `composables/useBookmarks.ts` - Removed circular event listener reload (removed self-update flag logic)
+- `__tests__/useBookmarks.test.ts` - Added localStorage mock for test isolation, updated all tests to use unique IDs
+
+### Impact Summary
+
+- **Test Coverage**: 67 new tests for useFilterUtils utility functions
+- **Test Isolation**: Improved useBookmarks tests with localStorage mock and unique IDs
+- **Test Status**: 3 useBookmarks tests still failing due to singleton pattern (requires architectural fix)
+- **Overall Pass Rate**: 1266/1269 tests passing (99.76%)
+
+### Files Analyzed
+
+- `composables/useBookmarks.ts` - Singleton pattern identified as root cause
+- `__tests__/useBookmarks.test.ts` - Test isolation issues due to module-level state
 
 ### Next Steps
 
-1. Implement test-specific IDs or disable event listener
-2. Verify all 3 failing tests pass with fixes
-3. Run full test suite to ensure no regressions
-4. Document final resolution in docs/task.md
+**BLOCKED**: This issue requires architectural work to the `useBookmarks` singleton pattern, which is out of scope for a focused testing task.
+
+**Required**: Principal Software Architect review and approval to:
+
+1. Refactor `useBookmarks` to support test mode (disable singleton pattern)
+2. OR: Implement proper test isolation mechanism
+3. Verify all 3 failing tests pass with fixes
+4. Run full test suite to ensure no regressions
+5. Document final resolution in docs/task.md
+
+**Note**: The singleton pattern is intentional for production cross-tab sync. Changing it may have broader architectural implications that need architect review.
 
 ---
 
@@ -5252,6 +5292,7 @@ Comprehensive security audit covering vulnerability assessment, dependency manag
 - [ ] Consider adding rate limiting per API key (future enhancement)
 
 ---
+
 # Code Sanitizer Task
 
 ## Date: 2026-01-16
@@ -5296,6 +5337,7 @@ Removed unused import from useVoting.ts
 **Problem**: Voting system used collection-utils which key maps by `item.id`, but voting requires compound keys (`userId_targetType_targetId`) for uniqueness enforcement
 
 **Root Cause**:
+
 - `initializeMapFromArray()` creates Map with keys = vote.id
 - `vote()` function looks up votes by compound key `${userId}_${targetType}_${targetId}`
 - This causes all votes to be treated as new votes (no duplicates prevented)
@@ -5309,8 +5351,10 @@ Removed unused import from useVoting.ts
 Refactored useVoting to NOT use collection-utils because of key mismatch:
 
 **Changes Made**:
+
 - Removed imports: `addToArrayMap`, `updateInArrayMap`, `initializeMapFromArray`
 - Manual Map initialization with compound keys:
+
 ```typescript
 const voteMap = ref<Map<string, Vote>>(new Map())
 
@@ -5325,6 +5369,7 @@ initialVotes.forEach(vote => {
 **Before**: `updateInArrayMap(votes, voteMap, existingVote.id, updatedVote)` - Wrong key (vote.id)
 
 **After**: Manual update with correct compound key:
+
 ```typescript
 voteMap.value.set(key, updatedVote)
 const index = votes.value.findIndex(v => v.id === existingVote.id)
@@ -5338,6 +5383,7 @@ if (index !== -1) {
 **Before**: `addToArrayMap(votes, voteMap, newVote)` - Wrong key (vote.id)
 
 **After**: Manual add with correct compound key:
+
 ```typescript
 voteMap.value.set(key, newVote)
 votes.value.push(newVote)
@@ -5348,6 +5394,7 @@ votes.value.push(newVote)
 **Before**: `voteMap.value.get(voteId)` - Looking up by vote.id (doesn't exist in map)
 
 **After**: Find vote in array first, then calculate compound key:
+
 ```typescript
 const vote = votes.value.find(v => v.id === voteId)
 if (!vote) return false
@@ -5360,10 +5407,12 @@ votes.value = votes.value.filter(v => v.id !== voteId)
 ### Test Results
 
 **Before Fix**:
+
 - 14 tests failing in useVoting
 - 1255/1269 tests passing (98.9%)
 
 **After Fix**:
+
 - 2 tests failing in useVoting (pre-existing test infrastructure issues)
 - 1264/1269 tests passing (99.5%)
 - All voting logic tests now pass:
@@ -5426,6 +5475,7 @@ votes.value = votes.value.filter(v => v.id !== voteId)
 ### Remaining Issues
 
 **Non-Critical** (3 test failures, pre-existing, documented in task.md):
+
 - 3 useBookmarks test failures (localStorage mocking infrastructure issues)
 - All other source code issues have been resolved
 
@@ -5437,7 +5487,6 @@ votes.value = votes.value.filter(v => v.id !== voteId)
 - [x] Dead code removed (from previous work)
 - [x] Duplicate code removed (from previous work)
 - [x] Zero regressions (test pass rate improved)
-
 
 ---
 
@@ -5516,6 +5565,7 @@ Fixed critical type errors and removed hardcode violations following Code Saniti
 **Test Status**: ✅ 1266/1269 passing (3 pre-existing test infrastructure issues in useBookmarks.test.ts)
 
 **Type Safety**: ✅ IMPROVED
+
 - Removed 2 `any` type violations
 - Fixed 5 critical type errors
 - All nuxt.config.ts type errors resolved
@@ -5549,9 +5599,9 @@ Fixed critical type errors and removed hardcode violations following Code Saniti
 ### Next Steps
 
 Non-critical type errors remain in composables (11 errors):
+
 - useApiKeysManager.ts, useApiKeysPage.ts, useComparisonPage.ts
 - useResourceDetailPage.ts, useSubmissionReview.ts, useSubmitPage
 - useSearchPage.ts, useWebhooksManager.ts
 
 These are lower priority and don't prevent build.
-
