@@ -72,7 +72,7 @@
             class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center"
           >
             <div class="flex justify-center">
-              <ComparisonValue
+              <LazyComparisonValue
                 :value="getResourceValue(resource, criterion.id)"
                 :type="criterion.type"
               />
@@ -111,7 +111,6 @@
 <script setup lang="ts">
 import type { Resource } from '~/types/resource'
 import type { ComparisonCriteria } from '~/types/comparison'
-import ComparisonValue from './ComparisonValue.vue'
 
 interface Props {
   resources?: Resource[]

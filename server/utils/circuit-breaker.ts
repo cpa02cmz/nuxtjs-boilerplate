@@ -6,14 +6,14 @@ interface CircuitBreakerState {
   successCount: number
 }
 
-interface CircuitBreakerConfig {
+export interface CircuitBreakerConfig {
   failureThreshold: number
   successThreshold: number
   timeoutMs: number
   monitoringWindowMs: number
 }
 
-interface CircuitBreakerStats {
+export interface CircuitBreakerStats {
   state: 'closed' | 'open' | 'half-open'
   failureCount: number
   successCount: number

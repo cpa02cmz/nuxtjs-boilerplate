@@ -1650,6 +1650,149 @@ Get application health status.
 }
 ```
 
+### GET /api/integration-health
+
+Get comprehensive integration health status including circuit breakers, webhook queues, and dead letter queue.
+
+This endpoint provides real-time monitoring of external service integrations and their health status for operations teams.
+
+#### Rate Limiting
+
+Subject to standard rate limiting policies.
+
+#### Response
+
+**Success (200):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "overall": {
+      "status": "healthy",
+      "timestamp": "2026-01-15T22:30:00Z",
+      "totalCircuitBreakers": 2,
+      "openCircuitBreakers": 0,
+      "totalWebhooksQueued": 5,
+      "totalDeadLetterWebhooks": 0
+    },
+    "circuitBreakers": {
+      "webhook:example.com": {
+        "state": "closed",
+        "failureCount": 0,
+        "successCount": 100,
+        "lastFailureTime": null,
+        "lastSuccessTime": 1705333800000,
+        "failureRate": 0
+      },
+      "api:external-service.com": {
+        "state": "half-open",
+        "failureCount": 3,
+        "successCount": 97,
+        "lastFailureTime": 1705333700000,
+        "lastSuccessTime": 1705333650000,
+        "failureRate": 0.03
+      }
+    },
+    "webhooks": {
+      "queue": {
+        "pending": 5,
+        "nextScheduled": "2026-01-15T22:35:00Z"
+      },
+      "deadLetter": {
+        "count": 0,
+        "items": []
+      }
+    }
+  }
+}
+```
+
+**Degraded Response (half-open breakers or dead letter items):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "overall": {
+      "status": "degraded",
+      "timestamp": "2026-01-15T22:30:00Z",
+      "totalCircuitBreakers": 2,
+      "openCircuitBreakers": 0,
+      "totalWebhooksQueued": 8,
+      "totalDeadLetterWebhooks": 2
+    },
+    "webhooks": {
+      "deadLetter": {
+        "count": 2,
+        "items": [
+          {
+            "id": "dl_123",
+            "webhookId": "webhook_456",
+            "event": "resource.created",
+            "failureReason": "Connection timeout after 10s",
+            "createdAt": "2026-01-15T22:20:00Z"
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+**Unhealthy Response (open circuit breakers):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "overall": {
+      "status": "unhealthy",
+      "timestamp": "2026-01-15T22:30:00Z",
+      "totalCircuitBreakers": 2,
+      "openCircuitBreakers": 1
+    },
+    "circuitBreakers": {
+      "webhook:unreliable.com": {
+        "state": "open",
+        "failureCount": 10,
+        "successCount": 90,
+        "lastFailureTime": 1705333700000,
+        "lastSuccessTime": 1705333500000,
+        "failureRate": 0.1
+      }
+    }
+  }
+}
+```
+
+#### Overall Status Values
+
+| Status      | Description                                                            |
+| ----------- | ---------------------------------------------------------------------- |
+| `healthy`   | All systems operational, no open circuit breakers or dead letter items |
+| `degraded`  | Some issues (half-open breakers or dead letter webhooks)               |
+| `unhealthy` | Critical failures (open circuit breakers)                              |
+
+#### Circuit Breaker States
+
+| State       | Description                                                 |
+| ----------- | ----------------------------------------------------------- |
+| `closed`    | Normal operation, requests flow through                     |
+| `open`      | Circuit breaker tripped, requests blocked (failing service) |
+| `half-open` | Testing recovery, limited requests allowed                  |
+
+#### Use Cases
+
+- **Monitoring Dashboard**: Display real-time integration health status
+- **Alerting**: Trigger alerts when status becomes degraded or unhealthy
+- **Troubleshooting**: Identify failing services and webhooks
+- **Capacity Planning**: Monitor webhook queue depth and dead letter accumulation
+
+#### Integration with Circuit Breakers
+
+This endpoint aggregates data from all configured circuit breakers in the system. For more information on circuit breaker configuration and behavior, see [Integration Patterns](../integration-patterns.md#circuit-breaker-pattern).
+
 ### GET /api/resource-health
 
 Get overall resource health statistics.
@@ -1833,4 +1976,4 @@ All API endpoints use a standardized error response format for consistent client
 
 ---
 
-_Last Updated: 2026-01-10_
+_Last Updated: 2026-01-15_

@@ -49,14 +49,14 @@
         class="flex flex-wrap justify-center gap-1"
       >
         <span
-          v-for="(item, index) in value.slice(0, 3)"
+          v-for="(item, index) in displayItems"
           :key="index"
           class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
         >
           {{ item }}
         </span>
         <span
-          v-if="value.length > 3"
+          v-if="hasMoreItems"
           class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
         >
           +{{ value.length - 3 }} more
@@ -71,10 +71,24 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 interface Props {
   value?: string | number | boolean | string[]
   type?: 'text' | 'number' | 'boolean' | 'list'
 }
 
-defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  value: '',
+  type: 'text',
+})
+
+const displayItems = computed(() => {
+  if (!Array.isArray(props.value)) return []
+  return props.value.slice(0, 3)
+})
+
+const hasMoreItems = computed(() => {
+  return Array.isArray(props.value) && props.value.length > 3
+})
 </script>

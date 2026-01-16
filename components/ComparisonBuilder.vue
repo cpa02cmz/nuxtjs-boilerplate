@@ -119,7 +119,7 @@
     </div>
 
     <!-- Comparison Table -->
-    <ComparisonTable
+    <LazyComparisonTable
       v-if="selectedResources.length >= 2"
       :resources="selectedResources"
       :criteria="defaultCriteria"
@@ -166,7 +166,6 @@
 import { computed } from 'vue'
 import type { Resource } from '~/types/resource'
 import type { ComparisonCriteria } from '~/types/comparison'
-import ComparisonTable from './ComparisonTable.vue'
 
 interface Props {
   selectedResources: Resource[]

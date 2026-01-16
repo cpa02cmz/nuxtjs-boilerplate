@@ -33,14 +33,14 @@
           {{ resource.category }}
         </span>
         <span
-          v-for="tag in resource.tags.slice(0, 3)"
+          v-for="tag in displayTags"
           :key="tag"
           class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
         >
           {{ tag }}
         </span>
         <span
-          v-if="resource.tags.length > 3"
+          v-if="hasMoreTags"
           class="text-xs text-gray-500 dark:text-gray-400"
         >
           +{{ resource.tags.length - 3 }} more
@@ -104,6 +104,8 @@
         </a>
         <button
           class="inline-flex justify-center items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
+          :aria-label="`Bookmark ${resource.title}`"
+          aria-pressed="false"
           @click="emit('bookmark', resource)"
         >
           <svg
@@ -126,6 +128,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Resource } from '~/types/resource'
 
 interface Props {
@@ -146,6 +149,15 @@ void props.resource
 const emit = defineEmits<{
   bookmark: [resource: Resource]
 }>()
+
+const displayTags = computed(() => {
+  if (!props.resource?.tags) return []
+  return props.resource.tags.slice(0, 3)
+})
+
+const hasMoreTags = computed(() => {
+  return (props.resource?.tags?.length || 0) > 3
+})
 </script>
 
 <style scoped>

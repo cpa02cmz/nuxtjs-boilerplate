@@ -74,7 +74,7 @@
       v-else
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
     >
-      <RecommendationCard
+      <LazyRecommendationCard
         v-for="rec in recommendations"
         :key="rec.resource.id"
         :resource="rec.resource"
@@ -113,7 +113,6 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import RecommendationCard from './RecommendationCard.vue'
 import { useRecommendationEngine } from '~/composables/useRecommendationEngine'
 import { useResourceData } from '~/composables/useResourceData'
 import { useBookmarks } from '~/composables/useBookmarks'

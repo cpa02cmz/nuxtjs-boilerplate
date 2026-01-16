@@ -14,8 +14,9 @@
       >
         <div class="flex-1 min-w-0">
           <button
-            class="text-left text-sm text-gray-800 truncate hover:text-gray-600"
+            class="text-left text-sm text-gray-800 truncate hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
             :title="`Search: ${search.query}`"
+            :aria-label="`Use saved search: ${search.name || search.query}`"
             @click="onUseSavedSearch(search)"
           >
             {{ search.name || search.query }}
@@ -65,7 +66,6 @@ interface Emits {
   (event: 'remove-saved-search', query: string): void
 }
 
- 
 withDefaults(defineProps<Props>(), {
   savedSearches: () => [],
 })

@@ -29,6 +29,7 @@
       role="menu"
       aria-orientation="vertical"
       aria-labelledby="share-menu"
+      @keydown="handleMenuKeydown"
     >
       <div
         class="py-1"
@@ -120,9 +121,12 @@
 
         <!-- Copy Link -->
         <button
-          class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          ref="copyButtonRef"
+          class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           role="menuitem"
+          aria-label="Copy link to clipboard"
           @click="copyToClipboard"
+          @keydown="handleMenuKeydown"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -143,7 +147,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 import logger from '~/utils/logger'
 
@@ -162,12 +166,63 @@ const props = withDefaults(defineProps<Props>(), {
 const showShareMenu = ref(false)
 const shareButtonRef = ref<HTMLElement | null>(null)
 const shareMenuRef = ref<HTMLElement | null>(null)
+const copyButtonRef = ref<HTMLElement | null>(null)
 
 // Calculate position class based on available space
 const positionClass = computed(() => {
-  // Default to positioning below the button
+  // Default to positioning below button
   return 'left-0 origin-top-right'
 })
+
+// Get all focusable menu items
+const menuItems = computed(() => {
+  if (!shareMenuRef.value) return []
+  return Array.from(
+    shareMenuRef.value.querySelectorAll<HTMLElement>(
+      'a[role="menuitem"], button[role="menuitem"]'
+    )
+  )
+})
+
+// Keyboard navigation for menu
+const handleMenuKeydown = (event: KeyboardEvent) => {
+  const items = menuItems.value
+  if (items.length === 0) return
+
+  const currentIndex = items.indexOf(document.activeElement as HTMLElement)
+
+  switch (event.key) {
+    case 'ArrowDown': {
+      event.preventDefault()
+      const nextIndex = currentIndex === items.length - 1 ? 0 : currentIndex + 1
+      items[nextIndex]?.focus()
+      break
+    }
+
+    case 'ArrowUp': {
+      event.preventDefault()
+      const prevIndex = currentIndex === 0 ? items.length - 1 : currentIndex - 1
+      items[prevIndex]?.focus()
+      break
+    }
+
+    case 'Home':
+      event.preventDefault()
+      items[0]?.focus()
+      break
+
+    case 'End':
+      event.preventDefault()
+      items[items.length - 1]?.focus()
+      break
+
+    case 'Escape':
+      event.preventDefault()
+      showShareMenu.value = false
+      shareButtonRef.value?.focus()
+      break
+  }
+}
 
 // Generate share URLs with UTM parameters
 const shareUrls = computed(() => {
@@ -181,8 +236,13 @@ const facebookUrl = computed(() => shareUrls.value.facebook)
 const redditUrl = computed(() => shareUrls.value.reddit)
 
 // Toggle the share menu
-const toggleShareMenu = () => {
+const toggleShareMenu = async () => {
   showShareMenu.value = !showShareMenu.value
+
+  if (showShareMenu.value) {
+    await nextTick()
+    menuItems.value[0]?.focus()
+  }
 }
 
 // Close menu when clicking outside
@@ -197,14 +257,23 @@ const handleClickOutside = (event: Event) => {
   }
 }
 
+// Watch for menu visibility changes to manage focus
+watch(showShareMenu, async isVisible => {
+  if (isVisible) {
+    await nextTick()
+    menuItems.value[0]?.focus()
+  } else {
+    shareButtonRef.value?.focus()
+  }
+})
+
 // Copy URL to clipboard
 const copyToClipboard = async () => {
   try {
-    // Modern clipboard API approach
     await navigator.clipboard.writeText(props.url)
-    // Close menu after copying
     showShareMenu.value = false
-    // Optionally show a toast notification here
+    await nextTick()
+    shareButtonRef.value?.focus()
   } catch {
     // Fallback for older browsers that don't support Clipboard API
     try {
@@ -231,10 +300,10 @@ const copyToClipboard = async () => {
       }
     } catch (fallbackErr) {
       logger.error('Failed to copy to clipboard:', fallbackErr)
-      // Optionally show an error message to the user
     }
-    // Close the menu after copying attempt
     showShareMenu.value = false
+    await nextTick()
+    shareButtonRef.value?.focus()
   }
 }
 
