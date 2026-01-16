@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
-import { useBookmarks } from '~/composables/useBookmarks'
+import { useBookmarks, resetBookmarksState } from '~/composables/useBookmarks'
 import type { Bookmark } from '~/composables/useBookmarks'
 
 describe('useBookmarks', () => {
@@ -7,6 +7,7 @@ describe('useBookmarks', () => {
     localStorage.clear()
     vi.clearAllMocks()
     vi.useFakeTimers()
+    resetBookmarksState()
   })
 
   afterEach(() => {

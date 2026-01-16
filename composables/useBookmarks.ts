@@ -17,8 +17,36 @@ const storage = createStorageWithDateSerialization<Bookmark[]>(
   []
 )
 
+let bookmarksRef: Ref<Bookmark[]> | null = null
+let cleanupListener: (() => void) | null = null
+
+export const resetBookmarksState = () => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('bookmarksUpdated', () => {
+      const bookmarks = bookmarksRef || ref<Bookmark[]>([])
+      bookmarksRef.value = storage.get()
+    })
+  }
+  if (bookmarksRef) {
+    bookmarksRef.value = []
+    bookmarksRef = null
+  }
+  storage.remove()
+  cleanupListener = null
+}
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('bookmarksUpdated', () => {
+      const bookmarks = bookmarksRef || ref<Bookmark[]>([])
+      bookmarksRef.value = storage.get()
+    })
+  }
+  bookmarksRef = null
+  storage.remove()
+}
+
 export const useBookmarks = () => {
-  const bookmarks = ref<Bookmark[]>([])
+  const bookmarks = bookmarksRef || ref<Bookmark[]>([])
+  bookmarksRef = bookmarks
 
   const initBookmarks = () => {
     bookmarks.value = storage.get()
@@ -155,8 +183,12 @@ export const useBookmarks = () => {
     saveBookmarks()
   }
 
-  if (typeof window !== 'undefined') {
-    window.addEventListener('bookmarksUpdated', initBookmarks)
+  if (typeof window !== 'undefined' && !cleanupListener) {
+    const listener = () => initBookmarks()
+    window.addEventListener('bookmarksUpdated', listener)
+    cleanupListener = () => {
+      window.removeEventListener('bookmarksUpdated', listener)
+    }
   }
 
   initBookmarks()
