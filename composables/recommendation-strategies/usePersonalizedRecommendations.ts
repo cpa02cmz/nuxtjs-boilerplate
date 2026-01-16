@@ -1,4 +1,8 @@
 import type { Resource } from '~/types/resource'
+import type {
+  RecommendationStrategy,
+  RecommendationContext,
+} from '~/types/recommendation'
 import {
   calculateSimilarity,
   calculateInterestMatch,
@@ -15,23 +19,26 @@ export function usePersonalizedRecommendations(
   config: RecommendationConfig,
   userPreferences?: UserPreferences,
   getDiverseRecommendations?: (
-     
     _currentResource?: Resource,
-     
     _currentCategory?: string
   ) => RecommendationResult[]
-) {
-  const getPersonalizedRecommendations = (
-    currentResource?: Resource,
-    currentCategory?: string
+): RecommendationStrategy {
+  const getRecommendations = (
+    context?: RecommendationContext
   ): RecommendationResult[] => {
-    if (!userPreferences && getDiverseRecommendations) {
+    const resources = context?.allResources ?? allResources
+    const configValue = context?.config ?? config
+    const userPrefs = context?.userPreferences ?? userPreferences
+    const currentResource = context?.currentResource
+    const currentCategory = context?.currentCategory
+
+    if (!userPrefs && getDiverseRecommendations) {
       return getDiverseRecommendations(currentResource, currentCategory)
     }
 
     const personalizedRecs: RecommendationResult[] = []
 
-    for (const resource of allResources) {
+    for (const resource of resources) {
       if (currentResource && resource.id === currentResource.id) continue
 
       let contentScore = 0
@@ -43,20 +50,21 @@ export function usePersonalizedRecommendations(
       if (currentResource) {
         contentScore =
           calculateSimilarity(currentResource, resource) *
-          config.contentBasedWeight
+          configValue.contentBasedWeight
       }
 
       interestScore =
-        calculateInterestMatch(resource, userPreferences) *
-        config.personalizationWeight
+        calculateInterestMatch(resource, userPrefs) *
+        configValue.personalizationWeight
 
       collaborativeScore =
-        calculateCollaborativeScore(resource.id, userPreferences) *
-        config.collaborativeWeight
+        calculateCollaborativeScore(resource.id, userPrefs) *
+        configValue.collaborativeWeight
 
-      popularityScore = (resource.popularity / 10) * config.popularityWeight
+      popularityScore =
+        (resource.popularity / 10) * configValue.popularityWeight
 
-      skillScore = calculateSkillMatch(resource, userPreferences) * 0.1
+      skillScore = calculateSkillMatch(resource, userPrefs) * 0.1
 
       const finalScore =
         contentScore +
@@ -65,7 +73,7 @@ export function usePersonalizedRecommendations(
         popularityScore +
         skillScore
 
-      if (finalScore > config.minSimilarityScore) {
+      if (finalScore > configValue.minSimilarityScore) {
         let reason:
           | 'collaborative'
           | 'content-based'
@@ -111,14 +119,15 @@ export function usePersonalizedRecommendations(
 
     return applyDiversity(
       personalizedRecs,
-      config.diversityFactor,
-      config.maxRecommendations
+      configValue.diversityFactor,
+      configValue.maxRecommendations
     )
       .sort((a, b) => b.score - a.score)
-      .slice(0, config.maxRecommendations)
+      .slice(0, configValue.maxRecommendations)
   }
 
   return {
-    getPersonalizedRecommendations,
+    name: 'personalized',
+    getRecommendations,
   }
 }

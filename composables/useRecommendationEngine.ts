@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import type { Resource } from '~/types/resource'
+import type { RecommendationStrategy } from '~/types/recommendation'
 import {
   calculateSimilarity,
   type RecommendationConfig,
@@ -31,22 +32,29 @@ export const useRecommendationEngine = (
     diversityFactor: 0.3,
   })
 
-  const contentBased = useContentBasedRecommendations(
+  const strategies: Record<string, RecommendationStrategy> = {
+    contentBased: useContentBasedRecommendations(allResources, config.value),
+    trending: useTrendingRecommendations(allResources, config.value),
+    popular: usePopularRecommendations(allResources, config.value),
+    categoryBased: useCategoryBasedRecommendations(allResources, config.value),
+    personalized: usePersonalizedRecommendations(
+      allResources,
+      config.value,
+      userPreferences as UserPreferences,
+      undefined
+    ),
+  }
+
+  const getContext = (
+    currentResource?: Resource,
+    currentCategory?: string
+  ) => ({
     allResources,
-    config.value
-  )
-  const trending = useTrendingRecommendations(allResources, config.value)
-  const popular = usePopularRecommendations(allResources, config.value)
-  const categoryBased = useCategoryBasedRecommendations(
-    allResources,
-    config.value
-  )
-  const personalized = usePersonalizedRecommendations(
-    allResources,
-    config.value,
-    userPreferences as UserPreferences,
-    undefined
-  )
+    config: config.value,
+    userPreferences: userPreferences as UserPreferences,
+    currentResource,
+    currentCategory,
+  })
 
   const getDiverseRecommendations = (
     currentResource?: Resource,
@@ -56,15 +64,17 @@ export const useRecommendationEngine = (
     const seenResourceIds = new Set<string>()
 
     if (currentResource) {
-      const contentBasedRecs =
-        contentBased.getContentBasedRecommendations(currentResource)
+      const contentBasedRecs = strategies.contentBased.getRecommendations(
+        getContext(currentResource, currentCategory)
+      )
       recommendations.push(...contentBasedRecs)
       contentBasedRecs.forEach(rec => seenResourceIds.add(rec.resource.id))
     }
 
     if (currentCategory) {
-      const categoryBasedRecs =
-        categoryBased.getCategoryBasedRecommendations(currentCategory)
+      const categoryBasedRecs = strategies.categoryBased.getRecommendations(
+        getContext(currentResource, currentCategory)
+      )
       const uniqueCategoryRecs = categoryBasedRecs.filter(
         rec => !seenResourceIds.has(rec.resource.id)
       )
@@ -72,14 +82,18 @@ export const useRecommendationEngine = (
       uniqueCategoryRecs.forEach(rec => seenResourceIds.add(rec.resource.id))
     }
 
-    const trendingRecs = trending.getTrendingRecommendations()
+    const trendingRecs = strategies.trending.getRecommendations(
+      getContext(currentResource, currentCategory)
+    )
     const uniqueTrendingRecs = trendingRecs
       .filter(rec => !seenResourceIds.has(rec.resource.id))
       .slice(0, Math.min(3, trendingRecs.length))
     recommendations.push(...uniqueTrendingRecs)
     uniqueTrendingRecs.forEach(rec => seenResourceIds.add(rec.resource.id))
 
-    const popularRecs = popular.getPopularRecommendations()
+    const popularRecs = strategies.popular.getRecommendations(
+      getContext(currentResource, currentCategory)
+    )
     const uniquePopularRecs = popularRecs
       .filter(rec => !seenResourceIds.has(rec.resource.id))
       .slice(0, Math.min(3, popularRecs.length))
@@ -89,6 +103,39 @@ export const useRecommendationEngine = (
     return recommendations
       .sort((a, b) => b.score - a.score)
       .slice(0, config.value.maxRecommendations)
+  }
+
+  const getContentBasedRecommendations = (
+    currentResource?: Resource
+  ): RecommendationResult[] => {
+    return strategies.contentBased.getRecommendations(
+      getContext(currentResource)
+    )
+  }
+
+  const getTrendingRecommendations = (): RecommendationResult[] => {
+    return strategies.trending.getRecommendations(getContext())
+  }
+
+  const getPopularRecommendations = (): RecommendationResult[] => {
+    return strategies.popular.getRecommendations(getContext())
+  }
+
+  const getCategoryBasedRecommendations = (
+    currentCategory?: string
+  ): RecommendationResult[] => {
+    return strategies.categoryBased.getRecommendations(
+      getContext(undefined, currentCategory)
+    )
+  }
+
+  const getPersonalizedRecommendations = (
+    currentResource?: Resource,
+    currentCategory?: string
+  ): RecommendationResult[] => {
+    return strategies.personalized.getRecommendations(
+      getContext(currentResource, currentCategory)
+    )
   }
 
   const updateConfig = (newConfig: Partial<RecommendationConfig>) => {
@@ -102,11 +149,11 @@ export const useRecommendationEngine = (
     calculateSimilarity,
     updateConfig,
     getDiverseRecommendations,
-    getPersonalizedRecommendations: personalized.getPersonalizedRecommendations,
-    getContentBasedRecommendations: contentBased.getContentBasedRecommendations,
-    getTrendingRecommendations: trending.getTrendingRecommendations,
-    getPopularRecommendations: popular.getPopularRecommendations,
-    getCategoryBasedRecommendations:
-      categoryBased.getCategoryBasedRecommendations,
+    getPersonalizedRecommendations,
+    getContentBasedRecommendations,
+    getTrendingRecommendations,
+    getPopularRecommendations,
+    getCategoryBasedRecommendations,
+    strategies,
   }
 }
