@@ -1,6 +1,7 @@
 import { ref, readonly } from 'vue'
 import type { SavedSearch } from '~/types/search'
 import { createStorageWithDateSerialization } from '~/utils/storage'
+import { emitEvent } from '~/utils/event-emitter'
 
 const SAVED_SEARCHES_KEY = 'resource_saved_searches'
 const MAX_SAVED_SEARCHES = 20
@@ -39,7 +40,7 @@ export const useSavedSearches = () => {
     }
 
     storage.set(savedSearches.value)
-    emitSavedSearchEvent('saved-search-updated', { query, name })
+    emitEvent('saved-search-updated', { query, name })
   }
 
   const removeSavedSearch = (query: string) => {
@@ -48,7 +49,7 @@ export const useSavedSearches = () => {
     storage.set(savedSearches.value)
 
     if (removedSearch) {
-      emitSavedSearchEvent('saved-search-removed', {
+      emitEvent('saved-search-removed', {
         query,
         name: removedSearch.name,
       })
@@ -57,15 +58,6 @@ export const useSavedSearches = () => {
 
   const getSavedSearches = (): SavedSearch[] => {
     return [...savedSearches.value]
-  }
-
-  const emitSavedSearchEvent = (
-    eventType: string,
-    detail: { query: string; name: string }
-  ) => {
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent(eventType, { detail }))
-    }
   }
 
   loadSavedSearches()

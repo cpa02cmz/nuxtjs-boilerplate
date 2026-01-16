@@ -1,5 +1,6 @@
 import { ref, computed, readonly } from 'vue'
 import { createStorageWithDateSerialization } from '~/utils/storage'
+import { emitEvent } from '~/utils/event-emitter'
 
 export interface Bookmark {
   id: string
@@ -18,15 +19,8 @@ const storage = createStorageWithDateSerialization<Bookmark[]>(
 )
 
 let bookmarksRef: Ref<Bookmark[]> | null = null
-let cleanupListener: (() => void) | null = null
 
 export const resetBookmarksState = () => {
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('bookmarksUpdated', () => {
-      const existingBookmarks = bookmarksRef || ref<Bookmark[]>([])
-      existingBookmarks.value = storage.get()
-    })
-  }
   if (bookmarksRef) {
     bookmarksRef.value = []
     bookmarksRef = null
@@ -44,9 +38,7 @@ export const useBookmarks = () => {
 
   const saveBookmarks = () => {
     storage.set(bookmarks.value)
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new Event('bookmarksUpdated'))
-    }
+    emitEvent('bookmarksUpdated')
   }
 
   const isBookmarked = (resourceId: string) => {
@@ -171,14 +163,6 @@ export const useBookmarks = () => {
   const clearBookmarks = () => {
     bookmarks.value = []
     saveBookmarks()
-  }
-
-  if (typeof window !== 'undefined' && !cleanupListener) {
-    const listener = () => initBookmarks()
-    window.addEventListener('bookmarksUpdated', listener)
-    cleanupListener = () => {
-      window.removeEventListener('bookmarksUpdated', listener)
-    }
   }
 
   initBookmarks()
