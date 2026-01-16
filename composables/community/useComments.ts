@@ -10,6 +10,7 @@ import type {
   UserProfile,
 } from '~/types/community'
 import { generateUniqueId } from '~/utils/id'
+import { updateInArray } from '~/utils/comment-utils'
 
 export const useComments = (initialComments: Comment[] = []) => {
   // Reactive state
@@ -113,26 +114,6 @@ export const useComments = (initialComments: Comment[] = []) => {
 
     // Update in array (maintains reactive state)
     // Could be top-level or nested reply
-    const updateInArray = (
-      commentArray: Comment[],
-      targetId: string,
-      updated: Comment
-    ): boolean => {
-      for (let i = 0; i < commentArray.length; i++) {
-        if (commentArray[i].id === targetId) {
-          commentArray[i] = updated
-          return true
-        }
-        if (commentArray[i].replies.length > 0) {
-          if (updateInArray(commentArray[i].replies, targetId, updated)) {
-            commentArray[i] = { ...commentArray[i] }
-            return true
-          }
-        }
-      }
-      return false
-    }
-
     updateInArray(comments.value, commentId, updatedComment)
 
     return updatedComment
@@ -158,26 +139,6 @@ export const useComments = (initialComments: Comment[] = []) => {
     commentMap.value.set(commentId, deletedComment)
 
     // Update in array
-    const updateInArray = (
-      commentArray: Comment[],
-      targetId: string,
-      updated: Comment
-    ): boolean => {
-      for (let i = 0; i < commentArray.length; i++) {
-        if (commentArray[i].id === targetId) {
-          commentArray[i] = updated
-          return true
-        }
-        if (commentArray[i].replies.length > 0) {
-          if (updateInArray(commentArray[i].replies, targetId, updated)) {
-            commentArray[i] = { ...commentArray[i] }
-            return true
-          }
-        }
-      }
-      return false
-    }
-
     updateInArray(comments.value, commentId, deletedComment)
 
     return true
@@ -228,26 +189,6 @@ export const useComments = (initialComments: Comment[] = []) => {
     commentMap.value.set(commentId, updatedComment)
 
     // Update in array
-    const updateInArray = (
-      commentArray: Comment[],
-      targetId: string,
-      updated: Comment
-    ): boolean => {
-      for (let i = 0; i < commentArray.length; i++) {
-        if (commentArray[i].id === targetId) {
-          commentArray[i] = updated
-          return true
-        }
-        if (commentArray[i].replies.length > 0) {
-          if (updateInArray(commentArray[i].replies, targetId, updated)) {
-            commentArray[i] = { ...commentArray[i] }
-            return true
-          }
-        }
-      }
-      return false
-    }
-
     updateInArray(comments.value, commentId, updatedComment)
   }
 
@@ -266,26 +207,6 @@ export const useComments = (initialComments: Comment[] = []) => {
     commentMap.value.set(commentId, removedComment)
 
     // Update in array
-    const updateInArray = (
-      commentArray: Comment[],
-      targetId: string,
-      updated: Comment
-    ): boolean => {
-      for (let i = 0; i < commentArray.length; i++) {
-        if (commentArray[i].id === targetId) {
-          commentArray[i] = updated
-          return true
-        }
-        if (commentArray[i].replies.length > 0) {
-          if (updateInArray(commentArray[i].replies, targetId, updated)) {
-            commentArray[i] = { ...commentArray[i] }
-            return true
-          }
-        }
-      }
-      return false
-    }
-
     updateInArray(comments.value, commentId, removedComment)
 
     return true

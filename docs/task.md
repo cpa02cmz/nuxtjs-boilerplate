@@ -1,3 +1,142 @@
+# Principal Software Architect Task
+
+## Date: 2026-01-16
+
+## Agent: Principal Software Architect
+
+## Branch: agent
+
+---
+
+## [ARCHITECTURE] Extract Duplicate updateInArray Utility (DRY Principle) ✅ COMPLETED (2026-01-16)
+
+### Overview
+
+Eliminated code duplication in useComments composable by extracting the `updateInArray` helper function to a reusable utility.
+
+### Issue
+
+**Location**: composables/community/useComments.ts
+
+**Problem**: The `updateInArray` helper function was duplicated 4 times across the composable (editComment, deleteComment, updateCommentVotes, removeCommentByModerator), violating DRY principle and creating maintenance burden.
+
+**Impact**: MEDIUM - Code duplication makes bug fixes harder, increases file size, and violates single responsibility principle.
+
+### Solution
+
+#### 1. Extracted updateInArray Utility ✅
+
+**File Created**: utils/comment-utils.ts (40 lines)
+
+**Features**:
+
+- `updateInArray()` - Recursively updates comment in nested comment array
+- Handles both top-level comments and nested replies
+- Type-safe with full JSDoc documentation
+- Reusable across all comment-related operations
+
+**Benefits**:
+
+- Single source of truth for comment array updates
+- Bug fixes and improvements in one location
+- Easy to test in isolation
+- Consistent behavior across all operations
+
+#### 2. Refactored useComments Composable ✅
+
+**File Modified**: composables/community/useComments.ts (309 → 231 lines, -78 lines, 25% reduction)
+
+**Changes**:
+
+- Added import for `updateInArray` utility
+- Removed 4 duplicate `updateInArray` function definitions (19 lines × 4 = 76 lines removed)
+- Updated all 4 functions to use imported utility:
+  - `editComment` - Now uses extracted utility
+  - `deleteComment` - Now uses extracted utility
+  - `updateCommentVotes` - Now uses extracted utility
+  - `removeCommentByModerator` - Now uses extracted utility
+
+**Benefits**:
+
+- Reduced file size by 25% (78 lines removed)
+- Single source of truth for update logic
+- Easier maintenance and testing
+- Cleaner, more readable composable
+
+### Architecture Improvements
+
+#### DRY Principle Compliance
+
+**Before**: Duplicate logic scattered across 4 functions
+
+```
+useComments.ts (309 lines)
+├── editComment
+│   └── updateInArray() - Duplicate #1 (19 lines)
+├── deleteComment
+│   └── updateInArray() - Duplicate #2 (19 lines)
+├── updateCommentVotes
+│   └── updateInArray() - Duplicate #3 (19 lines)
+└── removeCommentByModerator
+    └── updateInArray() - Duplicate #4 (19 lines)
+```
+
+**After**: Single reusable utility
+
+```
+utils/comment-utils.ts (40 lines)
+└── updateInArray() - Single source of truth
+
+useComments.ts (231 lines)
+├── editComment → updateInArray()
+├── deleteComment → updateInArray()
+├── updateCommentVotes → updateInArray()
+└── removeCommentByModerator → updateInArray()
+```
+
+### Success Criteria
+
+- [x] More modular than before - Extracted reusable utility
+- [x] Dependencies flow correctly - Composable imports from utils
+- [x] Simplest solution that works - Pure function, minimal surface area
+- [x] Zero regressions - No functional changes
+- [x] DRY principle - Single source of truth for update logic
+- [x] Code reduction - 78 lines removed from composable (25% reduction)
+- [x] Maintainability - Changes only needed in one place
+
+### Files Created
+
+- `utils/comment-utils.ts` (40 lines) - Comment update utility
+
+### Files Modified
+
+- `composables/community/useComments.ts` - Removed duplicate updateInArray functions, added import (79 lines removed, 1 line added)
+
+### Total Impact
+
+- **Lines Reduced**: 78 lines from useComments.ts (25% reduction)
+- **New Utility**: 1 reusable module (40 lines)
+- **Duplication**: 4 → 0 occurrences of updateInArray function
+- **Testability**: Significantly improved (test once, use everywhere)
+- **Maintainability**: Single point of change for comment array update logic
+
+### Architectural Principles Applied
+
+✅ **DRY Principle**: Single source of truth for comment array updates
+✅ **Single Responsibility**: Comment update logic focused in one utility
+✅ **Modularity**: Atomic, replaceable utility function
+✅ **Simplicity**: Pure function, minimal surface area
+✅ **Testability**: Easy to test in isolation
+
+### Anti-Patterns Avoided
+
+❌ **Code Duplication**: Eliminated 4 duplicate function definitions
+❌ **Scattered Logic**: Single source of truth for update logic
+❌ **Maintenance Burden**: Changes only needed in one place
+❌ **Large Composables**: Reduced file size from 309 to 231 lines
+
+---
+
 # Technical Writer Task
 
 ## Date: 2026-01-15
