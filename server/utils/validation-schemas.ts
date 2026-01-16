@@ -119,7 +119,7 @@ export const moderationActionSchema = z.object({
 
 export const triggerWebhookSchema = z.object({
   event: z.string().min(1, 'Event type is required'),
-  data: z.any(),
+  data: z.unknown().optional(),
   idempotencyKey: z.string().optional(),
 })
 
@@ -166,5 +166,5 @@ export const analyticsEventSchema = z.object({
     .int('Timestamp must be an integer')
     .positive('Timestamp must be positive')
     .optional(),
-  properties: z.record(z.string(), z.any()).optional(),
+  properties: z.record(z.string(), z.unknown()).optional(),
 })

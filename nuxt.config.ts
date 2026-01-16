@@ -157,7 +157,7 @@ export default defineNuxtConfig({
       enabled: true,
       suppressWarnings: true,
       navigateFallback: '/',
-      navigateFallbackAllowlist: ['^/$'],
+      navigateFallbackAllowlist: [/^\/$/],
       type: 'module',
     },
   },
@@ -165,10 +165,7 @@ export default defineNuxtConfig({
   // Security and performance configuration
   experimental: {
     // Enable nonce-based CSP support
-    inlineSSRStyles: false,
     payloadExtraction: true,
-    // Enable faster module resolution
-    respectNoExternal: true,
     // Enable component islands for better performance
     componentIslands: true,
   },
@@ -193,16 +190,9 @@ export default defineNuxtConfig({
   // Image optimization configuration
   image: {
     // Enable native lazy loading for images
-    provider: 'static', // Using static provider for local images
     quality: 80, // Default quality for optimized images
     format: ['webp', 'avif', 'jpeg'], // Prioritize modern formats
     densities: [1, 2], // Support for high-DPI displays
-    // Optimize all images by default
-    optimize: true,
-    // Configure the image provider
-    static: {
-      baseURL: '/images/',
-    },
   },
 
   // Additional performance optimizations
@@ -228,7 +218,12 @@ export default defineNuxtConfig({
         // Add preloading for critical resources
         { rel: 'preload', href: '/favicon.ico', as: 'image' },
         // Preload critical CSS
-        { rel: 'preload', href: '/_nuxt/', as: 'fetch', crossorigin: true },
+        {
+          rel: 'preload',
+          href: '/_nuxt/',
+          as: 'fetch',
+          crossorigin: 'anonymous',
+        },
         // DNS prefetch for external resources
         { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
         { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
@@ -323,21 +318,7 @@ export default defineNuxtConfig({
     },
   },
 
-  sitemap: {
-    hostname:
-      process.env.NUXT_PUBLIC_CANONICAL_URL ||
-      process.env.CANONICAL_URL ||
-      'http://localhost:3000',
-  },
-  ogImage: {
-    enabled: false, // We'll implement this later if needed
-  },
-  // Performance optimizations are included in the experimental section above
-  // Test configuration
-  test: {
-    // Enable testing features
-    setupFiles: ['./test-setup.ts'],
-  },
+  // Performance optimizations are included in experimental section above
   // Explicitly use Vite for faster builds
   builder: 'vite',
 
@@ -388,12 +369,8 @@ export default defineNuxtConfig({
 
   // Additional build optimization settings
   build: {
-    // Enable compression
-    compress: true,
     // Optimize for faster builds
     transpile: ['vue', 'entities', 'estree-walker'],
-    // Enable parallel builds
-    parallel: true,
     // Add more detailed build information
     analyze: false, // Enable only when needed for analysis
   },
