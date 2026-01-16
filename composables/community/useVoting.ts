@@ -5,12 +5,6 @@
 import { ref } from 'vue'
 import type { Vote, UserProfile } from '~/types/community'
 import { generateUniqueId } from '~/utils/id'
-import {
-  addToArrayMap,
-  updateInArrayMap,
-  initializeMapFromArray,
-  removeInArrayMap,
-} from '~/utils/collection-utils'
 import type {
   UpdateVoteCountCallback,
   UpdateUserContributionsCallback,
@@ -22,7 +16,12 @@ export const useVoting = (
   updateUserContributions?: UpdateUserContributionsCallback
 ) => {
   const votes = ref<Vote[]>([...initialVotes])
-  const voteMap = ref<Map<string, Vote>>(initializeMapFromArray(initialVotes))
+  const voteMap = ref<Map<string, Vote>>(new Map())
+
+  initialVotes.forEach(vote => {
+    const key = `${vote.userId}_${vote.targetType}_${vote.targetId}`
+    voteMap.value.set(key, vote)
+  })
 
   const vote = (
     targetType: string,
@@ -64,7 +63,11 @@ export const useVoting = (
           timestamp: new Date().toISOString(),
         }
 
-        updateInArrayMap(votes, voteMap, existingVote.id, updatedVote)
+        voteMap.value.set(key, updatedVote)
+        const index = votes.value.findIndex(v => v.id === existingVote.id)
+        if (index !== -1) {
+          votes.value[index] = updatedVote
+        }
 
         if (updateVoteCount) {
           updateVoteCount(targetType, targetId, existingVote.voteType, -1)
@@ -83,7 +86,8 @@ export const useVoting = (
         timestamp: new Date().toISOString(),
       }
 
-      addToArrayMap(votes, voteMap, newVote)
+      voteMap.value.set(key, newVote)
+      votes.value.push(newVote)
 
       if (updateVoteCount) {
         updateVoteCount(targetType, targetId, voteType, 1)
@@ -128,7 +132,7 @@ export const useVoting = (
   }
 
   const removeVote = (voteId: string): boolean => {
-    const vote = voteMap.value.get(voteId)
+    const vote = votes.value.find(v => v.id === voteId)
     if (!vote) return false
 
     const key = `${vote.userId}_${vote.targetType}_${vote.targetId}`
