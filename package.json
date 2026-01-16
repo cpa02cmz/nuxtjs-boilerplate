@@ -50,10 +50,10 @@
     "eslint-plugin-nuxt": "^4.0.0",
     "eslint-plugin-prettier": "^5.1.0",
     "eslint-plugin-unicorn": "^62.0.0",
-    "eslint-plugin-vue": "^10.6.2",
+    "eslint-plugin-vue": "^10.7.0",
     "glob": "^13.0.0",
     "globals": "^17.0.0",
-    "happy-dom": "^20.1.0",
+    "happy-dom": "^20.3.1",
     "jsdom": "^27.4.0",
     "nuxt": "^3.20.2",
     "postcss": "^8.4.32",
@@ -80,7 +80,6 @@
     "fuse.js": "^7.1.0",
     "nuxt-openapi": "^1.0.0",
     "web-vitals": "^5.1.0",
-    "xss": "^1.0.15",
     "zod": "^4.3.5"
   },
   "overrides": {
