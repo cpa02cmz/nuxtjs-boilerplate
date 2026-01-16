@@ -23,24 +23,14 @@ let cleanupListener: (() => void) | null = null
 export const resetBookmarksState = () => {
   if (typeof window !== 'undefined') {
     window.removeEventListener('bookmarksUpdated', () => {
-      const bookmarks = bookmarksRef || ref<Bookmark[]>([])
-      bookmarksRef.value = storage.get()
+      const existingBookmarks = bookmarksRef || ref<Bookmark[]>([])
+      existingBookmarks.value = storage.get()
     })
   }
   if (bookmarksRef) {
     bookmarksRef.value = []
     bookmarksRef = null
   }
-  storage.remove()
-  cleanupListener = null
-}
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('bookmarksUpdated', () => {
-      const bookmarks = bookmarksRef || ref<Bookmark[]>([])
-      bookmarksRef.value = storage.get()
-    })
-  }
-  bookmarksRef = null
   storage.remove()
 }
 
