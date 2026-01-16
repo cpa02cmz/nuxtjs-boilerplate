@@ -3733,3 +3733,120 @@ The 6 failing tests are pre-existing infrastructure issues with the `useBookmark
 - Review test flakiness metrics (CI: 99.5% pass rate)
 
 ---
+
+# Code Reviewer Task
+
+## Date: 2026-01-15
+
+## Agent: Senior Code Reviewer & Refactoring Specialist
+
+## Branch: agent
+
+---
+
+## [REFACTOR] Remove Hardcoded Task Data from task-coordination.ts
+
+- **Location**: utils/task-coordination.ts:48-116
+- **Issue**: Hardcoded task data with PR numbers and issue references in production code
+  - Contains hardcoded PR numbers (#286, #288, #289)
+  - Contains hardcoded issue references (#277, #278, #279, #280, #284)
+  - Task descriptions are implementation details, not business logic
+  - Task progress percentages are hardcoded values
+- **Suggestion**: Extract task data to external configuration or database
+  - Move task definitions to config file (e.g., config/tasks.json or use environment variables)
+  - Or migrate to proper project management system (GitHub Projects API, database)
+  - Replace hardcoded progress tracking with real-time status from CI/CD or PR status
+  - Remove production task coordination logic entirely - this appears to be development/agent tooling
+  - Consider moving to separate development tooling package if needed
+- **Priority**: High
+- **Effort**: Medium
+
+---
+
+## [REFACTOR] Extract Magic Numbers to Constants
+
+- **Location**: Multiple files
+  - utils/clipboard.ts:53-60 (-9999, 99999 for clipboard positioning/selection)
+  - composables/useFilterUtils.ts:86 (365 days for year calculation)
+  - composables/useSubmissionReview.ts:21 (moderator_123 hardcoded user ID)
+- **Issue**: Magic numbers scattered across codebase reduce maintainability
+  - Numbers without semantic meaning (what does 365 represent?)
+  - Hardcoded values that should be configurable
+  - Repeated values that could be defined once
+  - Makes code harder to understand and modify
+- **Suggestion**: Extract magic numbers to named constants
+  - Create constants file (e.g., utils/constants.ts) or define at top of relevant files
+  - Use descriptive names: `DAYS_IN_YEAR = 365`, `OFFSCREEN_POSITION = -9999`, `MAX_SELECTION_RANGE = 99999`
+  - Replace hardcoded user IDs with environment variables: `process.env.DEFAULT_MODERATOR_ID`
+  - Document constants with JSDoc comments explaining purpose and units
+- **Priority**: Medium
+- **Effort**: Small
+
+---
+
+## [REFACTOR] Improve Error Type Safety in Catch Blocks
+
+- **Location**: 50+ catch blocks across composables/ and utils/
+  - composables/useResourceData.ts:31 (catch (err) without type)
+  - composables/useErrorHandler.ts:96 (catch (error) but minimal error info)
+  - composables/useAnalyticsPage.ts:81 (catch (err) without logging)
+  - composables/useApiKeysManager.ts:35, 72, 103 (catch (err) without type)
+- **Issue**: Generic error catching without proper type safety or handling
+  - Using `catch (err)` or `catch (error)` without typing what error object is
+  - Errors are not properly logged in many catch blocks
+  - No differentiation between different error types (network errors, validation errors, etc.)
+  - Silent errors that might hide bugs
+- **Suggestion**: Improve error handling with proper types and logging
+  - Type all catch blocks: `catch (err: unknown)` and use type guards
+  - Use error logging utility consistently: `logError(err, context)`
+  - Create error type utilities (isNetworkError, isValidationError, etc.)
+  - Add try-catch blocks where missing (async operations without error handling)
+  - Consider centralized error handling pattern using useErrorHandler
+- **Priority**: High
+- **Effort**: Medium
+
+---
+
+## [REFACTOR] Consolidate Console Logging - Use Logger Exclusively
+
+- **Location**: utils/clipboard.ts:88-90, utils/logger.ts (ironic - logger uses console directly)
+- **Issue**: Direct console statements in production code
+  - utils/logger.ts uses console.log/warn/error/debug directly instead of consistent interface
+  - utils/clipboard.ts has console.log and console.error in comments (documentation suggests it's called)
+  - Production code with console statements can:
+    - Expose sensitive information
+    - Impact performance
+    - Clutter production logs
+    - Inconsistent logging levels across codebase
+- **Suggestion**: Consolidate all logging through logger utility
+  - Remove all direct console statements from production code
+  - Ensure logger.ts is the single source of truth for logging
+  - Configure logger to use appropriate backend (console in dev, external service in prod)
+  - Add log levels (debug, info, warn, error, critical)
+  - Document when to use each log level
+  - Add environment variable to enable/disable debug logs in production
+- **Priority**: Medium
+- **Effort**: Small
+
+---
+
+## [REFACTOR] Consider Splitting Large utils/tags.ts File
+
+- **Location**: utils/tags.ts (345 lines)
+- **Issue**: Large utility file with multiple responsibilities
+  - Contains DEFAULT_HIERARCHICAL_TAGS (large constant array)
+  - Multiple tag-related functions (convertFlatToHierarchicalTags, buildTagTree, flattenTagTree, etc.)
+  - Tag filtering, validation, and manipulation logic mixed together
+  - Single Responsibility Principle violation
+  - Harder to test and maintain
+- **Suggestion**: Split into focused modules based on functionality
+  - utils/tags/constants.ts - DEFAULT_HIERARCHICAL_TAGS constant
+  - utils/tags/conversion.ts - Tag conversion functions (convertFlatToHierarchicalTags, buildTagTree)
+  - utils/tags/filtering.ts - Tag filtering functions (filterTagsByLevel, getTagByPath)
+  - utils/tags/validation.ts - Tag validation logic
+  - Maintain single exports file (tags.ts) that re-exports from sub-modules for backward compatibility
+  - Or extract to types/tags.ts for type definitions and utils/tags for pure functions
+- **Priority**: Low
+- **Effort**: Large
+
+---
