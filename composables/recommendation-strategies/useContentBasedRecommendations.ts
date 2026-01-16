@@ -1,4 +1,8 @@
 import type { Resource } from '~/types/resource'
+import type {
+  RecommendationStrategy,
+  RecommendationContext,
+} from '~/types/recommendation'
 import {
   calculateSimilarity,
   type RecommendationConfig,
@@ -8,17 +12,23 @@ import {
 export function useContentBasedRecommendations(
   allResources: readonly Resource[],
   config: RecommendationConfig
-) {
-  const getContentBasedRecommendations = (
-    targetResource: Resource
+): RecommendationStrategy {
+  const getRecommendations = (
+    context?: RecommendationContext
   ): RecommendationResult[] => {
+    const targetResource = context?.currentResource
+    const resources = context?.allResources ?? allResources
+    const configValue = context?.config ?? config
+
+    if (!targetResource) return []
+
     const similarities: RecommendationResult[] = []
 
-    for (const resource of allResources) {
+    for (const resource of resources) {
       if (resource.id === targetResource.id) continue
 
       const similarity = calculateSimilarity(targetResource, resource)
-      if (similarity >= config.minSimilarityScore) {
+      if (similarity >= configValue.minSimilarityScore) {
         similarities.push({
           resource,
           score: similarity,
@@ -29,10 +39,11 @@ export function useContentBasedRecommendations(
 
     return similarities
       .sort((a, b) => b.score - a.score)
-      .slice(0, config.maxRecommendations)
+      .slice(0, configValue.maxRecommendations)
   }
 
   return {
-    getContentBasedRecommendations,
+    name: 'content-based',
+    getRecommendations,
   }
 }

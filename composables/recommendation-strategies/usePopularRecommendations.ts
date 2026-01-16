@@ -1,4 +1,8 @@
 import type { Resource } from '~/types/resource'
+import type {
+  RecommendationStrategy,
+  RecommendationContext,
+} from '~/types/recommendation'
 import {
   type RecommendationConfig,
   type RecommendationResult,
@@ -7,19 +11,25 @@ import {
 export function usePopularRecommendations(
   allResources: readonly Resource[],
   config: RecommendationConfig
-) {
-  const getPopularRecommendations = (): RecommendationResult[] => {
-    return allResources
+): RecommendationStrategy {
+  const getRecommendations = (
+    context?: RecommendationContext
+  ): RecommendationResult[] => {
+    const resources = context?.allResources ?? allResources
+    const configValue = context?.config ?? config
+
+    return resources
       .map(resource => ({
         resource,
         score: resource.popularity,
         reason: 'popular' as const,
       }))
       .sort((a, b) => b.score - a.score)
-      .slice(0, config.maxRecommendations)
+      .slice(0, configValue.maxRecommendations)
   }
 
   return {
-    getPopularRecommendations,
+    name: 'popular',
+    getRecommendations,
   }
 }
