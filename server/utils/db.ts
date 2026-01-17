@@ -1,13 +1,15 @@
-import { PrismaClient } from '@prisma/client'
+import prismaModule from '@prisma/client'
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+
+type PrismaClient = typeof prismaModule.PrismaClient
 
 declare global {
   var prisma: PrismaClient | undefined
 }
 
 export const prisma =
-  global.prisma ??
-  new PrismaClient({
+  (globalThis as typeof global).prisma ??
+  new prismaModule.PrismaClient({
     adapter: new PrismaBetterSqlite3({
       url: process.env.DATABASE_URL || './data/dev.db',
     }),

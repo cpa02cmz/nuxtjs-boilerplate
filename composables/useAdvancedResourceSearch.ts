@@ -9,12 +9,14 @@ import {
   highlightSearchTerms,
   createSearchSnippet,
 } from '~/utils/searchHighlighting'
+import { useFacetUtils } from '~/utils/facet-utils'
 
 type FacetCounts = Record<string, number>
 
 export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
   const { addSearchToHistory } = useSearchHistory()
   const { savedSearches, saveSearch, removeSavedSearch } = useSavedSearches()
+  const { calculateAllFacetCounts: calcAllFacets } = useFacetUtils()
   const fuse = createFuseInstance(resources)
 
   const advancedSearchResources = (query: string): Resource[] => {
@@ -113,57 +115,7 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     benefits: FacetCounts
   } => {
     const allResources = query ? advancedSearchResources(query) : [...resources]
-
-    const categoryCounts: FacetCounts = {}
-    const pricingCounts: FacetCounts = {}
-    const difficultyCounts: FacetCounts = {}
-    const technologyCounts: FacetCounts = {}
-    const tagCounts: FacetCounts = {}
-    const benefitCounts: FacetCounts = {}
-
-    allResources.forEach(resource => {
-      if (resource.category) {
-        categoryCounts[resource.category] =
-          (categoryCounts[resource.category] || 0) + 1
-      }
-
-      if (resource.pricingModel) {
-        pricingCounts[resource.pricingModel] =
-          (pricingCounts[resource.pricingModel] || 0) + 1
-      }
-
-      if (resource.difficulty) {
-        difficultyCounts[resource.difficulty] =
-          (difficultyCounts[resource.difficulty] || 0) + 1
-      }
-
-      if (Array.isArray(resource.technology)) {
-        resource.technology.forEach((tech: string) => {
-          technologyCounts[tech] = (technologyCounts[tech] || 0) + 1
-        })
-      }
-
-      if (Array.isArray(resource.tags)) {
-        resource.tags.forEach((tag: string) => {
-          tagCounts[tag] = (tagCounts[tag] || 0) + 1
-        })
-      }
-
-      if (Array.isArray(resource.benefits)) {
-        resource.benefits.forEach((benefit: string) => {
-          benefitCounts[benefit] = (benefitCounts[benefit] || 0) + 1
-        })
-      }
-    })
-
-    return {
-      category: categoryCounts,
-      pricingModel: pricingCounts,
-      difficulty: difficultyCounts,
-      technology: technologyCounts,
-      tags: tagCounts,
-      benefits: benefitCounts,
-    }
+    return calcAllFacets(allResources)
   }
 
   const getFacetedResults = (
