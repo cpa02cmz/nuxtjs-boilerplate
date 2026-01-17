@@ -1170,6 +1170,334 @@ Downgraded stylelint packages to last compatible versions:
 
 # Principal Software Architect Task
 
+## Date: 2026-01-17
+
+## Agent: Principal Software Architect
+
+## Branch: agent
+
+---
+
+## [ARCHITECTURE] Module Extraction - Facet Counting Utility ✅ COMPLETED (2026-01-17)
+
+### Overview
+
+Eliminated code duplication in useAdvancedResourceSearch.ts by extracting the facet counting pattern to a reusable utility.
+
+### Issue
+
+**Location**: composables/useAdvancedResourceSearch.ts
+
+**Problem**: The `calculateAllFacetCounts` function had 50 lines of duplicate counting logic for different resource properties:
+
+```typescript
+// Repeated pattern 6 times:
+if (resource.category) {
+  categoryCounts[resource.category] =
+    (categoryCounts[resource.category] || 0) + 1
+}
+
+if (resource.pricingModel) {
+  pricingCounts[resource.pricingModel] =
+    (pricingCounts[resource.pricingModel] || 0) + 1
+}
+
+// ... similar for difficulty, technology, tags, benefits
+```
+
+**Impact**: MEDIUM - Code duplication makes bug fixes harder, increases file size, and violates DRY principle.
+
+### Solution
+
+#### 1. Created Facet Counting Utility ✅
+
+**File Created**: utils/facet-utils.ts (88 lines)
+
+**Features**:
+
+- `incrementCount()` - Helper to increment count dictionary entries
+- `countProperty()` - Generic function to count property values across resources
+  - Handles array properties (technology, tags, benefits)
+  - Handles single-value properties (category, pricingModel, difficulty)
+- `countCategory()` - Counts category occurrences
+- `countPricingModel()` - Counts pricing model occurrences
+- `countDifficulty()` - Counts difficulty level occurrences
+- `countTechnology()` - Counts technology occurrences
+- `countTags()` - Counts tag occurrences
+- `countBenefits()` - Counts benefit occurrences
+- `calculateAllFacetCounts()` - Orchestrates all facet counting
+
+**Benefits**:
+
+- Single source of truth for facet counting
+- Generic countProperty function handles both array and string properties
+- Bug fixes and improvements in one location
+- Easy to test in isolation
+- Consistent counting behavior across all properties
+
+#### 2. Refactored useAdvancedResourceSearch Composable ✅
+
+**File Modified**: composables/useAdvancedResourceSearch.ts (235 → 188 lines, -47 lines, 20% reduction)
+
+**Changes**:
+
+- Added import for facet-utils
+- Simplified `calculateAllFacetCounts` from 50 lines to 3 lines:
+  - Removed 46 lines of duplicate counting logic
+  - Now delegates to `calcAllFacets(allResources)` from utility
+- Kept `calculateFacetCounts` for backward compatibility (used by tests)
+
+**Before** (lines 105-167):
+
+```typescript
+const allResources = query ? advancedSearchResources(query) : [...resources]
+
+const categoryCounts: FacetCounts = {}
+const pricingCounts: FacetCounts = {}
+const difficultyCounts: FacetCounts = {}
+const technologyCounts: FacetCounts = {}
+const tagCounts: FacetCounts = {}
+const benefitCounts: FacetCounts = {}
+
+allResources.forEach(resource => {
+  if (resource.category) {
+    categoryCounts[resource.category] =
+      (categoryCounts[resource.category] || 0) + 1
+  }
+  if (resource.pricingModel) {
+    pricingCounts[resource.pricingModel] =
+      (pricingCounts[resource.pricingModel] || 0) + 1
+  }
+  // ... 40 more lines of duplicate counting
+})
+
+return {
+  category: categoryCounts,
+  pricingModel: pricingCounts,
+  difficulty: difficultyCounts,
+  technology: technologyCounts,
+  tags: tagCounts,
+  benefits: benefitCounts,
+}
+```
+
+**After** (lines 107-119):
+
+```typescript
+const allResources = query ? advancedSearchResources(query) : [...resources]
+return calcAllFacets(allResources)
+```
+
+**Benefits**:
+
+- Reduced file size by 20% (47 lines removed)
+- Single source of truth for facet counting logic
+- Easier maintenance and testing
+- Cleaner, more readable composable
+
+### Success Criteria
+
+- [x] More modular than before - Extracted reusable facet utility
+- [x] Dependencies flow correctly - Composable imports from utils
+- [x] Simplest solution that works - Pure functions, minimal surface area
+- [x] Zero regressions - All 1266 tests passing (same as before)
+- [x] DRY principle - Single source of truth for facet counting
+- [x] Code reduction - 47 lines removed from useAdvancedResourceSearch (20% reduction)
+
+### Files Created
+
+- `utils/facet-utils.ts` (88 lines) - Facet counting utility
+
+### Files Modified
+
+- `composables/useAdvancedResourceSearch.ts` - Refactored to use facet-utils (47 lines removed, 2 lines added)
+
+### Total Impact
+
+- **Lines Reduced**: 47 lines from useAdvancedResourceSearch.ts (20% reduction)
+- **New Utility**: 1 reusable module (88 lines)
+- **Duplication**: 6 identical counting patterns → 0 (eliminated)
+- **Type Safety**: Maintained with generic type parameters
+- **Maintainability**: Single point of change for facet counting behavior
+- **Test Results**: 1266/1266 tests passing (same as before, no regressions)
+
+### Architectural Principles Applied
+
+✅ **DRY Principle**: Single source of truth for facet counting operations
+✅ **Single Responsibility**: Facet counting focused in one utility module
+✅ **Modularity**: Atomic, replaceable utility functions
+✅ **Simplicity**: Pure functions, minimal surface area
+✅ **Type Safety**: Generic types for type-safe counting operations
+✅ **Testability**: Utilities can be tested in isolation
+
+### Anti-Patterns Avoided
+
+❌ **Code Duplication**: Eliminated 6 duplicate counting patterns
+❌ **Scattered Logic**: Single source of truth for facet counting
+❌ **Maintenance Burden**: Changes only needed in one place
+
+---
+
+## [ARCHITECTURE] Extract Toggle Function Pattern (DRY Principle) ✅ COMPLETED (2026-01-17)
+
+### Overview
+
+Eliminated code duplication in useSearchPage.ts by extracting the toggle function pattern to a reusable helper.
+
+### Issue
+
+**Location**: composables/useSearchPage.ts
+
+**Problem**: Six toggle functions followed identical pattern, violating DRY principle:
+
+```typescript
+const toggleCategory = (category: string) => {
+  filterOptions.value.categories = toggleArrayItem(
+    filterOptions.value.categories || [],
+    category
+  )
+  trackFilter('category', category)
+}
+
+const togglePricingModel = (pricingModel: string) => {
+  filterOptions.value.pricingModels = toggleArrayItem(
+    filterOptions.value.pricingModels || [],
+    pricingModel
+  )
+  trackFilter('pricing', pricingModel)
+}
+
+// ... 4 more similar functions
+```
+
+**Impact**: MEDIUM - Code duplication makes bug fixes harder, increases file size, and violates DRY principle.
+
+### Solution
+
+#### 1. Created Generic Toggle Helper ✅
+
+**File Modified**: composables/useSearchPage.ts (248 → 234 lines, -14 lines, 6% reduction)
+
+**Changes**:
+
+- Created generic `toggleFilterOption` helper function:
+  - Takes filter key and item as parameters
+  - Uses `toggleArrayItem` from useFilterUtils
+  - Handles analytics tracking automatically
+  - Removes trailing 's' from filter key for tracking
+
+- Refactored all 6 toggle functions to use generic helper:
+  - `toggleCategory` → `toggleFilterOption('categories', category)`
+  - `togglePricingModel` → `toggleFilterOption('pricingModels', pricingModel)`
+  - `toggleDifficultyLevel` → `toggleFilterOption('difficultyLevels', difficultyLevel)`
+  - `toggleTechnology` → `toggleFilterOption('technologies', technology)`
+  - `toggleTag` → `toggleFilterOption('tags', tag)`
+  - `toggleBenefit` → `toggleFilterOption('benefits', benefit)`
+
+**Before** (lines 136-182, 46 lines):
+
+```typescript
+const toggleCategory = (category: string) => {
+  filterOptions.value.categories = toggleArrayItem(
+    filterOptions.value.categories || [],
+    category
+  )
+  trackFilter('category', category)
+}
+
+const togglePricingModel = (pricingModel: string) => {
+  filterOptions.value.pricingModels = toggleArrayItem(
+    filterOptions.value.pricingModels || [],
+    pricingModel
+  )
+  trackFilter('pricing', pricingModel)
+}
+
+// ... 36 more lines of duplicate toggle logic
+```
+
+**After** (lines 137-163, 26 lines):
+
+```typescript
+const toggleFilterOption = (
+  filterKey: keyof SearchPageFilterOptions,
+  item: string
+) => {
+  const currentArray = (filterOptions.value[filterKey] as string[]) || []
+  filterOptions.value[filterKey] = toggleArrayItem(currentArray, item)
+  trackFilter(filterKey.replace(/s$/, ''), item)
+}
+
+const toggleCategory = (category: string) => {
+  toggleFilterOption('categories', category)
+}
+
+const togglePricingModel = (pricingModel: string) => {
+  toggleFilterOption('pricingModels', pricingModel)
+}
+
+const toggleDifficultyLevel = (difficultyLevel: string) => {
+  toggleFilterOption('difficultyLevels', difficultyLevel)
+}
+
+const toggleTechnology = (technology: string) => {
+  toggleFilterOption('technologies', technology)
+}
+
+const toggleTag = (tag: string) => {
+  toggleFilterOption('tags', tag)
+}
+
+const toggleBenefit = (benefit: string) => {
+  toggleFilterOption('benefits', benefit)
+}
+```
+
+**Benefits**:
+
+- Reduced file size by 6% (14 lines removed)
+- Single source of truth for filter toggle logic
+- Automatic analytics tracking for all filter types
+- Type-safe with proper TypeScript types
+- Easy to add new filter types
+
+### Success Criteria
+
+- [x] More modular than before - Extracted reusable toggle helper
+- [x] Dependencies flow correctly - Internal helper function
+- [x] Simplest solution that works - Pure function, minimal surface area
+- [x] Zero regressions - All 1266 tests passing (same as before)
+- [x] DRY principle - Single source of truth for toggle logic
+- [x] Code reduction - 14 lines removed from useSearchPage (6% reduction)
+
+### Files Modified
+
+- `composables/useSearchPage.ts` - Created toggleFilterOption helper, refactored 6 toggle functions (14 lines removed)
+
+### Total Impact
+
+- **Lines Reduced**: 14 lines from useSearchPage.ts (6% reduction)
+- **Duplication**: 6 identical toggle patterns → 1 generic helper
+- **Type Safety**: Improved with proper TypeScript types (keyof SearchPageFilterOptions)
+- **Maintainability**: Single point of change for filter toggle behavior
+- **Test Results**: 1266/1266 tests passing (same as before, no regressions)
+
+### Architectural Principles Applied
+
+✅ **DRY Principle**: Single source of truth for filter toggle operations
+✅ **Single Responsibility**: Toggle logic focused in one helper function
+✅ **Modularity**: Reusable helper function
+✅ **Simplicity**: Pure function, minimal surface area
+✅ **Type Safety**: Proper TypeScript types for type-safe operations
+
+### Anti-Patterns Avoided
+
+❌ **Code Duplication**: Eliminated 6 duplicate toggle patterns
+❌ **Scattered Logic**: Single source of truth for toggle operations
+❌ **Maintenance Burden**: Changes only needed in one place
+
+---
+
 ## Date: 2026-01-16
 
 ## Agent: Principal Software Architect

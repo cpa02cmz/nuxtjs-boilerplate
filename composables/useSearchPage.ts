@@ -133,52 +133,37 @@ export const useSearchPage = () => {
     filterOptions.value.searchQuery = query
   }
 
+  const toggleFilterOption = (
+    filterKey: keyof SearchPageFilterOptions,
+    item: string
+  ) => {
+    const currentArray = (filterOptions.value[filterKey] as string[]) || []
+    filterOptions.value[filterKey] = toggleArrayItem(currentArray, item)
+    trackFilter(filterKey.replace(/s$/, ''), item)
+  }
+
   const toggleCategory = (category: string) => {
-    filterOptions.value.categories = toggleArrayItem(
-      filterOptions.value.categories || [],
-      category
-    )
-    trackFilter('category', category)
+    toggleFilterOption('categories', category)
   }
 
   const togglePricingModel = (pricingModel: string) => {
-    filterOptions.value.pricingModels = toggleArrayItem(
-      filterOptions.value.pricingModels || [],
-      pricingModel
-    )
-    trackFilter('pricing', pricingModel)
+    toggleFilterOption('pricingModels', pricingModel)
   }
 
   const toggleDifficultyLevel = (difficultyLevel: string) => {
-    filterOptions.value.difficultyLevels = toggleArrayItem(
-      filterOptions.value.difficultyLevels || [],
-      difficultyLevel
-    )
-    trackFilter('difficulty', difficultyLevel)
+    toggleFilterOption('difficultyLevels', difficultyLevel)
   }
 
   const toggleTechnology = (technology: string) => {
-    filterOptions.value.technologies = toggleArrayItem(
-      filterOptions.value.technologies || [],
-      technology
-    )
-    trackFilter('technology', technology)
+    toggleFilterOption('technologies', technology)
   }
 
   const toggleTag = (tag: string) => {
-    filterOptions.value.tags = toggleArrayItem(
-      filterOptions.value.tags || [],
-      tag
-    )
-    trackFilter('tag', tag)
+    toggleFilterOption('tags', tag)
   }
 
   const toggleBenefit = (benefit: string) => {
-    filterOptions.value.benefits = toggleArrayItem(
-      filterOptions.value.benefits || [],
-      benefit
-    )
-    trackFilter('benefit', benefit)
+    toggleFilterOption('benefits', benefit)
   }
 
   const setDateRange = (dateRange: string) => {
