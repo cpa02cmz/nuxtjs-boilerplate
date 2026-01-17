@@ -1,3 +1,139 @@
+# CTO Agent Task
+
+## Date: 2026-01-17
+
+## Agent: CTO Agent
+
+## Branch: agent
+
+---
+
+## [CRITICAL FIX] Fix useBookmarks.test.ts Test Isolation 🚨 IN PROGRESS
+
+### Overview
+
+Fix module-level state causing test isolation failures in useBookmarks.test.ts to unblock PR pipeline.
+
+### Issue
+
+**Location**: `__tests__/useBookmarks.test.ts`, `composables/useBookmarks.ts`
+
+**Blocker**: Issue #585 blocks ALL PR merges, including accessibility fixes (PR #584)
+
+**Problem**: Module-level state causes test isolation failures.
+
+**Test Failures** (3/36 tests failing):
+
+1. **Test**: "should add a new bookmark successfully"
+   - **Error**: Gets wrong title ("Test" instead of "Test Resource") from previous test
+   - **Cause**: Module-level `const bookmarks` persists across tests
+
+2. **Test**: "should persist to localStorage"
+   - **Error**: localStorage is null after clear() + save() sequence
+   - **Cause**: Module-level state not reset in beforeEach
+
+3. **Test**: "should trigger bookmarksUpdated event on add"
+   - **Error**: Event listener not called (expected 1, got 0)
+   - **Cause**: Event listener timing or setup issue
+
+**Impact**: 🔴 CRITICAL - Blocks ALL PR merges, including accessibility fixes (PR #584)
+
+### Solution
+
+**CEO Directive #001 Decision**: Option 2 (Quick Fix) - Add resetBookmarks() function
+
+#### 1. Implement resetBookmarks() Function ✅ TODO
+
+**File**: `composables/useBookmarks.ts`
+
+```typescript
+export function resetBookmarks() {
+  if (typeof window !== 'undefined' && storage) {
+    storage.clear()
+  }
+  bookmarks.value = []
+}
+```
+
+#### 2. Update Test File ✅ TODO
+
+**File**: `__tests__/useBookmarks.test.ts`
+
+```typescript
+import { resetBookmarks } from '@/composables/useBookmarks'
+
+describe('useBookmarks', () => {
+  beforeEach(() => {
+    // Reset module-level state
+    resetBookmarks()
+
+    // Mock localStorage
+    const localStorageMock = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+      clear: vi.fn(),
+      store: {} as Record<string, string>,
+    }
+
+    localStorageMock.getItem.mockImplementation(
+      (key: string) => localStorageMock.store[key]
+    )
+
+    localStorageMock.setItem.mockImplementation(
+      (key: string, value: string) => {
+        localStorageMock.store[key] = value
+      }
+    )
+
+    localStorageMock.clear.mockImplementation(() => {
+      localStorageMock.store = {}
+    })
+
+    global.localStorage = localStorageMock as any
+  })
+
+  // ... rest of tests
+})
+```
+
+### Success Criteria
+
+- [x] resetBookmarks() function implemented
+- [ ] useBookmarks.test.ts all 36 tests pass
+- [ ] Issue #585 updated with fix details
+- [ ] PR #584 ready to merge
+- [ ] Test suite: 100% pass rate (1269/1269 tests)
+
+### Files to Modify
+
+1. `composables/useBookmarks.ts` - Add resetBookmarks() export function
+2. `__tests__/useBookmarks.test.ts` - Update beforeEach to call resetBookmarks() and use proper localStorage mock
+
+### Related Documentation
+
+- CEO Directive #001: `docs/ceo-directive-2026-01-17-001.md`
+- Issue #585: useBookmarks Singleton Pattern Blocking All Merges
+- PR #584: Accessibility Fixes (ready to merge after fix)
+
+### Follow-up Tasks (P2 - Next Sprint)
+
+- [ ] Refactor useBookmarks to proper composable pattern (Option 1 from CEO Directive)
+  - Move all state inside composable function
+  - Return new instance per call
+  - Eliminates module-level state issues permanently
+
+### Executive Decision Notes
+
+**CEO Directive #001 (2026-01-17-001)**:
+
+- **Decision**: Use Option 2 (Quick Fix) instead of Option 1 (Refactor)
+- **Rationale**: Unblocks PR pipeline immediately (30-45 min vs 2-3 hours), allows feature development to resume today
+- **Follow-up**: Schedule Option 1 (refactor) as P2 task for next sprint
+- **Priority**: P0 - CRITICAL - Deadline: 2026-01-17 EOD
+
+---
+
 # Principal Software Architect Task
 
 ## Date: 2026-01-17
