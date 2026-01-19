@@ -2582,4 +2582,8 @@ Applied to all relevant file types:
 - ESLint configuration errors: ~50
 - Unused variables/imports: ~35
 
+| Date       | Category                 | Decision                                                  | Rationale                                                                                                                                                    |
+| ---------- | ------------------------ | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 2026-01-19 | Performance Optimization | Single-pass tag/category matching in useSearchSuggestions | Combined duplicate resource iteration loops from O(2n) to O(n), eliminating redundant array traversals, 2x performance improvement for suggestion generation |
+
 ---
