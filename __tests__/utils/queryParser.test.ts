@@ -75,7 +75,7 @@ describe('parseQuery', () => {
       })
     })
 
-    it.skip('should handle quoted terms (removes quotes) - PENDING: Bug #1 in queryParser (quotes not handled)', () => {
+    it('should handle quoted terms (removes quotes)', () => {
       const result = parseQuery('"vue framework"')
 
       expect(result).toEqual({
@@ -85,7 +85,7 @@ describe('parseQuery', () => {
       })
     })
 
-    it.skip('should handle mixed quoted and unquoted terms - PENDING: Bug #1 in queryParser (quotes not handled)', () => {
+    it('should handle mixed quoted and unquoted terms', () => {
       const result = parseQuery('vue "nuxt framework" typescript')
 
       expect(result).toEqual({
@@ -137,7 +137,7 @@ describe('parseQuery', () => {
       })
     })
 
-    it.skip('should handle AND with quoted terms - PENDING: Bugs #1 and #2 in queryParser (quotes and word boundaries)', () => {
+    it('should handle AND with quoted terms', () => {
       const result = parseQuery('"vue framework" AND "nuxt js"')
 
       expect(result).toEqual({
@@ -253,7 +253,7 @@ describe('parseQuery', () => {
       })
     })
 
-    it.skip('should handle complex query with mixed operators and quoted terms - PENDING: Bugs #1 and #2 in queryParser (quotes and word boundaries)', () => {
+    it('should handle complex query with mixed operators and quoted terms', () => {
       const result = parseQuery(
         '"vue framework" AND "nuxt js" NOT "react js" OR "angular framework"'
       )
@@ -396,7 +396,7 @@ describe('parseQuery', () => {
       })
     })
 
-    it.skip('should handle realistic search with quoted frameworks - PENDING: Bug #2 in queryParser (word boundaries)', () => {
+    it('should handle realistic search with quoted frameworks', () => {
       const result = parseQuery('"Vue.js" OR "React.js" AND "TypeScript"')
 
       expect(result).toEqual({
@@ -406,7 +406,7 @@ describe('parseQuery', () => {
       })
     })
 
-    it.skip('should handle search with version numbers - PENDING: Bug #2 in queryParser (word boundaries)', () => {
+    it('should handle search with version numbers', () => {
       const result = parseQuery('vue3 AND "nuxt 3" NOT "nuxt 2"')
 
       expect(result).toEqual({
@@ -458,7 +458,7 @@ describe('parseQuery', () => {
       })
     })
 
-    it.skip('should handle operator as part of term - PENDING: Bug #3 in queryParser (word boundaries)', () => {
+    it('should handle operator as part of term', () => {
       const result = parseQuery('bandstand OR handstand')
 
       expect(result).toEqual({
