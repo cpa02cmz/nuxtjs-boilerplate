@@ -1,32 +1,36 @@
 import type { SearchQuery } from '~/types/search'
 
+const removeQuotes = (term: string): string => {
+  return term.replace(/^"|"$/g, '')
+}
+
 export const parseQuery = (query: string): SearchQuery => {
   if (!query) {
     return { terms: [], operators: [], filters: {} }
   }
 
-  const hasOperators = /(\bAND\b|\bOR\b|\bNOT\b)/i.test(query)
+  const hasOperators = /\b(?:AND|OR|NOT)\b/i.test(query)
 
   if (hasOperators) {
     const terms: string[] = []
     const operators: ('AND' | 'OR' | 'NOT')[] = []
 
     const parts = query
-      .split(/(AND|OR|NOT)/gi)
+      .split(/\b(AND|OR|NOT)\b/gi)
       .map(part => part.trim())
       .filter(Boolean)
 
-    for (let i = 0; i < parts.length; i++) {
-      const part = parts[i]
+    for (const part of parts) {
+      const upperPart = part.toUpperCase()
 
-      if (part.toUpperCase() === 'AND') {
+      if (upperPart === 'AND') {
         operators.push('AND')
-      } else if (part.toUpperCase() === 'OR') {
+      } else if (upperPart === 'OR') {
         operators.push('OR')
-      } else if (part.toUpperCase() === 'NOT') {
+      } else if (upperPart === 'NOT') {
         operators.push('NOT')
       } else if (part) {
-        const cleanTerm = part.replace(/"/g, '')
+        const cleanTerm = removeQuotes(part)
         if (cleanTerm) {
           terms.push(cleanTerm)
         }
@@ -35,10 +39,29 @@ export const parseQuery = (query: string): SearchQuery => {
 
     return { terms, operators, filters: {} }
   } else {
-    const simpleTerms = query
-      .trim()
-      .split(/\s+/)
-      .filter(term => term.length > 0)
+    const simpleTerms: string[] = []
+    let currentTerm = ''
+    let inQuotes = false
+
+    for (let i = 0; i < query.length; i++) {
+      const char = query[i]
+
+      if (char === '"') {
+        inQuotes = !inQuotes
+      } else if (char === ' ' && !inQuotes) {
+        if (currentTerm) {
+          simpleTerms.push(removeQuotes(currentTerm))
+          currentTerm = ''
+        }
+      } else {
+        currentTerm += char
+      }
+    }
+
+    if (currentTerm) {
+      simpleTerms.push(removeQuotes(currentTerm))
+    }
+
     return { terms: simpleTerms, operators: [], filters: {} }
   }
 }
