@@ -4,10 +4,6 @@ const removeQuotes = (term: string): string => {
   return term.replace(/^"|"$/g, '')
 }
 
-const isOperator = (term: string): boolean => {
-  return /\b(?:AND|OR|NOT)\b/i.test(term)
-}
-
 export const parseQuery = (query: string): SearchQuery => {
   if (!query) {
     return { terms: [], operators: [], filters: {} }
@@ -49,7 +45,6 @@ export const parseQuery = (query: string): SearchQuery => {
 
     for (let i = 0; i < query.length; i++) {
       const char = query[i]
-      const nextChar = query[i + 1]
 
       if (char === '"') {
         inQuotes = !inQuotes
