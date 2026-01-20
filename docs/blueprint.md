@@ -606,6 +606,123 @@ HTTP Delivery (10s timeout, HMAC signature)
                 └─ < Max retries → Retry queue (reschedule)
 ```
 
+#### 5. **Rate Limiting**
+
+**Location**: `server/utils/enhanced-rate-limit.ts`
+
+Token bucket algorithm with endpoint-specific rate limiting to protect API from overload:
+
+**Token Bucket Algorithm**:
+
+```typescript
+interface TokenBucket {
+  tokens: number
+  lastRefill: number
+}
+
+interface RateLimitConfig {
+  windowMs: number // Window size in milliseconds
+  maxRequests: number // Max requests per window
+  tokensPerInterval: number // Tokens added per interval
+  intervalMs: number // Token refill interval (in ms)
+  message: string // Error message when limit exceeded
+}
+```
+
+- **Token Bucket**: Tokens refilled at regular intervals, consumed per request
+- **Smooth Rate Limiting**: Allows bursts of traffic while preventing sustained abuse
+- **Endpoint-Specific Configs**: Different limits for different endpoint types
+- **In-Memory Storage**: Fast O(1) lookups using Map
+
+**Rate Limit Configurations**:
+
+| Config Type | Max Requests | Window | Refill Rate | Use Case                     |
+| ----------- | ------------ | ------ | ----------- | ---------------------------- |
+| `general`   | 100          | 15 min | 10/min      | General requests             |
+| `api`       | 50           | 5 min  | 5/min       | API endpoints                |
+| `search`    | 30           | 1 min  | 5/30s       | Search endpoints             |
+| `heavy`     | 10           | 1 min  | 2/min       | Resource-intensive endpoints |
+| `export`    | 5            | 1 min  | 1/min       | Data export endpoints        |
+
+**Usage Example**:
+
+```typescript
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+
+export default defineEventHandler(async (event) => {
+  // Apply rate limiting
+  await rateLimit(event)
+
+  // Process request
+  return { success: true, data: ... }
+})
+```
+
+**Rate Limit Headers**:
+
+All rate-limited endpoints receive standard headers:
+
+- `X-RateLimit-Limit`: Max requests per window
+- `X-RateLimit-Remaining`: Remaining requests in current window
+- `X-RateLimit-Reset`: Unix timestamp when window resets
+- `X-RateLimit-Window`: Window duration in seconds
+- `X-RateLimit-Bypassed`: Present if admin bypass used
+
+**Admin Bypass**:
+
+- **Header-Based**: `x-admin-bypass-key` header for trusted admin requests
+- **Security**: Bypass keys blocked in query parameters (to prevent log exposure)
+- **Testing**: Helper functions for adding/clearing bypass keys in tests
+
+**Analytics**:
+
+Built-in analytics for monitoring rate limiting:
+
+```typescript
+interface RateLimitAnalytics {
+  totalRequests: number
+  blockedRequests: number
+  bypassedRequests: number
+}
+```
+
+**Database-Backed Rate Limiting for Analytics**:
+
+**Location**: `server/utils/rate-limiter.ts`, `server/api/analytics/events.post.ts`
+
+Analytics events use a special database-backed rate limiter that queries the analyticsEvent table:
+
+```typescript
+export async function checkRateLimit(
+  ip: string,
+  maxRequests: number = 10,
+  windowSeconds: number = 60
+): Promise<RateLimitResult>
+```
+
+- **Uses Actual Data**: Rate limits based on real analytics events submitted
+- **Appropriate for Analytics**: Makes sense to use analytics data as rate limit source
+- **Fallback Graceful**: Returns allowed=true on errors to prevent analytics loss
+
+**Rate Limiting Best Practices**:
+
+#### DO:
+
+✅ Use `enhanced-rate-limit.ts` for all new API endpoints
+✅ Configure appropriate limits based on endpoint cost (heavy vs. light)
+✅ Use database-backed rate limiter for analytics endpoints
+✅ Include rate limit headers in all responses
+✅ Use admin bypass key for trusted monitoring systems
+✅ Monitor analytics for rate limit violations
+
+#### DO NOT:
+
+❌ Hardcode rate limits without considering endpoint cost
+❌ Allow bypass keys in query parameters (security risk)
+❌ Mix rate limiting implementations in same codebase
+❌ Rate limit monitoring/health check endpoints
+❌ Rate limit without providing retry-after information
+
 ### Integration Decision Log
 
 | Date       | Decision                                              | Rationale                                                                                                                                                                                                                                                                                                                                               |
@@ -630,6 +747,7 @@ HTTP Delivery (10s timeout, HMAC signature)
 | 2026-01-15 | LocalStorage Abstraction - Storage Utility Pattern    | Created utils/storage.ts for type-safe localStorage operations, eliminated 60+ lines of duplicate storage logic across 4 composables (useBookmarks, useSearchHistory, useSavedSearches, useUserPreferences), improved maintainability with single source of truth for persistence                                                                       |
 | 2026-01-15 | Integration Health Monitoring Endpoint                | Created `/api/integration-health` endpoint for comprehensive monitoring of external integrations including circuit breakers, webhooks, and queue systems; exported CircuitBreakerStats and CircuitBreakerConfig interfaces for type safety; added aggregate health status (healthy/degraded/unhealthy) for operations teams; documented in OpenAPI spec |
 | 2026-01-19 | Verify API Documentation Completeness                 | Verified all API endpoints are documented in OpenAPI spec; confirmed 45+ endpoints fully documented with schemas, parameters, responses; validated integration patterns (circuit breaker, retry, rate limiting) properly documented in endpoint descriptions; OpenAPI spec serves as single source of truth for API consumers                           |
+| 2026-01-20 | Consolidate rate limiting implementations             | Removed unused server/plugins/rate-limit.ts plugin; standardized on token bucket algorithm (enhanced-rate-limit.ts) for all API endpoints; kept database-backed rate limiter for analytics endpoints; documented rate limiting architecture with best practices                                                                                         |
 
 ## 📦 Configuration Architecture
 
@@ -1342,6 +1460,138 @@ model AnalyticsEvent {
 - Properties stored as JSON for flexibility
 - **Soft-delete support**: `deletedAt` timestamp prevents permanent data loss
 
+#### Webhook Models
+
+**Location**: `prisma/schema.prisma`
+
+**Purpose**: Persistent storage for webhook system with database-backed persistence (migrated from in-memory storage)
+
+```prisma
+model Webhook {
+  id               String   @id @default(cuid())
+  url              String
+  events           String
+  active           Boolean  @default(true)
+  secret           String?
+  deliveryCount    Int      @default(0)
+  failureCount     Int      @default(0)
+  lastDeliveryAt   Int?
+  lastDeliveryStatus String?
+  createdAt        Int      @default(0)
+  updatedAt        Int      @default(0)
+  deletedAt        Int?
+
+  @@index([active])
+  @@index([deletedAt])
+  @@index([url])
+}
+
+model WebhookDelivery {
+  id               String   @id @default(cuid())
+  webhookId        String
+  event            String
+  payload          String
+  status           String
+  responseCode     Int?
+  responseMessage  String?
+  attemptCount     Int      @default(0)
+  nextRetryAt      Int?
+  createdAt        Int      @default(0)
+  completedAt      Int?
+  idempotencyKey   String?
+  deletedAt        Int?
+
+  @@index([webhookId])
+  @@index([idempotencyKey])
+  @@index([status])
+  @@index([createdAt])
+  @@index([webhookId, status])
+  @@index([idempotencyKey, webhookId])
+  @@index([deletedAt])
+}
+
+model WebhookQueue {
+  id               String   @id @default(cuid())
+  webhookId        String
+  event            String
+  payload          String
+  priority         Int      @default(0)
+  scheduledFor     Int
+  createdAt        Int      @default(0)
+  retryCount       Int      @default(0)
+  maxRetries       Int      @default(3)
+  deletedAt        Int?
+
+  @@index([scheduledFor])
+  @@index([priority, scheduledFor])
+  @@index([webhookId])
+  @@index([deletedAt])
+}
+
+model DeadLetterWebhook {
+  id               String   @id @default(cuid())
+  webhookId        String
+  event            String
+  payload          String
+  failureReason    String
+  lastAttemptAt    Int      @default(0)
+  createdAt        Int      @default(0)
+  deletedAt        Int?
+
+  @@index([createdAt])
+  @@index([webhookId])
+  @@index([deletedAt])
+}
+
+model ApiKey {
+  id               String   @id @default(cuid())
+  name             String
+  key              String   @unique
+  userId           String?
+  permissions      String
+  expiresAt        Int?
+  lastUsedAt       Int?
+  active           Boolean  @default(true)
+  createdAt        Int      @default(0)
+  updatedAt        Int      @default(0)
+  deletedAt        Int?
+
+  @@index([key])
+  @@index([userId])
+  @@index([active])
+  @@index([expiresAt])
+  @@index([deletedAt])
+}
+
+model IdempotencyKey {
+  id               String   @id @default(cuid())
+  key              String   @unique
+  deliveryId       String?
+  webhookId        String?
+  createdAt        Int      @default(0)
+  expiresAt        Int?
+  deletedAt        Int?
+
+  @@index([key])
+  @@index([webhookId])
+  @@index([createdAt])
+  @@index([expiresAt])
+  @@index([deletedAt])
+}
+```
+
+**Design Principles**:
+
+- Type-safe with TypeScript
+- Database persistence (no data loss on server restart)
+- Soft-delete support across all models
+- Optimized indexes for query patterns
+- JSON serialization for array fields (events, permissions)
+- Timestamps as integers for fast comparison
+- **Idempotency**: Duplicate webhook deliveries prevented via unique idempotency keys
+
+**Note**: SQLite doesn't support ARRAY or ENUM types, so arrays are stored as JSON strings and validated at application layer via Zod schemas.
+
 ### Index Strategy
 
 #### Single-Column Indexes
@@ -1822,20 +2072,21 @@ export async function cleanupOldEvents(
 
 ## 📊 Data Architecture Decision Log
 
-| Date       | Decision                                        | Rationale                                                                   |
-| ---------- | ----------------------------------------------- | --------------------------------------------------------------------------- |
-| 2025-01-07 | Migrate to SQLite from PostgreSQL               | Zero configuration, better for boilerplate, matches better-sqlite3 dep      |
-| 2025-01-07 | Consolidate to Prisma ORM                       | Single source of truth, type safety, migrations, query optimization         |
-| 2025-01-07 | Add composite indexes                           | Optimize common query patterns (timestamp + resourceId, timestamp + type)   |
-| 2025-01-07 | Refactor to database-level aggregation          | Fix N+1 queries, 95% reduction in data transfer                             |
-| 2025-01-07 | Implement Prisma Migrate                        | Version-controlled schema changes, reversible migrations                    |
-| 2025-01-07 | Enhanced data validation at boundary            | Centralized Zod schemas, consistent error responses, better type safety     |
-| 2025-01-07 | Made IP field optional in schema                | Handle edge cases where IP unavailable, better data model flexibility       |
-| 2025-01-07 | Database-based rate limiting                    | Scalable across instances, efficient aggregation, no in-memory state        |
-| 2025-01-07 | Fix N+1 query in getAggregatedAnalytics         | Move category aggregation to Promise.all, 50% reduction in roundtrips       |
-| 2025-01-09 | Added strict category and event type validation | Prevent invalid data from entering system, establish single source of truth |
-| 2025-01-09 | Created shared constants for validation         | Eliminate data duplication, ensure consistency across validation layers     |
-| 2026-01-09 | Added composite index for rate limiting         | Optimize (ip, timestamp) queries used in rate limiting, improve scalability |
+| Date       | Decision                                           | Rationale                                                                                                                    |
+| ---------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 2025-01-07 | Migrate to SQLite from PostgreSQL                  | Zero configuration, better for boilerplate, matches better-sqlite3 dep                                                       |
+| 2025-01-07 | Consolidate to Prisma ORM                          | Single source of truth, type safety, migrations, query optimization                                                          |
+| 2025-01-07 | Add composite indexes                              | Optimize common query patterns (timestamp + resourceId, timestamp + type)                                                    |
+| 2025-01-07 | Refactor to database-level aggregation             | Fix N+1 queries, 95% reduction in data transfer                                                                              |
+| 2025-01-07 | Implement Prisma Migrate                           | Version-controlled schema changes, reversible migrations                                                                     |
+| 2025-01-07 | Enhanced data validation at boundary               | Centralized Zod schemas, consistent error responses, better type safety                                                      |
+| 2025-01-07 | Made IP field optional in schema                   | Handle edge cases where IP unavailable, better data model flexibility                                                        |
+| 2025-01-07 | Database-based rate limiting                       | Scalable across instances, efficient aggregation, no in-memory state                                                         |
+| 2025-01-07 | Fix N+1 query in getAggregatedAnalytics            | Move category aggregation to Promise.all, 50% reduction in roundtrips                                                        |
+| 2026-01-09 | Added strict category and event type validation    | Prevent invalid data from entering system, establish single source of truth                                                  |
+| 2026-01-09 | Created shared constants for validation            | Eliminate data duplication, ensure consistency across validation layers                                                      |
+| 2026-01-09 | Added composite index for rate limiting            | Optimize (ip, timestamp) queries used in rate limiting, improve scalability                                                  |
+| 2026-01-20 | Migrate webhook storage from in-memory to database | Eliminate data loss on server restart, enable scaling, add soft-delete support, improve data integrity with idempotency keys |
 
 ## 📊 Performance Architecture Decision Log
 
