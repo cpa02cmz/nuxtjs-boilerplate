@@ -13,11 +13,16 @@ import { useFacetUtils } from '~/utils/facet-utils'
 
 type FacetCounts = Record<string, number>
 
+const MAX_CACHE_SIZE = 100
+
 export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
   const { addSearchToHistory } = useSearchHistory()
   const { savedSearches, saveSearch, removeSavedSearch } = useSavedSearches()
   const { calculateAllFacetCounts: calcAllFacets } = useFacetUtils()
   const fuse = createFuseInstance(resources)
+
+  const cachedSearchResults = new Map<string, Resource[]>()
+  const searchOrder: string[] = []
 
   const advancedSearchResources = (query: string): Resource[] => {
     const startTime = performance.now()
@@ -25,6 +30,13 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     if (!query || !fuse) {
       searchAnalyticsTracker.trackSearch(query, [...resources], 0)
       return [...resources]
+    }
+
+    const cacheKey = query
+    if (cachedSearchResults.has(cacheKey)) {
+      searchOrder.splice(searchOrder.indexOf(cacheKey), 1)
+      searchOrder.push(cacheKey)
+      return cachedSearchResults.get(cacheKey)!
     }
 
     const parsed = parseQuery(query)
@@ -77,6 +89,14 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
 
     // Track the original query, not individual terms
     searchAnalyticsTracker.trackSearch(query, results, duration)
+
+    if (cachedSearchResults.size >= MAX_CACHE_SIZE) {
+      const oldestKey = searchOrder.shift()!
+      cachedSearchResults.delete(oldestKey)
+    }
+
+    cachedSearchResults.set(cacheKey, results)
+    searchOrder.push(cacheKey)
 
     return results
   }
