@@ -189,10 +189,10 @@ export default defineNuxtConfig({
 
   // Image optimization configuration
   image: {
-    // Enable native lazy loading for images
-    quality: 80, // Default quality for optimized images
-    format: ['webp', 'avif', 'jpeg'], // Prioritize modern formats
-    densities: [1, 2], // Support for high-DPI displays
+    provider: 'ipx',
+    quality: 80,
+    format: ['webp', 'avif', 'jpeg'],
+    densities: [1, 2],
   },
 
   // Additional performance optimizations
