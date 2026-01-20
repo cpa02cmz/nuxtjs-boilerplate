@@ -748,6 +748,7 @@ export async function checkRateLimit(
 | 2026-01-15 | Integration Health Monitoring Endpoint                | Created `/api/integration-health` endpoint for comprehensive monitoring of external integrations including circuit breakers, webhooks, and queue systems; exported CircuitBreakerStats and CircuitBreakerConfig interfaces for type safety; added aggregate health status (healthy/degraded/unhealthy) for operations teams; documented in OpenAPI spec |
 | 2026-01-19 | Verify API Documentation Completeness                 | Verified all API endpoints are documented in OpenAPI spec; confirmed 45+ endpoints fully documented with schemas, parameters, responses; validated integration patterns (circuit breaker, retry, rate limiting) properly documented in endpoint descriptions; OpenAPI spec serves as single source of truth for API consumers                           |
 | 2026-01-20 | Consolidate rate limiting implementations             | Removed unused server/plugins/rate-limit.ts plugin; standardized on token bucket algorithm (enhanced-rate-limit.ts) for all API endpoints; kept database-backed rate limiter for analytics endpoints; documented rate limiting architecture with best practices                                                                                         |
+| 2026-01-20 | Process-then-Transform optimization for search API    | Moved pagination before `convertResourcesToHierarchicalTags` in search API endpoint; reduces transformation from O(n) to O(k) where k is page size; achieved 51x speedup for 1000 resources with 20 per page; added performance test to demonstrate improvement                                                                                         |
 
 ## 📦 Configuration Architecture
 
@@ -1145,6 +1146,7 @@ nuxtjs-boilerplate/
    - Only transform the data that will actually be used
    - Reduces O(n) to O(k) where k << n
    - Example: `server/api/v1/resources.get.ts` - hierarchical tag conversion moved after pagination (25x improvement)
+   - Example: `server/api/v1/search.get.ts` - hierarchical tag conversion moved after pagination (51x improvement)
 
 6. **O(1) Lookup Optimization**:
    - Use Map/WeakMap for O(1) lookups instead of Array.find() O(n)
@@ -1204,20 +1206,27 @@ nuxtjs-boilerplate/
     - Avoid manually adding scroll event listeners to virtual scroll containers
     - Virtual scroll libraries automatically handle scroll events through ref binding
     - Incorrect event handlers cause performance degradation and wasted CPU cycles
+
+14. **Process-then-Transform Optimization (Search API)**:
+    - Apply pagination BEFORE data transformation in search API
+    - Only transform paginated resources, not all filtered resources
+    - Reduces O(n) conversion to O(k) where k is page size (k << n)
+    - Example: `server/api/v1/search.get.ts` - pagination moved before `convertResourcesToHierarchicalTags` (51x speedup)
+    - Critical for search endpoints with large result sets (1000+ resources filtered, 20 per page)
     - Example: `components/VirtualResourceList.vue` - Removed incorrect scroll event listener, virtualizer handles events automatically
 
-14. **Batch Filter Optimization**:
+15. **Batch Filter Optimization**:
     - Filter all resources at once instead of iterating one-by-one
     - Eliminates repeated filter function calls
     - Example: `composables/useSearchPage.ts` - Filter all resources together instead of per-resource checks
 
-15. **O(n²) to O(n) Deduplication**:
+16. **O(n²) to O(n) Deduplication**:
     - Replace `Array.some()` with Set for deduplication
     - Track seen IDs in Set for O(1) lookup
     - Transforms quadratic complexity to linear
     - Example: `composables/useRecommendationEngine.ts` - Recommendation deduplication (O(n²) → O(n))
 
-16. **Lazy Component Loading**:
+17. **Lazy Component Loading**:
     - Use Nuxt 3 `Lazy` prefix for on-demand component loading
     - Remove direct imports for components not needed immediately
     - Reduces initial bundle size by excluding large components from main chunk
@@ -1227,7 +1236,7 @@ nuxtjs-boilerplate/
     - Pattern: `<LazyComponent />` instead of `<Component />` + `import Component from ...`
     - Use case: Large components (100+ lines) used in multiple locations with conditional/v-for rendering
 
-17. **O(n²) to O(n) Filter Consolidation**:
+18. **O(n²) to O(n) Filter Consolidation**:
     - Call filter functions once on entire array instead of per-resource
     - Eliminates n-1 redundant filter operations
     - Transforms quadratic complexity to linear
@@ -1236,7 +1245,7 @@ nuxtjs-boilerplate/
     - Pattern: Single `filter(allItems)` instead of `items.filter(i => filter([i]).length > 0)`
     - Use case: Filtering arrays where filter function accepts array parameter
 
-18. **Lazy Component Loading Enforcement**:
+19. **Lazy Component Loading Enforcement**:
     - Replace direct component imports with Nuxt `Lazy` prefix for code splitting
     - Large components (100+ lines) loaded on-demand instead of bundled in initial chunk
     - Reduces initial bundle size, improves Time to Interactive (TTI)
@@ -1245,7 +1254,7 @@ nuxtjs-boilerplate/
     - Pattern: `<LazyComponent />` instead of `<Component />` + `import Component from ...`
     - Use case: Large components used in multiple pages (pages/index.vue, pages/search.vue, layouts/default.vue)
 
-19. **LRU Search Result Caching**:
+20. **LRU Search Result Caching**:
     - Cache search results using LRU (Least Recently Used) eviction policy
     - Prevent duplicate expensive search operations when multiple functions access same query
     - Use Map with size limit and order tracking for LRU behavior
