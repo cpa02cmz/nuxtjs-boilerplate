@@ -15,8 +15,6 @@ describe('webhookQueueSystem', () => {
     secret: 'test-secret-123',
     createdAt: '2024-01-01T00:00:00.000Z',
     updatedAt: '2024-01-01T00:00:00.000Z',
-    deliveryCount: 0,
-    failureCount: 0,
   }
 
   const mockPayload: WebhookPayload = {
@@ -75,7 +73,7 @@ describe('webhookQueueSystem', () => {
       const $fetchMock = vi.fn().mockResolvedValue({ status: 200 })
       global.$fetch = $fetchMock as any
 
-      webhookStorage.createWebhook(mockWebhook)
+      await webhookStorage.createWebhook(mockWebhook)
 
       const result = await queueSystem.deliverWebhook(
         mockWebhook,
@@ -91,20 +89,21 @@ describe('webhookQueueSystem', () => {
       const $fetchMock = vi.fn().mockResolvedValue({ status: 200 })
       global.$fetch = $fetchMock as any
 
-      webhookStorage.createWebhook(mockWebhook)
+      await webhookStorage.createWebhook(mockWebhook)
 
       await queueSystem.deliverWebhook(mockWebhook, mockPayload, {
         async: false,
       })
 
-      const deliveries = webhookStorage.getDeliveriesByWebhookId('wh_test')
+      const deliveries =
+        await webhookStorage.getDeliveriesByWebhookId('wh_test')
       expect(deliveries.some(d => d.webhookId === 'wh_test')).toBe(true)
     })
   })
 
   describe('deliverWebhook - Asynchronous delivery', () => {
     it('should queue webhook when async is true', async () => {
-      webhookStorage.createWebhook(mockWebhook)
+      await webhookStorage.createWebhook(mockWebhook)
 
       const result = await queueSystem.deliverWebhook(
         mockWebhook,
@@ -113,13 +112,13 @@ describe('webhookQueueSystem', () => {
       )
 
       expect(result).toBe(true)
-      const queue = webhookStorage.getQueue()
+      const queue = await webhookStorage.getQueue()
       expect(queue.length).toBeGreaterThan(0)
       expect(queue.some(q => q.webhookId === 'wh_test')).toBe(true)
     })
 
     it('should start queue processor when queuing webhook', async () => {
-      webhookStorage.createWebhook(mockWebhook)
+      await webhookStorage.createWebhook(mockWebhook)
 
       await queueSystem.deliverWebhook(mockWebhook, mockPayload, {
         async: true,
@@ -132,7 +131,7 @@ describe('webhookQueueSystem', () => {
 
   describe('getQueueStats', () => {
     it('should return queue statistics', async () => {
-      webhookStorage.createWebhook(mockWebhook)
+      await webhookStorage.createWebhook(mockWebhook)
 
       await queueSystem.deliverWebhook(mockWebhook, mockPayload, {
         async: true,
@@ -156,7 +155,7 @@ describe('webhookQueueSystem', () => {
 
   describe('stopQueueProcessor', () => {
     it('should stop queue processor', async () => {
-      webhookStorage.createWebhook(mockWebhook)
+      await webhookStorage.createWebhook(mockWebhook)
 
       await queueSystem.deliverWebhook(mockWebhook, mockPayload, {
         async: true,
@@ -171,7 +170,7 @@ describe('webhookQueueSystem', () => {
 
   describe('deliverWebhook - Custom options', () => {
     it('should use custom maxRetries', async () => {
-      webhookStorage.createWebhook(mockWebhook)
+      await webhookStorage.createWebhook(mockWebhook)
 
       const result = await queueSystem.deliverWebhook(
         mockWebhook,
@@ -183,12 +182,12 @@ describe('webhookQueueSystem', () => {
       )
 
       expect(result).toBe(true)
-      const queue = webhookStorage.getQueue()
+      const queue = await webhookStorage.getQueue()
       expect(queue.length).toBeGreaterThan(0)
     })
 
     it('should use custom initialDelay', async () => {
-      webhookStorage.createWebhook(mockWebhook)
+      await webhookStorage.createWebhook(mockWebhook)
 
       const result = await queueSystem.deliverWebhook(
         mockWebhook,
@@ -200,12 +199,12 @@ describe('webhookQueueSystem', () => {
       )
 
       expect(result).toBe(true)
-      const queue = webhookStorage.getQueue()
+      const queue = await webhookStorage.getQueue()
       expect(queue.length).toBeGreaterThan(0)
     })
 
     it('should use custom priority', async () => {
-      webhookStorage.createWebhook(mockWebhook)
+      await webhookStorage.createWebhook(mockWebhook)
 
       const result = await queueSystem.deliverWebhook(
         mockWebhook,
@@ -217,7 +216,7 @@ describe('webhookQueueSystem', () => {
       )
 
       expect(result).toBe(true)
-      const queue = webhookStorage.getQueue()
+      const queue = await webhookStorage.getQueue()
       expect(queue.length).toBeGreaterThan(0)
       expect(queue[0].priority).toBe(10)
     })
@@ -233,27 +232,28 @@ describe('webhookQueueSystem', () => {
         idempotencyKey: 'key_123',
       }
 
-      webhookStorage.createWebhook(mockWebhook)
+      await webhookStorage.createWebhook(mockWebhook)
 
       await queueSystem.deliverWebhook(mockWebhook, idempotentPayload, {
         async: false,
       })
 
-      const delivery = webhookStorage.getDeliveryByIdempotencyKey('key_123')
+      const delivery =
+        await webhookStorage.getDeliveryByIdempotencyKey('key_123')
       expect(delivery).toBeDefined()
     })
   })
 
   describe('Queue item creation', () => {
     it('should create queue item with correct properties', async () => {
-      webhookStorage.createWebhook(mockWebhook)
+      await webhookStorage.createWebhook(mockWebhook)
 
       await queueSystem.deliverWebhook(mockWebhook, mockPayload, {
         async: true,
       })
 
-      const queue = webhookStorage.getQueue()
-      const queueItem = queue.find(q => q.webhookId === 'wh_test')
+      const queue = await webhookStorage.getQueue()
+      const queueItem = queue.find((q: any) => q.webhookId === 'wh_test')
 
       expect(queueItem).toBeDefined()
       expect(queueItem?.webhookId).toBe('wh_test')
@@ -275,21 +275,21 @@ describe('webhookQueueSystem', () => {
         active: false,
       }
 
-      webhookStorage.createWebhook(inactiveWebhook)
-      webhookStorage.createWebhook(mockWebhook)
+      await webhookStorage.createWebhook(inactiveWebhook)
+      await webhookStorage.createWebhook(mockWebhook)
 
       await queueSystem.deliverWebhook(inactiveWebhook, mockPayload, {
         async: true,
       })
 
-      const queue = webhookStorage.getQueue()
+      const queue = await webhookStorage.getQueue()
       expect(queue.some(q => q.webhookId === 'wh_inactive')).toBe(true)
     })
   })
 
   describe('Priority queue', () => {
     it('should respect priority when adding items', async () => {
-      webhookStorage.createWebhook(mockWebhook)
+      await webhookStorage.createWebhook(mockWebhook)
 
       await queueSystem.deliverWebhook(mockWebhook, mockPayload, {
         async: true,
@@ -304,7 +304,7 @@ describe('webhookQueueSystem', () => {
         priority: 1,
       })
 
-      const queue = webhookStorage.getQueue()
+      const queue = await webhookStorage.getQueue()
 
       expect(queue.length).toBeGreaterThan(0)
     })
