@@ -791,6 +791,278 @@ This documentation review ensures alignment with:
 
 ---
 
+## [ARCHITECTURE] Extract Webhook Queue System Responsibilities ✅ COMPLETED (2026-01-21)
+
+### Overview
+
+Refactor `WebhookQueueSystem` class to follow Single Responsibility Principle by extracting separate modules for queue management, retry logic, and signature generation.
+
+### Issue
+
+**Location**: `server/utils/webhookQueue.ts` (370 lines)
+
+**Problem**: The `WebhookQueueSystem` class violates Single Responsibility Principle with multiple concerns:
+
+1. Webhook delivery (sync and async)
+2. Queue management
+3. Retry logic (duplicates functionality in `retry.ts`)
+4. Dead letter queue handling
+5. Circuit breaker integration
+6. Signature generation
+7. Queue processing and scheduling
+
+**Impact**: MEDIUM - God class anti-pattern; harder to test and maintain; tight coupling
+
+### Evidence
+
+1. **Multiple Responsibilities**:
+   - Lines 30-98: Webhook delivery (sync + async)
+   - Lines 100-165: HTTP request execution and delivery logging
+   - Lines 167-188: Queue management
+   - Lines 190-230: Queue item processing
+   - Lines 232-254: Retry scheduling
+   - Lines 256-278: Dead letter queue
+   - Lines 280-306: Queue processor
+   - Lines 359-366: Signature generation
+
+2. **Comparison with Focused Utilities**:
+   - `CircuitBreaker` class: 192 lines, single responsibility (circuit breaking)
+   - `retry.ts`: 286 lines, single responsibility (retry logic)
+   - `WebhookQueueSystem`: 370 lines, multiple responsibilities
+
+3. **SOLID Violation**:
+   - ❌ Single Responsibility Principle: Handles queue, delivery, retry, dead letter, signing
+   - ❌ Open/Closed Principle: Adding new delivery types requires modifying class
+   - ❌ Dependency Inversion: Depends directly on webhookStorage, circuit-breaker, retry
+
+### Solution
+
+#### Extracted Module Architecture ✅
+
+**1. Signature Generator Module** (`server/utils/webhook-signer.ts`)
+
+```typescript
+// Pure functions for webhook signature generation
+export function generateWebhookSignature(
+  payload: WebhookPayload,
+  secret: string
+): string
+export function verifyWebhookSignature(
+  payload: string,
+  signature: string,
+  secret: string
+): boolean
+```
+
+**2. Queue Manager Module** (`server/utils/webhook-queue-manager.ts`)
+
+```typescript
+// Queue operations only
+export class WebhookQueueManager {
+  enqueue(item: WebhookQueueItem): void
+  dequeue(): WebhookQueueItem | null
+  getPendingItems(): WebhookQueueItem[]
+  remove(id: string): void
+  startProcessor(callback: (item: WebhookQueueItem) => Promise<void>): void
+  stopProcessor(): void
+}
+```
+
+**3. Delivery Service Module** (`server/utils/webhook-delivery.ts`)
+
+```typescript
+// HTTP delivery + logging
+export class WebhookDeliveryService {
+  async deliver(
+    webhook: Webhook,
+    payload: WebhookPayload
+  ): Promise<WebhookDelivery>
+  async deliverWithRetry(
+    webhook: Webhook,
+    payload: WebhookPayload,
+    maxRetries: number
+  ): Promise<WebhookDelivery>
+  logDelivery(delivery: WebhookDelivery): void
+}
+```
+
+**4. Dead Letter Manager Module** (`server/utils/webhook-dead-letter.ts`)
+
+```typescript
+// Dead letter queue management
+export class DeadLetterManager {
+  addToDeadLetter(item: WebhookQueueItem, webhook: Webhook, error: Error): void
+  removeFromDeadLetter(id: string): void
+  getDeadLetterItems(): DeadLetterWebhook[]
+  retry(id: string): Promise<boolean>
+}
+```
+
+**5. Refactored Webhook Queue System** (`server/utils/webhookQueue.ts`)
+
+```typescript
+// Orchestrator - coordinates modules
+export class WebhookQueueSystem {
+  constructor(
+    private queueManager: WebhookQueueManager,
+    private deliveryService: WebhookDeliveryService,
+    private deadLetterManager: DeadLetterManager,
+    private signer: WebhookSigner
+  ) {}
+
+  async deliverWebhook(
+    webhook: Webhook,
+    payload: WebhookPayload,
+    options?: WebhookDeliveryOptions
+  ): Promise<boolean>
+  stopQueueProcessor(): void
+  getQueueStats(): QueueStats
+}
+```
+
+### Architecture Improvements
+
+#### Before: Monolithic Webhook Queue System
+
+```
+WebhookQueueSystem (370 lines, multiple responsibilities)
+├── Webhook delivery (sync + async)
+├── HTTP request execution
+├── Queue management
+├── Queue processing
+├── Retry scheduling
+├── Dead letter queue
+├── Circuit breaker integration
+└── Signature generation
+
+Issues:
+❌ Single Responsibility Principle violated
+❌ God class anti-pattern
+❌ Hard to test (multiple responsibilities)
+❌ Tight coupling (depends on many modules)
+❌ Difficult to extend (new delivery types)
+```
+
+#### After: Modular Webhook Queue System
+
+```
+Webhook Queue System Architecture:
+
+┌─────────────────────────────────────────────────────────────┐
+│         WebhookQueueSystem (Orchestrator)                  │
+│         ~80 lines (coordination only)                        │
+│                                                           │
+│  - deliverWebhook() (public API)                            │
+│  - Coordinates modules                                     │
+│  - Maintains backward compatibility                         │
+└──────┬────────────────────────────┬────────────────────────┘
+       │                            │
+       ▼                            ▼
+┌──────────────────────┐   ┌──────────────────────────────┐
+│  QueueManager       │   │  DeadLetterManager          │
+│  ~60 lines          │   │  ~70 lines                  │
+│                      │   │                             │
+│  - enqueue()         │   │  - addToDeadLetter()        │
+│  - dequeue()         │   │  - removeFromDeadLetter()    │
+│  - startProcessor()  │   │  - retry()                  │
+└──────────────────────┘   └──────────────────────────────┘
+       │                            │
+       └────────────┬───────────────┘
+                    │
+                    ▼
+         ┌──────────────────────┐
+         │  DeliveryService     │
+         │  ~80 lines          │
+         │                      │
+         │  - deliver()        │
+         │  - deliverWithRetry()│
+         └──────┬───────────────┘
+                │
+                ▼
+         ┌──────────────────────┐
+         │  WebhookSigner      │
+         │  ~30 lines          │
+         │                      │
+         │  - generateSignature()│
+         │  - verifySignature() │
+         └──────────────────────┘
+
+Benefits:
+✅ Single Responsibility (each module one concern)
+✅ Testable (isolate each module)
+✅ Reusable (signer, queue manager usable elsewhere)
+✅ Extensible (new delivery types via new modules)
+✅ SOLID compliant (SRP, OCP, DIP)
+✅ Clear interfaces (dependency injection)
+```
+
+### Success Criteria
+
+- [x] Extract signature generator module - `webhook-signer.ts` created
+- [x] Extract queue manager module - `webhook-queue-manager.ts` created
+- [x] Extract delivery service module - `webhook-delivery.ts` created
+- [x] Extract dead letter manager module - `webhook-dead-letter.ts` created
+- [x] Refactor WebhookQueueSystem - Reduced to ~160 lines (orchestrator)
+- [x] Maintain backward compatibility - Existing API unchanged
+- [x] Lint passes - No lint errors
+- [x] Tests pass - Zero regressions (pre-existing webhookStorage test failures unrelated)
+- [x] Update docs/blueprint.md - Document new module architecture
+- [x] Update docs/task.md - Mark task complete
+
+### Files to Create
+
+1. `server/utils/webhook-signer.ts` - Signature generation (~30 lines)
+2. `server/utils/webhook-queue-manager.ts` - Queue management (~60 lines)
+3. `server/utils/webhook-delivery.ts` - Delivery service (~80 lines)
+4. `server/utils/webhook-dead-letter.ts` - Dead letter manager (~70 lines)
+
+### Files to Modify
+
+1. `server/utils/webhookQueue.ts` - Refactor to orchestrator (~80 lines)
+
+### Testing Strategy
+
+1. **Unit Tests for Each Module**:
+   - `webhook-signer.test.ts` - Test signature generation/verification
+   - `webhook-queue-manager.test.ts` - Test queue operations
+   - `webhook-delivery.test.ts` - Test HTTP delivery with mocks
+   - `webhook-dead-letter.test.ts` - Test dead letter management
+
+2. **Integration Tests**:
+   - `webhookQueueSystem.test.ts` - Test orchestrator coordinates modules correctly
+   - Verify backward compatibility with existing API
+
+3. **Existing Tests**:
+   - Run existing webhook tests to ensure no regressions
+
+### Architectural Principles Applied
+
+✅ **Single Responsibility**: Each module handles one concern
+✅ **Open/Closed**: New delivery types via new modules, no changes to existing
+✅ **Dependency Inversion**: WebhookQueueSystem depends on abstractions (interfaces)
+✅ **Interface Segregation**: Small, focused interfaces for each module
+✅ **Composition Over Inheritance**: Modules composed, not inherited
+✅ **Pure Functions**: Signature generator uses pure functions
+
+### Anti-Patterns Fixed
+
+❌ **God Class**: Eliminated 370-line monolithic class
+❌ **Multiple Responsibilities**: Separated queue, delivery, retry, dead letter
+❌ **Tight Coupling**: Modules injected via constructor
+❌ **Hard to Test**: Each module independently testable
+❌ **Hard to Extend**: New modules can be added without changing existing code
+
+### Related Architecture Decisions
+
+This refactoring aligns with:
+
+- Circuit Breaker Pattern (blueprint.md): Single responsibility circuit breaking
+- Retry with Exponential Backoff (blueprint.md): Reusable retry utilities
+- Interface Definition Pattern (blueprint.md): Clear contracts between modules
+- Single Source of Truth: Each module owns its domain
+
+---
+
 ## [ACCESSIBILITY FIX] Health Indicator Color-Only Information ✅ COMPLETED (2026-01-20)
 
 ### Overview
