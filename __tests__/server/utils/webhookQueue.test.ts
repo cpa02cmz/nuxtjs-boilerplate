@@ -26,22 +26,7 @@ describe('webhookQueueSystem', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
     vi.useFakeTimers()
-    const webhooks = await webhookStorage.getAllWebhooks()
-    for (const w of webhooks) {
-      await webhookStorage.deleteWebhook(w.id)
-    }
-    const apiKeys = await webhookStorage.getAllApiKeys()
-    for (const k of apiKeys) {
-      await webhookStorage.deleteApiKey(k.id)
-    }
-    const queue = await webhookStorage.getQueue()
-    for (const q of queue) {
-      await webhookStorage.removeFromQueue(q.id)
-    }
-    const deadLetterQueue = await webhookStorage.getDeadLetterQueue()
-    for (const dl of deadLetterQueue) {
-      await webhookStorage.removeFromDeadLetterQueue(dl.id)
-    }
+    await resetWebhookStorage()
     resetCircuitBreaker('webhook:https://example.com/webhook')
     queueSystem = new WebhookQueueSystem()
   })
@@ -50,22 +35,7 @@ describe('webhookQueueSystem', () => {
     vi.clearAllMocks()
     vi.useRealTimers()
     queueSystem.stopQueueProcessor()
-    const webhooks = await webhookStorage.getAllWebhooks()
-    for (const w of webhooks) {
-      await webhookStorage.deleteWebhook(w.id)
-    }
-    const apiKeys = await webhookStorage.getAllApiKeys()
-    for (const k of apiKeys) {
-      await webhookStorage.deleteApiKey(k.id)
-    }
-    const queue = await webhookStorage.getQueue()
-    for (const q of queue) {
-      await webhookStorage.removeFromQueue(q.id)
-    }
-    const deadLetterQueue = await webhookStorage.getDeadLetterQueue()
-    for (const dl of deadLetterQueue) {
-      await webhookStorage.removeFromDeadLetterQueue(dl.id)
-    }
+    await resetWebhookStorage()
   })
 
   describe('deliverWebhook - Synchronous delivery', () => {
@@ -124,7 +94,7 @@ describe('webhookQueueSystem', () => {
         async: true,
       })
 
-      const stats = queueSystem.getQueueStats()
+      const stats = await queueSystem.getQueueStats()
       expect(stats.isProcessing).toBe(true)
     })
   })
@@ -137,7 +107,7 @@ describe('webhookQueueSystem', () => {
         async: true,
       })
 
-      const stats = queueSystem.getQueueStats()
+      const stats = await queueSystem.getQueueStats()
 
       expect(stats).toHaveProperty('pending')
       expect(stats).toHaveProperty('deadLetter')
@@ -146,8 +116,8 @@ describe('webhookQueueSystem', () => {
       expect(stats.pending).toBeGreaterThan(0)
     })
 
-    it('should show zero items when queue is empty', () => {
-      const stats = queueSystem.getQueueStats()
+    it('should show zero items when queue is empty', async () => {
+      const stats = await queueSystem.getQueueStats()
 
       expect(stats.pending).toBe(0)
     })
@@ -163,7 +133,7 @@ describe('webhookQueueSystem', () => {
 
       queueSystem.stopQueueProcessor()
 
-      const stats = queueSystem.getQueueStats()
+      const stats = await queueSystem.getQueueStats()
       expect(stats.isProcessing).toBe(false)
     })
   })
@@ -253,7 +223,7 @@ describe('webhookQueueSystem', () => {
       })
 
       const queue = await webhookStorage.getQueue()
-      const queueItem = queue.find((q: any) => q.webhookId === 'wh_test')
+      const queueItem = queue.find(q => q.webhookId === 'wh_test')
 
       expect(queueItem).toBeDefined()
       expect(queueItem?.webhookId).toBe('wh_test')
