@@ -600,9 +600,13 @@ export const webhookStorage = {
   },
 
   async setDeliveryByIdempotencyKey(key: string, delivery: WebhookDelivery) {
-    await prisma.idempotencyKey.create({
-      data: {
+    await prisma.idempotencyKey.upsert({
+      where: { key },
+      create: {
         key,
+        deliveryId: delivery.id,
+      },
+      update: {
         deliveryId: delivery.id,
       },
     })
@@ -620,4 +624,13 @@ export const webhookStorage = {
 
     return !!idempotencyKey
   },
+}
+
+export async function resetWebhookStorage() {
+  await prisma.idempotencyKey.deleteMany({})
+  await prisma.webhookDelivery.deleteMany({})
+  await prisma.webhookQueue.deleteMany({})
+  await prisma.deadLetterWebhook.deleteMany({})
+  await prisma.webhook.deleteMany({})
+  await prisma.apiKey.deleteMany({})
 }

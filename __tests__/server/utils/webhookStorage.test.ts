@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { webhookStorage } from '~/server/utils/webhookStorage'
+import {
+  webhookStorage,
+  resetWebhookStorage,
+} from '~/server/utils/webhookStorage'
 import type {
   Webhook,
   WebhookDelivery,
@@ -83,45 +86,11 @@ describe('webhookStorage', () => {
   }
 
   beforeEach(async () => {
-    const webhooks = await webhookStorage.getAllWebhooks()
-    for (const w of webhooks) {
-      await webhookStorage.deleteWebhook(w.id)
-    }
-    const apiKeys = await webhookStorage.getAllApiKeys()
-    for (const k of apiKeys) {
-      await webhookStorage.deleteApiKey(k.id)
-    }
-    const queue = await webhookStorage.getQueue()
-    for (const q of queue) {
-      await webhookStorage.removeFromQueue(q.id)
-    }
-    const deadLetterQueue = await webhookStorage.getDeadLetterQueue()
-    for (const dl of deadLetterQueue) {
-      await webhookStorage.removeFromDeadLetterQueue(dl.id)
-    }
+    await resetWebhookStorage()
   })
 
   afterEach(async () => {
-    const webhooks = await webhookStorage.getAllWebhooks()
-    for (const w of webhooks) {
-      await webhookStorage.deleteWebhook(w.id)
-    }
-    const deliveries = await webhookStorage.getAllDeliveries()
-    for (const d of deliveries) {
-      await webhookStorage.deleteWebhook(d.webhookId)
-    }
-    const apiKeys = await webhookStorage.getAllApiKeys()
-    for (const k of apiKeys) {
-      await webhookStorage.deleteApiKey(k.id)
-    }
-    const queue = await webhookStorage.getQueue()
-    for (const q of queue) {
-      await webhookStorage.removeFromQueue(q.id)
-    }
-    const deadLetterQueue = await webhookStorage.getDeadLetterQueue()
-    for (const dl of deadLetterQueue) {
-      await webhookStorage.removeFromDeadLetterQueue(dl.id)
-    }
+    await resetWebhookStorage()
   })
 
   describe('Webhook Methods', () => {
