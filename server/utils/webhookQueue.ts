@@ -220,12 +220,12 @@ export class WebhookQueueSystem {
     })
   }
 
-  getQueueStats() {
+  async getQueueStats() {
     return {
-      pending: webhookQueueManager.getQueueSize(),
-      deadLetter: deadLetterManager.getDeadLetterCount(),
+      pending: await webhookQueueManager.getQueueSize(),
+      deadLetter: await deadLetterManager.getDeadLetterCount(),
       isProcessing: webhookQueueManager.isRunning(),
-      nextScheduled: webhookQueueManager.getNextScheduledTime(),
+      nextScheduled: await webhookQueueManager.getNextScheduledTime(),
     }
   }
 
