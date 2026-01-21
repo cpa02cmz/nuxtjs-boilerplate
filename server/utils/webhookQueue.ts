@@ -1,16 +1,11 @@
-import type {
-  Webhook,
-  WebhookPayload,
-  WebhookDelivery,
-  WebhookQueueItem,
-  DeadLetterWebhook,
-} from '~/types/webhook'
-import { randomUUID, createHmac } from 'node:crypto'
+import type { Webhook, WebhookPayload, WebhookQueueItem } from '~/types/webhook'
 import { webhookStorage } from './webhookStorage'
 import { getCircuitBreaker } from './circuit-breaker'
-import { retryWithResult, retryPresets, calculateBackoff } from './retry'
+import { retryWithResult, retryPresets } from './retry'
 import { createCircuitBreakerError } from './api-error'
-import { logger } from '~/utils/logger'
+import { webhookQueueManager } from './webhook-queue-manager'
+import { webhookDeliveryService } from './webhook-delivery'
+import { deadLetterManager } from './webhook-dead-letter'
 
 interface WebhookDeliveryOptions {
   maxRetries?: number
@@ -24,8 +19,7 @@ const DEFAULT_INITIAL_DELAY = 1000
 const DEFAULT_PRIORITY = 0
 
 export class WebhookQueueSystem {
-  private isProcessing = false
-  private processorInterval: NodeJS.Timeout | null = null
+  private circuitBreakerKeys: Map<string, string> = new Map()
 
   async deliverWebhook(
     webhook: Webhook,
@@ -55,7 +49,7 @@ export class WebhookQueueSystem {
     payload: WebhookPayload,
     maxRetries: number
   ): Promise<boolean> {
-    const circuitBreakerKey = `webhook:${webhook.url}`
+    const circuitBreakerKey = this.getCircuitBreakerKey(webhook)
     const circuitBreaker = getCircuitBreaker(circuitBreakerKey, {
       failureThreshold: 5,
       successThreshold: 2,
@@ -66,7 +60,11 @@ export class WebhookQueueSystem {
       async () => {
         return circuitBreaker.execute(
           async () => {
-            return this.executeWebhookDelivery(webhook, payload)
+            const { success } = await webhookDeliveryService.deliver(
+              webhook,
+              payload
+            )
+            return success
           },
           () => {
             const lastFailureTime = circuitBreaker.getStats().lastFailureTime
@@ -97,92 +95,29 @@ export class WebhookQueueSystem {
     return result.success
   }
 
-  private async executeWebhookDelivery(
-    webhook: Webhook,
-    payload: WebhookPayload
-  ): Promise<boolean> {
-    const signature = this.generateSignature(payload, webhook.secret || '')
-    const payloadWithSignature = { ...payload, signature }
-
-    let responseCode: number | undefined
-    let responseMessage: string | undefined
-    let success = false
-
-    try {
-      await $fetch(webhook.url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Webhook-Event': payload.event,
-          'X-Webhook-Signature': signature,
-          'X-Webhook-Timestamp': payload.timestamp,
-          ...(payload.idempotencyKey && {
-            'X-Webhook-Idempotency-Key': payload.idempotencyKey,
-          }),
-        },
-        body: JSON.stringify(payloadWithSignature),
-        timeout: 10000,
-      })
-
-      responseCode = 200
-      responseMessage = 'OK'
-      success = true
-    } catch (error: unknown) {
-      const err = error as { status?: number; message?: string }
-      responseCode = err.status || 0
-      responseMessage = err.message || 'Unknown error'
-      success = false
-    }
-
-    const delivery: WebhookDelivery = {
-      id: `del_${randomUUID()}`,
-      webhookId: webhook.id,
-      event: payload.event,
-      payload: payloadWithSignature,
-      status: success ? 'success' : 'failed',
-      statusCode: responseCode,
-      responseBody: responseMessage,
-      attemptCount: 1,
-      createdAt: new Date().toISOString(),
-      idempotencyKey: payload.idempotencyKey,
-      updatedAt: new Date().toISOString(),
-    }
-
-    webhookStorage.createDelivery(delivery)
-
-    if (payload.idempotencyKey) {
-      webhookStorage.setDeliveryByIdempotencyKey(
-        payload.idempotencyKey,
-        delivery
-      )
-    }
-
-    webhookStorage.updateWebhook(webhook.id, {
-      updatedAt: new Date().toISOString(),
-    })
-
-    return success
-  }
-
   private async queueWebhook(
     webhook: Webhook,
     payload: WebhookPayload,
     options: { maxRetries: number; initialDelayMs: number; priority: number }
   ): Promise<boolean> {
+    const { maxRetries, priority } = options
+
     const queueItem: WebhookQueueItem = {
       id: `q_${randomUUID()}`,
       webhookId: webhook.id,
       event: payload.event,
       payload,
-      priority: options.priority,
+      priority,
       scheduledFor: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       retryCount: 0,
-      maxRetries: options.maxRetries,
+      maxRetries,
     }
 
-    webhookStorage.addToQueue(queueItem)
-    this.startQueueProcessor()
+    webhookQueueManager.enqueue(queueItem)
+    webhookQueueManager.startProcessor(async item => {
+      await this.processQueueItem(item)
+    })
 
     return true
   }
@@ -190,11 +125,11 @@ export class WebhookQueueSystem {
   private async processQueueItem(item: WebhookQueueItem): Promise<void> {
     const webhook = webhookStorage.getWebhookById(item.webhookId)
     if (!webhook || !webhook.active) {
-      webhookStorage.removeFromQueue(item.id)
+      webhookQueueManager.remove(item.id)
       return
     }
 
-    const circuitBreakerKey = `webhook:${webhook?.url || ''}`
+    const circuitBreakerKey = this.getCircuitBreakerKey(webhook)
     const circuitBreaker = getCircuitBreaker(circuitBreakerKey, {
       failureThreshold: 5,
       successThreshold: 2,
@@ -202,12 +137,14 @@ export class WebhookQueueSystem {
     })
 
     let success = false
-    let lastError: unknown | null = null
+    let lastError: Error | null = null
 
     try {
       success = await circuitBreaker.execute(
         async () => {
-          return this.executeWebhookDelivery(webhook, item.payload)
+          const { success: deliverySuccess } =
+            await webhookDeliveryService.deliver(webhook, item.payload)
+          return deliverySuccess
         },
         () => {
           const lastFailureTime = circuitBreaker.getStats().lastFailureTime
@@ -217,13 +154,13 @@ export class WebhookQueueSystem {
           throw createCircuitBreakerError(webhook.url, lastFailureTimeIso)
         }
       )
-    } catch (error: unknown) {
+    } catch (error) {
       lastError = error instanceof Error ? error : null
       success = false
     }
 
     if (success) {
-      webhookStorage.removeFromQueue(item.id)
+      webhookQueueManager.remove(item.id)
     } else {
       await this.handleFailedDelivery(item, webhook, lastError)
     }
@@ -237,132 +174,64 @@ export class WebhookQueueSystem {
     item.retryCount++
 
     if (item.retryCount >= item.maxRetries) {
-      await this.moveToDeadLetterQueue(item, webhook, error)
-      webhookStorage.removeFromQueue(item.id)
+      deadLetterManager.addToDeadLetter(item, webhook, error)
+      webhookQueueManager.remove(item.id)
     } else {
       await this.scheduleRetry(item)
     }
   }
 
   private async scheduleRetry(item: WebhookQueueItem): Promise<void> {
-    const delay = calculateBackoff(item.retryCount, 1000, 30000, true)
+    const delay = this.calculateRetryDelay(item.retryCount)
     const nextRetryAt = new Date(Date.now() + delay).toISOString()
 
     item.scheduledFor = nextRetryAt
-    webhookStorage.removeFromQueue(item.id)
-    webhookStorage.addToQueue(item)
+    webhookQueueManager.remove(item.id)
+    webhookQueueManager.enqueue(item)
   }
 
-  private async moveToDeadLetterQueue(
-    item: WebhookQueueItem,
-    webhook: Webhook,
-    error: Error | null
-  ): Promise<void> {
-    const deliveries = webhookStorage.getDeliveriesByWebhookId(webhook.id)
-    const failedDeliveries = deliveries
-      .filter(d => d.webhookId === webhook.id && d.status === 'failed')
-      .slice(-item.retryCount)
+  private calculateRetryDelay(retryCount: number): number {
+    const baseDelayMs = 1000
+    const maxDelayMs = 30000
 
-    const deadLetterItem: DeadLetterWebhook = {
-      id: `dl_${randomUUID()}`,
-      webhookId: webhook.id,
-      event: item.event,
-      payload: item.payload,
-      failureReason: error?.message || 'Max retries exceeded',
-      lastAttemptAt: new Date().toISOString(),
-      createdAt: item.createdAt,
-      deliveryAttempts: failedDeliveries,
-    }
+    let delay = baseDelayMs * Math.pow(2, retryCount)
+    delay = Math.min(delay, maxDelayMs)
 
-    webhookStorage.addToDeadLetterQueue(deadLetterItem)
-  }
+    const jitterRange = delay * 0.1
+    const jitter = (Math.random() - 0.5) * jitterRange
+    delay += jitter
 
-  private startQueueProcessor(): void {
-    if (this.isProcessing) {
-      return
-    }
-
-    this.isProcessing = true
-    this.processorInterval = setInterval(() => {
-      this.processQueue()
-    }, 5000)
-  }
-
-  private async processQueue(): Promise<void> {
-    const queue = webhookStorage.getQueue()
-    const now = new Date()
-
-    for (const item of queue) {
-      const scheduledFor = new Date(item.scheduledFor)
-
-      if (scheduledFor <= now) {
-        try {
-          await this.processQueueItem(item)
-        } catch (error) {
-          logger.error(`Error processing queue item ${item.id}:`, error)
-        }
-      }
-    }
+    return Math.max(0, Math.floor(delay))
   }
 
   stopQueueProcessor(): void {
-    if (this.processorInterval) {
-      clearInterval(this.processorInterval)
-      this.processorInterval = null
-    }
-    this.isProcessing = false
+    webhookQueueManager.stopProcessor()
   }
 
   retryDeadLetterWebhook(id: string): boolean {
-    const deadLetterItem = webhookStorage.getDeadLetterWebhookById(id)
-    if (!deadLetterItem) {
-      return false
-    }
-
-    const webhook = webhookStorage.getWebhookById(deadLetterItem.webhookId)
-    if (!webhook) {
-      return false
-    }
-
-    webhookStorage.removeFromDeadLetterQueue(id)
-
-    const queueItem: WebhookQueueItem = {
-      id: `q_${randomUUID()}`,
-      webhookId: webhook.id,
-      event: deadLetterItem.event,
-      payload: deadLetterItem.payload,
-      priority: 10,
-      scheduledFor: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      retryCount: 0,
-      maxRetries: 3,
-    }
-
-    webhookStorage.addToQueue(queueItem)
-    this.startQueueProcessor()
-
-    return true
+    return deadLetterManager.retry(id, item => {
+      webhookQueueManager.enqueue(item)
+      webhookQueueManager.startProcessor(async queueItem => {
+        await this.processQueueItem(queueItem)
+      })
+    })
   }
 
   getQueueStats() {
-    const queue = webhookStorage.getQueue()
-    const deadLetterQueue = webhookStorage.getDeadLetterQueue()
-
     return {
-      pending: queue.length,
-      deadLetter: deadLetterQueue.length,
-      isProcessing: this.isProcessing,
-      nextScheduled: queue.length > 0 ? queue[0].scheduledFor : null,
+      pending: webhookQueueManager.getQueueSize(),
+      deadLetter: deadLetterManager.getDeadLetterCount(),
+      isProcessing: webhookQueueManager.isRunning(),
+      nextScheduled: webhookQueueManager.getNextScheduledTime(),
     }
   }
 
-  private generateSignature(payload: WebhookPayload, secret: string): string {
-    const payloadString = JSON.stringify(payload)
-    const signature = createHmac('sha256', secret)
-      .update(payloadString)
-      .digest('hex')
-
-    return `v1=${signature}`
+  private getCircuitBreakerKey(webhook: Webhook): string {
+    if (!this.circuitBreakerKeys.has(webhook.id)) {
+      const key = `webhook:${webhook.url}`
+      this.circuitBreakerKeys.set(webhook.id, key)
+    }
+    return this.circuitBreakerKeys.get(webhook.id)!
   }
 }
 

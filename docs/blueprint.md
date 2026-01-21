@@ -512,6 +512,72 @@ getAllCircuitBreakerStats()
 
 Comprehensive webhook reliability system to ensure reliable, non-blocking webhook delivery:
 
+**Modular Architecture (2026-01-21)**:
+
+```
+┌─────────────────────────────────────────────────────┐
+│         WebhookQueueSystem (Orchestrator)      │
+│         ~160 lines (coordination only)          │
+└──────┬────────────────────┬────────────────────────┘
+       │                    │
+       ▼                    ▼
+┌──────────────────┐   ┌──────────────────────────────┐
+│ WebhookQueue     │   │ DeadLetterManager          │
+│ Manager          │   │                          │
+│ ~60 lines        │   │ ~80 lines                │
+│                  │   │                         │
+│ - enqueue()      │   │ - addToDeadLetter()       │
+│ - dequeue()      │   │ - removeFromDeadLetter()   │
+│ - startProcessor()│   │ - retry()                │
+└──────────────────┘   └──────────────────────────────┘
+       │
+       └────────────┬──────────────┘
+                    │
+                    ▼
+         ┌──────────────────┐
+         │ WebhookDelivery │
+         │ Service         │
+         │ ~100 lines      │
+         │                │
+         │ - deliver()     │
+         │ - deliverWithRetry()
+         └──────────────────┘
+
+Benefits:
+✅ Single Responsibility (each module one concern)
+✅ Testable (isolate each module)
+✅ Reusable (modules usable elsewhere)
+✅ SOLID compliant (SRP, OCP, DIP)
+✅ Clear interfaces (dependency injection)
+```
+
+**Module Files**:
+
+1. **`server/utils/webhook-signer.ts`** (~30 lines)
+   - Signature generation and verification
+   - HMAC-SHA256 signing
+   - Pure functions for cryptographic operations
+
+2. **`server/utils/webhook-queue-manager.ts`** (~60 lines)
+   - Queue operations (enqueue, dequeue)
+   - Background processing (5-second intervals)
+   - Queue size and status tracking
+
+3. **`server/utils/webhook-delivery.ts`** (~100 lines)
+   - HTTP webhook delivery
+   - Retry with exponential backoff
+   - Delivery logging
+
+4. **`server/utils/webhook-dead-letter.ts`** (~80 lines)
+   - Failed webhook management
+   - Retry capability
+   - Dead letter queue operations
+
+5. **`server/utils/webhookQueue.ts`** (~160 lines, orchestrator)
+   - Coordinates all modules
+   - Maintains backward compatibility
+   - Circuit breaker integration
+
 **Idempotency Keys**:
 
 ```typescript
@@ -796,6 +862,7 @@ export async function checkRateLimit(
 | 2026-01-20 | Consolidate rate limiting implementations             | Removed unused server/plugins/rate-limit.ts plugin; standardized on token bucket algorithm (enhanced-rate-limit.ts) for all API endpoints; kept database-backed rate limiter for analytics endpoints; documented rate limiting architecture with best practices                                                                                         |
 | 2026-01-20 | Process-then-Transform optimization for search API    | Moved pagination before `convertResourcesToHierarchicalTags` in search API endpoint; reduces transformation from O(n) to O(k) where k is page size; achieved 51x speedup for 1000 resources with 20 per page; added performance test to demonstrate improvement                                                                                         |
 | 2026-01-21 | Update webhookStorage tests for async/await           | Updated all test functions to use async/await for 50+ webhookStorage method calls; aligned with new asynchronous API from webhook persistence migration; 60+ test functions modified to properly await Promise-returning methods; all 9 Webhook, 8 Delivery, 9 API Key, 5 Queue, 5 Dead Letter, 8 Idempotency tests updated with async pattern          |
+| 2026-01-21 | Modularize Webhook Queue System (SRP)                 | Extracted WebhookSigner, WebhookQueueManager, WebhookDeliveryService, and DeadLetterManager modules; reduced webhookQueueSystem from 370 lines to ~160 lines; applied Single Responsibility Principle with dependency injection; eliminated God Class anti-pattern in webhook architecture                                                              |
 
 ## 📦 Configuration Architecture
 
