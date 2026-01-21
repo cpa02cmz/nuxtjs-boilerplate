@@ -11,7 +11,147 @@ This document serves as the central task backlog for the autonomous coding syste
 
 Copy this template for new tasks:
 
-```markdown
+````markdown
+# Active Tasks
+
+## [TASK-001] Fix webhookStorage Test Isolation - Database State Cleanup
+
+**Feature**: INFRA-001
+**Status**: In Progress
+**Agent**: 03 Test Engineer
+**Created**: 2026-01-21
+**Updated**: 2026-01-21
+**Priority**: P0 (CRITICAL)
+
+### Description
+
+Fix test isolation failures in webhookStorage.test.ts caused by database state persisting across tests. Tests fail with "Unique constraint failed" errors for WebhookQueue, DeadLetterWebhook, and IdempotencyKey models.
+
+### Evidence
+
+**Failing Tests** (50+ tests):
+
+- `addToQueue > should add item to queue` - Unique constraint on WebhookQueue.id
+- `getQueueItemById > should return undefined for non-existent queue item` - Expecting undefined, got null
+- `addToDeadLetterQueue > should add item to dead letter queue` - Unique constraint on DeadLetterWebhook.id
+- `setDeliveryByIdempotencyKey > should set delivery by idempotency key` - Unique constraint on IdempotencyKey.key
+
+**Root Cause**: Tests don't clean database state between runs, causing unique constraint violations when attempting to insert records with same IDs.
+
+### Acceptance Criteria
+
+- [ ] Database cleanup function implemented for webhookStorage tests
+- [ ] All webhookStorage tests pass (50+ tests)
+- [ ] Test isolation verified (run tests twice, same results)
+- [ ] Zero unique constraint errors
+
+### Implementation Notes
+
+Approach options:
+
+1. Clear entire database in beforeEach
+2. Clear only webhookStorage models (Webhook, WebhookDelivery, WebhookQueue, DeadLetterWebhook, ApiKey, IdempotencyKey)
+3. Use unique IDs per test
+
+**Recommended**: Option 2 (Clear specific models) - faster, safer for concurrent tests
+
+### Dependencies
+
+None
+
+### Related Issues
+
+- Test pass rate: 1467/1568 passing (93.5%)
+
+---
+
+## [TASK-002] Fix High Severity Security Vulnerability
+
+**Feature**: SEC-001
+**Status**: Backlog
+**Agent**: 04 Security
+**Created**: 2026-01-21
+**Updated**: 2026-01-21
+**Priority**: P0 (CRITICAL)
+
+### Description
+
+Address high severity vulnerability identified during `npm install`. Run `npm audit fix` to resolve automatically fixable vulnerabilities.
+
+### Acceptance Criteria
+
+- [ ] npm audit passes with 0 vulnerabilities
+- [ ] Verify fix doesn't break functionality
+- [ ] Run full test suite after fix
+- [ ] Update security documentation if needed
+
+### Implementation Notes
+
+Run: `npm audit fix --force` if automatic fix fails
+
+### Dependencies
+
+None
+
+### Related Issues
+
+- Security audit last verified: 2026-01-20 (0 vulnerabilities at that time)
+
+---
+
+## Completed Tasks
+
+## [TASK-FEAT001] useBookmarks Test Isolation Fix ✅ COMPLETED (2026-01-21)
+
+**Feature**: FEAT-001
+**Status**: Complete
+**Agent**: 03 Test Engineer
+**Completed**: 2026-01-21
+**Priority**: P0
+
+### Description
+
+Fixed module-level singleton pattern in useBookmarks composable that caused test isolation failures, blocking all PR merges.
+
+### Solution Implemented
+
+Added `resetBookmarks()` function that clears module-level state:
+
+```typescript
+export const resetBookmarks = () => {
+  if (bookmarksRef) {
+    bookmarksRef.value.length = 0
+    bookmarksRef = null
+  }
+  if (typeof window !== 'undefined') {
+    storage.remove()
+  }
+}
+```
+````
+
+Tests now call `resetBookmarks()` in beforeEach to ensure clean state per test.
+
+### Acceptance Criteria
+
+- [x] resetBookmarks() function implemented
+- [x] useBookmarks.test.ts all 36 tests pass
+- [x] Issue #585 updated with fix details
+- [x] PR #584 ready to merge (accessibility fixes)
+
+### Files Modified
+
+1. `composables/useBookmarks.ts` - Added resetBookmarks() function
+2. `__tests__/useBookmarks.test.ts` - Call resetBookmarks() in beforeEach
+
+### Impact
+
+- **Before**: 3/36 tests failing (singleton pattern causing state leakage)
+- **After**: 36/36 tests passing (100% pass rate)
+- **Result**: PR pipeline unblocked, accessibility fixes (PR #584) can merge
+
+---
+
 ## [TASK-ID] Title
 
 **Feature**: FEATURE-ID
@@ -42,7 +182,6 @@ Technical details, constraints, or approach guidance.
 ### Related Issues
 
 - Issue #123
-```
 
 ---
 
