@@ -82,33 +82,46 @@ describe('webhookStorage', () => {
     deliveryAttempts: [],
   }
 
-  beforeEach(() => {
-    webhookStorage
-      .getAllWebhooks()
-      .forEach(w => webhookStorage.deleteWebhook(w.id))
-    webhookStorage
-      .getAllApiKeys()
-      .forEach(k => webhookStorage.deleteApiKey(k.id))
-    webhookStorage.getQueue().forEach(q => webhookStorage.removeFromQueue(q.id))
-    webhookStorage
-      .getDeadLetterQueue()
-      .forEach(dl => webhookStorage.removeFromDeadLetterQueue(dl.id))
+  beforeEach(async () => {
+    const webhooks = await webhookStorage.getAllWebhooks()
+    for (const w of webhooks) {
+      await webhookStorage.deleteWebhook(w.id)
+    }
+    const apiKeys = await webhookStorage.getAllApiKeys()
+    for (const k of apiKeys) {
+      await webhookStorage.deleteApiKey(k.id)
+    }
+    const queue = await webhookStorage.getQueue()
+    for (const q of queue) {
+      await webhookStorage.removeFromQueue(q.id)
+    }
+    const deadLetterQueue = await webhookStorage.getDeadLetterQueue()
+    for (const dl of deadLetterQueue) {
+      await webhookStorage.removeFromDeadLetterQueue(dl.id)
+    }
   })
 
-  afterEach(() => {
-    webhookStorage
-      .getAllWebhooks()
-      .forEach(w => webhookStorage.deleteWebhook(w.id))
-    webhookStorage
-      .getAllDeliveries()
-      .forEach(d => webhookStorage.deleteWebhook(d.id))
-    webhookStorage
-      .getAllApiKeys()
-      .forEach(k => webhookStorage.deleteApiKey(k.id))
-    webhookStorage.getQueue().forEach(q => webhookStorage.removeFromQueue(q.id))
-    webhookStorage
-      .getDeadLetterQueue()
-      .forEach(dl => webhookStorage.removeFromDeadLetterQueue(dl.id))
+  afterEach(async () => {
+    const webhooks = await webhookStorage.getAllWebhooks()
+    for (const w of webhooks) {
+      await webhookStorage.deleteWebhook(w.id)
+    }
+    const deliveries = await webhookStorage.getAllDeliveries()
+    for (const d of deliveries) {
+      await webhookStorage.deleteWebhook(d.webhookId)
+    }
+    const apiKeys = await webhookStorage.getAllApiKeys()
+    for (const k of apiKeys) {
+      await webhookStorage.deleteApiKey(k.id)
+    }
+    const queue = await webhookStorage.getQueue()
+    for (const q of queue) {
+      await webhookStorage.removeFromQueue(q.id)
+    }
+    const deadLetterQueue = await webhookStorage.getDeadLetterQueue()
+    for (const dl of deadLetterQueue) {
+      await webhookStorage.removeFromDeadLetterQueue(dl.id)
+    }
   })
 
   describe('Webhook Methods', () => {
