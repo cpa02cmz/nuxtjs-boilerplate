@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { WebhookQueueSystem } from '~/server/utils/webhookQueue'
-import { webhookStorage } from '~/server/utils/webhookStorage'
+import {
+  webhookStorage,
+  resetWebhookStorage,
+} from '~/server/utils/webhookStorage'
 import { resetCircuitBreaker } from '~/server/utils/circuit-breaker'
 import type { Webhook, WebhookPayload } from '~/types/webhook'
 
