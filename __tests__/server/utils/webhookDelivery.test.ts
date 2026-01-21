@@ -23,18 +23,24 @@ describe('webhookDeliveryService', () => {
     timestamp: '2024-01-01T00:00:00.000Z',
   }
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
-    webhookStorage
-      .getAllWebhooks()
-      .forEach(w => webhookStorage.deleteWebhook(w.id))
-    webhookStorage
-      .getAllApiKeys()
-      .forEach(k => webhookStorage.deleteApiKey(k.id))
-    webhookStorage.getQueue().forEach(q => webhookStorage.removeFromQueue(q.id))
-    webhookStorage
-      .getDeadLetterQueue()
-      .forEach(dl => webhookStorage.removeFromDeadLetterQueue(dl.id))
+    const webhooks = await webhookStorage.getAllWebhooks()
+    for (const w of webhooks) {
+      await webhookStorage.deleteWebhook(w.id)
+    }
+    const apiKeys = await webhookStorage.getAllApiKeys()
+    for (const k of apiKeys) {
+      await webhookStorage.deleteApiKey(k.id)
+    }
+    const queue = await webhookStorage.getQueue()
+    for (const q of queue) {
+      await webhookStorage.removeFromQueue(q.id)
+    }
+    const deadLetterQueue = await webhookStorage.getDeadLetterQueue()
+    for (const dl of deadLetterQueue) {
+      await webhookStorage.removeFromDeadLetterQueue(dl.id)
+    }
     resetCircuitBreaker('webhook:https://example.com/webhook')
   })
 
