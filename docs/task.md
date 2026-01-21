@@ -1654,6 +1654,12 @@ The async/await updates are complete. The remaining test failures (due to databa
 - Expected value updates for database-generated fields (timestamps, null returns)
 - Database cleanup/reset between test runs
 
+### Pull Request
+
+**Status**: ✅ PR updated - https://github.com/cpa02cmz/nuxtjs-boilerplate/pull/644
+**Action**: Updated existing PR #644 with task details
+**Branch**: agent → main
+
 This builds on:
 
 - Soft-Delete Pattern (blueprint.md migration 20260110100000): Establishes data deletion pattern with recovery capability
