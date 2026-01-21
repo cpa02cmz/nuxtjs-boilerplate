@@ -10,7 +10,7 @@ import type {
 
 describe('webhookStorage', () => {
   const mockWebhook: Webhook = {
-    id: 'wh_123',
+    id: 'wh_test_webhook_001',
     url: 'https://example.com/webhook',
     events: ['resource.created', 'resource.updated'],
     active: true,
@@ -24,8 +24,8 @@ describe('webhookStorage', () => {
   }
 
   const mockDelivery: WebhookDelivery = {
-    id: 'del_456',
-    webhookId: 'wh_123',
+    id: 'del_test_delivery_001',
+    webhookId: 'wh_test_webhook_001',
     event: 'resource.created',
     payload: {
       event: 'resource.created',
@@ -41,7 +41,7 @@ describe('webhookStorage', () => {
   }
 
   const mockApiKey: ApiKey = {
-    id: 'ak_789',
+    id: 'ak_test_apikey_001',
     name: 'Test API Key',
     key: 'sk_test_123456',
     userId: 'user_1',
@@ -126,73 +126,75 @@ describe('webhookStorage', () => {
 
   describe('Webhook Methods', () => {
     describe('createWebhook', () => {
-      it('should create a new webhook', () => {
-        const result = webhookStorage.createWebhook(mockWebhook)
+      it('should create a new webhook', async () => {
+        const result = await webhookStorage.createWebhook(mockWebhook)
 
         expect(result).toEqual(mockWebhook)
-        expect(webhookStorage.getAllWebhooks()).toHaveLength(1)
+        expect(await webhookStorage.getAllWebhooks()).toHaveLength(1)
       })
 
-      it('should create multiple webhooks', () => {
+      it('should create multiple webhooks', async () => {
         const webhook2: Webhook = {
           ...mockWebhook,
-          id: 'wh_456',
+          id: 'wh_test_webhook_002',
           url: 'https://example2.com/webhook',
         }
 
-        webhookStorage.createWebhook(mockWebhook)
-        webhookStorage.createWebhook(webhook2)
+        await webhookStorage.createWebhook(mockWebhook)
+        await webhookStorage.createWebhook(webhook2)
 
-        expect(webhookStorage.getAllWebhooks()).toHaveLength(2)
+        expect(await webhookStorage.getAllWebhooks()).toHaveLength(2)
       })
     })
 
     describe('getWebhookById', () => {
-      it('should return webhook by id', () => {
-        webhookStorage.createWebhook(mockWebhook)
+      it('should return webhook by id', async () => {
+        await webhookStorage.createWebhook(mockWebhook)
 
-        const result = webhookStorage.getWebhookById('wh_123')
+        const result = await webhookStorage.getWebhookById(
+          'wh_test_webhook_001'
+        )
 
         expect(result).toEqual(mockWebhook)
       })
 
-      it('should return undefined for non-existent webhook', () => {
-        const result = webhookStorage.getWebhookById('non-existent')
+      it('should return undefined for non-existent webhook', async () => {
+        const result = await webhookStorage.getWebhookById('non-existent')
 
         expect(result).toBeUndefined()
       })
     })
 
     describe('getAllWebhooks', () => {
-      it('should return all webhooks', () => {
+      it('should return all webhooks', async () => {
         const webhook2: Webhook = {
           ...mockWebhook,
-          id: 'wh_456',
+          id: 'wh_test_webhook_003',
           url: 'https://example2.com/webhook',
         }
 
-        webhookStorage.createWebhook(mockWebhook)
-        webhookStorage.createWebhook(webhook2)
+        await webhookStorage.createWebhook(mockWebhook)
+        await webhookStorage.createWebhook(webhook2)
 
-        const result = webhookStorage.getAllWebhooks()
+        const result = await webhookStorage.getAllWebhooks()
 
         expect(result).toHaveLength(2)
         expect(result).toContainEqual(mockWebhook)
         expect(result).toContainEqual(webhook2)
       })
 
-      it('should return empty array when no webhooks exist', () => {
-        const result = webhookStorage.getAllWebhooks()
+      it('should return empty array when no webhooks exist', async () => {
+        const result = await webhookStorage.getAllWebhooks()
 
         expect(result).toEqual([])
       })
     })
 
     describe('updateWebhook', () => {
-      it('should update webhook with partial data', () => {
-        webhookStorage.createWebhook(mockWebhook)
+      it('should update webhook with partial data', async () => {
+        await webhookStorage.createWebhook(mockWebhook)
 
-        const result = webhookStorage.updateWebhook('wh_123', {
+        const result = await webhookStorage.updateWebhook('wh_123', {
           active: false,
           failureCount: 2,
         })
@@ -204,8 +206,8 @@ describe('webhookStorage', () => {
         expect(result?.updatedAt).toBeDefined()
       })
 
-      it('should return null for non-existent webhook', () => {
-        const result = webhookStorage.updateWebhook('non-existent', {
+      it('should return null for non-existent webhook', async () => {
+        const result = await webhookStorage.updateWebhook('non-existent', {
           active: false,
         })
 
@@ -214,24 +216,24 @@ describe('webhookStorage', () => {
     })
 
     describe('deleteWebhook', () => {
-      it('should delete webhook by id', () => {
-        webhookStorage.createWebhook(mockWebhook)
+      it('should delete webhook by id', async () => {
+        await webhookStorage.createWebhook(mockWebhook)
 
-        const result = webhookStorage.deleteWebhook('wh_123')
+        const result = await webhookStorage.deleteWebhook('wh_123')
 
         expect(result).toBe(true)
-        expect(webhookStorage.getWebhookById('wh_123')).toBeUndefined()
+        expect(await webhookStorage.getWebhookById('wh_123')).toBeUndefined()
       })
 
-      it('should return false for non-existent webhook', () => {
-        const result = webhookStorage.deleteWebhook('non-existent')
+      it('should return false for non-existent webhook', async () => {
+        const result = await webhookStorage.deleteWebhook('non-existent')
 
         expect(result).toBe(false)
       })
     })
 
     describe('getWebhooksByEvent', () => {
-      it('should return webhooks that match event', () => {
+      it('should return webhooks that match event', async () => {
         const webhook2: Webhook = {
           ...mockWebhook,
           id: 'wh_456',
@@ -239,35 +241,38 @@ describe('webhookStorage', () => {
           active: true,
         }
 
-        webhookStorage.createWebhook(mockWebhook)
-        webhookStorage.createWebhook(webhook2)
+        await webhookStorage.createWebhook(mockWebhook)
+        await webhookStorage.createWebhook(webhook2)
 
-        const result = webhookStorage.getWebhooksByEvent('resource.created')
+        const result =
+          await webhookStorage.getWebhooksByEvent('resource.created')
 
         expect(result).toHaveLength(1)
         expect(result[0]).toEqual(mockWebhook)
       })
 
-      it('should only return active webhooks', () => {
+      it('should only return active webhooks', async () => {
         const inactiveWebhook: Webhook = {
           ...mockWebhook,
           id: 'wh_456',
           active: false,
         }
 
-        webhookStorage.createWebhook(mockWebhook)
-        webhookStorage.createWebhook(inactiveWebhook)
+        await webhookStorage.createWebhook(mockWebhook)
+        await webhookStorage.createWebhook(inactiveWebhook)
 
-        const result = webhookStorage.getWebhooksByEvent('resource.created')
+        const result =
+          await webhookStorage.getWebhooksByEvent('resource.created')
 
         expect(result).toHaveLength(1)
         expect(result[0]).toEqual(mockWebhook)
       })
 
-      it('should return empty array when no webhooks match event', () => {
-        webhookStorage.createWebhook(mockWebhook)
+      it('should return empty array when no webhooks match event', async () => {
+        await webhookStorage.createWebhook(mockWebhook)
 
-        const result = webhookStorage.getWebhooksByEvent('user.registered')
+        const result =
+          await webhookStorage.getWebhooksByEvent('user.registered')
 
         expect(result).toEqual([])
       })
@@ -276,42 +281,44 @@ describe('webhookStorage', () => {
 
   describe('Delivery Methods', () => {
     describe('createDelivery', () => {
-      it('should create a new delivery', () => {
-        const result = webhookStorage.createDelivery(mockDelivery)
+      it('should create a new delivery', async () => {
+        const result = await webhookStorage.createDelivery(mockDelivery)
 
         expect(result).toEqual(mockDelivery)
-        expect(webhookStorage.getAllDeliveries()).toHaveLength(1)
+        expect(await webhookStorage.getAllDeliveries()).toHaveLength(1)
       })
     })
 
     describe('getDeliveryById', () => {
-      it('should return delivery by id', () => {
-        webhookStorage.createDelivery(mockDelivery)
+      it('should return delivery by id', async () => {
+        await webhookStorage.createDelivery(mockDelivery)
 
-        const result = webhookStorage.getDeliveryById('del_456')
+        const result = await webhookStorage.getDeliveryById(
+          'del_test_delivery_001'
+        )
 
         expect(result).toEqual(mockDelivery)
       })
 
-      it('should return undefined for non-existent delivery', () => {
-        const result = webhookStorage.getDeliveryById('non-existent')
+      it('should return undefined for non-existent delivery', async () => {
+        const result = await webhookStorage.getDeliveryById('non-existent')
 
         expect(result).toBeUndefined()
       })
     })
 
     describe('getAllDeliveries', () => {
-      it('should return all deliveries', () => {
+      it('should return all deliveries', async () => {
         const delivery2: WebhookDelivery = {
           ...mockDelivery,
           id: 'del_789_unique',
           webhookId: 'wh_456',
         }
 
-        webhookStorage.createDelivery(mockDelivery)
-        webhookStorage.createDelivery(delivery2)
+        await webhookStorage.createDelivery(mockDelivery)
+        await webhookStorage.createDelivery(delivery2)
 
-        const result = webhookStorage.getAllDeliveries()
+        const result = await webhookStorage.getAllDeliveries()
 
         expect(result.length).toBeGreaterThanOrEqual(2)
         expect(result).toContainEqual(mockDelivery)
@@ -320,10 +327,10 @@ describe('webhookStorage', () => {
     })
 
     describe('updateDelivery', () => {
-      it('should update delivery with partial data', () => {
-        webhookStorage.createDelivery(mockDelivery)
+      it('should update delivery with partial data', async () => {
+        await webhookStorage.createDelivery(mockDelivery)
 
-        const result = webhookStorage.updateDelivery('del_456', {
+        const result = await webhookStorage.updateDelivery('del_456', {
           status: 'failed',
           attemptCount: 2,
         })
@@ -333,8 +340,8 @@ describe('webhookStorage', () => {
         expect(result?.id).toBe('del_456')
       })
 
-      it('should return null for non-existent delivery', () => {
-        const result = webhookStorage.updateDelivery('non-existent', {
+      it('should return null for non-existent delivery', async () => {
+        const result = await webhookStorage.updateDelivery('non-existent', {
           status: 'failed',
         })
 
@@ -343,7 +350,7 @@ describe('webhookStorage', () => {
     })
 
     describe('getDeliveriesByWebhookId', () => {
-      it('should return deliveries for webhook', () => {
+      it('should return deliveries for webhook', async () => {
         const delivery2: WebhookDelivery = {
           ...mockDelivery,
           id: 'del_789_unique2',
@@ -356,11 +363,11 @@ describe('webhookStorage', () => {
           webhookId: 'wh_456_unique',
         }
 
-        webhookStorage.createDelivery(mockDelivery)
-        webhookStorage.createDelivery(delivery2)
-        webhookStorage.createDelivery(delivery3)
+        await webhookStorage.createDelivery(mockDelivery)
+        await webhookStorage.createDelivery(delivery2)
+        await webhookStorage.createDelivery(delivery3)
 
-        const result = webhookStorage.getDeliveriesByWebhookId('wh_123')
+        const result = await webhookStorage.getDeliveriesByWebhookId('wh_123')
 
         expect(result.length).toBeGreaterThanOrEqual(2)
         expect(result).toContainEqual(mockDelivery)
@@ -372,58 +379,58 @@ describe('webhookStorage', () => {
 
   describe('API Key Methods', () => {
     describe('createApiKey', () => {
-      it('should create a new API key', () => {
-        const result = webhookStorage.createApiKey(mockApiKey)
+      it('should create a new API key', async () => {
+        const result = await webhookStorage.createApiKey(mockApiKey)
 
         expect(result).toEqual(mockApiKey)
-        expect(webhookStorage.getAllApiKeys()).toHaveLength(1)
+        expect(await webhookStorage.getAllApiKeys()).toHaveLength(1)
       })
     })
 
     describe('getApiKeyById', () => {
-      it('should return API key by id', () => {
-        webhookStorage.createApiKey(mockApiKey)
+      it('should return API key by id', async () => {
+        await webhookStorage.createApiKey(mockApiKey)
 
-        const result = webhookStorage.getApiKeyById('ak_789')
+        const result = await webhookStorage.getApiKeyById('ak_test_apikey_001')
 
         expect(result).toEqual(mockApiKey)
       })
 
-      it('should return undefined for non-existent API key', () => {
-        const result = webhookStorage.getApiKeyById('non-existent')
+      it('should return undefined for non-existent API key', async () => {
+        const result = await webhookStorage.getApiKeyById('non-existent')
 
         expect(result).toBeUndefined()
       })
     })
 
     describe('getApiKeyByValue', () => {
-      it('should return API key by value', () => {
-        webhookStorage.createApiKey(mockApiKey)
+      it('should return API key by value', async () => {
+        await webhookStorage.createApiKey(mockApiKey)
 
-        const result = webhookStorage.getApiKeyByValue('sk_test_123456')
+        const result = await webhookStorage.getApiKeyByValue('sk_test_123456')
 
         expect(result).toEqual(mockApiKey)
       })
 
-      it('should return undefined for non-existent API key value', () => {
-        const result = webhookStorage.getApiKeyByValue('sk_non_existent')
+      it('should return undefined for non-existent API key value', async () => {
+        const result = await webhookStorage.getApiKeyByValue('sk_non_existent')
 
         expect(result).toBeUndefined()
       })
     })
 
     describe('getAllApiKeys', () => {
-      it('should return all API keys', () => {
+      it('should return all API keys', async () => {
         const apiKey2: ApiKey = {
           ...mockApiKey,
-          id: 'ak_999',
+          id: 'ak_test_apikey_002',
           key: 'sk_test_789',
         }
 
-        webhookStorage.createApiKey(mockApiKey)
-        webhookStorage.createApiKey(apiKey2)
+        await webhookStorage.createApiKey(mockApiKey)
+        await webhookStorage.createApiKey(apiKey2)
 
-        const result = webhookStorage.getAllApiKeys()
+        const result = await webhookStorage.getAllApiKeys()
 
         expect(result).toHaveLength(2)
         expect(result).toContainEqual(mockApiKey)
@@ -432,22 +439,22 @@ describe('webhookStorage', () => {
     })
 
     describe('updateApiKey', () => {
-      it('should update API key with partial data', () => {
-        webhookStorage.createApiKey(mockApiKey)
+      it('should update API key with partial data', async () => {
+        await webhookStorage.createApiKey(mockApiKey)
 
-        const result = webhookStorage.updateApiKey('ak_789', {
+        const result = await webhookStorage.updateApiKey('ak_test_apikey_001', {
           active: false,
           lastUsedAt: '2024-01-01T00:00:00.000Z',
         })
 
         expect(result?.active).toBe(false)
         expect(result?.lastUsedAt).toBe('2024-01-01T00:00:00.000Z')
-        expect(result?.id).toBe('ak_789')
+        expect(result?.id).toBe('ak_test_apikey_001')
         expect(result?.updatedAt).toBeDefined()
       })
 
-      it('should return null for non-existent API key', () => {
-        const result = webhookStorage.updateApiKey('non-existent', {
+      it('should return null for non-existent API key', async () => {
+        const result = await webhookStorage.updateApiKey('non-existent', {
           active: false,
         })
 
@@ -456,17 +463,19 @@ describe('webhookStorage', () => {
     })
 
     describe('deleteApiKey', () => {
-      it('should delete API key by id', () => {
-        webhookStorage.createApiKey(mockApiKey)
+      it('should delete API key by id', async () => {
+        await webhookStorage.createApiKey(mockApiKey)
 
-        const result = webhookStorage.deleteApiKey('ak_789')
+        const result = await webhookStorage.deleteApiKey('ak_test_apikey_001')
 
         expect(result).toBe(true)
-        expect(webhookStorage.getApiKeyById('ak_789')).toBeUndefined()
+        expect(
+          await webhookStorage.getApiKeyById('ak_test_apikey_001')
+        ).toBeUndefined()
       })
 
-      it('should return false for non-existent API key', () => {
-        const result = webhookStorage.deleteApiKey('non-existent')
+      it('should return false for non-existent API key', async () => {
+        const result = await webhookStorage.deleteApiKey('non-existent')
 
         expect(result).toBe(false)
       })
@@ -475,16 +484,16 @@ describe('webhookStorage', () => {
 
   describe('Queue Methods', () => {
     describe('addToQueue', () => {
-      it('should add item to queue', () => {
-        const result = webhookStorage.addToQueue(mockQueueItem)
+      it('should add item to queue', async () => {
+        const result = await webhookStorage.addToQueue(mockQueueItem)
 
         expect(result).toEqual(mockQueueItem)
-        expect(webhookStorage.getQueue()).toHaveLength(1)
+        expect(await webhookStorage.getQueue()).toHaveLength(1)
       })
     })
 
     describe('getQueue', () => {
-      it('should return queue sorted by scheduledFor', () => {
+      it('should return queue sorted by scheduledFor', async () => {
         const item1: WebhookQueueItem = {
           ...mockQueueItem,
           id: 'q_001',
@@ -501,11 +510,11 @@ describe('webhookStorage', () => {
           scheduledFor: '2024-01-01T00:00:15.000Z',
         }
 
-        webhookStorage.addToQueue(item1)
-        webhookStorage.addToQueue(item2)
-        webhookStorage.addToQueue(item3)
+        await webhookStorage.addToQueue(item1)
+        await webhookStorage.addToQueue(item2)
+        await webhookStorage.addToQueue(item3)
 
-        const result = webhookStorage.getQueue()
+        const result = await webhookStorage.getQueue()
 
         expect(result).toHaveLength(3)
         expect(result[0]).toEqual(item2)
@@ -513,41 +522,41 @@ describe('webhookStorage', () => {
         expect(result[2]).toEqual(item3)
       })
 
-      it('should return empty array when queue is empty', () => {
-        const result = webhookStorage.getQueue()
+      it('should return empty array when queue is empty', async () => {
+        const result = await webhookStorage.getQueue()
 
         expect(result).toEqual([])
       })
     })
 
     describe('getQueueItemById', () => {
-      it('should return queue item by id', () => {
-        webhookStorage.addToQueue(mockQueueItem)
+      it('should return queue item by id', async () => {
+        await webhookStorage.addToQueue(mockQueueItem)
 
-        const result = webhookStorage.getQueueItemById('q_001')
+        const result = await webhookStorage.getQueueItemById('q_001')
 
         expect(result).toEqual(mockQueueItem)
       })
 
-      it('should return undefined for non-existent queue item', () => {
-        const result = webhookStorage.getQueueItemById('non-existent')
+      it('should return undefined for non-existent queue item', async () => {
+        const result = await webhookStorage.getQueueItemById('non-existent')
 
         expect(result).toBeUndefined()
       })
     })
 
     describe('removeFromQueue', () => {
-      it('should remove item from queue', () => {
-        webhookStorage.addToQueue(mockQueueItem)
+      it('should remove item from queue', async () => {
+        await webhookStorage.addToQueue(mockQueueItem)
 
-        const result = webhookStorage.removeFromQueue('q_001')
+        const result = await webhookStorage.removeFromQueue('q_001')
 
         expect(result).toBe(true)
-        expect(webhookStorage.getQueue()).toHaveLength(0)
+        expect(await webhookStorage.getQueue()).toHaveLength(0)
       })
 
-      it('should return false for non-existent queue item', () => {
-        const result = webhookStorage.removeFromQueue('non-existent')
+      it('should return false for non-existent queue item', async () => {
+        const result = await webhookStorage.removeFromQueue('non-existent')
 
         expect(result).toBe(false)
       })
@@ -556,66 +565,69 @@ describe('webhookStorage', () => {
 
   describe('Dead Letter Queue Methods', () => {
     describe('addToDeadLetterQueue', () => {
-      it('should add item to dead letter queue', () => {
-        const result = webhookStorage.addToDeadLetterQueue(mockDeadLetterItem)
+      it('should add item to dead letter queue', async () => {
+        const result =
+          await webhookStorage.addToDeadLetterQueue(mockDeadLetterItem)
 
         expect(result).toEqual(mockDeadLetterItem)
-        expect(webhookStorage.getDeadLetterQueue()).toHaveLength(1)
+        expect(await webhookStorage.getDeadLetterQueue()).toHaveLength(1)
       })
     })
 
     describe('getDeadLetterQueue', () => {
-      it('should return all dead letter items', () => {
+      it('should return all dead letter items', async () => {
         const item2: DeadLetterWebhook = {
           ...mockDeadLetterItem,
           id: 'dl_002',
         }
 
-        webhookStorage.addToDeadLetterQueue(mockDeadLetterItem)
-        webhookStorage.addToDeadLetterQueue(item2)
+        await webhookStorage.addToDeadLetterQueue(mockDeadLetterItem)
+        await webhookStorage.addToDeadLetterQueue(item2)
 
-        const result = webhookStorage.getDeadLetterQueue()
+        const result = await webhookStorage.getDeadLetterQueue()
 
         expect(result).toHaveLength(2)
         expect(result).toContainEqual(mockDeadLetterItem)
         expect(result).toContainEqual(item2)
       })
 
-      it('should return empty array when dead letter queue is empty', () => {
-        const result = webhookStorage.getDeadLetterQueue()
+      it('should return empty array when dead letter queue is empty', async () => {
+        const result = await webhookStorage.getDeadLetterQueue()
 
         expect(result).toEqual([])
       })
     })
 
     describe('getDeadLetterWebhookById', () => {
-      it('should return dead letter item by id', () => {
-        webhookStorage.addToDeadLetterQueue(mockDeadLetterItem)
+      it('should return dead letter item by id', async () => {
+        await webhookStorage.addToDeadLetterQueue(mockDeadLetterItem)
 
-        const result = webhookStorage.getDeadLetterWebhookById('dl_001')
+        const result = await webhookStorage.getDeadLetterWebhookById('dl_001')
 
         expect(result).toEqual(mockDeadLetterItem)
       })
 
-      it('should return undefined for non-existent dead letter item', () => {
-        const result = webhookStorage.getDeadLetterWebhookById('non-existent')
+      it('should return undefined for non-existent dead letter item', async () => {
+        const result =
+          await webhookStorage.getDeadLetterWebhookById('non-existent')
 
         expect(result).toBeUndefined()
       })
     })
 
     describe('removeFromDeadLetterQueue', () => {
-      it('should remove item from dead letter queue', () => {
-        webhookStorage.addToDeadLetterQueue(mockDeadLetterItem)
+      it('should remove item from dead letter queue', async () => {
+        await webhookStorage.addToDeadLetterQueue(mockDeadLetterItem)
 
-        const result = webhookStorage.removeFromDeadLetterQueue('dl_001')
+        const result = await webhookStorage.removeFromDeadLetterQueue('dl_001')
 
         expect(result).toBe(true)
-        expect(webhookStorage.getDeadLetterQueue()).toHaveLength(0)
+        expect(await webhookStorage.getDeadLetterQueue()).toHaveLength(0)
       })
 
-      it('should return false for non-existent dead letter item', () => {
-        const result = webhookStorage.removeFromDeadLetterQueue('non-existent')
+      it('should return false for non-existent dead letter item', async () => {
+        const result =
+          await webhookStorage.removeFromDeadLetterQueue('non-existent')
 
         expect(result).toBe(false)
       })
@@ -624,8 +636,8 @@ describe('webhookStorage', () => {
 
   describe('Idempotency Methods', () => {
     describe('setDeliveryByIdempotencyKey', () => {
-      it('should set delivery by idempotency key', () => {
-        const result = webhookStorage.setDeliveryByIdempotencyKey(
+      it('should set delivery by idempotency key', async () => {
+        const result = await webhookStorage.setDeliveryByIdempotencyKey(
           'key_123',
           mockDelivery
         )
@@ -635,42 +647,53 @@ describe('webhookStorage', () => {
     })
 
     describe('getDeliveryByIdempotencyKey', () => {
-      it('should get delivery by idempotency key', () => {
-        webhookStorage.setDeliveryByIdempotencyKey('key_123', mockDelivery)
+      it('should get delivery by idempotency key', async () => {
+        await webhookStorage.setDeliveryByIdempotencyKey(
+          'key_123',
+          mockDelivery
+        )
 
-        const result = webhookStorage.getDeliveryByIdempotencyKey('key_123')
+        const result =
+          await webhookStorage.getDeliveryByIdempotencyKey('key_123')
 
         expect(result).toEqual(mockDelivery)
       })
 
-      it('should return undefined for non-existent idempotency key', () => {
+      it('should return undefined for non-existent idempotency key', async () => {
         const result =
-          webhookStorage.getDeliveryByIdempotencyKey('non-existent')
+          await webhookStorage.getDeliveryByIdempotencyKey('non-existent')
 
         expect(result).toBeUndefined()
       })
     })
 
     describe('hasDeliveryWithIdempotencyKey', () => {
-      it('should return true when idempotency key exists', () => {
-        webhookStorage.setDeliveryByIdempotencyKey('key_123', mockDelivery)
+      it('should return true when idempotency key exists', async () => {
+        await webhookStorage.setDeliveryByIdempotencyKey(
+          'key_123',
+          mockDelivery
+        )
 
-        const result = webhookStorage.hasDeliveryWithIdempotencyKey('key_123')
+        const result =
+          await webhookStorage.hasDeliveryWithIdempotencyKey('key_123')
 
         expect(result).toBe(true)
       })
 
-      it('should return false when idempotency key does not exist', () => {
+      it('should return false when idempotency key does not exist', async () => {
         const result =
-          webhookStorage.hasDeliveryWithIdempotencyKey('non-existent')
+          await webhookStorage.hasDeliveryWithIdempotencyKey('non-existent')
 
         expect(result).toBe(false)
       })
     })
 
     describe('Idempotency Key Overwrite', () => {
-      it('should overwrite delivery for existing idempotency key', () => {
-        webhookStorage.setDeliveryByIdempotencyKey('key_123', mockDelivery)
+      it('should overwrite delivery for existing idempotency key', async () => {
+        await webhookStorage.setDeliveryByIdempotencyKey(
+          'key_123',
+          mockDelivery
+        )
 
         const newDelivery: WebhookDelivery = {
           ...mockDelivery,
@@ -678,15 +701,15 @@ describe('webhookStorage', () => {
           status: 'failed',
         }
 
-        const result = webhookStorage.setDeliveryByIdempotencyKey(
+        const result = await webhookStorage.setDeliveryByIdempotencyKey(
           'key_123',
           newDelivery
         )
 
         expect(result).toEqual(newDelivery)
-        expect(webhookStorage.getDeliveryByIdempotencyKey('key_123')).toEqual(
-          newDelivery
-        )
+        expect(
+          await webhookStorage.getDeliveryByIdempotencyKey('key_123')
+        ).toEqual(newDelivery)
       })
     })
   })
