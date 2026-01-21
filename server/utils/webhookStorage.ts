@@ -42,7 +42,7 @@ export const webhookStorage = {
       events: JSON.parse(webhook.events) as WebhookEvent[],
       createdAt: webhook.createdAt.toISOString(),
       updatedAt: webhook.updatedAt.toISOString(),
-    }
+    } as Webhook
   },
 
   async createWebhook(webhook: Webhook) {
@@ -240,7 +240,9 @@ export const webhookStorage = {
     }
   },
 
-  async getDeliveriesByWebhookId(webhookId: string) {
+  async getDeliveriesByWebhookId(
+    webhookId: string
+  ): Promise<WebhookDelivery[]> {
     const deliveries = await prisma.webhookDelivery.findMany({
       where: { webhookId, deletedAt: null },
       orderBy: { createdAt: 'desc' },

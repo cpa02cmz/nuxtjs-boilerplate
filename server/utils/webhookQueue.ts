@@ -140,12 +140,12 @@ export class WebhookQueueSystem {
       event: payload.event,
       payload: payloadWithSignature,
       status: success ? 'success' : 'failed',
-      responseCode,
-      responseMessage,
+      statusCode: responseCode,
+      responseBody: responseMessage,
       attemptCount: 1,
       createdAt: new Date().toISOString(),
       idempotencyKey: payload.idempotencyKey,
-      completedAt: success ? new Date().toISOString() : undefined,
+      updatedAt: new Date().toISOString(),
     }
 
     webhookStorage.createDelivery(delivery)
@@ -158,10 +158,7 @@ export class WebhookQueueSystem {
     }
 
     webhookStorage.updateWebhook(webhook.id, {
-      lastDeliveryAt: new Date().toISOString(),
-      lastDeliveryStatus: success ? 'success' : 'failed',
-      deliveryCount: webhook.deliveryCount + 1,
-      failureCount: success ? webhook.failureCount : webhook.failureCount + 1,
+      updatedAt: new Date().toISOString(),
     })
 
     return success
@@ -197,7 +194,7 @@ export class WebhookQueueSystem {
       return
     }
 
-    const circuitBreakerKey = `webhook:${webhook.url}`
+    const circuitBreakerKey = `webhook:${webhook?.url || ''}`
     const circuitBreaker = getCircuitBreaker(circuitBreakerKey, {
       failureThreshold: 5,
       successThreshold: 2,
