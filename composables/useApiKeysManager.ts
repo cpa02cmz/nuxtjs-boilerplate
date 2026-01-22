@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
+import type { ApiClient } from '~/utils/api-client'
 import type { ApiKey } from '~/types/webhook'
 
 export interface NewApiKey {
@@ -8,7 +9,20 @@ export interface NewApiKey {
   permissions: string[]
 }
 
-export const useApiKeysManager = () => {
+export interface UseApiKeysManagerOptions {
+  apiClient?: ApiClient
+}
+
+export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
+  const { apiClient: providedClient } = options
+
+  const getClient = () => {
+    if (providedClient) {
+      return providedClient
+    }
+    const { $apiClient } = useNuxtApp()
+    return $apiClient
+  }
   const apiKeys = ref<ApiKey[]>([])
   const loading = ref(true)
   const error = ref<string | null>(null)
@@ -18,8 +32,8 @@ export const useApiKeysManager = () => {
       loading.value = true
       error.value = null
 
-      const { $apiClient } = useNuxtApp()
-      const response = await $apiClient.get<{
+      const client = getClient()
+      const response = await client.get<{
         apiKeys: ApiKey[]
         data?: ApiKey[]
       }>('/api/v1/auth/api-keys')
@@ -49,8 +63,8 @@ export const useApiKeysManager = () => {
       loading.value = true
       error.value = null
 
-      const { $apiClient } = useNuxtApp()
-      const response = await $apiClient.post<{ apiKey: ApiKey; data?: ApiKey }>(
+      const client = getClient()
+      const response = await client.post<{ apiKey: ApiKey; data?: ApiKey }>(
         '/api/v1/auth/api-keys',
         newApiKey
       )
@@ -87,8 +101,8 @@ export const useApiKeysManager = () => {
       loading.value = true
       error.value = null
 
-      const { $apiClient } = useNuxtApp()
-      const response = await $apiClient.delete(`/api/v1/auth/api-keys/${keyId}`)
+      const client = getClient()
+      const response = await client.delete(`/api/v1/auth/api-keys/${keyId}`)
 
       if (!response.success) {
         error.value =
