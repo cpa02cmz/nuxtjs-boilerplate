@@ -7,10 +7,6 @@ export interface Webhook {
   secret?: string
   createdAt: string
   updatedAt: string
-  lastDeliveryAt?: string
-  lastDeliveryStatus?: 'success' | 'failed' | 'pending'
-  deliveryCount: number
-  failureCount: number
 }
 
 export type WebhookEvent =
@@ -35,14 +31,14 @@ export interface WebhookDelivery {
   webhookId: string
   event: WebhookEvent
   payload: WebhookPayload
-  status: 'success' | 'failed' | 'pending' | 'queued' | 'dead_letter'
-  responseCode?: number
-  responseMessage?: string
+  status: 'success' | 'failed' | 'pending'
+  statusCode?: number
+  responseBody?: string
+  errorMessage?: string
   attemptCount: number
-  nextRetryAt?: string
+  idempotencyKey?: string | null
   createdAt: string
-  completedAt?: string
-  idempotencyKey?: string
+  updatedAt: string
 }
 
 export interface WebhookQueueItem {
@@ -53,6 +49,7 @@ export interface WebhookQueueItem {
   priority: number
   scheduledFor: string
   createdAt: string
+  updatedAt: string
   retryCount: number
   maxRetries: number
 }
@@ -65,6 +62,7 @@ export interface DeadLetterWebhook {
   failureReason: string
   lastAttemptAt: string
   createdAt: string
+  updatedAt: string
   deliveryAttempts: WebhookDelivery[]
 }
 
@@ -86,9 +84,8 @@ export interface ApiKey {
   key: string
   userId?: string
   permissions: string[]
+  active: boolean
+  expiresAt?: string
   createdAt: string
   updatedAt: string
-  expiresAt?: string
-  lastUsedAt?: string
-  active: boolean
 }

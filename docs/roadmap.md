@@ -1,22 +1,44 @@
-# 🗺️ Nuxt.js Boilerplate Development Roadmap
+# 🗺️ Strategic Roadmap
 
-**Last Updated**: January 17, 2026  
-**Repository**: nuxtjs-boilerplate  
+**Last Updated**: January 21, 2026
+**Repository**: nuxtjs-boilerplate
 **Version**: 1.0.0-roadmap
+**Owner**: Principal Product Strategist (Agent 00)
+
+---
+
+## Product Strategist Overview
+
+This document defines the strategic direction for the autonomous coding system. It connects features to goals, tracks progress, and ensures all work delivers user value.
+
+### Strategic Principles
+
+1. **Vision First**: Understand WHY before WHAT
+2. **User-Centric**: Every feature delivers user value
+3. **Incrementalism**: Small shippable increments
+4. **Clarity**: Tasks executable without clarification
+5. **Traceability**: Task → Feature → Goal
+
+### Anti-Patterns
+
+- ❌ Vague tasks requiring clarification
+- ❌ Let docs drift from reality
+- ❌ Features without clear user value
+- ❌ Architectural decisions without updating blueprint
 
 ---
 
 ## 📊 Current Repository Status
 
-| Metric         | Current       | Target       | Status           |
-| -------------- | ------------- | ------------ | ---------------- |
-| Build Success  | ✅ 100%       | ✅ 100%      | 🟢 Good          |
-| Test Coverage  | ✅ 96.4%      | ✅ 80%+      | 🟢 Excellent     |
-| Test Pass Rate | ⚠️ 1266/1313  | ✅ 100%      | 🟡 Near Complete |
-| Security       | ✅ 0 Vulns    | ✅ 0 Vulns   | 🟢 Good          |
-| Performance    | ✅ 17.10s     | ✅ <30s      | 🟢 Good          |
-| Code Quality   | ✅ 0 Lint Err | ✅ 0 Errors  | 🟢 Good          |
-| Documentation  | ✅ Good       | ✅ Excellent | 🟢 Good          |
+| Metric         | Current        | Target       | Status           |
+| -------------- | -------------- | ------------ | ---------------- |
+| Build Success  | ✅ 100%        | ✅ 100%      | 🟢 Good          |
+| Test Coverage  | ✅ 93.5%       | ✅ 80%+      | 🟢 Excellent     |
+| Test Pass Rate | ⚠️ 1467/1568   | ✅ 100%      | 🟡 Near Complete |
+| Security       | ⚠️ 1 High Vuln | ✅ 0 Vulns   | 🟡 Needs Fix     |
+| Performance    | ✅ 17.10s      | ✅ <30s      | 🟢 Good          |
+| Code Quality   | ✅ 0 Lint Err  | ✅ 0 Errors  | 🟢 Good          |
+| Documentation  | ✅ Good        | ✅ Excellent | 🟢 Good          |
 
 ---
 
@@ -40,39 +62,91 @@
 
 ---
 
-## 🚨 Active Critical Issues (January 17, 2026)
+## 🚨 Active Critical Issues (January 21, 2026)
 
 ### 🚨 Priority 0 (CRITICAL - Today)
 
-#### Issue #585: Fix useBookmarks.test.ts Test Isolation
+#### Task INFRA-001: Fix webhookStorage.test.ts Test Isolation
 
-**Status**: 🚨 IN PROGRESS  
-**Deadline**: 2026-01-17 EOD  
-**Owner**: CTO Agent  
-**Approach**: Option 2 (Quick Fix) - Add resetBookmarks() function
+**Status**: 🚨 IN PROGRESS
+**Deadline**: 2026-01-21 EOD
+**Owner**: 03 Test Engineer
+**Feature**: INFRA-001
 
-**Impact**: Blocks ALL PR merges, including accessibility fixes (PR #584)
+**Impact**: 50+ tests failing, blocking 100% test pass rate goal
 
-**Test Failures** (3/36 tests failing):
+**Test Failures** (50+ tests failing):
 
-1. "should add a new bookmark successfully" - Wrong title from previous test
-2. "should persist to localStorage" - localStorage null after clear+save
-3. "should trigger bookmarksUpdated event on add" - Event listener not called
+1. Unique constraint on WebhookQueue.id (queue tests)
+2. Unique constraint on DeadLetterWebhook.id (dead letter tests)
+3. Unique constraint on IdempotencyKey.key (idempotency tests)
+4. Expecting undefined, got null (find methods returning null instead of undefined)
 
-**Root Cause**: Module-level state causes test isolation failures
+**Root Cause**: Database state not cleared between test runs
 
 **Success Criteria**:
 
-- [ ] resetBookmarks() function implemented
-- [ ] useBookmarks.test.ts all 36 tests pass
-- [ ] Issue #585 updated with fix details
-- [ ] PR #584 ready to merge
-- [ ] Test suite: 100% pass rate (1269/1269 tests)
+- [ ] Database cleanup function implemented
+- [ ] All webhookStorage tests pass (50+ tests)
+- [ ] Test isolation verified
+- [ ] Test suite: 100% pass rate (1517/1517 tests)
 
 **Related Documentation**:
 
-- CEO Directive #001: `docs/ceo-directive-2026-01-17-001.md`
-- PR #584: Accessibility Fixes (ready to merge after fix)
+- Feature: INFRA-001 in `docs/feature.md`
+- Task: TASK-001 in `docs/task.md`
+- Current pass rate: 1467/1568 (93.5%)
+
+---
+
+### 🚨 Priority 0 (CRITICAL - Today)
+
+#### Task SEC-001: Fix High Severity Security Vulnerability
+
+**Status**: ⏳ BACKLOG (ready to start)
+**Owner**: 04 Security Agent
+**Feature**: SEC-001
+
+**Impact**: 1 high severity vulnerability in dependencies
+
+**Vulnerability Details**:
+
+- Found during `npm install`
+- Command: `npm audit fix`
+- Previous audit (2026-01-20): 0 vulnerabilities
+
+**Success Criteria**:
+
+- [ ] npm audit passes with 0 vulnerabilities
+- [ ] Verify fix doesn't break functionality
+- [ ] Run full test suite after fix
+
+**Related Documentation**:
+
+- Feature: SEC-001 in `docs/feature.md`
+- Task: TASK-002 in `docs/task.md`
+
+---
+
+## ✅ Recently Completed Critical Issues
+
+### ✅ FEAT-001: useBookmarks.test.ts Test Isolation - COMPLETED (2026-01-21)
+
+**Status**: ✅ COMPLETE
+**Owner**: 03 Test Engineer
+
+**Solution**: Added `resetBookmarks()` function to clear module-level state
+
+**Results**:
+
+- **Before**: 3/36 tests failing (93.8% pass rate)
+- **After**: 36/36 tests passing (100% pass rate)
+- **Impact**: PR pipeline unblocked
+
+**Files Modified**:
+
+- `composables/useBookmarks.ts` - Added resetBookmarks() function
+- `__tests__/useBookmarks.test.ts` - Call resetBookmarks() in beforeEach
 
 ---
 
@@ -80,7 +154,7 @@
 
 ### PR #584: Accessibility Fixes
 
-**Status**: ⏳ READY TO MERGE (waiting for useBookmarks fix)
+**Status**: ⏳ READY TO MERGE (waiting for webhookStorage test fix)
 **Owner**: UI/UX Engineer
 
 **Content**:
@@ -92,7 +166,9 @@
 
 **Success Criteria**:
 
-- [ ] useBookmarks test fix completed
+- [ ] webhookStorage test fix completed (INFRA-001)
+- [ ] Security vulnerability fixed (SEC-001)
+- [ ] Test suite reaches 100% pass rate
 - [ ] PR merged to main
 - [ ] Zero accessibility regressions
 
@@ -162,7 +238,7 @@ Major version upgrade requiring:
 | Metric              | Current  | Target   | Status           |
 | ------------------- | -------- | -------- | ---------------- |
 | Build Success Rate  | 100%     | 100%     | 🟢 Excellent     |
-| Test Pass Rate      | 96.4%    | 100%     | 🟡 Near Complete |
+| Test Pass Rate      | 93.5%    | 100%     | 🟡 Near Complete |
 | Test Execution Time | 17.10s   | <30s     | 🟢 Excellent     |
 | Code Quality        | 0 errors | 0 errors | 🟢 Excellent     |
 | Security Vulns      | 0        | 0        | 🟢 Excellent     |
@@ -218,17 +294,19 @@ Major version upgrade requiring:
 
 ### Testing Infrastructure (COMPLETED)
 
-✅ **Test Coverage** - 96.4% pass rate (1266/1313 tests)
+✅ **Test Coverage** - 93.5% pass rate (1467/1568 tests)
 ✅ **Critical Path Tests** - useUrlSync (38 tests), useUserPreferences (36 tests)
 ✅ **useSavedSearches** - 27 tests (100% pass rate)
 ✅ **useComments** - 57 tests (100% pass rate)
 ✅ **useUserProfiles** - 61 tests (100% pass rate)
 ✅ **useVoting** - 54 tests (100% pass rate)
 ✅ **useModeration** - All tests passing
-✅ **useBookmarks** - 36 tests (3 failing due to singleton pattern)
+✅ **useBookmarks** - 36 tests (100% pass rate - FIXED 2026-01-21)
 ✅ **useFilterUtils** - 67 tests (100% pass rate)
+✅ **useRecommendationEngine** - 50 tests (100% pass rate)
 ✅ **Test Execution Time** - 17.10s (excellent)
-✅ **Test Infrastructure** - Fixed 96.4% of failing tests
+✅ **Test Infrastructure** - Fixed useBookmarks singleton pattern (2026-01-21)
+⚠️ **webhookStorage tests** - 50+ failing due to database isolation (IN PROGRESS)
 
 ### Accessibility (COMPLETED)
 
@@ -289,11 +367,12 @@ Major version upgrade requiring:
 
 ## 📈 Next Steps
 
-### Immediate (This Week - January 17, 2026)
+### Immediate (This Week - January 21, 2026)
 
-1. 🚨 **Fix useBookmarks.test.ts** - Complete test isolation fix (P0)
-2. ⏳ **Merge PR #584** - Accessibility fixes (waiting for P0 completion)
-3. ⏳ **Resume MVP Development** - Feature development pipeline unblocked
+1. 🚨 **Fix webhookStorage.test.ts** - Complete database test isolation fix (P0, INFRA-001)
+2. 🚨 **Fix Security Vulnerability** - Run npm audit fix (P0, SEC-001)
+3. ⏳ **Merge PR #584** - Accessibility fixes (waiting for P0 completion)
+4. ⏳ **Resume MVP Development** - Feature development pipeline unblocked
 
 ### Short-term (Next 2-4 Weeks)
 
@@ -314,14 +393,51 @@ Major version upgrade requiring:
 
 ### Current Risks
 
-1. **Test Isolation** - useBookmarks singleton pattern causing test failures (IN PROGRESS)
-2. **PR Pipeline Blocked** - All merges blocked until useBookmarks fix (HIGH RISK)
+1. **Test Isolation** - webhookStorage database state causing 50+ test failures (IN PROGRESS)
+2. **Security Vulnerability** - 1 high severity vulnerability in dependencies (BACKLOG)
+3. **PR Pipeline At Risk** - Security fix may require dependency updates that could break tests
 
 ### Mitigation Strategies
 
-1. **Quick Fix Approach** - Using Option 2 (resetBookmarks function) for immediate unblock
-2. **Follow-up Refactor** - Schedule Option 1 (proper composable pattern) as P2 task
-3. **Daily Monitoring** - Check test status and PR pipeline status
+1. **Database Cleanup** - Implement model-specific cleanup in beforeEach
+2. **Security Patch** - Run npm audit fix, verify tests pass after update
+3. **Test Verification** - Run full test suite after any dependency changes
+4. **Daily Monitoring** - Check test status and PR pipeline status
+
+---
+
+## Operational Modes
+
+### MODE A: INTAKE (New requirement received)
+
+1. **Understand**: What problem? Who benefits? Expected outcome?
+2. **Check Blueprint**: Does it fit architecture? Updates needed?
+3. **Define Feature** in `docs/feature.md`
+4. **Create Tasks** in `docs/task.md` with clear agent assignment
+
+### MODE B: PLANNING (Periodic review)
+
+1. **Status**: Which tasks complete? Blocked? Slow?
+2. **Gaps**: Missing tasks? Accumulating debt?
+3. **Reprioritize**: Impact, risk, dependencies
+4. **Update**: Mark complete, adjust priorities, update roadmap
+
+### MODE C: REFLECTION (After milestone)
+
+1. **Retrospective**: What worked? What didn't?
+2. **Blueprint Evolution**: New patterns? Deprecations?
+3. **Process Improvement**: Better breakdown? Better assignment?
+4. **Document**: Update blueprint, improve process
+
+---
+
+## Self-Improvement Questions
+
+1. Are tasks completing successfully?
+2. Is breakdown appropriate?
+3. Are feature goals met?
+4. Is pace sustainable?
+5. Is debt managed?
 
 ---
 
@@ -329,6 +445,6 @@ Major version upgrade requiring:
 
 ---
 
-_Last Updated: January 17, 2026_
-_Next Review: January 24, 2026 (after useBookmarks fix completion)_
+_Last Updated: January 21, 2026_
+_Next Review: January 22, 2026_
 _Owner: Principal Product Strategist (Agent 00)_
