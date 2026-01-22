@@ -10,8 +10,8 @@ export interface AnalyticsEvent {
   url?: string
   userAgent?: string
   ip?: string | null
-  timestamp: number
-  deletedAt?: number | null
+  timestamp: Date | string
+  deletedAt?: Date | string | null
   properties?: Record<string, unknown>
 }
 
@@ -39,7 +39,7 @@ export async function insertAnalyticsEvent(
         url: validatedEvent.url || null,
         userAgent: validatedEvent.userAgent || null,
         ip: validatedEvent.ip || null,
-        timestamp: validatedEvent.timestamp,
+        timestamp: new Date(validatedEvent.timestamp),
         properties: validatedEvent.properties
           ? JSON.stringify(validatedEvent.properties)
           : null,
@@ -61,8 +61,8 @@ function mapDbEventToAnalyticsEvent(event: {
   url: string | null
   userAgent: string | null
   ip: string | null
-  timestamp: number
-  deletedAt: number | null
+  timestamp: Date
+  deletedAt: Date | null
   properties: string | null
 }): AnalyticsEvent {
   return {
@@ -73,8 +73,8 @@ function mapDbEventToAnalyticsEvent(event: {
     url: event.url || undefined,
     userAgent: event.userAgent || undefined,
     ip: event.ip || undefined,
-    timestamp: event.timestamp,
-    deletedAt: event.deletedAt || undefined,
+    timestamp: event.timestamp.toISOString(),
+    deletedAt: event.deletedAt?.toISOString() || undefined,
     properties: event.properties ? JSON.parse(event.properties) : undefined,
   }
 }
@@ -88,8 +88,8 @@ export async function getAnalyticsEventsByDateRange(
   try {
     const where: Record<string, unknown> = {
       timestamp: {
-        gte: startDate.getTime(),
-        lte: endDate.getTime(),
+        gte: startDate,
+        lte: endDate,
       },
     }
 
@@ -124,8 +124,8 @@ export async function getAnalyticsEventsForResource(
     const where: Record<string, unknown> = {
       resourceId,
       timestamp: {
-        gte: startDate.getTime(),
-        lte: endDate.getTime(),
+        gte: startDate,
+        lte: endDate,
       },
     }
 
@@ -173,8 +173,8 @@ export async function getAggregatedAnalytics(
       prisma.analyticsEvent.count({
         where: {
           timestamp: {
-            gte: startDate.getTime(),
-            lte: endDate.getTime(),
+            gte: startDate,
+            lte: endDate,
           },
           deletedAt: null,
         },
@@ -183,8 +183,8 @@ export async function getAggregatedAnalytics(
         by: ['type'],
         where: {
           timestamp: {
-            gte: startDate.getTime(),
-            lte: endDate.getTime(),
+            gte: startDate,
+            lte: endDate,
           },
           deletedAt: null,
         },
@@ -194,8 +194,8 @@ export async function getAggregatedAnalytics(
         by: ['resourceId'],
         where: {
           timestamp: {
-            gte: startDate.getTime(),
-            lte: endDate.getTime(),
+            gte: startDate,
+            lte: endDate,
           },
           type: 'resource_view',
           deletedAt: null,
@@ -204,21 +204,21 @@ export async function getAggregatedAnalytics(
       }),
       prisma.$queryRaw<Array<{ date: string; count: number }>>`
         SELECT
-          date(datetime(timestamp/1000, 'unixepoch')) as date,
+          date(timestamp) as date,
           COUNT(*) as count
         FROM AnalyticsEvent
-        WHERE timestamp >= ${startDate.getTime()} 
-          AND timestamp <= ${endDate.getTime()}
+        WHERE timestamp >= ${startDate} 
+          AND timestamp <= ${endDate}
           AND deletedAt IS NULL
-        GROUP BY date(timestamp/1000, 'unixepoch')
+        GROUP BY date(timestamp)
         ORDER BY date
       `,
       prisma.analyticsEvent.groupBy({
         by: ['category'],
         where: {
           timestamp: {
-            gte: startDate.getTime(),
-            lte: endDate.getTime(),
+            gte: startDate,
+            lte: endDate,
           },
           category: {
             not: null,
@@ -290,8 +290,8 @@ export async function getResourceAnalytics(
             resourceId,
             type: 'resource_view',
             timestamp: {
-              gte: startDate.getTime(),
-              lte: endDate.getTime(),
+              gte: startDate,
+              lte: endDate,
             },
             deletedAt: null,
           },
@@ -302,8 +302,8 @@ export async function getResourceAnalytics(
             resourceId,
             type: 'resource_view',
             timestamp: {
-              gte: startDate.getTime(),
-              lte: endDate.getTime(),
+              gte: startDate,
+              lte: endDate,
             },
             deletedAt: null,
           },
@@ -313,8 +313,8 @@ export async function getResourceAnalytics(
             resourceId,
             type: 'resource_view',
             timestamp: {
-              gte: startDate.getTime(),
-              lte: endDate.getTime(),
+              gte: startDate,
+              lte: endDate,
             },
             deletedAt: null,
           },
@@ -324,15 +324,15 @@ export async function getResourceAnalytics(
         }),
         prisma.$queryRaw<Array<{ date: string; count: number }>>`
         SELECT
-          date(datetime(timestamp/1000, 'unixepoch')) as date,
+          date(timestamp) as date,
           COUNT(*) as count
         FROM AnalyticsEvent
         WHERE resourceId = ${resourceId}
           AND type = 'resource_view'
-          AND timestamp >= ${startDate.getTime()}
-          AND timestamp <= ${endDate.getTime()}
+          AND timestamp >= ${startDate}
+          AND timestamp <= ${endDate}
           AND deletedAt IS NULL
-        GROUP BY date(timestamp/1000, 'unixepoch')
+        GROUP BY date(timestamp)
         ORDER BY date
       `,
       ])
@@ -373,7 +373,10 @@ export async function exportAnalyticsToCsv(
       'Type,Resource ID,Category,URL,IP Address,Timestamp,Properties\n'
 
     for (const event of events) {
-      const timestamp = new Date(event.timestamp).toISOString()
+      const timestamp =
+        typeof event.timestamp === 'string'
+          ? event.timestamp
+          : event.timestamp.toISOString()
       const properties = JSON.stringify(event.properties || {}).replace(
         /"/g,
         '""'
@@ -402,8 +405,10 @@ export async function cleanupOldEvents(
   retentionDays: number = 30
 ): Promise<number> {
   try {
-    const cutoffDate = Date.now() - retentionDays * 24 * 60 * 60 * 1000
-    const deletedAt = Date.now()
+    const cutoffDate = new Date(
+      Date.now() - retentionDays * 24 * 60 * 60 * 1000
+    )
+    const deletedAt = new Date()
 
     const result = await prisma.analyticsEvent.updateMany({
       where: {
@@ -495,7 +500,15 @@ export async function exportSoftDeletedEventsToCsv(): Promise<string> {
       'ID,Type,Resource ID,Category,URL,IP Address,Timestamp,Deleted At,Properties\n'
 
     for (const event of events) {
-      const timestamp = new Date(event.timestamp).toISOString()
+      const timestamp =
+        typeof event.timestamp === 'string'
+          ? event.timestamp
+          : event.timestamp.toISOString()
+      const deletedAt = event.deletedAt
+        ? typeof event.deletedAt === 'string'
+          ? event.deletedAt
+          : event.deletedAt.toISOString()
+        : ''
       const properties = JSON.stringify(event.properties || {}).replace(
         /"/g,
         '""'
@@ -510,7 +523,7 @@ export async function exportSoftDeletedEventsToCsv(): Promise<string> {
           `"${event.url || ''}"`,
           `"${event.ip || ''}"`,
           `"${timestamp}"`,
-          `"${event.deletedAt ? new Date(event.deletedAt).toISOString() : ''}"`,
+          `"${deletedAt}"`,
           `"${properties}"`,
         ].join(',') + '\n'
     }

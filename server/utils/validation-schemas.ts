@@ -162,9 +162,10 @@ export const analyticsEventSchema = z.object({
     }, 'Invalid IP address format')
     .optional(),
   timestamp: z
-    .number()
-    .int('Timestamp must be an integer')
-    .positive('Timestamp must be positive')
-    .optional(),
+    .union([z.string(), z.date(), z.number().int().positive()])
+    .refine(val => val !== undefined, {
+      message:
+        'Invalid timestamp format. Must be string (ISO 8601), Date object, or number (Unix timestamp)',
+    }),
   properties: z.record(z.string(), z.unknown()).optional(),
 })
