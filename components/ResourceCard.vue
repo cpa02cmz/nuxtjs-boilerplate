@@ -367,20 +367,18 @@ const resourceSchema = computed(() => {
   // Only create schema if there's no error
   if (hasError.value) return null
 
-  const schema: Record<string, string | boolean | null> = {
+  const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication', // Using SoftwareApplication as most resources are web-based tools
+    '@type': 'SoftwareApplication',
     name: props.title,
     description: props.description,
     url: props.url,
   }
 
-  // Add icon if available
   if (props.icon) {
     schema.image = props.icon
   }
 
-  // Add offers information
   schema.offers = {
     '@type': 'Offer',
     availability: 'https://schema.org/InStock',
