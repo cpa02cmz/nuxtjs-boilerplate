@@ -7,6 +7,7 @@ import {
   type RecommendationConfig,
   type RecommendationResult,
 } from '~/utils/recommendation-algorithms'
+import { memoize } from '~/utils/memoize'
 
 export function useCategoryBasedRecommendations(
   allResources: readonly Resource[],
@@ -34,8 +35,16 @@ export function useCategoryBasedRecommendations(
     return categoryResources
   }
 
+  const memoizedGetRecommendations = memoize(
+    getRecommendations as (...args: unknown[]) => RecommendationResult[],
+    (...args: unknown[]) => {
+      const context = args[0] as RecommendationContext | undefined
+      return `category:${context?.currentCategory || 'none'}:${config.maxRecommendations}`
+    }
+  )
+
   return {
     name: 'category-based',
-    getRecommendations,
+    getRecommendations: memoizedGetRecommendations,
   }
 }

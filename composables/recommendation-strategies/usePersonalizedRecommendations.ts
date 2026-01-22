@@ -13,6 +13,7 @@ import {
   type RecommendationResult,
   type UserPreferences,
 } from '~/utils/recommendation-algorithms'
+import { memoize } from '~/utils/memoize'
 
 export function usePersonalizedRecommendations(
   allResources: readonly Resource[],
@@ -126,8 +127,20 @@ export function usePersonalizedRecommendations(
       .slice(0, configValue.maxRecommendations)
   }
 
+  const memoizedGetRecommendations = memoize(
+    getRecommendations as (...args: unknown[]) => RecommendationResult[],
+    (...args: unknown[]) => {
+      const context = args[0] as RecommendationContext | undefined
+      const userPrefs = context?.userPreferences ?? userPreferences
+      const prefsKey = userPrefs
+        ? `${userPrefs.interests?.join(',') || ''}:${userPrefs.viewedResources?.join(',') || ''}:${userPrefs.bookmarkedResources?.join(',') || ''}`
+        : 'none'
+      return `personalized:${prefsKey}:${config.maxRecommendations}:${config.minSimilarityScore}`
+    }
+  )
+
   return {
     name: 'personalized',
-    getRecommendations,
+    getRecommendations: memoizedGetRecommendations,
   }
 }

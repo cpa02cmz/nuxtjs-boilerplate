@@ -8,6 +8,7 @@ import {
   type RecommendationConfig,
   type RecommendationResult,
 } from '~/utils/recommendation-algorithms'
+import { memoize } from '~/utils/memoize'
 
 export function useContentBasedRecommendations(
   allResources: readonly Resource[],
@@ -42,8 +43,16 @@ export function useContentBasedRecommendations(
       .slice(0, configValue.maxRecommendations)
   }
 
+  const memoizedGetRecommendations = memoize(
+    getRecommendations as (...args: unknown[]) => RecommendationResult[],
+    (...args: unknown[]) => {
+      const context = args[0] as RecommendationContext | undefined
+      return `cb:${context?.currentResource?.id || 'none'}:${context?.config?.maxRecommendations || 10}:${context?.config?.minSimilarityScore || 0.3}`
+    }
+  )
+
   return {
     name: 'content-based',
-    getRecommendations,
+    getRecommendations: memoizedGetRecommendations,
   }
 }

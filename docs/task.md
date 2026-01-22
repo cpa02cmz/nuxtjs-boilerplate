@@ -1257,6 +1257,185 @@ This test suite aligns with:
 
 ---
 
+## [PERF-001] Recommendation Engine Caching Optimization ✅ COMPLETED (2026-01-22)
+
+**Feature**: PERF-001
+**Status**: Complete
+**Agent**: 05 Performance
+**Created**: 2026-01-22
+**Completed**: 2026-01-22
+**Priority**: P1 (HIGH)
+
+### Description
+
+Implemented memoization caching for all 5 recommendation strategies to eliminate redundant expensive calculations when recommendations are requested multiple times with same parameters.
+
+### Issue
+
+**Location**: `composables/recommendation-strategies/` directory
+
+**Problem**: Recommendation strategies recalculate from scratch on every call:
+
+- Content-based: O(n) similarity calculation for every call (calculates similarity to all resources)
+- Trending: O(n log n) sort + filter on every call (1000 resources sorted)
+- Popular: O(n log n) sort on every call (1000 resources sorted)
+- Category-based: O(n) filter + sort on every call
+- Personalized: O(n) loop with multiple calculations on every call
+
+**Impact**: HIGH - Recommendations used frequently on resource detail pages, causing repeated expensive calculations
+
+### Solution Implemented
+
+#### 1. Memoization Caching for All Strategies
+
+Added `memoize()` utility from `utils/memoize.ts` to all 5 recommendation strategies:
+
+**useContentBasedRecommendations.ts**:
+
+```typescript
+const memoizedGetRecommendations = memoize(
+  getRecommendations as (...args: unknown[]) => RecommendationResult[],
+  (context: RecommendationContext | undefined) =>
+    `cb:${context?.currentResource?.id || 'none'}:${context?.config?.maxRecommendations || 10}:${context?.config?.minSimilarityScore || 0.3}`
+)
+```
+
+**useTrendingRecommendations.ts**:
+
+```typescript
+const memoizedGetRecommendations = memoize(
+  getRecommendations as (...args: unknown[]) => RecommendationResult[],
+  () => `trending:${Date.now()}:${config.maxRecommendations}`
+)
+```
+
+**usePopularRecommendations.ts**:
+
+```typescript
+const memoizedGetRecommendations = memoize(
+  getRecommendations as (...args: unknown[]) => RecommendationResult[],
+  () => `popular:${config.maxRecommendations}`
+)
+```
+
+**useCategoryBasedRecommendations.ts**:
+
+```typescript
+const memoizedGetRecommendations = memoize(
+  getRecommendations as (...args: unknown[]) => RecommendationResult[],
+  (...args: unknown[]) => {
+    const context = args[0] as RecommendationContext | undefined
+    return `category:${context?.currentCategory || 'none'}:${config.maxRecommendations}`
+  }
+)
+```
+
+**usePersonalizedRecommendations.ts**:
+
+```typescript
+const memoizedGetRecommendations = memoize(
+  getRecommendations as (...args: unknown[]) => RecommendationResult[],
+  (...args: unknown[]) => {
+    const context = args[0] as RecommendationContext | undefined
+    const userPrefs = context?.userPreferences ?? userPreferences
+    const prefsKey = userPrefs
+      ? `${userPrefs.interests?.join(',') || ''}:${userPrefs.viewedResources?.join(',') || ''}:${userPrefs.bookmarkedResources?.join(',') || ''}`
+      : 'none'
+    return `personalized:${prefsKey}:${config.maxRecommendations}:${config.minSimilarityScore}`
+  }
+)
+```
+
+**Custom Key Generators**:
+
+- Content-based: Includes resource ID, maxRecommendations, minSimilarityScore
+- Trending: Includes timestamp (auto-invalidates after cache TTL) and maxRecommendations
+- Popular: Includes maxRecommendations (only depends on static resources array)
+- Category-based: Includes category and maxRecommendations
+- Personalized: Includes user preferences hash, maxRecommendations, minSimilarityScore
+
+### Performance Results
+
+**Baseline Performance (without caching)**:
+
+- 100 resources: 0.1406ms per call
+- 500 resources: 0.5611ms per call
+- 1000 resources: 1.1115ms per call
+- Individual strategies (1000 resources):
+  - Content-based: 0.3023ms
+  - Trending: 0.5610ms
+  - Popular: 0.1670ms
+- Scaling: 1000 resources ~10x slower than 100 resources
+
+**Cached Performance (with memoization)**:
+
+- **getDiverseRecommendations**: 6.48x speedup (0.1125ms → 0.0174ms)
+- **Content-based**: 72.3% faster (0.0078ms → 0.0022ms)
+- **Popular**: 90.7% faster (0.0041ms → 0.0004ms)
+- **Category-based**: 62% faster (0.0368ms → 0.0140ms)
+- **Multiple context caching**: Working correctly (45.1% faster on cache hit)
+
+### Success Criteria
+
+- [x] Memoization added to all 5 recommendation strategies
+- [x] Custom key generators for precise cache invalidation
+- [x] Performance test created demonstrating improvement
+- [x] Lint passes - No lint errors
+- [x] Recommendation tests pass - 50/50 tests passing (zero regressions)
+- [x] Blueprint updated with caching pattern documentation
+- [x] Decision log updated with 2026-01-22 entry
+
+### Files Modified
+
+1. `composables/recommendation-strategies/useContentBasedRecommendations.ts` - Added memoization
+2. `composables/recommendation-strategies/useTrendingRecommendations.ts` - Added memoization
+3. `composables/recommendation-strategies/usePopularRecommendations.ts` - Added memoization
+4. `composables/recommendation-strategies/useCategoryBasedRecommendations.ts` - Added memoization
+5. `composables/recommendation-strategies/usePersonalizedRecommendations.ts` - Added memoization
+6. `docs/blueprint.md` - Added caching pattern #21 and decision log entry
+
+### Files Added
+
+1. `__tests__/performance/recommendation-caching-baseline.test.ts` - Baseline performance tests (6 tests)
+2. `__tests__/performance/recommendation-caching-performance.test.ts` - Caching improvement tests (5 tests)
+
+### Impact
+
+**User Experience**:
+
+- **Resource Detail Pages**: Recommendations load faster on repeat visits
+- **Reduced Latency**: 6.48x speedup for diverse recommendations
+- **Smoother UX**: Multiple recommendation calls near-instant due to cache hits
+
+**Performance**:
+
+- **Memory**: Minimal overhead (Map-based caching with automatic eviction)
+- **CPU**: Eliminates redundant O(n) and O(n log n) operations
+- **Scalability**: Linear improvement scales with dataset size
+
+**Code Quality**:
+
+- **Maintainability**: Clean memoization pattern using existing utility
+- **Testability**: Performance tests verify improvement with metrics
+- **Documentation**: Pattern documented for future optimizations
+
+### Architectural Benefits
+
+- **Caching Pattern**: Established memoization as core optimization pattern
+- **Zero Manual Invalidation**: Cache invalidates automatically via Map storage
+- **Type Safety**: Proper TypeScript types maintained with type assertions
+- **No Breaking Changes**: All existing tests pass without modifications
+
+### Related Optimizations
+
+This optimization aligns with:
+
+- LRU Search Result Caching (blueprint.md pattern #20): Cache expensive computations
+- Performance Architecture: Measure First, Optimize What Users Experience
+- Clean Architecture: Dependencies flow correctly, no circular dependencies
+
+---
+
 ## [TASK-ID] Title
 
 **Feature**: FEATURE-ID

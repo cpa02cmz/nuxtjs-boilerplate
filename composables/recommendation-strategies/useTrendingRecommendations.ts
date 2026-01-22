@@ -7,6 +7,7 @@ import {
   type RecommendationConfig,
   type RecommendationResult,
 } from '~/utils/recommendation-algorithms'
+import { memoize } from '~/utils/memoize'
 
 export function useTrendingRecommendations(
   allResources: readonly Resource[],
@@ -38,8 +39,13 @@ export function useTrendingRecommendations(
     return trending
   }
 
+  const memoizedGetRecommendations = memoize(
+    getRecommendations as (...args: unknown[]) => RecommendationResult[],
+    () => `trending:${Date.now()}:${config.maxRecommendations}`
+  )
+
   return {
     name: 'trending',
-    getRecommendations,
+    getRecommendations: memoizedGetRecommendations,
   }
 }

@@ -7,6 +7,7 @@ import {
   type RecommendationConfig,
   type RecommendationResult,
 } from '~/utils/recommendation-algorithms'
+import { memoize } from '~/utils/memoize'
 
 export function usePopularRecommendations(
   allResources: readonly Resource[],
@@ -28,8 +29,13 @@ export function usePopularRecommendations(
       .slice(0, configValue.maxRecommendations)
   }
 
+  const memoizedGetRecommendations = memoize(
+    getRecommendations as (...args: unknown[]) => RecommendationResult[],
+    () => `popular:${config.maxRecommendations}`
+  )
+
   return {
     name: 'popular',
-    getRecommendations,
+    getRecommendations: memoizedGetRecommendations,
   }
 }
