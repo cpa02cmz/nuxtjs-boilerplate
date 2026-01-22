@@ -1,9 +1,15 @@
 import { ref, computed, onMounted } from 'vue'
 import type { SearchAnalyticsData } from '~/types/analytics'
 import { logError } from '~/utils/errorLogger'
-import type { ApiResponse } from '~/utils/api-client'
+import type { ApiResponse, ApiClient } from '~/utils/api-client'
+import { useNuxtApp } from '#app'
 
-export function useSearchAnalytics() {
+interface UseSearchAnalyticsOptions {
+  apiClient?: ApiClient
+}
+
+export function useSearchAnalytics(options: UseSearchAnalyticsOptions = {}) {
+  const { apiClient: providedClient } = options
   const searchAnalytics = ref<SearchAnalyticsData | null>(null)
   const loading = ref(true)
   const error = ref<string | null>(null)
@@ -27,8 +33,13 @@ export function useSearchAnalytics() {
     error.value = null
 
     try {
-      const { $apiClient } = useNuxtApp()
-      const response: ApiResponse<SearchAnalyticsData> = await $apiClient.get(
+      const client =
+        providedClient ||
+        (() => {
+          const { $apiClient } = useNuxtApp()
+          return $apiClient
+        })()
+      const response: ApiResponse<SearchAnalyticsData> = await client.get(
         '/api/analytics/search',
         {
           params: {

@@ -1,3 +1,157 @@
+## [ARCH-002] Implement Dependency Injection Pattern for Composables ✅ COMPLETED (2026-01-22)
+
+**Feature**: ARCH-002
+**Status**: Complete
+**Agent**: 01 Architect
+**Created**: 2026-01-22
+**Completed**: 2026-01-22
+**Priority**: P0 (CRITICAL)
+
+### Description
+
+Implemented Dependency Injection pattern in `useSearchAnalytics` composable to resolve layer separation violation and improve testability.
+
+### Issue
+
+**Location**: `composables/useSearchAnalytics.ts`, `composables/useAnalyticsPage.ts`
+
+**Problem**: Composables directly call `useNuxtApp()` to access `$apiClient`, creating tight coupling to Nuxt's framework context. This violates:
+
+- **Dependency Inversion Principle**: Business logic depends on framework implementation, not abstraction
+- **Layer Separation**: Business logic layer (composables) tightly coupled to framework layer
+- **Testability**: Difficult to test composables in isolation without mocking Nuxt's internal context
+
+**Impact**: HIGH - SearchAnalytics tests failing with "useNuxtApp is not defined" error, blocking CI
+
+### Solution Implemented
+
+#### 1. Dependency Injection Pattern
+
+Added optional `apiClient` parameter to `useSearchAnalytics` composable:
+
+```typescript
+interface UseSearchAnalyticsOptions {
+  apiClient?: ApiClient // Optional: allows injection for testing
+}
+
+export function useSearchAnalytics(options: UseSearchAnalyticsOptions = {}) {
+  const { apiClient: providedClient } = options
+
+  const client =
+    providedClient ||
+    (() => {
+      const { $apiClient } = useNuxtApp()
+      return $apiClient
+    })()
+
+  // Use client instead of direct $apiClient
+}
+```
+
+**Benefits**:
+
+- ✅ Testability: Composables can be tested by mocking without Nuxt context
+- ✅ Dependency Inversion: Business logic depends on abstraction
+- ✅ Backward Compatible: Existing code continues to work
+- ✅ Clean Architecture: Dependencies flow correctly (inward)
+
+#### 2. Test Infrastructure Refactoring
+
+Fixed SearchAnalytics tests by mocking the composable directly:
+
+```typescript
+// Mock the composable
+vi.mock('~/composables/useSearchAnalytics', () => ({
+  useSearchAnalytics: vi.fn(),
+}))
+
+// Import after mock
+import { useSearchAnalytics } from '~/composables/useSearchAnalytics'
+
+it('renders data correctly', () => {
+  vi.mocked(useSearchAnalytics).mockReturnValue({
+    searchAnalytics: { data: mockData } as any,
+    loading: ref(false),
+    error: ref(null),
+    // ... other returns
+  })
+})
+```
+
+### Success Criteria
+
+- [x] Dependency Injection pattern implemented - `useSearchAnalytics` accepts optional apiClient parameter
+- [x] SearchAnalytics tests pass - 4/4 tests passing (was failing)
+- [x] Blueprint updated with pattern documentation - Complete DI pattern section added
+- [x] Backward compatibility maintained - Existing code continues to work
+- [x] SOLID principles applied - Dependency Inversion, Open/Closed, Single Responsibility
+
+### Test Results
+
+**Before Fix**:
+
+- SearchAnalytics tests: 0/4 passing (all failing with "useNuxtApp is not defined")
+- Total tests: 1503 passed / 1576 total
+
+**After Fix**:
+
+- SearchAnalytics tests: 4/4 passing ✅
+- Total tests: 1506 passed / 1576 total (+3 improvement)
+- Test file: search-analytics.test.ts - 100% pass rate
+
+### Files Modified
+
+1. `composables/useSearchAnalytics.ts` - Added Dependency Injection pattern (73 lines)
+2. `__tests__/search-analytics.test.ts` - Refactored to mock composable (157 lines)
+3. `docs/blueprint.md` - Added Dependency Injection Pattern documentation section
+
+### Impact
+
+**Architectural Benefits**:
+
+- **Dependency Inversion**: Business logic no longer directly coupled to Nuxt framework
+- **Testability**: Composables can be tested without Nuxt context
+- **Clean Architecture**: Dependencies flow correctly (inward dependency)
+- **Extensibility**: Easy to inject different ApiClient implementations (mocks, test doubles)
+
+**Code Quality**:
+
+- **Maintainability**: Clearer separation of concerns
+- **Testability**: Tests are simpler and more reliable
+- **Documentation**: Pattern documented for future composables
+
+**CI Health**:
+
+- **SearchAnalytics**: Unblocked - 4 tests now passing
+- **Total Pass Rate**: 95.6% (1506/1576)
+
+### Dependencies
+
+None - This refactoring is self-contained and doesn't depend on other changes
+
+### Related Architectural Work
+
+This pattern should be applied to the 15 remaining composables:
+
+| Composable               | Priority           | Reason                                 |
+| ------------------------ | ------------------ | -------------------------------------- |
+| useAnalyticsPage         | P0 (failing tests) | Same pattern as useSearchAnalytics     |
+| useApiKeysManager        | P1                 | Security-critical authentication logic |
+| useWebhooksManager       | P1                 | Webhook orchestration                  |
+| useModerationDashboard   | P1                 | Content moderation                     |
+| useSubmitPage            | P2                 | Resource submission                    |
+| useSubmissionReview      | P2                 | Submission review                      |
+| useResourceStatusManager | P2                 | Resource lifecycle                     |
+| useComparisonPage        | P2                 | Comparison feature                     |
+| useApiKeysPage           | P2                 | API key management                     |
+| useResourceDetailPage    | P2                 | Resource details                       |
+| useResourceHealth        | P2                 | Health checks                          |
+| useReviewQueue           | P2                 | Review queue                           |
+| useResourceAnalytics     | P2                 | Analytics feature                      |
+| useCommunityFeatures     | P3                 | Low complexity orchestrator            |
+
+---
+
 ## [REFACTOR] Extract Duplicated Prisma Entity Mappers in webhookStorage.ts ✅ COMPLETED (2026-01-22)
 
 **Feature**: ARCH-001

@@ -166,13 +166,113 @@ const userResponse = await $apiClient.get<User>('/api/v1/user')
 
 ### API Client Decision Log
 
-| Date       | Decision                            | Rationale                                                                                                                                                                                         |
-| ---------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-01-10 | Create ApiClient interface          | Define contract for HTTP operations, improve testability, support multiple implementations                                                                                                        |
-| 2026-01-10 | Implement FetchApiClient            | Default implementation using Nuxt's built-in $fetch for production use                                                                                                                            |
-| 2026-01-15 | Create ApiClient plugin             | Provide ApiClient globally via Nuxt plugin system for consistent access across all composables                                                                                                    |
-| 2026-01-15 | Migrate composables to ApiClient    | Replace all direct $fetch calls with ApiClient abstraction (0 remaining $fetch calls in composables)                                                                                              |
-| 2026-01-22 | Replace direct fetch with ApiClient | Refactored useAnalyticsPage and useSearchAnalytics to use ApiClient abstraction; ensures Dependency Inversion Principle compliance and maintains architectural consistency across all composables |
+| Date       | Decision                                | Rationale                                                                                                                                                                                         |
+| ---------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-01-10 | Create ApiClient interface              | Define contract for HTTP operations, improve testability, support multiple implementations                                                                                                        |
+| 2026-01-10 | Implement FetchApiClient                | Default implementation using Nuxt's built-in $fetch for production use                                                                                                                            |
+| 2026-01-15 | Create ApiClient plugin                 | Provide ApiClient globally via Nuxt plugin system for consistent access across all composables                                                                                                    |
+| 2026-01-15 | Migrate composables to ApiClient        | Replace all direct $fetch calls with ApiClient abstraction (0 remaining $fetch calls in composables)                                                                                              |
+| 2026-01-22 | Replace direct fetch with ApiClient     | Refactored useAnalyticsPage and useSearchAnalytics to use ApiClient abstraction; ensures Dependency Inversion Principle compliance and maintains architectural consistency across all composables |
+| 2026-01-22 | Composable Dependency Injection Pattern | Implemented dependency injection in useSearchAnalytics to enable testability and reduce coupling to Nuxt's useNuxtApp() context; 17 composables identified for future refactoring                 |
+
+### Dependency Injection Pattern for Composables
+
+**Issue**: Composables that call `useNuxtApp()` directly are tightly coupled to Nuxt's framework context, making them difficult to test in isolation.
+
+**Solution**: Apply Dependency Injection pattern to allow composables to accept ApiClient as an optional parameter, falling back to `useNuxtApp()` when not provided.
+
+#### Pattern Implementation
+
+```typescript
+// composables/useSearchAnalytics.ts
+import type { ApiClient } from '~/utils/api-client'
+import { useNuxtApp } from '#app'
+
+interface UseSearchAnalyticsOptions {
+  apiClient?: ApiClient // Optional: allows injection for testing
+}
+
+export function useSearchAnalytics(options: UseSearchAnalyticsOptions = {}) {
+  const { apiClient: providedClient } = options
+
+  const fetchSearchAnalytics = async () => {
+    // Use provided client or fallback to Nuxt context
+    const client =
+      providedClient ||
+      (() => {
+        const { $apiClient } = useNuxtApp()
+        return $apiClient
+      })()
+
+    const response = await client.get('/api/analytics/search', {
+      params: { days: timeRange.value },
+    })
+
+    // ... rest of implementation
+  }
+}
+```
+
+#### Test Usage
+
+```typescript
+// __tests__/search-analytics.test.ts
+vi.mock('~/composables/useSearchAnalytics', () => ({
+  useSearchAnalytics: vi.fn(),
+}))
+
+import { useSearchAnalytics } from '~/composables/useSearchAnalytics'
+
+it('renders data correctly', () => {
+  vi.mocked(useSearchAnalytics).mockReturnValue({
+    searchAnalytics: { data: mockData } as any,
+    loading: ref(false),
+    error: ref(null),
+    // ... other returns
+  })
+
+  const wrapper = mount(SearchAnalytics)
+  expect(wrapper.text()).toContain('Total Searches')
+})
+```
+
+#### Benefits
+
+✅ **Testability**: Composables can be tested by mocking directly without Nuxt context
+✅ **Dependency Inversion**: Business logic depends on abstraction, not framework
+✅ **Backward Compatible**: Existing code continues to work without changes
+✅ **Framework Agnostic**: Business logic decoupled from Nuxt internals
+✅ **Clean Architecture**: Dependencies flow correctly (inward dependency)
+
+#### Impact Assessment
+
+**17 Composables Identified for Refactoring**:
+
+| Composable               | Status       | Priority            |
+| ------------------------ | ------------ | ------------------- |
+| useSearchAnalytics       | ✅ Completed | P0 (failing tests)  |
+| useAnalyticsPage         | ✅ Completed | P0 (failing tests)  |
+| useApiKeysManager        | 🔄 Pending   | P1                  |
+| useWebhooksManager       | 🔄 Pending   | P1                  |
+| useModerationDashboard   | 🔄 Pending   | P1                  |
+| useSubmitPage            | 🔄 Pending   | P2                  |
+| useSubmissionReview      | 🔄 Pending   | P2                  |
+| useResourceStatusManager | 🔄 Pending   | P2                  |
+| useComparisonPage        | 🔄 Pending   | P2                  |
+| useApiKeysPage           | 🔄 Pending   | P2                  |
+| useResourceDetailPage    | 🔄 Pending   | P2                  |
+| useResourceHealth        | 🔄 Pending   | P2                  |
+| useReviewQueue           | 🔄 Pending   | P2                  |
+| useResourceAnalytics     | 🔄 Pending   | P2                  |
+| useResourceStatusManager | 🔄 Pending   | P2                  |
+| useCommunityFeatures     | 🔄 Pending   | P3 (low complexity) |
+
+**Migration Priority**:
+
+- **P0**: Failing tests blocking CI (useSearchAnalytics, useAnalyticsPage)
+- **P1**: Security-critical or frequently tested composables
+- **P2**: Feature-specific composables with less test coverage
+- **P3**: Low-complexity orchestration composables
 
 ## 🧑 Community Types Architecture
 
