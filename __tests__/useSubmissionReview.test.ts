@@ -103,6 +103,7 @@ describe('useSubmissionReview - Critical Path Testing', () => {
       await fetchSubmission()
 
       expect(loading.value).toBe(false)
+      expect(error.value).toBe('Network error')
     })
   })
 
