@@ -1,3 +1,157 @@
+## [ARCH-002] Implement Dependency Injection Pattern for Composables ✅ COMPLETED (2026-01-22)
+
+**Feature**: ARCH-002
+**Status**: Complete
+**Agent**: 01 Architect
+**Created**: 2026-01-22
+**Completed**: 2026-01-22
+**Priority**: P0 (CRITICAL)
+
+### Description
+
+Implemented Dependency Injection pattern in `useSearchAnalytics` composable to resolve layer separation violation and improve testability.
+
+### Issue
+
+**Location**: `composables/useSearchAnalytics.ts`, `composables/useAnalyticsPage.ts`
+
+**Problem**: Composables directly call `useNuxtApp()` to access `$apiClient`, creating tight coupling to Nuxt's framework context. This violates:
+
+- **Dependency Inversion Principle**: Business logic depends on framework implementation, not abstraction
+- **Layer Separation**: Business logic layer (composables) tightly coupled to framework layer
+- **Testability**: Difficult to test composables in isolation without mocking Nuxt's internal context
+
+**Impact**: HIGH - SearchAnalytics tests failing with "useNuxtApp is not defined" error, blocking CI
+
+### Solution Implemented
+
+#### 1. Dependency Injection Pattern
+
+Added optional `apiClient` parameter to `useSearchAnalytics` composable:
+
+```typescript
+interface UseSearchAnalyticsOptions {
+  apiClient?: ApiClient // Optional: allows injection for testing
+}
+
+export function useSearchAnalytics(options: UseSearchAnalyticsOptions = {}) {
+  const { apiClient: providedClient } = options
+
+  const client =
+    providedClient ||
+    (() => {
+      const { $apiClient } = useNuxtApp()
+      return $apiClient
+    })()
+
+  // Use client instead of direct $apiClient
+}
+```
+
+**Benefits**:
+
+- ✅ Testability: Composables can be tested by mocking without Nuxt context
+- ✅ Dependency Inversion: Business logic depends on abstraction
+- ✅ Backward Compatible: Existing code continues to work
+- ✅ Clean Architecture: Dependencies flow correctly (inward)
+
+#### 2. Test Infrastructure Refactoring
+
+Fixed SearchAnalytics tests by mocking the composable directly:
+
+```typescript
+// Mock the composable
+vi.mock('~/composables/useSearchAnalytics', () => ({
+  useSearchAnalytics: vi.fn(),
+}))
+
+// Import after mock
+import { useSearchAnalytics } from '~/composables/useSearchAnalytics'
+
+it('renders data correctly', () => {
+  vi.mocked(useSearchAnalytics).mockReturnValue({
+    searchAnalytics: { data: mockData } as any,
+    loading: ref(false),
+    error: ref(null),
+    // ... other returns
+  })
+})
+```
+
+### Success Criteria
+
+- [x] Dependency Injection pattern implemented - `useSearchAnalytics` accepts optional apiClient parameter
+- [x] SearchAnalytics tests pass - 4/4 tests passing (was failing)
+- [x] Blueprint updated with pattern documentation - Complete DI pattern section added
+- [x] Backward compatibility maintained - Existing code continues to work
+- [x] SOLID principles applied - Dependency Inversion, Open/Closed, Single Responsibility
+
+### Test Results
+
+**Before Fix**:
+
+- SearchAnalytics tests: 0/4 passing (all failing with "useNuxtApp is not defined")
+- Total tests: 1503 passed / 1576 total
+
+**After Fix**:
+
+- SearchAnalytics tests: 4/4 passing ✅
+- Total tests: 1506 passed / 1576 total (+3 improvement)
+- Test file: search-analytics.test.ts - 100% pass rate
+
+### Files Modified
+
+1. `composables/useSearchAnalytics.ts` - Added Dependency Injection pattern (73 lines)
+2. `__tests__/search-analytics.test.ts` - Refactored to mock composable (157 lines)
+3. `docs/blueprint.md` - Added Dependency Injection Pattern documentation section
+
+### Impact
+
+**Architectural Benefits**:
+
+- **Dependency Inversion**: Business logic no longer directly coupled to Nuxt framework
+- **Testability**: Composables can be tested without Nuxt context
+- **Clean Architecture**: Dependencies flow correctly (inward dependency)
+- **Extensibility**: Easy to inject different ApiClient implementations (mocks, test doubles)
+
+**Code Quality**:
+
+- **Maintainability**: Clearer separation of concerns
+- **Testability**: Tests are simpler and more reliable
+- **Documentation**: Pattern documented for future composables
+
+**CI Health**:
+
+- **SearchAnalytics**: Unblocked - 4 tests now passing
+- **Total Pass Rate**: 95.6% (1506/1576)
+
+### Dependencies
+
+None - This refactoring is self-contained and doesn't depend on other changes
+
+### Related Architectural Work
+
+This pattern should be applied to the 15 remaining composables:
+
+| Composable               | Priority           | Reason                                 |
+| ------------------------ | ------------------ | -------------------------------------- |
+| useAnalyticsPage         | P0 (failing tests) | Same pattern as useSearchAnalytics     |
+| useApiKeysManager        | P1                 | Security-critical authentication logic |
+| useWebhooksManager       | P1                 | Webhook orchestration                  |
+| useModerationDashboard   | P1                 | Content moderation                     |
+| useSubmitPage            | P2                 | Resource submission                    |
+| useSubmissionReview      | P2                 | Submission review                      |
+| useResourceStatusManager | P2                 | Resource lifecycle                     |
+| useComparisonPage        | P2                 | Comparison feature                     |
+| useApiKeysPage           | P2                 | API key management                     |
+| useResourceDetailPage    | P2                 | Resource details                       |
+| useResourceHealth        | P2                 | Health checks                          |
+| useReviewQueue           | P2                 | Review queue                           |
+| useResourceAnalytics     | P2                 | Analytics feature                      |
+| useCommunityFeatures     | P3                 | Low complexity orchestrator            |
+
+---
+
 ## [REFACTOR] Extract Duplicated Prisma Entity Mappers in webhookStorage.ts ✅ COMPLETED (2026-01-22)
 
 **Feature**: ARCH-001
@@ -1006,6 +1160,100 @@ afterEach(async () => {
 ### Notes
 
 The remaining test failures in webhookStorage.test.ts (36 tests) are due to test infrastructure issues (outdated test mocks expecting fields that don't exist in the API response), not code defects. These are out of scope for the Code Sanitizer role and would need to be addressed by a Test Engineer updating the test mocks.
+
+---
+
+# Active Tasks
+
+## [TASK-TEST-001] useSubmissionReview Critical Path Testing ✅ COMPLETED (2026-01-22)
+
+**Feature**: TEST-001
+**Status**: Complete
+**Agent**: 03 Test Engineer
+**Created**: 2026-01-22
+**Completed**: 2026-01-22
+**Priority**: P1 (HIGH)
+
+### Description
+
+Implemented comprehensive test suite for `useSubmissionReview` composable to ensure software correctness through testing critical moderation business logic.
+
+### Solution Implemented
+
+Created `__tests__/useSubmissionReview.test.ts` with 31 tests covering:
+
+1. **Initialization Tests** - Default values and custom reviewer support
+2. **fetchSubmission Tests** - Error handling and loading states
+3. **approveSubmission Tests** - Success/failure paths and validation
+4. **rejectSubmission Tests** - Reason validation, edge cases, error handling
+5. **State Management Tests** - Instance isolation and reactive state
+6. **Type Safety Tests** - Interface contracts and return types
+7. **Rejection Reason Validation Tests** - Valid/invalid inputs
+8. **Edge Cases** - Null/undefined handling
+
+### Test Coverage
+
+- **Happy Path**: Valid submissions, successful approvals, successful rejections
+- **Sad Path**: API failures, network errors, missing submissions
+- **Edge Cases**: Empty reasons, whitespace-only reasons, long reasons
+- **State Isolation**: Separate instances maintain independent state
+- **Type Safety**: All interfaces and return types verified
+
+### Success Criteria
+
+- [x] Created test file with AAA pattern (Arrange, Act, Assert)
+- [x] All 31 tests passing (100% pass rate)
+- [x] Critical paths covered - fetch, approve, reject operations
+- [x] Edge cases tested - empty, whitespace, null inputs
+- [x] State isolation verified - multiple instances tested
+- [x] Type safety validated - interfaces and return types
+- [x] Test infrastructure follows existing patterns
+
+### Files Created
+
+1. `__tests__/useSubmissionReview.test.ts` - Comprehensive test suite (31 tests, ~400 lines)
+
+### Test Results
+
+**Before**: No test file existed for useSubmissionReview composable
+
+**After**:
+
+- **Test Files**: 1 passed (31 tests)
+- **Pass Rate**: 100% (31/31 passing)
+- **Duration**: 19ms (fast feedback)
+- **Coverage Areas**: Initialization, API interactions, error handling, state management, type safety, edge cases
+
+### Impact
+
+**Software Correctness**:
+
+- Critical moderation workflow now has test coverage
+- Business logic for approvals/rejections is verified
+- Error handling paths are tested
+- Edge case behavior is validated
+
+**Code Quality**:
+
+- Follows AAA pattern (Arrange, Act, Assert)
+- Tests behavior, not implementation
+- Fast execution (19ms for 31 tests)
+- Descriptive test names describe scenarios + expectations
+
+**Test Pyramid Compliance**:
+
+- Unit tests for composable logic (31 tests)
+- No external service dependencies (mocked useNuxtApp)
+- Deterministic results (same result every time)
+- Isolated tests (independent state)
+
+### Related Architectural Work
+
+This test suite aligns with:
+
+- Dependency Injection Pattern (blueprint.md): Composables can be tested without Nuxt context
+- Test Best Practices: Descriptive names, one assertion focus, mock external dependencies
+- QA Engineer Principles: Test behavior not implementation, test happy and sad paths, include null/empty/boundary scenarios
 
 ---
 
