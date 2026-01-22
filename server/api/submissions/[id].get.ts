@@ -1,4 +1,5 @@
 import type { Submission } from '~/types/submission'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 // Mock data for demonstration - in a real application, this would come from a database
 const mockSubmissions: Submission[] = []
@@ -12,6 +13,7 @@ import {
 
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event)
     const id = event.context.params?.id as string
 
     if (!id) {

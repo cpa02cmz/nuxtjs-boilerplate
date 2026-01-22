@@ -4,6 +4,7 @@
 import { useResourceData } from '~/composables/useResourceData'
 import { useRecommendationEngine } from '~/composables/useRecommendationEngine'
 import type { Resource } from '~/types/resource'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendNotFoundError,
   sendSuccessResponse,
@@ -21,6 +22,7 @@ export interface RecommendationQuery {
 
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event)
     const query = getQuery<RecommendationQuery>(event)
     const limit = parseInt(query.limit || '10', 10)
 

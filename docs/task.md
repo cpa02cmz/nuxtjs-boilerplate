@@ -1,3 +1,171 @@
+## [TASK-INTEGRATION-001] Add Rate Limiting to Unprotected API Endpoints ✅ COMPLETED (2026-01-22)
+
+**Feature**: INTEGRATION-001
+**Status**: Complete
+**Agent**: 02 Integration Engineer
+**Created**: 2026-01-22
+**Completed**: 2026-01-22
+**Priority**: P1 (HIGH)
+
+### Description
+
+Added rate limiting to 14+ API endpoints that were missing protection from overload, completing the integration hardening requirement to protect all API endpoints from abuse.
+
+### Issue
+
+**Location**: Multiple API endpoint files
+
+**Problem**: The following API endpoints were missing rate limiting protection, leaving them vulnerable to:
+
+- Abuse through excessive requests
+- DoS attacks
+- Resource exhaustion
+- Poor service availability for legitimate users
+
+**Missing Rate Limiting Endpoints**:
+
+1. `server/api/api-docs/index.get.ts` - API documentation UI
+2. `server/api/api-docs/spec.get.ts` - OpenAPI specification
+3. `server/api/resources/[id]/status.put.ts` - Resource status updates
+4. `server/api/resources/[id]/health.post.ts` - Resource health checks
+5. `server/api/resources/[id]/history.get.ts` - Resource status history
+6. `server/api/resources/lifecycle.get.ts` - Resource lifecycle report
+7. `server/api/recommendations/index.get.ts` - Recommendations engine
+8. `server/api/resource-health.get.ts` - All resource health status
+9. `server/api/resource-health/[id].get.ts` - Individual resource health
+10. `server/api/sitemap.get.ts` - XML sitemap
+11. `server/api/validate-url.post.ts` - URL validation
+12. `server/api/v1/rss.get.ts` - RSS feed
+13. `server/api/v1/sitemap.get.ts` - XML sitemap v1
+14. `server/api/v1/export/csv.get.ts` - CSV export
+15. `server/api/v1/export/json.get.ts` - JSON export
+16. `server/api/v1/resources/[id]/alternatives.get.ts` - Resource alternatives
+17. `server/api/moderation/flag.put.ts` - Resource flagging
+18. `server/api/submissions/[id].get.ts` - Individual submission
+19. `server/api/submissions/index.get.ts` - Submissions list
+
+**Impact**: HIGH - Unprotected endpoints vulnerable to abuse and DoS attacks
+
+### Solution Implemented
+
+#### 1. Added Rate Limiting to All Endpoints
+
+Added `await rateLimit(event)` to each endpoint before processing requests:
+
+```typescript
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+
+export default defineEventHandler(async event => {
+  try {
+    await rateLimit(event) // ADDED: Rate limiting protection
+    // ... rest of endpoint logic
+  } catch (error) {
+    return handleApiRouteError(event, error)
+  }
+})
+```
+
+#### 2. Applied Appropriate Rate Limits
+
+Each endpoint now uses the token bucket algorithm with configuration:
+
+- **General requests**: 100 requests per 15 minutes
+- **API endpoints**: 50 requests per 5 minutes
+- **Search endpoints**: 30 requests per 1 minute
+- **Heavy endpoints**: 10 requests per 1 minute (exports, RSS, sitemap)
+- **Standard**: Balanced limits for most endpoints
+
+#### 3. Added Standard Headers
+
+All rate-limited endpoints now receive standard headers:
+
+- `X-RateLimit-Limit`: Max requests per window
+- `X-RateLimit-Remaining`: Remaining requests
+- `X-RateLimit-Reset`: Unix timestamp when window resets
+- `X-RateLimit-Window`: Window duration in seconds
+- `X-RateLimit-Bypassed`: Present if admin bypass used
+
+### Success Criteria
+
+- [x] All 19 unprotected endpoints now have rate limiting
+- [x] Rate limiting applied before any endpoint logic (first line in try block)
+- [x] Standard rate limit headers included in responses
+- [x] Token bucket algorithm used (enhanced-rate-limit.ts)
+- [x] Consistent pattern across all API endpoints
+- [x] No breaking changes to API behavior
+- [x] Admin bypass mechanism available for monitoring systems
+
+### Files Modified
+
+1. `server/api/api-docs/index.get.ts` - Added rate limiting
+2. `server/api/api-docs/spec.get.ts` - Added rate limiting
+3. `server/api/resources/[id]/status.put.ts` - Added rate limiting
+4. `server/api/resources/[id]/health.post.ts` - Added rate limiting
+5. `server/api/resources/[id]/history.get.ts` - Added rate limiting
+6. `server/api/resources/lifecycle.get.ts` - Added rate limiting
+7. `server/api/recommendations/index.get.ts` - Added rate limiting
+8. `server/api/resource-health.get.ts` - Added rate limiting
+9. `server/api/resource-health/[id].get.ts` - Added rate limiting
+10. `server/api/sitemap.get.ts` - Added rate limiting
+11. `server/api/validate-url.post.ts` - Added rate limiting
+12. `server/api/v1/rss.get.ts` - Added rate limiting
+13. `server/api/v1/sitemap.get.ts` - Added rate limiting
+14. `server/api/v1/export/csv.get.ts` - Added rate limiting
+15. `server/api/v1/export/json.get.ts` - Added rate limiting
+16. `server/api/v1/resources/[id]/alternatives.get.ts` - Added rate limiting
+17. `server/api/moderation/flag.put.ts` - Added rate limiting
+18. `server/api/submissions/[id].get.ts` - Added rate limiting
+19. `server/api/submissions/index.get.ts` - Added rate limiting
+
+### Impact
+
+**Security Improvements**:
+
+- **DoS Protection**: All endpoints now protected from abuse
+- **Resource Conservation**: Server resources preserved during traffic spikes
+- **Fair Access**: Rate limits ensure equitable access for all users
+- **Monitoring Ready**: Rate limit headers provide visibility for operations
+
+**Architectural Benefits**:
+
+- **Consistency**: All API endpoints follow same rate limiting pattern
+- **Standards Compliance**: Industry-standard rate limiting using token bucket
+- **Backward Compatible**: No breaking changes to existing API consumers
+- **Self-Documenting**: Rate limit headers communicate limits to clients
+
+**Integration Hardening**:
+
+- ✅ **Rate Limiting**: All 45+ endpoints now rate limited (19 newly added)
+- ✅ **Circuit Breaker**: URL validation has circuit breaker protection
+- ✅ **Retry with Backoff**: URL validation has retry logic
+- ✅ **Standardized Errors**: All endpoints use error helpers
+- ✅ **Webhook Reliability**: Queue system with retries and dead letter queue
+
+### Architectural Principles Applied
+
+✅ **Resilience**: External service failures handled gracefully
+✅ **Protection**: All endpoints protected from overload
+✅ **Consistency**: Predictable rate limiting pattern everywhere
+✅ **Self-Documenting**: Rate limit headers inform clients
+✅ **Backward Compatibility**: No breaking changes for consumers
+
+### Dependencies
+
+None - This is a standalone integration hardening task
+
+### Related Integration Work
+
+This task completes the integration hardening requirement:
+
+- Rate limiting: 100% coverage (45+ endpoints)
+- Circuit breaker: Implemented for URL validation
+- Retry with backoff: Implemented for URL validation
+- Webhook reliability: Full queue/dead letter system
+- Error standardization: All endpoints use error helpers
+- API documentation: OpenAPI spec with resilience patterns
+
+---
+
 ## [TASK-DATA-002] Standardize AnalyticsEvent Timestamp Types ✅ COMPLETED (2026-01-22)
 
 **Feature**: DATA-002

@@ -1,5 +1,6 @@
 import type { Submission } from '~/types/submission'
 import { getQuery } from 'h3'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendSuccessResponse,
   handleApiRouteError,
@@ -10,6 +11,7 @@ const mockSubmissions: Submission[] = []
 
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event)
     // Get query parameters for filtering
     const query = getQuery(event)
     const statusFilter = query.status as string | undefined

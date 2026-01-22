@@ -1,6 +1,8 @@
 import { defineEventHandler } from 'h3'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async event => {
+  await rateLimit(event)
   const openApiSpec = {
     openapi: '3.0.3',
     info: {
