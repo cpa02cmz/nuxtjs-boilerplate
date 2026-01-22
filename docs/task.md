@@ -514,6 +514,137 @@ This pattern should be applied to the 15 remaining composables:
 
 ---
 
+## [ARCH-003] Dependency Injection Pattern for useApiKeysManager ✅ COMPLETED (2026-01-22)
+
+**Feature**: ARCH-003
+**Status**: Complete
+**Agent**: 01 Architect
+**Created**: 2026-01-22
+**Completed**: 2026-01-22
+**Priority**: P1 (HIGH)
+
+### Description
+
+Implemented Dependency Injection pattern in `useApiKeysManager` composable to resolve layer separation violation and improve testability.
+
+### Issue
+
+**Location**: `composables/useApiKeysManager.ts`
+
+**Problem**: Composable directly calls `useNuxtApp()` to access `$apiClient`, creating tight coupling to Nuxt's framework context. This violates:
+
+- **Dependency Inversion Principle**: Business logic depends on framework implementation, not abstraction
+- **Layer Separation**: Business logic layer (composables) tightly coupled to framework layer
+- **Testability**: Difficult to test composables in isolation without mocking Nuxt's internal context
+
+**Impact**: MEDIUM - API keys management is security-critical and benefits most from testability
+
+### Solution Implemented
+
+#### 1. Dependency Injection Pattern
+
+Added optional `apiClient` parameter to `useApiKeysManager` composable:
+
+```typescript
+import type { ApiClient } from '~/utils/api-client'
+
+export interface UseApiKeysManagerOptions {
+  apiClient?: ApiClient
+}
+
+export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
+  const { apiClient: providedClient } = options
+
+  const getClient = () => {
+    if (providedClient) {
+      return providedClient
+    }
+    const { $apiClient } = useNuxtApp()
+    return $apiClient
+  }
+
+  const fetchApiKeys = async (): Promise<void> => {
+    const client = getClient()
+    const response = await client.get('/api/v1/auth/api-keys')
+    // ...
+  }
+
+  const createApiKey = async (newApiKey: NewApiKey): Promise<ApiKey | null> => {
+    const client = getClient()
+    const response = await client.post('/api/v1/auth/api-keys', newApiKey)
+    // ...
+  }
+
+  const revokeApiKey = async (keyId: string): Promise<boolean> => {
+    const client = getClient()
+    const response = await client.delete(`/api/v1/auth/api-keys/${keyId}`)
+    // ...
+  }
+}
+```
+
+**Benefits**:
+
+- ✅ Testability: Composable can be tested by injecting mock ApiClient
+- ✅ Dependency Inversion: Business logic depends on abstraction
+- ✅ Backward Compatible: Existing code continues to work
+- ✅ Clean Architecture: Dependencies flow correctly (inward)
+
+### Success Criteria
+
+- [x] Dependency Injection pattern implemented - `useApiKeysManager` accepts optional apiClient parameter
+- [x] getClient() helper created - Provides injected or Nuxt client
+- [x] All methods updated - fetchApiKeys, createApiKey, revokeApiKey use getClient()
+- [x] Blueprint updated - Decision log and Impact Assessment updated
+- [x] Backward compatibility maintained - Existing code continues to work
+- [x] SOLID principles applied - Dependency Inversion, Open/Closed, Single Responsibility
+
+### Files Modified
+
+1. `composables/useApiKeysManager.ts` - Added Dependency Injection pattern (139 lines, +14 from original)
+2. `docs/blueprint.md` - Added decision log entry and updated Impact Assessment table
+
+### Impact
+
+**Architectural Benefits**:
+
+- **Dependency Inversion**: Business logic no longer directly coupled to Nuxt framework
+- **Testability**: Composable can be tested without Nuxt context by injecting mock ApiClient
+- **Clean Architecture**: Dependencies flow correctly (inward dependency)
+- **Extensibility**: Easy to inject different ApiClient implementations (mocks, test doubles)
+
+**Code Quality**:
+
+- **Maintainability**: Clearer separation of concerns
+- **Testability**: Tests are simpler and more reliable
+- **Security**: API key management now testable (security-critical feature)
+
+**Progress**:
+
+- **DI Pattern Composables Completed**: 3/17 (useSearchAnalytics, useAnalyticsPage, useApiKeysManager)
+- **P1 Remaining**: 2/3 (useWebhooksManager, useModerationDashboard)
+
+### Dependencies
+
+None - This refactoring is self-contained and doesn't depend on other changes
+
+### Related Architectural Work
+
+This continues the Dependency Injection Pattern refactoring for composables:
+
+**Completed Composables**:
+
+- useSearchAnalytics (P0 - ARCH-002)
+- useAnalyticsPage (P0 - ARCH-002)
+- useApiKeysManager (P1 - ARCH-003) ✅ Just completed
+
+**Remaining P1 Composables**:
+
+- useWebhooksManager - Webhook orchestration
+- useModerationDashboard - Content moderation
+
+---
+
 ## [REFACTOR] Extract Duplicated Prisma Entity Mappers in webhookStorage.ts ✅ COMPLETED (2026-01-22)
 
 **Feature**: ARCH-001

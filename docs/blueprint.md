@@ -175,6 +175,7 @@ const userResponse = await $apiClient.get<User>('/api/v1/user')
 | 2026-01-22 | Replace direct fetch with ApiClient        | Refactored useAnalyticsPage and useSearchAnalytics to use ApiClient abstraction; ensures Dependency Inversion Principle compliance and maintains architectural consistency across all composables |
 | 2026-01-22 | Composable Dependency Injection Pattern    | Implemented dependency injection in useSearchAnalytics to enable testability and reduce coupling to Nuxt's useNuxtApp() context; 17 composables identified for future refactoring                 |
 | 2026-01-22 | Standardize AnalyticsEvent Timestamp Types | Converted AnalyticsEvent timestamps from Int (Unix milliseconds) to DateTime (ISO 8601) for consistency across all models; migration included reversible up/down scripts, zero data loss          |
+| 2026-01-22 | Dependency Injection: useApiKeysManager    | Applied DI pattern to useApiKeysManager (P1 security-critical) for testability; 3 methods (fetchApiKeys, createApiKey, revokeApiKey) now use injectable ApiClient; 16 remaining composables       |
 
 ### Dependency Injection Pattern for Composables
 
@@ -253,7 +254,7 @@ it('renders data correctly', () => {
 | ------------------------ | ------------ | ------------------- |
 | useSearchAnalytics       | ✅ Completed | P0 (failing tests)  |
 | useAnalyticsPage         | ✅ Completed | P0 (failing tests)  |
-| useApiKeysManager        | 🔄 Pending   | P1                  |
+| useApiKeysManager        | ✅ Completed | P1                  |
 | useWebhooksManager       | 🔄 Pending   | P1                  |
 | useModerationDashboard   | 🔄 Pending   | P1                  |
 | useSubmitPage            | 🔄 Pending   | P2                  |
