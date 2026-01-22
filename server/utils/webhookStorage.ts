@@ -6,9 +6,16 @@ import type {
   WebhookQueueItem,
   DeadLetterWebhook,
 } from '~/types/webhook'
+import type {
+  Webhook as PrismaWebhook,
+  WebhookDelivery as PrismaWebhookDelivery,
+  ApiKey as PrismaApiKey,
+  WebhookQueueItem as PrismaWebhookQueueItem,
+  DeadLetterWebhook as PrismaDeadLetterWebhook,
+} from '@prisma/client'
 import { prisma } from './db'
 
-function mapPrismaToWebhook(webhook: any): Webhook {
+function mapPrismaToWebhook(webhook: PrismaWebhook): Webhook {
   return {
     id: webhook.id,
     url: webhook.url,
@@ -20,7 +27,9 @@ function mapPrismaToWebhook(webhook: any): Webhook {
   }
 }
 
-function mapPrismaToWebhookDelivery(delivery: any): WebhookDelivery {
+function mapPrismaToWebhookDelivery(
+  delivery: PrismaWebhookDelivery
+): WebhookDelivery {
   return {
     id: delivery.id,
     webhookId: delivery.webhookId,
@@ -39,7 +48,7 @@ function mapPrismaToWebhookDelivery(delivery: any): WebhookDelivery {
   }
 }
 
-function mapPrismaToApiKey(apiKey: any): ApiKey {
+function mapPrismaToApiKey(apiKey: PrismaApiKey): ApiKey {
   return {
     id: apiKey.id,
     key: apiKey.key,
@@ -53,7 +62,9 @@ function mapPrismaToApiKey(apiKey: any): ApiKey {
   }
 }
 
-function mapPrismaToWebhookQueueItem(queueItem: any): WebhookQueueItem {
+function mapPrismaToWebhookQueueItem(
+  queueItem: PrismaWebhookQueueItem
+): WebhookQueueItem {
   return {
     id: queueItem.id,
     webhookId: queueItem.webhookId,
@@ -68,7 +79,9 @@ function mapPrismaToWebhookQueueItem(queueItem: any): WebhookQueueItem {
   }
 }
 
-function mapPrismaToDeadLetterWebhook(deadLetter: any): DeadLetterWebhook {
+function mapPrismaToDeadLetterWebhook(
+  deadLetter: PrismaDeadLetterWebhook
+): DeadLetterWebhook {
   return {
     id: deadLetter.id,
     webhookId: deadLetter.webhookId,
