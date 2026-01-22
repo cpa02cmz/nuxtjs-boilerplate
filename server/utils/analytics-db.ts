@@ -10,7 +10,7 @@ export interface AnalyticsEvent {
   url?: string
   userAgent?: string
   ip?: string | null
-  timestamp: Date | string
+  timestamp: Date | string | number
   deletedAt?: Date | string | null
   properties?: Record<string, unknown>
 }
@@ -376,7 +376,9 @@ export async function exportAnalyticsToCsv(
       const timestamp =
         typeof event.timestamp === 'string'
           ? event.timestamp
-          : event.timestamp.toISOString()
+          : typeof event.timestamp === 'number'
+            ? new Date(event.timestamp).toISOString()
+            : event.timestamp.toISOString()
       const properties = JSON.stringify(event.properties || {}).replace(
         /"/g,
         '""'
@@ -503,11 +505,15 @@ export async function exportSoftDeletedEventsToCsv(): Promise<string> {
       const timestamp =
         typeof event.timestamp === 'string'
           ? event.timestamp
-          : event.timestamp.toISOString()
+          : typeof event.timestamp === 'number'
+            ? new Date(event.timestamp).toISOString()
+            : event.timestamp.toISOString()
       const deletedAt = event.deletedAt
         ? typeof event.deletedAt === 'string'
           ? event.deletedAt
-          : event.deletedAt.toISOString()
+          : typeof event.deletedAt === 'number'
+            ? new Date(event.deletedAt).toISOString()
+            : event.deletedAt.toISOString()
         : ''
       const properties = JSON.stringify(event.properties || {}).replace(
         /"/g,

@@ -58,7 +58,7 @@ describe('analytics-db', () => {
           url: 'https://example.com',
           userAgent: 'Mozilla/5.0',
           ip: '127.0.0.1',
-          timestamp: Date.now(),
+          timestamp: new Date(),
           properties: JSON.stringify({ referrer: 'google.com' }),
         })
 
@@ -84,7 +84,7 @@ describe('analytics-db', () => {
             url: event.url,
             userAgent: event.userAgent,
             ip: event.ip,
-            timestamp: event.timestamp,
+            timestamp: new Date(event.timestamp),
             properties: JSON.stringify(event.properties),
             deletedAt: null,
           },
@@ -95,7 +95,7 @@ describe('analytics-db', () => {
         vi.mocked(mockPrisma.analyticsEvent.create).mockResolvedValue({
           id: '1',
           type: 'search',
-          timestamp: Date.now(),
+          timestamp: new Date(),
         } as any)
 
         const event: analyticsDb.AnalyticsEvent = {
@@ -114,7 +114,7 @@ describe('analytics-db', () => {
             url: null,
             userAgent: null,
             ip: null,
-            timestamp: event.timestamp,
+            timestamp: new Date(event.timestamp),
             properties: null,
             deletedAt: null,
           },
@@ -125,7 +125,7 @@ describe('analytics-db', () => {
         vi.mocked(mockPrisma.analyticsEvent.create).mockResolvedValue({
           id: '1',
           type: 'resource_view',
-          timestamp: Date.now(),
+          timestamp: new Date(),
         } as any)
 
         const event: analyticsDb.AnalyticsEvent = {
@@ -183,7 +183,7 @@ describe('analytics-db', () => {
             url: 'https://example.com/1',
             userAgent: 'Mozilla/5.0',
             ip: '127.0.0.1',
-            timestamp: endDate.getTime(),
+            timestamp: endDate,
             properties: null,
           },
           {
@@ -194,7 +194,7 @@ describe('analytics-db', () => {
             url: null,
             userAgent: null,
             ip: null,
-            timestamp: startDate.getTime(),
+            timestamp: startDate,
             properties: JSON.stringify({ query: 'test' }),
           },
         ])
@@ -211,8 +211,8 @@ describe('analytics-db', () => {
         expect(mockPrisma.analyticsEvent.findMany).toHaveBeenCalledWith({
           where: {
             timestamp: {
-              gte: startDate.getTime(),
-              lte: endDate.getTime(),
+              gte: startDate,
+              lte: endDate,
             },
             deletedAt: null,
           },
@@ -296,7 +296,7 @@ describe('analytics-db', () => {
             url: 'https://example.com',
             userAgent: 'Mozilla/5.0',
             ip: '127.0.0.1',
-            timestamp: Date.now(),
+            timestamp: new Date(),
             properties: null,
           },
         ])
@@ -313,8 +313,8 @@ describe('analytics-db', () => {
           where: {
             resourceId,
             timestamp: {
-              gte: startDate.getTime(),
-              lte: endDate.getTime(),
+              gte: startDate,
+              lte: endDate,
             },
             deletedAt: null,
           },
@@ -343,8 +343,8 @@ describe('analytics-db', () => {
           where: {
             resourceId,
             timestamp: {
-              gte: startDate.getTime(),
-              lte: endDate.getTime(),
+              gte: startDate,
+              lte: endDate,
             },
             type: 'resource_view',
             deletedAt: null,
@@ -629,7 +629,7 @@ describe('analytics-db', () => {
             url: 'https://example.com',
             userAgent: 'Mozilla/5.0',
             ip: '127.0.0.1',
-            timestamp: Date.now(),
+            timestamp: new Date(),
             properties: JSON.stringify({ referrer: 'google.com' }),
           },
         ])
@@ -660,7 +660,7 @@ describe('analytics-db', () => {
             url: null,
             userAgent: null,
             ip: null,
-            timestamp: Date.now(),
+            timestamp: new Date(),
             properties: JSON.stringify({ title: 'Test "quoted" value' }),
           },
         ])
@@ -732,12 +732,12 @@ describe('analytics-db', () => {
         expect(mockPrisma.analyticsEvent.updateMany).toHaveBeenCalledWith({
           where: {
             timestamp: {
-              lt: expect.any(Number),
+              lt: expect.any(Date),
             },
             deletedAt: null,
           },
           data: {
-            deletedAt: expect.any(Number),
+            deletedAt: expect.any(Date),
           },
         })
       })
@@ -752,12 +752,12 @@ describe('analytics-db', () => {
         expect(mockPrisma.analyticsEvent.updateMany).toHaveBeenCalledWith({
           where: {
             timestamp: {
-              lt: expect.any(Number),
+              lt: expect.any(Date),
             },
             deletedAt: null,
           },
           data: {
-            deletedAt: expect.any(Number),
+            deletedAt: expect.any(Date),
           },
         })
       })
