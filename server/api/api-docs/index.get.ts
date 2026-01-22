@@ -1,6 +1,8 @@
 import { defineEventHandler } from 'h3'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async event => {
+  await rateLimit(event)
   const swaggerHtml = `
 <!DOCTYPE html>
 <html lang="en">

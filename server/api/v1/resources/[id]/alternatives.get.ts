@@ -1,5 +1,6 @@
 import { useAlternatives } from '~/composables/useAlternatives'
 import { useResourceData } from '~/composables/useResourceData'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendBadRequestError,
   sendNotFoundError,
@@ -9,6 +10,7 @@ import {
 
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event)
     const { resources } = useResourceData()
     const { getAllAlternatives } = useAlternatives()
 

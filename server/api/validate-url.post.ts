@@ -6,6 +6,7 @@
 
 import { validateUrl } from '~/utils/urlValidation'
 import { logger } from '~/utils/logger'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendBadRequestError,
   sendSuccessResponse,
@@ -16,6 +17,7 @@ export {}
 
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event)
     const body = await readBody(event)
 
     if (!body || !body.url) {

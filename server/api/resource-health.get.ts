@@ -8,6 +8,7 @@ import {
   getAllResourceHealthStatuses,
   getResourceHealthStats,
 } from '../utils/resourceHealth'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendSuccessResponse,
   handleApiRouteError,
@@ -15,6 +16,7 @@ import {
 
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event)
     const healthStatuses = getAllResourceHealthStatuses()
     const stats = getResourceHealthStats()
 

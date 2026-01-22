@@ -736,6 +736,7 @@ describe('Validation Schemas', () => {
     it('should validate valid analytics event', () => {
       const result = analyticsEventSchema.safeParse({
         type: 'resource_view',
+        timestamp: new Date(),
       })
       expect(result.success).toBe(true)
     })
@@ -744,6 +745,7 @@ describe('Validation Schemas', () => {
       const result = analyticsEventSchema.safeParse({
         type: 'resource_view',
         resourceId: 'resource-123',
+        timestamp: Date.now(),
       })
       expect(result.success).toBe(true)
     })
@@ -752,6 +754,7 @@ describe('Validation Schemas', () => {
       const result = analyticsEventSchema.safeParse({
         type: 'resource_view',
         resourceId: 'resource-123',
+        timestamp: new Date(),
         properties: {
           source: 'search',
           position: 1,
@@ -770,11 +773,12 @@ describe('Validation Schemas', () => {
     it('should accept complex properties', () => {
       const result = analyticsEventSchema.safeParse({
         type: 'search',
+        timestamp: Date.now(),
         properties: {
           query: 'vue framework',
           filters: ['category:Framework'],
           resultCount: 10,
-          timestamp: 1234567890,
+          nestedTimestamp: 1234567890,
         },
       })
       expect(result.success).toBe(true)
@@ -794,6 +798,7 @@ describe('Validation Schemas', () => {
     it('should handle null values in optional properties', () => {
       const result = analyticsEventSchema.safeParse({
         type: 'search',
+        timestamp: new Date(),
         properties: {
           field1: 'value',
           field2: null as any,

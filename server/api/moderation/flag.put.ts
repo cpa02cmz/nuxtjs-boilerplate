@@ -1,5 +1,6 @@
 import { readBody } from 'h3'
 import type { Flag } from '~/types/resource'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 const mockFlags: Flag[] = []
 const mockResources: unknown[] = []
@@ -13,6 +14,7 @@ import {
 
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event)
     const body = await readBody(event)
 
     // Validate required fields

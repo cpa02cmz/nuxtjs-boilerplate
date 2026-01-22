@@ -7,6 +7,7 @@ import {
   buildResourceUrlEntry,
   generateSitemapXML,
 } from '../../utils/sitemap'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { handleApiRouteError } from '~/server/utils/api-response'
 
 const API_ENDPOINTS = [
@@ -20,6 +21,7 @@ const API_ENDPOINTS = [
 
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event)
     const resourcesModule = await import('~/data/resources.json')
     const resources: Resource[] = resourcesModule.default || resourcesModule
 

@@ -1,5 +1,6 @@
 import { Resource } from '~/types/resource'
 import { getRouterParam } from '#imports'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendNotFoundError,
   sendSuccessResponse,
@@ -8,6 +9,7 @@ import {
 
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event)
     const resourceId = getRouterParam(event, 'id')
 
     // Get all resources to find specific resource

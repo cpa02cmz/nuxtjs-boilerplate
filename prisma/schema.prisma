@@ -7,16 +7,16 @@ datasource db {
 }
 
 model AnalyticsEvent {
-  id         String  @id @default(cuid())
+  id         String    @id @default(cuid())
   type       String
   resourceId String?
   category   String?
   url        String?
   userAgent  String?
   ip         String?
-  timestamp  Int
+  timestamp  DateTime
   properties String?
-  deletedAt  Int?
+  deletedAt  DateTime?
 
   @@index([timestamp])
   @@index([resourceId])

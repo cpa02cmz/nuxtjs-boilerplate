@@ -1,5 +1,6 @@
 import { Resource } from '~/types/resource'
 import { getRouterParam } from '#imports'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendSuccessResponse,
   sendBadRequestError,
@@ -12,6 +13,7 @@ const resourceStatusHistory = new Map<string, unknown[]>()
 
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event)
     const resourceId = getRouterParam(event, 'id') ?? ''
     const { status, reason, notes } = await readBody(event)
 

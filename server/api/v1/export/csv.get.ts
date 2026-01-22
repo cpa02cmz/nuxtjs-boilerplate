@@ -1,6 +1,7 @@
 import { defineEventHandler, setResponseHeader } from 'h3'
 import type { Resource } from '~/types/resource'
 import { resourcesToCsv } from '~/utils/csv'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { handleApiRouteError } from '~/server/utils/api-response'
 
 /**
@@ -10,6 +11,7 @@ import { handleApiRouteError } from '~/server/utils/api-response'
  */
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event)
     // Import resources from JSON
     const resourcesModule = await import('~/data/resources.json')
     const resources: Resource[] = resourcesModule.default || resourcesModule

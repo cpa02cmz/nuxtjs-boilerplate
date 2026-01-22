@@ -1,5 +1,6 @@
 import { Resource } from '~/types/resource'
 import { getResourceHealthStats } from '~/server/utils/resourceHealth'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendSuccessResponse,
   handleApiRouteError,
@@ -7,6 +8,7 @@ import {
 
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event)
     // Get all resources
     const resourcesModule = await import('~/data/resources.json')
     const resources: Resource[] = resourcesModule.default || resourcesModule
