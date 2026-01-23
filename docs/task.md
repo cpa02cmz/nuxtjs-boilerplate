@@ -2431,6 +2431,84 @@ The remaining test failures in webhookStorage.test.ts (36 tests) are due to test
 
 # Active Tasks
 
+## [TASK-DOCS-002] Fix Misleading Available Scripts Documentation ✅ COMPLETED (2026-01-23)
+
+**Feature**: DOCS-002
+**Status**: Complete
+**Agent**: 10 Technical Writer
+**Created**: 2026-01-23
+**Completed**: 2026-01-23
+**Priority**: P0 (CRITICAL)
+
+### Description
+
+Fixed actively misleading documentation in `docs/getting-started.md` that listed npm scripts which don't exist in package.json.
+
+### Issue
+
+**Location**: `docs/getting-started.md` - Lines 68-86
+
+**Problem**: The "Available Scripts" section listed 7 npm scripts that don't exist:
+
+- `npm run lint` - Script not found
+- `npm run lint:fix` - Script not found
+- `npm run format` - Script not found
+- `npm run test` - Script not found
+- `npm run test:watch` - Script not found
+- `npm run test:coverage` - Script not found
+- `npm run analyze` - Script not found
+
+**Root Cause**: Documentation copied from another template without verifying against actual package.json
+
+**Impact**: HIGH - New developers following this guide would encounter "script not found" errors, blocking setup and creating negative first impression
+
+### Solution Implemented
+
+Updated "Available Scripts" section to reflect actual package.json scripts:
+
+**Corrected Scripts**:
+
+- `npm run dev` - Start development server (http://localhost:3000)
+- `npm run build` - Build for production
+- `npm run generate` - Generate static site
+- `npm run preview` - Preview production build locally
+
+**Testing Note Added**:
+
+- Explained that test scripts are configured in vitest.config.ts
+- Provided direct command: `npx vitest`
+
+### Success Criteria
+
+- [x] Removed non-existent scripts from documentation
+- [x] Listed only actual scripts from package.json
+- [x] Added helpful note about testing setup
+- [x] Updated Last Updated date to 2026-01-23
+- [x] Documentation now matches implementation
+
+### Files Modified
+
+1. `docs/getting-started.md` - Fixed Available Scripts section
+
+### Impact
+
+**Documentation Quality**:
+
+- **Accuracy**: Scripts now match actual package.json
+- **Onboarding**: New developers won't encounter script errors
+- **Trust**: Documentation now reliable for setup
+
+**User Experience**:
+
+- **Setup Success**: All documented commands will work
+- **Clear Pathing**: Direct command provided for tests (npx vitest)
+
+### Related Issues
+
+None - Discovered during routine documentation review
+
+---
+
 ## [TASK-TEST-001] useSubmissionReview Critical Path Testing ✅ COMPLETED (2026-01-22)
 
 **Feature**: TEST-001
