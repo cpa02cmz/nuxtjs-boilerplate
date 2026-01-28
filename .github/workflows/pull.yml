@@ -1,0 +1,86 @@
+name: The Guardian (Pull)
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  checks: write
+
+jobs:
+  guardian:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install OpenCode CLI
+        run: curl -fsSL https://opencode.ai/install.sh | sh
+
+      - name: Context Sync & Merge Check
+        id: merge_check
+        run: |
+          git config user.name "OpenCode Bot"
+          git config user.email "bot@opencode.ai"
+          git fetch origin main
+          # Attempt merge without commit to check for conflicts
+          if ! git merge origin/main --no-commit --no-ff; then
+            echo "::error::Merge conflict detected"
+            echo "conflict=true" >> $GITHUB_OUTPUT
+            git merge --abort
+          else
+            git merge --abort # Clean up if successful, we just wanted to check
+          fi
+
+      - name: Resolve Conflicts (Self-Healing)
+        if: steps.merge_check.outputs.conflict == 'true'
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+        run: |
+          # Use big-pickle for heavy logic
+          opencode run --model opencode/big-pickle --prompt "Analyze conflict markers in this repo and force-push a resolution commit. Use git commands."
+
+      - name: Handle Reviews
+        if: github.event_name == 'pull_request_target'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+        run: |
+          PENDING_REVIEWS=$(gh pr view ${{ github.event.pull_request.number }} --json reviews --jq '.reviews | map(select(.state=="CHANGES_REQUESTED")) | length')
+          if [ "$PENDING_REVIEWS" -gt 0 ]; then
+             opencode run --model opencode/big-pickle --prompt "Read PR comments for PR #${{ github.event.pull_request.number }}, modify code to address them, and resolve the conversation."
+          fi
+
+      - name: Quality Gates
+        run: |
+          npm install
+          # Trap errors for self-healing
+          set +e
+          npm run build 2> build_error.log
+          BUILD_EXIT=$?
+          npm run lint 2> lint_error.log
+          LINT_EXIT=$?
+          npm test 2> test_error.log
+          TEST_EXIT=$?
+          set -e
+          
+          if [ $BUILD_EXIT -ne 0 ] || [ $LINT_EXIT -ne 0 ] || [ $TEST_EXIT -ne 0 ]; then
+            echo "failure=true" >> $GITHUB_OUTPUT
+            cat build_error.log lint_error.log test_error.log > failure.log
+            exit 1
+          fi
+
+      - name: Self-Healing on Failure
+        if: failure()
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+        run: |
+          opencode run --model opencode/big-pickle --prompt "Fix the errors found in failure.log and push the patch." --file failure.log
