@@ -1,5 +1,6 @@
 import { retryWithResult, retryPresets } from '~/server/utils/retry'
 import { getCircuitBreaker } from '~/server/utils/circuit-breaker'
+import { TIMING } from '~/server/utils/constants'
 
 export interface UrlValidationResult {
   url: string
@@ -27,9 +28,9 @@ export async function validateUrl(
   options: ValidationOptions = {}
 ): Promise<UrlValidationResult> {
   const {
-    timeout = 10000,
-    retries = 3,
-    retryDelay = 1000,
+    timeout = TIMING.WEBHOOK_REQUEST_TIMEOUT,
+    retries = TIMING.RETRY_MAX_ATTEMPTS,
+    retryDelay = TIMING.RETRY_BASE_DELAY_MS,
     useCircuitBreaker = true,
   } = options
 
@@ -51,9 +52,9 @@ export async function validateUrl(
   if (useCircuitBreaker) {
     const circuitBreakerKey = `url-validation:${new URL(url).hostname}`
     const circuitBreaker = getCircuitBreaker(circuitBreakerKey, {
-      failureThreshold: 5,
-      successThreshold: 2,
-      timeoutMs: 60000,
+      failureThreshold: TIMING.CIRCUIT_BREAKER_FAILURE_THRESHOLD,
+      successThreshold: TIMING.CIRCUIT_BREAKER_SUCCESS_THRESHOLD,
+      timeoutMs: TIMING.CIRCUIT_BREAKER_TIMEOUT_MS,
     })
 
     const result = await retryWithResult(

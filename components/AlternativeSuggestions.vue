@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="alternatives.length > 0"
-    class="mt-12"
-  >
+  <div v-if="alternatives.length > 0" class="mt-12">
     <h2 class="text-2xl font-bold text-gray-900 mb-6">
       Alternative Suggestions
     </h2>
@@ -40,7 +37,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const alternatives = ref<AlternativeSuggestion[]>([])
-const { getAllAlternatives } = useAlternativeSuggestions()
+const { getAlternativesForResource } = useAlternativeSuggestions()
 
 // Get button label based on category
 const getButtonLabel = (category: string) => {
@@ -61,7 +58,7 @@ const getButtonLabel = (category: string) => {
 // Initialize alternatives
 const initAlternatives = () => {
   if (props.resource) {
-    alternatives.value = getAllAlternatives(props.resource)
+    alternatives.value = getAlternativesForResource(props.resource)
   }
 }
 // Initialize on component mount

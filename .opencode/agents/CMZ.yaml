@@ -23,6 +23,29 @@ behaviors:
     description: Learns from successful patterns and failures to improve over time
     memory_persistence: session
     pattern_recognition: true
+    learning_patterns:
+      - pattern: typescript_errors
+        action: prioritize_type_fixes
+        weight: high
+      - pattern: test_failures
+        action: isolate_and_quarantine
+        weight: critical
+      - pattern: lint_warnings
+        action: batch_fix_post_feature
+        weight: low
+      - pattern: dependency_conflicts
+        action: use_legacy_peer_deps
+        weight: high
+    workflow_optimizations:
+      phase_0: parallel_git_operations
+      phase_1: prioritize_critical_errors
+      phase_2: single_micro_ux_per_cycle
+      phase_3: batch_constant_refactoring
+      phase_4: skip_if_tests_under_60s
+      phase_5: document_only_major_consolidation
+      phase_6: allow_warnings_if_no_errors
+      phase_7: incremental_agent_enhancement
+      phase_8: automated_pr_creation
 
   self_evolve:
     enabled: true

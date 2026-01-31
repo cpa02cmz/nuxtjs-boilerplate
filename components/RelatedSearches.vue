@@ -1,11 +1,6 @@
 <template>
-  <div
-    v-if="relatedSearches.length > 0"
-    class="mt-4 p-4 bg-blue-50 rounded-lg"
-  >
-    <h4 class="text-sm font-medium text-gray-900 mb-2">
-      Did you mean?
-    </h4>
+  <div v-if="relatedSearches.length > 0" class="mt-4 p-4 bg-blue-50 rounded-lg">
+    <h4 class="text-sm font-medium text-gray-900 mb-2">Did you mean?</h4>
     <div class="flex flex-wrap gap-2">
       <button
         v-for="(search, index) in relatedSearches"
@@ -38,7 +33,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const { resources } = useResourceData()
-const { getRelatedSearches } = useAdvancedResourceSearch(resources)
+const { getRelatedSearches } = useAdvancedResourceSearch(resources.value)
 
 const relatedSearches = computed(() => {
   if (!props.query || props.query.length < 2) return []

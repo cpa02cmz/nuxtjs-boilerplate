@@ -27,11 +27,11 @@
         :value="modelValue"
         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
         placeholder="Search resources by name, description, tags..."
-        aria-label="Search resources"
-        aria-describedby="search-results-info"
+        aria-label="Search resources (Press / to focus)"
+        aria-describedby="search-results-info search-shortcut-hint"
         :aria-expanded="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         aria-controls="search-suggestions-dropdown"
         aria-autocomplete="list"
@@ -39,7 +39,18 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
+      />
+      <!-- Keyboard shortcut hint -->
+      <div
+        v-if="!modelValue && !isFocused"
+        class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
       >
+        <kbd
+          class="hidden sm:inline-block px-2 py-1 text-xs font-semibold text-gray-400 bg-gray-100 border border-gray-300 rounded shadow-sm"
+          aria-hidden="true"
+          >/</kbd
+        >
+      </div>
       <div
         v-if="modelValue"
         class="absolute inset-y-0 right-0 flex items-center pr-3"
@@ -73,7 +84,7 @@
       <LazySearchSuggestions
         v-if="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         id="search-suggestions-dropdown"
         :suggestions="suggestions"
@@ -115,7 +126,6 @@ interface Emits {
   (event: 'search', value: string): void
 }
 
- 
 const props = withDefaults(defineProps<Props>(), {
   debounceTime: 300,
   enableAdvancedFeatures: true,
@@ -131,6 +141,7 @@ const suggestions = ref<
 >([])
 const showSuggestions = ref(false)
 const searchHistory = ref<string[]>([])
+const isFocused = ref(false)
 
 // Use the resources composable
 const { resources } = useResourceData()
@@ -195,12 +206,14 @@ const handleFocus = () => {
   // Update search history when input is focused
   searchHistory.value = [...advancedSearchHistory.value]
   showSuggestions.value = true
+  isFocused.value = true
 }
 
 const handleBlur = () => {
   // Use a timeout to allow for click events on suggestions
   setTimeout(() => {
     showSuggestions.value = false
+    isFocused.value = false
   }, 200)
 }
 
@@ -278,10 +291,24 @@ if (typeof window !== 'undefined') {
     showToast(`Removed saved search "${name}".`, 'info')
   }
 
+  // Keyboard shortcut handler - Press "/" to focus search
+  const handleSlashKey = (event: KeyboardEvent) => {
+    // Only trigger if "/" is pressed and no input/textarea is focused
+    if (
+      event.key === '/' &&
+      !isFocused.value &&
+      !['INPUT', 'TEXTAREA'].includes((event.target as HTMLElement)?.tagName)
+    ) {
+      event.preventDefault()
+      searchInputRef.value?.focus()
+    }
+  }
+
   // Add event listeners
   window.addEventListener('saved-search-added', savedSearchAddedHandler)
   window.addEventListener('saved-search-updated', savedSearchUpdatedHandler)
   window.addEventListener('saved-search-removed', savedSearchRemovedHandler)
+  window.addEventListener('keydown', handleSlashKey)
 
   // Clean up event listeners on component unmount
   onUnmounted(() => {
@@ -294,6 +321,7 @@ if (typeof window !== 'undefined') {
       'saved-search-removed',
       savedSearchRemovedHandler
     )
+    window.removeEventListener('keydown', handleSlashKey)
   })
 }
 </script>

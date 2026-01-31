@@ -2,13 +2,14 @@ import type { Webhook, WebhookPayload, WebhookDelivery } from '~/types/webhook'
 import { randomUUID } from 'node:crypto'
 import { webhookStorage } from './webhookStorage'
 import { webhookSigner } from './webhook-signer'
+import { TIMING } from './constants'
 
 export interface WebhookDeliveryOptions {
   maxRetries?: number
   timeoutMs?: number
 }
 
-const DEFAULT_TIMEOUT_MS = 10000
+const DEFAULT_TIMEOUT_MS = TIMING.WEBHOOK_REQUEST_TIMEOUT
 
 export class WebhookDeliveryService {
   async deliver(
