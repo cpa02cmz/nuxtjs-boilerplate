@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="pwa.showInstallPrompt"
+    v-if="showPrompt"
     role="alertdialog"
     aria-labelledby="pwa-install-title"
     aria-describedby="pwa-install-description"
@@ -62,16 +62,34 @@
 
 <script setup lang="ts">
 import { useNuxtApp } from '#app'
+import { ref, computed } from 'vue'
 
 const { pwa } = useNuxtApp()
+
+// Local state to track user dismissal - prevents prompt from reappearing immediately
+const userDismissed = ref(false)
+
+// Show prompt only if PWA wants to show it AND user hasn't dismissed it
+const showPrompt = computed(() => pwa.showInstallPrompt && !userDismissed.value)
 
 const installPWA = () => {
   pwa.installPWA()
 }
 
 const cancelInstall = () => {
-  // Simply hide the prompt by resetting the ref
-  // We don't actually cancel the deferred prompt, just hide the UI
-  // The prompt may still appear later if the user navigates to another page
+  // Mark as dismissed to hide the prompt
+  userDismissed.value = true
+  // Store dismissal in session so it doesn't reappear during this session
+  if (process.client) {
+    sessionStorage.setItem('pwa-install-dismissed', 'true')
+  }
+}
+
+// Check if user previously dismissed in this session
+if (process.client) {
+  const previouslyDismissed = sessionStorage.getItem('pwa-install-dismissed')
+  if (previouslyDismissed === 'true') {
+    userDismissed.value = true
+  }
 }
 </script>

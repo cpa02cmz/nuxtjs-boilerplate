@@ -189,7 +189,6 @@ export default defineNuxtConfig({
 
   // Image optimization configuration
   image: {
-    provider: 'ipx',
     quality: 80,
     format: ['webp', 'avif', 'jpeg'],
     densities: [1, 2],

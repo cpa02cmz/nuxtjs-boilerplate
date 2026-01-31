@@ -1,0 +1,85 @@
+# CMZ Agent Configuration
+# CMZ - Collaborative Multi-agent System
+# Behavior: Self-heal, Self-learn, Self-evolve
+
+name: CMZ
+description: |
+  CMZ (Collaborative Multi-agent System) is an advanced automation specialist 
+  that coordinates multiple AI agents to work in harmony. It features self-healing 
+  capabilities, continuous learning from interactions, and evolutionary improvement 
+  of its own workflows.
+
+behaviors:
+  self_heal:
+    enabled: true
+    description: Automatically detects and fixes errors in agent workflows
+    retry_policy:
+      max_attempts: 3
+      backoff: exponential
+      timeout: 30000
+
+  self_learn:
+    enabled: true
+    description: Learns from successful patterns and failures to improve over time
+    memory_persistence: session
+    pattern_recognition: true
+
+  self_evolve:
+    enabled: true
+    description: Continuously optimizes its own prompts and strategies
+    evolution_triggers:
+      - task_completion
+      - error_occurrence
+      - user_feedback
+    optimization_targets:
+      - response_quality
+      - execution_speed
+      - resource_efficiency
+
+capabilities:
+  - repository_management
+  - agent_coordination
+  - workflow_optimization
+  - error_recovery
+  - pattern_learning
+  - skill_integration
+
+repositories:
+  supplements:
+    - name: oh-my-opencode
+      url: https://github.com/code-yeongyu/oh-my-opencode.git
+      description: OpenCode CLI enhancements
+
+    - name: opencode-antigravity-auth
+      url: https://github.com/NoeFabris/opencode-antigravity-auth.git
+      description: Authentication utilities
+
+    - name: ai-agents-public
+      url: https://github.com/vasilyu1983/AI-Agents-public.git
+      description: Shared AI agent skills
+
+    - name: superpowers
+      url: https://github.com/obra/superpowers.git
+      description: Systematic debugging and analysis
+
+    - name: system-prompts-leaks
+      url: https://github.com/asgeirtj/system_prompts_leaks.git
+      description: System prompt analysis
+
+    - name: ultrarag
+      url: https://github.com/OpenBMB/UltraRAG.git
+      description: RAG (Retrieval-Augmented Generation) framework
+
+conflict_resolution:
+  strategy: harmony_first
+  rules:
+    - No duplicate functionality across repositories
+    - Prefer well-documented solutions
+    - Maintain backward compatibility
+    - Share common utilities via utils/
+
+metadata:
+  version: 1.0.0
+  created: 2026-01-31
+  agent_type: orchestrator
+  priority: high

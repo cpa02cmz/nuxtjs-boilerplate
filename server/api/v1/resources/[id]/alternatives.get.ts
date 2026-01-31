@@ -1,4 +1,4 @@
-import { useAlternatives } from '~/composables/useAlternatives'
+import { useAlternativeSuggestions } from '~/composables/useAlternativeSuggestions'
 import { useResourceData } from '~/composables/useResourceData'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
@@ -12,7 +12,7 @@ export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
     const { resources } = useResourceData()
-    const { getAllAlternatives } = useAlternatives()
+    const alternativesEngine = useAlternativeSuggestions(resources.value || [])
 
     // Get the resource ID from route parameters
     const resourceId = event.context.params?.id
@@ -28,7 +28,8 @@ export default defineEventHandler(async event => {
     }
 
     // Get alternatives for the resource
-    const alternatives = getAllAlternatives(targetResource)
+    const alternatives =
+      alternativesEngine.getAlternativesForResource(targetResource)
 
     const responseData = {
       resourceId,

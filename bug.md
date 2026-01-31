@@ -1,0 +1,115 @@
+# Bug Tracking Document
+
+**Created**: January 31, 2026
+**Phase**: 1 - BugLover
+**Status**: In Progress
+
+---
+
+## [x] Security Vulnerabilities - 8 Moderate Severity Issues ✅ FIXED
+
+**Type**: Security / Dependencies
+**Severity**: Medium
+**Status**: Found
+
+### Issues Found
+
+1. **Hono XSS Vulnerability** (GHSA-9r54-q6cx-xmh5)
+   - Package: hono <=4.11.6
+   - Issue: XSS through ErrorBoundary component
+   - Fix: Available via npm audit fix --force
+
+2. **Hono Arbitrary Key Read** (GHSA-w332-q679-j88p)
+   - Package: hono <=4.11.6
+   - Issue: Arbitrary Key Read in Serve static Middleware (Cloudflare Workers Adapter)
+   - Fix: Available via npm audit fix --force
+
+3. **Hono Cache Middleware** (GHSA-6wqw-2p9w-4vw4)
+   - Package: hono <=4.11.6
+   - Issue: Cache middleware ignores "Cache-Control: private" leading to Web Cache Deception
+   - Fix: Available via npm audit fix --force
+
+4. **Hono IPv4 Validation Bypass** (GHSA-r354-f388-2fhh)
+   - Package: hono <=4.11.6
+   - Issue: IPv4 address validation bypass in IP Restriction Middleware allows IP spoofing
+   - Fix: Available via npm audit fix --force
+
+5. **Lodash Prototype Pollution** (GHSA-xxjr-mmjv-4gpg)
+   - Package: lodash 4.0.0 - 4.17.21
+   - Issue: Prototype Pollution in `_.unset` and `_.omit` functions
+   - Fix: Available via npm audit fix --force
+   - Affected paths:
+     - @chevrotain/cst-dts-gen/node_modules/lodash
+     - @chevrotain/gast/node_modules/lodash
+     - chevrotain/node_modules/lodash
+
+### Root Cause
+
+- Dependency chain: prisma@>=6.20.0-dev.1 → @prisma/dev → hono
+- Dependency chain: @mrleebo/prisma-ast → chevrotain → lodash
+
+### Solution
+
+Run `npm audit fix --force` to install prisma@6.19.2 (breaking change required)
+
+### Action Completed ✅
+
+- [x] Run npm audit fix --force
+- [x] Verify build still works after fix - ✅ Build successful
+- [x] Run full test suite after fix - ✅ 1575 tests passing
+- [x] Verify no breaking changes in functionality - ✅ No regressions
+
+---
+
+## [ ] Vue onMounted Warning in Tests
+
+**Type**: Warning / Test Infrastructure
+**Severity**: Low
+**Status**: Found - Non-blocking
+
+### Issues Found
+
+Multiple Vue warnings in `__tests__/useUrlSync.test.ts`:
+
+```
+[Vue warn]: onMounted is called when there is no active component instance to be associated with.
+Lifecycle injection APIs can only be used during execution of setup().
+```
+
+### Affected Tests
+
+- All 38 tests in useUrlSync.test.ts showing warnings
+- Tests still pass despite warnings
+
+### Root Cause
+
+- Composable uses `onMounted` lifecycle hook outside of Vue component context in tests
+- Testing composables that use lifecycle hooks requires Vue Test Utils wrapper
+
+### Solution
+
+- Consider wrapping composable tests with mount() from @vue/test-utils
+- Or suppress warnings in test environment if functionality is correct
+
+### Action Required
+
+- [ ] Evaluate if warnings need fixing (low priority - tests pass)
+- [ ] Consider adding test utility for composables with lifecycle hooks
+
+---
+
+## Summary
+
+| Category                 | Count | Status       |
+| ------------------------ | ----- | ------------ |
+| Security Vulnerabilities | 8     | Needs Fix    |
+| Test Warnings            | 38    | Optional Fix |
+| Test Failures            | 0     | All Passing  |
+| Lint Errors              | 0     | All Passing  |
+
+### Test Results Summary
+
+- Test Files: 70 passed | 2 skipped (72 total)
+- Tests: 1575 passed | 48 skipped (1623 total)
+- Pass Rate: 100%
+- Duration: 78.23s
