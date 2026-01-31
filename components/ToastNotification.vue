@@ -1,10 +1,6 @@
 <template>
   <div class="toast-container">
-    <transition-group
-      name="toast"
-      tag="div"
-      class="toast-wrapper"
-    >
+    <transition-group name="toast" tag="div" class="toast-wrapper">
       <div
         v-for="toast in toasts"
         :key="toast.id"
@@ -71,10 +67,7 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p
-            v-if="toast.description"
-            class="toast__description"
-          >
+          <p v-if="toast.description" class="toast__description">
             {{ toast.description }}
           </p>
         </div>
@@ -104,6 +97,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { TOAST_DURATION } from '~/server/utils/constants'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -123,7 +117,9 @@ const addToast = (toast: Omit<Toast, 'id'>) => {
   toasts.value.push(newToast)
 
   // Auto remove toast after duration
-  const duration = toast.duration || (toast.type === 'error' ? 10000 : 5000)
+  const duration =
+    toast.duration ||
+    (toast.type === 'error' ? TOAST_DURATION.ERROR : TOAST_DURATION.SUCCESS)
   if (duration > 0) {
     setTimeout(() => {
       removeToast(id)

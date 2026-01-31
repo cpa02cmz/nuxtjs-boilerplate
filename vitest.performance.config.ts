@@ -2,22 +2,31 @@ import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 
+/**
+ * Performance Test Configuration
+ *
+ * This configuration runs performance and optimization tests separately
+ * from the main test suite to keep CI/CD pipeline fast.
+ *
+ * Usage: npx vitest --config vitest.performance.config.ts
+ *
+ * These tests are typically run:
+ * - In nightly builds
+ * - Before major releases
+ * - When performance-critical code changes
+ * - Manually when optimizing algorithms
+ */
 export default defineConfig({
   plugins: [vue()],
   test: {
     globals: true,
     environment: 'jsdom',
-    testTimeout: 10000,
+    testTimeout: 60000, // Longer timeout for performance tests
     setupFiles: ['./test-setup.ts'],
     fileParallelism: false,
     pool: 'forks',
-    exclude: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/.nuxt/**',
-      '**/__tests__/*integration*.test.ts',
-      '**/performance/*.test.ts', // Performance tests run separately to keep CI fast
-    ],
+    include: ['**/performance/*.test.ts'],
+    exclude: ['**/node_modules/**', '**/dist/**', '**/.nuxt/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -31,14 +40,6 @@ export default defineConfig({
         '**/*.config.*',
         'test-setup.ts',
       ],
-      thresholds: {
-        global: {
-          branches: 80,
-          functions: 80,
-          lines: 80,
-          statements: 80,
-        },
-      },
     },
   },
   resolve: {
