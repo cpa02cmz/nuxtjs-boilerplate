@@ -1,9 +1,7 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
     <div class="flex justify-between items-center mb-4">
-      <h3 class="text-lg font-medium text-gray-900">
-        Filters
-      </h3>
+      <h3 class="text-lg font-medium text-gray-900">Filters</h3>
       <button
         class="text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
         aria-label="Reset all filters"
@@ -16,7 +14,7 @@
     <FilterSection
       id="category"
       label="Category"
-      :aria-label="'Category filters'"
+      aria-label="Category filters"
       :options="categories"
       :selected-options="selectedCategories"
       :show-count="true"
@@ -27,7 +25,7 @@
     <FilterSection
       id="pricing"
       label="Pricing Model"
-      :aria-label="'Pricing model filters'"
+      aria-label="Pricing model filters"
       :options="pricingModels"
       :selected-options="selectedPricingModels"
       :show-count="true"
@@ -38,7 +36,7 @@
     <FilterSection
       id="difficulty"
       label="Difficulty"
-      :aria-label="'Difficulty level filters'"
+      aria-label="Difficulty level filters"
       :options="difficultyLevels"
       :selected-options="selectedDifficultyLevels"
       :show-count="true"
@@ -49,7 +47,7 @@
     <FilterSection
       id="technology"
       label="Technology"
-      :aria-label="'Technology filters'"
+      aria-label="Technology filters"
       :options="technologies"
       :selected-options="selectedTechnologies"
       :show-count="true"
@@ -60,7 +58,7 @@
     <FilterSection
       id="tags"
       label="Tags"
-      :aria-label="'Tag filters'"
+      aria-label="Tag filters"
       :options="tags"
       :selected-options="selectedTags"
       :show-count="false"
@@ -72,7 +70,7 @@
       v-if="allBenefits.length > 0"
       id="benefits"
       label="Benefits"
-      :aria-label="'Benefit filters'"
+      aria-label="Benefit filters"
       :options="allBenefits"
       :selected-options="selectedBenefits"
       :show-count="true"
@@ -81,18 +79,13 @@
     />
 
     <fieldset class="mb-6">
-      <legend class="text-sm font-medium text-gray-900 mb-3">
-        Date Added
-      </legend>
+      <legend class="text-sm font-medium text-gray-900 mb-3">Date Added</legend>
       <div
         role="radiogroup"
         aria-label="Filter by date added"
         class="space-y-2"
       >
-        <label
-          class="flex items-center"
-          :for="'date-anytime'"
-        >
+        <label class="flex items-center" :for="'date-anytime'">
           <input
             id="date-anytime"
             type="radio"
@@ -101,13 +94,10 @@
             :checked="selectedDateRange === 'anytime'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('anytime')"
-          >
+          />
           <span class="ml-2 text-sm text-gray-800">Any time</span>
         </label>
-        <label
-          class="flex items-center"
-          :for="'date-last-week'"
-        >
+        <label class="flex items-center" :for="'date-last-week'">
           <input
             id="date-last-week"
             type="radio"
@@ -116,13 +106,10 @@
             :checked="selectedDateRange === 'lastWeek'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastWeek')"
-          >
+          />
           <span class="ml-2 text-sm text-gray-800">Last week</span>
         </label>
-        <label
-          class="flex items-center"
-          :for="'date-last-month'"
-        >
+        <label class="flex items-center" :for="'date-last-month'">
           <input
             id="date-last-month"
             type="radio"
@@ -131,13 +118,10 @@
             :checked="selectedDateRange === 'lastMonth'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastMonth')"
-          >
+          />
           <span class="ml-2 text-sm text-gray-800">Last month</span>
         </label>
-        <label
-          class="flex items-center"
-          :for="'date-last-year'"
-        >
+        <label class="flex items-center" :for="'date-last-year'">
           <input
             id="date-last-year"
             type="radio"
@@ -146,7 +130,7 @@
             :checked="selectedDateRange === 'lastYear'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastYear')"
-          >
+          />
           <span class="ml-2 text-sm text-gray-800">Last year</span>
         </label>
       </div>

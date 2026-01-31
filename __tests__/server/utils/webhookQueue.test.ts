@@ -5,7 +5,7 @@ import {
   resetWebhookStorage,
 } from '~/server/utils/webhookStorage'
 import { resetCircuitBreaker } from '~/server/utils/circuit-breaker'
-import type { Webhook, WebhookPayload } from '~/types/webhook'
+import type { Webhook, WebhookPayload, WebhookQueueItem } from '~/types/webhook'
 
 describe('webhookQueueSystem', () => {
   let queueSystem: WebhookQueueSystem
@@ -87,7 +87,9 @@ describe('webhookQueueSystem', () => {
       expect(result).toBe(true)
       const queue = await webhookStorage.getQueue()
       expect(queue.length).toBeGreaterThan(0)
-      expect(queue.some(q => q.webhookId === 'wh_test')).toBe(true)
+      expect(
+        queue.some((q: WebhookQueueItem) => q.webhookId === 'wh_test')
+      ).toBe(true)
     })
 
     it('should start queue processor when queuing webhook', async () => {
@@ -226,7 +228,9 @@ describe('webhookQueueSystem', () => {
       })
 
       const queue = await webhookStorage.getQueue()
-      const queueItem = queue.find(q => q.webhookId === 'wh_test')
+      const queueItem = queue.find(
+        (q: WebhookQueueItem) => q.webhookId === 'wh_test'
+      )
 
       expect(queueItem).toBeDefined()
       expect(queueItem?.webhookId).toBe('wh_test')
@@ -256,7 +260,9 @@ describe('webhookQueueSystem', () => {
       })
 
       const queue = await webhookStorage.getQueue()
-      expect(queue.some(q => q.webhookId === 'wh_inactive')).toBe(true)
+      expect(
+        queue.some((q: WebhookQueueItem) => q.webhookId === 'wh_inactive')
+      ).toBe(true)
     })
   })
 

@@ -22,28 +22,35 @@ describe('SearchAnalytics Component', () => {
 
   it('renders correctly with loading state initially', async () => {
     const mockAnalyticsData: SearchAnalyticsData = {
-      totalSearches: 100,
-      successRate: 95,
-      zeroResultCount: 5,
-      avgResponseTime: 150,
-      searchTrends: [
-        { date: '2023-01-01', count: 10 },
-        { date: '2023-01-02', count: 15 },
-      ],
-      popularSearches: [
-        { query: 'test', count: 5 },
-        { query: 'vue', count: 3 },
-      ],
-      zeroResultQueries: [{ query: 'nonexistent', count: 2 }],
-      performanceMetrics: {
-        fastSearches: 70,
-        mediumSearches: 20,
-        slowSearches: 10,
+      success: true,
+      data: {
+        totalSearches: 100,
+        successRate: 95,
+        zeroResultCount: 5,
+        avgResponseTime: 150,
+        searchTrends: [
+          { date: '2023-01-01', count: 10 },
+          { date: '2023-01-02', count: 15 },
+        ],
+        popularSearches: [
+          { query: 'test', count: 5 },
+          { query: 'vue', count: 3 },
+        ],
+        zeroResultQueries: [{ query: 'nonexistent', count: 2 }],
+        performanceMetrics: {
+          fastSearches: 70,
+          mediumSearches: 20,
+          slowSearches: 10,
+        },
+      },
+      dateRange: {
+        start: '2023-01-01',
+        end: '2023-01-31',
       },
     }
 
     vi.mocked(useSearchAnalytics).mockReturnValue({
-      searchAnalytics: { data: mockAnalyticsData } as any,
+      searchAnalytics: ref(mockAnalyticsData),
       loading: ref(false),
       error: ref(null),
       timeRange: ref('30'),
@@ -70,7 +77,7 @@ describe('SearchAnalytics Component', () => {
 
   it('handles API error gracefully', async () => {
     vi.mocked(useSearchAnalytics).mockReturnValue({
-      searchAnalytics: null,
+      searchAnalytics: ref(null),
       loading: ref(false),
       error: ref('Network error'),
       timeRange: ref('30'),
@@ -94,33 +101,40 @@ describe('SearchAnalytics Component', () => {
 
   it('displays search analytics data correctly', async () => {
     const mockAnalyticsData: SearchAnalyticsData = {
-      totalSearches: 125,
-      successRate: 92,
-      zeroResultCount: 8,
-      avgResponseTime: 180,
-      searchTrends: [
-        { date: '2023-01-01', count: 12 },
-        { date: '2023-01-02', count: 18 },
-        { date: '2023-01-03', count: 15 },
-      ],
-      popularSearches: [
-        { query: 'javascript', count: 12 },
-        { query: 'vuejs', count: 8 },
-        { query: 'nuxt', count: 5 },
-      ],
-      zeroResultQueries: [
-        { query: 'nonexistent query', count: 3 },
-        { query: 'unknown term', count: 1 },
-      ],
-      performanceMetrics: {
-        fastSearches: 80,
-        mediumSearches: 15,
-        slowSearches: 5,
+      success: true,
+      data: {
+        totalSearches: 125,
+        successRate: 92,
+        zeroResultCount: 8,
+        avgResponseTime: 180,
+        searchTrends: [
+          { date: '2023-01-01', count: 12 },
+          { date: '2023-01-02', count: 18 },
+          { date: '2023-01-03', count: 15 },
+        ],
+        popularSearches: [
+          { query: 'javascript', count: 12 },
+          { query: 'vuejs', count: 8 },
+          { query: 'nuxt', count: 5 },
+        ],
+        zeroResultQueries: [
+          { query: 'nonexistent query', count: 3 },
+          { query: 'unknown term', count: 1 },
+        ],
+        performanceMetrics: {
+          fastSearches: 80,
+          mediumSearches: 15,
+          slowSearches: 5,
+        },
+      },
+      dateRange: {
+        start: '2023-01-01',
+        end: '2023-01-31',
       },
     }
 
     vi.mocked(useSearchAnalytics).mockReturnValue({
-      searchAnalytics: { data: mockAnalyticsData } as any,
+      searchAnalytics: ref(mockAnalyticsData),
       loading: ref(false),
       error: ref(null),
       timeRange: ref('30'),
@@ -149,7 +163,7 @@ describe('SearchAnalytics Component', () => {
     const fetchSearchAnalyticsMock = vi.fn()
 
     vi.mocked(useSearchAnalytics).mockReturnValue({
-      searchAnalytics: { data: null } as any,
+      searchAnalytics: ref(null),
       loading: ref(false),
       error: ref(null),
       timeRange: ref('30'),

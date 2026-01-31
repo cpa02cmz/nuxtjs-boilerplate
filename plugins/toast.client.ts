@@ -1,4 +1,5 @@
 import { defineNuxtPlugin, useState } from '#app'
+import { TOAST_DURATION } from '~/server/utils/constants'
 
 export default defineNuxtPlugin(nuxtApp => {
   // Toast type definition
@@ -28,7 +29,9 @@ export default defineNuxtPlugin(nuxtApp => {
       toastState.value.toasts.push(newToast)
 
       // Auto remove toast after duration
-      const toastDuration = duration || (type === 'error' ? 10000 : 5000)
+      const toastDuration =
+        duration ||
+        (type === 'error' ? TOAST_DURATION.ERROR : TOAST_DURATION.SUCCESS)
       if (toastDuration > 0) {
         setTimeout(() => {
           toastState.value.toasts = toastState.value.toasts.filter(

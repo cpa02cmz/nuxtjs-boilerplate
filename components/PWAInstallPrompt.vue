@@ -26,16 +26,10 @@
           </svg>
         </div>
         <div>
-          <h3
-            id="pwa-install-title"
-            class="font-medium text-gray-900"
-          >
+          <h3 id="pwa-install-title" class="font-medium text-gray-900">
             Install App
           </h3>
-          <p
-            id="pwa-install-description"
-            class="text-sm text-gray-500"
-          >
+          <p id="pwa-install-description" class="text-sm text-gray-500">
             Add to your home screen
           </p>
         </div>
@@ -64,16 +58,23 @@
 import { useNuxtApp } from '#app'
 import { ref, computed } from 'vue'
 
-const { pwa } = useNuxtApp()
+interface PWAInterface {
+  showInstallPrompt: boolean
+  installPWA: () => void
+}
+
+const { pwa } = useNuxtApp() as { pwa: PWAInterface }
 
 // Local state to track user dismissal - prevents prompt from reappearing immediately
 const userDismissed = ref(false)
 
 // Show prompt only if PWA wants to show it AND user hasn't dismissed it
-const showPrompt = computed(() => pwa.showInstallPrompt && !userDismissed.value)
+const showPrompt = computed(
+  () => pwa?.showInstallPrompt && !userDismissed.value
+)
 
 const installPWA = () => {
-  pwa.installPWA()
+  pwa?.installPWA()
 }
 
 const cancelInstall = () => {

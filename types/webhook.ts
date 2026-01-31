@@ -88,4 +88,5 @@ export interface ApiKey {
   expiresAt?: string
   createdAt: string
   updatedAt: string
+  lastUsedAt?: string
 }

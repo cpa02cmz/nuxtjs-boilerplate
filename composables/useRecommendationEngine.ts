@@ -7,6 +7,8 @@ import {
   type RecommendationResult,
   type UserPreferences,
 } from '~/utils/recommendation-algorithms'
+
+export type { RecommendationResult }
 import { useContentBasedRecommendations } from './recommendation-strategies/useContentBasedRecommendations'
 import { useTrendingRecommendations } from './recommendation-strategies/useTrendingRecommendations'
 import { usePopularRecommendations } from './recommendation-strategies/usePopularRecommendations'
