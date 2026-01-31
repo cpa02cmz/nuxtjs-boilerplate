@@ -48,8 +48,9 @@
         <kbd
           class="hidden sm:inline-block px-2 py-1 text-xs font-semibold text-gray-400 bg-gray-100 border border-gray-300 rounded shadow-sm"
           aria-hidden="true"
-          >/</kbd
         >
+          /
+        </kbd>
       </div>
       <div
         v-if="modelValue"
