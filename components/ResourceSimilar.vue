@@ -23,7 +23,7 @@
         :benefits="resource.benefits"
         :url="resource.url"
         :button-label="getButtonLabel(resource.category)"
-      />
+      >
     </div>
   </div>
 </template>

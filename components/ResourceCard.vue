@@ -20,7 +20,7 @@
           quality="80"
           img-class="w-12 h-12 rounded object-contain"
           @error="handleImageError"
-        />
+        >
       </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between">
@@ -37,7 +37,7 @@
               <span
                 v-if="highlightedTitle"
                 v-html="sanitizedHighlightedTitle"
-              />
+              >
               <!-- eslint-disable-line vue/no-v-html -->
               <span v-else>{{ title }}</span>
             </NuxtLink>
@@ -45,7 +45,7 @@
               <span
                 v-if="highlightedTitle"
                 v-html="sanitizedHighlightedTitle"
-              />
+              >
               <!-- eslint-disable-line vue/no-v-html -->
               <span v-else>{{ title }}</span>
             </span>
@@ -55,7 +55,7 @@
             v-if="status"
             :status="status"
             :health-score="healthScore"
-          />
+          >
         </div>
         <p
           id="resource-description"
@@ -64,7 +64,7 @@
           <span
             v-if="highlightedDescription"
             v-html="sanitizedHighlightedDescription"
-          />
+          >
           <!-- eslint-disable-line vue/no-v-html -->
           <span v-else>{{ description }}</span>
         </p>
@@ -109,7 +109,7 @@
               <div
                 class="bg-blue-600 h-2 rounded-full"
                 :style="{ width: `${similarityScore * 100}%` }"
-              />
+              >
             </div>
             <span class="ml-2 text-xs font-medium text-gray-700">
               {{ Math.round(similarityScore * 100) }}% match
@@ -151,7 +151,7 @@
                 :title="title"
                 :description="description"
                 :url="url"
-              />
+              >
             </ClientOnly>
             <!-- Share button -->
             <ClientOnly>
@@ -160,7 +160,7 @@
                 :title="title"
                 :description="description"
                 :url="`${runtimeConfig.public.canonicalUrl}/resources/${id}`"
-              />
+              >
             </ClientOnly>
             <!-- Compare button -->
             <button
@@ -176,16 +176,16 @@
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
-                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" >
                 <path
                   fill-rule="evenodd"
                   d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
                   clip-rule="evenodd"
-                />
+                >
               </svg>
             </button>
             <!-- Slot for additional actions -->
-            <slot name="actions" />
+            <slot name="actions" >
           </div>
         </div>
       </div>
@@ -211,7 +211,7 @@
             stroke-linejoin="round"
             stroke-width="2"
             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-          />
+          >
         </svg>
       </div>
       <div class="flex-1 min-w-0">

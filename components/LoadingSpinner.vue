@@ -21,7 +21,7 @@
         fill="none"
         stroke-width="2"
         stroke-miterlimit="10"
-      />
+      >
     </svg>
     <span
       v-if="label"

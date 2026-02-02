@@ -17,7 +17,7 @@
             stroke-linejoin="round"
             stroke-width="2"
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
+          >
         </svg>
       </div>
       <input
@@ -29,7 +29,8 @@
         placeholder="Search resources by name, description, tags..."
         aria-label="Search resources (Press / to focus)"
         aria-describedby="search-results-info search-shortcut-hint"
-        :aria-expanded="
+        :
+        aria-expanded="
           showSuggestions &&
           (suggestions.length > 0 || searchHistory.length > 0)
         "
@@ -39,7 +40,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      />
+      >
       <!-- Keyboard shortcut hint -->
       <div
         v-if="!modelValue && !isFocused"
@@ -74,7 +75,7 @@
               stroke-linejoin="round"
               stroke-width="2"
               d="M6 18L18 6M6 6l12 12"
-            />
+            >
           </svg>
         </button>
       </div>
@@ -82,12 +83,12 @@
 
     <!-- Search Suggestions Dropdown -->
     <ClientOnly>
-      <LazySearchSuggestions
-        v-if="
-          showSuggestions &&
-          (suggestions.length > 0 || searchHistory.length > 0)
-        "
-        id="search-suggestions-dropdown"
+        <LazySearchSuggestions
+          v-if="
+            showSuggestions &&
+            (suggestions.length > 0 || searchHistory.length > 0)
+          "
+          id="search-suggestions-dropdown"
         :suggestions="suggestions"
         :search-history="searchHistory"
         :visible="showSuggestions"
@@ -95,7 +96,7 @@
         @select-history="handleHistorySelect"
         @clear-history="handleClearHistory"
         @navigate="handleNavigate"
-      />
+      >
     </ClientOnly>
 
     <!-- ARIA live region for search results information -->
