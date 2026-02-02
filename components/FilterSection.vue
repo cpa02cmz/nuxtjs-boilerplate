@@ -26,7 +26,7 @@
             :aria-label="ariaLabelOption(option)"
             class="h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500"
             @change="toggleOption(option)"
-          />
+          >
           <label
             :for="`${id}-${option}`"
             class="ml-2 text-sm text-gray-800 cursor-pointer"

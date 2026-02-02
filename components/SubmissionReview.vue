@@ -170,7 +170,7 @@
             v-model="rejectionReason"
             placeholder="Enter reason for rejection..."
             class="rejection-textarea"
-          />
+          >
           <button
             class="btn btn-reject"
             @click="handleReject"

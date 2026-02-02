@@ -20,7 +20,7 @@
       :show-count="true"
       :get-count-for-option="getCategoryCount"
       @toggle="toggleCategory"
-    />
+    >
 
     <FilterSection
       id="pricing"
@@ -31,7 +31,7 @@
       :show-count="true"
       :get-count-for-option="getPricingCount"
       @toggle="togglePricingModel"
-    />
+    >
 
     <FilterSection
       id="difficulty"
@@ -42,7 +42,7 @@
       :show-count="true"
       :get-count-for-option="getDifficultyCount"
       @toggle="toggleDifficultyLevel"
-    />
+    >
 
     <FilterSection
       id="technology"
@@ -53,7 +53,7 @@
       :show-count="true"
       :get-count-for-option="getTechnologyCount"
       @toggle="toggleTechnology"
-    />
+    >
 
     <FilterSection
       id="tags"
@@ -64,7 +64,7 @@
       :show-count="false"
       :get-count-for-option="undefined"
       @toggle="toggleTag"
-    />
+    >
 
     <FilterSection
       v-if="allBenefits.length > 0"
@@ -76,7 +76,7 @@
       :show-count="true"
       :get-count-for-option="getBenefitCount"
       @toggle="toggleBenefit"
-    />
+    >
 
     <fieldset class="mb-6">
       <legend class="text-sm font-medium text-gray-900 mb-3">Date Added</legend>
@@ -94,7 +94,7 @@
             :checked="selectedDateRange === 'anytime'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('anytime')"
-          />
+          >
           <span class="ml-2 text-sm text-gray-800">Any time</span>
         </label>
         <label class="flex items-center" :for="'date-last-week'">
@@ -106,7 +106,7 @@
             :checked="selectedDateRange === 'lastWeek'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastWeek')"
-          />
+          >
           <span class="ml-2 text-sm text-gray-800">Last week</span>
         </label>
         <label class="flex items-center" :for="'date-last-month'">
@@ -118,7 +118,7 @@
             :checked="selectedDateRange === 'lastMonth'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastMonth')"
-          />
+          >
           <span class="ml-2 text-sm text-gray-800">Last month</span>
         </label>
         <label class="flex items-center" :for="'date-last-year'">
@@ -130,7 +130,7 @@
             :checked="selectedDateRange === 'lastYear'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastYear')"
-          />
+          >
           <span class="ml-2 text-sm text-gray-800">Last year</span>
         </label>
       </div>
@@ -141,7 +141,7 @@
       :saved-searches="savedSearches"
       @use-saved-search="onUseSavedSearch"
       @remove-saved-search="onRemoveSavedSearch"
-    />
+    >
   </div>
 </template>
 

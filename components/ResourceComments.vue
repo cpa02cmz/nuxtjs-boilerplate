@@ -14,7 +14,7 @@
         class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         rows="4"
         aria-label="Add a comment"
-      />
+      >
       <div class="mt-3 flex justify-end">
         <button
           class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors"
@@ -35,7 +35,7 @@
           <div
             class="bg-gray-200 border-2 border-dashed rounded-xl w-10 h-10"
             aria-hidden="true"
-          />
+          >
         </div>
         <div class="flex-1">
           <div class="bg-gray-50 rounded-lg p-4">
