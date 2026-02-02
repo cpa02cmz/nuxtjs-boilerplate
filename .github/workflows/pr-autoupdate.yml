@@ -30,7 +30,7 @@ jobs:
 
       - name: Notify Fork Users
         if: steps.forkcheck.outputs.fork == 'true'
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
