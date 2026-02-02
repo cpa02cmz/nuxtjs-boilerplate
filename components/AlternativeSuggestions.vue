@@ -18,7 +18,7 @@
         :button-label="getButtonLabel(alternative.resource.category)"
         :similarity-score="alternative.score"
         :similarity-reason="alternative.reason"
-      >
+      />
     </div>
   </div>
 </template>

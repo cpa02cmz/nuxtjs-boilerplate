@@ -25,12 +25,11 @@
         ref="searchInputRef"
         type="search"
         :value="modelValue"
-        class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+        class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400"
         placeholder="Search resources by name, description, tags..."
         aria-label="Search resources (Press / to focus)"
         aria-describedby="search-results-info search-shortcut-hint"
-        :
-        aria-expanded="
+        :aria-expanded="
           showSuggestions &&
           (suggestions.length > 0 || searchHistory.length > 0)
         "
@@ -40,7 +39,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint -->
       <div
         v-if="!modelValue && !isFocused"
@@ -75,7 +74,7 @@
               stroke-linejoin="round"
               stroke-width="2"
               d="M6 18L18 6M6 6l12 12"
-            >
+            />
           </svg>
         </button>
       </div>
@@ -83,12 +82,12 @@
 
     <!-- Search Suggestions Dropdown -->
     <ClientOnly>
-        <LazySearchSuggestions
-          v-if="
-            showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
-          "
-          id="search-suggestions-dropdown"
+      <LazySearchSuggestions
+        v-if="
+          showSuggestions &&
+          (suggestions.length > 0 || searchHistory.length > 0)
+        "
+        id="search-suggestions-dropdown"
         :suggestions="suggestions"
         :search-history="searchHistory"
         :visible="showSuggestions"
@@ -96,7 +95,7 @@
         @select-history="handleHistorySelect"
         @clear-history="handleClearHistory"
         @navigate="handleNavigate"
-      >
+      />
     </ClientOnly>
 
     <!-- ARIA live region for search results information -->

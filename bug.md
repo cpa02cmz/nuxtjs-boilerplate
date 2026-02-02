@@ -6,6 +6,63 @@
 
 ---
 
+## [/] Test Suite Failures - Partially Fixed
+
+**Type**: Bug / Test Infrastructure
+**Severity**: High
+**Status**: Partially Fixed (2026-02-02)
+
+### Issues Fixed ✅
+
+1. **[x] `components/__tests__/ShareButton.test.ts`** - Fixed SVG path closing tags - 5 tests passing
+2. **[x] `components/__tests__/SearchBar.test.ts`** - Fixed SVG path tags and template syntax - 12 tests passing
+3. **[x] `components/BookmarkButton.vue`** - Fixed SVG path closing tag
+4. **[x] `components/AlternativeSuggestions.vue`** - Fixed LazyResourceCard closing tag
+
+### Issues Remaining
+
+1. **[ ] `components/__tests__/ResourceCard.test.ts`** - Complex template structure issues (requires major refactoring)
+2. **[ ] `components/__tests__/ResourceFilters.test.ts`** - Template syntax errors
+3. **[ ] `__tests__/resource-lifecycle.test.ts`** - Module resolution errors
+4. **[ ] `__tests__/search-analytics.test.ts`** - Module resolution errors
+
+### Action Taken
+
+- [x] Fixed 4 critical Vue component template syntax errors
+- [x] Improved test pass rate from 6 failing suites to 4 failing suites
+- [x] 1493 tests now passing (increased from 1476)
+
+---
+
+## [ ] Lint Warnings - Vue/HTML Template Issues
+
+**Type**: Warning / Code Quality
+**Severity**: Low
+**Status**: Found
+
+### Issues Found
+
+Multiple Vue template warnings:
+
+- `vue/html-end-tags`: `<path>`, `<lazyresourcecard>` missing end tags
+- `vue/html-self-closing`: Should use self-closing tags
+- `vue/max-attributes-per-line`: Attribute formatting
+- `vue/html-indent`: Indentation issues
+
+### Affected Files
+
+- `components/AlternativeSuggestions.vue` (3 warnings)
+- `components/BookmarkButton.vue` (2 warnings)
+- `components/ComparisonBuilder.vue` (31+ warnings)
+
+### Action Required
+
+- [ ] Fix SVG element closing tags
+- [ ] Fix Vue component self-closing tags
+- [ ] Fix template indentation
+
+---
+
 ## [x] Security Vulnerabilities - 8 Moderate Severity Issues ✅ FIXED
 
 **Type**: Security / Dependencies
