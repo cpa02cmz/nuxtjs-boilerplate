@@ -354,7 +354,6 @@ export default defineNuxtConfig({
       // Enable more aggressive caching
       alias: {
         // Add common aliases to speed up resolution
-        'node-fetch-native': 'node-fetch-native/pure.js',
       },
     },
     // Additional build performance optimizations

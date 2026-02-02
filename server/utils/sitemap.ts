@@ -8,16 +8,20 @@ export interface SitemapEntry {
 }
 
 export function getBaseUrl(): string {
-  return 'http://localhost:3000'
+  return getBaseUrlFromConfig()
 }
 
 export function getBaseUrlFromConfig(): string {
-  const config = useRuntimeConfig()
-  return (
-    config.public.siteUrl ||
-    config.public.canonicalUrl ||
-    'http://localhost:3000'
-  )
+  try {
+    const config = useRuntimeConfig()
+    return (
+      config.public.siteUrl ||
+      config.public.canonicalUrl ||
+      'http://localhost:3000'
+    )
+  } catch {
+    return 'http://localhost:3000'
+  }
 }
 
 export const STATIC_PAGES: SitemapEntry[] = [

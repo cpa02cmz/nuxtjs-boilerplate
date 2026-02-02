@@ -106,6 +106,8 @@ export interface FilterOptions {
   difficultyLevels?: string[] | readonly string[]
   technologies?: string[] | readonly string[]
   tags?: string[] | readonly string[]
+  benefits?: string[] | readonly string[]
+  dateRange?: string
 }
 
 export interface AlternativeSuggestion {

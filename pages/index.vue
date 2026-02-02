@@ -236,10 +236,7 @@ useSeoMeta({
   ogDescription:
     'Discover amazing free resources available on the internet - from AI tools to hosting services.',
   ogImage: '/og-image.jpg',
-  ogUrl:
-    runtimeConfig.public.siteUrl ||
-    runtimeConfig.public.canonicalUrl ||
-    'http://localhost:3000',
+  ogUrl: runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000',
   twitterCard: 'summary_large_image',
 })
 

@@ -46,7 +46,7 @@
           v-model="notes"
           placeholder="Additional notes about this change"
           class="notes-field"
-        >
+        />
       </div>
 
       <button

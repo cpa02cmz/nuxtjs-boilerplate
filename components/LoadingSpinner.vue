@@ -21,8 +21,7 @@
         fill="none"
         stroke-width="2"
         stroke-miterlimit="10"
-      >
-    </svg>
+      /></svg>
     <span
       v-if="label"
       class="loading-spinner__label"

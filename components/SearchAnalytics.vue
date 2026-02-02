@@ -30,7 +30,7 @@
     >
       <div
         class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
-      >
+      />
     </div>
 
     <!-- Error State -->
@@ -99,7 +99,7 @@
                 stroke-linejoin="round"
                 stroke-width="2"
                 d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              >
+              />
             </svg>
           </div>
           <div class="ml-4">
@@ -131,7 +131,7 @@
                 stroke-linejoin="round"
                 stroke-width="2"
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              >
+              />
             </svg>
           </div>
           <div class="ml-4">
@@ -159,7 +159,7 @@
                 stroke-linejoin="round"
                 stroke-width="2"
                 d="M13 10V3L4 14h7v7l9-11h-7z"
-              >
+              />
             </svg>
           </div>
           <div class="ml-4">
@@ -209,7 +209,7 @@
                   class="w-3/4 bg-blue-500 rounded-t hover:bg-blue-600 transition-colors"
                   :style="{ height: `${(day.count / maxSearchCount) * 100}%` }"
                   :title="`${day.date}: ${day.count} searches`"
-                >
+                />
               </div>
               <span
                 class="text-xs text-gray-500 mt-1 truncate w-full text-center"

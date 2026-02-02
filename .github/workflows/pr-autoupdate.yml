@@ -22,7 +22,7 @@ jobs:
   # ============================================================
   auto_update_event:
     if: github.event_name == 'pull_request_target'
-    runs-on: ubuntu-24-04-arm
+    runs-on: ubuntu-22.04
     steps:
       - name: Fork Check
         id: forkcheck
@@ -66,7 +66,7 @@ jobs:
   # ============================================================
   list_open_prs:
     if: github.event_name == 'schedule'
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-22.04
     outputs:
       matrix: ${{ steps.collect.outputs.matrix }}
     steps:
@@ -94,7 +94,7 @@ jobs:
   rebase_scheduled:
     needs: list_open_prs
     if: github.event_name == 'schedule'
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -124,7 +124,7 @@ jobs:
   # ============================================================
   comment_trigger:
     if: github.event_name == 'issue_comment' && github.event.issue.pull_request && startsWith(github.event.comment.body, '/update')
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-22.04
     steps:
       - name: Get PR Details
         id: pr
