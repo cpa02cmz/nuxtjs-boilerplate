@@ -10,35 +10,30 @@
       :status="status"
       :migration-path="migrationPath"
       :deprecation-date="deprecationDate"
-    >
+    />
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
       <div class="md:col-span-2">
-        <DescriptionSection :description="description" >
-
-        <BenefitsSection :benefits="benefits" >
-
+        <DescriptionSection :description="description" />
+        <BenefitsSection :benefits="benefits" />
         <ScreenshotsSection
           v-if="screenshots && screenshots.length > 0"
           :screenshots="screenshots"
           :title="title"
           @image-error="$emit('imageError', $event)"
-        >
-
+        />
         <SpecificationsSection
           v-if="specifications && Object.keys(specifications).length > 0"
           :specifications="specifications"
-        >
-
+        />
         <FeaturesSection
           v-if="features && features.length > 0"
           :features="features"
-        >
-
+        />
         <LimitationsSection
           v-if="limitations && limitations.length > 0"
           :limitations="limitations"
-        >
+        />
       </div>
     </div>
   </div>

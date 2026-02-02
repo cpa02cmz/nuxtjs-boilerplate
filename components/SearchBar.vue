@@ -29,10 +29,9 @@
         placeholder="Search resources by name, description, tags..."
         aria-label="Search resources (Press / to focus)"
         aria-describedby="search-results-info search-shortcut-hint"
-        :
-        aria-expanded="
+        :aria-expanded="
           showSuggestions &&
-          (suggestions.length > 0 || searchHistory.length > 0)
+            (suggestions.length > 0 || searchHistory.length > 0)
         "
         aria-controls="search-suggestions-dropdown"
         aria-autocomplete="list"
@@ -75,7 +74,7 @@
               stroke-linejoin="round"
               stroke-width="2"
               d="M6 18L18 6M6 6l12 12"
-            >
+            />
           </svg>
         </button>
       </div>
@@ -83,12 +82,12 @@
 
     <!-- Search Suggestions Dropdown -->
     <ClientOnly>
-        <LazySearchSuggestions
-          v-if="
-            showSuggestions &&
+      <LazySearchSuggestions
+        v-if="
+          showSuggestions &&
             (suggestions.length > 0 || searchHistory.length > 0)
-          "
-          id="search-suggestions-dropdown"
+        "
+        id="search-suggestions-dropdown"
         :suggestions="suggestions"
         :search-history="searchHistory"
         :visible="showSuggestions"
@@ -96,7 +95,7 @@
         @select-history="handleHistorySelect"
         @clear-history="handleClearHistory"
         @navigate="handleNavigate"
-      >
+      />
     </ClientOnly>
 
     <!-- ARIA live region for search results information -->

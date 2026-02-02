@@ -7289,3 +7289,32 @@ Confidence: Behavior validated, security verified, regressions prevented
 ❌ **Implementation Testing**: Tests verify behavior, not implementation details
 
 ---
+
+## [TASK-BUG-001] Fix Component Syntax Errors and Test Warnings
+
+**Feature**: BUG-001
+**Status**: In Progress
+**Agent**: Jules
+**Created**: 2026-01-31
+**Priority**: P1 (HIGH)
+
+### Description
+
+Fixing critical Vue syntax errors across multiple components where self-closing tags are missing the closing slash. Also resolving duplicated type exports and Vue lifecycle warnings in tests.
+
+### Issue
+
+**Location**: Multiple components and tests
+
+**Problem**:
+- Missing self-closing tags (`/>`) in `ShareButton.vue`, `SearchBar.vue`, `ResourceCard.vue`, and `ResourceFilters.vue`.
+- Duplicated export of `RecommendationResult` causing Nuxt auto-import warnings.
+- `onMounted` lifecycle warnings in `useUrlSync.test.ts` due to missing component context.
+
+**Impact**: HIGH - Syntax errors break component rendering and tests; warnings clutter logs.
+
+### Solution Plan
+
+1. Fix missing `/>` in all identified components.
+2. Centralize `RecommendationResult` type and remove duplicates.
+3. Wrap `useUrlSync` tests in a component setup to provide valid lifecycle context.

@@ -15,6 +15,7 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       '**/.nuxt/**',
+      '**/supplements/**',
       '**/__tests__/*integration*.test.ts',
       '**/performance/*.test.ts', // Performance tests run separately to keep CI fast
     ],

@@ -2,10 +2,7 @@ import { computed, ref, readonly } from 'vue'
 import type { SortOption } from '~/types/resource'
 import { useResourceData } from './useResourceData'
 import { useAdvancedResourceSearch } from './useAdvancedResourceSearch'
-import {
-  filterByAllCriteriaWithDateRange,
-  toggleArrayItem,
-} from '~/utils/filter-utils'
+import { toggleArrayItem } from '~/utils/filter-utils'
 import { useResourceSort } from './useResourceSort'
 import { trackSearch, trackFilter } from '~/utils/analytics'
 
@@ -69,26 +66,16 @@ export const useSearchPage = () => {
     computed(() => sortOption.value)
   )
 
-  const searchedResources = computed(() => {
-    const query = filterOptions.value.searchQuery
-    if (!query || !resources.value.length) {
-      return [...resources.value]
-    }
-    return advancedSearch.advancedSearchResources(query)
-  })
-
   const filteredResources = computed(() => {
     if (!resources.value.length) {
       return []
     }
 
-    let result = searchedResources.value
-
-    result = filterByAllCriteriaWithDateRange(result, {
-      ...filterOptions.value,
-      benefits: filterOptions.value.benefits,
-      dateRange: filterOptions.value.dateRange,
-    })
+    const query = filterOptions.value.searchQuery || ''
+    const result = advancedSearch.advancedSearchResources(
+      query,
+      filterOptions.value
+    )
 
     return sortResources(result, sortOption.value)
   })
