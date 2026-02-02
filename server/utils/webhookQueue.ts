@@ -160,7 +160,7 @@ export class WebhookQueueSystem {
     }
 
     if (success) {
-      webhookQueueManager.remove(item.id)
+      await webhookQueueManager.remove(item.id)
     } else {
       await this.handleFailedDelivery(item, webhook, lastError)
     }
