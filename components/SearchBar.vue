@@ -31,7 +31,7 @@
         aria-describedby="search-results-info search-shortcut-hint"
         :aria-expanded="
           showSuggestions &&
-          (suggestions.length > 0 || searchHistory.length > 0)
+            (suggestions.length > 0 || searchHistory.length > 0)
         "
         aria-controls="search-suggestions-dropdown"
         aria-autocomplete="list"
@@ -39,7 +39,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      />
+      >
       <!-- Keyboard shortcut hint -->
       <div
         v-if="!modelValue && !isFocused"
@@ -85,7 +85,7 @@
       <LazySearchSuggestions
         v-if="
           showSuggestions &&
-          (suggestions.length > 0 || searchHistory.length > 0)
+            (suggestions.length > 0 || searchHistory.length > 0)
         "
         id="search-suggestions-dropdown"
         :suggestions="suggestions"
