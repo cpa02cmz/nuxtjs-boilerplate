@@ -170,7 +170,7 @@
             v-model="rejectionReason"
             placeholder="Enter reason for rejection..."
             class="rejection-textarea"
-          >
+          />
           <button
             class="btn btn-reject"
             @click="handleReject"
@@ -384,7 +384,7 @@ onMounted(() => {
   margin-bottom: 1rem;
   resize: vertical;
   background: var(--color-background);
-  color: var(--color-text);
+  color: var(--text-color);
 }
 
 .btn {

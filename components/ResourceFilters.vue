@@ -1,7 +1,9 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
     <div class="flex justify-between items-center mb-4">
-      <h3 class="text-lg font-medium text-gray-900">Filters</h3>
+      <h3 class="text-lg font-medium text-gray-900">
+        Filters
+      </h3>
       <button
         class="text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
         aria-label="Reset all filters"
@@ -20,7 +22,7 @@
       :show-count="true"
       :get-count-for-option="getCategoryCount"
       @toggle="toggleCategory"
-    >
+    />
 
     <FilterSection
       id="pricing"
@@ -31,7 +33,7 @@
       :show-count="true"
       :get-count-for-option="getPricingCount"
       @toggle="togglePricingModel"
-    >
+    />
 
     <FilterSection
       id="difficulty"
@@ -42,7 +44,7 @@
       :show-count="true"
       :get-count-for-option="getDifficultyCount"
       @toggle="toggleDifficultyLevel"
-    >
+    />
 
     <FilterSection
       id="technology"
@@ -53,7 +55,7 @@
       :show-count="true"
       :get-count-for-option="getTechnologyCount"
       @toggle="toggleTechnology"
-    >
+    />
 
     <FilterSection
       id="tags"
@@ -64,7 +66,7 @@
       :show-count="false"
       :get-count-for-option="undefined"
       @toggle="toggleTag"
-    >
+    />
 
     <FilterSection
       v-if="allBenefits.length > 0"
@@ -76,16 +78,21 @@
       :show-count="true"
       :get-count-for-option="getBenefitCount"
       @toggle="toggleBenefit"
-    >
+    />
 
     <fieldset class="mb-6">
-      <legend class="text-sm font-medium text-gray-900 mb-3">Date Added</legend>
+      <legend class="text-sm font-medium text-gray-900 mb-3">
+        Date Added
+      </legend>
       <div
         role="radiogroup"
         aria-label="Filter by date added"
         class="space-y-2"
       >
-        <label class="flex items-center" :for="'date-anytime'">
+        <label
+          class="flex items-center"
+          :for="'date-anytime'"
+        >
           <input
             id="date-anytime"
             type="radio"
@@ -97,7 +104,10 @@
           >
           <span class="ml-2 text-sm text-gray-800">Any time</span>
         </label>
-        <label class="flex items-center" :for="'date-last-week'">
+        <label
+          class="flex items-center"
+          :for="'date-last-week'"
+        >
           <input
             id="date-last-week"
             type="radio"
@@ -109,7 +119,10 @@
           >
           <span class="ml-2 text-sm text-gray-800">Last week</span>
         </label>
-        <label class="flex items-center" :for="'date-last-month'">
+        <label
+          class="flex items-center"
+          :for="'date-last-month'"
+        >
           <input
             id="date-last-month"
             type="radio"
@@ -121,7 +134,10 @@
           >
           <span class="ml-2 text-sm text-gray-800">Last month</span>
         </label>
-        <label class="flex items-center" :for="'date-last-year'">
+        <label
+          class="flex items-center"
+          :for="'date-last-year'"
+        >
           <input
             id="date-last-year"
             type="radio"
@@ -141,7 +157,7 @@
       :saved-searches="savedSearches"
       @use-saved-search="onUseSavedSearch"
       @remove-saved-search="onRemoveSavedSearch"
-    >
+    />
   </div>
 </template>
 

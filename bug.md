@@ -210,3 +210,45 @@ Lifecycle injection APIs can only be used during execution of setup().
 - Tests: 1575 passed | 48 skipped (1623 total)
 - Pass Rate: 100%
 - Duration: 78.23s
+
+## [ ] Vue Syntax Errors in Components
+
+**Type**: Syntax Error / Template
+**Severity**: High
+**Status**: Found
+
+### Issues Found
+
+Missing self-closing tags (`/>`) or closing tags in the following components:
+- `components/ShareButton.vue`
+- `components/SearchBar.vue`
+- `components/ResourceCard.vue`
+- `components/ResourceFilters.vue`
+
+### Root Cause
+
+Regressive changes or search-replace error that removed the closing slash from self-closing tags.
+
+---
+
+## [ ] Duplicated RecommendationResult Export
+
+**Type**: Code Quality / Warning
+**Severity**: Low
+**Status**: Found
+
+### Issues Found
+
+Duplicated export/re-export of `RecommendationResult` in `composables/useRecommendationEngine.ts` and `utils/recommendation-algorithms.ts`.
+
+---
+
+## [ ] Vue onMounted Warning in Tests (useUrlSync)
+
+**Type**: Warning / Test Infrastructure
+**Severity**: Low
+**Status**: Found
+
+### Issues Found
+
+Multiple warnings in `__tests__/useUrlSync.test.ts` about `onMounted` being called without an active component instance.

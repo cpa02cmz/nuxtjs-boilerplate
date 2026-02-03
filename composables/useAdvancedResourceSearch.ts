@@ -1,5 +1,5 @@
 import { readonly } from 'vue'
-import type { Resource } from '~/types/resource'
+import type { Resource, FilterOptions } from '~/types/resource'
 import { searchAnalyticsTracker } from '~/utils/searchAnalytics'
 import { useSearchHistory } from '~/composables/useSearchHistory'
 import { useSavedSearches } from '~/composables/useSavedSearches'
@@ -10,6 +10,7 @@ import {
   createSearchSnippet,
 } from '~/utils/searchHighlighting'
 import { useFacetUtils } from '~/utils/facet-utils'
+import { filterByAllCriteriaWithDateRange } from '~/utils/filter-utils'
 
 type FacetCounts = Record<string, number>
 
@@ -24,79 +25,86 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
   const cachedSearchResults = new Map<string, Resource[]>()
   const searchOrder: string[] = []
 
-  const advancedSearchResources = (query: string): Resource[] => {
+  const advancedSearchResources = (
+    query: string,
+    filters?: FilterOptions
+  ): Resource[] => {
     const startTime = performance.now()
 
-    if (!query || !fuse) {
-      searchAnalyticsTracker.trackSearch(query, [...resources], 0)
-      return [...resources]
-    }
+    // 1. Perform fuzzy search or return all resources
+    let results: Resource[] = []
+    const cacheKey = query || '_ALL_RESOURCES_'
 
-    const cacheKey = query
     if (cachedSearchResults.has(cacheKey)) {
       searchOrder.splice(searchOrder.indexOf(cacheKey), 1)
       searchOrder.push(cacheKey)
-      return cachedSearchResults.get(cacheKey)!
-    }
-
-    const parsed = parseQuery(query)
-
-    if (parsed.terms.length === 0) {
-      searchAnalyticsTracker.trackSearch(query, [...resources], 0)
-      return [...resources]
-    }
-
-    let results: Resource[] = []
-
-    if (parsed.operators.length > 0) {
-      const firstTermResults = fuse.search(parsed.terms[0])
-      results = firstTermResults.map(item => item.item)
-
-      for (let i = 1; i < parsed.terms.length; i++) {
-        const term = parsed.terms[i]
-        const operator = parsed.operators[i - 1]
-
-        const termResults = fuse.search(term)
-        const termResources = termResults.map(item => item.item)
-
-        if (operator === 'AND') {
-          results = results.filter(resource =>
-            termResources.some(result => result.id === resource.id)
-          )
-        } else if (operator === 'OR') {
-          const allResults = [...results, ...termResources]
-          const resultMap = new Map(allResults.map(r => [r.id, r]))
-          results = Array.from(resultMap.values())
-        } else if (operator === 'NOT') {
-          results = results.filter(
-            resource => !termResources.some(result => result.id === resource.id)
-          )
-        }
-      }
+      results = [...cachedSearchResults.get(cacheKey)!]
+    } else if (!query || !fuse) {
+      results = [...resources]
+      searchAnalyticsTracker.trackSearch(query, results, 0)
+      cachedSearchResults.set(cacheKey, results)
+      searchOrder.push(cacheKey)
     } else {
-      for (const term of parsed.terms) {
-        const searchResults = fuse.search(term)
-        const termResources = searchResults.map(item => item.item)
-        results = [...results, ...termResources]
+      const parsed = parseQuery(query)
+
+      if (parsed.terms.length === 0) {
+        results = [...resources]
+        searchAnalyticsTracker.trackSearch(query, results, 0)
+      } else if (parsed.operators.length > 0) {
+        const firstTermResults = fuse.search(parsed.terms[0])
+        results = firstTermResults.map(item => item.item)
+
+        for (let i = 1; i < parsed.terms.length; i++) {
+          const term = parsed.terms[i]
+          const operator = parsed.operators[i - 1]
+
+          const termResults = fuse.search(term)
+          const termResources = termResults.map(item => item.item)
+
+          if (operator === 'AND') {
+            results = results.filter(resource =>
+              termResources.some(result => result.id === resource.id)
+            )
+          } else if (operator === 'OR') {
+            const allResults = [...results, ...termResources]
+            const resultMap = new Map(allResults.map(r => [r.id, r]))
+            results = Array.from(resultMap.values())
+          } else if (operator === 'NOT') {
+            results = results.filter(
+              resource =>
+                !termResources.some(result => result.id === resource.id)
+            )
+          }
+        }
+      } else {
+        for (const term of parsed.terms) {
+          const searchResults = fuse.search(term)
+          const termResources = searchResults.map(item => item.item)
+          results = [...results, ...termResources]
+        }
+
+        const resultMap = new Map(results.map(r => [r.id, r]))
+        results = Array.from(resultMap.values())
       }
 
-      const resultMap = new Map(results.map(r => [r.id, r]))
-      results = Array.from(resultMap.values())
+      // Track the original query, not individual terms
+      const endTime = performance.now()
+      const duration = endTime - startTime
+      searchAnalyticsTracker.trackSearch(query, results, duration)
+
+      if (cachedSearchResults.size >= MAX_CACHE_SIZE) {
+        const oldestKey = searchOrder.shift()!
+        cachedSearchResults.delete(oldestKey)
+      }
+
+      cachedSearchResults.set(cacheKey, results)
+      searchOrder.push(cacheKey)
     }
 
-    const endTime = performance.now()
-    const duration = endTime - startTime
-
-    // Track the original query, not individual terms
-    searchAnalyticsTracker.trackSearch(query, results, duration)
-
-    if (cachedSearchResults.size >= MAX_CACHE_SIZE) {
-      const oldestKey = searchOrder.shift()!
-      cachedSearchResults.delete(oldestKey)
+    // 2. Apply filters if provided
+    if (filters) {
+      results = filterByAllCriteriaWithDateRange(results, filters)
     }
-
-    cachedSearchResults.set(cacheKey, results)
-    searchOrder.push(cacheKey)
 
     return results
   }
@@ -142,25 +150,7 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
     query: string,
     filters: Record<string, string[]>
   ) => {
-    let results = query ? advancedSearchResources(query) : [...resources]
-
-    Object.entries(filters).forEach(([key, values]) => {
-      if (values.length > 0) {
-        results = results.filter(resource => {
-          const resourceValue = resource[key as keyof Resource] as unknown
-
-          if (Array.isArray(resourceValue)) {
-            return resourceValue.some((item: string) => values.includes(item))
-          } else if (typeof resourceValue === 'string') {
-            return values.includes(resourceValue)
-          } else {
-            return false
-          }
-        })
-      }
-    })
-
-    return results
+    return advancedSearchResources(query, filters as FilterOptions)
   }
 
   const getAdvancedSuggestions = (

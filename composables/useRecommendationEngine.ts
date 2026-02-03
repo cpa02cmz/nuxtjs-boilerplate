@@ -1,14 +1,15 @@
 import { ref } from 'vue'
 import type { Resource } from '~/types/resource'
-import type { RecommendationStrategy } from '~/types/recommendation'
+import type {
+  RecommendationStrategy,
+  RecommendationResult,
+} from '~/types/recommendation'
 import {
   calculateSimilarity,
   type RecommendationConfig,
-  type RecommendationResult,
   type UserPreferences,
 } from '~/utils/recommendation-algorithms'
 
-export type { RecommendationResult }
 import { useContentBasedRecommendations } from './recommendation-strategies/useContentBasedRecommendations'
 import { useTrendingRecommendations } from './recommendation-strategies/useTrendingRecommendations'
 import { usePopularRecommendations } from './recommendation-strategies/usePopularRecommendations'

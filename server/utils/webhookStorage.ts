@@ -118,80 +118,116 @@ export const webhookStorage = {
   },
 
   async createWebhook(webhook: Webhook) {
-    const created = await prisma.webhook.create({
-      data: {
-        id: webhook.id,
-        url: webhook.url,
-        secret: webhook.secret,
-        active: webhook.active,
-        events: JSON.stringify(webhook.events),
-      },
-    })
+    try {
+      const created = await prisma.webhook.create({
+        data: {
+          id: webhook.id,
+          url: webhook.url,
+          secret: webhook.secret,
+          active: webhook.active,
+          events: JSON.stringify(webhook.events),
+        },
+      })
 
-    return mapPrismaToWebhook(created)
+      return mapPrismaToWebhook(created)
+    } catch (error) {
+      throw new Error(
+        `Failed to create webhook: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
   },
 
   async updateWebhook(id: string, data: Partial<Webhook>) {
-    const updated = await prisma.webhook.updateMany({
-      where: { id, deletedAt: null },
-      data: {
-        ...(data.url && { url: data.url }),
-        ...(data.secret !== undefined && { secret: data.secret }),
-        ...(data.active !== undefined && { active: data.active }),
-        ...(data.events && { events: JSON.stringify(data.events) }),
-      },
-    })
+    try {
+      const updated = await prisma.webhook.updateMany({
+        where: { id, deletedAt: null },
+        data: {
+          ...(data.url && { url: data.url }),
+          ...(data.secret !== undefined && { secret: data.secret }),
+          ...(data.active !== undefined && { active: data.active }),
+          ...(data.events && { events: JSON.stringify(data.events) }),
+        },
+      })
 
-    if (updated.count === 0) return null
+      if (updated.count === 0) return null
 
-    const webhook = await prisma.webhook.findUnique({
-      where: { id },
-    })
+      const webhook = await prisma.webhook.findUnique({
+        where: { id },
+      })
 
-    return webhook ? mapPrismaToWebhook(webhook) : null
+      return webhook ? mapPrismaToWebhook(webhook) : null
+    } catch (error) {
+      throw new Error(
+        `Failed to update webhook: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
   },
 
   async deleteWebhook(id: string) {
-    const deleted = await prisma.webhook.updateMany({
-      where: { id, deletedAt: null },
-      data: { deletedAt: new Date() },
-    })
+    try {
+      const deleted = await prisma.webhook.updateMany({
+        where: { id, deletedAt: null },
+        data: { deletedAt: new Date() },
+      })
 
-    return deleted.count > 0
+      return deleted.count > 0
+    } catch (error) {
+      throw new Error(
+        `Failed to delete webhook: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
   },
 
   async getWebhooksByEvent(event: string) {
-    const webhooks = await prisma.webhook.findMany({
-      where: {
-        deletedAt: null,
-        active: true,
-        events: { contains: `"${event}"` },
-      },
-      take: 100,
-    })
+    try {
+      const webhooks = await prisma.webhook.findMany({
+        where: {
+          deletedAt: null,
+          active: true,
+          events: { contains: `"${event}"` },
+        },
+        take: 100,
+      })
 
-    return webhooks.map(mapPrismaToWebhook)
+      return webhooks.map(mapPrismaToWebhook)
+    } catch (error) {
+      throw new Error(
+        `Failed to get webhooks by event: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
   },
 
   // Delivery methods
   async getAllDeliveries() {
-    const deliveries = await prisma.webhookDelivery.findMany({
-      where: { deletedAt: null },
-      orderBy: { createdAt: 'desc' },
-      take: 1000,
-    })
+    try {
+      const deliveries = await prisma.webhookDelivery.findMany({
+        where: { deletedAt: null },
+        orderBy: { createdAt: 'desc' },
+        take: 1000,
+      })
 
-    return deliveries.map(mapPrismaToWebhookDelivery)
+      return deliveries.map(mapPrismaToWebhookDelivery)
+    } catch (error) {
+      throw new Error(
+        `Failed to get all deliveries: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
   },
 
   async getDeliveryById(id: string) {
-    const delivery = await prisma.webhookDelivery.findFirst({
-      where: { id, deletedAt: null },
-    })
+    try {
+      const delivery = await prisma.webhookDelivery.findFirst({
+        where: { id, deletedAt: null },
+      })
 
-    if (!delivery) return null
+      if (!delivery) return null
 
-    return mapPrismaToWebhookDelivery(delivery)
+      return mapPrismaToWebhookDelivery(delivery)
+    } catch (error) {
+      throw new Error(
+        `Failed to get delivery by id: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
   },
 
   async createDelivery(delivery: WebhookDelivery) {

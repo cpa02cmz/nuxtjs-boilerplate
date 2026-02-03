@@ -115,7 +115,7 @@ export class WebhookQueueSystem {
       maxRetries,
     }
 
-    webhookQueueManager.enqueue(queueItem)
+    await webhookQueueManager.enqueue(queueItem)
     webhookQueueManager.startProcessor(async item => {
       await this.processQueueItem(item)
     })
@@ -160,7 +160,7 @@ export class WebhookQueueSystem {
     }
 
     if (success) {
-      webhookQueueManager.remove(item.id)
+      await webhookQueueManager.remove(item.id)
     } else {
       await this.handleFailedDelivery(item, webhook, lastError)
     }
@@ -189,8 +189,8 @@ export class WebhookQueueSystem {
       ...item,
       scheduledFor: nextRetryAt,
     }
-    webhookQueueManager.remove(item.id)
-    webhookQueueManager.enqueue(updatedItem)
+    await webhookQueueManager.remove(item.id)
+    await webhookQueueManager.enqueue(updatedItem)
   }
 
   private calculateRetryDelay(retryCount: number): number {
@@ -213,7 +213,7 @@ export class WebhookQueueSystem {
 
   async retryDeadLetterWebhook(id: string): Promise<boolean> {
     return deadLetterManager.retry(id, async item => {
-      webhookQueueManager.enqueue(item)
+      await webhookQueueManager.enqueue(item)
       webhookQueueManager.startProcessor(async queueItem => {
         await this.processQueueItem(queueItem)
       })

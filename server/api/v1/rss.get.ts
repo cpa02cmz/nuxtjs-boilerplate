@@ -44,7 +44,7 @@ function generateRssFeed(resources: Resource[]): string {
   const siteUrl =
     config.public.siteUrl ||
     config.public.canonicalUrl ||
-    'http://localhost:3000' // Fallback to localhost for development
+    'http://localhost:3000'
   const title = 'Free Developer Resources'
   const description = 'A collection of free resources for developers'
   const date = new Date().toUTCString()

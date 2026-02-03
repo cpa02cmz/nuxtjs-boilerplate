@@ -264,10 +264,25 @@ watch(showShareMenu, async isVisible => {
   }
 })
 
+// Helper to show toast notifications
+const showToast = (
+  message: string,
+  type: 'success' | 'error' | 'warning' | 'info' = 'info'
+) => {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('show-toast', {
+        detail: { message, type },
+      })
+    )
+  }
+}
+
 // Copy URL to clipboard
 const copyToClipboard = async () => {
   try {
     await navigator.clipboard.writeText(props.url)
+    showToast('Link copied to clipboard!', 'success')
     showShareMenu.value = false
     await nextTick()
     shareButtonRef.value?.focus()

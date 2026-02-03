@@ -40,8 +40,7 @@
                 stroke-linejoin="round"
                 stroke-width="2"
                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              >
-            </svg>
+              /></svg>
             <span>{{ history }}</span>
           </div>
         </li>
@@ -53,7 +52,7 @@
       <div
         v-if="searchHistory.length > 0"
         class="border-t border-gray-200 my-1"
-      >
+      />
       <div
         class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider"
       >
@@ -84,8 +83,7 @@
               stroke-linejoin="round"
               stroke-width="2"
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            >
-          </svg>
+            /></svg>
           <div class="flex flex-col">
             <span class="font-medium text-gray-900 truncate">{{
               suggestion.title
@@ -96,34 +94,33 @@
           </div>
         </li>
       </ul>
-    </div>
 
-    <!-- Clear History Button -->
-    <div
-      v-if="searchHistory.length > 0"
-      class="border-t border-gray-200 mt-1"
-    >
-      <button
-        class="w-full px-4 py-2 text-left text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 flex items-center focus:outline-none focus:ring-2 focus:ring-gray-800"
-        aria-label="Clear all search history"
-        @click="clearHistory"
+      <!-- Clear History Button -->
+      <div
+        v-if="searchHistory.length > 0"
+        class="border-t border-gray-200 mt-1"
       >
-        <svg
-          class="w-4 h-4 mr-2"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
+        <button
+          class="w-full px-4 py-2 text-left text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 flex items-center focus:outline-none focus:ring-2 focus:ring-gray-800"
+          aria-label="Clear all search history"
+          @click="clearHistory"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          <svg
+            class="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
           >
-        </svg>
-        Clear search history
-      </button>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            /></svg>
+          Clear search history
+        </button>
+      </div>
     </div>
   </div>
 </template>

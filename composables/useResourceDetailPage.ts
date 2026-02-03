@@ -41,7 +41,9 @@ export const useResourceDetailPage = () => {
   })
 
   const currentUrl = computed(() => {
-    return `${runtimeConfig.public.canonicalUrl}/resources/${resourceId.value}`
+    const baseUrl =
+      runtimeConfig.public.canonicalUrl || 'http://localhost:3000'
+    return `${baseUrl}/resources/${resourceId.value}`
   })
 
   const shareUrls = computed(() => {

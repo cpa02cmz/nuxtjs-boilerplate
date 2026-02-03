@@ -38,7 +38,7 @@ export default defineEventHandler(async event => {
       failureCount: 0,
     }
 
-    webhookStorage.createWebhook(newWebhook)
+    await webhookStorage.createWebhook(newWebhook)
 
     // Return without secret for security
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
