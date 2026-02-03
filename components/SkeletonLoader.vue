@@ -15,7 +15,7 @@
       rounded ? 'rounded-full' : '',
     ]"
     :style="{ width: customWidth ? customWidth : undefined }"
-  >
+  />
 </template>
 
 <script setup lang="ts">

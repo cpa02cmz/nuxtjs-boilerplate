@@ -15,7 +15,7 @@
     >
       <div
         class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"
-      >
+      />
     </div>
 
     <div
@@ -34,7 +34,7 @@
               fill-rule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
               clip-rule="evenodd"
-            >
+            />
           </svg>
         </div>
         <div class="ml-3">
@@ -60,7 +60,7 @@
           stroke-linejoin="round"
           stroke-width="2"
           d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.467-.881-6.08-2.33M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6.03 8 6 10v1a1 1 0 001 1h3m4 0v4a1 1 0 01-1 1h-3a1 1 0 01-1-1v-4m4 0h3"
-        >
+        />
       </svg>
       <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">
         No recommendations available
@@ -81,7 +81,7 @@
         :explanation="rec.explanation"
         :reason="rec.reason"
         @bookmark="handleBookmark"
-      >
+      />
     </div>
 
     <div
@@ -103,7 +103,7 @@
             stroke-linejoin="round"
             stroke-width="2"
             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-          >
+          />
         </svg>
         Refresh Recommendations
       </button>
@@ -118,7 +118,7 @@ import { useResourceData } from '~/composables/useResourceData'
 import { useBookmarks } from '~/composables/useBookmarks'
 import { useUserPreferences } from '~/composables/useUserPreferences'
 import { logError } from '~/utils/errorLogger'
-import type { RecommendationResult } from '~/composables/useRecommendationEngine'
+import type { RecommendationResult } from '~/types/recommendation'
 import type { Resource } from '~/types/resource'
 
 interface Props {

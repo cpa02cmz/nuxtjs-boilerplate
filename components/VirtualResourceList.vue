@@ -26,7 +26,7 @@
         <slot
           :item="items[virtualRow.index]"
           :index="virtualRow.index"
-        >
+        />
       </div>
     </div>
   </div>

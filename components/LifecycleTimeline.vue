@@ -23,7 +23,7 @@
           <div
             v-if="index !== statusHistory.length - 1"
             class="timeline-connector"
-          >
+          />
         </div>
         <div class="timeline-content">
           <div class="change-info">

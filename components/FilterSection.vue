@@ -65,6 +65,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  ariaLabel: undefined,
   showCount: true,
   scrollable: true,
   getCountForOption: undefined,

@@ -1,12 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { ref } from 'vue'
+import { ref, defineComponent } from 'vue'
 import type { Ref } from 'vue'
+import { mount } from '@vue/test-utils'
 import { useUrlSync } from '~/composables/useUrlSync'
 import type { FilterOptions, SortOption } from '~/types/resource'
 
 const mockReplace = vi.fn()
 const mockRoute = ref({
-  query: {},
+  query: {} as Record<string, any>,
   path: '/search',
 })
 
@@ -31,7 +32,24 @@ describe('useUrlSync', () => {
     })
     sortOption = ref<SortOption>('popularity-desc')
     mockReplace.mockClear()
+    mockRoute.value = {
+      query: {},
+      path: '/search',
+    }
   })
+
+  // Helper function to mount a component and use the composable
+  const mountComposable = () => {
+    let result: any
+    const TestComponent = defineComponent({
+      setup() {
+        result = useUrlSync(filterOptions, sortOption)
+        return () => null
+      },
+    })
+    const wrapper = mount(TestComponent)
+    return { ...result, wrapper }
+  }
 
   describe('parseUrlParams', () => {
     it('should parse search query from URL', () => {
@@ -40,7 +58,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.searchQuery).toBe('test query')
@@ -52,7 +70,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.searchQuery).toBe('first')
@@ -64,7 +82,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.categories).toEqual(['Testing'])
@@ -76,7 +94,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.categories).toEqual(['Testing', 'Development'])
@@ -88,7 +106,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.categories).toEqual(['Testing', 'Development'])
@@ -100,7 +118,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.pricingModels).toEqual(['Free'])
@@ -112,7 +130,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.pricingModels).toEqual(['Free', 'Paid'])
@@ -124,7 +142,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.difficultyLevels).toEqual(['Beginner'])
@@ -136,7 +154,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.difficultyLevels).toEqual([
@@ -151,7 +169,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.technologies).toEqual(['Vue.js'])
@@ -163,7 +181,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.technologies).toEqual(['Vue.js', 'React'])
@@ -175,7 +193,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(sortOption.value).toBe('alphabetical-asc')
@@ -187,7 +205,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(sortOption.value).toBe('alphabetical-asc')
@@ -200,7 +218,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(sortOption.value).toBe('popularity-desc')
@@ -219,7 +237,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.searchQuery).toBe('test')
@@ -236,7 +254,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.searchQuery).toBe('')
@@ -251,7 +269,7 @@ describe('useUrlSync', () => {
     it('should update URL with search query', () => {
       filterOptions.value.searchQuery = 'test query'
 
-      const { updateUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { updateUrlParams } = mountComposable()
       updateUrlParams()
 
       expect(mockReplace).toHaveBeenCalledWith({
@@ -262,7 +280,7 @@ describe('useUrlSync', () => {
     it('should update URL with categories', () => {
       filterOptions.value.categories = ['Testing', 'Development']
 
-      const { updateUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { updateUrlParams } = mountComposable()
       updateUrlParams()
 
       expect(mockReplace).toHaveBeenCalledWith({
@@ -273,7 +291,7 @@ describe('useUrlSync', () => {
     it('should not include empty categories array in URL', () => {
       filterOptions.value.categories = []
 
-      const { updateUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { updateUrlParams } = mountComposable()
       updateUrlParams()
 
       expect(mockReplace).toHaveBeenCalledWith({
@@ -284,7 +302,7 @@ describe('useUrlSync', () => {
     it('should update URL with pricing models', () => {
       filterOptions.value.pricingModels = ['Free', 'Paid']
 
-      const { updateUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { updateUrlParams } = mountComposable()
       updateUrlParams()
 
       expect(mockReplace).toHaveBeenCalledWith({
@@ -295,7 +313,7 @@ describe('useUrlSync', () => {
     it('should update URL with difficulty levels', () => {
       filterOptions.value.difficultyLevels = ['Beginner', 'Intermediate']
 
-      const { updateUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { updateUrlParams } = mountComposable()
       updateUrlParams()
 
       expect(mockReplace).toHaveBeenCalledWith({
@@ -306,7 +324,7 @@ describe('useUrlSync', () => {
     it('should update URL with technologies', () => {
       filterOptions.value.technologies = ['Vue.js', 'React']
 
-      const { updateUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { updateUrlParams } = mountComposable()
       updateUrlParams()
 
       expect(mockReplace).toHaveBeenCalledWith({
@@ -317,7 +335,7 @@ describe('useUrlSync', () => {
     it('should update URL with sort option', () => {
       sortOption.value = 'alphabetical-asc'
 
-      const { updateUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { updateUrlParams } = mountComposable()
       updateUrlParams()
 
       expect(mockReplace).toHaveBeenCalledWith({
@@ -328,7 +346,7 @@ describe('useUrlSync', () => {
     it('should not include default sort option in URL', () => {
       sortOption.value = 'popularity-desc'
 
-      const { updateUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { updateUrlParams } = mountComposable()
       updateUrlParams()
 
       expect(mockReplace).toHaveBeenCalledWith({
@@ -344,7 +362,7 @@ describe('useUrlSync', () => {
       filterOptions.value.technologies = ['Vue.js']
       sortOption.value = 'alphabetical-asc'
 
-      const { updateUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { updateUrlParams } = mountComposable()
       updateUrlParams()
 
       expect(mockReplace).toHaveBeenCalledWith({
@@ -362,7 +380,7 @@ describe('useUrlSync', () => {
     it('should create new array instances to avoid reference issues', () => {
       filterOptions.value.categories = ['Testing']
 
-      const { updateUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { updateUrlParams } = mountComposable()
       updateUrlParams()
 
       const params = mockReplace.mock.calls[0][0].query
@@ -378,7 +396,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.categories).toEqual(['Testing'])
@@ -396,7 +414,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.searchQuery).toBe('')
@@ -412,7 +430,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.searchQuery).toBe('')
@@ -420,7 +438,7 @@ describe('useUrlSync', () => {
     })
 
     it('should not update URL when filters have empty arrays', () => {
-      const { updateUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { updateUrlParams } = mountComposable()
       updateUrlParams()
 
       expect(mockReplace).toHaveBeenCalledWith({
@@ -436,7 +454,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(Array.isArray(filterOptions.value.categories)).toBe(true)
@@ -449,7 +467,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(Array.isArray(filterOptions.value.pricingModels)).toBe(true)
@@ -462,7 +480,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(Array.isArray(filterOptions.value.difficultyLevels)).toBe(true)
@@ -475,7 +493,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(Array.isArray(filterOptions.value.technologies)).toBe(true)
@@ -488,7 +506,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.categories).toEqual(['Testing'])
@@ -500,7 +518,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams } = useUrlSync(filterOptions, sortOption)
+      const { parseUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(typeof filterOptions.value.searchQuery).toBe('string')
@@ -524,10 +542,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams, updateUrlParams } = useUrlSync(
-        filterOptions,
-        sortOption
-      )
+      const { parseUrlParams, updateUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(filterOptions.value.searchQuery).toBe('test')
@@ -550,10 +565,7 @@ describe('useUrlSync', () => {
         path: '/search',
       }
 
-      const { parseUrlParams, updateUrlParams } = useUrlSync(
-        filterOptions,
-        sortOption
-      )
+      const { parseUrlParams, updateUrlParams } = mountComposable()
       parseUrlParams()
 
       expect(sortOption.value).toBe('popularity-desc')

@@ -20,7 +20,7 @@ concurrency:
 jobs:
   opencode:
     name: AI Security Officer Agent
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     permissions:
       id-token: write

@@ -11,7 +11,7 @@
     :class="imgClass"
     @error="handleError"
     @load="handleLoad"
-  >
+  />
 </template>
 
 <script setup lang="ts">

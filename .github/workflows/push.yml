@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   creator_solver:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -31,7 +31,7 @@ jobs:
           cache: 'npm'
 
       - name: Install OpenCode CLI
-        run: curl -fsSL https://opencode.ai/install.sh | sh
+        run: curl -fsSL https://opencode.ai/install | sh
 
       - name: Analyze ecosystem
         id: analysis
