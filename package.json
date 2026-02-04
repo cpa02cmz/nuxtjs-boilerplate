@@ -84,6 +84,7 @@
     "zod": "^4.3.5"
   },
   "overrides": {
-    "hono": "4.11.7"
+    "hono": "4.11.7",
+    "@isaacs/brace-expansion": "5.0.1"
   }
 }

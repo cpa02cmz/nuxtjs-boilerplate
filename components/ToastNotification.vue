@@ -17,6 +17,15 @@
         @focusin="pauseToast(toast.id)"
         @focusout="resumeToast(toast.id)"
       >
+        <!-- Progress bar for auto-dismiss -->
+        <div
+          v-if="toast.duration !== 0"
+          class="toast__progress"
+          :class="{ 'toast__progress--paused': pausedToastIds.has(toast.id) }"
+          :style="{
+            animationDuration: `${toast.duration || (toast.type === 'error' ? TOAST_DURATION.ERROR : TOAST_DURATION.SUCCESS)}ms`,
+          }"
+        />
         <div class="toast__icon">
           <svg
             v-if="toast.type === 'success'"
@@ -105,6 +114,74 @@
     </transition-group>
   </div>
 </template>
+<script setup lang="ts">
+import { ref } from 'vue'
+import { TOAST_DURATION } from '~/server/utils/constants'
+
+export type ToastType = 'success' | 'error' | 'warning' | 'info'
+
+interface Toast {
+  id: string
+  type: ToastType
+  message: string
+  description?: string
+  duration?: number
+}
+
+const toasts = ref<Toast[]>([])
+const pausedToastIds = ref<Set<string>>(new Set())
+
+const addToast = (toast: Omit<Toast, 'id'>) => {
+  const id = Math.random().toString(36).substring(2, 9)
+  const newToast = { id, ...toast }
+  toasts.value.push(newToast)
+
+  // Auto remove toast after duration (respects pause state)
+  const duration =
+    toast.duration ||
+    (toast.type === 'error' ? TOAST_DURATION.ERROR : TOAST_DURATION.SUCCESS)
+  if (duration > 0) {
+    const startTime = Date.now()
+    const checkAndRemove = () => {
+      if (!toasts.value.find(t => t.id === id)) return // Already removed
+
+      if (pausedToastIds.value.has(id)) {
+        // Toast is paused, check again in 100ms
+        setTimeout(checkAndRemove, 100)
+      } else if (Date.now() - startTime >= duration) {
+        removeToast(id)
+      } else {
+        // Not yet expired, check again
+        setTimeout(
+          checkAndRemove,
+          Math.min(100, duration - (Date.now() - startTime))
+        )
+      }
+    }
+    setTimeout(checkAndRemove, duration)
+  }
+}
+
+const pauseToast = (id: string) => {
+  pausedToastIds.value.add(id)
+}
+
+const resumeToast = (id: string) => {
+  pausedToastIds.value.delete(id)
+}
+
+const removeToast = (id: string) => {
+  toasts.value = toasts.value.filter(toast => toast.id !== id)
+}
+
+// Expose methods to parent components
+defineExpose({
+  addToast,
+  removeToast,
+  pauseToast,
+  resumeToast,
+})
+</script>
 
 <script setup lang="ts">
 import { ref } from 'vue'
@@ -293,5 +370,35 @@ defineExpose({
 .toast-leave-to {
   transform: translateX(100%);
   opacity: 0;
+}
+
+/* Progress bar styles */
+.toast {
+  position: relative;
+  overflow: hidden;
+}
+
+.toast__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background-color: rgba(0, 0, 0, 0.2);
+  width: 100%;
+  transform-origin: left;
+  animation: progress linear forwards;
+}
+
+.toast__progress--paused {
+  animation-play-state: paused;
+}
+
+@keyframes progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
 }
 </style>
