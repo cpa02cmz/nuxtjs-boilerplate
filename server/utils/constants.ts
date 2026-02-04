@@ -133,3 +133,50 @@ export const HTTP_STATUS = {
   CLIENT_ERROR_MAX: 499,
   SERVER_ERROR_MIN: 500,
 } as const
+
+// UI layout constants (in pixels)
+export const UI_LAYOUT = {
+  // Toast/notification positioning
+  TOAST_CONTAINER_TOP: 20,
+  TOAST_CONTAINER_RIGHT: 20,
+  TOAST_MAX_WIDTH: 400,
+  TOAST_MIN_WIDTH: 300,
+
+  // Spacing scale (in rem units, multiplied by 0.25)
+  SPACING_XS: 0.25, // 0.25rem = 4px
+  SPACING_SM: 0.5, // 0.5rem = 8px
+  SPACING_MD: 0.75, // 0.75rem = 12px
+  SPACING_LG: 1, // 1rem = 16px
+  SPACING_XL: 1.5, // 1.5rem = 24px
+  SPACING_2XL: 2, // 2rem = 32px
+
+  // Border radius (in rem)
+  BORDER_RADIUS_SM: 0.25,
+  BORDER_RADIUS_MD: 0.5,
+  BORDER_RADIUS_LG: 0.75,
+
+  // Font sizes (in rem)
+  FONT_SIZE_SM: 0.75,
+  FONT_SIZE_MD: 0.875,
+  FONT_SIZE_LG: 1,
+
+  // Line heights (in rem)
+  LINE_HEIGHT_SM: 1,
+  LINE_HEIGHT_MD: 1.25,
+  LINE_HEIGHT_LG: 1.5,
+} as const
+
+// Animation duration constants (in seconds)
+export const ANIMATION_DURATION = {
+  FAST: 0.2,
+  NORMAL: 0.3,
+  SLOW: 0.5,
+} as const
+
+// Z-index scale
+export const Z_INDEX = {
+  TOAST: 9999,
+  MODAL: 9000,
+  DROPDOWN: 1000,
+  STICKY: 100,
+} as const
