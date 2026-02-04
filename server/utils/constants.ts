@@ -100,3 +100,36 @@ export const SEARCH_CONFIG = {
   MAX_SUGGESTIONS: 5,
   MAX_HISTORY_ITEMS: 10,
 } as const
+
+// RSS feed configuration
+export const RSS_CONFIG = {
+  MAX_ITEMS: 50,
+  DEFAULT_LIMIT: 20,
+} as const
+
+// Pagination and data limits
+export const PAGINATION = {
+  DEFAULT_PAGE_SIZE: 20,
+  MAX_PAGE_SIZE: 100,
+  MAX_ITEMS_PER_REQUEST: 1000,
+} as const
+
+// Cache configuration
+export const CACHE_CONFIG = {
+  MAX_CACHE_SIZE: 100,
+  MAX_POPULAR_SEARCHES: 50,
+  MAX_ZERO_RESULT_SEARCHES: 50,
+  MAX_PERFORMANCE_HISTORY: 100,
+  MAX_ANALYTICS_ENTRIES: 100,
+} as const
+
+// HTTP status code ranges
+export const HTTP_STATUS = {
+  OK_MIN: 200,
+  OK_MAX: 399,
+  REDIRECT_MIN: 300,
+  REDIRECT_MAX: 399,
+  CLIENT_ERROR_MIN: 400,
+  CLIENT_ERROR_MAX: 499,
+  SERVER_ERROR_MIN: 500,
+} as const

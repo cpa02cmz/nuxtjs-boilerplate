@@ -110,14 +110,37 @@ describe('generateUniqueId', () => {
 
   describe('Edge Cases', () => {
     it('should handle same millisecond timestamp with different random suffix', () => {
-      const id1 = generateUniqueId()
-      const id2 = generateUniqueId()
+      // Generate IDs rapidly to try to get same timestamp
+      const ids: string[] = []
+      for (let i = 0; i < 100; i++) {
+        ids.push(generateUniqueId())
+      }
 
-      const timestamp1 = id1.slice(0, -5)
-      const timestamp2 = id2.slice(0, -5)
+      // Find two IDs with the same timestamp
+      const timestampMap = new Map<string, string[]>()
+      for (const id of ids) {
+        const timestamp = id.slice(0, -5)
+        const existing = timestampMap.get(timestamp) || []
+        existing.push(id)
+        timestampMap.set(timestamp, existing)
+      }
 
-      expect(timestamp1).toBe(timestamp2)
-      expect(id1).not.toBe(id2)
+      // Find a timestamp with multiple IDs
+      let foundSameTimestamp = false
+      for (const [_timestamp, idList] of timestampMap) {
+        if (idList.length >= 2) {
+          foundSameTimestamp = true
+          // Verify IDs with same timestamp are different
+          expect(idList[0]).not.toBe(idList[1])
+          break
+        }
+      }
+
+      // If we didn't find same timestamp, at least verify uniqueness
+      if (!foundSameTimestamp) {
+        const uniqueIds = new Set(ids)
+        expect(uniqueIds.size).toBe(ids.length)
+      }
     })
 
     it('should work correctly in strict mode', () => {

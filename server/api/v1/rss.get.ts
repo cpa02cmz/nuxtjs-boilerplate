@@ -2,6 +2,7 @@ import { defineEventHandler, setResponseHeader } from 'h3'
 import type { Resource } from '~/types/resource'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { handleApiRouteError } from '~/server/utils/api-response'
+import { RSS_CONFIG } from '~/server/utils/constants'
 
 /**
  * GET /api/v1/rss
@@ -21,7 +22,7 @@ export default defineEventHandler(async event => {
         (a, b) =>
           new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()
       )
-      .slice(0, 50)
+      .slice(0, RSS_CONFIG.MAX_ITEMS)
 
     // Generate RSS XML
     const rssContent = generateRssFeed(resources)

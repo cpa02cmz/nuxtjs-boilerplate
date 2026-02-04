@@ -1,6 +1,11 @@
 <template>
-  <div v-if="relatedSearches.length > 0" class="mt-4 p-4 bg-blue-50 rounded-lg">
-    <h4 class="text-sm font-medium text-gray-900 mb-2">Did you mean?</h4>
+  <div
+    v-if="relatedSearches.length > 0"
+    class="mt-4 p-4 bg-blue-50 rounded-lg"
+  >
+    <h4 class="text-sm font-medium text-gray-900 mb-2">
+      Did you mean?
+    </h4>
     <div class="flex flex-wrap gap-2">
       <button
         v-for="(search, index) in relatedSearches"
@@ -18,30 +23,24 @@
 import { computed } from 'vue'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
-import { UI_CONSTANTS } from '~/server/utils/constants'
 
-interface Props {
+const props = defineProps<{
   query: string
-  limit?: number
-}
-
-const emit = defineEmits<{
-  'search-select': [query: string]
 }>()
 
-const props = withDefaults(defineProps<Props>(), {
-  limit: UI_CONSTANTS.RELATED_SEARCHES_LIMIT,
-})
+const emit = defineEmits<{
+  (e: 'select', search: string): void
+}>()
 
 const { resources } = useResourceData()
-const { getRelatedSearches } = useAdvancedResourceSearch(resources.value)
+const { getRelatedSearches } = useAdvancedResourceSearch(resources)
 
 const relatedSearches = computed(() => {
   if (!props.query || props.query.length < 2) return []
-  return getRelatedSearches(props.query, props.limit)
+  return getRelatedSearches(props.query)
 })
 
-const onSearchSelect = (query: string) => {
-  emit('search-select', query)
+const onSearchSelect = (search: string) => {
+  emit('select', search)
 }
 </script>

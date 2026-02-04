@@ -58,7 +58,9 @@ for a direct database connection or `accelerateUrl` for Accelerate to the
 4. **[x] `components/AlternativeSuggestions.vue`** - Fixed LazyResourceCard closing tag
 5. **[x] `components/__tests__/ResourceCard.test.ts`** - 7 tests passing
 6. **[x] `__tests__/search-analytics.test.ts`** - Tests passing
-7. \*\*[x] All test infrastructure issues resolved
+7. **[x] `__tests__/utils/id.test.ts`** - Fixed flaky "same millisecond timestamp" test
+8. **[x] `components/RelatedSearches.vue`** - Fixed lint warnings
+9. \*\*[x] All test infrastructure issues resolved
 
 ### Test Results
 

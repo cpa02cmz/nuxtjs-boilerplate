@@ -14,6 +14,7 @@ import type {
   DeadLetterWebhook as PrismaDeadLetterWebhook,
 } from '@prisma/client'
 import { prisma } from './db'
+import { PAGINATION } from './constants'
 
 function mapPrismaToWebhook(webhook: PrismaWebhook): Webhook {
   return {
@@ -101,7 +102,7 @@ export const webhookStorage = {
     const webhooks = await prisma.webhook.findMany({
       where: { deletedAt: null },
       orderBy: { createdAt: 'desc' },
-      take: 1000,
+      take: PAGINATION.MAX_ITEMS_PER_REQUEST,
     })
 
     return webhooks.map(mapPrismaToWebhook)
@@ -186,7 +187,7 @@ export const webhookStorage = {
           active: true,
           events: { contains: `"${event}"` },
         },
-        take: 100,
+        take: PAGINATION.MAX_PAGE_SIZE,
       })
 
       return webhooks.map(mapPrismaToWebhook)
@@ -203,7 +204,7 @@ export const webhookStorage = {
       const deliveries = await prisma.webhookDelivery.findMany({
         where: { deletedAt: null },
         orderBy: { createdAt: 'desc' },
-        take: 1000,
+        take: PAGINATION.MAX_ITEMS_PER_REQUEST,
       })
 
       return deliveries.map(mapPrismaToWebhookDelivery)
@@ -280,7 +281,7 @@ export const webhookStorage = {
     const deliveries = await prisma.webhookDelivery.findMany({
       where: { webhookId, deletedAt: null },
       orderBy: { createdAt: 'desc' },
-      take: 1000,
+      take: PAGINATION.MAX_ITEMS_PER_REQUEST,
     })
 
     return deliveries.map(mapPrismaToWebhookDelivery)
@@ -291,7 +292,7 @@ export const webhookStorage = {
     const apiKeys = await prisma.apiKey.findMany({
       where: { deletedAt: null },
       orderBy: { createdAt: 'desc' },
-      take: 1000,
+      take: PAGINATION.MAX_ITEMS_PER_REQUEST,
     })
 
     return apiKeys.map(mapPrismaToApiKey)
@@ -376,7 +377,7 @@ export const webhookStorage = {
     const queue = await prisma.webhookQueue.findMany({
       where: { deletedAt: null },
       orderBy: [{ priority: 'asc' }, { scheduledFor: 'asc' }],
-      take: 1000,
+      take: PAGINATION.MAX_ITEMS_PER_REQUEST,
     })
 
     return queue.map(mapPrismaToWebhookQueueItem)
@@ -423,7 +424,7 @@ export const webhookStorage = {
     const deadLetter = await prisma.deadLetterWebhook.findMany({
       where: { deletedAt: null },
       orderBy: { createdAt: 'desc' },
-      take: 1000,
+      take: PAGINATION.MAX_ITEMS_PER_REQUEST,
     })
 
     return deadLetter.map(mapPrismaToDeadLetterWebhook)
