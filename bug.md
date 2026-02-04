@@ -235,13 +235,13 @@ Lifecycle injection APIs can only be used during execution of setup().
 
 ## Summary
 
-| Category                 | Count | Status         |
-| ------------------------ | ----- | -------------- |
-| Security Vulnerabilities | 8     | ✅ Fixed       |
-| TypeScript Errors        | 0     | ✅ All Fixed   |
-| Test Warnings            | 0     | ✅ All Fixed   |
-| Test Failures            | 0     | ✅ All Passing |
-| Lint Errors              | 0     | ✅ All Passing |
+| Category                 | Count | Status          |
+| ------------------------ | ----- | --------------- |
+| Security Vulnerabilities | 8     | ✅ Fixed        |
+| TypeScript Errors        | 30+   | ⚠️ Non-blocking |
+| Test Warnings            | 0     | ✅ All Fixed    |
+| Test Failures            | 0     | ✅ All Passing  |
+| Lint Errors              | 0     | ✅ All Passing  |
 
 ### Test Results Summary (2026-02-04)
 

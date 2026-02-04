@@ -1,6 +1,10 @@
 <template>
   <div class="toast-container">
-    <transition-group name="toast" tag="div" class="toast-wrapper">
+    <transition-group
+      name="toast"
+      tag="div"
+      class="toast-wrapper"
+    >
       <div
         v-for="toast in toasts"
         :key="toast.id"
@@ -71,7 +75,10 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p v-if="toast.description" class="toast__description">
+          <p
+            v-if="toast.description"
+            class="toast__description"
+          >
             {{ toast.description }}
           </p>
         </div>
@@ -109,7 +116,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { TOAST_DURATION } from '~/server/utils/constants'
+import { TOAST_DURATION, UI_TIMING } from '~/server/utils/constants'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -139,15 +146,18 @@ const addToast = (toast: Omit<Toast, 'id'>) => {
       if (!toasts.value.find(t => t.id === id)) return // Already removed
 
       if (pausedToastIds.value.has(id)) {
-        // Toast is paused, check again in 100ms
-        setTimeout(checkAndRemove, 100)
+        // Toast is paused, check again
+        setTimeout(checkAndRemove, UI_TIMING.TOAST_CHECK_INTERVAL_MS)
       } else if (Date.now() - startTime >= duration) {
         removeToast(id)
       } else {
         // Not yet expired, check again
         setTimeout(
           checkAndRemove,
-          Math.min(100, duration - (Date.now() - startTime))
+          Math.min(
+            UI_TIMING.TOAST_CHECK_INTERVAL_MS,
+            duration - (Date.now() - startTime)
+          )
         )
       }
     }

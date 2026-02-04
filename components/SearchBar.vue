@@ -115,6 +115,7 @@ import { ref, onUnmounted } from 'vue'
 import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
+import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
 
 interface Props {
   modelValue: string
@@ -128,7 +129,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  debounceTime: 300,
+  debounceTime: UI_TIMING.SEARCH_DEBOUNCE_MS,
   enableAdvancedFeatures: true,
 })
 const emit = defineEmits<Emits>()
@@ -177,11 +178,11 @@ const handleInput = (event: Event) => {
 
 // Update suggestions based on input
 const updateSuggestions = (query: string) => {
-  if (query && query.length > 1) {
+  if (query && query.length >= SEARCH_CONFIG.MIN_QUERY_LENGTH) {
     // Use advanced suggestions if enabled, otherwise use basic suggestions
     const suggestionsData = props.enableAdvancedFeatures
-      ? getAdvancedSuggestions(query, 5)
-      : getBasicSuggestions(query, 5)
+      ? getAdvancedSuggestions(query, SEARCH_CONFIG.MAX_SUGGESTIONS)
+      : getBasicSuggestions(query, SEARCH_CONFIG.MAX_SUGGESTIONS)
 
     suggestions.value = suggestionsData.map(resource => ({
       id: resource.id,
@@ -215,7 +216,7 @@ const handleBlur = () => {
   setTimeout(() => {
     showSuggestions.value = false
     isFocused.value = false
-  }, 200)
+  }, UI_TIMING.SEARCH_BLUR_DELAY_MS)
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {

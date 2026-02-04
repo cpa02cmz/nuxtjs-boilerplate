@@ -74,3 +74,29 @@ export const UI_FEEDBACK_DURATION = {
   ANNOUNCEMENT_CLEAR: 3000,
   SUCCESS_MESSAGE_CLEAR: 3000,
 } as const
+
+// UI interaction timing constants
+export const UI_TIMING = {
+  // Search and input debouncing
+  SEARCH_DEBOUNCE_MS: 300,
+  SEARCH_BLUR_DELAY_MS: 200,
+  SUGGESTION_CHECK_INTERVAL_MS: 100,
+
+  // Connection checking
+  CONNECTION_TIMEOUT_MS: 5000,
+  CONNECTION_RETRY_INTERVAL_MS: 100,
+
+  // Toast and notification intervals
+  TOAST_CHECK_INTERVAL_MS: 100,
+
+  // Animation durations
+  ANIMATION_DURATION_MS: 300,
+  ANIMATION_LEAVE_DURATION_MS: 200,
+} as const
+
+// Search configuration
+export const SEARCH_CONFIG = {
+  MIN_QUERY_LENGTH: 2,
+  MAX_SUGGESTIONS: 5,
+  MAX_HISTORY_ITEMS: 10,
+} as const
