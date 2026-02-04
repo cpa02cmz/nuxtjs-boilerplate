@@ -33,7 +33,7 @@ const emit = defineEmits<{
 }>()
 
 const { resources } = useResourceData()
-const { getRelatedSearches } = useAdvancedResourceSearch(resources)
+const { getRelatedSearches } = useAdvancedResourceSearch(resources.value)
 
 const relatedSearches = computed(() => {
   if (!props.query || props.query.length < 2) return []

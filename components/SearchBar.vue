@@ -91,10 +91,10 @@
         :suggestions="suggestions"
         :search-history="searchHistory"
         :visible="showSuggestions"
+        :focused-index="activeIndex"
         @select-suggestion="handleSuggestionSelect"
         @select-history="handleHistorySelect"
         @clear-history="handleClearHistory"
-        @navigate="handleNavigate"
       />
     </ClientOnly>
 
@@ -111,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
@@ -144,14 +144,12 @@ const suggestions = ref<
 const showSuggestions = ref(false)
 const searchHistory = ref<string[]>([])
 const isFocused = ref(false)
+const activeIndex = ref(-1)
 
 // Use the resources composable
 const { resources } = useResourceData()
-const {
-  getAdvancedSuggestions,
-  addToSearchHistory,
-  searchHistory: advancedSearchHistory,
-} = useAdvancedResourceSearch(resources)
+const { getAdvancedSuggestions, addToSearchHistory } =
+  useAdvancedResourceSearch(resources.value)
 
 // Use the basic resources composable for fallback
 const { getSuggestions: getBasicSuggestions } = useResources()
@@ -202,13 +200,13 @@ const clearSearch = () => {
   emit('search', '')
   suggestions.value = []
   showSuggestions.value = false
+  activeIndex.value = -1
 }
 
 const handleFocus = () => {
-  // Update search history when input is focused
-  searchHistory.value = [...advancedSearchHistory.value]
   showSuggestions.value = true
   isFocused.value = true
+  activeIndex.value = -1
 }
 
 const handleBlur = () => {
@@ -219,13 +217,42 @@ const handleBlur = () => {
   }, UI_TIMING.SEARCH_BLUR_DELAY_MS)
 }
 
+// Compute total navigable items (suggestions + history)
+const totalItems = computed(() => {
+  return suggestions.value.length + searchHistory.value.length
+})
+
 const handleKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
     showSuggestions.value = false
+    activeIndex.value = -1
+  } else if (event.key === 'ArrowDown') {
+    event.preventDefault()
+    if (showSuggestions.value && totalItems.value > 0) {
+      activeIndex.value = (activeIndex.value + 1) % totalItems.value
+    }
+  } else if (event.key === 'ArrowUp') {
+    event.preventDefault()
+    if (showSuggestions.value && totalItems.value > 0) {
+      activeIndex.value =
+        activeIndex.value <= 0 ? totalItems.value - 1 : activeIndex.value - 1
+    }
   } else if (event.key === 'Enter') {
-    if (props.modelValue) {
+    if (activeIndex.value >= 0 && totalItems.value > 0) {
+      // Select the active item
+      const suggestionCount = suggestions.value.length
+      if (activeIndex.value < suggestionCount) {
+        // It's a suggestion
+        handleSuggestionSelect(suggestions.value[activeIndex.value])
+      } else {
+        // It's from history
+        const historyIndex = activeIndex.value - suggestionCount
+        handleHistorySelect(searchHistory.value[historyIndex])
+      }
+    } else if (props.modelValue) {
       addToSearchHistory(props.modelValue)
     }
+    activeIndex.value = -1
   }
 }
 
@@ -239,6 +266,7 @@ const handleSuggestionSelect = (suggestion: {
   emit('search', suggestion.title)
   addToSearchHistory(suggestion.title)
   showSuggestions.value = false
+  activeIndex.value = -1
 }
 
 const handleHistorySelect = (history: string) => {
@@ -246,17 +274,13 @@ const handleHistorySelect = (history: string) => {
   emit('search', history)
   addToSearchHistory(history)
   showSuggestions.value = false
+  activeIndex.value = -1
 }
 
 const handleClearHistory = () => {
   // Clear both advanced and basic search history
   // Since we're using advanced search, we'll just update our local ref
   searchHistory.value = []
-}
-
-const handleNavigate = () => {
-  // This is handled by SearchSuggestions component
-  // but we can add additional logic here if needed
 }
 
 // Expose focus method to parent components
@@ -278,18 +302,21 @@ if (typeof window !== 'undefined') {
     )
   }
 
-  const savedSearchAddedHandler = (event: CustomEvent) => {
-    const { name } = event.detail
+  // Define custom event handler type
+  type CustomEventHandler = (event: Event) => void
+
+  const savedSearchAddedHandler: CustomEventHandler = event => {
+    const { name } = (event as CustomEvent).detail
     showToast(`Saved search "${name}" successfully!`, 'success')
   }
 
-  const savedSearchUpdatedHandler = (event: CustomEvent) => {
-    const { name } = event.detail
+  const savedSearchUpdatedHandler: CustomEventHandler = event => {
+    const { name } = (event as CustomEvent).detail
     showToast(`Updated saved search "${name}"!`, 'success')
   }
 
-  const savedSearchRemovedHandler = (event: CustomEvent) => {
-    const { name } = event.detail
+  const savedSearchRemovedHandler: CustomEventHandler = event => {
+    const { name } = (event as CustomEvent).detail
     showToast(`Removed saved search "${name}".`, 'info')
   }
 

@@ -24,6 +24,7 @@ import { trackResourceView } from '~/utils/analytics'
 import { generateSeoData } from '~/utils/seo'
 import { copyToClipboard } from '~/utils/clipboard'
 import type { ApiClient } from '~/utils/api-client'
+import { UI_TIMING } from '~/server/utils/constants'
 
 export interface UseResourceDetailPageOptions {
   apiClient?: ApiClient
@@ -232,7 +233,7 @@ export const useResourceDetailPage = (
         if (!resourcesLoading.value) {
           loadResource()
         } else {
-          setTimeout(checkResources, 100)
+          setTimeout(checkResources, UI_TIMING.CONNECTION_RETRY_INTERVAL_MS)
         }
       }
       checkResources()

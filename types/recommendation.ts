@@ -1,9 +1,12 @@
 import type { Resource } from '~/types/resource'
 import type {
   RecommendationConfig,
-  RecommendationResult,
+  RecommendationResult as RecResult,
   UserPreferences,
 } from '~/utils/recommendation-algorithms'
+
+// Re-export RecommendationResult type
+export type RecommendationResult = RecResult
 
 export interface RecommendationStrategy {
   readonly name: string

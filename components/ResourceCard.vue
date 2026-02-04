@@ -236,6 +236,7 @@ import { trackResourceView, trackResourceClick } from '~/utils/analytics'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
 import { memoizeHighlight } from '~/utils/memoize'
 import { logError } from '~/utils/errorLogger'
+import type { Resource } from '~/types/resource'
 
 interface Props {
   title: string
@@ -344,7 +345,7 @@ const addResourceToComparison = () => {
   if (!props.id) return
 
   // Create a resource object with the required properties
-  const resource = {
+  const resource: Partial<Resource> = {
     id: props.id,
     title: props.title,
     description: props.description,
@@ -354,7 +355,7 @@ const addResourceToComparison = () => {
   }
 
   // Add the resource to comparison
-  const added = addResource(resource)
+  const added = addResource(resource as Resource)
 
   if (added) {
     // Navigate to comparison page

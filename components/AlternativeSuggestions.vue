@@ -29,6 +29,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { useAlternativeSuggestions } from '~/composables/useAlternativeSuggestions'
+import { useResourceData } from '~/composables/useResourceData'
 import type { Resource, AlternativeSuggestion } from '~/types/resource'
 
 interface Props {
@@ -40,7 +41,10 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const alternatives = ref<AlternativeSuggestion[]>([])
-const { getAlternativesForResource } = useAlternativeSuggestions()
+const { resources } = useResourceData()
+const { getAlternativesForResource } = useAlternativeSuggestions(
+  resources.value
+)
 
 // Get button label based on category
 const getButtonLabel = (category: string) => {
