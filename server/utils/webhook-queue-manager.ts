@@ -1,7 +1,6 @@
 import type { WebhookQueueItem } from '~/types/webhook'
 import { webhookStorage } from './webhookStorage'
 import { logger } from '~/utils/logger'
-import { TIMING } from './constants'
 
 export class WebhookQueueManager {
   private isProcessing = false
@@ -42,7 +41,7 @@ export class WebhookQueueManager {
     this.isProcessing = true
     this.processorInterval = setInterval(() => {
       this.processQueue()
-    }, TIMING.WEBHOOK_QUEUE_PROCESSOR_INTERVAL)
+    }, 5000)
   }
 
   stopProcessor(): void {
@@ -54,7 +53,7 @@ export class WebhookQueueManager {
   }
 
   private async processQueue(): Promise<void> {
-    const queue = await webhookStorage.getQueue()
+    const queue = webhookStorage.getQueue()
     const now = new Date()
 
     for (const item of queue) {
@@ -84,8 +83,8 @@ export class WebhookQueueManager {
     return queue.length > 0 ? queue[0].scheduledFor : null
   }
 
-  async getNextScheduledAt(): Promise<number | null> {
-    const queue = await webhookStorage.getQueue()
+  getNextScheduledAt(): number | null {
+    const queue = webhookStorage.getQueue()
     return queue.length > 0 ? new Date(queue[0].scheduledFor).getTime() : null
   }
 }
