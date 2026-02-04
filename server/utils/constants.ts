@@ -67,3 +67,23 @@ export const TOAST_DURATION = {
   WARNING: 7000,
   INFO: 5000,
 } as const
+
+// UI Constants
+export const UI_CONSTANTS = {
+  // Related searches display limit
+  RELATED_SEARCHES_LIMIT: 5,
+
+  // Popular searches display limit
+  POPULAR_SEARCHES_LIMIT: 5,
+
+  // Search suggestions display limit
+  SEARCH_SUGGESTIONS_LIMIT: 5,
+
+  // Resource card limits
+  MAX_RESOURCE_DESCRIPTION_LENGTH: 150,
+  MAX_RESOURCE_BENEFITS_DISPLAY: 3,
+
+  // Pagination defaults
+  DEFAULT_PAGE_SIZE: 20,
+  MAX_PAGE_SIZE: 100,
+} as const
