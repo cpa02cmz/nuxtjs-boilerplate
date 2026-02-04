@@ -1,10 +1,6 @@
 <template>
   <div class="toast-container">
-    <transition-group
-      name="toast"
-      tag="div"
-      class="toast-wrapper"
-    >
+    <transition-group name="toast" tag="div" class="toast-wrapper">
       <div
         v-for="toast in toasts"
         :key="toast.id"
@@ -75,10 +71,7 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p
-            v-if="toast.description"
-            class="toast__description"
-          >
+          <p v-if="toast.description" class="toast__description">
             {{ toast.description }}
           </p>
         </div>
@@ -101,6 +94,14 @@
             />
           </svg>
         </button>
+        <!-- Progress bar showing remaining time -->
+        <div
+          class="toast__progress"
+          :class="{ 'toast__progress--paused': pausedToastIds.has(toast.id) }"
+          :style="{
+            animationDuration: `${toast.duration || (toast.type === 'error' ? TOAST_DURATION.ERROR : TOAST_DURATION.SUCCESS)}ms`,
+          }"
+        />
       </div>
     </transition-group>
   </div>
@@ -202,6 +203,8 @@ defineExpose({
   min-width: 300px;
   max-width: 100%;
   animation: slideIn 0.3s ease-out;
+  position: relative;
+  overflow: hidden;
 }
 
 .toast--success {
@@ -267,6 +270,64 @@ defineExpose({
 
 .toast__close:hover {
   opacity: 1;
+}
+
+/* Progress bar showing remaining time */
+.toast__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: currentColor;
+  opacity: 0.3;
+  animation: progress linear forwards;
+  border-bottom-left-radius: 0.5rem;
+}
+
+.toast__progress--paused {
+  animation-play-state: paused;
+}
+
+@keyframes progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .toast__progress {
+    animation: none;
+    width: 100%;
+    opacity: 0.15;
+  }
+
+  .toast {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .toast-enter-active,
+  .toast-leave-active {
+    transition: opacity 0.2s ease;
+  }
+
+  .toast-enter-from,
+  .toast-leave-to {
+    transform: none;
+    opacity: 0;
+  }
 }
 
 @keyframes slideIn {

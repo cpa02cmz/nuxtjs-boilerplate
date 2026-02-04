@@ -14,6 +14,7 @@
 import { ref, reactive } from 'vue'
 import { useNuxtApp } from '#app'
 import logger from '~/utils/logger'
+import { UI_FEEDBACK_DURATION } from '~/server/utils/constants'
 import type { ApiClient } from '~/utils/api-client'
 import type { Webhook } from '~/types/webhook'
 
@@ -107,7 +108,7 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
 
       setTimeout(() => {
         announcement.value = ''
-      }, 3000)
+      }, UI_FEEDBACK_DURATION.ANNOUNCEMENT_CLEAR)
 
       await fetchWebhooks()
       return true
@@ -139,7 +140,7 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
 
       setTimeout(() => {
         announcement.value = ''
-      }, 3000)
+      }, UI_FEEDBACK_DURATION.ANNOUNCEMENT_CLEAR)
 
       await fetchWebhooks()
     } catch (error) {
@@ -168,7 +169,7 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
 
       setTimeout(() => {
         announcement.value = ''
-      }, 3000)
+      }, UI_FEEDBACK_DURATION.ANNOUNCEMENT_CLEAR)
 
       await fetchWebhooks()
     } catch (error) {
