@@ -2,6 +2,7 @@
 // Client-side performance monitoring plugin
 import { onCLS, onFCP, onLCP, onTTFB, onINP } from 'web-vitals'
 import { createStorage } from '~/utils/storage'
+import { logger } from '~/utils/logger'
 
 export default defineNuxtPlugin(() => {
   if (process.client) {
@@ -16,7 +17,7 @@ export default defineNuxtPlugin(() => {
       }) => {
         // Log metrics for debugging in development
         if (process.env.NODE_ENV === 'development') {
-          console.log(`${metric.name}: ${metric.value}`)
+          logger.info(`${metric.name}: ${metric.value}`)
         }
 
         // Store metrics in storage for potential later aggregation
@@ -70,7 +71,7 @@ export default defineNuxtPlugin(() => {
               }, 0)
 
               if (process.env.NODE_ENV === 'development') {
-                console.log(`Total resource load time: ${resourceLoadTime}ms`)
+                logger.info(`Total resource load time: ${resourceLoadTime}ms`)
               }
             }
 
@@ -79,7 +80,7 @@ export default defineNuxtPlugin(() => {
               performance.timing.domContentLoadedEventEnd -
               performance.timing.navigationStart
             if (process.env.NODE_ENV === 'development') {
-              console.log(`DOM Content Loaded Time: ${domContentLoadedTime}ms`)
+              logger.info(`DOM Content Loaded Time: ${domContentLoadedTime}ms`)
             }
           }, 1000)
         })
