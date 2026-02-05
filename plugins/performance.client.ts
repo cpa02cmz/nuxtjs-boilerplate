@@ -4,6 +4,11 @@ import { onCLS, onFCP, onLCP, onTTFB, onINP } from 'web-vitals'
 import { createStorage } from '~/utils/storage'
 import { logger } from '~/utils/logger'
 
+// Storage key constants
+const STORAGE_KEYS = {
+  WEB_VITALS_PREFIX: 'web-vitals-',
+} as const
+
 export default defineNuxtPlugin(() => {
   if (process.client) {
     // Check if we're in browser and Web Vitals is available
@@ -22,7 +27,7 @@ export default defineNuxtPlugin(() => {
 
         // Store metrics in storage for potential later aggregation
         if (typeof window !== 'undefined') {
-          const key = `web-vitals-${metric.name}`
+          const key = `${STORAGE_KEYS.WEB_VITALS_PREFIX}${metric.name}`
           const storage = createStorage<
             {
               value: number
@@ -44,7 +49,10 @@ export default defineNuxtPlugin(() => {
             timestamp: Date.now(),
           })
 
-          storage.set(data)
+          const success = storage.set(data)
+          if (!success && process.env.NODE_ENV === 'development') {
+            logger.warn('Failed to store web vitals metric')
+          }
         }
 
         // In a real implementation, you would send these metrics to your analytics service
