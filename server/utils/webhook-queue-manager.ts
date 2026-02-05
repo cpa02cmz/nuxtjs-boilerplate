@@ -53,7 +53,7 @@ export class WebhookQueueManager {
   }
 
   private async processQueue(): Promise<void> {
-    const queue = webhookStorage.getQueue()
+    const queue = await webhookStorage.getQueue()
     const now = new Date()
 
     for (const item of queue) {
