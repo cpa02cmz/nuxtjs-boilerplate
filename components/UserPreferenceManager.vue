@@ -254,10 +254,10 @@ onMounted(async () => {
 
   if (userPrefs.userProfile.value) {
     const prefs = userPrefs.userProfile.value.preferences
-    selectedCategories.value = prefs.categories
+    selectedCategories.value = [...prefs.categories]
     selectedSkillLevel.value = prefs.skillLevel
-    notificationSettings.value = prefs.notificationSettings
-    privacySettings.value = prefs.privacySettings
+    notificationSettings.value = { ...prefs.notificationSettings }
+    privacySettings.value = { ...prefs.privacySettings }
   }
 })
 

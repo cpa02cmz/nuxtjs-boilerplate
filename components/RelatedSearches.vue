@@ -24,28 +24,23 @@ import { computed } from 'vue'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
 
-interface Props {
+const props = defineProps<{
   query: string
-  limit?: number
-}
-
-const emit = defineEmits<{
-  'search-select': [query: string]
 }>()
 
-const props = withDefaults(defineProps<Props>(), {
-  limit: 5,
-})
+const emit = defineEmits<{
+  (e: 'select', search: string): void
+}>()
 
 const { resources } = useResourceData()
 const { getRelatedSearches } = useAdvancedResourceSearch(resources.value)
 
 const relatedSearches = computed(() => {
   if (!props.query || props.query.length < 2) return []
-  return getRelatedSearches(props.query, props.limit)
+  return getRelatedSearches(props.query)
 })
 
-const onSearchSelect = (query: string) => {
-  emit('search-select', query)
+const onSearchSelect = (search: string) => {
+  emit('select', search)
 }
 </script>

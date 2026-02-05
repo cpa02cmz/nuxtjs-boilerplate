@@ -3,6 +3,9 @@
     <span
       :class="['status-badge', statusClass]"
       :title="statusTitle"
+      role="status"
+      :aria-label="statusTitle"
+      tabindex="0"
     >
       {{ statusText }}
     </span>
@@ -178,6 +181,13 @@ const healthLabel = computed(() => {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.025em;
+  cursor: help;
+  transition: outline-offset 0.2s ease;
+}
+
+.status-badge:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .status-active {

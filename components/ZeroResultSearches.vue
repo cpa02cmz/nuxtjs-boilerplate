@@ -37,7 +37,6 @@ interface Emits {
   (event: 'search-select', query: string): void
 }
 
- 
 const props = withDefaults(defineProps<Props>(), {
   limit: 10,
 })
@@ -45,7 +44,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>()
 
 const { resources } = useResourceData()
-const { getZeroResultSearches } = useAdvancedResourceSearch(resources)
+const { getZeroResultSearches } = useAdvancedResourceSearch(resources.value)
 
 const zeroResultSearches = computed(() => {
   return getZeroResultSearches(props.limit)

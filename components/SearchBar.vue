@@ -43,10 +43,10 @@
       <!-- Keyboard shortcut hint -->
       <div
         v-if="!modelValue && !isFocused"
-        class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+        class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none group"
       >
         <kbd
-          class="hidden sm:inline-block px-2 py-1 text-xs font-semibold text-gray-400 bg-gray-100 border border-gray-300 rounded shadow-sm"
+          class="hidden sm:inline-block px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded-md shadow-sm transition-all duration-150 group-hover:bg-gray-100 group-hover:border-gray-300 group-hover:shadow"
           aria-hidden="true"
         >
           /
@@ -57,7 +57,7 @@
         class="absolute inset-y-0 right-0 flex items-center pr-3"
       >
         <button
-          class="text-gray-400 hover:text-gray-600 focus:outline-none"
+          class="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-150 rounded-full p-0.5 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500"
           aria-label="Clear search"
           @click="clearSearch"
         >
@@ -91,10 +91,10 @@
         :suggestions="suggestions"
         :search-history="searchHistory"
         :visible="showSuggestions"
+        :focused-index="activeIndex"
         @select-suggestion="handleSuggestionSelect"
         @select-history="handleHistorySelect"
         @clear-history="handleClearHistory"
-        @navigate="handleNavigate"
       />
     </ClientOnly>
 
@@ -111,10 +111,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
+import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
 
 interface Props {
   modelValue: string
@@ -128,7 +129,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  debounceTime: 300,
+  debounceTime: UI_TIMING.SEARCH_DEBOUNCE_MS,
   enableAdvancedFeatures: true,
 })
 const emit = defineEmits<Emits>()
@@ -143,14 +144,12 @@ const suggestions = ref<
 const showSuggestions = ref(false)
 const searchHistory = ref<string[]>([])
 const isFocused = ref(false)
+const activeIndex = ref(-1)
 
 // Use the resources composable
 const { resources } = useResourceData()
-const {
-  getAdvancedSuggestions,
-  addToSearchHistory,
-  searchHistory: advancedSearchHistory,
-} = useAdvancedResourceSearch(resources)
+const { getAdvancedSuggestions, addToSearchHistory } =
+  useAdvancedResourceSearch(resources.value)
 
 // Use the basic resources composable for fallback
 const { getSuggestions: getBasicSuggestions } = useResources()
@@ -177,11 +176,11 @@ const handleInput = (event: Event) => {
 
 // Update suggestions based on input
 const updateSuggestions = (query: string) => {
-  if (query && query.length > 1) {
+  if (query && query.length >= SEARCH_CONFIG.MIN_QUERY_LENGTH) {
     // Use advanced suggestions if enabled, otherwise use basic suggestions
     const suggestionsData = props.enableAdvancedFeatures
-      ? getAdvancedSuggestions(query, 5)
-      : getBasicSuggestions(query, 5)
+      ? getAdvancedSuggestions(query, SEARCH_CONFIG.MAX_SUGGESTIONS)
+      : getBasicSuggestions(query, SEARCH_CONFIG.MAX_SUGGESTIONS)
 
     suggestions.value = suggestionsData.map(resource => ({
       id: resource.id,
@@ -201,13 +200,13 @@ const clearSearch = () => {
   emit('search', '')
   suggestions.value = []
   showSuggestions.value = false
+  activeIndex.value = -1
 }
 
 const handleFocus = () => {
-  // Update search history when input is focused
-  searchHistory.value = [...advancedSearchHistory.value]
   showSuggestions.value = true
   isFocused.value = true
+  activeIndex.value = -1
 }
 
 const handleBlur = () => {
@@ -215,16 +214,45 @@ const handleBlur = () => {
   setTimeout(() => {
     showSuggestions.value = false
     isFocused.value = false
-  }, 200)
+  }, UI_TIMING.SEARCH_BLUR_DELAY_MS)
 }
+
+// Compute total navigable items (suggestions + history)
+const totalItems = computed(() => {
+  return suggestions.value.length + searchHistory.value.length
+})
 
 const handleKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
     showSuggestions.value = false
+    activeIndex.value = -1
+  } else if (event.key === 'ArrowDown') {
+    event.preventDefault()
+    if (showSuggestions.value && totalItems.value > 0) {
+      activeIndex.value = (activeIndex.value + 1) % totalItems.value
+    }
+  } else if (event.key === 'ArrowUp') {
+    event.preventDefault()
+    if (showSuggestions.value && totalItems.value > 0) {
+      activeIndex.value =
+        activeIndex.value <= 0 ? totalItems.value - 1 : activeIndex.value - 1
+    }
   } else if (event.key === 'Enter') {
-    if (props.modelValue) {
+    if (activeIndex.value >= 0 && totalItems.value > 0) {
+      // Select the active item
+      const suggestionCount = suggestions.value.length
+      if (activeIndex.value < suggestionCount) {
+        // It's a suggestion
+        handleSuggestionSelect(suggestions.value[activeIndex.value])
+      } else {
+        // It's from history
+        const historyIndex = activeIndex.value - suggestionCount
+        handleHistorySelect(searchHistory.value[historyIndex])
+      }
+    } else if (props.modelValue) {
       addToSearchHistory(props.modelValue)
     }
+    activeIndex.value = -1
   }
 }
 
@@ -238,6 +266,7 @@ const handleSuggestionSelect = (suggestion: {
   emit('search', suggestion.title)
   addToSearchHistory(suggestion.title)
   showSuggestions.value = false
+  activeIndex.value = -1
 }
 
 const handleHistorySelect = (history: string) => {
@@ -245,17 +274,13 @@ const handleHistorySelect = (history: string) => {
   emit('search', history)
   addToSearchHistory(history)
   showSuggestions.value = false
+  activeIndex.value = -1
 }
 
 const handleClearHistory = () => {
   // Clear both advanced and basic search history
   // Since we're using advanced search, we'll just update our local ref
   searchHistory.value = []
-}
-
-const handleNavigate = () => {
-  // This is handled by SearchSuggestions component
-  // but we can add additional logic here if needed
 }
 
 // Expose focus method to parent components
@@ -277,18 +302,21 @@ if (typeof window !== 'undefined') {
     )
   }
 
-  const savedSearchAddedHandler = (event: CustomEvent) => {
-    const { name } = event.detail
+  // Define custom event handler type
+  type CustomEventHandler = (event: Event) => void
+
+  const savedSearchAddedHandler: CustomEventHandler = event => {
+    const { name } = (event as CustomEvent).detail
     showToast(`Saved search "${name}" successfully!`, 'success')
   }
 
-  const savedSearchUpdatedHandler = (event: CustomEvent) => {
-    const { name } = event.detail
+  const savedSearchUpdatedHandler: CustomEventHandler = event => {
+    const { name } = (event as CustomEvent).detail
     showToast(`Updated saved search "${name}"!`, 'success')
   }
 
-  const savedSearchRemovedHandler = (event: CustomEvent) => {
-    const { name } = event.detail
+  const savedSearchRemovedHandler: CustomEventHandler = event => {
+    const { name } = (event as CustomEvent).detail
     showToast(`Removed saved search "${name}".`, 'info')
   }
 

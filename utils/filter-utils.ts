@@ -139,7 +139,10 @@ export const matchesDateRange = (
  */
 export const filterByAllCriteriaWithDateRange = (
   resources: readonly Resource[],
-  filterOptions: FilterOptions & { dateRange?: string; benefits?: string[] }
+  filterOptions: FilterOptions & {
+    dateRange?: string
+    benefits?: string[] | readonly string[]
+  }
 ): Resource[] => {
   const {
     categories,

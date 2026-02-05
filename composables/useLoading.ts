@@ -1,4 +1,5 @@
 import { reactive, readonly } from 'vue'
+import { UI_FEEDBACK_DURATION } from '~/server/utils/constants'
 
 // Define loading state interface
 export interface LoadingState {
@@ -56,7 +57,7 @@ export const useLoading = () => {
             loadingState.success = false
             loadingState.message = null
           }
-        }, 3000)
+        }, UI_FEEDBACK_DURATION.SUCCESS_MESSAGE_CLEAR)
       }
     }
   }

@@ -110,13 +110,21 @@
             />
           </svg>
         </button>
+        <!-- Progress bar showing remaining time -->
+        <div
+          class="toast__progress"
+          :class="{ 'toast__progress--paused': pausedToastIds.has(toast.id) }"
+          :style="{
+            animationDuration: `${toast.duration || (toast.type === 'error' ? TOAST_DURATION.ERROR : TOAST_DURATION.SUCCESS)}ms`,
+          }"
+        />
       </div>
     </transition-group>
   </div>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { TOAST_DURATION } from '~/server/utils/constants'
+import { TOAST_DURATION, UI_TIMING } from '~/server/utils/constants'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -146,15 +154,18 @@ const addToast = (toast: Omit<Toast, 'id'>) => {
       if (!toasts.value.find(t => t.id === id)) return // Already removed
 
       if (pausedToastIds.value.has(id)) {
-        // Toast is paused, check again in 100ms
-        setTimeout(checkAndRemove, 100)
+        // Toast is paused, check again
+        setTimeout(checkAndRemove, UI_TIMING.TOAST_CHECK_INTERVAL_MS)
       } else if (Date.now() - startTime >= duration) {
         removeToast(id)
       } else {
         // Not yet expired, check again
         setTimeout(
           checkAndRemove,
-          Math.min(100, duration - (Date.now() - startTime))
+          Math.min(
+            UI_TIMING.TOAST_CHECK_INTERVAL_MS,
+            duration - (Date.now() - startTime)
+          )
         )
       }
     }
@@ -210,6 +221,8 @@ defineExpose({
   min-width: 300px;
   max-width: 100%;
   animation: slideIn 0.3s ease-out;
+  position: relative;
+  overflow: hidden;
 }
 
 .toast--success {
@@ -275,6 +288,64 @@ defineExpose({
 
 .toast__close:hover {
   opacity: 1;
+}
+
+/* Progress bar showing remaining time */
+.toast__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: currentColor;
+  opacity: 0.3;
+  animation: progress linear forwards;
+  border-bottom-left-radius: 0.5rem;
+}
+
+.toast__progress--paused {
+  animation-play-state: paused;
+}
+
+@keyframes progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .toast__progress {
+    animation: none;
+    width: 100%;
+    opacity: 0.15;
+  }
+
+  .toast {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .toast-enter-active,
+  .toast-leave-active {
+    transition: opacity 0.2s ease;
+  }
+
+  .toast-enter-from,
+  .toast-leave-to {
+    transform: none;
+    opacity: 0;
+  }
 }
 
 @keyframes slideIn {

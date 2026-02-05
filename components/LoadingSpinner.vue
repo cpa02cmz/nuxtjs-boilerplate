@@ -21,7 +21,8 @@
         fill="none"
         stroke-width="2"
         stroke-miterlimit="10"
-      /></svg>
+      />
+    </svg>
     <span
       v-if="label"
       class="loading-spinner__label"
@@ -79,6 +80,35 @@ withDefaults(defineProps<Props>(), {
   stroke-dashoffset: 0;
   stroke-linecap: round;
   animation: dash 1.5s ease-in-out infinite;
+}
+
+/* Respect user's motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner__circular {
+    animation: none;
+  }
+
+  .loading-spinner__path {
+    animation: none;
+    stroke-dasharray: 89, 200;
+    stroke-dashoffset: -35px;
+    opacity: 0.6;
+  }
+
+  /* Add a subtle pulse for reduced motion users */
+  .loading-spinner__circular {
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
 }
 
 .loading-spinner__label {

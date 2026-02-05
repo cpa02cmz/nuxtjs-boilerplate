@@ -1,6 +1,7 @@
 import { ref, computed, readonly } from 'vue'
 import { logError } from '~/utils/errorLogger'
 import logger from '~/utils/logger'
+import { TIMING } from '~/server/utils/constants'
 import type { Resource } from '~/types/resource'
 
 // Main composable for managing resource data
@@ -48,7 +49,9 @@ export const useResourceData = () => {
       if (attempt < maxRetries) {
         retryCount.value = attempt
         // Wait for a bit before retrying (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
+        await new Promise(resolve =>
+          setTimeout(resolve, TIMING.RETRY_BASE_DELAY_MS * attempt)
+        )
         await initResources(attempt + 1)
       } else {
         loading.value = false

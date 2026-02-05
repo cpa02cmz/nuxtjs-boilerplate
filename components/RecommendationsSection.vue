@@ -118,6 +118,7 @@ import { useResourceData } from '~/composables/useResourceData'
 import { useBookmarks } from '~/composables/useBookmarks'
 import { useUserPreferences } from '~/composables/useUserPreferences'
 import { logError } from '~/utils/errorLogger'
+import { UI_TIMING } from '~/server/utils/constants'
 import type { RecommendationResult } from '~/types/recommendation'
 import type { Resource } from '~/types/resource'
 
@@ -146,7 +147,9 @@ const initRecommendations = async () => {
     // Wait for resources to be loaded
     if (!resources.value || resources.value.length === 0) {
       // Wait a bit for resources to load
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve =>
+        setTimeout(resolve, UI_TIMING.SUGGESTION_CHECK_INTERVAL_MS)
+      )
     }
 
     if (resources.value && resources.value.length > 0) {

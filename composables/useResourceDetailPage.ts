@@ -23,8 +23,26 @@ import { generateResourceShareUrls } from '~/utils/shareUtils'
 import { trackResourceView } from '~/utils/analytics'
 import { generateSeoData } from '~/utils/seo'
 import { copyToClipboard } from '~/utils/clipboard'
+import type { ApiClient } from '~/utils/api-client'
+import { UI_TIMING } from '~/server/utils/constants'
 
-export const useResourceDetailPage = () => {
+export interface UseResourceDetailPageOptions {
+  apiClient?: ApiClient
+}
+
+export const useResourceDetailPage = (
+  options: UseResourceDetailPageOptions = {}
+) => {
+  const { apiClient: providedClient } = options
+
+  const getClient = () => {
+    if (providedClient) {
+      return providedClient
+    }
+    const { $apiClient } = useNuxtApp()
+    return $apiClient
+  }
+
   const route = useRoute()
   const runtimeConfig = useRuntimeConfig()
   const { resources, loading: resourcesLoading } = useResources()
@@ -41,8 +59,7 @@ export const useResourceDetailPage = () => {
   })
 
   const currentUrl = computed(() => {
-    const baseUrl =
-      runtimeConfig.public.canonicalUrl || 'http://localhost:3000'
+    const baseUrl = runtimeConfig.public.canonicalUrl || 'http://localhost:3000'
     return `${baseUrl}/resources/${resourceId.value}`
   })
 
@@ -67,8 +84,8 @@ export const useResourceDetailPage = () => {
 
   const fetchResourceHistory = async (id: string) => {
     try {
-      const { $apiClient } = useNuxtApp()
-      const response = await $apiClient.get<{
+      const client = getClient()
+      const response = await client.get<{
         statusHistory: unknown[]
         updateHistory: unknown[]
       }>(`/api/resources/${id}/history`)
@@ -94,8 +111,8 @@ export const useResourceDetailPage = () => {
 
   const fetchResourceAnalytics = async (id: string) => {
     try {
-      const { $apiClient } = useNuxtApp()
-      const response = await $apiClient.get<Record<string, unknown>>(
+      const client = getClient()
+      const response = await client.get<Record<string, unknown>>(
         `/api/analytics/resource/${id}`
       )
 
@@ -216,7 +233,7 @@ export const useResourceDetailPage = () => {
         if (!resourcesLoading.value) {
           loadResource()
         } else {
-          setTimeout(checkResources, 100)
+          setTimeout(checkResources, UI_TIMING.CONNECTION_RETRY_INTERVAL_MS)
         }
       }
       checkResources()

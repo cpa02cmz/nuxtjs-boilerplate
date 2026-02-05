@@ -2,8 +2,9 @@ import { ref, readonly } from 'vue'
 import type { SavedSearch } from '~/types/search'
 import { createStorageWithDateSerialization } from '~/utils/storage'
 import { emitEvent } from '~/utils/event-emitter'
+import { STORAGE_KEYS } from '~/server/utils/constants'
 
-const SAVED_SEARCHES_KEY = 'resource_saved_searches'
+const SAVED_SEARCHES_KEY = STORAGE_KEYS.SAVED_SEARCHES
 const MAX_SAVED_SEARCHES = 20
 
 export const useSavedSearches = () => {

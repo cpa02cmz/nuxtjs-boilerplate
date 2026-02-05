@@ -40,7 +40,8 @@
                 stroke-linejoin="round"
                 stroke-width="2"
                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              /></svg>
+              />
+            </svg>
             <span>{{ history }}</span>
           </div>
         </li>
@@ -83,7 +84,8 @@
               stroke-linejoin="round"
               stroke-width="2"
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            /></svg>
+            />
+          </svg>
           <div class="flex flex-col">
             <span class="font-medium text-gray-900 truncate">{{
               suggestion.title
@@ -117,7 +119,8 @@
               stroke-linejoin="round"
               stroke-width="2"
               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-            /></svg>
+            />
+          </svg>
           Clear search history
         </button>
       </div>
@@ -126,7 +129,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 interface SuggestionItem {
   id: string
@@ -140,6 +143,7 @@ interface Props {
   searchHistory?: string[]
   visible: boolean
   id?: string
+  focusedIndex?: number
 }
 
 interface Emits {
@@ -148,16 +152,23 @@ interface Emits {
   (event: 'clear-history'): void
   (event: 'navigate', direction: 'up' | 'down'): void
 }
-
-const props =  
-  withDefaults(defineProps<Props>(), {
-    suggestions: () => [],
-    searchHistory: () => [],
-    id: undefined,
-  })
+const props = withDefaults(defineProps<Props>(), {
+  suggestions: () => [],
+  searchHistory: () => [],
+  id: undefined,
+  focusedIndex: -1,
+})
 const emit = defineEmits<Emits>()
 
-const focusedIndex = ref(-1)
+// Use internal state if prop not provided, otherwise use prop
+const internalFocusedIndex = ref(-1)
+const focusedIndex = computed({
+  get: () =>
+    props.focusedIndex >= 0 ? props.focusedIndex : internalFocusedIndex.value,
+  set: val => {
+    internalFocusedIndex.value = val
+  },
+})
 
 // Clear the focused index when suggestions are hidden
 watch(

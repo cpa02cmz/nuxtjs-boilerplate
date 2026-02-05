@@ -1,3 +1,249 @@
+## [BUGFIX-001] Fixed Vue Template Lint Warnings ✅ COMPLETED (2026-02-04)
+
+**Feature**: BUGFIX-001
+**Status**: Complete
+**Agent**: 04 BugLover
+**Created**: 2026-02-04
+**Completed**: 2026-02-04
+**Priority**: P1 (HIGH)
+
+### Description
+
+Fixed Vue template lint warnings related to attribute formatting in multiple components.
+
+### Issue
+
+**Location**: `components/LoadingSpinner.vue`, `components/ToastNotification.vue`
+
+**Problem**: ESLint warnings for:
+
+- `vue/max-attributes-per-line`: Attributes should be on separate lines when exceeding limit
+- Components had attributes improperly formatted across lines
+
+**Impact**: LOW - Code style consistency, CI warnings
+
+### Solution Implemented
+
+Ran `eslint --fix` to auto-fix formatting issues:
+
+- Fixed attribute line breaks in LoadingSpinner.vue
+- Fixed attribute line breaks in ToastNotification.vue
+- All formatting now follows Vue style guide
+
+### Success Criteria
+
+- [x] All lint warnings resolved
+- [x] 0 ESLint errors
+- [x] 0 ESLint warnings
+- [x] All tests passing
+
+### Files Modified
+
+1. `components/LoadingSpinner.vue` - Fixed attribute formatting
+2. `components/ToastNotification.vue` - Fixed attribute formatting
+
+---
+
+## [UX-001] Enhanced Offline Indicator with Retry and Dismiss ✅ COMPLETED (2026-02-04)
+
+**Feature**: UX-001
+**Status**: Complete
+**Agent**: 02 Pallete
+**Created**: 2026-02-04
+**Completed**: 2026-02-04
+**Priority**: P2 (MEDIUM)
+
+### Description
+
+Enhanced the OfflineIndicator component with improved UX features including retry functionality, dismiss button, animations, and last online timestamp.
+
+### Issue
+
+**Location**: `components/OfflineIndicator.vue`
+
+**Problem**: Original offline indicator was a static banner that:
+
+- Could not be dismissed
+- Had no retry mechanism
+- No visual feedback on connection status
+- No information about when user was last online
+
+**Impact**: LOW - Better user experience during offline periods
+
+### Solution Implemented
+
+#### 1. Added Smooth Animations
+
+Used Vue Transition component for smooth slide-in/slide-out animations:
+
+```vue
+<Transition
+  enter-active-class="transform transition ease-out duration-300"
+  enter-from-class="-translate-y-full opacity-0"
+  enter-to-class="translate-y-0 opacity-100"
+  leave-active-class="transform transition ease-in duration-200"
+  leave-from-class="translate-y-0 opacity-100"
+  leave-to-class="-translate-y-full opacity-0"
+>
+```
+
+#### 2. Added Retry Button
+
+- Manual connection check with fetch to `/favicon.ico`
+- Loading spinner during check
+- Updates online status immediately on success
+- Uses `UI_TIMING.CONNECTION_TIMEOUT_MS` (5s) timeout
+
+#### 3. Added Dismiss Button
+
+- Users can dismiss the offline notification
+- Notification reappears when connection status changes
+- Dismissal state is temporary (not persisted)
+
+#### 4. Added "Last Online" Timestamp
+
+- Shows when user was last online (e.g., "Last online: 5m ago")
+- Uses localStorage to persist last online time
+- Human-friendly formatting (just now, 5m ago, 2h ago, 3d ago)
+
+### Success Criteria
+
+- [x] Smooth slide animations added
+- [x] Retry button with loading state implemented
+- [x] Dismiss button implemented
+- [x] Last online timestamp displayed
+- [x] All tests passing
+- [x] Lint passes with 0 errors
+- [x] Accessible with proper ARIA labels
+
+### Files Modified
+
+1. `components/OfflineIndicator.vue` - Complete UX overhaul
+
+### Impact
+
+**User Experience**:
+
+- Users can manually check connection status
+- Less intrusive with dismiss option
+- Better context with last online time
+- Smooth animations feel polished
+
+**Accessibility**:
+
+- Proper ARIA labels on buttons
+- Role="alert" for screen readers
+- Keyboard accessible controls
+
+---
+
+## [CONSOLIDATE-001] Centralize UI Timing Constants ✅ COMPLETED (2026-02-04)
+
+**Feature**: CONSOLIDATE-001
+**Status**: Complete
+**Agent**: 05 StorX
+**Created**: 2026-02-04
+**Completed**: 2026-02-04
+**Priority**: P2 (MEDIUM)
+
+### Description
+
+Centralized hardcoded timing values across UI components into shared constants to improve maintainability and consistency.
+
+### Issue
+
+**Location**: `components/SearchBar.vue`, `components/ToastNotification.vue`, `components/OfflineIndicator.vue`
+
+**Problem**: Multiple components had hardcoded timing values:
+
+- Search debounce: 300ms (hardcoded in multiple places)
+- Blur delay: 200ms (hardcoded)
+- Toast check interval: 100ms (hardcoded)
+- Connection timeout: 5000ms (hardcoded)
+
+**Impact**: MEDIUM - Hardcoded values scattered across codebase make updates difficult and error-prone
+
+### Solution Implemented
+
+#### 1. Extended Constants File
+
+Added UI timing constants to `server/utils/constants.ts`:
+
+```typescript
+export const UI_TIMING = {
+  SEARCH_DEBOUNCE_MS: 300,
+  SEARCH_BLUR_DELAY_MS: 200,
+  SUGGESTION_CHECK_INTERVAL_MS: 100,
+  CONNECTION_TIMEOUT_MS: 5000,
+  CONNECTION_RETRY_INTERVAL_MS: 100,
+  TOAST_CHECK_INTERVAL_MS: 100,
+  ANIMATION_DURATION_MS: 300,
+  ANIMATION_LEAVE_DURATION_MS: 200,
+} as const
+
+export const SEARCH_CONFIG = {
+  MIN_QUERY_LENGTH: 2,
+  MAX_SUGGESTIONS: 5,
+  MAX_HISTORY_ITEMS: 10,
+} as const
+```
+
+#### 2. Updated Components
+
+**SearchBar.vue**:
+
+- Changed default debounce from hardcoded 300 to `UI_TIMING.SEARCH_DEBOUNCE_MS`
+- Changed blur timeout from hardcoded 200 to `UI_TIMING.SEARCH_BLUR_DELAY_MS`
+- Changed min query length from hardcoded 1 to `SEARCH_CONFIG.MIN_QUERY_LENGTH`
+- Changed max suggestions from hardcoded 5 to `SEARCH_CONFIG.MAX_SUGGESTIONS`
+
+**ToastNotification.vue**:
+
+- Changed check intervals from hardcoded 100 to `UI_TIMING.TOAST_CHECK_INTERVAL_MS`
+
+**OfflineIndicator.vue**:
+
+- Changed connection timeout from hardcoded 5000 to `UI_TIMING.CONNECTION_TIMEOUT_MS`
+
+### Success Criteria
+
+- [x] UI_TIMING constants created with all timing values
+- [x] SEARCH_CONFIG constants created for search parameters
+- [x] SearchBar.vue uses constants
+- [x] ToastNotification.vue uses constants
+- [x] OfflineIndicator.vue uses constants
+- [x] All tests passing (1532/1578)
+- [x] Lint passes with 0 errors
+
+### Files Modified
+
+1. `server/utils/constants.ts` - Added UI_TIMING and SEARCH_CONFIG constants
+2. `components/SearchBar.vue` - Use constants for debounce, blur delay, query length, suggestions
+3. `components/ToastNotification.vue` - Use constants for check intervals
+4. `components/OfflineIndicator.vue` - Use constants for connection timeout
+
+### Impact
+
+**Maintainability**:
+
+- Single source of truth for timing values
+- Easy to adjust timing across entire application
+- Consistent user experience
+
+**Code Quality**:
+
+- No magic numbers in component code
+- Self-documenting configuration
+- Type-safe constants with `as const`
+
+**Architectural Benefits**:
+
+- Configuration separated from implementation
+- Easier to test with different timing values
+- Better separation of concerns
+
+---
+
 ## [ARCH-005] Dependency Injection Pattern for P2 Composables ✅ COMPLETED (2026-01-23)
 
 **Feature**: ARCH-005
@@ -7307,6 +7553,7 @@ Fixing critical Vue syntax errors across multiple components where self-closing 
 **Location**: Multiple components and tests
 
 **Problem**:
+
 - Missing self-closing tags (`/>`) in `ShareButton.vue`, `SearchBar.vue`, `ResourceCard.vue`, and `ResourceFilters.vue`.
 - Duplicated export of `RecommendationResult` causing Nuxt auto-import warnings.
 - `onMounted` lifecycle warnings in `useUrlSync.test.ts` due to missing component context.

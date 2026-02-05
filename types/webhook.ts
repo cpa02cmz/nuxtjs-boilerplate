@@ -7,6 +7,7 @@ export interface Webhook {
   secret?: string
   createdAt: string
   updatedAt: string
+  lastDeliveryStatus?: 'success' | 'failed' | 'pending'
 }
 
 export type WebhookEvent =

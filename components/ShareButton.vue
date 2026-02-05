@@ -122,13 +122,15 @@
         <!-- Copy Link -->
         <button
           ref="copyButtonRef"
-          class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+          :class="{ 'bg-green-50 text-green-700': copySuccess }"
           role="menuitem"
-          aria-label="Copy link to clipboard"
+          :aria-label="copySuccess ? 'Link copied!' : 'Copy link to clipboard'"
           @click="copyToClipboard"
           @keydown="handleMenuKeydown"
         >
           <svg
+            v-if="!copySuccess"
             xmlns="http://www.w3.org/2000/svg"
             class="h-4 w-4 mr-2 text-gray-600"
             viewBox="0 0 20 20"
@@ -139,7 +141,20 @@
               d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h4a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"
             />
           </svg>
-          Copy link
+          <svg
+            v-else
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 mr-2 text-green-600"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          {{ copySuccess ? 'Copied!' : 'Copy link' }}
         </button>
       </div>
     </div>
@@ -167,6 +182,8 @@ const showShareMenu = ref(false)
 const shareButtonRef = ref<HTMLElement | null>(null)
 const shareMenuRef = ref<HTMLElement | null>(null)
 const copyButtonRef = ref<HTMLElement | null>(null)
+const copySuccess = ref(false)
+let copySuccessTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Calculate position class based on available space
 const positionClass = computed(() => {
@@ -285,10 +302,7 @@ const showToast = (
 const copyToClipboard = async () => {
   try {
     await navigator.clipboard.writeText(props.url)
-    showToast('Link copied to clipboard!', 'success')
-    showShareMenu.value = false
-    await nextTick()
-    shareButtonRef.value?.focus()
+    showCopySuccess()
   } catch {
     // Fallback for older browsers that don't support Clipboard API
     try {
@@ -313,13 +327,34 @@ const copyToClipboard = async () => {
       if (!successful) {
         throw new Error('execCommand copy failed')
       }
+      showCopySuccess()
     } catch (fallbackErr) {
       logger.error('Failed to copy to clipboard:', fallbackErr)
+      showToast('Failed to copy link', 'error')
+      showShareMenu.value = false
+      await nextTick()
+      shareButtonRef.value?.focus()
     }
+  }
+}
+
+// Show copy success feedback
+const showCopySuccess = async () => {
+  copySuccess.value = true
+  showToast('Link copied to clipboard!', 'success')
+
+  // Clear any existing timeout
+  if (copySuccessTimeout) {
+    clearTimeout(copySuccessTimeout)
+  }
+
+  // Reset after 2 seconds, then close menu
+  copySuccessTimeout = setTimeout(async () => {
+    copySuccess.value = false
     showShareMenu.value = false
     await nextTick()
     shareButtonRef.value?.focus()
-  }
+  }, 2000)
 }
 
 onMounted(() => {

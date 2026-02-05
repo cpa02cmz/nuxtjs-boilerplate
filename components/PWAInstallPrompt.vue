@@ -74,7 +74,7 @@ interface PWAInterface {
   installPWA: () => void
 }
 
-const { pwa } = useNuxtApp() as { pwa: PWAInterface }
+const { pwa } = useNuxtApp() as unknown as { pwa: PWAInterface }
 
 // Local state to track user dismissal - prevents prompt from reappearing immediately
 const userDismissed = ref(false)
