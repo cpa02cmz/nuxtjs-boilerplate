@@ -43,10 +43,10 @@
       <!-- Keyboard shortcut hint -->
       <div
         v-if="!modelValue && !isFocused"
-        class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+        class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none group"
       >
         <kbd
-          class="hidden sm:inline-block px-2 py-1 text-xs font-semibold text-gray-400 bg-gray-100 border border-gray-300 rounded shadow-sm"
+          class="hidden sm:inline-block px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded-md shadow-sm transition-all duration-150 group-hover:bg-gray-100 group-hover:border-gray-300 group-hover:shadow"
           aria-hidden="true"
         >
           /
@@ -57,7 +57,7 @@
         class="absolute inset-y-0 right-0 flex items-center pr-3"
       >
         <button
-          class="text-gray-400 hover:text-gray-600 focus:outline-none"
+          class="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-150 rounded-full p-0.5 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500"
           aria-label="Clear search"
           @click="clearSearch"
         >
