@@ -6,11 +6,11 @@
     "#internal/nuxt/paths": "./.nuxt/tsconfig.json"
   },
   "scripts": {
-    "build": "nuxt build",
+    "build": "prisma generate && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare && prisma generate",
+    "postinstall": "nuxt prepare",
     "lint": "eslint . && stylelint **/*.{css,scss,less,vue}",
     "lint:fix": "eslint --fix . && stylelint --fix **/*.{css,scss,less,vue}",
     "format": "prettier --write .",
@@ -84,6 +84,6 @@
     "zod": "^4.3.5"
   },
   "overrides": {
-    "hono": "4.11.4"
+    "hono": "4.11.7"
   }
 }
