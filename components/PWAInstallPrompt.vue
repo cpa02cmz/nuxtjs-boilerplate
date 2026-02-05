@@ -64,6 +64,11 @@
 import { useNuxtApp } from '#app'
 import { ref, computed } from 'vue'
 
+// Storage key constants
+const STORAGE_KEYS = {
+  PWA_INSTALL_DISMISSED: 'pwa-install-dismissed',
+} as const
+
 interface PWAInterface {
   showInstallPrompt: boolean
   installPWA: () => void
@@ -88,13 +93,15 @@ const cancelInstall = () => {
   userDismissed.value = true
   // Store dismissal in session so it doesn't reappear during this session
   if (process.client) {
-    sessionStorage.setItem('pwa-install-dismissed', 'true')
+    sessionStorage.setItem(STORAGE_KEYS.PWA_INSTALL_DISMISSED, 'true')
   }
 }
 
 // Check if user previously dismissed in this session
 if (process.client) {
-  const previouslyDismissed = sessionStorage.getItem('pwa-install-dismissed')
+  const previouslyDismissed = sessionStorage.getItem(
+    STORAGE_KEYS.PWA_INSTALL_DISMISSED
+  )
   if (previouslyDismissed === 'true') {
     userDismissed.value = true
   }

@@ -40,7 +40,7 @@ export default defineNitroPlugin(async nitroApp => {
         }
       } else {
         if (process.env.NODE_ENV !== 'production') {
-          console.warn('No resources found to validate.')
+          logger.warn('No resources found to validate.')
         }
       }
     } catch (error) {
@@ -55,17 +55,25 @@ export default defineNitroPlugin(async nitroApp => {
   // Set up periodic validation (every hour)
   const validationInterval = setInterval(
     async () => {
-      if (process.env.NODE_ENV !== 'production') {
-        logger.info('Starting scheduled resource validation...')
+      try {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.info('Starting scheduled resource validation...')
+        }
+        await validateAllResources()
+      } catch (error) {
+        logger.error('Scheduled resource validation failed:', error)
       }
-      await validateAllResources()
     },
     60 * 60 * 1000
   ) // 1 hour in milliseconds
 
   // Also run validation on server start after a short delay
   setTimeout(async () => {
-    await validateAllResources()
+    try {
+      await validateAllResources()
+    } catch (error) {
+      logger.error('Initial resource validation failed:', error)
+    }
   }, 5000) // 5 seconds delay to allow server to fully start
 
   // Store the validation interval in nitroApp for potential cleanup

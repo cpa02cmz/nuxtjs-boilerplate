@@ -17,6 +17,15 @@
         @focusin="pauseToast(toast.id)"
         @focusout="resumeToast(toast.id)"
       >
+        <!-- Progress bar for auto-dismiss -->
+        <div
+          v-if="toast.duration !== 0"
+          class="toast__progress"
+          :class="{ 'toast__progress--paused': pausedToastIds.has(toast.id) }"
+          :style="{
+            animationDuration: `${toast.duration || (toast.type === 'error' ? TOAST_DURATION.ERROR : TOAST_DURATION.SUCCESS)}ms`,
+          }"
+        />
         <div class="toast__icon">
           <svg
             v-if="toast.type === 'success'"
@@ -113,7 +122,6 @@
     </transition-group>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref } from 'vue'
 import { TOAST_DURATION, UI_TIMING } from '~/server/utils/constants'
@@ -364,5 +372,35 @@ defineExpose({
 .toast-leave-to {
   transform: translateX(100%);
   opacity: 0;
+}
+
+/* Progress bar styles */
+.toast {
+  position: relative;
+  overflow: hidden;
+}
+
+.toast__progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background-color: rgba(0, 0, 0, 0.2);
+  width: 100%;
+  transform-origin: left;
+  animation: progress linear forwards;
+}
+
+.toast__progress--paused {
+  animation-play-state: paused;
+}
+
+@keyframes progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
 }
 </style>
