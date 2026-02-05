@@ -7,6 +7,11 @@ import { defineNitroPlugin } from 'nitropack/runtime'
 import { updateAllResourceHealth } from '../utils/resourceHealth'
 import logger from '~/utils/logger'
 
+// Extended NitroApp interface for resource validation
+interface ExtendedNitroApp {
+  _resourceValidationInterval?: NodeJS.Timeout
+}
+
 export default defineNitroPlugin(async nitroApp => {
   // Skip resource validation during Vercel build to prevent long build times
   if (process.env.VERCEL === '1') {
@@ -64,16 +69,16 @@ export default defineNitroPlugin(async nitroApp => {
   }, 5000) // 5 seconds delay to allow server to fully start
 
   // Store the validation interval in nitroApp for potential cleanup
-  ;(nitroApp as any)._resourceValidationInterval = validationInterval
+  const extendedApp = nitroApp as ExtendedNitroApp
+  extendedApp._resourceValidationInterval = validationInterval
 
   // Add cleanup handler to clear interval on shutdown
   process.on('SIGTERM', () => {
     if (process.env.NODE_ENV !== 'production') {
       console.log('Shutting down resource validation...')
     }
-    const app = nitroApp as any
-    if (app._resourceValidationInterval) {
-      clearInterval(app._resourceValidationInterval)
+    if (extendedApp._resourceValidationInterval) {
+      clearInterval(extendedApp._resourceValidationInterval)
     }
   })
 
@@ -81,9 +86,8 @@ export default defineNitroPlugin(async nitroApp => {
     if (process.env.NODE_ENV !== 'production') {
       console.log('Shutting down resource validation...')
     }
-    const app = nitroApp as any
-    if (app._resourceValidationInterval) {
-      clearInterval(app._resourceValidationInterval)
+    if (extendedApp._resourceValidationInterval) {
+      clearInterval(extendedApp._resourceValidationInterval)
     }
   })
 })
