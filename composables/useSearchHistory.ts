@@ -1,8 +1,9 @@
 import { ref, computed } from 'vue'
 import { createStorage } from '~/utils/storage'
+import { STORAGE_KEYS } from '~/server/utils/constants'
 
 export const useSearchHistory = () => {
-  const SEARCH_HISTORY_KEY = 'resource_search_history'
+  const SEARCH_HISTORY_KEY = STORAGE_KEYS.SEARCH_HISTORY
   const MAX_HISTORY_ITEMS = 10
 
   const storage = createStorage<string[]>(SEARCH_HISTORY_KEY, [])

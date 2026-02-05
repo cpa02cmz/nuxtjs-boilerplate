@@ -19,7 +19,7 @@ const logger = {
       process.env.NODE_ENV === 'development' &&
       process.env.DEBUG === 'true'
     ) {
-      logger.debug(message, data || '')
+      console.log(message, data || '')
     }
   },
 }
@@ -31,7 +31,7 @@ if (
   process.env.NODE_ENV !== 'production' ||
   process.env.VALIDATION_LOGS === 'true'
 ) {
-  console.log('Validating security implementation...')
+  logger.info('Validating security implementation...')
 }
 
 // Check if sanitization is centralized in utils/sanitize.ts (which is the proper approach)

@@ -1,3 +1,13 @@
+// Storage keys for localStorage/sessionStorage
+export const STORAGE_KEYS = {
+  SEARCH_HISTORY: 'resource_search_history',
+  SAVED_SEARCHES: 'resource_saved_searches',
+  BOOKMARKS: 'resource_bookmarks',
+  USER_PROFILE: 'userProfile',
+  PWA_INSTALL_DISMISSED: 'pwa-install-dismissed',
+  WEB_VITALS_PREFIX: 'web-vitals-',
+} as const
+
 export const VALID_CATEGORIES = [
   'Development',
   'Design',

@@ -1,6 +1,7 @@
 import { ref, computed, readonly } from 'vue'
 import { createStorageWithDateSerialization } from '~/utils/storage'
 import { emitEvent } from '~/utils/event-emitter'
+import { STORAGE_KEYS } from '~/server/utils/constants'
 
 export interface Bookmark {
   id: string
@@ -12,7 +13,7 @@ export interface Bookmark {
   category?: string
 }
 
-const BOOKMARKS_STORAGE_KEY = 'resource_bookmarks'
+const BOOKMARKS_STORAGE_KEY = STORAGE_KEYS.BOOKMARKS
 const storage = createStorageWithDateSerialization<Bookmark[]>(
   BOOKMARKS_STORAGE_KEY,
   []
