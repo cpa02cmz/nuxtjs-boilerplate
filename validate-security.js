@@ -3,26 +3,8 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-// Simple logger for Node.js scripts
-const logger = {
-  info: (message, data) => {
-    console.log(message, data || '')
-  },
-  warn: (message, data) => {
-    console.warn(message, data || '')
-  },
-  error: (message, data) => {
-    console.error(message, data || '')
-  },
-  debug: (message, data) => {
-    if (
-      process.env.NODE_ENV === 'development' &&
-      process.env.DEBUG === 'true'
-    ) {
-      logger.debug(message, data || '')
-    }
-  },
-}
+// Import centralized logger utility
+import { logger } from './utils/logger.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -31,7 +13,7 @@ if (
   process.env.NODE_ENV !== 'production' ||
   process.env.VALIDATION_LOGS === 'true'
 ) {
-  console.log('Validating security implementation...')
+  logger.info('Validating security implementation...')
 }
 
 // Check if sanitization is centralized in utils/sanitize.ts (which is the proper approach)

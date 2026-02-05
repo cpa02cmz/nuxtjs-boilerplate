@@ -9,26 +9,46 @@ export class WebhookQueueManager {
     null
 
   async enqueue(item: WebhookQueueItem): Promise<void> {
-    await webhookStorage.addToQueue(item)
+    try {
+      await webhookStorage.addToQueue(item)
+    } catch (error) {
+      logger.error('Failed to enqueue webhook item:', error)
+      throw error
+    }
   }
 
   async dequeue(): Promise<WebhookQueueItem | null> {
-    const queue = await webhookStorage.getQueue()
-    if (queue.length === 0) {
+    try {
+      const queue = await webhookStorage.getQueue()
+      if (queue.length === 0) {
+        return null
+      }
+
+      const item = queue[0]
+      await webhookStorage.removeFromQueue(item.id)
+      return item
+    } catch (error) {
+      logger.error('Failed to dequeue webhook item:', error)
       return null
     }
-
-    const item = queue[0]
-    await webhookStorage.removeFromQueue(item.id)
-    return item
   }
 
   async getPendingItems(): Promise<WebhookQueueItem[]> {
-    return await webhookStorage.getQueue()
+    try {
+      return await webhookStorage.getQueue()
+    } catch (error) {
+      logger.error('Failed to get pending webhook items:', error)
+      return []
+    }
   }
 
   async remove(id: string): Promise<void> {
-    await webhookStorage.removeFromQueue(id)
+    try {
+      await webhookStorage.removeFromQueue(id)
+    } catch (error) {
+      logger.error(`Failed to remove webhook item ${id}:`, error)
+      throw error
+    }
   }
 
   startProcessor(callback: (item: WebhookQueueItem) => Promise<void>): void {
@@ -70,8 +90,13 @@ export class WebhookQueueManager {
   }
 
   async getQueueSize(): Promise<number> {
-    const queue = await webhookStorage.getQueue()
-    return queue.length
+    try {
+      const queue = await webhookStorage.getQueue()
+      return queue.length
+    } catch (error) {
+      logger.error('Failed to get webhook queue size:', error)
+      return 0
+    }
   }
 
   isRunning(): boolean {
@@ -79,13 +104,23 @@ export class WebhookQueueManager {
   }
 
   async getNextScheduledTime(): Promise<string | null> {
-    const queue = await webhookStorage.getQueue()
-    return queue.length > 0 ? queue[0].scheduledFor : null
+    try {
+      const queue = await webhookStorage.getQueue()
+      return queue.length > 0 ? queue[0].scheduledFor : null
+    } catch (error) {
+      logger.error('Failed to get next scheduled webhook time:', error)
+      return null
+    }
   }
 
-  getNextScheduledAt(): number | null {
-    const queue = webhookStorage.getQueue()
-    return queue.length > 0 ? new Date(queue[0].scheduledFor).getTime() : null
+  async getNextScheduledAt(): Promise<number | null> {
+    try {
+      const queue = await webhookStorage.getQueue()
+      return queue.length > 0 ? new Date(queue[0].scheduledFor).getTime() : null
+    } catch (error) {
+      logger.error('Failed to get next scheduled webhook timestamp:', error)
+      return null
+    }
   }
 }
 
