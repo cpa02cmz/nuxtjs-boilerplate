@@ -1,5 +1,6 @@
 import type { Resource } from '~/types/resource'
 import { getRouterParam } from 'h3'
+import { randomUUID } from 'node:crypto'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendSuccessResponse,
@@ -44,9 +45,9 @@ export default defineEventHandler(async event => {
     // Get current user or default to 'system'
     const userId = event.context.auth?.userId ?? 'system'
 
-    // Create status change record
+    // Create status change record with cryptographically secure ID
     const statusChange = {
-      id: Math.random().toString(36).substring(2, 15),
+      id: randomUUID(),
       fromStatus: (resource.status ?? 'active') as string,
       toStatus: status,
       reason: (reason ?? 'Status updated manually') as string,
