@@ -130,7 +130,7 @@ export const analyticsEventSchema = z.object({
     .max(50, 'Event type too long')
     .refine(
       val => isValidEventType(val),
-      'Invalid event type. Must be one of: resource_view, search, filter_change, bookmark, comparison, submission'
+      'Invalid event type. Must be one of: resource_view, search, filter_change, bookmark, comparison, submission, page_view, resource_click, advanced_search, zero_result_search, search_result_click, filter_applied, recommendation_click, resource_rating, time_spent, bookmark_action, resource_shared'
     ),
   resourceId: z
     .string()
