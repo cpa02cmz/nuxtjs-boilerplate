@@ -28,6 +28,7 @@ import { apiConfig, type ApiConfig } from './api.config'
 import { contentConfig, type ContentConfig } from './content.config'
 import { limitsConfig, type LimitsConfig } from './limits.config'
 import { comparisonConfig, type ComparisonConfig } from './comparison.config'
+import { socialConfig, type SocialConfig } from './social.config'
 
 // Re-export individual configs
 export { appConfig, type AppConfig }
@@ -52,6 +53,7 @@ export { apiConfig, type ApiConfig }
 export { contentConfig, type ContentConfig }
 export { limitsConfig, type LimitsConfig }
 export { comparisonConfig, type ComparisonConfig }
+export { socialConfig, type SocialConfig }
 
 // Default export with all configs
 export const config = {
@@ -72,6 +74,7 @@ export const config = {
   content: contentConfig,
   limits: limitsConfig,
   comparison: comparisonConfig,
+  social: socialConfig,
 } as const
 
 export type Config = typeof config

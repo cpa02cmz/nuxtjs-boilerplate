@@ -147,6 +147,12 @@ export const uiConfig = {
     maxRetries: parseInt(process.env.DATA_LOADING_MAX_RETRIES || '3'),
     retryDelayMs: parseInt(process.env.DATA_LOADING_RETRY_DELAY || '1000'),
   },
+
+  // Search Highlighting
+  search: {
+    highlightClasses:
+      process.env.SEARCH_HIGHLIGHT_CLASSES || 'bg-yellow-200 text-gray-900',
+  },
 } as const
 
 export type UiConfig = typeof uiConfig

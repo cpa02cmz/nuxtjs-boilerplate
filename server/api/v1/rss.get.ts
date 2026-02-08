@@ -3,6 +3,7 @@ import type { Resource } from '~/types/resource'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { handleApiRouteError } from '~/server/utils/api-response'
 import { RSS_CONFIG } from '~/server/utils/constants'
+import { appConfig } from '~/configs/app.config'
 
 /**
  * GET /api/v1/rss
@@ -45,7 +46,7 @@ function generateRssFeed(resources: Resource[]): string {
   const siteUrl =
     config.public.siteUrl ||
     config.public.canonicalUrl ||
-    'http://localhost:3000'
+    appConfig.baseUrl.default
   const title = 'Free Developer Resources'
   const description = 'A collection of free resources for developers'
   const date = new Date().toUTCString()

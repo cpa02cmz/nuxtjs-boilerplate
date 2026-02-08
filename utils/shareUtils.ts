@@ -1,6 +1,7 @@
 /**
  * Utility functions for social sharing
  */
+import { socialConfig } from '../configs/social.config'
 
 /**
  * Add UTM parameters to a URL
@@ -42,12 +43,14 @@ export const generateShareUrls = (
     `${title} - ${description || ''}`
   )
 
+  const { urls } = socialConfig
+
   return {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodedBaseUrl}&hashtags=FreeResources,WebDevelopment`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedBaseUrl}&quote=${encodedTitleAndDescription}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description || '')}`,
-    reddit: `https://www.reddit.com/submit?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}`,
-    email: `mailto:?subject=${encodeURIComponent(title)}&body=Check out this resource: ${baseUrl}%0D%0A%0D%0A${encodeURIComponent(description || '')}`,
+    twitter: `${urls.twitter.baseUrl}?text=${encodeURIComponent(title)}&url=${encodedBaseUrl}&hashtags=${urls.twitter.params.hashtags}`,
+    facebook: `${urls.facebook.baseUrl}?u=${encodedBaseUrl}&quote=${encodedTitleAndDescription}`,
+    linkedin: `${urls.linkedin.baseUrl}?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description || '')}`,
+    reddit: `${urls.reddit.baseUrl}?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}`,
+    email: `${urls.email.protocol}?subject=${encodeURIComponent(title)}&body=Check out this resource: ${baseUrl}%0D%0A%0D%0A${encodeURIComponent(description || '')}`,
   }
 }
 
@@ -59,18 +62,24 @@ export const generateResourceShareUrls = (
   title: string,
   description?: string
 ) => {
+  const { utm, urls } = socialConfig
   const encodedBaseUrl = encodeURIComponent(
-    addUTMParams(baseUrl, 'social', 'share', 'resource-sharing')
+    addUTMParams(
+      baseUrl,
+      utm.defaults.source,
+      utm.defaults.medium,
+      utm.defaults.campaign
+    )
   )
   const encodedTitleAndDescription = encodeURIComponent(
     `${title} - ${description || ''}`
   )
 
   return {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodedBaseUrl}&hashtags=FreeResources,WebDevelopment`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedBaseUrl}&quote=${encodedTitleAndDescription}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description || '')}`,
-    reddit: `https://www.reddit.com/submit?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}`,
-    email: `mailto:?subject=${encodeURIComponent(title)}&body=Check out this resource: ${baseUrl}%0D%0A%0D%0A${encodeURIComponent(description || '')}`,
+    twitter: `${urls.twitter.baseUrl}?text=${encodeURIComponent(title)}&url=${encodedBaseUrl}&hashtags=${urls.twitter.params.hashtags}`,
+    facebook: `${urls.facebook.baseUrl}?u=${encodedBaseUrl}&quote=${encodedTitleAndDescription}`,
+    linkedin: `${urls.linkedin.baseUrl}?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description || '')}`,
+    reddit: `${urls.reddit.baseUrl}?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}`,
+    email: `${urls.email.protocol}?subject=${encodeURIComponent(title)}&body=Check out this resource: ${baseUrl}%0D%0A%0D%0A${encodeURIComponent(description || '')}`,
   }
 }

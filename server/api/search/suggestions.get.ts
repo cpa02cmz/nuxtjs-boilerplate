@@ -7,6 +7,7 @@ import {
   sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { searchConfig } from '~/configs/search.config'
 
 /**
  * GET /api/search/suggestions
@@ -37,12 +38,12 @@ export default defineEventHandler(async event => {
       }
     }
 
-    // Validate and parse limit parameter
-    let limit = 5 // default
+    // Validate and parse limit parameter using searchConfig
+    let limit = searchConfig.behavior.maxSuggestions
     if (query.limit !== undefined) {
       const parsedLimit = parseInt(query.limit as string)
       if (!isNaN(parsedLimit) && parsedLimit > 0) {
-        limit = Math.min(parsedLimit, 10) // max 10 suggestions
+        limit = Math.min(parsedLimit, searchConfig.behavior.maxSuggestions * 2)
       } else {
         return sendBadRequestError(
           event,
@@ -84,11 +85,12 @@ export default defineEventHandler(async event => {
       limit: limit,
       timestamp: new Date().toISOString(),
     }
-    await cacheSetWithTags(cacheKey, responseData, 60, [
-      'search',
-      'suggestions',
-      'api',
-    ])
+    await cacheSetWithTags(
+      cacheKey,
+      responseData,
+      parseInt(process.env.SUGGESTIONS_CACHE_TTL_SECONDS || '60'),
+      ['search', 'suggestions', 'api']
+    )
 
     // Set cache miss header
     event.node.res?.setHeader('X-Cache', 'MISS')

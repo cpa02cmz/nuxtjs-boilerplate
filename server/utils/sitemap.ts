@@ -1,4 +1,5 @@
 import type { Resource } from '~/types/resource'
+import { appConfig } from '~/configs/app.config'
 
 export interface SitemapEntry {
   url: string
@@ -6,6 +7,10 @@ export interface SitemapEntry {
   changefreq: string
   lastmod?: string
 }
+
+// Sitemap XML namespace - Flexy hates hardcoded values!
+const SITEMAP_NAMESPACE =
+  process.env.SITEMAP_NAMESPACE || 'http://www.sitemaps.org/schemas/sitemap/0.9'
 
 export function getBaseUrl(): string {
   return getBaseUrlFromConfig()
@@ -17,10 +22,10 @@ export function getBaseUrlFromConfig(): string {
     return (
       config.public.siteUrl ||
       config.public.canonicalUrl ||
-      'http://localhost:3000'
+      appConfig.baseUrl.default
     )
   } catch {
-    return 'http://localhost:3000'
+    return appConfig.baseUrl.default
   }
 }
 
@@ -67,7 +72,7 @@ export function buildResourceUrlEntry(
 
 export function generateSitemapXML(entries: string[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="${SITEMAP_NAMESPACE}">
 ${entries.join('\n')}
 </urlset>`
 }

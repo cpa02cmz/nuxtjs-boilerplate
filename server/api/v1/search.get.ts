@@ -12,6 +12,7 @@ import {
   sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { paginationConfig } from '~/configs/pagination.config'
 
 /**
  * GET /api/v1/search
@@ -50,12 +51,12 @@ export default defineEventHandler(async event => {
     let resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Parse query parameters with validation
-    // Validate and parse limit parameter
-    let limit = 20 // default
+    // Validate and parse limit parameter using paginationConfig
+    let limit = paginationConfig.search.defaultLimit
     if (query.limit !== undefined) {
       const parsedLimit = parseInt(query.limit as string)
       if (!isNaN(parsedLimit) && parsedLimit > 0) {
-        limit = Math.min(parsedLimit, 100) // max 100
+        limit = Math.min(parsedLimit, paginationConfig.search.maxLimit)
       } else {
         return sendBadRequestError(
           event,
@@ -65,7 +66,7 @@ export default defineEventHandler(async event => {
     }
 
     // Validate and parse offset parameter
-    let offset = 0 // default
+    let offset = paginationConfig.defaults.offset
     if (query.offset !== undefined) {
       const parsedOffset = parseInt(query.offset as string)
       if (!isNaN(parsedOffset) && parsedOffset >= 0) {
@@ -216,11 +217,12 @@ export default defineEventHandler(async event => {
 
     // Cache the result with tags for easier invalidation
     // Use shorter TTL for search results since they change more frequently
-    await cacheSetWithTags(cacheKey, response, 120, [
-      'search',
-      'api-v1',
-      'search-results',
-    ])
+    await cacheSetWithTags(
+      cacheKey,
+      response,
+      parseInt(process.env.SEARCH_CACHE_TTL_SECONDS || '120'),
+      ['search', 'api-v1', 'search-results']
+    )
 
     // Set cache miss header
     event.node.res?.setHeader('X-Cache', 'MISS')

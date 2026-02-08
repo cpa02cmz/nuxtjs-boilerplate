@@ -16,6 +16,16 @@ export const appConfig = {
   // Contact and Social
   twitterHandle: process.env.TWITTER_HANDLE || '@yourTwitterHandle',
 
+  // Base URLs
+  baseUrl: {
+    // Production URL from env or default
+    production: process.env.NUXT_PUBLIC_CANONICAL_URL || '',
+    // Development fallback URL
+    development: process.env.DEV_BASE_URL || 'http://localhost:3000',
+    // Default fallback when no other URL is available
+    default: process.env.DEFAULT_BASE_URL || 'http://localhost:3000',
+  },
+
   // Feature Flags
   features: {
     enablePWA: process.env.ENABLE_PWA !== 'false',

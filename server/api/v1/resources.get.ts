@@ -8,6 +8,7 @@ import {
   sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { paginationConfig } from '~/configs/pagination.config'
 
 /**
  * GET /api/v1/resources
@@ -48,12 +49,12 @@ export default defineEventHandler(async event => {
     let resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Parse query parameters with validation
-    // Validate and parse limit parameter
-    let limit = 20 // default
+    // Validate and parse limit parameter using paginationConfig
+    let limit = paginationConfig.api.defaultLimit
     if (query.limit !== undefined) {
       const parsedLimit = parseInt(query.limit as string)
       if (!isNaN(parsedLimit) && parsedLimit > 0) {
-        limit = Math.min(parsedLimit, 100) // max 100
+        limit = Math.min(parsedLimit, paginationConfig.api.maxLimit)
       } else {
         return sendBadRequestError(
           event,
@@ -63,7 +64,7 @@ export default defineEventHandler(async event => {
     }
 
     // Validate and parse offset/page parameter (page takes precedence over offset)
-    let offset = 0 // default
+    let offset = paginationConfig.defaults.offset
     if (query.page !== undefined) {
       const parsedPage = parseInt(query.page as string)
       if (!isNaN(parsedPage) && parsedPage >= 1) {
@@ -215,11 +216,12 @@ export default defineEventHandler(async event => {
     }
 
     // Cache the result with tags for easier invalidation
-    await cacheSetWithTags(cacheKey, response, 300, [
-      'resources',
-      'api-v1',
-      'list',
-    ])
+    await cacheSetWithTags(
+      cacheKey,
+      response,
+      parseInt(process.env.RESOURCES_CACHE_TTL_SECONDS || '300'),
+      ['resources', 'api-v1', 'list']
+    )
 
     // Set cache miss header
     event.node.res?.setHeader('X-Cache', 'MISS')

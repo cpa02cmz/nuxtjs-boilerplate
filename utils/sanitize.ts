@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify'
+import { uiConfig } from '../configs/ui.config'
 
 const FORBID_TAGS = [
   'script',
@@ -251,10 +252,13 @@ export const sanitizeAndHighlight = (
   const escapedQuery = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const regex = new RegExp(`(${escapedQuery})`, 'gi')
 
+  // Use configurable highlight classes from uiConfig
+  const highlightClasses = uiConfig.search.highlightClasses
+
   // Create highlighted text - only highlighting the already sanitized text
   const highlighted = sanitizedText.replace(
     regex,
-    '<mark class="bg-yellow-200 text-gray-900">$&</mark>'
+    `<mark class="${highlightClasses}">$&</mark>`
   )
 
   const fullySanitized = DOMPurify.sanitize(highlighted, {
