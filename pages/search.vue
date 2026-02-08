@@ -40,31 +40,18 @@
       </div>
 
       <!-- No Results State -->
-      <div
+      <LazyEmptyState
         v-else-if="!filteredResources.length && !loading"
-        class="text-center py-12"
-      >
-        <h3 class="text-xl font-medium text-gray-900 mb-2">
-          No resources found
-        </h3>
-        <p class="text-gray-500 mb-6">
-          Try adjusting your search or filter criteria
-        </p>
-        <ClientOnly>
-          <LazyRelatedSearches
-            :query="searchQuery"
-            class="mb-6"
-            @search-select="handleRelatedSearch"
-          />
-        </ClientOnly>
-        <button
-          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
-          aria-label="Reset all filters to default"
-          @click="resetAllFilters"
-        >
-          Reset Filters
-        </button>
-      </div>
+        title="No resources found"
+        description="We couldn't find any resources matching your search. Try adjusting your filters or search terms to discover more great free tools."
+        :suggestions="['AI Tools', 'Web Hosting', 'Databases', 'APIs', 'VPS']"
+        show-reset
+        show-browse-all
+        show-tips
+        @reset="resetAllFilters"
+        @browse-all="handleBrowseAll"
+        @suggestion-click="handleSuggestionClick"
+      />
 
       <!-- Results with Filters -->
       <div
@@ -300,7 +287,8 @@ const resetAllFilters = () => {
   searchQuery.value = ''
 }
 
-const handleRelatedSearch = (query: string) => {
+// Kept for RelatedSearches compatibility if used elsewhere
+const _handleRelatedSearch = (query: string) => {
   searchQuery.value = query
   updateSearchQuery(query)
 }
@@ -329,6 +317,15 @@ const onUndoDelete = (search: {
   createdAt: Date
 }) => {
   saveSearch(search.name, search.query)
+}
+
+const handleBrowseAll = () => {
+  resetAllFilters()
+}
+
+const handleSuggestionClick = (suggestion: string) => {
+  searchQuery.value = suggestion
+  updateSearchQuery(suggestion)
 }
 
 const getButtonLabel = (category: string) => {

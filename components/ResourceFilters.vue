@@ -214,6 +214,7 @@ const props = withDefaults(defineProps<Props>(), {
   benefits: () => [],
   searchQuery: '',
   facetCounts: () => ({}),
+  benefits: () => [],
   selectedBenefits: () => [],
   selectedDateRange: 'anytime',
   savedSearches: () => [],
