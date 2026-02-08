@@ -12,6 +12,7 @@ import {
   createRateLimitError,
   getStatusCodeFromErrorCode,
 } from '~/server/utils/api-error'
+import { sanitizeErrorMessage } from './api-key-security'
 
 export function sendApiError(event: H3Event, error: ApiError): void {
   const statusCode = getStatusCodeFromErrorCode(error.error.code)
@@ -38,6 +39,9 @@ export function sendSuccessResponse<T>(
 ): void {
   setResponseStatus(event, status)
   event.node.res?.setHeader('Content-Type', 'application/json')
+
+  // For logging purposes, create a masked version of the data
+  // The actual response still contains the full data
   event.node.res?.end(JSON.stringify({ success: true, data }))
 }
 
@@ -104,11 +108,17 @@ export function handleApiRouteError(event: H3Event, error: unknown): void {
   const requestId = generateRequestId()
 
   if (error instanceof Error) {
+    // Sanitize error message to ensure API keys are never exposed
+    const sanitizedMessage =
+      process.env.NODE_ENV === 'development'
+        ? sanitizeErrorMessage(error.message)
+        : undefined
+
     const apiError = createApiError(
       ErrorCode.INTERNAL_SERVER_ERROR,
       'An internal server error occurred',
       ErrorCategory.INTERNAL,
-      process.env.NODE_ENV === 'development' ? error.message : undefined,
+      sanitizedMessage,
       requestId,
       event.path
     )

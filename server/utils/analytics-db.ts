@@ -10,16 +10,51 @@ export interface AnalyticsEvent {
   url?: string
   userAgent?: string
   ip?: string | null
+  timestamp: Date
+  deletedAt?: Date | null
+  properties?: Record<string, unknown>
+}
+
+/**
+ * Input type for creating analytics events - accepts multiple timestamp formats
+ */
+export interface AnalyticsEventInput {
+  id?: string
+  type: string
+  resourceId?: string
+  category?: string
+  url?: string
+  userAgent?: string
+  ip?: string | null
   timestamp: Date | string | number
   deletedAt?: Date | string | null
   properties?: Record<string, unknown>
 }
 
+/**
+ * Normalizes timestamp input to Date object
+ */
+function normalizeTimestamp(timestamp: Date | string | number): Date {
+  if (timestamp instanceof Date) return timestamp
+  if (typeof timestamp === 'number') return new Date(timestamp)
+  return new Date(timestamp)
+}
+
 export async function insertAnalyticsEvent(
-  event: AnalyticsEvent
+  event: AnalyticsEventInput
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const validation = analyticsEventSchema.safeParse(event)
+    // Normalize timestamp before validation
+    const normalizedEvent = {
+      ...event,
+      timestamp: normalizeTimestamp(event.timestamp),
+      deletedAt: event.deletedAt
+        ? event.deletedAt instanceof Date
+          ? event.deletedAt
+          : new Date(event.deletedAt)
+        : null,
+    }
+    const validation = analyticsEventSchema.safeParse(normalizedEvent)
 
     if (!validation.success) {
       const errorMessage = validation.error.issues
@@ -73,8 +108,8 @@ function mapDbEventToAnalyticsEvent(event: {
     url: event.url || undefined,
     userAgent: event.userAgent || undefined,
     ip: event.ip || undefined,
-    timestamp: event.timestamp.toISOString(),
-    deletedAt: event.deletedAt?.toISOString() || undefined,
+    timestamp: event.timestamp,
+    deletedAt: event.deletedAt || undefined,
     properties: event.properties ? JSON.parse(event.properties) : undefined,
   }
 }
