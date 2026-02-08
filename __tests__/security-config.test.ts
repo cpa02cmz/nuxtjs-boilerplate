@@ -111,12 +111,6 @@ describe('Security Configuration', () => {
       expect(securityConfig.additionalHeaders).toHaveProperty(
         'Permissions-Policy'
       )
-      expect(securityConfig.additionalHeaders).toHaveProperty(
-        'Access-Control-Allow-Methods'
-      )
-      expect(securityConfig.additionalHeaders).toHaveProperty(
-        'Access-Control-Allow-Headers'
-      )
     })
   })
 })

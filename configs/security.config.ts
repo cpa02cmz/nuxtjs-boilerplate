@@ -45,7 +45,7 @@ export const securityConfig = {
   },
 
   // Additional Security Headers
-  headers: {
+  additionalHeaders: {
     'X-Content-Type-Options':
       process.env.HEADER_CONTENT_TYPE_OPTIONS || 'nosniff',
     'X-Frame-Options': process.env.HEADER_FRAME_OPTIONS || 'DENY',
@@ -134,7 +134,7 @@ export function generateCsp(nonce?: string): string {
 // Function to get all security headers
 export function getSecurityHeaders(nonce?: string): Record<string, string> {
   const headers: Record<string, string> = {
-    ...securityConfig.headers,
+    ...securityConfig.additionalHeaders,
     'Access-Control-Allow-Origin': securityConfig.cors.allowedOrigins[0] || '*',
     'Access-Control-Allow-Methods':
       securityConfig.cors.allowedMethods.join(', '),
