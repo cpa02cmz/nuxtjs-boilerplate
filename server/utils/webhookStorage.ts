@@ -17,12 +17,18 @@ import { prisma } from './db'
 import { PAGINATION } from './constants'
 import { safeJsonParse } from './safeJsonParse'
 import { logger } from '~/utils/logger'
+import { encryptSecret, decryptSecret } from './encryption'
 
 function mapPrismaToWebhook(webhook: PrismaWebhook): Webhook {
+  // Decrypt secret when mapping from database
+  const decryptedSecret = webhook.secret
+    ? decryptSecret(webhook.secret)
+    : undefined
+
   return {
     id: webhook.id,
     url: webhook.url,
-    secret: webhook.secret ?? undefined,
+    secret: decryptedSecret ?? undefined,
     active: webhook.active,
     events: safeJsonParse<WebhookEvent[]>(webhook.events, []),
     createdAt: webhook.createdAt.toISOString(),
@@ -156,11 +162,16 @@ export const webhookStorage = {
 
   async createWebhook(webhook: Webhook) {
     try {
+      // Encrypt secret before storing
+      const encryptedSecret = webhook.secret
+        ? encryptSecret(webhook.secret)
+        : null
+
       const created = await prisma.webhook.create({
         data: {
           id: webhook.id,
           url: webhook.url,
-          secret: webhook.secret,
+          secret: encryptedSecret,
           active: webhook.active,
           events: JSON.stringify(webhook.events),
         },
@@ -174,11 +185,19 @@ export const webhookStorage = {
 
   async updateWebhook(id: string, data: Partial<Webhook>) {
     try {
+      // Encrypt secret before updating if provided
+      const encryptedSecret =
+        data.secret !== undefined
+          ? data.secret
+            ? encryptSecret(data.secret)
+            : null
+          : undefined
+
       const updated = await prisma.webhook.updateMany({
         where: { id, deletedAt: null },
         data: {
           ...(data.url && { url: data.url }),
-          ...(data.secret !== undefined && { secret: data.secret }),
+          ...(encryptedSecret !== undefined && { secret: encryptedSecret }),
           ...(data.active !== undefined && { active: data.active }),
           ...(data.events && { events: JSON.stringify(data.events) }),
         },
