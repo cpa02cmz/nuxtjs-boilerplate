@@ -2,6 +2,7 @@ import { defineNitroPlugin } from 'nitropack/runtime'
 import type { H3Event } from 'h3'
 import { randomBytes } from 'node:crypto'
 import { getSecurityHeaders } from '../utils/security-config'
+import { logger } from '~/utils/logger'
 
 // Comprehensive security headers plugin
 export default defineNitroPlugin(nitroApp => {
@@ -90,9 +91,9 @@ export default defineNitroPlugin(nitroApp => {
     } catch (error) {
       // Log errors in any environment but don't expose detailed errors in production
       if (process.env.NODE_ENV !== 'production') {
-        console.warn('Failed to set security headers in afterResponse:', error)
+        logger.warn('Failed to set security headers in afterResponse:', error)
       } else {
-        console.error('Security header setting failed')
+        logger.error('Security header setting failed')
       }
     }
   })

@@ -1,6 +1,7 @@
 import { defineNitroPlugin } from 'nitropack/runtime'
 import { randomBytes } from 'node:crypto'
 import { getSecurityHeaders } from '../utils/security-config'
+import { logger } from '~/utils/logger'
 
 // HTML Security Plugin - handles security headers for HTML responses
 // This plugin coordinates with the API response security to prevent duplication
@@ -31,9 +32,9 @@ export default defineNitroPlugin(nitroApp => {
     } catch (error) {
       // Log errors but don't expose detailed errors in production
       if (process.env.NODE_ENV !== 'production') {
-        console.warn('Failed to set security headers in render:html:', error)
+        logger.warn('Failed to set security headers in render:html:', error)
       } else {
-        console.error('HTML security header setting failed')
+        logger.error('HTML security header setting failed')
       }
     }
   })
