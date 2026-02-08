@@ -89,6 +89,64 @@ export const uiConfig = {
       cdn: process.env.RESOURCE_CARD_BTN_CDN || 'Get CDN',
     },
   },
+
+  // Dropdown and Suggestion Settings
+  dropdown: {
+    maxHeight: process.env.DROPDOWN_MAX_HEIGHT || 'max-h-96',
+    filterMaxHeight: process.env.FILTER_MAX_HEIGHT || 'max-h-40',
+  },
+
+  // Icon Sizes
+  iconSizes: {
+    suggestion: process.env.ICON_SUGGESTION_SIZE || 'w-4 h-4',
+    default: process.env.ICON_DEFAULT_CLASS || 'w-5 h-5',
+  },
+
+  // Filter Chip Settings
+  chips: {
+    queryMaxWidth: process.env.CHIP_QUERY_MAX_WIDTH || 'max-w-[200px]',
+    valueMaxWidth: process.env.CHIP_VALUE_MAX_WIDTH || 'max-w-[150px]',
+    badgePadding: process.env.CHIP_BADGE_PADDING || 'px-2 py-0.5',
+  },
+
+  // Virtual List Settings
+  virtualList: {
+    itemHeight: parseInt(process.env.VIRTUAL_LIST_ITEM_HEIGHT || '320'),
+    overscan: parseInt(process.env.VIRTUAL_LIST_OVERSCAN || '5'),
+    pageItemHeight: parseInt(
+      process.env.VIRTUAL_LIST_PAGE_ITEM_HEIGHT || '340'
+    ),
+    pageOverscan: parseInt(process.env.VIRTUAL_LIST_PAGE_OVERSCAN || '3'),
+  },
+
+  // Scrollbar Settings
+  scrollbar: {
+    width: process.env.SCROLLBAR_WIDTH || '8px',
+    trackColor: process.env.SCROLLBAR_TRACK_COLOR || '#f1f5f9',
+    thumbColor: process.env.SCROLLBAR_THUMB_COLOR || '#cbd5e1',
+    thumbHoverColor: process.env.SCROLLBAR_THUMB_HOVER_COLOR || '#94a3b8',
+  },
+
+  // Timing Values (ms)
+  timing: {
+    // Animation timeouts
+    bookmarkAnimationMs: parseInt(
+      process.env.TIMING_BOOKMARK_ANIMATION || '400'
+    ),
+    bookmarkStatusClearMs: parseInt(
+      process.env.TIMING_BOOKMARK_STATUS_CLEAR || '1000'
+    ),
+    copySuccessTimeoutMs: parseInt(process.env.TIMING_COPY_SUCCESS || '2000'),
+    searchTrackingDelayMs: parseInt(
+      process.env.TIMING_SEARCH_TRACKING || '500'
+    ),
+  },
+
+  // Data Loading
+  dataLoading: {
+    maxRetries: parseInt(process.env.DATA_LOADING_MAX_RETRIES || '3'),
+    retryDelayMs: parseInt(process.env.DATA_LOADING_RETRY_DELAY || '1000'),
+  },
 } as const
 
 export type UiConfig = typeof uiConfig
