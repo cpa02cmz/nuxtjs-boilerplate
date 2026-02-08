@@ -22,7 +22,7 @@ jobs:
   # ============================================================
   auto_update_event:
     if: github.event_name == 'pull_request_target'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-22.04-arm
     steps:
       - name: Fork Check
         id: forkcheck
