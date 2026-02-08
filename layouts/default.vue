@@ -94,6 +94,36 @@
             >
               API Analytics
             </NuxtLink>
+            <NuxtLink
+              v-if="comparisonCount > 0"
+              to="/compare"
+              class="relative inline-flex items-center px-3 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+              :class="{ 'animate-bounce-scale': isCountAnimating }"
+              :aria-label="`Compare ${comparisonCount} resources`"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 mr-1.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+              Compare
+              <span
+                class="ml-1.5 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 text-xs font-bold bg-white text-blue-600 rounded-full"
+                :class="{ 'animate-pop': isCountAnimating }"
+              >
+                {{ comparisonCount }}
+              </span>
+            </NuxtLink>
           </nav>
 
           <!-- Mobile menu button -->
@@ -218,6 +248,37 @@
           >
             API Analytics
           </NuxtLink>
+          <NuxtLink
+            v-if="comparisonCount > 0"
+            to="/compare"
+            class="flex items-center justify-between text-gray-800 bg-blue-50 hover:bg-blue-100 text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+            active-class="bg-blue-100"
+            @click="closeMobileMenu"
+          >
+            <span class="flex items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2 text-blue-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+              Compare Resources
+            </span>
+            <span
+              class="inline-flex items-center justify-center min-w-[1.5rem] h-6 px-1.5 text-sm font-bold bg-blue-600 text-white rounded-full"
+            >
+              {{ comparisonCount }}
+            </span>
+          </NuxtLink>
           <!-- Mobile search bar -->
           <div class="px-2 pt-2 sm:px-3">
             <LazySearchBar
@@ -263,6 +324,7 @@
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, navigateTo } from '#app'
 import { useResources } from '~/composables/useResources'
+import { useResourceComparison } from '~/composables/useResourceComparison'
 import type { NodeListOf } from 'dom'
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
 
@@ -271,6 +333,22 @@ const mobileMenuButton = ref<HTMLElement | null>(null)
 const mobileMenuRef = ref<HTMLElement | null>(null)
 const firstFocusableElement = ref<HTMLElement | null>(null)
 const lastFocusableElement = ref<HTMLElement | null>(null)
+
+// Comparison counter state
+const { comparisonCount } = useResourceComparison()
+const isCountAnimating = ref(false)
+const previousCount = ref(comparisonCount.value)
+
+// Watch for comparison count changes to trigger animation
+watch(comparisonCount, (newCount, oldCount) => {
+  if (newCount !== oldCount && newCount > 0) {
+    isCountAnimating.value = true
+    setTimeout(() => {
+      isCountAnimating.value = false
+    }, 400)
+  }
+  previousCount.value = newCount
+})
 
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
@@ -357,3 +435,50 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyDown)
 })
 </script>
+
+<style scoped>
+/* Bounce scale animation for comparison button */
+.animate-bounce-scale {
+  animation: bounce-scale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes bounce-scale {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.95);
+  }
+  80% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Pop animation for counter badge */
+.animate-pop {
+  animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-bounce-scale,
+  .animate-pop {
+    animation: none;
+  }
+}
+</style>
