@@ -56,6 +56,79 @@ export const themeConfig = {
     toastMaxWidth: parseInt(process.env.TOAST_MAX_WIDTH || '400'),
     toastMinWidth: parseInt(process.env.TOAST_MIN_WIDTH || '300'),
   },
+
+  // Status Badge Colors
+  status: {
+    active: {
+      bg: process.env.STATUS_ACTIVE_BG || '#dcfce7',
+      text: process.env.STATUS_ACTIVE_TEXT || '#166534',
+    },
+    deprecated: {
+      bg: process.env.STATUS_DEPRECATED_BG || '#fef9c3',
+      text: process.env.STATUS_DEPRECATED_TEXT || '#854d0e',
+    },
+    discontinued: {
+      bg: process.env.STATUS_DISCONTINUED_BG || '#fee2e2',
+      text: process.env.STATUS_DISCONTINUED_TEXT || '#991b1b',
+    },
+    pending: {
+      bg: process.env.STATUS_PENDING_BG || '#dbeafe',
+      text: process.env.STATUS_PENDING_TEXT || '#1e40af',
+    },
+  },
+
+  // Social Media Brand Colors
+  social: {
+    twitter: {
+      bg: process.env.SOCIAL_TWITTER_BG || '#3b82f6',
+      hover: process.env.SOCIAL_TWITTER_HOVER || '#2563eb',
+    },
+    facebook: {
+      bg: process.env.SOCIAL_FACEBOOK_BG || '#1d4ed8',
+      hover: process.env.SOCIAL_FACEBOOK_HOVER || '#1e40af',
+    },
+    linkedin: {
+      bg: process.env.SOCIAL_LINKEDIN_BG || '#0077b5',
+      hover: process.env.SOCIAL_LINKEDIN_HOVER || '#005885',
+    },
+    reddit: {
+      bg: process.env.SOCIAL_REDDIT_BG || '#f97316',
+      hover: process.env.SOCIAL_REDDIT_HOVER || '#ea580c',
+    },
+    email: {
+      bg: process.env.SOCIAL_EMAIL_BG || '#6b7280',
+      hover: process.env.SOCIAL_EMAIL_HOVER || '#4b5563',
+    },
+    copy: {
+      bg: process.env.SOCIAL_COPY_BG || '#10b981',
+      hover: process.env.SOCIAL_COPY_HOVER || '#059669',
+    },
+  },
+
+  // Skeleton Loader Colors
+  skeleton: {
+    base: process.env.SKELETON_BASE_COLOR || '#e5e7eb',
+    highlight: process.env.SKELETON_HIGHLIGHT_COLOR || '#f3f4f6',
+    shine: process.env.SKELETON_SHINE_COLOR || '#d1d5db',
+    text: process.env.SKELETON_TEXT_COLOR || '#374151',
+  },
+
+  // Scrollbar Colors
+  scrollbar: {
+    track: process.env.SCROLLBAR_TRACK_COLOR || '#f1f5f9',
+    thumb: process.env.SCROLLBAR_THUMB_COLOR || '#cbd5e1',
+    thumbHover: process.env.SCROLLBAR_THUMB_HOVER_COLOR || '#94a3b8',
+  },
+
+  // Status Manager Component Colors
+  statusManager: {
+    borderColor: process.env.STATUS_MANAGER_BORDER || '#e5e7eb',
+    selectBg: process.env.STATUS_MANAGER_SELECT_BG || '#ffffff',
+    selectBorder: process.env.STATUS_MANAGER_SELECT_BORDER || '#d1d5db',
+    selectFocus: process.env.STATUS_MANAGER_SELECT_FOCUS || '#3b82f6',
+    updateButtonBg: process.env.STATUS_MANAGER_UPDATE_BTN_BG || '#4f46e5',
+    updateButtonHover: process.env.STATUS_MANAGER_UPDATE_BTN_HOVER || '#4338ca',
+  },
 } as const
 
 export type ThemeConfig = typeof themeConfig

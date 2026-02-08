@@ -5,7 +5,7 @@
       href="#main-content"
       class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-gray-900 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-800"
     >
-      Skip to main content
+      {{ navigationConfig.skipLink.label }}
     </a>
 
     <header
@@ -18,9 +18,9 @@
             <NuxtLink
               to="/"
               class="text-xl font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              :aria-label="'Free Stuff on the Internet - Return to home page'"
+              :aria-label="navigationConfig.branding.ariaLabel"
             >
-              Free Stuff on the Internet
+              {{ navigationConfig.branding.siteName }}
             </NuxtLink>
           </div>
 
@@ -28,7 +28,7 @@
           <div class="hidden lg:flex items-center flex-1 max-w-lg mx-8">
             <LazySearchBar
               v-model="searchQuery"
-              :aria-label="'Search for free resources'"
+              :aria-label="navigationConfig.search.ariaLabel"
               @search="handleSearch"
             />
           </div>
@@ -36,63 +36,22 @@
           <nav
             class="hidden lg:flex items-center space-x-4"
             role="navigation"
-            aria-label="Main navigation"
+            :aria-label="uiConfig.accessibility.navAriaLabel"
           >
             <NuxtLink
-              to="/"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              :aria-label="'Free Stuff on the Internet - Return to home page'"
+              v-for="item in navigationConfig.main"
+              :key="item.to"
+              :to="item.to"
+              :class="[
+                'px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded',
+                item.highlight
+                  ? 'bg-gray-100 hover:bg-gray-200'
+                  : 'text-gray-800 hover:text-gray-900',
+              ]"
+              :active-class="item.activeClass || 'bg-gray-100'"
+              :aria-label="item.ariaLabel"
             >
-              Home
-            </NuxtLink>
-            <NuxtLink
-              to="/search"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-100"
-            >
-              Search
-            </NuxtLink>
-            <NuxtLink
-              to="/ai-keys"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-100"
-            >
-              AI Keys
-            </NuxtLink>
-            <NuxtLink
-              to="/favorites"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-100"
-            >
-              Favorites
-            </NuxtLink>
-            <NuxtLink
-              to="/about"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-100"
-            >
-              About
-            </NuxtLink>
-            <NuxtLink
-              to="/submit"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium font-medium bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-200"
-            >
-              Submit
-            </NuxtLink>
-            <NuxtLink
-              to="/developer"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-100"
-            >
-              Developer
-            </NuxtLink>
-            <NuxtLink
-              to="/api-analytics"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-100"
-            >
-              API Analytics
+              {{ item.label }}
             </NuxtLink>
           </nav>
 
@@ -105,12 +64,16 @@
               aria-controls="mobile-menu"
               :aria-expanded="mobileMenuOpen"
               :aria-label="
-                mobileMenuOpen ? 'Close main menu' : 'Open main menu'
+                mobileMenuOpen
+                  ? navigationConfig.mobile.menuButton.ariaLabelClose
+                  : navigationConfig.mobile.menuButton.ariaLabelOpen
               "
               @click="toggleMobileMenu"
             >
               <span class="sr-only">{{
-                mobileMenuOpen ? 'Close main menu' : 'Open main menu'
+                mobileMenuOpen
+                  ? navigationConfig.mobile.menuButton.ariaLabelClose
+                  : navigationConfig.mobile.menuButton.ariaLabelOpen
               }}</span>
               <svg
                 :class="['h-6 w-6', { hidden: mobileMenuOpen }]"
@@ -156,73 +119,25 @@
       >
         <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           <NuxtLink
-            to="/"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
+            v-for="item in navigationConfig.main"
+            :key="item.to"
+            :to="item.to"
+            :class="[
+              'block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800',
+              item.highlight
+                ? 'bg-gray-100 hover:bg-gray-200'
+                : 'text-gray-800 hover:bg-gray-100 hover:text-gray-900',
+            ]"
+            :active-class="item.activeClass || 'bg-gray-100'"
             @click="closeMobileMenu"
           >
-            Home
-          </NuxtLink>
-          <NuxtLink
-            to="/search"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-100"
-            @click="closeMobileMenu"
-          >
-            Search
-          </NuxtLink>
-          <NuxtLink
-            to="/ai-keys"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-100"
-            @click="closeMobileMenu"
-          >
-            AI Keys
-          </NuxtLink>
-          <NuxtLink
-            to="/favorites"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-100"
-            @click="closeMobileMenu"
-          >
-            Favorites
-          </NuxtLink>
-          <NuxtLink
-            to="/about"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-100"
-            @click="closeMobileMenu"
-          >
-            About
-          </NuxtLink>
-          <NuxtLink
-            to="/submit"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-200"
-            @click="closeMobileMenu"
-          >
-            Submit
-          </NuxtLink>
-          <NuxtLink
-            to="/developer"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-100"
-            @click="closeMobileMenu"
-          >
-            Developer
-          </NuxtLink>
-          <NuxtLink
-            to="/api-analytics"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-100"
-            @click="closeMobileMenu"
-          >
-            API Analytics
+            {{ item.label }}
           </NuxtLink>
           <!-- Mobile search bar -->
           <div class="px-2 pt-2 sm:px-3">
             <LazySearchBar
               v-model="searchQuery"
-              :aria-label="'Search for free resources'"
+              :aria-label="navigationConfig.search.ariaLabel"
               @search="handleMobileSearch"
             />
           </div>
@@ -242,8 +157,9 @@
       <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 text-sm"
       >
-        © {{ new Date().getFullYear() }} Free Stuff on the Internet. All rights
-        reserved.
+        © {{ new Date().getFullYear() }}
+        {{ navigationConfig.branding.siteName }}.
+        {{ navigationConfig.footer.copyright.text }}
         <p class="sr-only">
           Footer content ends
         </p>
@@ -265,6 +181,8 @@ import { useRoute, navigateTo } from '#app'
 import { useResources } from '~/composables/useResources'
 import type { NodeListOf } from 'dom'
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
+import { navigationConfig } from '~/configs/navigation.config'
+import { uiConfig } from '~/configs/ui.config'
 
 const mobileMenuOpen = ref(false)
 const mobileMenuButton = ref<HTMLElement | null>(null)

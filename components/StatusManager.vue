@@ -1,6 +1,6 @@
 <template>
   <div class="status-manager">
-    <h3>Manage Resource Status</h3>
+    <h3>{{ messagesConfig.ui.headers.moderationQueue }}</h3>
 
     <div class="status-controls">
       <div class="status-selector">
@@ -10,20 +10,12 @@
           v-model="selectedStatus"
           class="status-dropdown"
         >
-          <option value="active">
-            Active
-          </option>
-          <option value="deprecated">
-            Deprecated
-          </option>
-          <option value="discontinued">
-            Discontinued
-          </option>
-          <option value="updated">
-            Updated
-          </option>
-          <option value="pending">
-            Pending
+          <option
+            v-for="option in uiConfig.statusManager.statusOptions"
+            :key="option.value"
+            :value="option.value.toLowerCase()"
+          >
+            {{ option.label }}
           </option>
         </select>
       </div>
@@ -54,7 +46,11 @@
         :disabled="isUpdating || !selectedStatus"
         @click="handleUpdate"
       >
-        {{ isUpdating ? 'Updating...' : 'Update Status' }}
+        {{
+          isUpdating
+            ? uiConfig.loading.updating
+            : uiConfig.statusManager.updateButtonLabel
+        }}
       </button>
     </div>
 
@@ -66,13 +62,14 @@
         v-if="lastUpdate.success"
         class="success-message"
       >
-        Status updated successfully!
+        {{ messagesConfig.success.general.statusUpdated }}
       </div>
       <div
         v-else
         class="error-message"
       >
-        Error updating status: {{ lastUpdate.error }}
+        {{ messagesConfig.errors.moderation.updateFailed }}:
+        {{ lastUpdate.error }}
       </div>
     </div>
   </div>
@@ -80,6 +77,8 @@
 
 <script setup lang="ts">
 import { useResourceStatusManager } from '~/composables/useResourceStatusManager'
+import { uiConfig } from '~/configs/ui.config'
+import { messagesConfig } from '~/configs/messages.config'
 
 interface Props {
   resourceId: string

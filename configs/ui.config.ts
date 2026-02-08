@@ -89,6 +89,83 @@ export const uiConfig = {
       cdn: process.env.RESOURCE_CARD_BTN_CDN || 'Get CDN',
     },
   },
+
+  // Virtual List Settings
+  virtualList: {
+    containerHeight: process.env.VIRTUAL_LIST_HEIGHT || 'calc(100vh - 200px)',
+    overscan: parseInt(process.env.VIRTUAL_LIST_OVERSCAN || '5'),
+  },
+
+  // Search Suggestions
+  searchSuggestions: {
+    maxRecentSearches: parseInt(process.env.SEARCH_MAX_RECENT || '10'),
+    clearHistoryLabel:
+      process.env.SEARCH_CLEAR_HISTORY_LABEL || 'Clear History',
+  },
+
+  // Review Queue
+  reviewQueue: {
+    filterLabelAll: process.env.REVIEW_FILTER_ALL || 'All Statuses',
+    filterLabelPending: process.env.REVIEW_FILTER_PENDING || 'Pending',
+    filterLabelApproved: process.env.REVIEW_FILTER_APPROVED || 'Approved',
+    filterLabelRejected: process.env.REVIEW_FILTER_REJECTED || 'Rejected',
+    metaLabelCategory: process.env.REVIEW_META_CATEGORY || 'Category:',
+    metaLabelSubmittedBy:
+      process.env.REVIEW_META_SUBMITTED_BY || 'Submitted by:',
+    metaLabelSubmitted: process.env.REVIEW_META_SUBMITTED || 'Submitted:',
+  },
+
+  // Status Manager
+  statusManager: {
+    statusOptions: [
+      { value: 'ACTIVE', label: process.env.STATUS_LABEL_ACTIVE || 'Active' },
+      {
+        value: 'DEPRECATED',
+        label: process.env.STATUS_LABEL_DEPRECATED || 'Deprecated',
+      },
+      {
+        value: 'DISCONTINUED',
+        label: process.env.STATUS_LABEL_DISCONTINUED || 'Discontinued',
+      },
+    ],
+    updateButtonLabel: process.env.STATUS_UPDATE_BTN_LABEL || 'Update Status',
+  },
+
+  // Accessibility Labels
+  accessibility: {
+    skipToMain: process.env.A11Y_SKIP_TO_MAIN || 'Skip to main content',
+    loadingContent: process.env.A11Y_LOADING_CONTENT || 'Loading content...',
+    closeModal: process.env.A11Y_CLOSE_MODAL || 'Close modal',
+    openMenu: process.env.A11Y_OPEN_MENU || 'Open menu',
+    closeMenu: process.env.A11Y_CLOSE_MENU || 'Close menu',
+    searchAriaLabel:
+      process.env.A11Y_SEARCH_LABEL || 'Search for free resources',
+    navAriaLabel: process.env.A11Y_NAV_LABEL || 'Main navigation',
+  },
+
+  // Loading Messages
+  loading: {
+    default: process.env.LOADING_DEFAULT || 'Loading...',
+    updating: process.env.LOADING_UPDATING || 'Updating...',
+    content: process.env.LOADING_CONTENT || 'Loading content...',
+  },
+
+  // Placeholders
+  placeholders: {
+    filterByCategory:
+      process.env.PLACEHOLDER_FILTER_CATEGORY || 'Filter by category...',
+    search: process.env.PLACEHOLDER_SEARCH || 'Search...',
+  },
+
+  // Error Handler
+  errorHandler: {
+    historyLimit: parseInt(process.env.ERROR_HISTORY_LIMIT || '50'),
+  },
+
+  // Resource Detail Page
+  resourceDetail: {
+    placeholderImage: process.env.PLACEHOLDER_IMAGE || '/placeholder-image.jpg',
+  },
 } as const
 
 export type UiConfig = typeof uiConfig
