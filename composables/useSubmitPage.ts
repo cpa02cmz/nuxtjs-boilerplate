@@ -6,6 +6,7 @@ import logger from '~/utils/logger'
 import { validationConfig } from '~/configs/validation.config'
 import { uiConfig } from '~/configs/ui.config'
 import { apiConfig } from '~/configs/api.config'
+import { contentConfig } from '~/configs/content.config'
 
 interface FormData {
   title: string
@@ -55,39 +56,50 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
     errors.value = {}
 
     if (!formData.value.title.trim()) {
-      errors.value.title = 'Title is required'
+      errors.value.title = validationConfig.messages.required.title
     } else if (
       formData.value.title.length > validationConfig.resource.name.maxLength
     ) {
-      errors.value.title = `Title is too long (max ${validationConfig.resource.name.maxLength} characters)`
+      errors.value.title = validationConfig.messages.tooLong.title.replace(
+        '{{max}}',
+        validationConfig.resource.name.maxLength.toString()
+      )
     }
 
     if (!formData.value.description.trim()) {
-      errors.value.description = 'Description is required'
+      errors.value.description = validationConfig.messages.required.description
     } else if (
       formData.value.description.length <
       validationConfig.resource.description.minLength
     ) {
-      errors.value.description = `Description must be at least ${validationConfig.resource.description.minLength} characters`
+      errors.value.description =
+        validationConfig.messages.tooShort.description.replace(
+          '{{min}}',
+          validationConfig.resource.description.minLength.toString()
+        )
     } else if (
       formData.value.description.length >
       validationConfig.resource.description.maxLength
     ) {
-      errors.value.description = `Description is too long (max ${validationConfig.resource.description.maxLength} characters)`
+      errors.value.description =
+        validationConfig.messages.tooLong.description.replace(
+          '{{max}}',
+          validationConfig.resource.description.maxLength.toString()
+        )
     }
 
     if (!formData.value.url.trim()) {
-      errors.value.url = 'URL is required'
+      errors.value.url = validationConfig.messages.required.url
     } else {
       try {
         new URL(formData.value.url)
       } catch {
-        errors.value.url = 'Please enter a valid URL'
+        errors.value.url = validationConfig.messages.invalid.url
       }
     }
 
     if (!formData.value.category) {
-      errors.value.category = 'Category is required'
+      errors.value.category = validationConfig.messages.required.category
     }
 
     if (Object.keys(errors.value).length > 0) {
@@ -169,7 +181,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
         submitError.value =
           responseData?.message ||
           response.error?.message ||
-          'An error occurred while submitting resource'
+          contentConfig.submit.error.message
       }
     } catch (error: unknown) {
       const errorData = error as {

@@ -4,7 +4,7 @@
     class="mb-6"
   >
     <h4 class="text-sm font-medium text-gray-900 mb-3">
-      Saved Searches
+      {{ contentConfig.search.suggestions.recentTitle }}
     </h4>
     <TransitionGroup
       name="saved-search"
@@ -59,6 +59,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useNuxtApp } from '#app'
+import { contentConfig } from '~/configs/content.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface SavedSearch {
   name: string
@@ -107,15 +109,15 @@ const onRemoveSavedSearch = (search: SavedSearch) => {
   // Emit removal event after brief delay to allow animation
   setTimeout(() => {
     emit('remove-saved-search', search.query)
-  }, 300)
+  }, uiConfig.animation.durationMs)
 
-  // Set timeout to permanently remove from undo list after 5 seconds
+  // Set timeout to permanently remove from undo list after configured duration
   const timeout = setTimeout(() => {
     recentlyDeleted.value = recentlyDeleted.value.filter(
       s => s.query !== search.query
     )
     undoTimeouts.value.delete(search.query)
-  }, 5000)
+  }, uiConfig.toast.duration.info)
 
   undoTimeouts.value.set(search.query, timeout)
 

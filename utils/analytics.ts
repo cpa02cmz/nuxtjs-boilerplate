@@ -1,6 +1,7 @@
 // utils/analytics.ts
 // Client-side analytics tracking utilities
 import logger from '~/utils/logger'
+import { apiConfig } from '~/configs/api.config'
 
 export interface AnalyticsEvent {
   type: string
@@ -36,7 +37,7 @@ export async function trackEvent(event: AnalyticsEvent): Promise<boolean> {
     }
 
     // Send the event to the analytics API
-    const response = await fetch('/api/analytics/events', {
+    const response = await fetch(apiConfig.analytics.events, {
       method: 'POST',
       headers,
       body: JSON.stringify(event),
