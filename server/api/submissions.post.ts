@@ -1,14 +1,13 @@
 // For Nuxt 3, we'll use built-in storage system instead of file system directly
 import { defineEventHandler, readBody } from 'h3'
-import { randomUUID } from 'crypto'
 import { logger } from '~/utils/logger'
-import type { Submission } from '~/types/submission'
 import {
   sendSuccessResponse,
   sendValidationError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { createSubmissionSchema } from '~/server/utils/validation-schemas'
+import { prisma } from '~/server/utils/db'
 
 export default defineEventHandler(async event => {
   try {
@@ -20,6 +19,14 @@ export default defineEventHandler(async event => {
 
     if (!validationResult.success) {
       const firstError = validationResult.error.issues[0]
+      if (!firstError) {
+        return sendValidationError(
+          event,
+          'general',
+          'Validation failed',
+          undefined
+        )
+      }
       return sendValidationError(
         event,
         firstError.path[0] as string,
@@ -30,28 +37,31 @@ export default defineEventHandler(async event => {
 
     const validatedData = validationResult.data
 
-    // Create a submission object with metadata
-    // Use cryptographically secure UUID for ID generation (fixes CVE)
-    const submission: Submission = {
-      id: `sub_${Date.now()}_${randomUUID()}`,
-      resourceData: {
-        title: validatedData.title.trim(),
-        description: validatedData.description.trim(),
-        url: validatedData.url.trim(),
-        category: validatedData.category.trim(),
-        tags: validatedData.tags,
-        pricingModel: validatedData.pricingModel,
-        difficulty: validatedData.difficulty,
-        technology: validatedData.technology,
-        benefits: validatedData.benefits,
-      },
-      status: 'pending',
-      submittedAt: new Date().toISOString(),
-      submittedBy: 'anonymous',
+    // Create resource data object
+    const resourceData = {
+      title: validatedData.title.trim(),
+      description: validatedData.description.trim(),
+      url: validatedData.url.trim(),
+      category: validatedData.category.trim(),
+      tags: validatedData.tags,
+      pricingModel: validatedData.pricingModel,
+      difficulty: validatedData.difficulty,
+      technology: validatedData.technology,
+      benefits: validatedData.benefits,
     }
 
-    // For now, we'll log the submission (in a real app, this would go to a database)
-    logger.info(`Resource submitted: ${submission.id}`, { submission })
+    // Save submission to database
+    const submission = await prisma.submission.create({
+      data: {
+        resourceData: JSON.stringify(resourceData),
+        status: 'pending',
+        submittedBy: 'anonymous',
+      },
+    })
+
+    logger.info(`Resource submitted: ${submission.id}`, {
+      submissionId: submission.id,
+    })
 
     return sendSuccessResponse(event, {
       message: 'Resource submitted successfully',

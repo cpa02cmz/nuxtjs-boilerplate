@@ -206,3 +206,20 @@ model Resource {
   @@index([category, status])
   @@index([status, deletedAt])
 }
+
+model Submission {
+  id             String    @id @default(cuid())
+  resourceData   String // JSON serialized resource data
+  status         String    @default("pending") // pending, approved, rejected
+  submittedBy    String    @default("anonymous")
+  submittedAt    DateTime  @default(now())
+  reviewedBy     String?
+  reviewedAt     DateTime?
+  notes          String?
+  rejectionReason String?
+  qualityScore   Float?
+  
+  @@index([status])
+  @@index([submittedAt])
+  @@index([status, submittedAt])
+}
