@@ -34,7 +34,7 @@ export const prisma =
   global.__dbPrisma ??
   new PrismaClient({
     adapter: new PrismaBetterSqlite3({
-      url: process.env.DATABASE_URL || './data/dev.db',
+      url: process.env.DATABASE_URL || 'file:./data/dev.db',
       timeout: dbConfig.timeout,
     }),
   })
