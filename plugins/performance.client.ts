@@ -83,12 +83,19 @@ export default defineNuxtPlugin(() => {
               }
             }
 
-            // Log DOM content loaded time
-            const domContentLoadedTime =
-              performance.timing.domContentLoadedEventEnd -
-              performance.timing.navigationStart
-            if (process.env.NODE_ENV === 'development') {
-              logger.info(`DOM Content Loaded Time: ${domContentLoadedTime}ms`)
+            // Log DOM content loaded time using modern PerformanceNavigationTiming API
+            const navigationEntries = performance.getEntriesByType('navigation')
+            if (navigationEntries.length > 0) {
+              const navigationEntry =
+                navigationEntries[0] as PerformanceNavigationTiming
+              const domContentLoadedTime =
+                navigationEntry.domContentLoadedEventEnd -
+                navigationEntry.startTime
+              if (process.env.NODE_ENV === 'development') {
+                logger.info(
+                  `DOM Content Loaded Time: ${domContentLoadedTime}ms`
+                )
+              }
             }
           }, 1000)
         })
