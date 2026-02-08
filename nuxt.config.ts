@@ -221,13 +221,8 @@ export default defineNuxtConfig({
         { rel: 'prefetch', href: '/api/submissions' },
         // Add preloading for critical resources
         { rel: 'preload', href: '/favicon.ico', as: 'image' },
-        // Preload critical CSS
-        {
-          rel: 'preload',
-          href: '/_nuxt/',
-          as: 'fetch',
-          crossorigin: 'anonymous',
-        },
+        // Note: Critical CSS is automatically injected by Nuxt
+        // Do not preload /_nuxt/ directory as it causes 404 errors
         // DNS prefetch for external resources
         { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
         { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
