@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import { getQuery } from 'h3'
+import { createHash, timingSafeEqual } from 'node:crypto'
 
 interface TokenBucket {
   tokens: number
@@ -17,11 +18,45 @@ interface RateLimitConfig {
 // In-memory store for token buckets
 const tokenBucketStore = new Map<string, TokenBucket>()
 
-// Admin bypass keys - loaded from environment variable at startup
-// Only used when valid bypass key is provided in request headers
-const adminBypassKeys = new Set<string>()
+// Admin bypass keys - stored as SHA-256 hashes for security
+// Original keys are never stored in memory, only their hashes
+const adminBypassKeyHashes = new Set<string>()
+
+/**
+ * Hash a bypass key using SHA-256
+ * @param key - The bypass key to hash
+ * @returns SHA-256 hash of the key
+ */
+function hashBypassKey(key: string): string {
+  return createHash('sha256').update(key).digest('hex')
+}
+
+/**
+ * Validate a bypass key against stored hashes using constant-time comparison
+ * @param key - The bypass key to validate
+ * @returns True if the key is valid
+ */
+function validateBypassKey(key: string): boolean {
+  const inputHash = hashBypassKey(key)
+
+  for (const storedHash of adminBypassKeyHashes) {
+    // Use timingSafeEqual to prevent timing attacks
+    if (
+      inputHash.length === storedHash.length &&
+      timingSafeEqual(Buffer.from(inputHash), Buffer.from(storedHash))
+    ) {
+      return true
+    }
+  }
+  return false
+}
+
+// Load admin bypass keys from environment variable at startup
+// Keys are hashed immediately and original values are discarded
 if (process.env.ADMIN_RATE_LIMIT_BYPASS_KEY) {
-  adminBypassKeys.add(process.env.ADMIN_RATE_LIMIT_BYPASS_KEY)
+  adminBypassKeyHashes.add(
+    hashBypassKey(process.env.ADMIN_RATE_LIMIT_BYPASS_KEY)
+  )
 }
 
 class RateLimiter {
@@ -51,7 +86,7 @@ class RateLimiter {
     message?: string
   }> {
     // Check if this is an admin bypass request
-    if (bypassKey && adminBypassKeys.has(bypassKey)) {
+    if (bypassKey && validateBypassKey(bypassKey)) {
       return {
         allowed: true,
         remaining: this.config.maxRequests, // Always show max remaining for bypass
@@ -112,7 +147,7 @@ class RateLimiter {
     bypassKey?: string
   ): Promise<{ remaining: number; resetTime: number; limit: number }> {
     // If this is an admin bypass request, show unlimited capacity
-    if (bypassKey && adminBypassKeys.has(bypassKey)) {
+    if (bypassKey && validateBypassKey(bypassKey)) {
       return {
         remaining: this.config.maxRequests,
         resetTime: Math.floor((Date.now() + this.config.intervalMs) / 1000),
@@ -291,7 +326,7 @@ export async function rateLimit(event: H3Event, key?: string): Promise<void> {
   const status = await rateLimiter.getStatus(rateLimitKey, bypassKey)
 
   // If this was a bypassed request, increment analytics
-  if (bypassKey && adminBypassKeys.has(bypassKey)) {
+  if (bypassKey && validateBypassKey(bypassKey)) {
     analytics.bypassedRequests++
   }
 
@@ -307,7 +342,7 @@ export async function rateLimit(event: H3Event, key?: string): Promise<void> {
   )
 
   // If this was a bypassed request, let it through regardless
-  if (bypassKey && adminBypassKeys.has(bypassKey)) {
+  if (bypassKey && validateBypassKey(bypassKey)) {
     // Add bypass indicator header
     event.node.res?.setHeader('X-RateLimit-Bypassed', 'true')
     return
@@ -334,9 +369,10 @@ export function getRateLimitAnalytics(): Map<string, RateLimitAnalytics> {
 /**
  * Add a bypass key for testing purposes
  * SECURITY: This should only be used in tests, never in production code
+ * Keys are hashed before storage, just like production keys
  */
 export function addBypassKeyForTesting(key: string): void {
-  adminBypassKeys.add(key)
+  adminBypassKeyHashes.add(hashBypassKey(key))
 }
 
 /**
@@ -344,5 +380,5 @@ export function addBypassKeyForTesting(key: string): void {
  * SECURITY: This should only be used in tests, never in production code
  */
 export function clearBypassKeysForTesting(): void {
-  adminBypassKeys.clear()
+  adminBypassKeyHashes.clear()
 }
