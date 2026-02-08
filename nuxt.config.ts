@@ -1,6 +1,15 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import {
+  SITE_CONFIG,
+  THEME_CONFIG,
+  SEO_CONFIG,
+  FEATURE_FLAGS,
+  IMAGE_CONFIG,
+  PWA_CONFIG,
+} from './configs'
+
 export default defineNuxtConfig({
-  devtools: { enabled: false }, // Disable in production for performance
+  devtools: { enabled: FEATURE_FLAGS.devtools },
   css: ['~/assets/css/main.css'],
   modules: [
     '@nuxt/test-utils/module',
@@ -16,151 +25,17 @@ export default defineNuxtConfig({
       siteUrl:
         process.env.NUXT_PUBLIC_SITE_URL ||
         process.env.SITE_URL ||
-        process.env.NUXT_PUBLIC_CANONICAL_URL ||
-        process.env.CANONICAL_URL ||
-        process.env.HOST ||
+        SITE_CONFIG.canonicalUrl ||
         process.env.VERCEL_URL ||
         'http://localhost:3000',
-      canonicalUrl:
-        process.env.NUXT_PUBLIC_CANONICAL_URL ||
-        process.env.CANONICAL_URL ||
-        'http://localhost:3000',
+      canonicalUrl: SITE_CONFIG.canonicalUrl,
+      siteName: SITE_CONFIG.name,
+      siteTagline: SITE_CONFIG.tagline,
     },
   },
 
-  // PWA Configuration - merged from both branches
-  pwa: {
-    strategies: 'generateSW',
-    registerType: 'autoUpdate',
-    manifest: {
-      name: 'Free Stuff on the Internet',
-      short_name: 'Free Resources',
-      description:
-        'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-      theme_color: '#4f46e5',
-      lang: 'en',
-      display: 'standalone',
-      orientation: 'any',
-      background_color: '#ffffff',
-      id: '/',
-      start_url: '/',
-      scope: '/',
-      icons: [
-        {
-          src: 'pwa/icon-192x192.png',
-          sizes: '192x192',
-          type: 'image/png',
-        },
-        {
-          src: 'pwa/icon-512x512.png',
-          sizes: '512x512',
-          type: 'image/png',
-        },
-        {
-          src: 'pwa/maskable-icon-192x192.png',
-          sizes: '192x192',
-          type: 'image/png',
-          purpose: 'maskable',
-        },
-        {
-          src: 'pwa/maskable-icon-512x512.png',
-          sizes: '512x512',
-          type: 'image/png',
-          purpose: 'maskable',
-        },
-      ],
-    },
-    workbox: {
-      // Cache strategies for different assets
-      globPatterns: ['**/*.{js,css,html,png,svg,ico,jpg,webp,woff2}'],
-      runtimeCaching: [
-        {
-          // Cache API calls with a network-first strategy
-          urlPattern: '^/api/.*',
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: 'api-cache',
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24, // 24 hours
-            },
-          },
-        },
-        {
-          // Cache resources data
-          urlPattern: '.*resources\\.json',
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'resources-cache',
-            expiration: {
-              maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
-            },
-          },
-        },
-        {
-          // Cache static assets
-          urlPattern: '^https://fonts\\.(?:googleapis|gstatic)\\.com/.*',
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'google-fonts-cache',
-            expiration: {
-              maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-            },
-          },
-        },
-        {
-          // Cache Nuxt build assets
-          urlPattern:
-            '^/_nuxt/.*\\.(js|css|png|svg|jpg|jpeg|gif|webp|woff|woff2)',
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'nuxt-assets-cache',
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
-            },
-          },
-        },
-        {
-          urlPattern: 'https://.*\\.githubusercontent\\.com/.*',
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'github-cdn-cache',
-            expiration: {
-              maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
-            },
-            cacheableResponse: {
-              statuses: [0, 200],
-            },
-          },
-        },
-        {
-          urlPattern: '^https://.*\\.(png|jpe?g|gif|svg|webp)$',
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'image-cache',
-            expiration: {
-              maxEntries: 20,
-              maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
-            },
-            cacheableResponse: {
-              statuses: [0, 200],
-            },
-          },
-        },
-      ],
-    },
-    devOptions: {
-      enabled: true,
-      suppressWarnings: true,
-      navigateFallback: '/',
-      navigateFallbackAllowlist: [/^\/$/],
-      type: 'module',
-    },
-  },
+  // PWA Configuration - now using modular config
+  pwa: PWA_CONFIG,
 
   // Security and performance configuration
   experimental: {
@@ -187,13 +62,10 @@ export default defineNuxtConfig({
     ],
   },
 
-  // Image optimization configuration
+  // Image optimization configuration - using modular config
   // Note: Only specify non-default values to avoid duplicate key warnings during build
   // Nuxt Image provides sensible defaults: provider='ipx', quality=80, densities=[1,2]
-  image: {
-    quality: 80,
-    format: ['webp', 'avif', 'jpeg'],
-  },
+  image: IMAGE_CONFIG,
 
   // Additional performance optimizations
   features: {
@@ -227,7 +99,6 @@ export default defineNuxtConfig({
         // DNS prefetch for external resources
         { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
         { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
-        // Add canonical URL - will be set dynamically in app.vue
       ],
       script: [
         // Add script for performance monitoring if needed
@@ -238,8 +109,11 @@ export default defineNuxtConfig({
         // Note: CSP is implemented via server plugin (server/plugins/security-headers.ts)
         // with dynamic nonce generation for proper security
         { name: 'referrer', content: 'no-referrer' },
-        { name: 'theme-color', content: '#ffffff' },
-        { name: 'msapplication-TileColor', content: '#ffffff' },
+        { name: 'theme-color', content: THEME_CONFIG.colors.themeColor },
+        {
+          name: 'msapplication-TileColor',
+          content: THEME_CONFIG.colors.tileColor,
+        },
         // Add Core Web Vitals meta tags
         {
           name: 'viewport',
@@ -250,43 +124,39 @@ export default defineNuxtConfig({
         // SEO meta tags
         {
           name: 'description',
-          content:
-            'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+          content: SEO_CONFIG.defaultDescription,
         },
         {
           name: 'keywords',
-          content:
-            'free resources, AI tools, hosting, databases, CDN, VPS, web development',
+          content: SEO_CONFIG.keywords,
         },
-        { name: 'author', content: 'Free Stuff on the Internet' },
+        { name: 'author', content: SITE_CONFIG.author },
         // Open Graph tags
         {
           property: 'og:title',
-          content: 'Free Stuff on the Internet - Free Resources for Developers',
+          content: SEO_CONFIG.defaultTitle,
         },
         {
           property: 'og:description',
-          content:
-            'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+          content: SEO_CONFIG.defaultDescription,
         },
-        { property: 'og:type', content: 'website' },
+        { property: 'og:type', content: SEO_CONFIG.ogType },
         // og:url will be set dynamically in app.vue
-        { property: 'og:image', content: '/og-image.jpg' }, // This will be updated later
+        { property: 'og:image', content: SEO_CONFIG.ogImage },
         // Twitter card
-        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:card', content: SEO_CONFIG.twitterCard },
         {
           name: 'twitter:title',
-          content: 'Free Stuff on the Internet - Free Resources for Developers',
+          content: SEO_CONFIG.defaultTitle,
         },
         {
           name: 'twitter:description',
-          content:
-            'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+          content: SEO_CONFIG.defaultDescription,
         },
       ],
       // Add resource hints
       htmlAttrs: {
-        lang: 'en',
+        lang: SITE_CONFIG.language,
       },
     },
   },

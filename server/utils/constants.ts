@@ -1,3 +1,22 @@
+/**
+ * Server Constants
+ * Flexy says: Import from modular configs instead of hardcoding!
+ */
+
+import {
+  SEARCH_BEHAVIOR,
+  CACHE_LIMITS,
+  PAGINATION,
+  TOAST_CONFIG,
+  UI_TIMING,
+  UI_LAYOUT,
+  Z_INDEX,
+  ANIMATION_DURATION,
+  WEBHOOK_RETRY_CONFIG,
+  RETRY_CONFIG,
+  CIRCUIT_BREAKER_CONFIG,
+} from '../../configs'
+
 // Storage keys for localStorage/sessionStorage
 export const STORAGE_KEYS = {
   SEARCH_HISTORY: 'resource_search_history',
@@ -42,26 +61,28 @@ export function isValidEventType(type: string): type is ValidEventType {
   return VALID_EVENT_TYPES.includes(type as ValidEventType)
 }
 
-// Timing constants (in milliseconds)
+// Timing constants (in milliseconds) - now using modular config
 export const TIMING = {
   // Webhook processing intervals
   WEBHOOK_QUEUE_PROCESSOR_INTERVAL: 5000,
-  WEBHOOK_RETRY_DELAY_BASE: 1000,
-  WEBHOOK_RETRY_DELAY_MAX: 30000,
-  WEBHOOK_REQUEST_TIMEOUT: 10000,
+  WEBHOOK_RETRY_DELAY_BASE: WEBHOOK_RETRY_CONFIG.baseDelayMs,
+  WEBHOOK_RETRY_DELAY_MAX: WEBHOOK_RETRY_CONFIG.maxDelayMs,
+  WEBHOOK_REQUEST_TIMEOUT: WEBHOOK_RETRY_CONFIG.timeoutMs,
 
   // Retry and backoff settings
-  RETRY_BASE_DELAY_MS: 1000,
-  RETRY_MAX_DELAY_MS: 30000,
-  RETRY_MAX_ATTEMPTS: 3,
+  RETRY_BASE_DELAY_MS: RETRY_CONFIG.defaults.baseDelayMs,
+  RETRY_MAX_DELAY_MS: RETRY_CONFIG.defaults.maxDelayMs,
+  RETRY_MAX_ATTEMPTS: RETRY_CONFIG.defaults.maxAttempts,
 
   // Circuit breaker settings
-  CIRCUIT_BREAKER_TIMEOUT_MS: 60000,
-  CIRCUIT_BREAKER_FAILURE_THRESHOLD: 5,
-  CIRCUIT_BREAKER_SUCCESS_THRESHOLD: 2,
+  CIRCUIT_BREAKER_TIMEOUT_MS: CIRCUIT_BREAKER_CONFIG.defaults.timeoutMs,
+  CIRCUIT_BREAKER_FAILURE_THRESHOLD:
+    CIRCUIT_BREAKER_CONFIG.defaults.failureThreshold,
+  CIRCUIT_BREAKER_SUCCESS_THRESHOLD:
+    CIRCUIT_BREAKER_CONFIG.defaults.successThreshold,
 
   // Cache and debounce settings
-  DEBOUNCE_DEFAULT_MS: 300,
+  DEBOUNCE_DEFAULT_MS: UI_TIMING.searchDebounceMs,
   CACHE_TTL_MS: 300000, // 5 minutes
 
   // Rate limiting windows
@@ -70,12 +91,12 @@ export const TIMING = {
   RATE_LIMIT_SEARCH_WINDOW_MS: 60000, // 1 minute
 } as const
 
-// Toast notification durations
+// Toast notification durations - using modular config
 export const TOAST_DURATION = {
-  SUCCESS: 5000,
-  ERROR: 10000,
-  WARNING: 7000,
-  INFO: 5000,
+  SUCCESS: TOAST_CONFIG.duration.success,
+  ERROR: TOAST_CONFIG.duration.error,
+  WARNING: TOAST_CONFIG.duration.warning,
+  INFO: TOAST_CONFIG.duration.info,
 } as const
 
 // UI feedback message duration (announcements, success messages)
@@ -85,30 +106,30 @@ export const UI_FEEDBACK_DURATION = {
   SUCCESS_MESSAGE_CLEAR: 3000,
 } as const
 
-// UI interaction timing constants
-export const UI_TIMING = {
+// UI interaction timing constants - using modular config
+export const UI_TIMING_CONSTANTS = {
   // Search and input debouncing
-  SEARCH_DEBOUNCE_MS: 300,
-  SEARCH_BLUR_DELAY_MS: 200,
+  SEARCH_DEBOUNCE_MS: UI_TIMING.searchDebounceMs,
+  SEARCH_BLUR_DELAY_MS: UI_TIMING.searchBlurDelayMs,
   SUGGESTION_CHECK_INTERVAL_MS: 100,
 
   // Connection checking
-  CONNECTION_TIMEOUT_MS: 5000,
-  CONNECTION_RETRY_INTERVAL_MS: 100,
+  CONNECTION_TIMEOUT_MS: UI_TIMING.connectionTimeoutMs,
+  CONNECTION_RETRY_INTERVAL_MS: UI_TIMING.connectionRetryIntervalMs,
 
   // Toast and notification intervals
   TOAST_CHECK_INTERVAL_MS: 100,
 
   // Animation durations
-  ANIMATION_DURATION_MS: 300,
-  ANIMATION_LEAVE_DURATION_MS: 200,
+  ANIMATION_DURATION_MS: UI_TIMING.animationDurationMs,
+  ANIMATION_LEAVE_DURATION_MS: UI_TIMING.animationLeaveDurationMs,
 } as const
 
-// Search configuration
+// Search configuration - using modular config
 export const SEARCH_CONFIG = {
-  MIN_QUERY_LENGTH: 2,
-  MAX_SUGGESTIONS: 5,
-  MAX_HISTORY_ITEMS: 10,
+  MIN_QUERY_LENGTH: SEARCH_BEHAVIOR.minQueryLength,
+  MAX_SUGGESTIONS: SEARCH_BEHAVIOR.maxSuggestions,
+  MAX_HISTORY_ITEMS: SEARCH_BEHAVIOR.maxHistoryItems,
 } as const
 
 // RSS feed configuration
@@ -117,20 +138,20 @@ export const RSS_CONFIG = {
   DEFAULT_LIMIT: 20,
 } as const
 
-// Pagination and data limits
-export const PAGINATION = {
-  DEFAULT_PAGE_SIZE: 20,
-  MAX_PAGE_SIZE: 100,
+// Pagination and data limits - using modular config
+export const PAGINATION_CONFIG = {
+  DEFAULT_PAGE_SIZE: PAGINATION.DEFAULT_PAGE_SIZE,
+  MAX_PAGE_SIZE: PAGINATION.MAX_PAGE_SIZE,
   MAX_ITEMS_PER_REQUEST: 1000,
 } as const
 
-// Cache configuration
+// Cache configuration - using modular config
 export const CACHE_CONFIG = {
-  MAX_CACHE_SIZE: 100,
-  MAX_POPULAR_SEARCHES: 50,
-  MAX_ZERO_RESULT_SEARCHES: 50,
-  MAX_PERFORMANCE_HISTORY: 100,
-  MAX_ANALYTICS_ENTRIES: 100,
+  MAX_CACHE_SIZE: CACHE_LIMITS.maxEntries,
+  MAX_POPULAR_SEARCHES: CACHE_LIMITS.maxPopularSearches,
+  MAX_ZERO_RESULT_SEARCHES: CACHE_LIMITS.maxZeroResultSearches,
+  MAX_PERFORMANCE_HISTORY: CACHE_LIMITS.maxPerformanceHistory,
+  MAX_ANALYTICS_ENTRIES: CACHE_LIMITS.maxAnalyticsEntries,
 } as const
 
 // HTTP status code ranges
@@ -144,49 +165,56 @@ export const HTTP_STATUS = {
   SERVER_ERROR_MIN: 500,
 } as const
 
-// UI layout constants (in pixels)
-export const UI_LAYOUT = {
+// UI layout constants (in pixels) - using modular config
+export const UI_LAYOUT_CONSTANTS = {
   // Toast/notification positioning
-  TOAST_CONTAINER_TOP: 20,
-  TOAST_CONTAINER_RIGHT: 20,
-  TOAST_MAX_WIDTH: 400,
-  TOAST_MIN_WIDTH: 300,
+  TOAST_CONTAINER_TOP: TOAST_CONFIG.position.top,
+  TOAST_CONTAINER_RIGHT: TOAST_CONFIG.position.right,
+  TOAST_MAX_WIDTH: TOAST_CONFIG.position.maxWidth,
+  TOAST_MIN_WIDTH: TOAST_CONFIG.position.minWidth,
 
   // Spacing scale (in rem units, multiplied by 0.25)
-  SPACING_XS: 0.25, // 0.25rem = 4px
-  SPACING_SM: 0.5, // 0.5rem = 8px
-  SPACING_MD: 0.75, // 0.75rem = 12px
-  SPACING_LG: 1, // 1rem = 16px
-  SPACING_XL: 1.5, // 1.5rem = 24px
-  SPACING_2XL: 2, // 2rem = 32px
+  SPACING_XS: UI_LAYOUT.spacing.xs,
+  SPACING_SM: UI_LAYOUT.spacing.sm,
+  SPACING_MD: UI_LAYOUT.spacing.md,
+  SPACING_LG: UI_LAYOUT.spacing.lg,
+  SPACING_XL: UI_LAYOUT.spacing.xl,
+  SPACING_2XL: UI_LAYOUT.spacing['2xl'],
 
   // Border radius (in rem)
-  BORDER_RADIUS_SM: 0.25,
-  BORDER_RADIUS_MD: 0.5,
-  BORDER_RADIUS_LG: 0.75,
+  BORDER_RADIUS_SM: UI_LAYOUT.borderRadius.sm,
+  BORDER_RADIUS_MD: UI_LAYOUT.borderRadius.md,
+  BORDER_RADIUS_LG: UI_LAYOUT.borderRadius.lg,
 
   // Font sizes (in rem)
-  FONT_SIZE_SM: 0.75,
-  FONT_SIZE_MD: 0.875,
-  FONT_SIZE_LG: 1,
+  FONT_SIZE_SM: UI_LAYOUT.fontSize.sm,
+  FONT_SIZE_MD: UI_LAYOUT.fontSize.md,
+  FONT_SIZE_LG: UI_LAYOUT.fontSize.lg,
 
   // Line heights (in rem)
-  LINE_HEIGHT_SM: 1,
-  LINE_HEIGHT_MD: 1.25,
-  LINE_HEIGHT_LG: 1.5,
+  LINE_HEIGHT_SM: UI_LAYOUT.lineHeight.sm,
+  LINE_HEIGHT_MD: UI_LAYOUT.lineHeight.md,
+  LINE_HEIGHT_LG: UI_LAYOUT.lineHeight.lg,
 } as const
 
-// Animation duration constants (in seconds)
-export const ANIMATION_DURATION = {
-  FAST: 0.2,
-  NORMAL: 0.3,
-  SLOW: 0.5,
+// Animation duration constants (in seconds) - using modular config
+export const ANIMATION_DURATION_CONSTANTS = {
+  FAST: ANIMATION_DURATION.fast,
+  NORMAL: ANIMATION_DURATION.normal,
+  SLOW: ANIMATION_DURATION.slow,
 } as const
 
-// Z-index scale
-export const Z_INDEX = {
-  TOAST: 9999,
-  MODAL: 9000,
-  DROPDOWN: 1000,
-  STICKY: 100,
+// Z-index scale - using modular config
+export const Z_INDEX_CONSTANTS = {
+  TOAST: Z_INDEX.toast,
+  MODAL: Z_INDEX.modal,
+  DROPDOWN: Z_INDEX.dropdown,
+  STICKY: Z_INDEX.sticky,
 } as const
+
+// Legacy exports for backward compatibility
+export { UI_TIMING_CONSTANTS as UI_TIMING }
+export { PAGINATION_CONFIG as PAGINATION }
+export { UI_LAYOUT_CONSTANTS as UI_LAYOUT }
+export { ANIMATION_DURATION_CONSTANTS as ANIMATION_DURATION }
+export { Z_INDEX_CONSTANTS as Z_INDEX }
