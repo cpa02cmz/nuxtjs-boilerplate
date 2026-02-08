@@ -83,7 +83,6 @@ nuxtjs-boilerplate/
 ├── plugins/             # Nuxt plugins
 ├── server/
 │   ├── api/            # Server API routes
-│   ├── middleware/     # Server middleware
 │   └── utils/          # Server utilities
 ├── types/              # TypeScript type definitions
 ├── utils/              # Client-side utilities
