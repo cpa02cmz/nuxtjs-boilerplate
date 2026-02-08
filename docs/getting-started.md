@@ -105,7 +105,6 @@ nuxtjs-boilerplate/
 ├── public/            # Public static files
 ├── server/            # Server-side API routes and middleware
 │   ├── api/          # API endpoints
-│   ├── middleware/   # Server middleware
 │   └── utils/        # Server utilities
 ├── types/             # TypeScript type definitions
 ├── utils/             # Client-side utilities

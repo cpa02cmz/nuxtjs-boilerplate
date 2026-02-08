@@ -81,7 +81,6 @@ npm run prisma:studio    # Open Prisma Studio
 ├── data/                # Static data files
 ├── docs/                # Documentation
 ├── layouts/             # Nuxt layouts
-├── middleware/          # Route middleware
 ├── modules/             # Custom Nuxt modules
 ├── pages/               # Page components
 ├── plugins/             # Nuxt plugins
@@ -89,10 +88,8 @@ npm run prisma:studio    # Open Prisma Studio
 ├── public/              # Public static files
 ├── server/              # Server-side code
 │   ├── api/            # API endpoints
-│   ├── middleware/     # Server middleware
 │   ├── plugins/        # Server plugins
 │   └── utils/          # Server utilities
-├── src/                 # Additional source code
 ├── types/               # TypeScript types
 ├── utils/               # Utility functions
 └── __tests__/           # Test files
