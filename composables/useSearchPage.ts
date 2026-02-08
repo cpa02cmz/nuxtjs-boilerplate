@@ -5,6 +5,7 @@ import { useAdvancedResourceSearch } from './useAdvancedResourceSearch'
 import { toggleArrayItem } from '~/utils/filter-utils'
 import { useResourceSort } from './useResourceSort'
 import { trackSearch, trackFilter } from '~/utils/analytics'
+import { DateRange } from '~/utils/constants'
 
 // Extended filter options for search page
 export interface SearchPageFilterOptions {
@@ -54,7 +55,7 @@ export const useSearchPage = () => {
     technologies: [],
     tags: [],
     benefits: [],
-    dateRange: 'anytime',
+    dateRange: DateRange.ANYTIME,
   })
 
   const sortOption = ref<SortOption>('relevance')
@@ -176,7 +177,7 @@ export const useSearchPage = () => {
       technologies: [],
       tags: [],
       benefits: [],
-      dateRange: 'anytime',
+      dateRange: DateRange.ANYTIME,
     }
     sortOption.value = 'relevance'
   }

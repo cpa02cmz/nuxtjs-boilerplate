@@ -5,6 +5,7 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { TIME_CONSTANTS, SubmissionStatus } from '~/utils/constants'
 
 // Mock data for demonstration - in a real application, this would come from a database
 const mockSubmissions: Submission[] = [
@@ -20,9 +21,9 @@ const mockSubmissions: Submission[] = [
       difficulty: 'Beginner',
       technology: ['JavaScript', 'React'],
     },
-    status: 'pending',
+    status: SubmissionStatus.PENDING,
     submittedBy: 'user123',
-    submittedAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    submittedAt: new Date(Date.now() - TIME_CONSTANTS.DAY_MS).toISOString(), // 1 day ago
   },
   {
     id: 'sub_1648815745_def456',
@@ -36,9 +37,11 @@ const mockSubmissions: Submission[] = [
       difficulty: 'Intermediate',
       technology: ['Figma', 'Design'],
     },
-    status: 'pending',
+    status: SubmissionStatus.PENDING,
     submittedBy: 'user456',
-    submittedAt: new Date(Date.now() - 43200000).toISOString(), // 12 hours ago
+    submittedAt: new Date(
+      Date.now() - TIME_CONSTANTS.HOUR_MS * 12
+    ).toISOString(), // 12 hours ago
   },
 ]
 

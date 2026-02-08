@@ -3,6 +3,7 @@ import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import type { ApiClient } from '~/utils/api-client'
 import { limitsConfig } from '~/configs/limits.config'
+import { TIME_CONSTANTS, SubmissionStatus } from '~/utils/constants'
 
 export interface ActivityItem {
   id: string
@@ -40,7 +41,7 @@ export const useModerationDashboard = (
       const queueResponse = await client.get<{ total?: number }>(
         '/api/moderation/queue',
         {
-          params: { status: 'pending' },
+          params: { status: SubmissionStatus.PENDING },
         }
       )
 
@@ -58,25 +59,33 @@ export const useModerationDashboard = (
           id: '1',
           type: 'approve',
           message: 'Approved "React Best Practices Guide" submission',
-          timestamp: new Date(Date.now() - 3600000).toISOString(),
+          timestamp: new Date(
+            Date.now() - TIME_CONSTANTS.HOUR_MS
+          ).toISOString(),
         },
         {
           id: '2',
           type: 'reject',
           message: 'Rejected "Fake Resource" submission - spam',
-          timestamp: new Date(Date.now() - 7200000).toISOString(),
+          timestamp: new Date(
+            Date.now() - TIME_CONSTANTS.HOUR_MS * 2
+          ).toISOString(),
         },
         {
           id: '3',
           type: 'flag',
           message: 'Resource "Old Tool" flagged for being deprecated',
-          timestamp: new Date(Date.now() - 10800000).toISOString(),
+          timestamp: new Date(
+            Date.now() - TIME_CONSTANTS.HOUR_MS * 3
+          ).toISOString(),
         },
         {
           id: '4',
           type: 'submit',
           message: 'New submission "Vue 3 Components Library" received',
-          timestamp: new Date(Date.now() - 14400000).toISOString(),
+          timestamp: new Date(
+            Date.now() - TIME_CONSTANTS.HOUR_MS * 4
+          ).toISOString(),
         },
       ]
     } catch (err) {

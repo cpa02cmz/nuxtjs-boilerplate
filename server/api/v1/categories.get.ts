@@ -6,6 +6,7 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { CACHE_TTL } from '~/utils/constants'
 
 /**
  * GET /api/v1/categories
@@ -43,9 +44,9 @@ export default defineEventHandler(async event => {
       })
     )
 
-    // Cache result for 1 hour (3600 seconds) since categories don't change often
+    // Cache result for 1 hour since categories don't change often
     const response = { success: true, data: categories }
-    await cacheManager.set(cacheKey, response, 3600)
+    await cacheManager.set(cacheKey, response, CACHE_TTL.CATEGORIES)
 
     // Set cache miss header
     event.node.res?.setHeader('X-Cache', 'MISS')

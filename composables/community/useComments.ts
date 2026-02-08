@@ -11,6 +11,7 @@ import type {
 } from '~/types/community'
 import { generateUniqueId } from '~/utils/id'
 import { updateInArray } from '~/utils/comment-utils'
+import { CommentStatus } from '~/utils/constants'
 
 export const useComments = (initialComments: Comment[] = []) => {
   // Reactive state
@@ -40,7 +41,7 @@ export const useComments = (initialComments: Comment[] = []) => {
       votes: 0,
       replies: [],
       isEdited: false,
-      status: 'active',
+      status: CommentStatus.ACTIVE,
     }
 
     // O(1) map insertion
@@ -74,7 +75,7 @@ export const useComments = (initialComments: Comment[] = []) => {
       votes: 0,
       replies: [],
       isEdited: false,
-      status: 'active',
+      status: CommentStatus.ACTIVE,
     }
 
     // Add reply to parent

@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+import { DATABASE_CONSTANTS } from '~/utils/constants'
 
 declare global {
   var __dbPrisma: PrismaClient | undefined
@@ -15,10 +16,10 @@ const getDatabaseConfig = () => {
   // Environment-specific configurations
   const configs = {
     development: {
-      timeout: 5000, // 5 seconds busy timeout
+      timeout: DATABASE_CONSTANTS.BUSY_TIMEOUT_MS, // 5 seconds busy timeout
     },
     production: {
-      timeout: 10000, // 10 seconds busy timeout for high load
+      timeout: DATABASE_CONSTANTS.BUSY_TIMEOUT_MS * 2, // 10 seconds busy timeout for high load
     },
     test: {
       timeout: 1000, // 1 second for fast test failures

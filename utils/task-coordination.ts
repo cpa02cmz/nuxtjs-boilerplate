@@ -8,12 +8,13 @@
  * - Community Features (Issue #280)
  */
 import { limitsConfig } from '~/configs/limits.config'
+import { TaskStatus } from '~/utils/constants'
 
 interface Task {
   id: string
   title: string
   description: string
-  status: 'pending' | 'in-progress' | 'completed' | 'blocked'
+  status: `${TaskStatus}`
   priority: 'low' | 'medium' | 'high' | 'critical'
   assignee?: string
   dependencies: string[]
@@ -53,7 +54,7 @@ class TaskCoordinationSystem {
       title: 'Advanced Search and Filtering System',
       description:
         'Implement comprehensive advanced search and filtering system with faceted search, saved searches, and enhanced filtering options',
-      status: 'in-progress',
+      status: TaskStatus.IN_PROGRESS,
       priority: 'high',
       dependencies: [],
       progress: 90, // Since basic implementation exists
@@ -69,7 +70,7 @@ class TaskCoordinationSystem {
       title: 'Analytics Dashboard',
       description:
         'Implement comprehensive analytics dashboard to track user behavior, resource performance, and system metrics',
-      status: 'completed',
+      status: TaskStatus.COMPLETED,
       priority: 'high',
       dependencies: [],
       progress: 100,
@@ -82,7 +83,7 @@ class TaskCoordinationSystem {
       title: 'API Rate Limiting',
       description:
         'Implement comprehensive rate limiting system with different tiers for different API endpoints',
-      status: 'completed',
+      status: TaskStatus.COMPLETED,
       priority: 'high',
       dependencies: [],
       progress: 100,
@@ -95,7 +96,7 @@ class TaskCoordinationSystem {
       title: 'Resource Recommendation Engine',
       description:
         'Implement comprehensive resource recommendation engine using collaborative and content-based filtering',
-      status: 'pending',
+      status: TaskStatus.PENDING,
       priority: 'high',
       dependencies: ['analytics-dashboard'],
       progress: 0,
@@ -108,7 +109,7 @@ class TaskCoordinationSystem {
       title: 'Community Features and User Profiles',
       description:
         'Implement comprehensive community features including user profiles, comments, voting, and moderation',
-      status: 'pending',
+      status: TaskStatus.PENDING,
       priority: 'medium',
       dependencies: ['analytics-dashboard'],
       progress: 0,

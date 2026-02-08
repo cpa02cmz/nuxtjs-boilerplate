@@ -9,6 +9,7 @@ import {
   sendNotFoundError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { CACHE_TTL } from '~/utils/constants'
 
 /**
  * GET /api/v1/resources/:id
@@ -62,7 +63,7 @@ export default defineEventHandler(async event => {
     }
 
     // Cache the result with tags for easier invalidation
-    await cacheSetWithTags(cacheKey, response, 600, [
+    await cacheSetWithTags(cacheKey, response, CACHE_TTL.RESOURCE_DETAIL, [
       'resource',
       'api-v1',
       `resource-${id}`,

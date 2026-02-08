@@ -7,6 +7,7 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { TIME_CONSTANTS } from '~/utils/constants'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
@@ -17,7 +18,7 @@ export default defineEventHandler(async event => {
     // Parse date range from query parameters
     const startDate = query.startDate
       ? new Date(query.startDate as string)
-      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Default to last 30 days
+      : new Date(Date.now() - TIME_CONSTANTS.DAY_MS * 30) // Default to last 30 days
     const endDate = query.endDate
       ? new Date(query.endDate as string)
       : new Date()

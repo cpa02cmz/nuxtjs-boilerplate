@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify'
+import { HIGHLIGHT_CLASSES } from '~/utils/constants'
 
 const FORBID_TAGS = [
   'script',
@@ -254,7 +255,7 @@ export const sanitizeAndHighlight = (
   // Create highlighted text - only highlighting the already sanitized text
   const highlighted = sanitizedText.replace(
     regex,
-    '<mark class="bg-yellow-200 text-gray-900">$&</mark>'
+    `<mark class="${HIGHLIGHT_CLASSES.MARK}">$&</mark>`
   )
 
   const fullySanitized = DOMPurify.sanitize(highlighted, {

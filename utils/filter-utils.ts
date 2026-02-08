@@ -11,6 +11,7 @@
  */
 
 import type { Resource, FilterOptions } from '~/types/resource'
+import { DateRange, TIME_CONSTANTS } from '~/utils/constants'
 
 /**
  * Check if a filter array has active values
@@ -115,19 +116,19 @@ export const matchesDateRange = (
   resource: Resource,
   dateRange: string | undefined
 ): boolean => {
-  if (!dateRange || dateRange === 'anytime') return true
+  if (!dateRange || dateRange === DateRange.ANYTIME) return true
 
   const now = new Date()
   const resourceDate = new Date(resource.dateAdded || now)
   const timeDiff = now.getTime() - resourceDate.getTime()
-  const daysDiff = timeDiff / (1000 * 60 * 60 * 24)
+  const daysDiff = timeDiff / TIME_CONSTANTS.DAY_MS
 
   switch (dateRange) {
-    case 'lastWeek':
+    case DateRange.LAST_WEEK:
       return daysDiff <= 7
-    case 'lastMonth':
+    case DateRange.LAST_MONTH:
       return daysDiff <= 30
-    case 'lastYear':
+    case DateRange.LAST_YEAR:
       return daysDiff <= 365
     default:
       return true

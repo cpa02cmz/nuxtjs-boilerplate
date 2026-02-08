@@ -1,6 +1,7 @@
 import prisma from './db'
 import { analyticsEventSchema } from './validation-schemas'
 import { logger } from '~/utils/logger'
+import { TIME_CONSTANTS } from '~/utils/constants'
 
 export interface AnalyticsEvent {
   id?: string
@@ -443,7 +444,7 @@ export async function cleanupOldEvents(
 ): Promise<number> {
   try {
     const cutoffDate = new Date(
-      Date.now() - retentionDays * 24 * 60 * 60 * 1000
+      Date.now() - retentionDays * TIME_CONSTANTS.DAY_MS
     )
     const deletedAt = new Date()
 

@@ -2,6 +2,7 @@ import { defineNitroPlugin } from 'nitropack/runtime'
 import type { H3Event } from 'h3'
 import { setCookie, getCookie } from 'h3'
 import { randomBytes } from 'node:crypto'
+import { CSRF_CONSTANTS, TIME_CONSTANTS_SECONDS } from '~/utils/constants'
 
 /**
  * CSRF Protection Plugin
@@ -13,9 +14,9 @@ import { randomBytes } from 'node:crypto'
  * 3. Sets appropriate CSRF token cookies
  */
 
-const CSRF_COOKIE_NAME = 'csrf_token'
-const CSRF_HEADER_NAME = 'x-csrf-token'
-const CSRF_COOKIE_MAX_AGE = 60 * 60 * 24 // 24 hours
+const CSRF_COOKIE_NAME = CSRF_CONSTANTS.COOKIE_NAME
+const CSRF_HEADER_NAME = CSRF_CONSTANTS.HEADER_NAME
+const CSRF_COOKIE_MAX_AGE = TIME_CONSTANTS_SECONDS.DAY // 24 hours
 
 // Generate a cryptographically secure CSRF token
 function generateCsrfToken(): string {

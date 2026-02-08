@@ -1,6 +1,7 @@
 // server/plugins/analytics-cleanup.ts
 import { defineNitroPlugin } from 'nitropack/runtime'
 import logger from '~/utils/logger'
+import { TIME_CONSTANTS } from '~/utils/constants'
 
 export default defineNitroPlugin(async () => {
   logger.info('Analytics cleanup plugin initialized')
@@ -15,15 +16,12 @@ export default defineNitroPlugin(async () => {
     })
 
     // Set up periodic cleanup (every 24 hours)
-    const cleanupInterval = setInterval(
-      () => {
-        logger.info('Running scheduled analytics cleanup...')
-        runAnalyticsCleanup().catch(error => {
-          logger.error('Error during scheduled analytics cleanup', error)
-        })
-      },
-      24 * 60 * 60 * 1000
-    ) // 24 hours
+    const cleanupInterval = setInterval(() => {
+      logger.info('Running scheduled analytics cleanup...')
+      runAnalyticsCleanup().catch(error => {
+        logger.error('Error during scheduled analytics cleanup', error)
+      })
+    }, TIME_CONSTANTS.DAY_MS) // 24 hours
 
     // Clean up interval when Nitro shuts down
     process.on('SIGINT', () => {

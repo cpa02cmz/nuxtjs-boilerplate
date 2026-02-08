@@ -4,11 +4,12 @@
 import { randomBytes } from 'node:crypto'
 import type { H3Event } from 'h3'
 import { getCookie, setCookie, readBody } from 'h3'
+import { CSRF_CONSTANTS, TIME_CONSTANTS_SECONDS } from '~/utils/constants'
 
-// CSRF Token constants
-const CSRF_COOKIE_NAME = 'csrf_token'
-const CSRF_HEADER_NAME = 'x-csrf-token'
-const CSRF_COOKIE_MAX_AGE = 60 * 60 * 24 // 24 hours
+// CSRF Token constants - re-export from constants for backwards compatibility
+const CSRF_COOKIE_NAME = CSRF_CONSTANTS.COOKIE_NAME
+const CSRF_HEADER_NAME = CSRF_CONSTANTS.HEADER_NAME
+const CSRF_COOKIE_MAX_AGE = TIME_CONSTANTS_SECONDS.DAY // 24 hours
 
 /**
  * Generate a cryptographically secure CSRF token

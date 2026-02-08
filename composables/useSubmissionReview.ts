@@ -12,6 +12,7 @@ import { useNuxtApp } from '#app'
 import type { ApiClient } from '~/utils/api-client'
 import { logError } from '~/utils/errorLogger'
 import type { Submission } from '~/types/submission'
+import { SubmissionStatus } from '~/utils/constants'
 
 export interface SubmissionReviewOptions {
   submissionId: string
@@ -81,7 +82,7 @@ export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
       })
 
       if (response.success) {
-        submission.value.status = 'approved'
+        submission.value.status = SubmissionStatus.APPROVED
         submission.value.reviewedBy = reviewedBy
         submission.value.reviewedAt = new Date().toISOString()
         return true
@@ -118,7 +119,7 @@ export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
       })
 
       if (response.success) {
-        submission.value.status = 'rejected'
+        submission.value.status = SubmissionStatus.REJECTED
         submission.value.reviewedBy = reviewedBy
         submission.value.reviewedAt = new Date().toISOString()
         submission.value.rejectionReason = reason

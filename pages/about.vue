@@ -113,6 +113,8 @@
 </template>
 
 <script setup>
+import { DEFAULT_BASE_URL } from '~/utils/constants'
+
 definePageMeta({
   layout: 'default',
 })
@@ -127,7 +129,7 @@ useSeoMeta({
   ogDescription:
     'Learn more about Free Stuff on the Internet - a curated collection of free resources for developers, students, and anyone looking to save money while accessing powerful tools and services.',
   ogImage: '/og-image.jpg',
-  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000'}/about`,
+  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || DEFAULT_BASE_URL}/about`,
   twitterCard: 'summary_large_image',
 })
 </script>

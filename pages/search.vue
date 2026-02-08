@@ -13,30 +13,19 @@
 
       <!-- Search Bar -->
       <div class="mb-8">
-        <LazySearchBar
-          v-model="searchQuery"
-          @search="handleSearch"
-        />
+        <LazySearchBar v-model="searchQuery" @search="handleSearch" />
       </div>
 
       <!-- Loading State -->
-      <div
-        v-if="loading"
-        class="flex justify-center items-center py-12"
-      >
+      <div v-if="loading" class="flex justify-center items-center py-12">
         <div
           class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-800"
         />
       </div>
 
       <!-- Error State -->
-      <div
-        v-else-if="error"
-        class="text-center py-12"
-      >
-        <p class="text-red-600 text-lg">
-          Error loading resources: {{ error }}
-        </p>
+      <div v-else-if="error" class="text-center py-12">
+        <p class="text-red-600 text-lg">Error loading resources: {{ error }}</p>
       </div>
 
       <!-- No Results State -->
@@ -67,10 +56,7 @@
       </div>
 
       <!-- Results with Filters -->
-      <div
-        v-else
-        class="flex flex-col lg:flex-row gap-8"
-      >
+      <div v-else class="flex flex-col lg:flex-row gap-8">
         <!-- ARIA live region for search results -->
         <div
           id="search-results-status"
@@ -198,6 +184,7 @@ import VirtualResourceList from '~/components/VirtualResourceList.vue'
 import PopularSearches from '~/components/PopularSearches.vue'
 import ZeroResultSearches from '~/components/ZeroResultSearches.vue'
 import ActiveFilters from '~/components/ActiveFilters.vue'
+import { DEFAULT_BASE_URL } from '~/utils/constants'
 
 definePageMeta({
   layout: 'default',
@@ -212,7 +199,7 @@ useSeoMeta({
   ogDescription:
     'Search and filter through our collection of free resources including AI tools, hosting services, databases, and more for developers.',
   ogImage: '/og-image.jpg',
-  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000'}/search`,
+  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || DEFAULT_BASE_URL}/search`,
   twitterCard: 'summary_large_image',
 })
 

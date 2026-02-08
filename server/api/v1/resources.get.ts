@@ -8,6 +8,7 @@ import {
   sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { PAGINATION_DEFAULTS, CACHE_TTL } from '~/utils/constants'
 
 /**
  * GET /api/v1/resources
@@ -49,11 +50,11 @@ export default defineEventHandler(async event => {
 
     // Parse query parameters with validation
     // Validate and parse limit parameter
-    let limit = 20 // default
+    let limit: number = PAGINATION_DEFAULTS.PAGE_SIZE // default
     if (query.limit !== undefined) {
       const parsedLimit = parseInt(query.limit as string)
       if (!isNaN(parsedLimit) && parsedLimit > 0) {
-        limit = Math.min(parsedLimit, 100) // max 100
+        limit = Math.min(parsedLimit, PAGINATION_DEFAULTS.MAX_PAGE_SIZE) // max page size
       } else {
         return sendBadRequestError(
           event,
@@ -63,7 +64,7 @@ export default defineEventHandler(async event => {
     }
 
     // Validate and parse offset/page parameter (page takes precedence over offset)
-    let offset = 0 // default
+    let offset: number = PAGINATION_DEFAULTS.OFFSET // default
     if (query.page !== undefined) {
       const parsedPage = parseInt(query.page as string)
       if (!isNaN(parsedPage) && parsedPage >= 1) {
@@ -215,7 +216,7 @@ export default defineEventHandler(async event => {
     }
 
     // Cache the result with tags for easier invalidation
-    await cacheSetWithTags(cacheKey, response, 300, [
+    await cacheSetWithTags(cacheKey, response, CACHE_TTL.DEFAULT, [
       'resources',
       'api-v1',
       'list',
