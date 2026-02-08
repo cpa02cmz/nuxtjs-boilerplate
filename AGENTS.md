@@ -10,7 +10,7 @@
 
 ### Core Technologies
 
-- **Framework**: Nuxt.js 3.21.0 (Vue 3.5.27)
+- **Framework**: Nuxt.js 3.20.2 (Vue 3.5.26)
 - **Language**: TypeScript 5.9.3
 - **Database**: SQLite with Prisma ORM 7.3.0
 - **Styling**: Tailwind CSS with custom configuration
