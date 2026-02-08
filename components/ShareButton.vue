@@ -10,7 +10,10 @@
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5"
+        :class="[
+          'h-5 w-5 transition-transform duration-200 ease-out',
+          showShareMenu && 'rotate-90',
+        ]"
         viewBox="0 0 20 20"
         fill="currentColor"
       >
@@ -365,3 +368,12 @@ onUnmounted(() => {
   document.removeEventListener('mousedown', handleClickOutside)
 })
 </script>
+
+<style scoped>
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .transition-transform {
+    transition: none !important;
+  }
+}
+</style>
