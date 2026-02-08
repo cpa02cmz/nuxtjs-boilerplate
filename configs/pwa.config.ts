@@ -68,8 +68,38 @@ export const pwaConfig = {
 } as const
 
 // Helper function to parse glob patterns
+// Handles patterns with curly braces like "**/*.{js,css,html}" correctly
 function parseGlobPatterns(value: string): string[] {
-  return value.split(',').map(s => s.trim())
+  const patterns: string[] = []
+  let current = ''
+  let braceDepth = 0
+
+  for (let i = 0; i < value.length; i++) {
+    const char = value[i]
+
+    if (char === '{') {
+      braceDepth++
+      current += char
+    } else if (char === '}') {
+      braceDepth--
+      current += char
+    } else if (char === ',' && braceDepth === 0) {
+      // Only split on commas outside of braces
+      if (current.trim()) {
+        patterns.push(current.trim())
+      }
+      current = ''
+    } else {
+      current += char
+    }
+  }
+
+  // Don't forget the last pattern
+  if (current.trim()) {
+    patterns.push(current.trim())
+  }
+
+  return patterns
 }
 
 export type PwaConfig = typeof pwaConfig
