@@ -137,6 +137,26 @@
             @update-sort-option="setSortOption"
           />
 
+          <ActiveFilters
+            :search-query="searchQuery"
+            :selected-categories="selectedCategories"
+            :selected-pricing-models="selectedPricingModels"
+            :selected-difficulty-levels="selectedDifficultyLevels"
+            :selected-technologies="selectedTechnologies"
+            :selected-tags="selectedTags"
+            :selected-benefits="selectedBenefits"
+            :selected-date-range="selectedDateRange"
+            @clear-search="searchQuery = ''"
+            @toggle-category="enhancedToggleCategory"
+            @toggle-pricing-model="enhancedTogglePricingModel"
+            @toggle-difficulty-level="enhancedToggleDifficultyLevel"
+            @toggle-technology="enhancedToggleTechnology"
+            @toggle-tag="enhancedToggleTag"
+            @toggle-benefit="enhancedToggleBenefit"
+            @clear-date-range="selectedDateRange = 'anytime'"
+            @reset-filters="resetAllFilters"
+          />
+
           <div class="mt-6">
             <VirtualResourceList
               :items="filteredResources"
@@ -176,6 +196,7 @@ import ResourceSort from '~/components/ResourceSort.vue'
 import VirtualResourceList from '~/components/VirtualResourceList.vue'
 import PopularSearches from '~/components/PopularSearches.vue'
 import ZeroResultSearches from '~/components/ZeroResultSearches.vue'
+import ActiveFilters from '~/components/ActiveFilters.vue'
 
 definePageMeta({
   layout: 'default',
@@ -215,6 +236,13 @@ const {
   technologies,
   tags,
   benefits,
+  toggleCategory,
+  togglePricingModel,
+  toggleDifficultyLevel,
+  toggleTechnology,
+  toggleTag,
+  toggleBenefit,
+  setDateRange,
 } = useSearchPage()
 
 useUrlSync(filterOptions, sortOption)
@@ -236,9 +264,34 @@ const selectedTechnologies = computed(
 )
 const selectedTags = computed(() => filterOptions.value.tags || [])
 const selectedBenefits = computed(() => filterOptions.value.benefits || [])
-const selectedDateRange = computed(
-  () => filterOptions.value.dateRange || 'anytime'
-)
+const selectedDateRange = computed({
+  get: () => filterOptions.value.dateRange || 'anytime',
+  set: (value: string) => setDateRange(value),
+})
+
+const enhancedToggleCategory = (category: string) => {
+  toggleCategory(category)
+}
+
+const enhancedTogglePricingModel = (pricingModel: string) => {
+  togglePricingModel(pricingModel)
+}
+
+const enhancedToggleDifficultyLevel = (difficultyLevel: string) => {
+  toggleDifficultyLevel(difficultyLevel)
+}
+
+const enhancedToggleTechnology = (technology: string) => {
+  toggleTechnology(technology)
+}
+
+const enhancedToggleTag = (tag: string) => {
+  toggleTag(tag)
+}
+
+const enhancedToggleBenefit = (benefit: string) => {
+  toggleBenefit(benefit)
+}
 
 const resetAllFilters = () => {
   resetFilters()
