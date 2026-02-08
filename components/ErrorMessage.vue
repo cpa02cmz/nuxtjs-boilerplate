@@ -143,6 +143,27 @@ withDefaults(defineProps<Props>(), {
   color: inherit;
   text-decoration: underline;
   cursor: pointer;
-  padding: 0;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  margin: -0.25rem -0.5rem;
+}
+
+.error-message__action-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+}
+
+.error-message__action-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  text-decoration: none;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error-message__action-button {
+    transition: none;
+  }
 }
 </style>
