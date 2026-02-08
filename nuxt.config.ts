@@ -334,15 +334,14 @@ export default defineNuxtConfig({
             // Split vendor chunks to improve caching
             'vendor-vue': ['vue', '@vue/reactivity', 'vue-router'],
             'vendor-search': ['fuse.js'],
-            'vendor-security': ['dompurify', 'xss'],
+            'vendor-security': ['dompurify'],
             'vendor-web-vitals': ['web-vitals'],
           },
           // Optimize chunk naming for better caching
           chunkFileNames: '_nuxt/[name].[hash].js',
           entryFileNames: '_nuxt/[name].[hash].js',
         },
-        // Externalize dependencies that don't need to be bundled
-        external: ['@nuxt/kit'],
+        // Note: @nuxt/kit should NOT be externalized as it's required by custom modules
       },
     },
     // Optimize build speed
