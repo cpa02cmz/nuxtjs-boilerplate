@@ -12,6 +12,7 @@ import {
   sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { generateCacheTags, cacheTagsConfig } from '~/configs/cache-tags.config'
 
 /**
  * GET /api/v1/search
@@ -216,11 +217,15 @@ export default defineEventHandler(async event => {
 
     // Cache the result with tags for easier invalidation
     // Use shorter TTL for search results since they change more frequently
-    await cacheSetWithTags(cacheKey, response, 120, [
-      'search',
-      'api-v1',
-      'search-results',
-    ])
+    await cacheSetWithTags(
+      cacheKey,
+      response,
+      120,
+      generateCacheTags(
+        cacheTagsConfig.search.results,
+        cacheTagsConfig.resources.list
+      )
+    )
 
     // Set cache miss header
     event.node.res?.setHeader('X-Cache', 'MISS')
