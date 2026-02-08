@@ -2,6 +2,7 @@ import { ref, computed, readonly } from 'vue'
 import { logError } from '~/utils/errorLogger'
 import logger from '~/utils/logger'
 import { TIMING } from '~/server/utils/constants'
+import { uiConfig } from '~/configs/ui.config'
 import type { Resource } from '~/types/resource'
 
 // Main composable for managing resource data
@@ -10,7 +11,7 @@ export const useResourceData = () => {
   const loading = ref(true)
   const error = ref<string | null>(null)
   const retryCount = ref(0)
-  const maxRetries = 3
+  const maxRetries = uiConfig.dataLoading.maxRetries // Flexy hates hardcoded 3! Using config now
   const lastError = ref<Error | null>(null)
 
   // Initialize resources

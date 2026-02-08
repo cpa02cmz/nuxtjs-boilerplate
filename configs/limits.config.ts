@@ -32,6 +32,11 @@ export const limitsConfig = {
     defaultRelatedSearchesLimit: parseInt(
       process.env.SEARCH_DEFAULT_RELATED_LIMIT || '5'
     ),
+
+    // Maximum concurrent URL validations
+    maxConcurrentValidations: parseInt(
+      process.env.SEARCH_MAX_CONCURRENT_VALIDATIONS || '5'
+    ),
   },
 
   // Error logging limits

@@ -7,6 +7,8 @@ import {
   sendNotFoundError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { limitsConfig } from '~/configs/limits.config'
+import { cacheConfig } from '~/configs/cache.config'
 import { defineEventHandler, getRouterParam } from 'h3'
 import { generateCacheTags, cacheTagsConfig } from '~/configs/cache-tags.config'
 
@@ -67,7 +69,7 @@ export default defineEventHandler(async event => {
               r.tags?.some((tag: string) => resourceTags.includes(tag)) ||
               r.technology?.some((tech: string) => resourceTech.includes(tech)))
         )
-        .slice(0, 6) // Limit to 6 alternatives
+        .slice(0, limitsConfig.suggestions.maxAlternatives) // Use config instead of hardcoded
     }
 
     const response = {
@@ -83,7 +85,7 @@ export default defineEventHandler(async event => {
     await cacheSetWithTags(
       cacheKey,
       response,
-      300,
+      cacheConfig.server.defaultTtlMs / 1000,
       generateCacheTags(
         cacheTagsConfig.resources.alternatives(resourceId),
         resourceId

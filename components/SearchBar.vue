@@ -57,7 +57,7 @@
         aria-describedby="search-results-info search-shortcut-hint"
         :aria-expanded="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         aria-controls="search-suggestions-dropdown"
         aria-autocomplete="list"
@@ -65,7 +65,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint -->
       <div
         v-if="!modelValue && !isFocused"
@@ -111,7 +111,7 @@
       <LazySearchSuggestions
         v-if="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         id="search-suggestions-dropdown"
         :suggestions="suggestions"
@@ -144,6 +144,7 @@ import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSear
 import { useResourceData } from '~/composables/useResourceData'
 import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
+import { searchConfig } from '~/configs/search.config'
 
 interface Props {
   modelValue: string
@@ -219,8 +220,14 @@ const updateSuggestions = (query: string) => {
       id: resource.id,
       title: resource.title,
       description:
-        resource.description.substring(0, 100) +
-        (resource.description.length > 100 ? '...' : ''),
+        resource.description.substring(
+          0,
+          searchConfig.behavior.descriptionTruncateLength
+        ) +
+        (resource.description.length >
+        searchConfig.behavior.descriptionTruncateLength
+          ? '...'
+          : ''),
       url: resource.url,
     }))
   } else {

@@ -237,13 +237,15 @@ async function fetchUrlWithTimeout(
   }
 }
 
+import { limitsConfig } from '~/configs/limits.config'
+
 /**
  * Validates multiple URLs concurrently with a limit on concurrent requests
  */
 export async function validateUrls(
   urls: string[],
   options: ValidationOptions = {},
-  concurrencyLimit: number = 5
+  concurrencyLimit: number = limitsConfig.search.maxConcurrentValidations || 5
 ): Promise<UrlValidationResult[]> {
   const results: UrlValidationResult[] = []
 
