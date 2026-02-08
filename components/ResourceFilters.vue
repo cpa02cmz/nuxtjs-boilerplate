@@ -157,6 +157,7 @@
       :saved-searches="savedSearches"
       @use-saved-search="onUseSavedSearch"
       @remove-saved-search="onRemoveSavedSearch"
+      @undo-delete="onUndoDelete"
     />
   </div>
 </template>
@@ -203,6 +204,10 @@ interface Emits {
     search: { name: string; query: string; createdAt: Date }
   ): void
   (event: 'remove-saved-search', query: string): void
+  (
+    event: 'undo-delete',
+    search: { name: string; query: string; createdAt: Date }
+  ): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -293,5 +298,13 @@ const onUseSavedSearch = (search: {
 
 const onRemoveSavedSearch = (query: string) => {
   emit('remove-saved-search', query)
+}
+
+const onUndoDelete = (search: {
+  name: string
+  query: string
+  createdAt: Date
+}) => {
+  emit('undo-delete', search)
 }
 </script>

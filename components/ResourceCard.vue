@@ -6,18 +6,15 @@
     role="article"
   >
     <div class="flex items-start">
-      <div
-        v-if="icon"
-        class="flex-shrink-0 mr-4"
-      >
+      <div v-if="icon" class="flex-shrink-0 mr-4">
         <OptimizedImage
           :src="icon"
           :alt="title"
-          width="48"
-          height="48"
+          :width="uiConfig.images.defaultWidth"
+          :height="uiConfig.images.defaultHeight"
           format="webp"
           loading="lazy"
-          quality="80"
+          :quality="uiConfig.images.quality"
           img-class="w-12 h-12 rounded object-contain"
           @error="handleImageError"
         />
@@ -57,10 +54,7 @@
             :health-score="healthScore"
           />
         </div>
-        <p
-          id="resource-description"
-          class="mt-1 text-gray-800 text-sm"
-        >
+        <p id="resource-description" class="mt-1 text-gray-800 text-sm">
           <span
             v-if="highlightedDescription"
             v-html="sanitizedHighlightedDescription"
@@ -73,30 +67,18 @@
           role="region"
           aria-label="Free tier information"
         >
-          <p
-            id="free-tier-label"
-            class="font-medium text-gray-900 text-sm"
-          >
-            Free Tier:
+          <p id="free-tier-label" class="font-medium text-gray-900 text-sm">
+            {{ contentConfig.resourceCard.freeTier }}
           </p>
-          <ul
-            class="mt-1 space-y-1 text-xs text-gray-800"
-            role="list"
-          >
-            <li
-              v-for="(benefit, index) in benefits"
-              :key="index"
-            >
+          <ul class="mt-1 space-y-1 text-xs text-gray-800" role="list">
+            <li v-for="(benefit, index) in benefits" :key="index">
               {{ benefit }}
             </li>
           </ul>
         </div>
 
         <!-- Similarity information (for alternative suggestions) -->
-        <div
-          v-if="similarityScore && similarityScore > 0"
-          class="mt-3"
-        >
+        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
           <div class="flex items-center">
             <div
               class="w-full bg-gray-200 rounded-full h-2"
@@ -115,10 +97,7 @@
               {{ Math.round(similarityScore * 100) }}% match
             </span>
           </div>
-          <p
-            v-if="similarityReason"
-            class="mt-1 text-xs text-gray-600"
-          >
+          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
             {{ similarityReason }}
           </p>
         </div>
@@ -133,10 +112,9 @@
             @click="handleLinkClick"
           >
             {{ buttonLabel }}
-            <span
-              v-if="newTab"
-              class="ml-1 text-xs"
-            >(new tab)</span>
+            <span v-if="newTab" class="ml-1 text-xs">{{
+              contentConfig.resourceCard.newTab
+            }}</span>
           </a>
           <div
             class="flex items-center space-x-2"
@@ -165,14 +143,34 @@
             <!-- Compare button -->
             <button
               v-if="id"
-              class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 rounded-full transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-              :aria-label="`Add ${title} to comparison`"
-              title="Add to comparison"
+              ref="compareButtonRef"
+              :class="[
+                'p-2 rounded-full transition-all duration-200 ease-out',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+                isAddingToComparison
+                  ? 'bg-blue-100 text-blue-600 scale-110'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800',
+              ]"
+              :aria-label="
+                isAddingToComparison
+                  ? `Added ${title} to comparison`
+                  : `Add ${title} to comparison`
+              "
+              :title="
+                isAddingToComparison
+                  ? 'Added to comparison'
+                  : 'Add to comparison'
+              "
+              :aria-pressed="isAddingToComparison"
               @click="addResourceToComparison"
             >
               <svg
+                v-if="!isAddingToComparison"
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
+                :class="[
+                  'h-5 w-5 transition-transform duration-200',
+                  isCompareAnimating && 'animate-icon-pop',
+                ]"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -180,6 +178,19 @@
                 <path
                   fill-rule="evenodd"
                   d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <svg
+                v-else
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 animate-check-pop"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                   clip-rule="evenodd"
                 />
               </svg>
@@ -193,10 +204,7 @@
   </article>
 
   <!-- Error state -->
-  <div
-    v-else
-    class="bg-white p-6 rounded-lg shadow border border-red-200"
-  >
+  <div v-else class="bg-white p-6 rounded-lg shadow border border-red-200">
     <div class="flex items-start">
       <div class="flex-shrink-0 mr-4">
         <svg
@@ -215,9 +223,7 @@
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-red-900">
-          Resource Unavailable
-        </h3>
+        <h3 class="text-lg font-medium text-red-900">Resource Unavailable</h3>
         <p class="mt-1 text-red-700 text-sm">
           This resource could not be displayed due to an error.
         </p>
@@ -236,6 +242,8 @@ import { trackResourceView, trackResourceClick } from '~/utils/analytics'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
 import { memoizeHighlight } from '~/utils/memoize'
 import { logError } from '~/utils/errorLogger'
+import { uiConfig } from '~/configs/ui.config'
+import { contentConfig } from '~/configs/content.config'
 import type { Resource } from '~/types/resource'
 
 interface Props {
@@ -264,7 +272,7 @@ const props = withDefaults(defineProps<Props>(), {
   id: undefined,
   category: 'unknown',
   newTab: true,
-  buttonLabel: 'Get Free Access',
+  buttonLabel: uiConfig.resourceCard.defaultButtonLabel,
   highlightedTitle: undefined,
   highlightedDescription: undefined,
   icon: undefined,
@@ -276,6 +284,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const hasError = ref(false)
+const isAddingToComparison = ref(false)
+const isCompareAnimating = ref(false)
+const compareButtonRef = ref<HTMLButtonElement | null>(null)
 
 // Memoized highlight function to prevent recomputation
 const memoizedHighlight = memoizeHighlight(sanitizeAndHighlight)
@@ -340,9 +351,9 @@ const handleLinkClick = (event: Event) => {
 // Get runtime config for canonical URL
 const runtimeConfig = useRuntimeConfig()
 
-// Method to add resource to comparison
+// Method to add resource to comparison with UX feedback
 const addResourceToComparison = () => {
-  if (!props.id) return
+  if (!props.id || isAddingToComparison.value) return
 
   // Create a resource object with the required properties
   const resource: Partial<Resource> = {
@@ -358,8 +369,22 @@ const addResourceToComparison = () => {
   const added = addResource(resource as Resource)
 
   if (added) {
-    // Navigate to comparison page
-    navigateTo('/compare')
+    // Show visual feedback
+    isAddingToComparison.value = true
+    isCompareAnimating.value = true
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches
+
+    // Navigate after brief delay to allow users to see feedback
+    // Skip delay for users who prefer reduced motion
+    const navigationDelay = prefersReducedMotion ? 0 : 400
+
+    setTimeout(() => {
+      navigateTo('/compare')
+    }, navigationDelay)
   }
 }
 
@@ -420,3 +445,50 @@ if (typeof useHead === 'function') {
   })
 }
 </script>
+
+<style scoped>
+/* Icon pop animation when clicking compare button */
+.animate-icon-pop {
+  animation: icon-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes icon-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Checkmark pop animation when added to comparison */
+.animate-check-pop {
+  animation: check-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes check-pop {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-icon-pop,
+  .animate-check-pop {
+    animation: none;
+  }
+}
+</style>

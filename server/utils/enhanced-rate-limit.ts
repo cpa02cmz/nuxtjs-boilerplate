@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import { getQuery } from 'h3'
+import { rateLimitConfig } from '~/configs/rate-limit.config'
 
 interface TokenBucket {
   tokens: number
@@ -178,41 +179,42 @@ function getAnalytics(path: string): RateLimitAnalytics {
 }
 
 // Default rate limit configurations for different endpoint types
+// Flexy hates hardcoded values! Using config values instead.
 export const rateLimitConfigs = {
   general: new RateLimiter({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    maxRequests: 100,
-    tokensPerInterval: 10, // 10 tokens every interval
-    intervalMs: 60 * 1000, // refill every minute
-    message: 'Too many requests, please try again later.',
+    windowMs: rateLimitConfig.general.windowMs,
+    maxRequests: rateLimitConfig.general.maxRequests,
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_GENERAL_TOKENS || '10'),
+    intervalMs: parseInt(process.env.RATE_LIMIT_GENERAL_INTERVAL_MS || '60000'),
+    message: rateLimitConfig.general.message,
   }),
   search: new RateLimiter({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    maxRequests: 30,
-    tokensPerInterval: 5, // 5 tokens every interval
-    intervalMs: 30 * 1000, // refill every 30 seconds
-    message: 'Too many search requests, please slow down.',
+    windowMs: rateLimitConfig.search.windowMs,
+    maxRequests: rateLimitConfig.search.maxRequests,
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_SEARCH_TOKENS || '5'),
+    intervalMs: parseInt(process.env.RATE_LIMIT_SEARCH_INTERVAL_MS || '30000'),
+    message: rateLimitConfig.search.message,
   }),
   heavy: new RateLimiter({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    maxRequests: 10,
-    tokensPerInterval: 2, // 2 tokens every interval
-    intervalMs: 60 * 1000, // refill every minute
-    message: 'Too many heavy computation requests, please slow down.',
+    windowMs: rateLimitConfig.heavy.windowMs,
+    maxRequests: rateLimitConfig.heavy.maxRequests,
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_HEAVY_TOKENS || '2'),
+    intervalMs: parseInt(process.env.RATE_LIMIT_HEAVY_INTERVAL_MS || '60000'),
+    message: rateLimitConfig.heavy.message,
   }),
   export: new RateLimiter({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    maxRequests: 5,
-    tokensPerInterval: 1, // 1 token every interval
-    intervalMs: 60 * 1000, // refill every minute
-    message: 'Too many export requests, please slow down.',
+    windowMs: rateLimitConfig.export.windowMs,
+    maxRequests: rateLimitConfig.export.maxRequests,
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_EXPORT_TOKENS || '1'),
+    intervalMs: parseInt(process.env.RATE_LIMIT_EXPORT_INTERVAL_MS || '60000'),
+    message: rateLimitConfig.export.message,
   }),
   api: new RateLimiter({
-    windowMs: 5 * 60 * 1000, // 5 minutes
-    maxRequests: 50,
-    tokensPerInterval: 5, // 5 tokens every interval
-    intervalMs: 60 * 1000, // refill every minute
-    message: 'API rate limit exceeded. Please try again later.',
+    windowMs: rateLimitConfig.webhook.windowMs,
+    maxRequests: rateLimitConfig.webhook.maxRequests,
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_API_TOKENS || '5'),
+    intervalMs: parseInt(process.env.RATE_LIMIT_API_INTERVAL_MS || '60000'),
+    message: rateLimitConfig.webhook.message,
   }),
 }
 

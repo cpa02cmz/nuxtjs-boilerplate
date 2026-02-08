@@ -25,6 +25,7 @@ import { analyticsConfig, type AnalyticsConfig } from './analytics.config'
 import { uiConfig, type UiConfig } from './ui.config'
 import { pwaConfig, type PwaConfig } from './pwa.config'
 import { apiConfig, type ApiConfig } from './api.config'
+import { contentConfig, type ContentConfig } from './content.config'
 
 // Re-export individual configs
 export { appConfig, type AppConfig }
@@ -46,6 +47,7 @@ export { analyticsConfig, type AnalyticsConfig }
 export { uiConfig, type UiConfig }
 export { pwaConfig, type PwaConfig }
 export { apiConfig, type ApiConfig }
+export { contentConfig, type ContentConfig }
 
 // Default export with all configs
 export const config = {
@@ -63,6 +65,7 @@ export const config = {
   ui: uiConfig,
   pwa: pwaConfig,
   api: apiConfig,
+  content: contentConfig,
 } as const
 
 export type Config = typeof config
