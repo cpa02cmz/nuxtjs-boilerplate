@@ -58,7 +58,7 @@
     "postcss": "^8.4.32",
     "postcss-html": "^1.5.0",
     "prettier": "^3.8.0",
-    "prisma": "^6.19.2",
+    "prisma": "^7.3.0",
     "rollup-plugin-visualizer": "^6.0.5",
     "stylelint": "^17.1.0",
     "stylelint-config-css-modules": "^4.4.0",
