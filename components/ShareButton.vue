@@ -154,8 +154,11 @@
           <!-- Copy Link -->
           <button
             ref="copyButtonRef"
-            class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-            :class="{ 'bg-green-50 text-green-700': copySuccess }"
+            class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ease-out"
+            :class="{
+              'bg-green-50 text-green-700': copySuccess,
+              'scale-[1.02]': copySuccess,
+            }"
             role="menuitem"
             :aria-label="
               copySuccess ? 'Link copied!' : 'Copy link to clipboard'
@@ -180,12 +183,15 @@
               xmlns="http://www.w3.org/2000/svg"
               class="h-4 w-4 mr-2 text-green-600"
               viewBox="0 0 20 20"
-              fill="currentColor"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
             >
               <path
-                fill-rule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clip-rule="evenodd"
+                class="checkmark-path"
+                d="M4 10l4 4 8-8"
               />
             </svg>
             {{ copySuccess ? 'Copied!' : 'Copy link' }}
@@ -405,30 +411,26 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Checkmark bounce animation for successful copy feedback */
-.animate-check-bounce {
-  animation: check-bounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+/* Animated checkmark path for copy feedback */
+.checkmark-path {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: draw-check 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-@keyframes check-bounce {
-  0% {
-    transform: scale(0) rotate(-45deg);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
+@keyframes draw-check {
+  to {
+    stroke-dashoffset: 0;
   }
 }
 
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  .transition-transform,
-  .animate-check-bounce {
+  .checkmark-path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .transition-transform {
     transition: none !important;
     animation: none !important;
   }
