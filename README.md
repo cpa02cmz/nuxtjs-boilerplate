@@ -141,19 +141,6 @@ npm run test:coverage
 - **Deployment**: Vercel/Netlify ready
 - **Performance**: Optimized for Core Web Vitals
 
-## 🚀 Quick Start
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-```
-
 ## 📚 Documentation
 
 ### Getting Started
@@ -180,7 +167,7 @@ npm run build
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](./docs/development.md#contributing) for details.
+We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for details.
 
 ## 📊 Repository Management
 

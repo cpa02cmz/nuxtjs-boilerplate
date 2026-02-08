@@ -312,7 +312,7 @@ Now that you have the development environment set up:
 2. **Explore the Code**: Start with `app.vue` and `pages/index.vue`
 3. **Review Testing Strategy**: Run `npm test` to see existing tests
 4. **Check API Documentation**: Visit `/api-docs` when running the dev server
-5. **Read Contributing Guidelines**: See `CONTRIBUTING.md`
+5. **Read Contributing Guidelines**: See [`CONTRIBUTING.md`](../CONTRIBUTING.md)
 
 ## Getting Help
 
