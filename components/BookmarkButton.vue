@@ -4,6 +4,8 @@
       :class="[
         'flex items-center justify-center w-10 h-10 rounded-full transition-colors duration-200',
         'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500',
+        'bookmark-btn',
+        { 'bookmark-btn--active': isAnimating },
         isBookmarked
           ? 'text-yellow-500 bg-yellow-50 hover:bg-yellow-100'
           : 'text-gray-400 hover:text-yellow-500 hover:bg-gray-100',
@@ -14,7 +16,11 @@
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        :class="isBookmarked ? 'fill-current' : 'stroke-current'"
+        :class="[
+          isBookmarked ? 'fill-current' : 'stroke-current',
+          'bookmark-icon',
+          { 'bookmark-icon--active': isAnimating && isBookmarked },
+        ]"
         :stroke-width="isBookmarked ? '0' : '1.5'"
         class="w-5 h-5"
         viewBox="0 0 24 24"
@@ -65,6 +71,7 @@ const isBookmarked = computed(() =>
 )
 
 const bookmarkStatus = ref('')
+const isAnimating = ref(false)
 
 const handleBookmarkToggle = () => {
   const wasBookmarked = isBookmarked.value
@@ -77,8 +84,80 @@ const handleBookmarkToggle = () => {
 
   bookmarkStatus.value = wasBookmarked ? 'Bookmark removed' : 'Bookmark added'
 
+  // Trigger animation when adding bookmark
+  if (!wasBookmarked) {
+    isAnimating.value = true
+    setTimeout(() => {
+      isAnimating.value = false
+    }, 300)
+  }
+
   setTimeout(() => {
     bookmarkStatus.value = ''
   }, 1000)
 }
 </script>
+
+<style scoped>
+/* Bookmark button micro-interaction */
+.bookmark-btn {
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.bookmark-btn--active {
+  animation: bookmark-bounce 0.3s ease;
+}
+
+.bookmark-icon {
+  transition:
+    transform 0.2s ease,
+    fill 0.2s ease;
+}
+
+.bookmark-icon--active {
+  animation: icon-pop 0.3s ease;
+}
+
+@keyframes bookmark-bounce {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.85);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  80% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes icon-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .bookmark-btn,
+  .bookmark-icon {
+    animation: none !important;
+    transition:
+      background-color 0.2s ease,
+      fill 0.2s ease;
+  }
+}
+</style>
