@@ -7,6 +7,7 @@
  * - Resource Recommendation Engine (Issue #279)
  * - Community Features (Issue #280)
  */
+import { limitsConfig } from '~/configs/limits.config'
 
 interface Task {
   id: string
@@ -207,7 +208,9 @@ class TaskCoordinationSystem {
       .filter((task: Task) => task.priority === priority)
   }
 
-  getRecentReports(limit: number = 10): CoordinationReport[] {
+  getRecentReports(
+    limit: number = limitsConfig.task.defaultRecentReportsLimit
+  ): CoordinationReport[] {
     return this.reports
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
       .slice(0, limit)
@@ -319,8 +322,9 @@ export const getTasksByStatus = (status: Task['status']) =>
 export const getTasksByPriority = (priority: Task['priority']) =>
   taskCoordinationSystem.getTasksByPriority(priority)
 
-export const getRecentReports = (limit: number = 10) =>
-  taskCoordinationSystem.getRecentReports(limit)
+export const getRecentReports = (
+  limit: number = limitsConfig.task.defaultRecentReportsLimit
+) => taskCoordinationSystem.getRecentReports(limit)
 
 export const getDependencyStatus = (taskId: string) =>
   taskCoordinationSystem.getDependencyStatus(taskId)

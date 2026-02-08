@@ -17,6 +17,14 @@ export const recommendationConfig = {
     category: parseFloat(process.env.REC_SIMILARITY_CATEGORY || '0.5'),
     tags: parseFloat(process.env.REC_SIMILARITY_TAGS || '0.3'),
     technology: parseFloat(process.env.REC_SIMILARITY_TECHNOLOGY || '0.2'),
+    // Minimum score to be considered similar
+    minScore: parseFloat(process.env.REC_SIMILARITY_MIN_SCORE || '0.3'),
+    // Thresholds for similarity levels
+    thresholds: {
+      high: parseFloat(process.env.REC_SIMILARITY_THRESHOLD_HIGH || '0.7'),
+      medium: parseFloat(process.env.REC_SIMILARITY_THRESHOLD_MEDIUM || '0.5'),
+      low: parseFloat(process.env.REC_SIMILARITY_THRESHOLD_LOW || '0.3'),
+    },
   },
 
   // Interest Match Weights

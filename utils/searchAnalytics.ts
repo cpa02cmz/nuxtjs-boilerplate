@@ -1,5 +1,7 @@
 import type { Resource } from '~/types/resource'
 import { createStorageWithDateSerialization } from './storage'
+import { limitsConfig } from '~/configs/limits.config'
+import { searchConfig } from '~/configs/search.config'
 
 // Interface for search analytics data
 export interface SearchAnalytics {
@@ -111,20 +113,25 @@ export class SearchAnalyticsTracker {
         timestamp: new Date(),
       })
 
-      // Keep only the last 100 performance records to prevent excessive memory usage
-      if (this.performanceHistory.length > 100) {
-        this.performanceHistory = this.performanceHistory.slice(-100)
+      // Keep only the last N performance records to prevent excessive memory usage
+      if (
+        this.performanceHistory.length >
+        limitsConfig.analytics.maxPerformanceRecords
+      ) {
+        this.performanceHistory = this.performanceHistory.slice(
+          -limitsConfig.analytics.maxPerformanceRecords
+        )
       }
     }
 
     // Limit arrays to prevent excessive memory usage
     this.popularSearches = this.popularSearches
       .sort((a, b) => b.count - a.count)
-      .slice(0, 50) // Keep top 50 popular searches
+      .slice(0, searchConfig.cache.maxPopularSearches)
 
     this.zeroResultSearches = this.zeroResultSearches
       .sort((a, b) => b.count - a.count)
-      .slice(0, 50) // Keep top 50 zero-result searches
+      .slice(0, searchConfig.cache.maxZeroResultSearches)
 
     // Save to storage
     this.popularSearchesStorage.set(this.popularSearches)
@@ -133,21 +140,28 @@ export class SearchAnalyticsTracker {
   }
 
   // Get popular searches
-  getPopularSearches(limit: number = 10): PopularSearch[] {
+  getPopularSearches(
+    limit: number = limitsConfig.analytics.defaultPopularLimit
+  ): PopularSearch[] {
     return this.popularSearches
       .sort((a, b) => b.count - a.count)
       .slice(0, limit)
   }
 
   // Get zero-result searches
-  getZeroResultSearches(limit: number = 10): ZeroResultSearch[] {
+  getZeroResultSearches(
+    limit: number = limitsConfig.analytics.defaultZeroResultLimit
+  ): ZeroResultSearch[] {
     return this.zeroResultSearches
       .sort((a, b) => b.count - a.count)
       .slice(0, limit)
   }
 
   // Get related searches based on common queries
-  getRelatedSearches(query: string, limit: number = 5): string[] {
+  getRelatedSearches(
+    query: string,
+    limit: number = limitsConfig.search.defaultRelatedSearchesLimit
+  ): string[] {
     const normalizedQuery = query.toLowerCase()
     const related: string[] = []
 
@@ -229,10 +243,10 @@ export class SearchAnalyticsTracker {
     }
   }
 
-  // Get slow performing queries (above a threshold, default 200ms)
+  // Get slow performing queries (above a threshold)
   getSlowQueries(
-    threshold: number = 200,
-    limit: number = 10
+    threshold: number = limitsConfig.analytics.slowQueryThresholdMs,
+    limit: number = limitsConfig.analytics.slowQueryLimit
   ): { query: string; avgDuration: number }[] {
     const queryDurations = new Map<string, number[]>()
 

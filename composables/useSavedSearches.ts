@@ -3,9 +3,10 @@ import type { SavedSearch } from '~/types/search'
 import { createStorageWithDateSerialization } from '~/utils/storage'
 import { emitEvent } from '~/utils/event-emitter'
 import { STORAGE_KEYS } from '~/server/utils/constants'
+import { limitsConfig } from '~/configs/limits.config'
 
 const SAVED_SEARCHES_KEY = STORAGE_KEYS.SAVED_SEARCHES
-const MAX_SAVED_SEARCHES = 20
+const MAX_SAVED_SEARCHES = limitsConfig.search.maxSavedSearches
 
 export const useSavedSearches = () => {
   const storage = createStorageWithDateSerialization<SavedSearch[]>(

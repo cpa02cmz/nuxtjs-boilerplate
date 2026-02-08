@@ -68,6 +68,16 @@ export {
   type SearchConfig,
 } from '~/configs/search.config'
 
+export {
+  limitsConfig as LIMITS_CONFIG,
+  type LimitsConfig,
+} from '~/configs/limits.config'
+
+export {
+  comparisonConfig as COMPARISON_CONFIG,
+  type ComparisonConfig,
+} from '~/configs/comparison.config'
+
 // Backward-compatible re-exports using config values
 // These maintain the old constant names but use configurable values
 import { webhooksConfig } from '~/configs/webhooks.config'

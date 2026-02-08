@@ -1,6 +1,8 @@
 import { ref, readonly } from 'vue'
 import type { Resource, AlternativeSuggestion } from '~/types/resource'
 import { useRecommendationEngine } from '~/composables/useRecommendationEngine'
+import { limitsConfig } from '~/configs/limits.config'
+import { recommendationConfig } from '~/configs/recommendation.config'
 
 // Configuration for alternative suggestions
 export interface AlternativeConfig {
@@ -20,13 +22,13 @@ export const useAlternativeSuggestions = (
 ) => {
   // Configuration for the alternative suggestions system
   const config = ref<AlternativeConfig>({
-    minSimilarityScore: 0.3,
-    maxAlternatives: 6,
+    minSimilarityScore: recommendationConfig.similarity.minScore,
+    maxAlternatives: limitsConfig.suggestions.maxAlternatives,
     includeSimilar: true,
     similarityThresholds: {
-      high: 0.7,
-      medium: 0.5,
-      low: 0.3,
+      high: recommendationConfig.similarity.thresholds.high,
+      medium: recommendationConfig.similarity.thresholds.medium,
+      low: recommendationConfig.similarity.thresholds.low,
     },
   })
 

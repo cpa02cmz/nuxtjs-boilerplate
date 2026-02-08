@@ -1,5 +1,7 @@
 import Fuse from 'fuse.js'
 import type { Resource } from '~/types/resource'
+import { searchConfig } from '~/configs/search.config'
+import { limitsConfig } from '~/configs/limits.config'
 
 // Define search index structure
 interface SearchIndex {
@@ -21,15 +23,18 @@ class SearchIndexManager {
     // Create Fuse.js index for resources
     const fuseIndex = new Fuse(resources, {
       keys: [
-        { name: 'title', weight: 0.4 },
-        { name: 'description', weight: 0.3 },
-        { name: 'benefits', weight: 0.2 },
-        { name: 'tags', weight: 0.1 },
+        { name: 'title', weight: searchConfig.suggestionWeights.name },
+        {
+          name: 'description',
+          weight: searchConfig.suggestionWeights.description,
+        },
+        { name: 'benefits', weight: searchConfig.keys.tags.weight },
+        { name: 'tags', weight: searchConfig.keys.category.weight },
       ],
-      threshold: 0.3,
-      includeScore: true,
-      useExtendedSearch: true,
-      minMatchCharLength: 1,
+      threshold: searchConfig.suggestions.threshold,
+      includeScore: searchConfig.fuse.includeScore,
+      useExtendedSearch: searchConfig.fuse.useExtendedSearch,
+      minMatchCharLength: searchConfig.suggestions.minMatchCharLength,
     })
 
     // Extract unique tags and categories
@@ -95,15 +100,18 @@ class SearchIndexManager {
     // Rebuild the fuse index
     this.index.resources = new Fuse(this.resources, {
       keys: [
-        { name: 'title', weight: 0.4 },
-        { name: 'description', weight: 0.3 },
-        { name: 'benefits', weight: 0.2 },
-        { name: 'tags', weight: 0.1 },
+        { name: 'title', weight: searchConfig.suggestionWeights.name },
+        {
+          name: 'description',
+          weight: searchConfig.suggestionWeights.description,
+        },
+        { name: 'benefits', weight: searchConfig.keys.tags.weight },
+        { name: 'tags', weight: searchConfig.keys.category.weight },
       ],
-      threshold: 0.3,
-      includeScore: true,
-      useExtendedSearch: true,
-      minMatchCharLength: 1,
+      threshold: searchConfig.suggestions.threshold,
+      includeScore: searchConfig.fuse.includeScore,
+      useExtendedSearch: searchConfig.fuse.useExtendedSearch,
+      minMatchCharLength: searchConfig.suggestions.minMatchCharLength,
     })
   }
 
@@ -121,15 +129,18 @@ class SearchIndexManager {
     // Rebuild the fuse index
     this.index.resources = new Fuse(this.resources, {
       keys: [
-        { name: 'title', weight: 0.4 },
-        { name: 'description', weight: 0.3 },
-        { name: 'benefits', weight: 0.2 },
-        { name: 'tags', weight: 0.1 },
+        { name: 'title', weight: searchConfig.suggestionWeights.name },
+        {
+          name: 'description',
+          weight: searchConfig.suggestionWeights.description,
+        },
+        { name: 'benefits', weight: searchConfig.keys.tags.weight },
+        { name: 'tags', weight: searchConfig.keys.category.weight },
       ],
-      threshold: 0.3,
-      includeScore: true,
-      useExtendedSearch: true,
-      minMatchCharLength: 1,
+      threshold: searchConfig.suggestions.threshold,
+      includeScore: searchConfig.fuse.includeScore,
+      useExtendedSearch: searchConfig.fuse.useExtendedSearch,
+      minMatchCharLength: searchConfig.suggestions.minMatchCharLength,
     })
 
     // Rebuild tags and categories
@@ -176,7 +187,9 @@ class SearchIndexManager {
   }
 
   // Get popular searches
-  getPopularSearches(limit: number = 10): { query: string; count: number }[] {
+  getPopularSearches(
+    limit: number = limitsConfig.analytics.defaultPopularLimit
+  ): { query: string; count: number }[] {
     if (!this.index) {
       throw new Error('Search index not initialized')
     }
