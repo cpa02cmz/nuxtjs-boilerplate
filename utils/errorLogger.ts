@@ -1,5 +1,6 @@
 // Error logging service for consistent error tracking
 import { logger } from './logger'
+import { limitsConfig } from '~/configs/limits.config'
 
 export interface ErrorLog {
   id: string
@@ -15,7 +16,7 @@ export interface ErrorLog {
 
 class ErrorLogger {
   private logs: ErrorLog[] = []
-  private maxLogs = 100 // Keep only the last 100 logs
+  private maxLogs = limitsConfig.errorLog.maxLogs
 
   // Log an error with different severity levels
   log(

@@ -1,6 +1,9 @@
 import { ref, computed, readonly } from 'vue'
 import type { Resource } from '~/types/resource'
 import type { ComparisonData, ComparisonCriteria } from '~/types/comparison'
+import { limitsConfig } from '~/configs/limits.config'
+import { recommendationConfig } from '~/configs/recommendation.config'
+import { comparisonConfig } from '~/configs/comparison.config'
 
 // Configuration for comparison system
 interface ComparisonConfig {
@@ -15,78 +18,78 @@ export const useResourceComparison = () => {
   const selectedResources = ref<Resource[]>([])
   const comparisonCriteria = ref<ComparisonCriteria[]>([])
   const config = ref<ComparisonConfig>({
-    maxResources: 4,
-    similarityThreshold: 0.3,
+    maxResources: limitsConfig.comparison.maxResources,
+    similarityThreshold: recommendationConfig.similarity.minScore,
     defaultCriteria: [
       {
         id: 'title',
         name: 'Name',
         type: 'text',
         category: 'basic',
-        weight: 1,
+        weight: comparisonConfig.weights.title,
       },
       {
         id: 'description',
         name: 'Description',
         type: 'text',
         category: 'basic',
-        weight: 1,
+        weight: comparisonConfig.weights.description,
       },
       {
         id: 'pricingModel',
         name: 'Pricing',
         type: 'text',
         category: 'business',
-        weight: 1,
+        weight: comparisonConfig.weights.pricingModel,
       },
       {
         id: 'category',
         name: 'Category',
         type: 'text',
         category: 'basic',
-        weight: 0.8,
+        weight: comparisonConfig.weights.category,
       },
       {
         id: 'technology',
         name: 'Technology',
         type: 'list',
         category: 'technical',
-        weight: 1,
+        weight: comparisonConfig.weights.technology,
       },
       {
         id: 'popularity',
         name: 'Popularity',
         type: 'number',
         category: 'metrics',
-        weight: 0.7,
+        weight: comparisonConfig.weights.popularity,
       },
       {
         id: 'benefits',
         name: 'Benefits',
         type: 'list',
         category: 'features',
-        weight: 1,
+        weight: comparisonConfig.weights.benefits,
       },
       {
         id: 'limitiations',
         name: 'Limitations',
         type: 'list',
         category: 'features',
-        weight: 0.8,
+        weight: comparisonConfig.weights.limitations,
       },
       {
         id: 'platforms',
         name: 'Platforms',
         type: 'list',
         category: 'technical',
-        weight: 0.7,
+        weight: comparisonConfig.weights.platforms,
       },
       {
         id: 'features',
         name: 'Features',
         type: 'list',
         category: 'features',
-        weight: 1,
+        weight: comparisonConfig.weights.features,
       },
     ],
   })

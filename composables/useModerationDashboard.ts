@@ -2,6 +2,7 @@ import { readonly, ref, onMounted } from 'vue'
 import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import type { ApiClient } from '~/utils/api-client'
+import { limitsConfig } from '~/configs/limits.config'
 
 export interface ActivityItem {
   id: string
@@ -47,9 +48,10 @@ export const useModerationDashboard = (
         pendingCount.value = queueResponse.data?.total || 0
       }
 
-      approvedCount.value = 24
-      rejectedCount.value = 8
-      flaggedCount.value = 5
+      // Mock data - will be replaced with real data from API
+      approvedCount.value = limitsConfig.moderation.mockApprovedCount
+      rejectedCount.value = limitsConfig.moderation.mockRejectedCount
+      flaggedCount.value = limitsConfig.moderation.mockFlaggedCount
 
       recentActivity.value = [
         {
@@ -84,10 +86,10 @@ export const useModerationDashboard = (
         'useModerationDashboard'
       )
 
-      pendingCount.value = 0
-      approvedCount.value = 0
-      rejectedCount.value = 0
-      flaggedCount.value = 0
+      pendingCount.value = limitsConfig.community.initialContributions
+      approvedCount.value = limitsConfig.community.initialContributions
+      rejectedCount.value = limitsConfig.community.initialContributions
+      flaggedCount.value = limitsConfig.community.initialContributions
     }
   }
 
