@@ -12,6 +12,8 @@ import {
   sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { VALIDATION_CONFIG } from '~/configs/validation.config'
+import { CACHE_CONFIG } from '~/configs/cache.config'
 
 /**
  * GET /api/v1/search
@@ -50,12 +52,12 @@ export default defineEventHandler(async event => {
     let resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Parse query parameters with validation
-    // Validate and parse limit parameter
-    let limit = 20 // default
+    // Validate and parse limit parameter using config
+    let limit: number = VALIDATION_CONFIG.pagination.defaultLimit
     if (query.limit !== undefined) {
       const parsedLimit = parseInt(query.limit as string)
       if (!isNaN(parsedLimit) && parsedLimit > 0) {
-        limit = Math.min(parsedLimit, 100) // max 100
+        limit = Math.min(parsedLimit, VALIDATION_CONFIG.pagination.maxLimit)
       } else {
         return sendBadRequestError(
           event,
@@ -216,7 +218,7 @@ export default defineEventHandler(async event => {
 
     // Cache the result with tags for easier invalidation
     // Use shorter TTL for search results since they change more frequently
-    await cacheSetWithTags(cacheKey, response, 120, [
+    await cacheSetWithTags(cacheKey, response, CACHE_CONFIG.ttlSeconds.search, [
       'search',
       'api-v1',
       'search-results',

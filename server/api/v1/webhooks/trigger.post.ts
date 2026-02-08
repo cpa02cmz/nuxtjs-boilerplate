@@ -7,6 +7,8 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { triggerWebhookSchema } from '~/server/utils/validation-schemas'
+import { SUCCESS_MESSAGES } from '~/configs/messages.config'
+import { TIMING_CONFIG } from '~/configs/timing.config'
 
 export default defineEventHandler(async event => {
   try {
@@ -37,7 +39,7 @@ export default defineEventHandler(async event => {
       await webhookStorage.getDeliveryByIdempotencyKey(idempotencyKey)
     if (existingDelivery) {
       sendSuccessResponse(event, {
-        message: 'Webhook already delivered (idempotent request)',
+        message: SUCCESS_MESSAGES.webhook.alreadyDelivered,
         triggered: 0,
         queued: 0,
         existingDelivery: {
@@ -55,7 +57,7 @@ export default defineEventHandler(async event => {
 
     if (webhooks.length === 0) {
       sendSuccessResponse(event, {
-        message: 'No webhooks to trigger',
+        message: SUCCESS_MESSAGES.webhook.noWebhooks,
         triggered: 0,
         queued: 0,
       })
@@ -73,7 +75,7 @@ export default defineEventHandler(async event => {
     for (const webhook of webhooks) {
       await webhookQueueSystem.deliverWebhook(webhook, payload, {
         async: true,
-        maxRetries: 3,
+        maxRetries: TIMING_CONFIG.retry.maxAttempts,
         priority: 0,
       })
       queuedWebhooks++
@@ -82,7 +84,10 @@ export default defineEventHandler(async event => {
     const queueStats = await webhookQueueSystem.getQueueStats()
 
     sendSuccessResponse(event, {
-      message: `Queued ${queuedWebhooks} webhooks for async delivery for event: ${validatedData.event}`,
+      message: SUCCESS_MESSAGES.webhook.queued(
+        queuedWebhooks,
+        validatedData.event
+      ),
       triggered: webhooks.length,
       queued: queuedWebhooks,
       idempotencyKey,

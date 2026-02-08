@@ -1,4 +1,5 @@
 import { getRequestIP, setResponseHeader, createError } from 'h3'
+import { RATE_LIMIT_CONFIG } from '../../configs/rate-limit.config'
 
 // Advanced in-memory rate limiter with different limits for different endpoints
 // In production, you'd want to use a more robust solution like Redis
@@ -17,61 +18,49 @@ interface RateLimitConfig {
   message: string // Error message when limit exceeded
 }
 
-// Configuration for different endpoint types
-const RATE_LIMIT_CONFIG: { [key: string]: RateLimitConfig } = {
-  // General API endpoints
-  general: {
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    maxRequests: 100,
-    message: 'Too many requests, please try again later.',
-  },
-  // Search endpoints (more restrictive)
-  search: {
-    windowMs: 1 * 60 * 1000, // 1 minute
-    maxRequests: 30,
-    message: 'Too many search requests, please slow down.',
-  },
-  // Heavy computation endpoints (most restrictive)
-  heavy: {
-    windowMs: 1 * 60 * 1000, // 1 minute
-    maxRequests: 10,
-    message: 'Too many heavy computation requests, please slow down.',
-  },
-  // Export endpoints (restrictive)
-  export: {
-    windowMs: 1 * 60 * 1000, // 1 minute
-    maxRequests: 5,
-    message: 'Too many export requests, please slow down.',
-  },
-}
-
 // Map endpoint patterns to rate limit tiers
 function getRateLimitTier(path: string): RateLimitConfig {
   if (path.includes('/api/v1/search') || path.includes('/api/v1/search')) {
-    return RATE_LIMIT_CONFIG.search
+    return {
+      windowMs: RATE_LIMIT_CONFIG.windows.search,
+      maxRequests: RATE_LIMIT_CONFIG.maxRequests.search,
+      message: RATE_LIMIT_CONFIG.messages.search,
+    }
   } else if (path.includes('/api/v1/export')) {
-    return RATE_LIMIT_CONFIG.export
+    return {
+      windowMs: RATE_LIMIT_CONFIG.windows.export,
+      maxRequests: RATE_LIMIT_CONFIG.maxRequests.export,
+      message: RATE_LIMIT_CONFIG.messages.export,
+    }
   } else if (path.includes('/api/v1/webhooks')) {
     // Webhook endpoints have specific rate limits
     return {
-      windowMs: 1 * 60 * 1000, // 1 minute
-      maxRequests: 20,
-      message: 'Too many webhook requests, please slow down.',
+      windowMs: RATE_LIMIT_CONFIG.windows.webhook,
+      maxRequests: RATE_LIMIT_CONFIG.maxRequests.webhook,
+      message: RATE_LIMIT_CONFIG.messages.webhook,
     }
   } else if (path.includes('/api/v1/auth/api-keys')) {
     // API key management endpoints have specific rate limits
     return {
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      maxRequests: 10,
-      message: 'Too many API key management requests.',
+      windowMs: RATE_LIMIT_CONFIG.windows.apiKey,
+      maxRequests: RATE_LIMIT_CONFIG.maxRequests.apiKey,
+      message: RATE_LIMIT_CONFIG.messages.apiKey,
     }
   } else if (
     path.includes('/api/v1/resources') ||
     path.includes('/api/categories')
   ) {
-    return RATE_LIMIT_CONFIG.heavy
+    return {
+      windowMs: RATE_LIMIT_CONFIG.windows.heavy,
+      maxRequests: RATE_LIMIT_CONFIG.maxRequests.heavy,
+      message: RATE_LIMIT_CONFIG.messages.heavy,
+    }
   } else {
-    return RATE_LIMIT_CONFIG.general
+    return {
+      windowMs: RATE_LIMIT_CONFIG.windows.general,
+      maxRequests: RATE_LIMIT_CONFIG.maxRequests.general,
+      message: RATE_LIMIT_CONFIG.messages.general,
+    }
   }
 }
 
@@ -110,23 +99,24 @@ export default defineEventHandler(event => {
     rateLimitStore[key].count++
   }
 
-  const remaining = rateLimitConfig.maxRequests - rateLimitStore[key].count
-  const resetTime = rateLimitStore[key].resetTime
+  const storeEntry = rateLimitStore[key]!
+  const remaining = rateLimitConfig.maxRequests - storeEntry.count
+  const resetTime = storeEntry.resetTime
 
-  // Set rate limit headers
+  // Set rate limit headers using config
   setResponseHeader(
     event,
-    'X-RateLimit-Limit',
+    RATE_LIMIT_CONFIG.headers.limit,
     rateLimitConfig.maxRequests.toString()
   )
   setResponseHeader(
     event,
-    'X-RateLimit-Remaining',
+    RATE_LIMIT_CONFIG.headers.remaining,
     Math.max(0, remaining).toString()
   )
   setResponseHeader(
     event,
-    'X-RateLimit-Reset',
+    RATE_LIMIT_CONFIG.headers.reset,
     Math.floor(resetTime / 1000).toString()
   )
   setResponseHeader(

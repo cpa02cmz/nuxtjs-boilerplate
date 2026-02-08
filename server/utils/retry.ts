@@ -1,3 +1,5 @@
+import { RETRY_PRESETS } from '../../configs/timing.config'
+
 interface RetryConfig {
   maxRetries: number
   baseDelayMs: number
@@ -62,8 +64,8 @@ export function isRetryableError(
 
 export function calculateBackoff(
   attempt: number,
-  baseDelayMs: number = 1000,
-  maxDelayMs: number = 30000,
+  baseDelayMs: number = RETRY_PRESETS.default.baseDelayMs,
+  maxDelayMs: number = RETRY_PRESETS.default.maxDelayMs,
   jitterEnabled: boolean = true,
   jitterFactor: number = 0.1
 ): number {
@@ -99,10 +101,10 @@ export async function retryWithBackoff<T>(
   config: Partial<RetryConfig> = {}
 ): Promise<T> {
   const defaultConfig: RetryConfig = {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
+    maxRetries: RETRY_PRESETS.default.maxAttempts,
+    baseDelayMs: RETRY_PRESETS.default.baseDelayMs,
+    maxDelayMs: RETRY_PRESETS.default.maxDelayMs,
+    backoffMultiplier: RETRY_PRESETS.default.backoffMultiplier,
     retryableErrors: [],
     jitterEnabled: true,
     jitterFactor: 0.1,
@@ -157,10 +159,10 @@ export async function retryWithResult<T>(
   config: Partial<RetryConfig> = {}
 ): Promise<RetryResult<T>> {
   const defaultConfig: RetryConfig = {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
+    maxRetries: RETRY_PRESETS.default.maxAttempts,
+    baseDelayMs: RETRY_PRESETS.default.baseDelayMs,
+    maxDelayMs: RETRY_PRESETS.default.maxDelayMs,
+    backoffMultiplier: RETRY_PRESETS.default.backoffMultiplier,
     retryableErrors: [],
     jitterEnabled: true,
     jitterFactor: 0.1,
@@ -240,44 +242,45 @@ export function isRetryableHttpCode(statusCode: number): boolean {
   return getRetryableHttpCodes().includes(statusCode)
 }
 
+// Export presets from config for backward compatibility
 export const retryPresets = {
   quick: {
-    maxRetries: 2,
-    baseDelayMs: 500,
-    maxDelayMs: 5000,
-    backoffMultiplier: 2,
+    maxRetries: RETRY_PRESETS.aggressive.maxAttempts,
+    baseDelayMs: RETRY_PRESETS.aggressive.baseDelayMs,
+    maxDelayMs: RETRY_PRESETS.aggressive.maxDelayMs,
+    backoffMultiplier: RETRY_PRESETS.aggressive.backoffMultiplier,
     jitterEnabled: true,
     jitterFactor: 0.1,
   },
   standard: {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
+    maxRetries: RETRY_PRESETS.default.maxAttempts,
+    baseDelayMs: RETRY_PRESETS.default.baseDelayMs,
+    maxDelayMs: RETRY_PRESETS.default.maxDelayMs,
+    backoffMultiplier: RETRY_PRESETS.default.backoffMultiplier,
     jitterEnabled: true,
     jitterFactor: 0.1,
   },
   slow: {
-    maxRetries: 5,
-    baseDelayMs: 2000,
-    maxDelayMs: 60000,
-    backoffMultiplier: 2,
+    maxRetries: RETRY_PRESETS.conservative.maxAttempts,
+    baseDelayMs: RETRY_PRESETS.conservative.baseDelayMs,
+    maxDelayMs: RETRY_PRESETS.conservative.maxDelayMs,
+    backoffMultiplier: RETRY_PRESETS.conservative.backoffMultiplier,
     jitterEnabled: true,
     jitterFactor: 0.15,
   },
   aggressive: {
-    maxRetries: 3,
-    baseDelayMs: 100,
-    maxDelayMs: 5000,
-    backoffMultiplier: 1.5,
+    maxRetries: RETRY_PRESETS.aggressive.maxAttempts,
+    baseDelayMs: RETRY_PRESETS.aggressive.baseDelayMs,
+    maxDelayMs: RETRY_PRESETS.aggressive.maxDelayMs,
+    backoffMultiplier: RETRY_PRESETS.aggressive.backoffMultiplier,
     jitterEnabled: true,
     jitterFactor: 0.2,
   },
   httpRetry: {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
+    maxRetries: RETRY_PRESETS.api.maxAttempts,
+    baseDelayMs: RETRY_PRESETS.api.baseDelayMs,
+    maxDelayMs: RETRY_PRESETS.api.maxDelayMs,
+    backoffMultiplier: RETRY_PRESETS.api.backoffMultiplier,
     retryableErrors: getRetryableHttpCodes(),
     jitterEnabled: true,
     jitterFactor: 0.1,

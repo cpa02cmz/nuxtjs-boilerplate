@@ -31,10 +31,7 @@
           </svg>
           <span class="text-yellow-800 text-sm font-medium">
             You are offline. Some features may be limited.
-            <span
-              v-if="lastOnlineTime"
-              class="text-yellow-700 text-xs ml-1"
-            >
+            <span v-if="lastOnlineTime" class="text-yellow-700 text-xs ml-1">
               (Last online: {{ lastOnlineTime }})
             </span>
           </span>
@@ -46,10 +43,7 @@
             :disabled="isChecking"
             @click="checkConnection"
           >
-            <span
-              v-if="isChecking"
-              class="flex items-center"
-            >
+            <span v-if="isChecking" class="flex items-center">
               <svg
                 class="animate-spin h-4 w-4 mr-1"
                 xmlns="http://www.w3.org/2000/svg"
@@ -103,7 +97,8 @@
 
 <script setup lang="ts">
 import { ref, onUnmounted, onMounted } from 'vue'
-import { UI_TIMING } from '~/server/utils/constants'
+import { UI_TIMING_CONFIG } from '~/configs/ui.config'
+import { EXTERNAL_URLS } from '~/configs/app.config'
 
 const isOffline = ref(false)
 const isDismissed = ref(false)
@@ -136,10 +131,10 @@ const checkConnection = async () => {
     const controller = new AbortController()
     const timeoutId = setTimeout(
       () => controller.abort(),
-      UI_TIMING.CONNECTION_TIMEOUT_MS
+      UI_TIMING_CONFIG.connection.timeout
     )
 
-    await fetch('/favicon.ico', {
+    await fetch(EXTERNAL_URLS.healthCheck, {
       method: 'HEAD',
       cache: 'no-store',
       signal: controller.signal,
