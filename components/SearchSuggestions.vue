@@ -2,9 +2,12 @@
   <div
     v-if="suggestions.length > 0 || searchHistory.length > 0"
     :id="id"
-    class="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 max-h-96 overflow-auto border border-gray-200"
+    :class="[
+      'absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 overflow-auto border border-gray-200',
+      uiConfig.dropdown.maxHeight,
+    ]"
     role="listbox"
-    aria-label="Search suggestions"
+    :aria-label="contentConfig.search.suggestions.title"
     @keydown="handleKeyDown"
   >
     <!-- Search History Section -->
@@ -12,7 +15,7 @@
       <div
         class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider"
       >
-        Recent Searches
+        {{ contentConfig.search.suggestions.recentTitle }}
       </div>
       <ul>
         <li
@@ -29,7 +32,7 @@
         >
           <div class="flex items-center">
             <svg
-              class="w-4 h-4 mr-2 text-gray-400"
+              :class="[uiConfig.iconSizes.suggestion, 'mr-2 text-gray-400']"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -57,7 +60,7 @@
       <div
         class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider"
       >
-        Suggestions
+        {{ contentConfig.search.suggestions.title }}
       </div>
       <ul>
         <li
@@ -73,7 +76,10 @@
           @mouseenter="focusedIndex = searchHistory.length + index"
         >
           <svg
-            class="w-4 h-4 mr-2 mt-0.5 text-gray-400 flex-shrink-0"
+            :class="[
+              uiConfig.iconSizes.suggestion,
+              'mr-2 mt-0.5 text-gray-400 flex-shrink-0',
+            ]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -104,11 +110,12 @@
       >
         <button
           class="w-full px-4 py-2 text-left text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 flex items-center focus:outline-none focus:ring-2 focus:ring-gray-800"
-          aria-label="Clear all search history"
+          :aria-label="contentConfig.search.suggestions.clearHistory"
           @click="clearHistory"
         >
           <svg
-            class="w-4 h-4 mr-2"
+            :class="uiConfig.iconSizes.suggestion"
+            class="mr-2"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -121,7 +128,7 @@
               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
             />
           </svg>
-          Clear search history
+          {{ contentConfig.search.suggestions.clearHistory }}
         </button>
       </div>
     </div>
@@ -130,6 +137,8 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { contentConfig } from '~/configs/content.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface SuggestionItem {
   id: string

@@ -13,11 +13,11 @@
         <OptimizedImage
           :src="icon"
           :alt="title"
-          width="48"
-          height="48"
+          :width="uiConfig.images.defaultWidth"
+          :height="uiConfig.images.defaultHeight"
           format="webp"
           loading="lazy"
-          quality="80"
+          :quality="uiConfig.images.quality"
           img-class="w-12 h-12 rounded object-contain"
           @error="handleImageError"
         />
@@ -77,7 +77,7 @@
             id="free-tier-label"
             class="font-medium text-gray-900 text-sm"
           >
-            Free Tier:
+            {{ contentConfig.resourceCard.freeTier }}
           </p>
           <ul
             class="mt-1 space-y-1 text-xs text-gray-800"
@@ -136,7 +136,9 @@
             <span
               v-if="newTab"
               class="ml-1 text-xs"
-            >(new tab)</span>
+            >{{
+              contentConfig.resourceCard.newTab
+            }}</span>
           </a>
           <div
             class="flex items-center space-x-2"
@@ -236,6 +238,8 @@ import { trackResourceView, trackResourceClick } from '~/utils/analytics'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
 import { memoizeHighlight } from '~/utils/memoize'
 import { logError } from '~/utils/errorLogger'
+import { uiConfig } from '~/configs/ui.config'
+import { contentConfig } from '~/configs/content.config'
 import type { Resource } from '~/types/resource'
 
 interface Props {
@@ -264,7 +268,7 @@ const props = withDefaults(defineProps<Props>(), {
   id: undefined,
   category: 'unknown',
   newTab: true,
-  buttonLabel: 'Get Free Access',
+  buttonLabel: uiConfig.resourceCard.defaultButtonLabel,
   highlightedTitle: undefined,
   highlightedDescription: undefined,
   icon: undefined,
