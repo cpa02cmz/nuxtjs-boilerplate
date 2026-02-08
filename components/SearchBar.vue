@@ -50,7 +50,7 @@
         ref="searchInputRef"
         type="search"
         :value="modelValue"
-        class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400"
+        class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400 focus:shadow-lg focus:-translate-y-0.5"
         :class="{ 'placeholder:text-gray-300': isSearching }"
         placeholder="Search resources by name, description, tags..."
         aria-label="Search resources (Press / to focus)"
@@ -69,10 +69,10 @@
       <!-- Keyboard shortcut hint -->
       <div
         v-if="!modelValue && !isFocused"
-        class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none group"
+        class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
       >
         <kbd
-          class="hidden sm:inline-block px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded-md shadow-sm transition-all duration-150 group-hover:bg-gray-100 group-hover:border-gray-300 group-hover:shadow"
+          class="hidden sm:inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded-md shadow-sm transition-all duration-200 ease-out hover:bg-gray-100 hover:border-gray-300 hover:shadow-md hover:scale-105"
           aria-hidden="true"
         >
           /
@@ -83,7 +83,7 @@
         class="absolute inset-y-0 right-0 flex items-center pr-3"
       >
         <button
-          class="text-gray-400 hover:text-gray-600 focus:outline-none transition-colors duration-150 rounded-full p-0.5 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500"
+          class="text-gray-400 hover:text-gray-600 focus:outline-none transition-all duration-200 ease-out rounded-full p-0.5 hover:bg-gray-100 hover:rotate-90 focus:ring-2 focus:ring-blue-500 active:scale-90"
           aria-label="Clear search"
           @click="clearSearch"
         >
@@ -387,3 +387,23 @@ if (typeof window !== 'undefined') {
   })
 }
 </script>
+
+<style scoped>
+/* Respect reduced motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  input {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  kbd {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  button {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+</style>

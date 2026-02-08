@@ -1,3 +1,5 @@
+import { webhooksConfig } from '~/configs/webhooks.config'
+
 interface CircuitBreakerState {
   isOpen: boolean
   isHalfOpen: boolean
@@ -155,10 +157,10 @@ export function getCircuitBreaker(
 ): CircuitBreaker {
   if (!circuitBreakers.has(key)) {
     const defaultConfig: CircuitBreakerConfig = {
-      failureThreshold: 5,
-      successThreshold: 2,
-      timeoutMs: 60000,
-      monitoringWindowMs: 300000,
+      failureThreshold: webhooksConfig.circuitBreaker.failureThreshold,
+      successThreshold: webhooksConfig.circuitBreaker.successThreshold,
+      timeoutMs: webhooksConfig.circuitBreaker.timeoutMs,
+      monitoringWindowMs: webhooksConfig.circuitBreaker.resetTimeoutMs,
     }
 
     circuitBreakers.set(
