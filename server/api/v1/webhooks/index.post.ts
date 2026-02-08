@@ -34,8 +34,6 @@ export default defineEventHandler(async event => {
       secret,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      deliveryCount: 0,
-      failureCount: 0,
     }
 
     await webhookStorage.createWebhook(newWebhook)
