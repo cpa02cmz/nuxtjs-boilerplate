@@ -195,6 +195,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  benefits: () => [],
   searchQuery: '',
   facetCounts: () => ({}),
   selectedBenefits: () => [],
