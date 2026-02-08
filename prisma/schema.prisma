@@ -116,6 +116,7 @@ model ApiKey {
   permissions String
   active      Boolean   @default(true)
   expiresAt   DateTime?
+  lastUsedAt  DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
