@@ -3,6 +3,7 @@ import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import type { ApiClient } from '~/utils/api-client'
 import { limitsConfig } from '~/configs/limits.config'
+import { iconsConfig } from '~/configs/icons.config'
 
 export interface ActivityItem {
   id: string
@@ -94,17 +95,18 @@ export const useModerationDashboard = (
   }
 
   const getActivityIcon = (type: string) => {
+    // Use iconsConfig - Flexy hates hardcoded values!
     switch (type) {
       case 'approve':
-        return '✅'
+        return iconsConfig.activity.approve
       case 'reject':
-        return '❌'
+        return iconsConfig.activity.reject
       case 'flag':
-        return '🚩'
+        return iconsConfig.activity.flag
       case 'submit':
-        return '📝'
+        return iconsConfig.activity.submit
       default:
-        return 'ℹ️'
+        return iconsConfig.activity.default
     }
   }
 

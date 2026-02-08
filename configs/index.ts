@@ -80,6 +80,7 @@ import {
   type SitemapConfig,
   type SitemapPageEntry,
 } from './sitemap.config'
+import { iconsConfig, type IconsConfig } from './icons.config'
 
 // Re-export individual configs
 export { appConfig, type AppConfig }
@@ -156,6 +157,7 @@ export {
   type SitemapConfig,
   type SitemapPageEntry,
 }
+export { iconsConfig, type IconsConfig }
 
 // Default export with all configs
 export const config = {
@@ -182,6 +184,7 @@ export const config = {
   time: timeConfig,
   cacheTags: cacheTagsConfig,
   sitemap: sitemapConfig,
+  icons: iconsConfig,
 } as const
 
 export type Config = typeof config
