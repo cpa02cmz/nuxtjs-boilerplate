@@ -136,7 +136,7 @@ export const webhookStorage = {
 
       return webhooks.map(mapPrismaToWebhook)
     } catch (error) {
-      return handleStorageError('get all webhooks', error)
+      handleStorageError('get all webhooks', error)
     }
   },
 
@@ -150,7 +150,7 @@ export const webhookStorage = {
 
       return mapPrismaToWebhook(webhook)
     } catch (error) {
-      return handleStorageError(`get webhook by id ${id}`, error)
+      handleStorageError(`get webhook by id ${id}`, error)
     }
   },
 
@@ -168,7 +168,7 @@ export const webhookStorage = {
 
       return mapPrismaToWebhook(created)
     } catch (error) {
-      return handleStorageError('create webhook', error)
+      handleStorageError('create webhook', error)
     }
   },
 
@@ -192,7 +192,7 @@ export const webhookStorage = {
 
       return webhook ? mapPrismaToWebhook(webhook) : null
     } catch (error) {
-      return handleStorageError(`update webhook ${id}`, error)
+      handleStorageError(`update webhook ${id}`, error)
     }
   },
 
@@ -205,7 +205,7 @@ export const webhookStorage = {
 
       return deleted.count > 0
     } catch (error) {
-      return handleStorageError(`delete webhook ${id}`, error)
+      handleStorageError(`delete webhook ${id}`, error)
     }
   },
 
@@ -222,7 +222,7 @@ export const webhookStorage = {
 
       return webhooks.map(mapPrismaToWebhook)
     } catch (error) {
-      return handleStorageError(`get webhooks by event ${event}`, error)
+      handleStorageError(`get webhooks by event ${event}`, error)
     }
   },
 
@@ -237,7 +237,7 @@ export const webhookStorage = {
 
       return deliveries.map(mapPrismaToWebhookDelivery)
     } catch (error) {
-      return handleStorageError('get all deliveries', error)
+      handleStorageError('get all deliveries', error)
     }
   },
 
@@ -251,7 +251,7 @@ export const webhookStorage = {
 
       return mapPrismaToWebhookDelivery(delivery)
     } catch (error) {
-      return handleStorageError(`get delivery by id ${id}`, error)
+      handleStorageError(`get delivery by id ${id}`, error)
     }
   },
 
@@ -276,7 +276,7 @@ export const webhookStorage = {
 
       return mapPrismaToWebhookDelivery(created)
     } catch (error) {
-      return handleStorageError('create delivery', error)
+      handleStorageError('create delivery', error)
     }
   },
 
@@ -303,7 +303,7 @@ export const webhookStorage = {
 
       return delivery ? mapPrismaToWebhookDelivery(delivery) : null
     } catch (error) {
-      return handleStorageError(`update delivery ${id}`, error)
+      handleStorageError(`update delivery ${id}`, error)
     }
   },
 
@@ -319,10 +319,7 @@ export const webhookStorage = {
 
       return deliveries.map(mapPrismaToWebhookDelivery)
     } catch (error) {
-      return handleStorageError(
-        `get deliveries by webhook id ${webhookId}`,
-        error
-      )
+      handleStorageError(`get deliveries by webhook id ${webhookId}`, error)
     }
   },
 
@@ -337,7 +334,7 @@ export const webhookStorage = {
 
       return apiKeys.map(mapPrismaToApiKey)
     } catch (error) {
-      return handleStorageError('get all API keys', error)
+      handleStorageError('get all API keys', error)
     }
   },
 
@@ -351,7 +348,7 @@ export const webhookStorage = {
 
       return mapPrismaToApiKey(apiKey)
     } catch (error) {
-      return handleStorageError(`get API key by id ${id}`, error)
+      handleStorageError(`get API key by id ${id}`, error)
     }
   },
 
@@ -370,7 +367,7 @@ export const webhookStorage = {
 
       return mapPrismaToApiKey(apiKey)
     } catch (error) {
-      return handleStorageError('get API key by value', error)
+      handleStorageError('get API key by value', error)
     }
   },
 
@@ -390,7 +387,7 @@ export const webhookStorage = {
 
       return mapPrismaToApiKey(created)
     } catch (error) {
-      return handleStorageError('create API key', error)
+      handleStorageError('create API key', error)
     }
   },
 
@@ -418,7 +415,7 @@ export const webhookStorage = {
 
       return apiKey ? mapPrismaToApiKey(apiKey) : null
     } catch (error) {
-      return handleStorageError(`update API key ${id}`, error)
+      handleStorageError(`update API key ${id}`, error)
     }
   },
 
@@ -431,7 +428,7 @@ export const webhookStorage = {
 
       return deleted.count > 0
     } catch (error) {
-      return handleStorageError(`delete API key ${id}`, error)
+      handleStorageError(`delete API key ${id}`, error)
     }
   },
 
@@ -446,7 +443,7 @@ export const webhookStorage = {
 
       return queue.map(mapPrismaToWebhookQueueItem)
     } catch (error) {
-      return handleStorageError('get queue', error)
+      handleStorageError('get queue', error)
     }
   },
 
@@ -460,7 +457,7 @@ export const webhookStorage = {
 
       return mapPrismaToWebhookQueueItem(item)
     } catch (error) {
-      return handleStorageError(`get queue item by id ${id}`, error)
+      handleStorageError(`get queue item by id ${id}`, error)
     }
   },
 
@@ -481,7 +478,7 @@ export const webhookStorage = {
 
       return mapPrismaToWebhookQueueItem(created)
     } catch (error) {
-      return handleStorageError('add to queue', error)
+      handleStorageError('add to queue', error)
     }
   },
 
@@ -494,7 +491,7 @@ export const webhookStorage = {
 
       return deleted.count > 0
     } catch (error) {
-      return handleStorageError(`remove from queue ${id}`, error)
+      handleStorageError(`remove from queue ${id}`, error)
     }
   },
 
@@ -509,7 +506,7 @@ export const webhookStorage = {
 
       return deadLetter.map(mapPrismaToDeadLetterWebhook)
     } catch (error) {
-      return handleStorageError('get dead letter queue', error)
+      handleStorageError('get dead letter queue', error)
     }
   },
 
@@ -523,7 +520,7 @@ export const webhookStorage = {
 
       return mapPrismaToDeadLetterWebhook(item)
     } catch (error) {
-      return handleStorageError(`get dead letter webhook by id ${id}`, error)
+      handleStorageError(`get dead letter webhook by id ${id}`, error)
     }
   },
 
@@ -543,7 +540,7 @@ export const webhookStorage = {
 
       return mapPrismaToDeadLetterWebhook(created)
     } catch (error) {
-      return handleStorageError('add to dead letter queue', error)
+      handleStorageError('add to dead letter queue', error)
     }
   },
 
@@ -556,7 +553,7 @@ export const webhookStorage = {
 
       return deleted.count > 0
     } catch (error) {
-      return handleStorageError(`remove from dead letter queue ${id}`, error)
+      handleStorageError(`remove from dead letter queue ${id}`, error)
     }
   },
 
@@ -580,7 +577,7 @@ export const webhookStorage = {
 
       return mapPrismaToWebhookDelivery(delivery)
     } catch (error) {
-      return handleStorageError(`get delivery by idempotency key`, error)
+      handleStorageError(`get delivery by idempotency key`, error)
     }
   },
 
@@ -599,7 +596,7 @@ export const webhookStorage = {
 
       return delivery
     } catch (error) {
-      return handleStorageError('set delivery by idempotency key', error)
+      handleStorageError('set delivery by idempotency key', error)
     }
   },
 
@@ -614,7 +611,7 @@ export const webhookStorage = {
 
       return !!idempotencyKey
     } catch (error) {
-      return handleStorageError('check idempotency key', error)
+      handleStorageError('check idempotency key', error)
     }
   },
 }
@@ -628,6 +625,6 @@ export async function resetWebhookStorage() {
     await prisma.webhook.deleteMany({})
     await prisma.apiKey.deleteMany({})
   } catch (error) {
-    return handleStorageError('reset webhook storage', error)
+    handleStorageError('reset webhook storage', error)
   }
 }
