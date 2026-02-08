@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white p-6 rounded-lg shadow animate-pulse">
+  <div class="bg-white p-6 rounded-lg shadow skeleton-pulse">
     <div class="flex items-start">
       <!-- Icon placeholder -->
       <div class="flex-shrink-0 mr-4">
@@ -35,3 +35,16 @@
 <script setup lang="ts">
 // Skeleton loading component for ResourceCard
 </script>
+
+<style scoped>
+.skeleton-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-pulse {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+</style>
