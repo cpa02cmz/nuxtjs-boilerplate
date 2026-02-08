@@ -10,9 +10,8 @@ const parseAllowedOrigins = (): string[] => {
   return origins.split(',').map(origin => origin.trim())
 }
 
-// CSP Directives Configuration
 export const securityConfig = {
-  // Content Security Policy
+  // CSP Directives Configuration
   csp: {
     defaultSrc: parseCspDirective(process.env.CSP_DEFAULT_SRC || "'self'"),
     scriptSrc: parseCspDirective(
@@ -33,6 +32,7 @@ export const securityConfig = {
       process.env.CSP_CONNECT_SRC ||
         "'self', https://fonts.googleapis.com, https://fonts.gstatic.com, https://unpkg.com, https://twitter.com, https://www.facebook.com, https://www.linkedin.com, https://www.reddit.com"
     ),
+    frameSrc: parseCspDirective(process.env.CSP_FRAME_SRC || "'self'"),
     frameAncestors: parseCspDirective(
       process.env.CSP_FRAME_ANCESTORS || "'none'"
     ),
