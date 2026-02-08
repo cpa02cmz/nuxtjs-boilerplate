@@ -1,5 +1,6 @@
 import type { Resource } from '~/types/resource'
 import { VALID_CATEGORIES } from './constants'
+import { validationConfig } from '~/configs/validation.config'
 
 interface QualityCheckResult {
   id: string
@@ -11,6 +12,7 @@ interface QualityCheckResult {
 
 /**
  * Performs automated quality checks on a resource submission
+ * Flexy hates hardcoded values - all from validationConfig!
  */
 export function runQualityChecks(resource: Resource): QualityCheckResult[] {
   const checks: QualityCheckResult[] = []
@@ -61,14 +63,18 @@ export function runQualityChecks(resource: Resource): QualityCheckResult[] {
     }
   }
 
-  // Description length check
-  if (resource.description && resource.description.length < 20) {
+  // Description length check - uses config instead of hardcoded value
+  const descriptionMinLength = validationConfig.quality.descriptionMinLength
+  if (
+    resource.description &&
+    resource.description.length < descriptionMinLength
+  ) {
     checks.push({
       id: 'description-length',
       title: 'Description Length',
       description: 'Checks if the description is detailed enough',
       status: 'warn',
-      details: `Description "${resource.description.substring(0, 30)}..." is quite short`,
+      details: `Description "${resource.description.substring(0, 30)}..." is quite short (minimum ${descriptionMinLength} characters)`,
     })
   } else {
     checks.push({
@@ -79,19 +85,8 @@ export function runQualityChecks(resource: Resource): QualityCheckResult[] {
     })
   }
 
-  // Spam keyword check
-  const spamKeywords = [
-    'spam',
-    'fake',
-    'scam',
-    'click here',
-    'buy now',
-    'free money',
-    'get rich',
-    'make money',
-    'casino',
-    'gambling',
-  ]
+  // Spam keyword check - uses config instead of hardcoded array
+  const spamKeywords = validationConfig.quality.spamKeywords
   const descriptionLower = resource.description.toLowerCase()
   const hasSpam = spamKeywords.some(keyword =>
     descriptionLower.includes(keyword.toLowerCase())
@@ -157,20 +152,22 @@ export function runQualityChecks(resource: Resource): QualityCheckResult[] {
 
 /**
  * Calculates an overall quality score based on the quality checks
+ * Flexy hates hardcoded penalties - all from validationConfig!
  */
 export function calculateQualityScore(checks: QualityCheckResult[]): number {
   let score = 100
+  const penalties = validationConfig.quality.penalties
 
   for (const check of checks) {
     switch (check.status) {
       case 'fail':
-        score -= 25 // Significant penalty for failures
+        score -= penalties.fail
         break
       case 'warn':
-        score -= 10 // Moderate penalty for warnings
+        score -= penalties.warn
         break
       case 'pending':
-        score -= 5 // Small penalty for pending checks
+        score -= penalties.pending
         break
       // 'pass' doesn't affect the score negatively
     }

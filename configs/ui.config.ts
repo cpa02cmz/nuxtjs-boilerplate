@@ -80,6 +80,14 @@ export const uiConfig = {
       process.env.RESOURCE_CARD_BUTTON_LABEL || 'Get Free Access',
     newTabIndicator: process.env.RESOURCE_CARD_NEW_TAB_INDICATOR || '(new tab)',
     freeTierLabel: process.env.RESOURCE_CARD_FREE_TIER_LABEL || 'Free Tier:',
+    // Category-specific button labels - Flexy hates hardcoded strings!
+    categoryButtonLabels: {
+      'ai tools': process.env.RESOURCE_CARD_BTN_AI_TOOLS || 'Explore AI Tools',
+      vps: process.env.RESOURCE_CARD_BTN_VPS || 'Get VPS',
+      'web hosting': process.env.RESOURCE_CARD_BTN_HOSTING || 'Find Hosting',
+      databases: process.env.RESOURCE_CARD_BTN_DATABASES || 'Explore Databases',
+      cdn: process.env.RESOURCE_CARD_BTN_CDN || 'Get CDN',
+    },
   },
 } as const
 
