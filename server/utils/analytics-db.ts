@@ -612,3 +612,17 @@ export async function cleanupSoftDeletedEvents(
 export async function closeDatabase(): Promise<void> {
   await prisma.$disconnect()
 }
+
+/**
+ * Run analytics cleanup with default retention period
+ * Wrapper function for scheduled cleanup tasks
+ */
+export async function runAnalyticsCleanup(): Promise<number> {
+  const retentionDays = parseInt(process.env.ANALYTICS_RETENTION_DAYS || '90')
+
+  if (retentionDays <= 0) {
+    return 0
+  }
+
+  return await cleanupOldEvents(retentionDays)
+}

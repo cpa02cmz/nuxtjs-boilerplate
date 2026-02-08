@@ -105,7 +105,9 @@ sw.*
 *~
 
 # Editor backup files
-.vscode/settings.json
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
 *.sublime-project
 *.sublime-workspace
 

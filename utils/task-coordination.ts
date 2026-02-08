@@ -1,11 +1,6 @@
 /**
  * Task Coordination System
  * Manages the coordination of multiple development agents working on different features
- *
- * This system helps coordinate:
- * - Advanced Search System (Issue #277)
- * - Resource Recommendation Engine (Issue #279)
- * - Community Features (Issue #280)
  */
 
 interface Task {
@@ -46,7 +41,6 @@ class TaskCoordinationSystem {
   }
 
   private initializeDefaultTasks(): void {
-    // Advanced Search System (Issue #277)
     this.addTask({
       id: 'advanced-search',
       title: 'Advanced Search and Filtering System',
@@ -55,14 +49,10 @@ class TaskCoordinationSystem {
       status: 'in-progress',
       priority: 'high',
       dependencies: [],
-      progress: 90, // Since basic implementation exists
-      notes: [
-        'PR #288 exists and looks ready',
-        'Basic implementation in useAdvancedResourceSearch.ts',
-      ],
+      progress: 90,
+      notes: ['Basic implementation in useAdvancedResourceSearch.ts'],
     })
 
-    // Analytics Dashboard (Issue #278)
     this.addTask({
       id: 'analytics-dashboard',
       title: 'Analytics Dashboard',
@@ -72,10 +62,9 @@ class TaskCoordinationSystem {
       priority: 'high',
       dependencies: [],
       progress: 100,
-      notes: ['PR #286 selected', 'Basic analytics in place'],
+      notes: ['Basic analytics in place'],
     })
 
-    // API Rate Limiting (Issue #284)
     this.addTask({
       id: 'api-rate-limiting',
       title: 'API Rate Limiting',
@@ -85,10 +74,9 @@ class TaskCoordinationSystem {
       priority: 'high',
       dependencies: [],
       progress: 100,
-      notes: ['PR #289 selected', 'Rate limiting in place'],
+      notes: ['Rate limiting in place'],
     })
 
-    // Resource Recommendation Engine (Issue #279)
     this.addTask({
       id: 'recommendation-engine',
       title: 'Resource Recommendation Engine',
@@ -98,10 +86,9 @@ class TaskCoordinationSystem {
       priority: 'high',
       dependencies: ['analytics-dashboard'],
       progress: 0,
-      notes: ['No PR exists yet', 'Depends on analytics data from PR #286'],
+      notes: ['Depends on analytics data'],
     })
 
-    // Community Features (Issue #280)
     this.addTask({
       id: 'community-features',
       title: 'Community Features and User Profiles',
@@ -111,7 +98,7 @@ class TaskCoordinationSystem {
       priority: 'medium',
       dependencies: ['analytics-dashboard'],
       progress: 0,
-      notes: ['No PR exists yet', 'Depends on user analytics data'],
+      notes: ['Depends on user analytics data'],
     })
   }
 

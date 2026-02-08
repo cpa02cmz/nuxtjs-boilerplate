@@ -7,7 +7,7 @@ export default defineNitroPlugin(async () => {
 
   // Dynamically import analytics cleanup only at runtime, not during build/prerendering
   try {
-    const { runAnalyticsCleanup } = await import('../utils/analyticsCleanup')
+    const { runAnalyticsCleanup } = await import('../utils/analytics-db')
 
     // Run cleanup once when the server starts
     await runAnalyticsCleanup().catch(error => {
