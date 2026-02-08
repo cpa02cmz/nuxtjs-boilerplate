@@ -52,7 +52,7 @@ export default defineNuxtPlugin(() => {
 
   return {
     provide: {
-      pwa: {
+      pwaInstall: {
         showInstallPrompt: readonly(showInstallPrompt),
         installPWA,
       },

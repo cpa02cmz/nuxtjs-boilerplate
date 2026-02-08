@@ -29,8 +29,11 @@ export async function trackEvent(event: AnalyticsEvent): Promise<boolean> {
 
     const result = await response.json()
 
-    if (!result.success) {
-      logger.error('Failed to track analytics event:', result.message)
+    // Handle error responses properly - check both success field and HTTP status
+    if (!response.ok || result.success === false) {
+      const errorMessage =
+        result.error?.message || result.message || `HTTP ${response.status}`
+      logger.error('Failed to track analytics event:', errorMessage)
       return false
     }
 
