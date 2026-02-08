@@ -4,6 +4,13 @@
  *
  * This script monitors browser console for errors/warnings and
  * runs Lighthouse audits to find optimization opportunities.
+ *
+ * NOTE: This script requires optional dependencies to be installed:
+ *   npm install --save-dev playwright lighthouse chrome-launcher
+ *
+ * These dependencies are not included in the main package.json to keep
+ * the installation lightweight. Install them only if you need to run
+ * browser monitoring and Lighthouse audits.
  */
 
 import { chromium } from 'playwright'
