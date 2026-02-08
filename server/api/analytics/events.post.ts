@@ -1,10 +1,12 @@
 import { defineEventHandler, readBody, getHeaders, getRequestIP } from 'h3'
+import { randomUUID } from 'node:crypto'
 import { insertAnalyticsEvent } from '~/server/utils/analytics-db'
 import { analyticsEventSchema } from '~/server/utils/validation-schemas'
 import {
   sendValidationError,
   sendRateLimitError,
   sendApiError,
+  sendSuccessResponse,
 } from '~/server/utils/api-response'
 import {
   createApiError,
@@ -48,6 +50,9 @@ export default defineEventHandler(async event => {
 
     if (!validationResult.success) {
       const firstError = validationResult.error.issues[0]
+      if (!firstError) {
+        return sendValidationError(event, 'unknown', 'Validation failed')
+      }
       return sendValidationError(
         event,
         firstError.path[0] as string,
@@ -78,15 +83,22 @@ export default defineEventHandler(async event => {
       return sendApiError(event, error)
     }
 
-    return {
-      success: true,
-      eventId: analyticsEvent.timestamp,
-      rateLimit: {
-        remaining: rateLimitCheck.remainingRequests - 1,
-        limit: 10,
-        reset: new Date(rateLimitCheck.resetTime).toISOString(),
+    // Generate unique event ID using UUID
+    const eventId = randomUUID()
+
+    // Use standardized success response helper
+    return sendSuccessResponse(
+      event,
+      {
+        eventId,
+        rateLimit: {
+          remaining: rateLimitCheck.remainingRequests - 1,
+          limit: 10,
+          reset: new Date(rateLimitCheck.resetTime).toISOString(),
+        },
       },
-    }
+      201
+    )
   } catch (error) {
     logger.error('Analytics event error:', error)
     const apiError = createApiError(
