@@ -13,30 +13,19 @@
 
       <!-- Search Bar -->
       <div class="mb-8">
-        <LazySearchBar
-          v-model="searchQuery"
-          @search="handleSearch"
-        />
+        <LazySearchBar v-model="searchQuery" @search="handleSearch" />
       </div>
 
       <!-- Loading State -->
-      <div
-        v-if="loading"
-        class="flex justify-center items-center py-12"
-      >
+      <div v-if="loading" class="flex justify-center items-center py-12">
         <div
           class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-800"
         />
       </div>
 
       <!-- Error State -->
-      <div
-        v-else-if="error"
-        class="text-center py-12"
-      >
-        <p class="text-red-600 text-lg">
-          Error loading resources: {{ error }}
-        </p>
+      <div v-else-if="error" class="text-center py-12">
+        <p class="text-red-600 text-lg">Error loading resources: {{ error }}</p>
       </div>
 
       <!-- No Results State -->
@@ -67,10 +56,7 @@
       </div>
 
       <!-- Results with Filters -->
-      <div
-        v-else
-        class="flex flex-col lg:flex-row gap-8"
-      >
+      <div v-else class="flex flex-col lg:flex-row gap-8">
         <!-- ARIA live region for search results -->
         <div
           id="search-results-status"
@@ -112,6 +98,7 @@
             @reset-filters="resetAllFilters"
             @use-saved-search="onUseSavedSearch"
             @remove-saved-search="onRemoveSavedSearch"
+            @undo-delete="onUndoDelete"
           />
 
           <!-- Show popular searches when there's no active search -->
@@ -225,6 +212,7 @@ const {
   resetFilters,
   handleSearch,
   savedSearches,
+  saveSearch,
   removeSavedSearch,
   createSearchSnippet,
   highlightSearchTerms,
@@ -319,6 +307,14 @@ const onUseSavedSearch = (search: {
 
 const onRemoveSavedSearch = (query: string) => {
   removeSavedSearch(query)
+}
+
+const onUndoDelete = (search: {
+  name: string
+  query: string
+  createdAt: Date
+}) => {
+  saveSearch(search.name, search.query)
 }
 
 const getButtonLabel = (category: string) => {
