@@ -27,6 +27,14 @@ export async function cleanupOldAnalyticsEvents(daysToKeep: number = 90) {
     logger.info(`Soft-deleted ${result.count} old analytics events`)
     return result.count
   } catch (error) {
+    // Handle case where AnalyticsEvent table doesn't exist (e.g., during build/prerender)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    if (errorMessage.includes('does not exist in the current database')) {
+      logger.warn(
+        'AnalyticsEvent table does not exist - skipping cleanup (database may not be migrated)'
+      )
+      return 0
+    }
     logger.error('Error cleaning up old analytics events:', error)
     throw error
   }
