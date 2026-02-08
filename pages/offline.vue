@@ -18,9 +18,7 @@
           />
         </svg>
       </div>
-      <h1 class="text-2xl font-bold text-gray-900 mb-2">
-        You're Offline
-      </h1>
+      <h1 class="text-2xl font-bold text-gray-900 mb-2">You're Offline</h1>
       <p class="text-gray-600 mb-6">
         It looks like you're not connected to the internet. Please check your
         connection and try again.
@@ -49,6 +47,9 @@ definePageMeta({
 })
 
 const checkConnection = () => {
+  // Guard: only run on client-side
+  if (!process.client) return
+
   if (navigator.onLine) {
     window.location.href = window.location.origin
   } else {
@@ -57,6 +58,9 @@ const checkConnection = () => {
 }
 
 const goHome = () => {
+  // Guard: only run on client-side
+  if (!process.client) return
+
   window.location.href = window.location.origin
 }
 </script>
