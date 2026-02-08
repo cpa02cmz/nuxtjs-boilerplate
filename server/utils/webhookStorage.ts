@@ -10,19 +10,20 @@ import type {
   Webhook as PrismaWebhook,
   WebhookDelivery as PrismaWebhookDelivery,
   ApiKey as PrismaApiKey,
-  WebhookQueueItem as PrismaWebhookQueueItem,
+  WebhookQueue as PrismaWebhookQueue,
   DeadLetterWebhook as PrismaDeadLetterWebhook,
 } from '@prisma/client'
 import { prisma } from './db'
 import { PAGINATION } from './constants'
+import { safeJsonParse } from './safeJsonParse'
 
 function mapPrismaToWebhook(webhook: PrismaWebhook): Webhook {
   return {
     id: webhook.id,
     url: webhook.url,
-    secret: webhook.secret,
+    secret: webhook.secret ?? undefined,
     active: webhook.active,
-    events: JSON.parse(webhook.events) as WebhookEvent[],
+    events: safeJsonParse<WebhookEvent[]>(webhook.events, []),
     createdAt: webhook.createdAt.toISOString(),
     updatedAt: webhook.updatedAt.toISOString(),
   }
@@ -35,13 +36,17 @@ function mapPrismaToWebhookDelivery(
     id: delivery.id,
     webhookId: delivery.webhookId,
     event: delivery.event as WebhookEvent,
-    payload: JSON.parse(delivery.payload),
-    status: delivery.status,
-    statusCode: delivery.statusCode,
+    payload: safeJsonParse(delivery.payload, {
+      event: '',
+      data: {},
+      timestamp: '',
+    }),
+    status: delivery.status as 'success' | 'failed' | 'pending',
+    statusCode: delivery.statusCode ?? undefined,
     responseBody: delivery.responseBody
-      ? JSON.parse(delivery.responseBody)
+      ? safeJsonParse(delivery.responseBody, undefined)
       : undefined,
-    errorMessage: delivery.errorMessage,
+    errorMessage: delivery.errorMessage ?? undefined,
     attemptCount: delivery.attemptCount,
     idempotencyKey: delivery.idempotencyKey,
     createdAt: delivery.createdAt.toISOString(),
@@ -53,9 +58,9 @@ function mapPrismaToApiKey(apiKey: PrismaApiKey): ApiKey {
   return {
     id: apiKey.id,
     key: apiKey.key,
-    userId: apiKey.userId,
+    userId: apiKey.userId ?? undefined,
     name: apiKey.name,
-    permissions: JSON.parse(apiKey.permissions),
+    permissions: safeJsonParse<string[]>(apiKey.permissions, []),
     active: apiKey.active,
     expiresAt: apiKey.expiresAt?.toISOString(),
     createdAt: apiKey.createdAt.toISOString(),
@@ -64,13 +69,17 @@ function mapPrismaToApiKey(apiKey: PrismaApiKey): ApiKey {
 }
 
 function mapPrismaToWebhookQueueItem(
-  queueItem: PrismaWebhookQueueItem
+  queueItem: PrismaWebhookQueue
 ): WebhookQueueItem {
   return {
     id: queueItem.id,
     webhookId: queueItem.webhookId,
     event: queueItem.event as WebhookEvent,
-    payload: JSON.parse(queueItem.payload),
+    payload: safeJsonParse(queueItem.payload, {
+      event: '',
+      data: {},
+      timestamp: '',
+    }),
     priority: queueItem.priority,
     retryCount: queueItem.retryCount,
     maxRetries: queueItem.maxRetries,
@@ -87,12 +96,19 @@ function mapPrismaToDeadLetterWebhook(
     id: deadLetter.id,
     webhookId: deadLetter.webhookId,
     event: deadLetter.event as WebhookEvent,
-    payload: JSON.parse(deadLetter.payload),
+    payload: safeJsonParse(deadLetter.payload, {
+      event: '',
+      data: {},
+      timestamp: '',
+    }),
     failureReason: deadLetter.failureReason,
     lastAttemptAt: deadLetter.lastAttemptAt.toISOString(),
     createdAt: deadLetter.createdAt.toISOString(),
     updatedAt: deadLetter.updatedAt.toISOString(),
-    deliveryAttempts: JSON.parse(deadLetter.deliveryAttempts),
+    deliveryAttempts: safeJsonParse<WebhookDelivery[]>(
+      deadLetter.deliveryAttempts,
+      []
+    ),
   }
 }
 
@@ -245,7 +261,7 @@ export const webhookStorage = {
           : null,
         errorMessage: delivery.errorMessage,
         attemptCount: delivery.attemptCount,
-        idempotencyKey: delivery.idempotencyKey,
+        idempotencyKey: delivery.idempotencyKey ?? undefined,
       },
     })
 
@@ -474,7 +490,7 @@ export const webhookStorage = {
       },
     })
 
-    if (!idempotencyKey) return null
+    if (!idempotencyKey || !idempotencyKey.deliveryId) return null
 
     const delivery = await prisma.webhookDelivery.findFirst({
       where: { id: idempotencyKey.deliveryId, deletedAt: null },
