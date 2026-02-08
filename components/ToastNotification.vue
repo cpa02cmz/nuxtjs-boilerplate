@@ -1,10 +1,6 @@
 <template>
   <div class="toast-container">
-    <transition-group
-      name="toast"
-      tag="div"
-      class="toast-wrapper"
-    >
+    <transition-group name="toast" tag="div" class="toast-wrapper">
       <div
         v-for="toast in toasts"
         :key="toast.id"
@@ -84,10 +80,7 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p
-            v-if="toast.description"
-            class="toast__description"
-          >
+          <p v-if="toast.description" class="toast__description">
             {{ toast.description }}
           </p>
         </div>
@@ -128,7 +121,7 @@ import { TOAST_DURATION, UI_TIMING } from '~/server/utils/constants'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
-interface Toast {
+export interface Toast {
   id: string
   type: ToastType
   message: string

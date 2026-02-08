@@ -92,18 +92,28 @@ export const useResourceComparison = () => {
   })
 
   // Add a resource to comparison
-  const addResource = (resource: Resource) => {
+  // Returns detailed status information for better UX feedback
+  const addResource = (
+    resource: Resource
+  ):
+    | { success: true; count: number; maxCount: number }
+    | { success: false; reason: 'max_reached' | 'already_added' } => {
+    // Check if comparison is full
     if (selectedResources.value.length >= config.value.maxResources) {
-      return false
+      return { success: false, reason: 'max_reached' }
     }
 
     // Check if resource is already in comparison
     if (selectedResources.value.some(r => r.id === resource.id)) {
-      return false
+      return { success: false, reason: 'already_added' }
     }
 
     selectedResources.value = [...selectedResources.value, resource]
-    return true
+    return {
+      success: true,
+      count: selectedResources.value.length,
+      maxCount: config.value.maxResources,
+    }
   }
 
   // Remove a resource from comparison
