@@ -5,33 +5,29 @@
         <h1
           class="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl"
         >
-          Free Stuff on the Internet
+          {{ APP_NAME }}
         </h1>
         <p class="mt-6 max-w-lg mx-auto text-xl text-gray-600">
-          Discover amazing free resources available on the internet - from AI
-          tools to hosting services.
+          {{ APP_DESCRIPTION }}
         </p>
       </div>
 
       <!-- Search Bar -->
       <div class="mt-8 max-w-2xl mx-auto">
-        <LazySearchBar
-          v-model="searchQuery"
-          @search="handleSearch"
-        />
+        <LazySearchBar v-model="searchQuery" @search="handleSearch" />
       </div>
 
       <!-- Loading State with Skeletons -->
-      <div
-        v-if="loading"
-        class="mt-16"
-      >
+      <div v-if="loading" class="mt-16">
         <div class="flex flex-wrap gap-2 mb-8 justify-center">
           <div
             v-for="i in 5"
             :key="i"
             class="px-3 py-1 text-sm rounded-full border bg-gray-200 animate-pulse"
-            style="width: 80px; height: 28px"
+            :style="{
+              width: SKELETON_DIMENSIONS.categoryButton.width,
+              height: SKELETON_DIMENSIONS.categoryButton.height,
+            }"
           />
         </div>
 
@@ -41,18 +37,12 @@
 
         <!-- Resources Grid with Skeletons -->
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <ResourceCardSkeleton
-            v-for="i in 6"
-            :key="`skeleton-${i}`"
-          />
+          <ResourceCardSkeleton v-for="i in 6" :key="`skeleton-${i}`" />
         </div>
       </div>
 
       <!-- Error State -->
-      <div
-        v-else-if="error"
-        class="mt-16"
-      >
+      <div v-else-if="error" class="mt-16">
         <ErrorMessage
           :message="errorMessage || error"
           variant="error"
@@ -61,10 +51,7 @@
       </div>
 
       <!-- Resources Grid -->
-      <div
-        v-else
-        class="mt-16"
-      >
+      <div v-else class="mt-16">
         <!-- ARIA live region for search results -->
         <div
           id="search-results-status"
@@ -174,10 +161,7 @@
           </div>
 
           <!-- Trending Resources Section -->
-          <div
-            v-if="filteredResources.length > 0 && !loading"
-            class="mt-16"
-          >
+          <div v-if="filteredResources.length > 0 && !loading" class="mt-16">
             <h2 class="text-2xl font-bold text-gray-900 mb-6">
               Trending Resources
             </h2>
@@ -202,10 +186,7 @@
         </div>
 
         <!-- Recommendations Section -->
-        <div
-          v-if="filteredResources.length > 0 && !loading"
-          class="mt-16"
-        >
+        <div v-if="filteredResources.length > 0 && !loading" class="mt-16">
           <ClientOnly>
             <LazyRecommendationsSection />
           </ClientOnly>
@@ -216,10 +197,12 @@
 </template>
 
 <script setup lang="ts">
+import { APP_NAME, APP_DESCRIPTION, OG_IMAGE_PATH } from '~/constants/app'
 import { useResources } from '~/composables/useResources'
 import { useUrlSync } from '~/composables/useUrlSync'
 import { useHomePage } from '~/composables/useHomePage'
 import { getButtonLabel } from '~/utils/resourceHelper'
+import { SKELETON_DIMENSIONS } from '~/constants/ui'
 import ResourceSort from '~/components/ResourceSort.vue'
 
 definePageMeta({
@@ -229,14 +212,15 @@ definePageMeta({
 // Set page-specific meta tags
 const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
-  title: 'Free Stuff on the Internet - Free Resources for Developers',
-  ogTitle: 'Free Stuff on the Internet - Free Resources for Developers',
-  description:
-    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-  ogDescription:
-    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-  ogImage: '/og-image.jpg',
-  ogUrl: runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000',
+  title: `${APP_NAME} - Free Resources for Developers`,
+  ogTitle: `${APP_NAME} - Free Resources for Developers`,
+  description: APP_DESCRIPTION,
+  ogDescription: APP_DESCRIPTION,
+  ogImage: OG_IMAGE_PATH,
+  ogUrl:
+    runtimeConfig.public.siteUrl ||
+    runtimeConfig.public.canonicalUrl ||
+    'http://localhost:3000',
   twitterCard: 'summary_large_image',
 })
 

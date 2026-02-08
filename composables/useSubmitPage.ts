@@ -3,6 +3,9 @@ import { useNuxtApp } from '#app'
 import type { ApiClient } from '~/utils/api-client'
 import { logError } from '~/utils/errorLogger'
 import logger from '~/utils/logger'
+import { VALIDATION_LIMITS, VALIDATION_MESSAGES } from '~/constants/validation'
+import { API_ENDPOINTS } from '~/constants/api'
+import { UI_FEEDBACK_DURATION } from '~/constants/ui'
 
 interface FormData {
   title: string
@@ -52,31 +55,35 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
     errors.value = {}
 
     if (!formData.value.title.trim()) {
-      errors.value.title = 'Title is required'
-    } else if (formData.value.title.length > 200) {
-      errors.value.title = 'Title is too long (max 200 characters)'
+      errors.value.title = VALIDATION_MESSAGES.titleRequired
+    } else if (formData.value.title.length > VALIDATION_LIMITS.titleMaxLength) {
+      errors.value.title = VALIDATION_MESSAGES.titleTooLong
     }
 
     if (!formData.value.description.trim()) {
-      errors.value.description = 'Description is required'
-    } else if (formData.value.description.length < 10) {
-      errors.value.description = 'Description must be at least 10 characters'
-    } else if (formData.value.description.length > 1000) {
-      errors.value.description = 'Description is too long (max 1000 characters)'
+      errors.value.description = VALIDATION_MESSAGES.descriptionRequired
+    } else if (
+      formData.value.description.length < VALIDATION_LIMITS.descriptionMinLength
+    ) {
+      errors.value.description = VALIDATION_MESSAGES.descriptionTooShort
+    } else if (
+      formData.value.description.length > VALIDATION_LIMITS.descriptionMaxLength
+    ) {
+      errors.value.description = VALIDATION_MESSAGES.descriptionTooLong
     }
 
     if (!formData.value.url.trim()) {
-      errors.value.url = 'URL is required'
+      errors.value.url = VALIDATION_MESSAGES.urlRequired
     } else {
       try {
         new URL(formData.value.url)
       } catch {
-        errors.value.url = 'Please enter a valid URL'
+        errors.value.url = VALIDATION_MESSAGES.urlInvalid
       }
     }
 
     if (!formData.value.category) {
-      errors.value.category = 'Category is required'
+      errors.value.category = VALIDATION_MESSAGES.categoryRequired
     }
 
     if (Object.keys(errors.value).length > 0) {
@@ -98,7 +105,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
 
     setTimeout(() => {
       document.body.removeChild(announcement)
-    }, 5000)
+    }, UI_FEEDBACK_DURATION.errorDisplay)
   }
 
   const processTags = (tagsString: string): string[] => {
@@ -124,7 +131,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
 
     try {
       const client = getClient()
-      const response = await client.post('/api/submissions', {
+      const response = await client.post(API_ENDPOINTS.submissions, {
         title: formData.value.title.trim(),
         description: formData.value.description.trim(),
         url: formData.value.url.trim(),
@@ -143,7 +150,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
 
         setTimeout(() => {
           submitSuccess.value = false
-        }, 5000)
+        }, UI_FEEDBACK_DURATION.successMessageClear)
       } else {
         const responseData = response.data as
           | { errors?: { field: string; message: string }[]; message?: string }

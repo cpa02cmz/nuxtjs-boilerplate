@@ -7,6 +7,15 @@
 </template>
 
 <script setup lang="ts">
+import {
+  APP_NAME,
+  APP_DESCRIPTION,
+  OG_IMAGE_PATH,
+  OG_IMAGE_DIMENSIONS,
+} from '~/constants/app'
+import { SOCIAL_HANDLES, JSON_LD_CONTEXT, SCHEMA_TYPES } from '~/constants/seo'
+import { EXTERNAL_FONTS } from '~/constants/external'
+
 // This app.vue file ensures proper layout integration across the application
 // It replaces the default Nuxt welcome page and integrates with the custom default layout
 // All pages will now properly render within the default layout structure
@@ -18,33 +27,30 @@ const runtimeConfig = useRuntimeConfig()
 import ErrorBoundary from '~/components/ErrorBoundary.vue'
 
 useSeoMeta({
-  title: 'Free Stuff on the Internet - Free Resources for Developers',
-  ogTitle: 'Free Stuff on the Internet - Free Resources for Developers',
-  description:
-    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-  ogDescription:
-    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-  ogImage: `${runtimeConfig.public.canonicalUrl}/og-image.jpg`,
-  ogImageWidth: '1200',
-  ogImageHeight: '630',
-  ogImageType: 'image/jpeg',
+  title: `${APP_NAME} - Free Resources for Developers`,
+  ogTitle: `${APP_NAME} - Free Resources for Developers`,
+  description: APP_DESCRIPTION,
+  ogDescription: APP_DESCRIPTION,
+  ogImage: `${runtimeConfig.public.canonicalUrl}${OG_IMAGE_PATH}`,
+  ogImageWidth: OG_IMAGE_DIMENSIONS.width,
+  ogImageHeight: OG_IMAGE_DIMENSIONS.height,
+  ogImageType: OG_IMAGE_DIMENSIONS.type,
   ogUrl: runtimeConfig.public.canonicalUrl,
   ogType: 'website',
   twitterCard: 'summary_large_image',
-  twitterSite: '@yourTwitterHandle', // Replace with actual Twitter handle if available
-  twitterCreator: '@yourTwitterHandle', // Replace with actual Twitter handle if available
+  twitterSite: SOCIAL_HANDLES.twitter,
+  twitterCreator: SOCIAL_HANDLES.twitter,
 })
 
 // Add structured data for the website using JSON-LD
 const websiteSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'Free Stuff on the Internet',
-  description:
-    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+  '@context': JSON_LD_CONTEXT,
+  '@type': SCHEMA_TYPES.website,
+  name: APP_NAME,
+  description: APP_DESCRIPTION,
   url: runtimeConfig.public.canonicalUrl,
   potentialAction: {
-    '@type': 'SearchAction',
+    '@type': SCHEMA_TYPES.searchAction,
     target: `${runtimeConfig.public.canonicalUrl}/search?q={search_term_string}`,
     'query-input': 'required name=search_term_string',
   },
@@ -57,12 +63,12 @@ useHead({
     {
       rel: 'preload',
       as: 'font',
-      href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+      href: EXTERNAL_FONTS.google.inter,
       crossorigin: 'anonymous',
     },
     // Add resource hints for performance
-    { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
-    { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
+    { rel: 'dns-prefetch', href: EXTERNAL_FONTS.google.url },
+    { rel: 'dns-prefetch', href: EXTERNAL_FONTS.google.gstatic },
     // Add canonical URL
     {
       rel: 'canonical',

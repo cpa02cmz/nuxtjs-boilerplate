@@ -1,3 +1,14 @@
+import {
+  APP_NAME,
+  APP_SHORT_NAME,
+  APP_DESCRIPTION,
+  THEME_COLORS,
+  DEFAULT_LANGUAGE,
+  SEO_KEYWORDS,
+} from './constants/app'
+import { CACHE_DURATIONS } from './constants/external'
+import { IMAGE_CONFIG } from './constants/ui'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: false }, // Disable in production for performance
@@ -33,15 +44,14 @@ export default defineNuxtConfig({
     strategies: 'generateSW',
     registerType: 'autoUpdate',
     manifest: {
-      name: 'Free Stuff on the Internet',
-      short_name: 'Free Resources',
-      description:
-        'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-      theme_color: '#4f46e5',
-      lang: 'en',
+      name: APP_NAME,
+      short_name: APP_SHORT_NAME,
+      description: APP_DESCRIPTION,
+      theme_color: THEME_COLORS.primary,
+      lang: DEFAULT_LANGUAGE,
       display: 'standalone',
       orientation: 'any',
-      background_color: '#ffffff',
+      background_color: THEME_COLORS.background,
       id: '/',
       start_url: '/',
       scope: '/',
@@ -82,7 +92,7 @@ export default defineNuxtConfig({
             cacheName: 'api-cache',
             expiration: {
               maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24, // 24 hours
+              maxAgeSeconds: CACHE_DURATIONS.api,
             },
           },
         },
@@ -106,7 +116,7 @@ export default defineNuxtConfig({
             cacheName: 'google-fonts-cache',
             expiration: {
               maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              maxAgeSeconds: CACHE_DURATIONS.fonts,
             },
           },
         },
@@ -119,7 +129,7 @@ export default defineNuxtConfig({
             cacheName: 'nuxt-assets-cache',
             expiration: {
               maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              maxAgeSeconds: CACHE_DURATIONS.assets,
             },
           },
         },
@@ -130,7 +140,7 @@ export default defineNuxtConfig({
             cacheName: 'github-cdn-cache',
             expiration: {
               maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+              maxAgeSeconds: CACHE_DURATIONS.github,
             },
             cacheableResponse: {
               statuses: [0, 200],
@@ -144,7 +154,7 @@ export default defineNuxtConfig({
             cacheName: 'image-cache',
             expiration: {
               maxEntries: 20,
-              maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+              maxAgeSeconds: CACHE_DURATIONS.images,
             },
             cacheableResponse: {
               statuses: [0, 200],
@@ -189,9 +199,9 @@ export default defineNuxtConfig({
 
   // Image optimization configuration
   image: {
-    quality: 80,
-    format: ['webp', 'avif', 'jpeg'],
-    densities: [1, 2],
+    quality: IMAGE_CONFIG.quality,
+    format: [...IMAGE_CONFIG.formats],
+    densities: [...IMAGE_CONFIG.densities],
   },
 
   // Additional performance optimizations
@@ -237,8 +247,8 @@ export default defineNuxtConfig({
         // Note: CSP is implemented via server plugin (server/plugins/security-headers.ts)
         // with dynamic nonce generation for proper security
         { name: 'referrer', content: 'no-referrer' },
-        { name: 'theme-color', content: '#ffffff' },
-        { name: 'msapplication-TileColor', content: '#ffffff' },
+        { name: 'theme-color', content: THEME_COLORS.background },
+        { name: 'msapplication-TileColor', content: THEME_COLORS.background },
         // Add Core Web Vitals meta tags
         {
           name: 'viewport',
@@ -249,24 +259,21 @@ export default defineNuxtConfig({
         // SEO meta tags
         {
           name: 'description',
-          content:
-            'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+          content: APP_DESCRIPTION,
         },
         {
           name: 'keywords',
-          content:
-            'free resources, AI tools, hosting, databases, CDN, VPS, web development',
+          content: SEO_KEYWORDS.join(', '),
         },
-        { name: 'author', content: 'Free Stuff on the Internet' },
+        { name: 'author', content: APP_NAME },
         // Open Graph tags
         {
           property: 'og:title',
-          content: 'Free Stuff on the Internet - Free Resources for Developers',
+          content: `${APP_NAME} - Free Resources for Developers`,
         },
         {
           property: 'og:description',
-          content:
-            'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+          content: APP_DESCRIPTION,
         },
         { property: 'og:type', content: 'website' },
         // og:url will be set dynamically in app.vue
@@ -275,12 +282,11 @@ export default defineNuxtConfig({
         { name: 'twitter:card', content: 'summary_large_image' },
         {
           name: 'twitter:title',
-          content: 'Free Stuff on the Internet - Free Resources for Developers',
+          content: `${APP_NAME} - Free Resources for Developers`,
         },
         {
           name: 'twitter:description',
-          content:
-            'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+          content: APP_DESCRIPTION,
         },
       ],
       // Add resource hints

@@ -1,11 +1,38 @@
 import { z } from 'zod'
 import { isValidCategory, isValidEventType } from './constants'
+import {
+  VALIDATION_LIMITS,
+  VALIDATION_MESSAGES,
+  PRICING_MODELS,
+  DIFFICULTY_LEVELS,
+  SKILL_LEVELS,
+  RESOURCE_STATUSES,
+  VALIDATION_PATTERNS,
+} from '~/constants/validation'
+import { PAGINATION } from '~/constants/ui'
+import { REQUEST_CONFIG } from '~/constants/api'
 
 export const validateUrlSchema = z.object({
   url: z.string().url('Invalid URL format'),
-  timeout: z.number().int().positive().optional().default(10000),
-  retries: z.number().int().min(0).max(10).optional().default(3),
-  retryDelay: z.number().int().nonnegative().optional().default(1000),
+  timeout: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .default(REQUEST_CONFIG.defaultTimeout),
+  retries: z
+    .number()
+    .int()
+    .min(0)
+    .max(REQUEST_CONFIG.maxRetries)
+    .optional()
+    .default(REQUEST_CONFIG.defaultRetries),
+  retryDelay: z
+    .number()
+    .int()
+    .nonnegative()
+    .optional()
+    .default(REQUEST_CONFIG.defaultRetryDelay),
   useCircuitBreaker: z.boolean().optional().default(true),
 })
 
@@ -25,30 +52,51 @@ export const updateWebhookSchema = z.object({
 })
 
 export const createSubmissionSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
+  title: z
+    .string()
+    .min(VALIDATION_LIMITS.titleMinLength, VALIDATION_MESSAGES.titleRequired)
+    .max(VALIDATION_LIMITS.titleMaxLength, VALIDATION_MESSAGES.titleTooLong),
   description: z
     .string()
-    .min(10, 'Description must be at least 10 characters')
-    .max(2000, 'Description too long'),
+    .min(
+      VALIDATION_LIMITS.descriptionMinLength,
+      VALIDATION_MESSAGES.descriptionTooShort
+    )
+    .max(
+      VALIDATION_LIMITS.descriptionMaxLength,
+      VALIDATION_MESSAGES.descriptionTooLong
+    ),
   url: z.string().url('Invalid URL format'),
-  category: z.string().min(1, 'Category is required'),
-  tags: z.array(z.string()).max(20, 'Too many tags').optional().default([]),
+  category: z.string().min(1, VALIDATION_MESSAGES.categoryRequired),
+  tags: z
+    .array(z.string())
+    .max(VALIDATION_LIMITS.maxTags, VALIDATION_MESSAGES.tooManyTags)
+    .optional()
+    .default([]),
   pricingModel: z
-    .enum(['Free', 'Freemium', 'Paid', 'Open Source'])
+    .enum([
+      PRICING_MODELS[0],
+      PRICING_MODELS[1],
+      PRICING_MODELS[2],
+      PRICING_MODELS[3],
+    ])
     .optional()
     .default('Free'),
   difficulty: z
-    .enum(['Beginner', 'Intermediate', 'Advanced'])
+    .enum([DIFFICULTY_LEVELS[0], DIFFICULTY_LEVELS[1], DIFFICULTY_LEVELS[2]])
     .optional()
     .default('Beginner'),
   technology: z
     .array(z.string())
-    .max(20, 'Too many technologies')
+    .max(
+      VALIDATION_LIMITS.maxTechnologies,
+      VALIDATION_MESSAGES.tooManyTechnologies
+    )
     .optional()
     .default([]),
   benefits: z
     .array(z.string())
-    .max(10, 'Too many benefits')
+    .max(VALIDATION_LIMITS.maxBenefits, VALIDATION_MESSAGES.tooManyBenefits)
     .optional()
     .default([]),
 })
@@ -57,7 +105,7 @@ export const updateUserPreferencesSchema = z.object({
   categories: z.array(z.string()).optional(),
   technologies: z.array(z.string()).optional(),
   skillLevel: z
-    .enum(['beginner', 'intermediate', 'advanced', 'expert'])
+    .enum([SKILL_LEVELS[0], SKILL_LEVELS[1], SKILL_LEVELS[2], SKILL_LEVELS[3]])
     .optional(),
   interests: z.array(z.string()).optional(),
   notificationSettings: z
@@ -79,24 +127,42 @@ export const updateUserPreferencesSchema = z.object({
 export const searchQuerySchema = z.object({
   query: z
     .string()
-    .min(1, 'Search query is required')
-    .max(500, 'Query too long'),
+    .min(VALIDATION_LIMITS.minQueryLength, VALIDATION_MESSAGES.queryRequired)
+    .max(VALIDATION_LIMITS.maxQueryLength, VALIDATION_MESSAGES.queryTooLong),
   category: z.string().optional(),
-  difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']).optional(),
-  pricingModel: z.enum(['Free', 'Freemium', 'Paid', 'Open Source']).optional(),
+  difficulty: z
+    .enum([DIFFICULTY_LEVELS[0], DIFFICULTY_LEVELS[1], DIFFICULTY_LEVELS[2]])
+    .optional(),
+  pricingModel: z
+    .enum([
+      PRICING_MODELS[0],
+      PRICING_MODELS[1],
+      PRICING_MODELS[2],
+      PRICING_MODELS[3],
+    ])
+    .optional(),
   technology: z.string().optional(),
-  limit: z.number().int().min(1).max(100).optional().default(20),
+  limit: z
+    .number()
+    .int()
+    .min(1)
+    .max(PAGINATION.maxPageSize)
+    .optional()
+    .default(PAGINATION.defaultPageSize),
   offset: z.number().int().nonnegative().optional().default(0),
 })
 
 export const createApiKeySchema = z.object({
-  name: z.string().min(1, 'API key name is required').max(100, 'Name too long'),
+  name: z
+    .string()
+    .min(1, 'API key name is required')
+    .max(VALIDATION_LIMITS.apiKeyNameMaxLength, 'Name too long'),
   scopes: z.array(z.string()).min(1, 'At least one scope is required'),
   expiresIn: z.number().int().positive().optional(),
 })
 
 export const updateApiKeySchema = z.object({
-  name: z.string().min(1).max(100).optional(),
+  name: z.string().min(1).max(VALIDATION_LIMITS.apiKeyNameMaxLength).optional(),
   scopes: z.array(z.string()).min(1).optional(),
   active: z.boolean().optional(),
 })
@@ -105,16 +171,26 @@ export const bulkStatusUpdateSchema = z.object({
   resourceIds: z
     .array(z.string())
     .min(1, 'At least one resource ID is required')
-    .max(100, 'Too many resources'),
-  status: z.enum(['active', 'archived', 'deprecated']),
+    .max(VALIDATION_LIMITS.maxResourceIds, 'Too many resources'),
+  status: z.enum([
+    RESOURCE_STATUSES[0],
+    RESOURCE_STATUSES[1],
+    RESOURCE_STATUSES[2],
+  ]),
 })
 
 export const moderationActionSchema = z.object({
   reason: z
     .string()
-    .min(10, 'Reason must be at least 10 characters')
-    .max(500, 'Reason too long'),
-  notes: z.string().max(1000, 'Notes too long').optional(),
+    .min(
+      VALIDATION_LIMITS.reasonMinLength,
+      'Reason must be at least 10 characters'
+    )
+    .max(VALIDATION_LIMITS.reasonMaxLength, 'Reason too long'),
+  notes: z
+    .string()
+    .max(VALIDATION_LIMITS.notesMaxLength, 'Notes too long')
+    .optional(),
 })
 
 export const triggerWebhookSchema = z.object({
@@ -127,38 +203,41 @@ export const analyticsEventSchema = z.object({
   type: z
     .string()
     .min(1, 'Event type is required')
-    .max(50, 'Event type too long')
+    .max(VALIDATION_LIMITS.maxEventTypeLength, 'Event type too long')
     .refine(
       val => isValidEventType(val),
       'Invalid event type. Must be one of: resource_view, search, filter_change, bookmark, comparison, submission'
     ),
   resourceId: z
     .string()
-    .max(25, 'Resource ID too long')
+    .max(VALIDATION_LIMITS.maxResourceIdLength, 'Resource ID too long')
     .refine(
-      val => val === '' || /^[a-zA-Z0-9_-]+$/.test(val),
+      val => val === '' || VALIDATION_PATTERNS.resourceId.test(val),
       'Resource ID contains invalid characters'
     )
     .optional(),
   category: z
     .string()
-    .max(100, 'Category too long')
+    .max(VALIDATION_LIMITS.maxCategoryLength, 'Category too long')
     .refine(
       val => isValidCategory(val),
       'Invalid category. Must be one of: Development, Design, Productivity, Marketing, Analytics, Security, AI/ML, DevOps, Testing, Education'
     )
     .optional(),
   url: z.string().url('Invalid URL format').optional(),
-  userAgent: z.string().max(500, 'User agent too long').optional(),
+  userAgent: z
+    .string()
+    .max(VALIDATION_LIMITS.maxUserAgentLength, 'User agent too long')
+    .optional(),
   ip: z
     .string()
-    .max(45, 'IP address too long')
+    .max(VALIDATION_LIMITS.maxIpLength, 'IP address too long')
     .refine(val => {
-      const ipv4Regex =
-        /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
-      const ipv6Regex =
-        /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::$|^:(?::[0-9a-fA-F]{1,4}){1,7}|[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,7}|(?:[0-9a-fA-F]{1,4}:){1,7}:|:(?::[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}$/
-      return ipv4Regex.test(val) || ipv6Regex.test(val) || val === 'unknown'
+      return (
+        VALIDATION_PATTERNS.ipv4.test(val) ||
+        VALIDATION_PATTERNS.ipv6.test(val) ||
+        val === 'unknown'
+      )
     }, 'Invalid IP address format')
     .optional(),
   timestamp: z

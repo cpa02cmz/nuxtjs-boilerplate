@@ -5,22 +5,19 @@
       href="#main-content"
       class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-gray-900 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-800"
     >
-      Skip to main content
+      {{ ACCESSIBILITY_LABELS.skipToMainContent }}
     </a>
 
-    <header
-      class="bg-white shadow"
-      role="banner"
-    >
+    <header class="bg-white shadow" role="banner">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
           <div class="flex items-center">
             <NuxtLink
               to="/"
               class="text-xl font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              :aria-label="'Free Stuff on the Internet - Return to home page'"
+              :aria-label="ACCESSIBILITY_LABELS.returnToHome"
             >
-              Free Stuff on the Internet
+              {{ APP_NAME }}
             </NuxtLink>
           </div>
 
@@ -28,7 +25,7 @@
           <div class="hidden lg:flex items-center flex-1 max-w-lg mx-8">
             <LazySearchBar
               v-model="searchQuery"
-              :aria-label="'Search for free resources'"
+              :aria-label="ACCESSIBILITY_LABELS.searchResources"
               @search="handleSearch"
             />
           </div>
@@ -41,58 +38,58 @@
             <NuxtLink
               to="/"
               class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              :aria-label="'Free Stuff on the Internet - Return to home page'"
+              :aria-label="NAV_ITEMS.home.ariaLabel"
             >
-              Home
+              {{ NAV_ITEMS.home.label }}
             </NuxtLink>
             <NuxtLink
-              to="/search"
+              :to="NAV_ITEMS.search.path"
               class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
               active-class="bg-gray-100"
             >
-              Search
+              {{ NAV_ITEMS.search.label }}
             </NuxtLink>
             <NuxtLink
-              to="/ai-keys"
+              :to="NAV_ITEMS.aiKeys.path"
               class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
               active-class="bg-gray-100"
             >
-              AI Keys
+              {{ NAV_ITEMS.aiKeys.label }}
             </NuxtLink>
             <NuxtLink
-              to="/favorites"
+              :to="NAV_ITEMS.favorites.path"
               class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
               active-class="bg-gray-100"
             >
-              Favorites
+              {{ NAV_ITEMS.favorites.label }}
             </NuxtLink>
             <NuxtLink
-              to="/about"
+              :to="NAV_ITEMS.about.path"
               class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
               active-class="bg-gray-100"
             >
-              About
+              {{ NAV_ITEMS.about.label }}
             </NuxtLink>
             <NuxtLink
-              to="/submit"
+              :to="NAV_ITEMS.submit.path"
               class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium font-medium bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
               active-class="bg-gray-200"
             >
-              Submit
+              {{ NAV_ITEMS.submit.label }}
             </NuxtLink>
             <NuxtLink
-              to="/developer"
+              :to="NAV_ITEMS.developer.path"
               class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
               active-class="bg-gray-100"
             >
-              Developer
+              {{ NAV_ITEMS.developer.label }}
             </NuxtLink>
             <NuxtLink
-              to="/api-analytics"
+              :to="NAV_ITEMS.apiAnalytics.path"
               class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
               active-class="bg-gray-100"
             >
-              API Analytics
+              {{ NAV_ITEMS.apiAnalytics.label }}
             </NuxtLink>
           </nav>
 
@@ -105,12 +102,16 @@
               aria-controls="mobile-menu"
               :aria-expanded="mobileMenuOpen"
               :aria-label="
-                mobileMenuOpen ? 'Close main menu' : 'Open main menu'
+                mobileMenuOpen
+                  ? ACCESSIBILITY_LABELS.closeMainMenu
+                  : ACCESSIBILITY_LABELS.openMainMenu
               "
               @click="toggleMobileMenu"
             >
               <span class="sr-only">{{
-                mobileMenuOpen ? 'Close main menu' : 'Open main menu'
+                mobileMenuOpen
+                  ? ACCESSIBILITY_LABELS.closeMainMenu
+                  : ACCESSIBILITY_LABELS.openMainMenu
               }}</span>
               <svg
                 :class="['h-6 w-6', { hidden: mobileMenuOpen }]"
@@ -160,93 +161,84 @@
             class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
             @click="closeMobileMenu"
           >
-            Home
+            {{ NAV_ITEMS.home.label }}
           </NuxtLink>
           <NuxtLink
-            to="/search"
+            :to="NAV_ITEMS.search.path"
             class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
             active-class="bg-gray-100"
             @click="closeMobileMenu"
           >
-            Search
+            {{ NAV_ITEMS.search.label }}
           </NuxtLink>
           <NuxtLink
-            to="/ai-keys"
+            :to="NAV_ITEMS.aiKeys.path"
             class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
             active-class="bg-gray-100"
             @click="closeMobileMenu"
           >
-            AI Keys
+            {{ NAV_ITEMS.aiKeys.label }}
           </NuxtLink>
           <NuxtLink
-            to="/favorites"
+            :to="NAV_ITEMS.favorites.path"
             class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
             active-class="bg-gray-100"
             @click="closeMobileMenu"
           >
-            Favorites
+            {{ NAV_ITEMS.favorites.label }}
           </NuxtLink>
           <NuxtLink
-            to="/about"
+            :to="NAV_ITEMS.about.path"
             class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
             active-class="bg-gray-100"
             @click="closeMobileMenu"
           >
-            About
+            {{ NAV_ITEMS.about.label }}
           </NuxtLink>
           <NuxtLink
-            to="/submit"
+            :to="NAV_ITEMS.submit.path"
             class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-800"
             active-class="bg-gray-200"
             @click="closeMobileMenu"
           >
-            Submit
+            {{ NAV_ITEMS.submit.label }}
           </NuxtLink>
           <NuxtLink
-            to="/developer"
+            :to="NAV_ITEMS.developer.path"
             class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
             active-class="bg-gray-100"
             @click="closeMobileMenu"
           >
-            Developer
+            {{ NAV_ITEMS.developer.label }}
           </NuxtLink>
           <NuxtLink
-            to="/api-analytics"
+            :to="NAV_ITEMS.apiAnalytics.path"
             class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
             active-class="bg-gray-100"
             @click="closeMobileMenu"
           >
-            API Analytics
+            {{ NAV_ITEMS.apiAnalytics.label }}
           </NuxtLink>
           <!-- Mobile search bar -->
           <div class="px-2 pt-2 sm:px-3">
             <LazySearchBar
               v-model="searchQuery"
-              :aria-label="'Search for free resources'"
+              :aria-label="ACCESSIBILITY_LABELS.searchResources"
               @search="handleMobileSearch"
             />
           </div>
         </div>
       </div>
     </header>
-    <main
-      id="main-content"
-      role="main"
-    >
+    <main id="main-content" role="main">
       <slot />
     </main>
-    <footer
-      class="bg-white mt-8 py-6 border-t"
-      role="contentinfo"
-    >
+    <footer class="bg-white mt-8 py-6 border-t" role="contentinfo">
       <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 text-sm"
       >
-        © {{ new Date().getFullYear() }} Free Stuff on the Internet. All rights
-        reserved.
-        <p class="sr-only">
-          Footer content ends
-        </p>
+        {{ footerCopyright }}
+        <p class="sr-only">Footer content ends</p>
       </div>
     </footer>
 
@@ -265,6 +257,28 @@ import { useRoute, navigateTo } from '#app'
 import { useResources } from '~/composables/useResources'
 import type { NodeListOf } from 'dom'
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
+import {
+  APP_NAME,
+  ACCESSIBILITY_LABELS,
+  getCopyrightText,
+} from '~/constants/app'
+
+// Navigation items configuration
+const NAV_ITEMS = {
+  home: { label: 'Home', ariaLabel: ACCESSIBILITY_LABELS.returnToHome },
+  search: { label: 'Search', path: '/search' },
+  aiKeys: { label: 'AI Keys', path: '/ai-keys' },
+  favorites: { label: 'Favorites', path: '/favorites' },
+  about: { label: 'About', path: '/about' },
+  submit: { label: 'Submit', path: '/submit' },
+  developer: { label: 'Developer', path: '/developer' },
+  apiAnalytics: { label: 'API Analytics', path: '/api-analytics' },
+} as const
+
+// Footer copyright text
+const footerCopyright = computed(() =>
+  getCopyrightText(new Date().getFullYear())
+)
 
 const mobileMenuOpen = ref(false)
 const mobileMenuButton = ref<HTMLElement | null>(null)

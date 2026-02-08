@@ -1,3 +1,9 @@
+import {
+  SOCIAL_SHARE_URLS,
+  DEFAULT_HASHTAGS,
+  UTM_DEFAULTS,
+} from '~/constants/external'
+
 /**
  * Utility functions for social sharing
  */
@@ -43,11 +49,11 @@ export const generateShareUrls = (
   )
 
   return {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodedBaseUrl}&hashtags=FreeResources,WebDevelopment`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedBaseUrl}&quote=${encodedTitleAndDescription}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description || '')}`,
-    reddit: `https://www.reddit.com/submit?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}`,
-    email: `mailto:?subject=${encodeURIComponent(title)}&body=Check out this resource: ${baseUrl}%0D%0A%0D%0A${encodeURIComponent(description || '')}`,
+    twitter: `${SOCIAL_SHARE_URLS.twitter}?text=${encodeURIComponent(title)}&url=${encodedBaseUrl}&hashtags=${DEFAULT_HASHTAGS.join(',')}`,
+    facebook: `${SOCIAL_SHARE_URLS.facebook}?u=${encodedBaseUrl}&quote=${encodedTitleAndDescription}`,
+    linkedin: `${SOCIAL_SHARE_URLS.linkedin}?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description || '')}`,
+    reddit: `${SOCIAL_SHARE_URLS.reddit}?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}`,
+    email: `${SOCIAL_SHARE_URLS.email}?subject=${encodeURIComponent(title)}&body=Check out this resource: ${baseUrl}%0D%0A%0D%0A${encodeURIComponent(description || '')}`,
   }
 }
 
@@ -60,17 +66,22 @@ export const generateResourceShareUrls = (
   description?: string
 ) => {
   const encodedBaseUrl = encodeURIComponent(
-    addUTMParams(baseUrl, 'social', 'share', 'resource-sharing')
+    addUTMParams(
+      baseUrl,
+      UTM_DEFAULTS.source,
+      UTM_DEFAULTS.medium,
+      UTM_DEFAULTS.campaign
+    )
   )
   const encodedTitleAndDescription = encodeURIComponent(
     `${title} - ${description || ''}`
   )
 
   return {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodedBaseUrl}&hashtags=FreeResources,WebDevelopment`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedBaseUrl}&quote=${encodedTitleAndDescription}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description || '')}`,
-    reddit: `https://www.reddit.com/submit?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}`,
-    email: `mailto:?subject=${encodeURIComponent(title)}&body=Check out this resource: ${baseUrl}%0D%0A%0D%0A${encodeURIComponent(description || '')}`,
+    twitter: `${SOCIAL_SHARE_URLS.twitter}?text=${encodeURIComponent(title)}&url=${encodedBaseUrl}&hashtags=${DEFAULT_HASHTAGS.join(',')}`,
+    facebook: `${SOCIAL_SHARE_URLS.facebook}?u=${encodedBaseUrl}&quote=${encodedTitleAndDescription}`,
+    linkedin: `${SOCIAL_SHARE_URLS.linkedin}?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description || '')}`,
+    reddit: `${SOCIAL_SHARE_URLS.reddit}?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}`,
+    email: `${SOCIAL_SHARE_URLS.email}?subject=${encodeURIComponent(title)}&body=Check out this resource: ${baseUrl}%0D%0A%0D%0A${encodeURIComponent(description || '')}`,
   }
 }
