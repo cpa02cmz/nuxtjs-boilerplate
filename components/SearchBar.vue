@@ -52,8 +52,8 @@
         :value="modelValue"
         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400 focus:shadow-lg focus:-translate-y-0.5"
         :class="{ 'placeholder:text-gray-300': isSearching }"
-        placeholder="Search resources by name, description, tags..."
-        aria-label="Search resources (Press / to focus)"
+        :placeholder="contentConfig.search.placeholder"
+        :aria-label="`Search resources (Press ${uiConfig.keyboard.searchShortcut} to focus)`"
         aria-describedby="search-results-info search-shortcut-hint"
         :aria-expanded="
           showSuggestions &&
@@ -75,7 +75,7 @@
           class="hidden sm:inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded-md shadow-sm transition-all duration-200 ease-out hover:bg-gray-100 hover:border-gray-300 hover:shadow-md hover:scale-105"
           aria-hidden="true"
         >
-          /
+          {{ uiConfig.keyboard.searchShortcut }}
         </kbd>
       </div>
       <div
@@ -143,6 +143,8 @@ import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
 import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
+import { contentConfig } from '~/configs/content.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   modelValue: string
@@ -353,11 +355,11 @@ if (typeof window !== 'undefined') {
     showToast(`Removed saved search "${name}".`, 'info')
   }
 
-  // Keyboard shortcut handler - Press "/" to focus search
-  const handleSlashKey = (event: KeyboardEvent) => {
-    // Only trigger if "/" is pressed and no input/textarea is focused
+  // Keyboard shortcut handler - Press shortcut key to focus search
+  const handleShortcutKey = (event: KeyboardEvent) => {
+    // Only trigger if shortcut key is pressed and no input/textarea is focused
     if (
-      event.key === '/' &&
+      event.key === uiConfig.keyboard.searchShortcut &&
       !isFocused.value &&
       !['INPUT', 'TEXTAREA'].includes((event.target as HTMLElement)?.tagName)
     ) {
@@ -370,7 +372,7 @@ if (typeof window !== 'undefined') {
   window.addEventListener('saved-search-added', savedSearchAddedHandler)
   window.addEventListener('saved-search-updated', savedSearchUpdatedHandler)
   window.addEventListener('saved-search-removed', savedSearchRemovedHandler)
-  window.addEventListener('keydown', handleSlashKey)
+  window.addEventListener('keydown', handleShortcutKey)
 
   // Clean up event listeners on component unmount
   onUnmounted(() => {
@@ -383,7 +385,7 @@ if (typeof window !== 'undefined') {
       'saved-search-removed',
       savedSearchRemovedHandler
     )
-    window.removeEventListener('keydown', handleSlashKey)
+    window.removeEventListener('keydown', handleShortcutKey)
   })
 }
 </script>

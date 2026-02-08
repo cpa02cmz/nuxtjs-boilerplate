@@ -165,6 +165,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 import logger from '~/utils/logger'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   title?: string
@@ -348,13 +349,14 @@ const showCopySuccess = async () => {
     clearTimeout(copySuccessTimeout)
   }
 
-  // Reset after 2 seconds, then close menu
+  // Reset after configured timeout, then close menu
+  // Flexy hates hardcoded values! Using uiConfig.timing.copySuccessTimeoutMs
   copySuccessTimeout = setTimeout(async () => {
     copySuccess.value = false
     showShareMenu.value = false
     await nextTick()
     shareButtonRef.value?.focus()
-  }, 2000)
+  }, uiConfig.timing.copySuccessTimeoutMs)
 }
 
 onMounted(() => {

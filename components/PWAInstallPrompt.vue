@@ -30,30 +30,30 @@
             id="pwa-install-title"
             class="font-medium text-gray-900"
           >
-            Install App
+            {{ contentConfig.pwa.installTitle }}
           </h3>
           <p
             id="pwa-install-description"
             class="text-sm text-gray-500"
           >
-            Add to your home screen
+            {{ contentConfig.pwa.installDesc }}
           </p>
         </div>
       </div>
       <div class="flex space-x-2">
         <button
           class="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-          aria-label="Cancel app installation"
+          :aria-label="contentConfig.pwa.notNow + ' app installation'"
           @click="cancelInstall"
         >
-          Not now
+          {{ contentConfig.pwa.notNow }}
         </button>
         <button
           class="px-3 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          aria-label="Install app to home screen"
+          :aria-label="contentConfig.pwa.install + ' app to home screen'"
           @click="installPWA"
         >
-          Install
+          {{ contentConfig.pwa.install }}
         </button>
       </div>
     </div>
@@ -63,6 +63,7 @@
 <script setup lang="ts">
 import { useNuxtApp } from '#app'
 import { ref, computed } from 'vue'
+import { contentConfig } from '~/configs/content.config'
 
 // Storage key constants
 const STORAGE_KEYS = {

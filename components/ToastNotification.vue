@@ -9,7 +9,7 @@
         v-for="toast in toasts"
         :key="toast.id"
         class="toast"
-        :class="`toast--${toast.type}`"
+        :style="getToastStyle(toast.type)"
         role="alert"
         :aria-live="toast.type === 'error' ? 'assertive' : 'polite'"
         @mouseenter="pauseToast(toast.id)"
@@ -125,6 +125,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { TOAST_DURATION, UI_TIMING } from '~/server/utils/constants'
+import { themeConfig } from '~/configs/theme.config'
+import { uiConfig } from '~/configs/ui.config'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -138,6 +140,38 @@ interface Toast {
 
 const toasts = ref<Toast[]>([])
 const pausedToastIds = ref<Set<string>>(new Set())
+
+// Flexy hates hardcoded values! All theme colors come from config
+const toastStyles = {
+  success: {
+    background: themeConfig.toast.success.bg,
+    border: themeConfig.toast.success.border,
+    color: themeConfig.toast.success.text,
+  },
+  error: {
+    background: themeConfig.toast.error.bg,
+    border: themeConfig.toast.error.border,
+    color: themeConfig.toast.error.text,
+  },
+  warning: {
+    background: themeConfig.toast.warning.bg,
+    border: themeConfig.toast.warning.border,
+    color: themeConfig.toast.warning.text,
+  },
+  info: {
+    background: themeConfig.toast.info.bg,
+    border: themeConfig.toast.info.border,
+    color: themeConfig.toast.info.text,
+  },
+}
+
+const getToastStyle = (type: ToastType) => {
+  return {
+    backgroundColor: toastStyles[type].background,
+    borderLeft: `4px solid ${toastStyles[type].border}`,
+    color: toastStyles[type].color,
+  }
+}
 
 const addToast = (toast: Omit<Toast, 'id'>) => {
   const id = Math.random().toString(36).substring(2, 9)
@@ -197,10 +231,10 @@ defineExpose({
 <style scoped>
 .toast-container {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-  max-width: 400px;
+  top: v-bind('uiConfig.toast.position.top + "px"');
+  right: v-bind('uiConfig.toast.position.right + "px"');
+  z-index: v-bind('uiConfig.zIndex.toast');
+  max-width: v-bind('uiConfig.toast.position.maxWidth + "px"');
   width: 100%;
 }
 
@@ -218,35 +252,12 @@ defineExpose({
   box-shadow:
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  min-width: 300px;
+  min-width: v-bind('uiConfig.toast.position.minWidth + "px"');
   max-width: 100%;
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn v-bind('uiConfig.toast.animation.durationMs + "ms"')
+    ease-out;
   position: relative;
   overflow: hidden;
-}
-
-.toast--success {
-  background-color: #f0fdf4;
-  border-left: 4px solid #22c55e;
-  color: #166534;
-}
-
-.toast--error {
-  background-color: #fef2f2;
-  border-left: 4px solid #ef4444;
-  color: #b91c1c;
-}
-
-.toast--warning {
-  background-color: #fffbeb;
-  border-left: 4px solid #f59e0b;
-  color: #92400e;
-}
-
-.toast--info {
-  background-color: #eff6ff;
-  border-left: 4px solid #3b82f6;
-  color: #1e40af;
 }
 
 .toast__icon {

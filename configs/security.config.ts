@@ -98,6 +98,13 @@ export const securityConfig = {
     formats: parseImageFormats(process.env.IMAGE_FORMATS || 'webp, avif, jpeg'),
     densities: parseDensities(process.env.IMAGE_DENSITIES || '1, 2'),
   },
+
+  // CSRF Configuration
+  csrf: {
+    cookieName: process.env.CSRF_COOKIE_NAME || 'csrf_token',
+    headerName: process.env.CSRF_HEADER_NAME || 'X-CSRF-Token',
+    tokenLength: parseInt(process.env.CSRF_TOKEN_LENGTH || '32'),
+  },
 } as const
 
 // Helper function to parse CSP directive string

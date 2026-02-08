@@ -52,6 +52,7 @@
 <script setup lang="ts">
 import { useBookmarks } from '~/composables/useBookmarks'
 import { computed, ref } from 'vue'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   resourceId?: string
@@ -83,9 +84,10 @@ const handleBookmarkToggle = () => {
   // Trigger animation when adding bookmark
   if (!wasBookmarked) {
     isAnimating.value = true
+    // Flexy hates hardcoded values! Using uiConfig.timing.bookmarkAnimationMs
     setTimeout(() => {
       isAnimating.value = false
-    }, 400)
+    }, uiConfig.timing.bookmarkAnimationMs)
   }
 
   toggleBookmark({
@@ -97,9 +99,10 @@ const handleBookmarkToggle = () => {
 
   bookmarkStatus.value = wasBookmarked ? 'Bookmark removed' : 'Bookmark added'
 
+  // Flexy hates hardcoded values! Using uiConfig.timing.bookmarkStatusClearMs
   setTimeout(() => {
     bookmarkStatus.value = ''
-  }, 1000)
+  }, uiConfig.timing.bookmarkStatusClearMs)
 }
 </script>
 

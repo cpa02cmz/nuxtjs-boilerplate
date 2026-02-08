@@ -2,7 +2,7 @@
   <div
     v-if="message"
     class="error-message"
-    :class="`error-message--${variant}`"
+    :style="getErrorStyle(variant)"
     role="alert"
     :aria-live="variant === 'error' ? 'assertive' : 'polite'"
   >
@@ -72,6 +72,8 @@
 </template>
 
 <script setup lang="ts">
+import { themeConfig } from '~/configs/theme.config'
+
 interface Action {
   label: string
   handler: () => void
@@ -88,6 +90,28 @@ withDefaults(defineProps<Props>(), {
   variant: 'error',
   action: undefined,
 })
+
+// Flexy hates hardcoded values! All theme colors come from config
+const getErrorStyle = (variant: 'error' | 'warning' | 'success') => {
+  const styles = {
+    error: {
+      backgroundColor: themeConfig.toast.error.bg,
+      border: `1px solid ${themeConfig.toast.error.border}`,
+      color: themeConfig.toast.error.text,
+    },
+    warning: {
+      backgroundColor: themeConfig.toast.warning.bg,
+      border: `1px solid ${themeConfig.toast.warning.border}`,
+      color: themeConfig.toast.warning.text,
+    },
+    success: {
+      backgroundColor: themeConfig.toast.success.bg,
+      border: `1px solid ${themeConfig.toast.success.border}`,
+      color: themeConfig.toast.success.text,
+    },
+  }
+  return styles[variant]
+}
 </script>
 
 <style scoped>
@@ -96,24 +120,6 @@ withDefaults(defineProps<Props>(), {
   border-radius: 0.375rem;
   display: flex;
   gap: 0.5rem;
-}
-
-.error-message--error {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #b91c1c;
-}
-
-.error-message--warning {
-  background-color: #fffbeb;
-  border: 1px solid #fde68a;
-  color: #92400e;
-}
-
-.error-message--success {
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: #166534;
 }
 
 .error-message__icon {
