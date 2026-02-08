@@ -1,3 +1,5 @@
+import { webhooksConfig } from '~/configs/webhooks.config'
+
 interface RetryConfig {
   maxRetries: number
   baseDelayMs: number
@@ -99,19 +101,19 @@ export async function retryWithBackoff<T>(
   config: Partial<RetryConfig> = {}
 ): Promise<T> {
   const defaultConfig: RetryConfig = {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
+    maxRetries: webhooksConfig.retry.maxAttempts,
+    baseDelayMs: webhooksConfig.retry.baseDelayMs,
+    maxDelayMs: webhooksConfig.retry.maxDelayMs,
     backoffMultiplier: 2,
     retryableErrors: [],
     jitterEnabled: true,
-    jitterFactor: 0.1,
+    jitterFactor: webhooksConfig.retry.jitterFactor,
   }
 
   const finalConfig: RetryConfig = {
     ...defaultConfig,
     ...config,
-    retryableErrors: config.retryableErrors || defaultConfig.retryableErrors,
+    retryableErrors: config.retryableErrors ?? defaultConfig.retryableErrors,
   }
 
   const errors: RetryAttempt[] = []
@@ -139,7 +141,10 @@ export async function retryWithBackoff<T>(
       }
 
       const delay = calculateDelay(attempt, finalConfig)
-      errors[errors.length - 1].delayMs = delay
+      const lastError = errors[errors.length - 1]
+      if (lastError) {
+        lastError.delayMs = delay
+      }
 
       await new Promise(resolve => setTimeout(resolve, delay))
     }
@@ -157,19 +162,19 @@ export async function retryWithResult<T>(
   config: Partial<RetryConfig> = {}
 ): Promise<RetryResult<T>> {
   const defaultConfig: RetryConfig = {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
+    maxRetries: webhooksConfig.retry.maxAttempts,
+    baseDelayMs: webhooksConfig.retry.baseDelayMs,
+    maxDelayMs: webhooksConfig.retry.maxDelayMs,
     backoffMultiplier: 2,
     retryableErrors: [],
     jitterEnabled: true,
-    jitterFactor: 0.1,
+    jitterFactor: webhooksConfig.retry.jitterFactor,
   }
 
   const finalConfig: RetryConfig = {
     ...defaultConfig,
     ...config,
-    retryableErrors: config.retryableErrors || defaultConfig.retryableErrors,
+    retryableErrors: config.retryableErrors ?? defaultConfig.retryableErrors,
   }
 
   const errors: RetryAttempt[] = []
@@ -213,7 +218,10 @@ export async function retryWithResult<T>(
 
       const delay = calculateDelay(attempt, finalConfig)
       totalDelayMs += delay
-      errors[errors.length - 1].delayMs = delay
+      const lastError = errors[errors.length - 1]
+      if (lastError) {
+        lastError.delayMs = delay
+      }
 
       await new Promise(resolve => setTimeout(resolve, delay))
     }

@@ -45,6 +45,7 @@ Get paginated list of resources with filtering and sorting options.
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": "res_123",
@@ -53,18 +54,21 @@ Get paginated list of resources with filtering and sorting options.
       "url": "https://example.com",
       "category": "development",
       "tags": ["free", "tools"],
-      "featured": false,
-      "createdAt": "2026-01-01T00:00:00Z",
-      "upvotes": 5,
-      "downvotes": 1,
-      "healthStatus": "active"
+      "pricingModel": "free",
+      "difficulty": "beginner",
+      "benefits": ["Easy to use", "Open source"],
+      "technology": ["javascript", "vue"],
+      "dateAdded": "2026-01-01",
+      "popularity": 85,
+      "icon": "https://example.com/icon.png"
     }
   ],
   "pagination": {
-    "page": 1,
-    "limit": 20,
     "total": 150,
-    "pages": 8
+    "limit": 20,
+    "offset": 0,
+    "hasNext": true,
+    "hasPrev": false
   }
 }
 ```
@@ -77,34 +81,24 @@ Get a specific resource by ID.
 
 ```json
 {
-  "id": "res_123",
-  "title": "Example Resource",
-  "description": "Resource description",
-  "url": "https://example.com",
-  "category": "development",
-  "tags": ["free", "tools"],
-  "featured": false,
-  "createdAt": "2026-01-01T00:00:00Z",
-  "upvotes": 5,
-  "downvotes": 1,
-  "healthStatus": "active",
-  "alternatives": [
-    {
-      "id": "res_456",
-      "title": "Alternative Resource",
-      "url": "https://alternative.com"
-    }
-  ],
-  "comments": [
-    {
-      "id": "comment_1",
-      "author": "user_456",
-      "authorName": "Jane Doe",
-      "content": "Great resource!",
-      "createdAt": "2026-01-02T00:00:00Z",
-      "upvotes": 2
-    }
-  ]
+  "success": true,
+  "data": {
+    "id": "res_123",
+    "title": "Example Resource",
+    "description": "Resource description",
+    "url": "https://example.com",
+    "category": "development",
+    "tags": ["free", "tools"],
+    "pricingModel": "free",
+    "difficulty": "beginner",
+    "benefits": ["Easy to use", "Open source"],
+    "technology": ["javascript", "vue"],
+    "dateAdded": "2026-01-01",
+    "popularity": 85,
+    "icon": "https://example.com/icon.png",
+    "alternatives": ["res_456", "res_789"],
+    "status": "approved"
+  }
 }
 ```
 

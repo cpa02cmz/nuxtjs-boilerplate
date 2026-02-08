@@ -112,6 +112,7 @@
             @reset-filters="resetAllFilters"
             @use-saved-search="onUseSavedSearch"
             @remove-saved-search="onRemoveSavedSearch"
+            @undo-delete="onUndoDelete"
           />
 
           <!-- Show popular searches when there's no active search -->
@@ -225,6 +226,7 @@ const {
   resetFilters,
   handleSearch,
   savedSearches,
+  saveSearch,
   removeSavedSearch,
   createSearchSnippet,
   highlightSearchTerms,
@@ -319,6 +321,14 @@ const onUseSavedSearch = (search: {
 
 const onRemoveSavedSearch = (query: string) => {
   removeSavedSearch(query)
+}
+
+const onUndoDelete = (search: {
+  name: string
+  query: string
+  createdAt: Date
+}) => {
+  saveSearch(search.name, search.query)
 }
 
 const getButtonLabel = (category: string) => {

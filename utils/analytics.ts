@@ -10,6 +10,13 @@ export interface AnalyticsEvent {
   properties?: Record<string, unknown>
 }
 
+// Get CSRF token from cookie
+function getCsrfToken(): string | null {
+  if (typeof document === 'undefined') return null
+  const match = document.cookie.match(new RegExp('(^| )csrf_token=([^;]+)'))
+  return match ? match[2] : null
+}
+
 // Track an analytics event
 export async function trackEvent(event: AnalyticsEvent): Promise<boolean> {
   try {
@@ -18,12 +25,20 @@ export async function trackEvent(event: AnalyticsEvent): Promise<boolean> {
       // Development logging removed for production
     }
 
+    // Get CSRF token for POST request
+    const csrfToken = getCsrfToken()
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    }
+
+    if (csrfToken) {
+      headers['X-CSRF-Token'] = csrfToken
+    }
+
     // Send the event to the analytics API
     const response = await fetch('/api/analytics/events', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(event),
     })
 

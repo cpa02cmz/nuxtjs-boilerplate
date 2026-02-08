@@ -62,6 +62,7 @@ export const rateLimitConfig = {
     windowSeconds: parseInt(
       process.env.RATE_LIMIT_DEFAULT_WINDOW_SECONDS || '60'
     ),
+    maxAgeHours: parseInt(process.env.RATE_LIMIT_MAX_AGE_HOURS || '24'),
   },
 
   // Rate Limit Headers
