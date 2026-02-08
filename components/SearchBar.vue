@@ -26,12 +26,12 @@
         type="search"
         :value="modelValue"
         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400"
-        placeholder="Search resources by name, description, tags..."
-        aria-label="Search resources (Press / to focus)"
+        :placeholder="contentConfig.search.placeholder"
+        :aria-label="`Search resources (Press ${uiConfig.keyboard.searchShortcut} to focus)`"
         aria-describedby="search-results-info search-shortcut-hint"
         :aria-expanded="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         aria-controls="search-suggestions-dropdown"
         aria-autocomplete="list"
@@ -39,7 +39,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint -->
       <div
         v-if="!modelValue && !isFocused"
@@ -49,7 +49,7 @@
           class="hidden sm:inline-block px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded-md shadow-sm transition-all duration-150 group-hover:bg-gray-100 group-hover:border-gray-300 group-hover:shadow"
           aria-hidden="true"
         >
-          /
+          {{ uiConfig.keyboard.searchShortcut }}
         </kbd>
       </div>
       <div
@@ -85,7 +85,7 @@
       <LazySearchSuggestions
         v-if="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         id="search-suggestions-dropdown"
         :suggestions="suggestions"
@@ -116,6 +116,9 @@ import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
 import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
+import { contentConfig } from '~/configs/content.config'
+import { uiConfig } from '~/configs/ui.config'
+import { searchConfig } from '~/configs/search.config'
 
 interface Props {
   modelValue: string
@@ -186,8 +189,14 @@ const updateSuggestions = (query: string) => {
       id: resource.id,
       title: resource.title,
       description:
-        resource.description.substring(0, 100) +
-        (resource.description.length > 100 ? '...' : ''),
+        resource.description.substring(
+          0,
+          searchConfig.behavior.descriptionTruncateLength
+        ) +
+        (resource.description.length >
+        searchConfig.behavior.descriptionTruncateLength
+          ? '...'
+          : ''),
       url: resource.url,
     }))
   } else {
@@ -320,11 +329,11 @@ if (typeof window !== 'undefined') {
     showToast(`Removed saved search "${name}".`, 'info')
   }
 
-  // Keyboard shortcut handler - Press "/" to focus search
+  // Keyboard shortcut handler - Press configured shortcut to focus search
   const handleSlashKey = (event: KeyboardEvent) => {
-    // Only trigger if "/" is pressed and no input/textarea is focused
+    // Only trigger if the configured shortcut is pressed and no input/textarea is focused
     if (
-      event.key === '/' &&
+      event.key === uiConfig.keyboard.searchShortcut &&
       !isFocused.value &&
       !['INPUT', 'TEXTAREA'].includes((event.target as HTMLElement)?.tagName)
     ) {

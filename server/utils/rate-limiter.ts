@@ -1,5 +1,6 @@
 import prisma from './db'
 import { logger } from '~/utils/logger'
+import { rateLimitConfig } from '~/configs/rate-limit.config'
 
 export interface RateLimitResult {
   allowed: boolean
@@ -20,8 +21,8 @@ export interface RateLimitResult {
  */
 export async function checkRateLimit(
   key: string,
-  maxRequests: number = 100,
-  windowSeconds: number = 60
+  maxRequests: number = rateLimitConfig.defaults.maxRequests,
+  windowSeconds: number = rateLimitConfig.defaults.windowSeconds
 ): Promise<RateLimitResult> {
   try {
     const now = new Date()
@@ -132,7 +133,7 @@ export async function recordRateLimitedEvent(
  * Should be called periodically (e.g., via cron job)
  */
 export async function cleanupOldRateLimits(
-  maxAgeHours: number = 24
+  maxAgeHours: number = rateLimitConfig.defaults.maxAgeHours
 ): Promise<number> {
   try {
     const cutoff = new Date(Date.now() - maxAgeHours * 60 * 60 * 1000)
