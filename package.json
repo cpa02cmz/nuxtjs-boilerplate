@@ -82,8 +82,5 @@
     "web-vitals": "^5.1.0",
     "zod": "^4.3.5"
   },
-  "overrides": {
-    "hono": "4.11.7",
-    "lodash": "^4.17.21"
-  }
+  "overrides": {}
 }
