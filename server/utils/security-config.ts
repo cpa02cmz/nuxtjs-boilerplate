@@ -23,7 +23,9 @@ interface SecurityConfig {
 export const securityConfig: SecurityConfig = {
   csp: {
     defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", "'strict-dynamic'", 'https:'],
+    // Security fix: Removed generic 'https:' which allowed any HTTPS script
+    // Now using strict CSP with nonce support and self/strict-dynamic only
+    scriptSrc: ["'self'", "'strict-dynamic'"],
     styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     imgSrc: [
       "'self'",
@@ -37,7 +39,15 @@ export const securityConfig: SecurityConfig = {
     ],
     connectSrc: [
       "'self'",
-      'https:', // API calls to HTTPS endpoints
+      // Restricted from generic 'https:' to specific domains for security
+      // Resource validation and webhooks require external connectivity
+      'https://fonts.googleapis.com',
+      'https://fonts.gstatic.com',
+      'https://unpkg.com',
+      'https://twitter.com',
+      'https://www.facebook.com',
+      'https://www.linkedin.com',
+      'https://www.reddit.com',
     ],
     frameAncestors: ["'none'"], // Prevent embedding in iframes
     objectSrc: ["'none'"], // Prevent plugins like Flash
