@@ -98,7 +98,20 @@ export const cacheConfig = {
 
 // Helper function to parse glob patterns
 function parseGlobPatterns(value: string): string[] {
-  return value.split(',').map(s => s.trim())
+  // Handle brace expansion patterns like "**/*.{js,css,html}"
+  // These should NOT be split by comma as they are valid glob syntax
+  const trimmed = value.trim()
+
+  // If it contains brace expansion, return as single pattern
+  if (trimmed.includes('{') && trimmed.includes('}')) {
+    return [trimmed]
+  }
+
+  // Otherwise split by comma for multiple patterns
+  return trimmed
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean)
 }
 
 export type CacheConfig = typeof cacheConfig

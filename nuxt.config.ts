@@ -239,7 +239,7 @@ export default defineNuxtConfig({
         // with dynamic nonce generation for proper security
         {
           name: 'referrer',
-          content: securityConfig.headers['Referrer-Policy'],
+          content: securityConfig.additionalHeaders['Referrer-Policy'],
         },
         { name: 'theme-color', content: themeConfig.pwa.themeColor },
         {
