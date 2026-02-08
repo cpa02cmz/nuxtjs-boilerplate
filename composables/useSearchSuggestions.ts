@@ -3,6 +3,7 @@ import type { Resource } from '~/types/resource'
 import type { SuggestionResult } from '~/types/search'
 import { useSearchHistory } from '~/composables/useSearchHistory'
 import { createFuseForSuggestions } from '~/utils/fuseHelper'
+import { searchConfig } from '~/configs/search.config'
 
 // Composable for managing search suggestions engine
 export const useSearchSuggestions = (resources: readonly Resource[]) => {
@@ -39,7 +40,7 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
   // Generate suggestions based on search query
   const generateSuggestions = (
     query: string,
-    limit: number = 5
+    limit: number = searchConfig.behavior.maxSuggestions
   ): SuggestionResult[] => {
     if (!query || !fuse.value) return []
 
@@ -58,8 +59,14 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
         resourceId: result.item.id,
         metadata: {
           description:
-            result.item.description.substring(0, 100) +
-            (result.item.description.length > 100 ? '...' : ''),
+            result.item.description.substring(
+              0,
+              searchConfig.behavior.descriptionTruncateLength
+            ) +
+            (result.item.description.length >
+            searchConfig.behavior.descriptionTruncateLength
+              ? '...'
+              : ''),
           category: result.item.category,
           tags: result.item.tags,
           url: result.item.url,
@@ -115,7 +122,7 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
     })
 
     // Add popular searches if the query is empty or short
-    if (query.length < 3) {
+    if (query.length < searchConfig.behavior.minQueryLength + 1) {
       popularSearches.value.slice(0, limit).forEach((popular, index) => {
         suggestions.push({
           text: popular.query,
@@ -178,8 +185,13 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
     } else {
       popularSearches.value.push({ query, count: 1 })
       popularSearches.value.sort((a, b) => b.count - a.count)
-      if (popularSearches.value.length > 20) {
-        popularSearches.value = popularSearches.value.slice(0, 20)
+      if (
+        popularSearches.value.length > searchConfig.cache.maxPopularSearches
+      ) {
+        popularSearches.value = popularSearches.value.slice(
+          0,
+          searchConfig.cache.maxPopularSearches
+        )
       }
     }
   }

@@ -4,6 +4,7 @@ import { useNuxtApp } from '#app'
 import logger from '~/utils/logger'
 import type { Resource } from '~/types/resource'
 import { useResourceComparison } from '~/composables/useResourceComparison'
+import { apiConfig } from '~/configs/api.config'
 
 interface UseComparisonPageOptions {
   autoFetch?: boolean
@@ -37,7 +38,7 @@ export const useComparisonPage = (options?: UseComparisonPageOptions) => {
 
       const { $apiClient } = useNuxtApp()
       const response = await $apiClient.get<{ resources: Resource[] }>(
-        '/api/v1/comparisons',
+        apiConfig.comparisons.base,
         {
           params: {
             ids: resourceIds.value.join(','),

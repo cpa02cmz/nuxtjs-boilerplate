@@ -24,6 +24,7 @@ import { validationConfig, type ValidationConfig } from './validation.config'
 import { analyticsConfig, type AnalyticsConfig } from './analytics.config'
 import { uiConfig, type UiConfig } from './ui.config'
 import { pwaConfig, type PwaConfig } from './pwa.config'
+import { apiConfig, type ApiConfig } from './api.config'
 
 // Re-export individual configs
 export { appConfig, type AppConfig }
@@ -44,6 +45,7 @@ export { validationConfig, type ValidationConfig }
 export { analyticsConfig, type AnalyticsConfig }
 export { uiConfig, type UiConfig }
 export { pwaConfig, type PwaConfig }
+export { apiConfig, type ApiConfig }
 
 // Default export with all configs
 export const config = {
@@ -60,6 +62,7 @@ export const config = {
   analytics: analyticsConfig,
   ui: uiConfig,
   pwa: pwaConfig,
+  api: apiConfig,
 } as const
 
 export type Config = typeof config

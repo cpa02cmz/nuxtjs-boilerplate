@@ -3,6 +3,7 @@ import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import type { ApiClient } from '~/utils/api-client'
 import type { ApiKey } from '~/types/webhook'
+import { apiConfig } from '~/configs/api.config'
 
 export interface NewApiKey {
   name: string
@@ -36,7 +37,7 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
       const response = await client.get<{
         apiKeys: ApiKey[]
         data?: ApiKey[]
-      }>('/api/v1/auth/api-keys')
+      }>(apiConfig.auth.apiKeys)
 
       if (response.success) {
         apiKeys.value = response.data?.apiKeys ?? response.data?.data ?? []
@@ -65,7 +66,7 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
 
       const client = getClient()
       const response = await client.post<{ apiKey: ApiKey; data?: ApiKey }>(
-        '/api/v1/auth/api-keys',
+        apiConfig.auth.apiKeys,
         newApiKey
       )
 
@@ -102,7 +103,7 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
       error.value = null
 
       const client = getClient()
-      const response = await client.delete(`/api/v1/auth/api-keys/${keyId}`)
+      const response = await client.delete(apiConfig.auth.apiKeyById(keyId))
 
       if (!response.success) {
         error.value =
