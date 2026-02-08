@@ -19,10 +19,7 @@ export default defineNuxtModule({
       handler: resolve('./server/api/api-docs/index.get.ts'),
     })
 
-    // Add server middleware for API authentication
-    addServerHandler({
-      middleware: true,
-      handler: resolve('./server/middleware/api-auth.ts'),
-    })
+    // Server middleware is automatically loaded from server/middleware/ directory
+    // No need to manually register api-auth.ts
   },
 })
