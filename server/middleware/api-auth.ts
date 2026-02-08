@@ -1,7 +1,7 @@
 import { getHeader, getQuery } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 
-export default defineEventHandler(event => {
+export default defineEventHandler(async event => {
   // Only apply to API routes that require authentication
   if (
     !event.path?.startsWith('/api/v1/') ||
@@ -21,7 +21,7 @@ export default defineEventHandler(event => {
   }
 
   // Verify API key exists and is active
-  const storedKey = webhookStorage.getApiKeyByValue(apiKey)
+  const storedKey = await webhookStorage.getApiKeyByValue(apiKey)
 
   if (!storedKey || !storedKey.active) {
     throw createError({
@@ -31,7 +31,7 @@ export default defineEventHandler(event => {
   }
 
   // Update last used timestamp
-  webhookStorage.updateApiKey(storedKey.id, {
+  await webhookStorage.updateApiKey(storedKey.id, {
     lastUsedAt: new Date().toISOString(),
   })
 

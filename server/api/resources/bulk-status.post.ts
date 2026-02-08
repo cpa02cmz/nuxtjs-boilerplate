@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { Resource } from '~/types/resource'
+import type { Resource } from '~/types/resource'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendBadRequestError,

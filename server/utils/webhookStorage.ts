@@ -490,7 +490,7 @@ export const webhookStorage = {
       },
     })
 
-    if (!idempotencyKey || !idempotencyKey.deliveryId) return null
+    if (!idempotencyKey?.deliveryId) return null
 
     const delivery = await prisma.webhookDelivery.findFirst({
       where: { id: idempotencyKey.deliveryId, deletedAt: null },

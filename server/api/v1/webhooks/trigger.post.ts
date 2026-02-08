@@ -17,6 +17,9 @@ export default defineEventHandler(async event => {
 
     if (!validationResult.success) {
       const firstError = validationResult.error.issues[0]
+      if (!firstError) {
+        return sendValidationError(event, 'unknown', 'Validation failed')
+      }
       return sendValidationError(
         event,
         firstError.path[0] as string,
@@ -31,7 +34,7 @@ export default defineEventHandler(async event => {
       `evt_${Date.now()}_${Math.random().toString(36).substring(7)}`
 
     const existingDelivery =
-      webhookStorage.getDeliveryByIdempotencyKey(idempotencyKey)
+      await webhookStorage.getDeliveryByIdempotencyKey(idempotencyKey)
     if (existingDelivery) {
       sendSuccessResponse(event, {
         message: 'Webhook already delivered (idempotent request)',
@@ -46,7 +49,7 @@ export default defineEventHandler(async event => {
       return
     }
 
-    const webhooks = webhookStorage.getWebhooksByEvent(
+    const webhooks = await webhookStorage.getWebhooksByEvent(
       validatedData.event as WebhookEvent
     )
 
@@ -76,7 +79,7 @@ export default defineEventHandler(async event => {
       queuedWebhooks++
     }
 
-    const queueStats = webhookQueueSystem.getQueueStats()
+    const queueStats = await webhookQueueSystem.getQueueStats()
 
     sendSuccessResponse(event, {
       message: `Queued ${queuedWebhooks} webhooks for async delivery for event: ${validatedData.event}`,

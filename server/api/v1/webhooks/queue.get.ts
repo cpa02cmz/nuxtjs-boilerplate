@@ -7,9 +7,9 @@ import {
 
 export default defineEventHandler(async event => {
   try {
-    const queueStats = webhookQueueSystem.getQueueStats()
-    const queue = webhookStorage.getQueue()
-    const deadLetterQueue = webhookStorage.getDeadLetterQueue()
+    const queueStats = await webhookQueueSystem.getQueueStats()
+    const queue = await webhookStorage.getQueue()
+    const deadLetterQueue = await webhookStorage.getDeadLetterQueue()
 
     sendSuccessResponse(event, {
       stats: queueStats,

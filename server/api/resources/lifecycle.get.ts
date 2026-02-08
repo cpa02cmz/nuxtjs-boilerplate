@@ -1,4 +1,4 @@
-import { Resource } from '~/types/resource'
+import type { Resource } from '~/types/resource'
 import { getResourceHealthStats } from '~/server/utils/resourceHealth'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
@@ -33,11 +33,13 @@ export default defineEventHandler(async event => {
     resources.forEach((resource: Resource) => {
       const status = resource.status || 'active'
       if (Object.prototype.hasOwnProperty.call(statusCounts, status)) {
-        statusCounts[status]++
-        resourcesByStatus[status].push(resource)
+        statusCounts[status] = (statusCounts[status] ?? 0) + 1
+        if (resourcesByStatus[status]) {
+          resourcesByStatus[status].push(resource)
+        }
       } else {
-        statusCounts.active++
-        resourcesByStatus.active.push(resource)
+        statusCounts.active = (statusCounts.active ?? 0) + 1
+        resourcesByStatus.active?.push(resource)
       }
     })
 

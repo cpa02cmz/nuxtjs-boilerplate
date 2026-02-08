@@ -1,5 +1,5 @@
-import { Resource } from '~/types/resource'
-import { getRouterParam } from '#imports'
+import type { Resource } from '~/types/resource'
+import { getRouterParam } from 'h3'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendNotFoundError,

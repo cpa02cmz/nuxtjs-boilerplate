@@ -8,7 +8,7 @@ export default defineEventHandler(async event => {
   const active = query.active as string | undefined
   const eventFilter = query.event as string | undefined
 
-  let filteredWebhooks = webhookStorage.getAllWebhooks()
+  let filteredWebhooks = await webhookStorage.getAllWebhooks()
 
   // Filter by active status
   if (active !== undefined) {
