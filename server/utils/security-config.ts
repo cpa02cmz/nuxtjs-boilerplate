@@ -25,7 +25,12 @@ export const securityConfig: SecurityConfig = {
     defaultSrc: ["'self'"],
     // Security fix: Removed generic 'https:' which allowed any HTTPS script
     // Now using strict CSP with nonce support and self/strict-dynamic only
-    scriptSrc: ["'self'", "'strict-dynamic'"],
+    // In development, we need to allow eval and inline scripts for HMR
+    // Note: strict-dynamic is removed in development as it conflicts with unsafe-inline
+    scriptSrc:
+      process.env.NODE_ENV === 'development'
+        ? ["'self'", "'unsafe-eval'", "'unsafe-inline'"]
+        : ["'self'", "'strict-dynamic'"],
     styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     imgSrc: [
       "'self'",
@@ -36,6 +41,7 @@ export const securityConfig: SecurityConfig = {
     fontSrc: [
       "'self'",
       'https://fonts.gstatic.com', // External fonts
+      'https://fonts.googleapis.com', // Font CSS
     ],
     connectSrc: [
       "'self'",
@@ -48,6 +54,7 @@ export const securityConfig: SecurityConfig = {
       'https://www.facebook.com',
       'https://www.linkedin.com',
       'https://www.reddit.com',
+      ...(process.env.NODE_ENV === 'development' ? ['ws:', 'wss:'] : []), // Allow WebSocket for HMR
     ],
     frameAncestors: ["'none'"], // Prevent embedding in iframes
     objectSrc: ["'none'"], // Prevent plugins like Flash
@@ -76,7 +83,12 @@ export function generateCsp(nonce?: string): string {
       let sourceString = sources.join(' ')
 
       // Add nonce to script-src and style-src if provided
-      if (nonce && (directive === 'scriptSrc' || directive === 'styleSrc')) {
+      // In development, don't add nonce to avoid conflicts with unsafe-inline
+      if (
+        nonce &&
+        (directive === 'scriptSrc' || directive === 'styleSrc') &&
+        process.env.NODE_ENV !== 'development'
+      ) {
         sourceString = `'nonce-${nonce}' ${sourceString}`
       }
 
