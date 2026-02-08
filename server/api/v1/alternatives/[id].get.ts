@@ -8,6 +8,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { defineEventHandler, getRouterParam } from 'h3'
+import { generateCacheTags, cacheTagsConfig } from '~/configs/cache-tags.config'
 
 export default defineEventHandler(async event => {
   try {
@@ -79,12 +80,15 @@ export default defineEventHandler(async event => {
     }
 
     // Cache result
-    await cacheSetWithTags(cacheKey, response, 300, [
-      'alternatives',
-      'api-v1',
-      'resource-alternatives',
-      resourceId,
-    ])
+    await cacheSetWithTags(
+      cacheKey,
+      response,
+      300,
+      generateCacheTags(
+        cacheTagsConfig.resources.alternatives(resourceId),
+        resourceId
+      )
+    )
 
     event.node.res?.setHeader('X-Cache', 'MISS')
     event.node.res?.setHeader('X-Cache-Key', cacheKey)

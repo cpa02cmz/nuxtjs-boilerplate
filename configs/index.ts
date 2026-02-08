@@ -29,6 +29,58 @@ import { contentConfig, type ContentConfig } from './content.config'
 import { limitsConfig, type LimitsConfig } from './limits.config'
 import { comparisonConfig, type ComparisonConfig } from './comparison.config'
 
+// New modular configs - Flexy loves modularity!
+import {
+  csrfConfig,
+  isSafeMethod,
+  isStateChangingMethod,
+  requiresCsrfProtection,
+  type CsrfConfig,
+  type SafeMethod,
+  type StateChangingMethod,
+} from './csrf.config'
+import {
+  httpConfig,
+  isSuccessStatus,
+  isRedirectStatus,
+  isClientErrorStatus,
+  isServerErrorStatus,
+  isErrorStatus,
+  type HttpConfig,
+  type HttpMethod,
+  type HttpStatus,
+  type HttpHeader,
+  type ContentType,
+} from './http.config'
+import {
+  TIME_MS,
+  TIME_SECONDS,
+  timeConfig,
+  toMilliseconds,
+  toSeconds,
+  toMinutes,
+  toHours,
+  toDays,
+  formatDuration,
+  type TimeMs,
+  type TimeSeconds,
+  type TimeConfig,
+} from './time.config'
+import {
+  cacheTagsConfig,
+  generateCacheTags,
+  getResourceCacheTags,
+  getSearchCacheTags,
+  type CacheTagsConfig,
+} from './cache-tags.config'
+import {
+  sitemapConfig,
+  getStaticPages,
+  getResourceSitemapDefaults,
+  type SitemapConfig,
+  type SitemapPageEntry,
+} from './sitemap.config'
+
 // Re-export individual configs
 export { appConfig, type AppConfig }
 export { themeConfig, type ThemeConfig }
@@ -53,6 +105,58 @@ export { contentConfig, type ContentConfig }
 export { limitsConfig, type LimitsConfig }
 export { comparisonConfig, type ComparisonConfig }
 
+// Re-export new modular configs
+export {
+  csrfConfig,
+  isSafeMethod,
+  isStateChangingMethod,
+  requiresCsrfProtection,
+  type CsrfConfig,
+  type SafeMethod,
+  type StateChangingMethod,
+}
+export {
+  httpConfig,
+  isSuccessStatus,
+  isRedirectStatus,
+  isClientErrorStatus,
+  isServerErrorStatus,
+  isErrorStatus,
+  type HttpConfig,
+  type HttpMethod,
+  type HttpStatus,
+  type HttpHeader,
+  type ContentType,
+}
+export {
+  TIME_MS,
+  TIME_SECONDS,
+  timeConfig,
+  toMilliseconds,
+  toSeconds,
+  toMinutes,
+  toHours,
+  toDays,
+  formatDuration,
+  type TimeMs,
+  type TimeSeconds,
+  type TimeConfig,
+}
+export {
+  cacheTagsConfig,
+  generateCacheTags,
+  getResourceCacheTags,
+  getSearchCacheTags,
+  type CacheTagsConfig,
+}
+export {
+  sitemapConfig,
+  getStaticPages,
+  getResourceSitemapDefaults,
+  type SitemapConfig,
+  type SitemapPageEntry,
+}
+
 // Default export with all configs
 export const config = {
   app: appConfig,
@@ -72,6 +176,12 @@ export const config = {
   content: contentConfig,
   limits: limitsConfig,
   comparison: comparisonConfig,
+  // New modular configs
+  csrf: csrfConfig,
+  http: httpConfig,
+  time: timeConfig,
+  cacheTags: cacheTagsConfig,
+  sitemap: sitemapConfig,
 } as const
 
 export type Config = typeof config
