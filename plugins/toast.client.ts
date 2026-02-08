@@ -1,5 +1,5 @@
 import { defineNuxtPlugin, useState } from '#app'
-import { TOAST_DURATION } from '~/server/utils/constants'
+import { TOAST_DURATION } from '~/utils/constants'
 
 export default defineNuxtPlugin(nuxtApp => {
   // Toast type definition

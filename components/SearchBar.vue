@@ -57,7 +57,7 @@
         aria-describedby="search-results-info search-shortcut-hint"
         :aria-expanded="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         aria-controls="search-suggestions-dropdown"
         aria-autocomplete="list"
@@ -65,7 +65,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint -->
       <div
         v-if="!modelValue && !isFocused"
@@ -111,7 +111,7 @@
       <LazySearchSuggestions
         v-if="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         id="search-suggestions-dropdown"
         :suggestions="suggestions"
@@ -142,7 +142,7 @@ import { ref, computed, onUnmounted } from 'vue'
 import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
-import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
+import { UI_TIMING, SEARCH_CONFIG } from '~/utils/constants'
 
 interface Props {
   modelValue: string

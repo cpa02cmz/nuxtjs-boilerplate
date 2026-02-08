@@ -161,7 +161,6 @@ interface Props {
   difficultyLevels: string[]
   technologies: string[]
   tags: string[]
-  benefits?: string[]
   selectedCategories: string[]
   selectedPricingModels: string[]
   selectedDifficultyLevels: string[]

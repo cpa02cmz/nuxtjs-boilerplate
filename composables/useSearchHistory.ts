@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { createStorage } from '~/utils/storage'
-import { STORAGE_KEYS } from '~/server/utils/constants'
+import { STORAGE_KEYS } from '~/utils/constants'
 import { limitsConfig } from '~/configs/limits.config'
 
 export const useSearchHistory = () => {

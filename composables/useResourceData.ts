@@ -1,7 +1,7 @@
 import { ref, computed, readonly } from 'vue'
 import { logError } from '~/utils/errorLogger'
 import logger from '~/utils/logger'
-import { TIMING } from '~/server/utils/constants'
+import { TIMING } from '~/utils/constants'
 import type { Resource } from '~/types/resource'
 
 // Main composable for managing resource data

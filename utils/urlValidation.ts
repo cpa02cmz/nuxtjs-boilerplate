@@ -1,6 +1,6 @@
 import { retryWithResult, retryPresets } from '~/server/utils/retry'
 import { getCircuitBreaker } from '~/server/utils/circuit-breaker'
-import { TIMING } from '~/server/utils/constants'
+import { TIMING } from '~/utils/constants'
 
 export interface UrlValidationResult {
   url: string

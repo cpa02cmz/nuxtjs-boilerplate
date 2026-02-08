@@ -14,7 +14,7 @@
 import { ref, reactive } from 'vue'
 import { useNuxtApp } from '#app'
 import logger from '~/utils/logger'
-import { UI_FEEDBACK_DURATION } from '~/server/utils/constants'
+import { UI_FEEDBACK_DURATION } from '~/utils/constants'
 import type { ApiClient } from '~/utils/api-client'
 import type { Webhook } from '~/types/webhook'
 import { apiConfig } from '~/configs/api.config'

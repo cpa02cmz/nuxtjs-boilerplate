@@ -11,7 +11,7 @@ export default defineNuxtPlugin(nuxtApp => {
       // Wait for page to load before tracking
       if (window && document) {
         setTimeout(() => {
-          trackPageView(window.location.pathname, document.title)
+          trackPageView(window.location.href, document.title)
         }, 100)
       }
 
@@ -21,7 +21,7 @@ export default defineNuxtPlugin(nuxtApp => {
           // Only track if route actually changed
           if (to.path !== from.path) {
             setTimeout(() => {
-              trackPageView(to.path, document.title)
+              trackPageView(window.location.href, document.title)
             }, 100)
           }
         }

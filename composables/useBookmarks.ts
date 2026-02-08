@@ -1,7 +1,7 @@
 import { ref, computed, readonly } from 'vue'
 import { createStorageWithDateSerialization } from '~/utils/storage'
 import { emitEvent } from '~/utils/event-emitter'
-import { STORAGE_KEYS } from '~/server/utils/constants'
+import { STORAGE_KEYS } from '~/utils/constants'
 
 export interface Bookmark {
   id: string

@@ -6,7 +6,7 @@ import type {
   UserInteraction,
 } from '~/types/user'
 import { createStorage } from '~/utils/storage'
-import { STORAGE_KEYS } from '~/server/utils/constants'
+import { STORAGE_KEYS } from '~/utils/constants'
 
 export const useUserPreferences = () => {
   const USER_PROFILE_KEY = STORAGE_KEYS.USER_PROFILE

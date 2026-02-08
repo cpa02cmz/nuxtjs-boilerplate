@@ -2,7 +2,7 @@ import { ref, readonly } from 'vue'
 import type { SavedSearch } from '~/types/search'
 import { createStorageWithDateSerialization } from '~/utils/storage'
 import { emitEvent } from '~/utils/event-emitter'
-import { STORAGE_KEYS } from '~/server/utils/constants'
+import { STORAGE_KEYS } from '~/utils/constants'
 import { limitsConfig } from '~/configs/limits.config'
 
 const SAVED_SEARCHES_KEY = STORAGE_KEYS.SAVED_SEARCHES

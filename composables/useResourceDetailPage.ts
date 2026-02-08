@@ -24,7 +24,7 @@ import { trackResourceView } from '~/utils/analytics'
 import { generateSeoData } from '~/utils/seo'
 import { copyToClipboard } from '~/utils/clipboard'
 import type { ApiClient } from '~/utils/api-client'
-import { UI_TIMING } from '~/server/utils/constants'
+import { UI_TIMING } from '~/utils/constants'
 import { apiConfig } from '~/configs/api.config'
 
 export interface UseResourceDetailPageOptions {

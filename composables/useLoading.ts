@@ -1,5 +1,5 @@
 import { reactive, readonly } from 'vue'
-import { UI_FEEDBACK_DURATION } from '~/server/utils/constants'
+import { UI_FEEDBACK_DURATION } from '~/utils/constants'
 
 // Define loading state interface
 export interface LoadingState {
