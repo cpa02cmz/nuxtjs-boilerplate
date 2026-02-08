@@ -80,7 +80,7 @@ This project implements several security measures:
 ## Security Contacts
 
 - **Security Reports**: [GitHub Security Advisory form](https://github.com/cpa02cmz/nuxtjs-boilerplate/security/advisories/new)
-- **Maintainer**: [GitHub Maintainer Username]
+- **Maintainer**: cpa02cmz
 
 ## Security Acknowledgments
 
