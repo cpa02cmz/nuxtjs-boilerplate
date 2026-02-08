@@ -97,7 +97,9 @@
             {{ resource.title }}
           </span>
           <button
-            class="ml-2 text-red-500 hover:text-red-700"
+            class="ml-2 text-red-500 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded-sm transition-colors duration-200"
+            :aria-label="`Remove ${resource.title} from comparison`"
+            type="button"
             @click="removeResource(resource.id)"
           >
             <svg
