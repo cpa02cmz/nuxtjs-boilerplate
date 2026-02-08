@@ -59,6 +59,25 @@ export const securityConfig = {
       'geolocation=(), microphone=(), camera=()',
   },
 
+  // Alias for backward compatibility with tests
+  additionalHeaders: {
+    'X-Content-Type-Options':
+      process.env.HEADER_CONTENT_TYPE_OPTIONS || 'nosniff',
+    'X-Frame-Options': process.env.HEADER_FRAME_OPTIONS || 'DENY',
+    'X-XSS-Protection': process.env.HEADER_XSS_PROTECTION || '0',
+    'Referrer-Policy':
+      process.env.HEADER_REFERRER_POLICY || 'strict-origin-when-cross-origin',
+    'Strict-Transport-Security':
+      process.env.HEADER_HSTS || 'max-age=31536000; includeSubDomains; preload',
+    'Permissions-Policy':
+      process.env.HEADER_PERMISSIONS_POLICY ||
+      'geolocation=(), microphone=(), camera=()',
+    'Access-Control-Allow-Methods':
+      process.env.CORS_ALLOWED_METHODS || 'GET, HEAD, POST, OPTIONS',
+    'Access-Control-Allow-Headers':
+      process.env.CORS_ALLOWED_HEADERS || 'Content-Type, Authorization',
+  },
+
   // CORS Configuration
   cors: {
     allowedOrigins: parseAllowedOrigins(),
