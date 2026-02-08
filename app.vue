@@ -53,13 +53,6 @@ const websiteSchema = {
 // Add JSON-LD structured data to the head
 useHead({
   link: [
-    // Preload critical resources
-    {
-      rel: 'preload',
-      as: 'font',
-      href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-      crossorigin: 'anonymous',
-    },
     // Add resource hints for performance
     { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
     { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },

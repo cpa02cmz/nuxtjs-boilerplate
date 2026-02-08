@@ -36,6 +36,17 @@ export const VALID_EVENT_TYPES = [
   'bookmark',
   'comparison',
   'submission',
+  'page_view',
+  'resource_click',
+  'advanced_search',
+  'zero_result_search',
+  'search_result_click',
+  'filter_applied',
+  'recommendation_click',
+  'resource_rating',
+  'time_spent',
+  'bookmark_action',
+  'resource_shared',
 ] as const
 
 export type ValidEventType = (typeof VALID_EVENT_TYPES)[number]
