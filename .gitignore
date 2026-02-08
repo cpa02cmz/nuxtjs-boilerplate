@@ -129,3 +129,4 @@ ISSUE_*.md
 docs/*-report-*.md
 docs/*-task-*.md
 pr_intel/
+prisma/dev.db

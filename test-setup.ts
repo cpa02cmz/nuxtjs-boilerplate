@@ -94,20 +94,6 @@ vi.mock('#app/composables/router', () => {
   }
 })
 
-vi.mock('#app/composables/router', () => {
-  return {
-    useRouter: vi.fn(),
-    useRoute: vi.fn(),
-  }
-})
-
-vi.mock('#app/composables/router', () => {
-  return {
-    useRouter: vi.fn(),
-    useRoute: vi.fn(),
-  }
-})
-
 // Setup global localStorage and sessionStorage mocks
 beforeEach(() => {
   vi.clearAllMocks()
