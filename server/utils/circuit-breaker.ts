@@ -111,7 +111,9 @@ export class CircuitBreaker {
 
   private shouldAttemptReset(): boolean {
     if (!this.state.lastFailureTime) return false
-    return Date.now() - this.state.lastFailureTime >= this.config.timeoutMs
+    return (
+      Date.now() - this.state.lastFailureTime >= this.config.monitoringWindowMs
+    )
   }
 
   getStats(): CircuitBreakerStats {
