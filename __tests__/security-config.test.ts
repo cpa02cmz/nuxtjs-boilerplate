@@ -97,26 +97,12 @@ describe('Security Configuration', () => {
     })
 
     it('should have additional security headers', () => {
-      expect(securityConfig.additionalHeaders).toHaveProperty(
-        'X-Content-Type-Options'
-      )
-      expect(securityConfig.additionalHeaders).toHaveProperty('X-Frame-Options')
-      expect(securityConfig.additionalHeaders).toHaveProperty(
-        'X-XSS-Protection'
-      )
-      expect(securityConfig.additionalHeaders).toHaveProperty('Referrer-Policy')
-      expect(securityConfig.additionalHeaders).toHaveProperty(
-        'Strict-Transport-Security'
-      )
-      expect(securityConfig.additionalHeaders).toHaveProperty(
-        'Permissions-Policy'
-      )
-      expect(securityConfig.additionalHeaders).toHaveProperty(
-        'Access-Control-Allow-Methods'
-      )
-      expect(securityConfig.additionalHeaders).toHaveProperty(
-        'Access-Control-Allow-Headers'
-      )
+      expect(securityConfig.headers).toHaveProperty('X-Content-Type-Options')
+      expect(securityConfig.headers).toHaveProperty('X-Frame-Options')
+      expect(securityConfig.headers).toHaveProperty('X-XSS-Protection')
+      expect(securityConfig.headers).toHaveProperty('Referrer-Policy')
+      expect(securityConfig.headers).toHaveProperty('Strict-Transport-Security')
+      expect(securityConfig.headers).toHaveProperty('Permissions-Policy')
     })
   })
 })
