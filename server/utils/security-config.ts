@@ -68,6 +68,8 @@ export const securityConfig: SecurityConfig = {
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
     'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+    'Access-Control-Allow-Origin':
+      process.env.ALLOWED_ORIGINS || 'https://yourdomain.com',
     'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   },
