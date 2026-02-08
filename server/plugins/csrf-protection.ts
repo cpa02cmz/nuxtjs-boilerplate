@@ -2,6 +2,7 @@ import { defineNitroPlugin } from 'nitropack/runtime'
 import type { H3Event } from 'h3'
 import { setCookie, getCookie } from 'h3'
 import { randomBytes } from 'node:crypto'
+import { logger } from '~/utils/logger'
 
 /**
  * CSRF Protection Plugin
@@ -75,7 +76,7 @@ export default defineNitroPlugin(nitroApp => {
       event.node.res.setHeader('X-CSRF-Token', csrfToken)
     } catch (error) {
       // Log error but don't break the request
-      console.error('CSRF protection error:', error)
+      logger.error('CSRF protection error:', error)
     }
   })
 })
