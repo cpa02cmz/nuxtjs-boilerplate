@@ -124,7 +124,7 @@ This boilerplate implements a comprehensive architecture for modern web applicat
 - **Search & Discovery**: Advanced search with faceted filtering and recommendations
 - **Community Features**: User engagement tools and moderation system
 
-For more details, see the [coordination system documentation](./docs/coordination-system.md) and [integration patterns guide](./docs/integration-patterns.md).
+For more details, see the [integration patterns guide](./docs/integration-patterns.md).
 
 ## 🏗️ Infrastructure Status
 

@@ -66,7 +66,6 @@ nuxtjs-boilerplate/
 │   └── [other utilities]
 └── docs/                         # Documentation
     ├── roadmap.md                # Project roadmap
-    ├── tasks.md                  # Task management
     └── [other docs]
 ```
 

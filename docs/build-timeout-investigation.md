@@ -281,8 +281,6 @@ image: {
 
 ## Documentation
 
-- **CEO Directive #001**: `docs/ceo-directive-2026-01-19-001.md`
-- **CEO Daily Assessment**: `docs/ceo-daily-assessment-2026-01-19.md`
 - **Nuxt Image Docs**: https://image.nuxt.com/usage/nuxt-img
 - **Nuxt Image Providers**: https://image.nuxt.com/providers
 

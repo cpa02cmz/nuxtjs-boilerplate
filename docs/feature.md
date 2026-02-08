@@ -306,4 +306,4 @@ beforeEach(() => {
 
 ---
 
-**Maintenance Note**: When adding features, update the Feature Index table and ensure consistency with `task.md` and `roadmap.md`.
+**Maintenance Note**: When adding features, update the Feature Index table and ensure consistency with `roadmap.md`.
