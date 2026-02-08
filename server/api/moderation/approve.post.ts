@@ -12,6 +12,7 @@ import {
   sendSuccessResponse,
   sendBadRequestError,
   sendNotFoundError,
+  handleApiRouteError,
 } from '~/server/utils/api-response'
 
 const mockSubmissions: Submission[] = []
@@ -82,5 +83,6 @@ export default defineEventHandler(async event => {
       error instanceof Error ? error : undefined,
       'moderation/approve.post'
     )
+    return handleApiRouteError(event, error)
   }
 })
