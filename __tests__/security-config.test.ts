@@ -111,12 +111,13 @@ describe('Security Configuration', () => {
       expect(securityConfig.additionalHeaders).toHaveProperty(
         'Permissions-Policy'
       )
-      expect(securityConfig.additionalHeaders).toHaveProperty(
-        'Access-Control-Allow-Methods'
-      )
-      expect(securityConfig.additionalHeaders).toHaveProperty(
-        'Access-Control-Allow-Headers'
-      )
+    })
+
+    it('should have CORS configuration', () => {
+      expect(securityConfig.cors).toHaveProperty('allowedMethods')
+      expect(securityConfig.cors).toHaveProperty('allowedHeaders')
+      expect(securityConfig.cors).toHaveProperty('allowedOrigins')
+      expect(securityConfig.cors).toHaveProperty('maxAge')
     })
   })
 })
