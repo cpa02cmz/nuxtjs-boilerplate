@@ -66,8 +66,16 @@ export default defineEventHandler(async event => {
 
     webhookStorage.createApiKey(newKey)
 
-    // Return key with actual API key value
-    sendSuccessResponse(event, newKey)
+    // Return key with actual API key value and security warning
+    // This is the ONLY time the full key is shown - never logged or stored in plaintext
+    sendSuccessResponse(event, {
+      ...newKey,
+      key: apiKey,
+      _warning:
+        'This is the ONLY time this API key will be shown. Please copy it immediately and store it securely. The key cannot be retrieved again.',
+      _securityNote:
+        'Never share this key or commit it to version control. Use environment variables or secure secret management.',
+    })
   } catch (error) {
     handleApiRouteError(event, error)
   }
