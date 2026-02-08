@@ -4,7 +4,32 @@
       <div
         class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
       >
+        <!-- Loading spinner shown during debounce -->
         <svg
+          v-if="isSearching"
+          class="w-5 h-5 text-blue-500 animate-spin"
+          fill="none"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          />
+        </svg>
+        <!-- Search icon shown when not searching -->
+        <svg
+          v-else
           class="w-5 h-5 text-gray-400"
           fill="none"
           stroke="currentColor"
@@ -26,6 +51,7 @@
         type="search"
         :value="modelValue"
         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400"
+        :class="{ 'placeholder:text-gray-300': isSearching }"
         placeholder="Search resources by name, description, tags..."
         aria-label="Search resources (Press / to focus)"
         aria-describedby="search-results-info search-shortcut-hint"
@@ -105,7 +131,8 @@
       aria-live="polite"
       class="sr-only"
     >
-      Search results will be updated automatically
+      <span v-if="isSearching">Searching...</span>
+      <span v-else>Search results will be updated automatically</span>
     </div>
   </div>
 </template>
@@ -145,6 +172,7 @@ const showSuggestions = ref(false)
 const searchHistory = ref<string[]>([])
 const isFocused = ref(false)
 const activeIndex = ref(-1)
+const isSearching = ref(false)
 
 // Use the resources composable
 const { resources } = useResourceData()
@@ -162,6 +190,9 @@ const handleInput = (event: Event) => {
   // Update the model value immediately
   emit('update:modelValue', value)
 
+  // Show searching state for immediate feedback
+  isSearching.value = true
+
   // Debounce the search to avoid constant updates
   if (inputTimeout.value) {
     clearTimeout(inputTimeout.value)
@@ -171,6 +202,7 @@ const handleInput = (event: Event) => {
     debouncedQuery.value = value
     updateSuggestions(value)
     emit('search', value)
+    isSearching.value = false
   }, props.debounceTime)
 }
 
@@ -201,6 +233,7 @@ const clearSearch = () => {
   suggestions.value = []
   showSuggestions.value = false
   activeIndex.value = -1
+  isSearching.value = false
 }
 
 const handleFocus = () => {
