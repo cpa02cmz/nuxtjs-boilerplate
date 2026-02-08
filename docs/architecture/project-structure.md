@@ -64,7 +64,6 @@ components/
 ├── LoadingSpinner.vue  # Loading state components
 ├── SearchBar.vue       # Search interface
 ├── SearchSuggestions.vue # Search suggestions
-├── SkeletonLoader.vue  # Loading placeholders
 └── ...                 # Additional components
 ```
 
@@ -79,7 +78,6 @@ composables/
 ├── useCommunityFeatures.ts # Community features
 ├── useLoading.ts        # Loading state management
 ├── useRecommendationEngine.ts # Recommendation system
-├── useResourceAnalytics.ts # Resource analytics
 ├── useResourceComparison.ts # Comparison functionality
 ├── useResourceData.ts   # Resource data management
 ├── useResourceFilters.ts # Resource filtering
