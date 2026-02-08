@@ -116,10 +116,8 @@ jobs:
             P0 | P1 | P2 | P3
 
           5. TOOL USAGE (MANDATORY)
-          - When analyzing PR or fixing issues, ALWAYS use custom tools from .opencode/tool/
-          - Examples: @check-console-logs, @find-untyped, @check-missing-error-handling
-          - Tools provide automated analysis and fix suggestions
-          - Report which tools you used and their results
+          - When analyzing PR or fixing issues, ALWAYS use skills. identify skills in .opencode/skills
+          - Report which skills you used and their results
 
           ========================
           STATE MACHINE OVERVIEW
@@ -160,31 +158,21 @@ jobs:
           Make every PR safely mergable and merge it without conflicts.
 
           PROCESS:
-          1. Sort PRs by urgency:
-             a. Merge conflict present
-             b. CI failing
-             c. Ready to merge
-             d. Draft
-
+          1. Sort PRs by created time, choose latest open pr.
           2. For each PR (one at a time):
              - Checkout PR branch
              - Fetch latest DEFAULT_BRANCH
              - Rebase or merge DEFAULT_BRANCH INTO PR branch
              - Resolve conflicts ONLY if trivial and deterministic
-               - If not trivial → comment with explanation and STOP on that PR
+               - If not trivial → comment with explanation and CLOSE that PR
              - All comments must be resolved.
               - Run build and test suite
-              - BEFORE fixing, analyze issues using tools:
-                - @check-console-logs - Find console.log that should use logger
-                - @check-missing-error-handling - Find async functions without try-catch
-                - @find-untyped - Find 'any' types
-                - @check-storage-keys - Find hardcoded localStorage keys
               - Fix:
                 - Lint errors
                 - Warnings (all warnings must be fixed, not just errors)
                 - Formatting issues
                 - Minor test failures
-                - Issues found by tools
+                - Vulnerabilities and severity
               - Commit fixes directly to PR branch
 
           3. Merge Conditions:
