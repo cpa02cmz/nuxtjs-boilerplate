@@ -188,10 +188,11 @@ export default defineNuxtConfig({
   },
 
   // Image optimization configuration
+  // Note: Only specify non-default values to avoid duplicate key warnings during build
+  // Nuxt Image provides sensible defaults: provider='ipx', quality=80, densities=[1,2]
   image: {
     quality: 80,
     format: ['webp', 'avif', 'jpeg'],
-    densities: [1, 2],
   },
 
   // Additional performance optimizations
@@ -347,10 +348,6 @@ export default defineNuxtConfig({
     // Optimize build speed
     esbuild: {
       logLevel: 'silent', // Reduce build noise
-      // Suppress specific warnings that are build artifacts
-      logOverride: {
-        'duplicate-key': 'silent',
-      },
     },
     // Optimize module resolution
     resolve: {
