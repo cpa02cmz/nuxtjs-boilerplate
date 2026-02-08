@@ -1,4 +1,46 @@
 import { vi, beforeEach } from 'vitest'
+import { config as testUtilsConfig } from '@vue/test-utils'
+
+// Configure Vue Test Utils to stub Nuxt-specific components globally
+// This resolves warnings about Lazy* components and ClientOnly not being resolved
+testUtilsConfig.global.stubs = {
+  // Stub lazy-loaded components
+  LazySearchSuggestions: {
+    name: 'LazySearchSuggestions',
+    template: '<div class="lazy-search-suggestions"><slot /></div>',
+  },
+  LazyBookmarkButton: {
+    name: 'LazyBookmarkButton',
+    template: '<button class="lazy-bookmark-button">Bookmark</button>',
+  },
+  LazyShareButton: {
+    name: 'LazyShareButton',
+    template: '<button class="lazy-share-button">Share</button>',
+  },
+  // Stub ClientOnly to render its slot content in tests
+  ClientOnly: {
+    name: 'ClientOnly',
+    template: '<div class="client-only"><slot /></div>',
+  },
+  // Stub OptimizedImage component
+  OptimizedImage: {
+    name: 'OptimizedImage',
+    template: '<img :src="src" :alt="alt" />',
+    props: ['src', 'alt', 'width', 'height'],
+  },
+  // Stub NuxtLink
+  NuxtLink: {
+    name: 'NuxtLink',
+    template: '<a :href="to"><slot /></a>',
+    props: ['to'],
+  },
+  // Stub ResourceStatus
+  ResourceStatus: {
+    name: 'ResourceStatus',
+    template: '<span class="resource-status">{{ status }}</span>',
+    props: ['status', 'healthScore'],
+  },
+}
 
 // Make browser APIs and timers globally available for tests
 const g = global as any
