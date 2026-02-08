@@ -305,7 +305,7 @@ describe('webhookStorage', () => {
         expect(result?.payload).toEqual(mockDelivery.payload)
         expect(result?.createdAt).toBeDefined()
         expect(result?.updatedAt).toBeDefined()
-        expect(result?.errorMessage).toBeNull()
+        expect(result?.errorMessage).toBeUndefined()
         expect(result?.responseBody).toBeUndefined()
         expect(await webhookStorage.getAllDeliveries()).toHaveLength(1)
       })
