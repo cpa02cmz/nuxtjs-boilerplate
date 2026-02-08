@@ -29,12 +29,13 @@ npm run test:ui
 
 ## Test Structure
 
-Tests are located in the `tests/` directory with the following structure:
+Tests are located in the `__tests__/` directory with the following structure:
 
-- `tests/components/` - Component unit tests
-- `tests/composables/` - Composable function tests
-- `tests/pages/` - Page component tests
-- `tests/utils/` - Utility function tests
+- `__tests__/` - Test files and factories at root level
+- `__tests__/components/` - Component unit tests
+- `__tests__/composables/` - Composable function tests
+- `components/__tests__/` - Component-specific tests
+- `__tests__/utils/` - Utility function tests
 
 ## Writing Tests
 
