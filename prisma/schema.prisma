@@ -144,3 +144,44 @@ model IdempotencyKey {
   @@index([expiresAt])
   @@index([deletedAt])
 }
+
+model Resource {
+  id              String    @id @default(cuid())
+  title           String
+  description     String
+  benefits        String    // JSON array of strings
+  url             String
+  category        String
+  pricingModel    String
+  difficulty      String
+  tags            String    // JSON array of strings
+  technology      String    // JSON array of strings
+  dateAdded       DateTime  @default(now())
+  lastUpdated     DateTime  @updatedAt
+  popularity      Int       @default(0)
+  viewCount       Int       @default(0)
+  rating          Float?
+  screenshots     String?   // JSON array of URLs
+  specifications  String?   // JSON object
+  features        String?   // JSON array of strings
+  limitations     String?   // JSON array of strings
+  platforms       String?   // JSON array of strings
+  license         String?
+  icon            String?
+  alternatives    String?   // JSON array of resource IDs
+  status          String    @default("approved")
+  submittedBy     String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  rejectionReason String?
+  qualityScore    Float?
+  deletedAt       DateTime?
+
+  @@index([category])
+  @@index([status])
+  @@index([dateAdded])
+  @@index([popularity])
+  @@index([deletedAt])
+  @@index([category, status])
+  @@index([status, deletedAt])
+}
