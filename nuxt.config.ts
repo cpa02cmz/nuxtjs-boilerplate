@@ -187,8 +187,8 @@ export default defineNuxtConfig({
   },
 
   // Image optimization configuration
-  // Note: provider defaults to 'ipx' in Nuxt 3, no need to specify explicitly
   image: {
+    provider: 'ipx',
     quality: securityConfig.image.quality,
     format: securityConfig.image.formats as (
       | 'webp'
