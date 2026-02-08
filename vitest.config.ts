@@ -2,12 +2,23 @@ import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 
+// Flexy hates hardcoded values! Use environment variables for test configuration.
+const testTimeout = parseInt(process.env.VITEST_TEST_TIMEOUT || '10000')
+const coverageBranches = parseInt(process.env.VITEST_COVERAGE_BRANCHES || '80')
+const coverageFunctions = parseInt(
+  process.env.VITEST_COVERAGE_FUNCTIONS || '80'
+)
+const coverageLines = parseInt(process.env.VITEST_COVERAGE_LINES || '80')
+const coverageStatements = parseInt(
+  process.env.VITEST_COVERAGE_STATEMENTS || '80'
+)
+
 export default defineConfig({
   plugins: [vue()],
   test: {
     globals: true,
     environment: 'jsdom',
-    testTimeout: 10000,
+    testTimeout,
     setupFiles: ['./test-setup.ts'],
     fileParallelism: false,
     pool: 'forks',
@@ -34,10 +45,10 @@ export default defineConfig({
       ],
       thresholds: {
         global: {
-          branches: 80,
-          functions: 80,
-          lines: 80,
-          statements: 80,
+          branches: coverageBranches,
+          functions: coverageFunctions,
+          lines: coverageLines,
+          statements: coverageStatements,
         },
       },
     },

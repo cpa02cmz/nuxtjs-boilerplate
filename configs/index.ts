@@ -25,6 +25,17 @@ import { analyticsConfig, type AnalyticsConfig } from './analytics.config'
 import { uiConfig, type UiConfig } from './ui.config'
 import { pwaConfig, type PwaConfig } from './pwa.config'
 import { apiConfig, type ApiConfig } from './api.config'
+import {
+  circuitBreakerConfig,
+  getCircuitBreakerPreset,
+  type CircuitBreakerConfig,
+} from './circuit-breaker.config'
+import {
+  retryConfig,
+  getRetryPreset,
+  type RetryConfig,
+  type RetryPreset,
+} from './retry.config'
 
 // Re-export individual configs
 export { appConfig, type AppConfig }
@@ -46,6 +57,12 @@ export { analyticsConfig, type AnalyticsConfig }
 export { uiConfig, type UiConfig }
 export { pwaConfig, type PwaConfig }
 export { apiConfig, type ApiConfig }
+export {
+  circuitBreakerConfig,
+  getCircuitBreakerPreset,
+  type CircuitBreakerConfig,
+}
+export { retryConfig, getRetryPreset, type RetryConfig, type RetryPreset }
 
 // Default export with all configs
 export const config = {
@@ -63,6 +80,8 @@ export const config = {
   ui: uiConfig,
   pwa: pwaConfig,
   api: apiConfig,
+  circuitBreaker: circuitBreakerConfig,
+  retry: retryConfig,
 } as const
 
 export type Config = typeof config

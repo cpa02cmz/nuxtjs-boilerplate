@@ -1,3 +1,5 @@
+import { circuitBreakerConfig } from '~/configs/circuit-breaker.config'
+
 interface CircuitBreakerState {
   isOpen: boolean
   isHalfOpen: boolean
@@ -154,12 +156,7 @@ export function getCircuitBreaker(
   config?: Partial<CircuitBreakerConfig>
 ): CircuitBreaker {
   if (!circuitBreakers.has(key)) {
-    const defaultConfig: CircuitBreakerConfig = {
-      failureThreshold: 5,
-      successThreshold: 2,
-      timeoutMs: 60000,
-      monitoringWindowMs: 300000,
-    }
+    const defaultConfig: CircuitBreakerConfig = circuitBreakerConfig.defaults
 
     circuitBreakers.set(
       key,

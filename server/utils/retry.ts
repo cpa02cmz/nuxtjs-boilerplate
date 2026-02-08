@@ -1,3 +1,5 @@
+import { retryConfig, getRetryPreset } from '~/configs/retry.config'
+
 interface RetryConfig {
   maxRetries: number
   baseDelayMs: number
@@ -98,20 +100,23 @@ export async function retryWithBackoff<T>(
   fn: () => Promise<T>,
   config: Partial<RetryConfig> = {}
 ): Promise<T> {
+  const defaults = retryConfig.defaults
   const defaultConfig: RetryConfig = {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
+    maxRetries: defaults.maxRetries,
+    baseDelayMs: defaults.baseDelayMs,
+    maxDelayMs: defaults.maxDelayMs,
+    backoffMultiplier: defaults.backoffMultiplier,
     retryableErrors: [],
-    jitterEnabled: true,
-    jitterFactor: 0.1,
+    jitterEnabled: defaults.jitterEnabled,
+    jitterFactor: defaults.jitterFactor,
   }
 
   const finalConfig: RetryConfig = {
     ...defaultConfig,
     ...config,
-    retryableErrors: config.retryableErrors || defaultConfig.retryableErrors,
+    retryableErrors: config.retryableErrors ?? defaultConfig.retryableErrors,
+    jitterEnabled: config.jitterEnabled ?? defaultConfig.jitterEnabled,
+    jitterFactor: config.jitterFactor ?? defaultConfig.jitterFactor,
   }
 
   const errors: RetryAttempt[] = []
@@ -139,7 +144,10 @@ export async function retryWithBackoff<T>(
       }
 
       const delay = calculateDelay(attempt, finalConfig)
-      errors[errors.length - 1].delayMs = delay
+      const lastError = errors[errors.length - 1]
+      if (lastError) {
+        lastError.delayMs = delay
+      }
 
       await new Promise(resolve => setTimeout(resolve, delay))
     }
@@ -156,20 +164,23 @@ export async function retryWithResult<T>(
   fn: () => Promise<T>,
   config: Partial<RetryConfig> = {}
 ): Promise<RetryResult<T>> {
+  const defaults = retryConfig.defaults
   const defaultConfig: RetryConfig = {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
+    maxRetries: defaults.maxRetries,
+    baseDelayMs: defaults.baseDelayMs,
+    maxDelayMs: defaults.maxDelayMs,
+    backoffMultiplier: defaults.backoffMultiplier,
     retryableErrors: [],
-    jitterEnabled: true,
-    jitterFactor: 0.1,
+    jitterEnabled: defaults.jitterEnabled,
+    jitterFactor: defaults.jitterFactor,
   }
 
   const finalConfig: RetryConfig = {
     ...defaultConfig,
     ...config,
-    retryableErrors: config.retryableErrors || defaultConfig.retryableErrors,
+    retryableErrors: config.retryableErrors ?? defaultConfig.retryableErrors,
+    jitterEnabled: config.jitterEnabled ?? defaultConfig.jitterEnabled,
+    jitterFactor: config.jitterFactor ?? defaultConfig.jitterFactor,
   }
 
   const errors: RetryAttempt[] = []
@@ -213,7 +224,10 @@ export async function retryWithResult<T>(
 
       const delay = calculateDelay(attempt, finalConfig)
       totalDelayMs += delay
-      errors[errors.length - 1].delayMs = delay
+      const lastError = errors[errors.length - 1]
+      if (lastError) {
+        lastError.delayMs = delay
+      }
 
       await new Promise(resolve => setTimeout(resolve, delay))
     }
@@ -233,7 +247,7 @@ export async function retryWithResult<T>(
 }
 
 export function getRetryableHttpCodes(): number[] {
-  return [408, 429, 500, 502, 503, 504]
+  return retryConfig.retryableStatusCodes
 }
 
 export function isRetryableHttpCode(statusCode: number): boolean {
@@ -241,45 +255,22 @@ export function isRetryableHttpCode(statusCode: number): boolean {
 }
 
 export const retryPresets = {
-  quick: {
-    maxRetries: 2,
-    baseDelayMs: 500,
-    maxDelayMs: 5000,
-    backoffMultiplier: 2,
-    jitterEnabled: true,
-    jitterFactor: 0.1,
+  get quick() {
+    return getRetryPreset('quick')
   },
-  standard: {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
-    jitterEnabled: true,
-    jitterFactor: 0.1,
+  get standard() {
+    return getRetryPreset('standard')
   },
-  slow: {
-    maxRetries: 5,
-    baseDelayMs: 2000,
-    maxDelayMs: 60000,
-    backoffMultiplier: 2,
-    jitterEnabled: true,
-    jitterFactor: 0.15,
+  get slow() {
+    return getRetryPreset('slow')
   },
-  aggressive: {
-    maxRetries: 3,
-    baseDelayMs: 100,
-    maxDelayMs: 5000,
-    backoffMultiplier: 1.5,
-    jitterEnabled: true,
-    jitterFactor: 0.2,
+  get aggressive() {
+    return getRetryPreset('aggressive')
   },
-  httpRetry: {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
-    retryableErrors: getRetryableHttpCodes(),
-    jitterEnabled: true,
-    jitterFactor: 0.1,
+  get httpRetry() {
+    return {
+      ...getRetryPreset('http'),
+      retryableErrors: getRetryableHttpCodes(),
+    }
   },
 }

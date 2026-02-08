@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import { getQuery } from 'h3'
+import { rateLimitConfig } from '~/configs/rate-limit.config'
 
 interface TokenBucket {
   tokens: number
@@ -178,41 +179,57 @@ function getAnalytics(path: string): RateLimitAnalytics {
 }
 
 // Default rate limit configurations for different endpoint types
+// Flexy hates hardcoded values! Using config from rate-limit.config.ts
+function getTokensPerInterval(maxRequests: number): number {
+  // Calculate tokens per interval based on max requests
+  // Aim for approximately 10% of max requests per minute
+  return Math.max(1, Math.floor(maxRequests / 10))
+}
+
+function getIntervalMs(): number {
+  // Default interval: 1 minute (60000ms)
+  return 60000
+}
+
 export const rateLimitConfigs = {
   general: new RateLimiter({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    maxRequests: 100,
-    tokensPerInterval: 10, // 10 tokens every interval
-    intervalMs: 60 * 1000, // refill every minute
-    message: 'Too many requests, please try again later.',
+    windowMs: rateLimitConfig.general.windowMs,
+    maxRequests: rateLimitConfig.general.maxRequests,
+    tokensPerInterval: getTokensPerInterval(
+      rateLimitConfig.general.maxRequests
+    ),
+    intervalMs: getIntervalMs(),
+    message: rateLimitConfig.general.message,
   }),
   search: new RateLimiter({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    maxRequests: 30,
-    tokensPerInterval: 5, // 5 tokens every interval
-    intervalMs: 30 * 1000, // refill every 30 seconds
-    message: 'Too many search requests, please slow down.',
+    windowMs: rateLimitConfig.search.windowMs,
+    maxRequests: rateLimitConfig.search.maxRequests,
+    tokensPerInterval: getTokensPerInterval(rateLimitConfig.search.maxRequests),
+    intervalMs: getIntervalMs(),
+    message: rateLimitConfig.search.message,
   }),
   heavy: new RateLimiter({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    maxRequests: 10,
-    tokensPerInterval: 2, // 2 tokens every interval
-    intervalMs: 60 * 1000, // refill every minute
-    message: 'Too many heavy computation requests, please slow down.',
+    windowMs: rateLimitConfig.heavy.windowMs,
+    maxRequests: rateLimitConfig.heavy.maxRequests,
+    tokensPerInterval: getTokensPerInterval(rateLimitConfig.heavy.maxRequests),
+    intervalMs: getIntervalMs(),
+    message: rateLimitConfig.heavy.message,
   }),
   export: new RateLimiter({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    maxRequests: 5,
-    tokensPerInterval: 1, // 1 token every interval
-    intervalMs: 60 * 1000, // refill every minute
-    message: 'Too many export requests, please slow down.',
+    windowMs: rateLimitConfig.export.windowMs,
+    maxRequests: rateLimitConfig.export.maxRequests,
+    tokensPerInterval: getTokensPerInterval(rateLimitConfig.export.maxRequests),
+    intervalMs: getIntervalMs(),
+    message: rateLimitConfig.export.message,
   }),
   api: new RateLimiter({
-    windowMs: 5 * 60 * 1000, // 5 minutes
-    maxRequests: 50,
-    tokensPerInterval: 5, // 5 tokens every interval
-    intervalMs: 60 * 1000, // refill every minute
-    message: 'API rate limit exceeded. Please try again later.',
+    windowMs: rateLimitConfig.webhook.windowMs,
+    maxRequests: rateLimitConfig.webhook.maxRequests,
+    tokensPerInterval: getTokensPerInterval(
+      rateLimitConfig.webhook.maxRequests
+    ),
+    intervalMs: getIntervalMs(),
+    message: rateLimitConfig.webhook.message,
   }),
 }
 

@@ -55,6 +55,11 @@ export const analyticsConfig = {
 
     // FID (First Input Delay) threshold (ms)
     fidThreshold: parseInt(process.env.PERFORMANCE_FID_THRESHOLD || '100'),
+
+    // Slow query threshold (ms)
+    slowQueryThresholdMs: parseInt(
+      process.env.PERFORMANCE_SLOW_QUERY_THRESHOLD_MS || '200'
+    ),
   },
 } as const
 
