@@ -52,6 +52,7 @@
 <script setup lang="ts">
 import { useBookmarks } from '~/composables/useBookmarks'
 import { computed, ref } from 'vue'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   resourceId?: string
@@ -97,9 +98,10 @@ const handleBookmarkToggle = () => {
 
   bookmarkStatus.value = wasBookmarked ? 'Bookmark removed' : 'Bookmark added'
 
+  // Flexy hates hardcoded! Using config value from uiConfig
   setTimeout(() => {
     bookmarkStatus.value = ''
-  }, 1000)
+  }, uiConfig.timing.bookmarkStatusClearMs)
 }
 </script>
 

@@ -98,7 +98,24 @@ export const securityConfig = {
     formats: parseImageFormats(process.env.IMAGE_FORMATS || 'webp, avif, jpeg'),
     densities: parseDensities(process.env.IMAGE_DENSITIES || '1, 2'),
   },
+
+  // CSRF Protection - Protected paths that require CSRF token validation
+  // Flexy hates hardcoded! All protected paths are now configurable
+  csrf: {
+    protectedPaths: parseProtectedPaths(
+      process.env.CSRF_PROTECTED_PATHS ||
+        '/api/submissions, /api/v1/auth/api-keys, /api/analytics/events, /api/user/preferences, /api/moderation/flag, /api/moderation/approve, /api/moderation/reject, /api/resources/bulk-status, /api/resources/'
+    ),
+    cookieName: process.env.CSRF_COOKIE_NAME || 'csrf_token',
+    headerName: process.env.CSRF_HEADER_NAME || 'x-csrf-token',
+    cookieMaxAge: parseInt(process.env.CSRF_COOKIE_MAX_AGE || '86400'), // 24 hours
+  },
 } as const
+
+// Helper function to parse protected paths
+function parseProtectedPaths(value: string): string[] {
+  return value.split(',').map(s => s.trim())
+}
 
 // Helper function to parse CSP directive string
 function parseCspDirective(value: string): string[] {

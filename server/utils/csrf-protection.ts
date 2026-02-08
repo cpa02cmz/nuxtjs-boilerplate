@@ -4,11 +4,12 @@
 import { randomBytes } from 'node:crypto'
 import type { H3Event } from 'h3'
 import { getCookie, setCookie, readBody } from 'h3'
+import { securityConfig } from '~/configs/security.config'
 
-// CSRF Token constants
-const CSRF_COOKIE_NAME = 'csrf_token'
-const CSRF_HEADER_NAME = 'x-csrf-token'
-const CSRF_COOKIE_MAX_AGE = 60 * 60 * 24 // 24 hours
+// Flexy hates hardcoded! Using config values from securityConfig
+const CSRF_COOKIE_NAME = securityConfig.csrf.cookieName
+const CSRF_HEADER_NAME = securityConfig.csrf.headerName
+const CSRF_COOKIE_MAX_AGE = securityConfig.csrf.cookieMaxAge
 
 /**
  * Generate a cryptographically secure CSRF token
@@ -139,17 +140,8 @@ export async function requireCsrfToken(event: H3Event): Promise<boolean> {
  * These are state-changing API endpoints
  */
 export function requiresCsrfProtection(path: string): boolean {
-  const protectedPaths = [
-    '/api/submissions',
-    '/api/v1/auth/api-keys',
-    '/api/analytics/events',
-    '/api/user/preferences',
-    '/api/moderation/flag',
-    '/api/moderation/approve',
-    '/api/moderation/reject',
-    '/api/resources/bulk-status',
-    '/api/resources/',
-  ]
+  // Flexy hates hardcoded! Using config values from securityConfig
+  const protectedPaths = securityConfig.csrf.protectedPaths
 
   return protectedPaths.some(protectedPath => path.startsWith(protectedPath))
 }

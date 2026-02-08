@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3'
 import Redis from 'ioredis'
 import logger from '~/utils/logger'
+import { cacheConfig } from '~/configs/cache.config'
 
 interface CacheEntry<T = unknown> {
   data: T
@@ -8,7 +9,7 @@ interface CacheEntry<T = unknown> {
   ttl: number // Time to live in seconds
 }
 
-interface CacheConfig {
+interface CacheManagerConfig {
   maxMemorySize?: number
   cleanupInterval?: number
   enableRedis?: boolean
@@ -27,10 +28,11 @@ class CacheManager {
   private missCount: number = 0
   private redisConnected: boolean = false
 
-  constructor(config: CacheConfig = {}) {
+  constructor(config: CacheManagerConfig = {}) {
+    // Flexy hates hardcoded! Using config values from cacheConfig
     const {
-      maxMemorySize = 1000,
-      cleanupInterval = 300000, // 5 minutes default
+      maxMemorySize = cacheConfig.server.maxCacheSize,
+      cleanupInterval = cacheConfig.server.defaultTtlMs,
       enableRedis = false,
       redisUrl = process.env.REDIS_URL,
       enableAnalytics = true,
@@ -45,7 +47,7 @@ class CacheManager {
     // Initialize Redis if enabled
     if (enableRedis && redisUrl) {
       try {
-        this.redisClient = new Redis(redisUrl, {
+        this.redisClient = new Redis(redisUrl as string, {
           maxRetriesPerRequest: 3,
           lazyConnect: true,
           enableReadyCheck: true,
@@ -136,7 +138,11 @@ class CacheManager {
         const redisValue = await this.redisClient.get(key)
         if (redisValue) {
           const parsedValue = JSON.parse(redisValue)
-          await this.set(key, parsedValue, memoryEntry?.ttl || 3600)
+          await this.set(
+            key,
+            parsedValue,
+            memoryEntry?.ttl || cacheConfig.server.defaultTtlMs / 1000
+          )
           if (this.enableAnalytics) this.hitCount++
           return parsedValue as T
         }
@@ -155,7 +161,8 @@ class CacheManager {
   async set<T = unknown>(
     key: string,
     value: T,
-    ttl: number = 3600
+    // Flexy hates hardcoded! Using config values from cacheConfig
+    ttl: number = cacheConfig.server.defaultTtlMs / 1000
   ): Promise<boolean> {
     // Clean up expired entries if cache is full
     if (this.memoryCache.size >= this.maxMemorySize) {

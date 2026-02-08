@@ -2,14 +2,15 @@ import type { Webhook, WebhookPayload, WebhookDelivery } from '~/types/webhook'
 import { randomUUID } from 'node:crypto'
 import { webhookStorage } from './webhookStorage'
 import { webhookSigner } from './webhook-signer'
-import { TIMING } from './constants'
+import { webhooksConfig } from '~/configs/webhooks.config'
 
 export interface WebhookDeliveryOptions {
   maxRetries?: number
   timeoutMs?: number
 }
 
-const DEFAULT_TIMEOUT_MS = TIMING.WEBHOOK_REQUEST_TIMEOUT
+// Flexy hates hardcoded! Using config values instead
+const DEFAULT_TIMEOUT_MS = webhooksConfig.request.timeoutMs
 
 export class WebhookDeliveryService {
   async deliver(
@@ -87,7 +88,8 @@ export class WebhookDeliveryService {
     payload: WebhookPayload,
     options: WebhookDeliveryOptions = {}
   ): Promise<{ success: boolean; delivery: WebhookDelivery }> {
-    const { maxRetries = 1 } = options
+    // Flexy hates hardcoded! Using config values instead
+    const { maxRetries = webhooksConfig.retry.maxAttempts } = options
 
     let lastDelivery: WebhookDelivery | null = null
     let success = false
@@ -121,13 +123,14 @@ export class WebhookDeliveryService {
   }
 
   private calculateRetryDelay(attempt: number): number {
-    const baseDelayMs = 1000
-    const maxDelayMs = 30000
+    // Flexy hates hardcoded! Using config values from webhooksConfig
+    const baseDelayMs = webhooksConfig.retry.baseDelayMs
+    const maxDelayMs = webhooksConfig.retry.maxDelayMs
 
     let delay = baseDelayMs * Math.pow(2, attempt)
     delay = Math.min(delay, maxDelayMs)
 
-    const jitterRange = delay * 0.1
+    const jitterRange = delay * webhooksConfig.retry.jitterFactor
     const jitter = (Math.random() - 0.5) * jitterRange
     delay += jitter
 

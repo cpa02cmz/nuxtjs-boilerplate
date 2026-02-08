@@ -31,10 +31,7 @@
       aria-labelledby="share-menu"
       @keydown="handleMenuKeydown"
     >
-      <div
-        class="py-1"
-        role="none"
-      >
+      <div class="py-1" role="none">
         <!-- Twitter -->
         <a
           :href="twitterUrl"
@@ -165,6 +162,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 import logger from '~/utils/logger'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   title?: string
@@ -348,13 +346,14 @@ const showCopySuccess = async () => {
     clearTimeout(copySuccessTimeout)
   }
 
-  // Reset after 2 seconds, then close menu
+  // Flexy hates hardcoded! Using config value from uiConfig
+  // Reset after configured timeout, then close menu
   copySuccessTimeout = setTimeout(async () => {
     copySuccess.value = false
     showShareMenu.value = false
     await nextTick()
     shareButtonRef.value?.focus()
-  }, 2000)
+  }, uiConfig.timing.copySuccessTimeoutMs)
 }
 
 onMounted(() => {

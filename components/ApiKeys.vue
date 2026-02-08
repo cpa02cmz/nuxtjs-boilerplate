@@ -2,19 +2,13 @@
   <div class="api-keys-manager">
     <div class="api-keys-header">
       <h2>API Keys</h2>
-      <button
-        class="btn btn-primary"
-        @click="showCreateForm = true"
-      >
+      <button class="btn btn-primary" @click="showCreateForm = true">
         Create API Key
       </button>
     </div>
 
     <!-- Create API Key Form -->
-    <div
-      v-if="showCreateForm"
-      class="api-key-form"
-    >
+    <div v-if="showCreateForm" class="api-key-form">
       <h3>Create New API Key</h3>
       <form @submit.prevent="createApiKey">
         <div class="form-group">
@@ -26,7 +20,7 @@
             required
             placeholder="My Application Key"
             class="form-control"
-          >
+          />
         </div>
 
         <div class="form-group">
@@ -37,31 +31,16 @@
             multiple
             class="form-control"
           >
-            <option value="read">
-              Read
-            </option>
-            <option value="write">
-              Write
-            </option>
-            <option value="delete">
-              Delete
-            </option>
-            <option value="webhooks">
-              Webhooks
-            </option>
-            <option value="admin">
-              Admin
-            </option>
+            <option value="read">Read</option>
+            <option value="write">Write</option>
+            <option value="delete">Delete</option>
+            <option value="webhooks">Webhooks</option>
+            <option value="admin">Admin</option>
           </select>
         </div>
 
         <div class="form-actions">
-          <button
-            type="submit"
-            class="btn btn-primary"
-          >
-            Create API Key
-          </button>
+          <button type="submit" class="btn btn-primary">Create API Key</button>
           <button
             type="button"
             class="btn btn-secondary"
@@ -76,28 +55,16 @@
     <!-- API Keys List -->
     <div class="api-keys-list">
       <h3>API Keys</h3>
-      <div
-        v-if="apiKeys.length === 0"
-        class="empty-state"
-      >
+      <div v-if="apiKeys.length === 0" class="empty-state">
         No API keys created
       </div>
-      <div
-        v-else
-        class="api-key-items"
-      >
-        <div
-          v-for="key in apiKeys"
-          :key="key.id"
-          class="api-key-item"
-        >
+      <div v-else class="api-key-items">
+        <div v-for="key in apiKeys" :key="key.id" class="api-key-item">
           <div class="api-key-info">
             <div class="api-key-name">
               {{ key.name }}
             </div>
-            <div class="api-key-id">
-              ID: {{ key.id }}
-            </div>
+            <div class="api-key-id">ID: {{ key.id }}</div>
             <div class="api-key-permissions">
               <span
                 v-for="permission in key.permissions"
@@ -117,10 +84,7 @@
             </div>
           </div>
           <div class="api-key-actions">
-            <button
-              class="btn btn-sm btn-danger"
-              @click="revokeApiKey(key.id)"
-            >
+            <button class="btn btn-sm btn-danger" @click="revokeApiKey(key.id)">
               Revoke
             </button>
           </div>
@@ -129,11 +93,7 @@
     </div>
 
     <!-- API Key Created Modal -->
-    <div
-      v-if="showKeyCreatedModal"
-      class="modal-overlay"
-      @click="closeModal"
-    >
+    <div v-if="showKeyCreatedModal" class="modal-overlay" @click="closeModal">
       <div
         ref="modalContent"
         class="modal-content"
@@ -143,14 +103,9 @@
         tabindex="-1"
         @click.stop
       >
-        <h3 id="modal-title">
-          New API Key Created
-        </h3>
+        <h3 id="modal-title">New API Key Created</h3>
         <p><strong>Key:</strong> {{ createdApiKey?.key }}</p>
-        <p
-          class="warning"
-          role="alert"
-        >
+        <p class="warning" role="alert">
           Make sure to copy this key now. You won't be able to see it again.
         </p>
         <div class="form-actions">
@@ -165,12 +120,7 @@
           >
             {{ copySuccess ? 'Copied!' : 'Copy Key' }}
           </button>
-          <button
-            class="btn btn-secondary"
-            @click="closeModal"
-          >
-            Close
-          </button>
+          <button class="btn btn-secondary" @click="closeModal">Close</button>
         </div>
       </div>
     </div>
@@ -182,6 +132,7 @@ import type { ApiKey } from '~/types/webhook'
 import type { NewApiKey } from '~/composables/useApiKeysManager'
 import { useApiKeysManager } from '~/composables/useApiKeysManager'
 import logger from '~/utils/logger'
+import { uiConfig } from '~/configs/ui.config'
 
 const {
   apiKeys,
@@ -294,10 +245,11 @@ const copyApiKey = async () => {
       await navigator.clipboard.writeText(createdApiKey.value.key)
       copySuccess.value = true
 
-      // Reset button text after 2 seconds
+      // Flexy hates hardcoded! Using config value from uiConfig
+      // Reset button text after configured timeout
       setTimeout(() => {
         copySuccess.value = false
-      }, 2000)
+      }, uiConfig.timing.copySuccessTimeoutMs)
     } catch (error) {
       logger.error('Error copying API key to clipboard', error)
     }

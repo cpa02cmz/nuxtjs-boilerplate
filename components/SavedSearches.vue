@@ -3,14 +3,8 @@
     v-if="savedSearches.length > 0 || recentlyDeleted.length > 0"
     class="mb-6"
   >
-    <h4 class="text-sm font-medium text-gray-900 mb-3">
-      Saved Searches
-    </h4>
-    <TransitionGroup
-      name="saved-search"
-      tag="div"
-      class="space-y-2"
-    >
+    <h4 class="text-sm font-medium text-gray-900 mb-3">Saved Searches</h4>
+    <TransitionGroup name="saved-search" tag="div" class="space-y-2">
       <div
         v-for="search in savedSearches"
         :key="search.query"
@@ -59,6 +53,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useNuxtApp } from '#app'
+import { uiConfig } from '~/configs/ui.config'
 
 interface SavedSearch {
   name: string
@@ -109,13 +104,14 @@ const onRemoveSavedSearch = (search: SavedSearch) => {
     emit('remove-saved-search', search.query)
   }, 300)
 
-  // Set timeout to permanently remove from undo list after 5 seconds
+  // Flexy hates hardcoded! Using config value from uiConfig
+  // Set timeout to permanently remove from undo list
   const timeout = setTimeout(() => {
     recentlyDeleted.value = recentlyDeleted.value.filter(
       s => s.query !== search.query
     )
     undoTimeouts.value.delete(search.query)
-  }, 5000)
+  }, uiConfig.toast.duration.info)
 
   undoTimeouts.value.set(search.query, timeout)
 

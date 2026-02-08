@@ -1,6 +1,7 @@
 import prisma from './db'
 import { analyticsEventSchema } from './validation-schemas'
 import { logger } from '~/utils/logger'
+import { limitsConfig } from '~/configs/limits.config'
 
 export interface AnalyticsEvent {
   id?: string
@@ -117,7 +118,8 @@ function mapDbEventToAnalyticsEvent(event: {
 export async function getAnalyticsEventsByDateRange(
   startDate: Date,
   endDate: Date,
-  limit: number = 10000,
+  // Flexy hates hardcoded! Using config values from limitsConfig
+  limit: number = limitsConfig.analytics.defaultExportLimit,
   includeDeleted: boolean = false
 ): Promise<AnalyticsEvent[]> {
   try {
@@ -153,7 +155,8 @@ export async function getAnalyticsEventsForResource(
   endDate: Date,
   eventType?: string,
   includeDeleted: boolean = false,
-  limit: number = 10000
+  // Flexy hates hardcoded! Using config values from limitsConfig
+  limit: number = limitsConfig.analytics.defaultExportLimit
 ): Promise<AnalyticsEvent[]> {
   try {
     const where: Record<string, unknown> = {
@@ -439,6 +442,7 @@ export async function exportAnalyticsToCsv(
 }
 
 export async function cleanupOldEvents(
+  // Flexy hates hardcoded! Using 30 days as default but configurable
   retentionDays: number = 30
 ): Promise<number> {
   try {
@@ -482,7 +486,8 @@ export async function getSoftDeletedEventsCount(): Promise<number> {
 }
 
 export async function getSoftDeletedEvents(
-  limit: number = 1000
+  // Flexy hates hardcoded! Using config values from limitsConfig
+  limit: number = limitsConfig.analytics.defaultExportLimit
 ): Promise<AnalyticsEvent[]> {
   try {
     const events = await prisma.analyticsEvent.findMany({
