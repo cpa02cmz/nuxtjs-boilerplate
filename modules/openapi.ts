@@ -19,7 +19,7 @@ export default defineNuxtModule({
       handler: resolve('./server/api/api-docs/index.get.ts'),
     })
 
-    // Note: Server middleware (api-auth.ts) is auto-scanned from server/middleware/
-    // by Nitro and does not need to be manually registered here
+    // Server middleware is automatically loaded from server/middleware/ directory
+    // No need to manually register api-auth.ts
   },
 })
