@@ -20,12 +20,14 @@ const storage = createStorageWithDateSerialization<Bookmark[]>(
 )
 
 let bookmarksRef: Ref<Bookmark[]> | null = null
+const lastRemovedBookmark = ref<Bookmark | null>(null)
 
 export const resetBookmarksState = () => {
   if (bookmarksRef) {
     bookmarksRef.value = []
     bookmarksRef = null
   }
+  lastRemovedBookmark.value = null
   storage.remove()
 }
 
@@ -34,6 +36,7 @@ export const resetBookmarks = () => {
     bookmarksRef.value.length = 0
     bookmarksRef = null
   }
+  lastRemovedBookmark.value = null
   if (typeof window !== 'undefined') {
     storage.remove()
   }
@@ -78,9 +81,27 @@ export const useBookmarks = () => {
       bookmark => bookmark.id === resourceId
     )
     if (index !== -1) {
+      lastRemovedBookmark.value = bookmarks.value[index]
       bookmarks.value.splice(index, 1)
       saveBookmarks()
     }
+  }
+
+  const undoRemoveBookmark = () => {
+    if (lastRemovedBookmark.value) {
+      const bookmark = lastRemovedBookmark.value
+      if (!isBookmarked(bookmark.id)) {
+        bookmarks.value.push(bookmark)
+        saveBookmarks()
+      }
+      lastRemovedBookmark.value = null
+      return true
+    }
+    return false
+  }
+
+  const clearLastRemovedBookmark = () => {
+    lastRemovedBookmark.value = null
   }
 
   const toggleBookmark = (resource: {
@@ -183,6 +204,9 @@ export const useBookmarks = () => {
     isBookmarked,
     addBookmark,
     removeBookmark,
+    undoRemoveBookmark,
+    clearLastRemovedBookmark,
+    lastRemovedBookmark: readonly(lastRemovedBookmark),
     toggleBookmark,
     updateBookmarkNotes,
     updateBookmarkCategory,

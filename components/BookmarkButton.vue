@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
 import { useBookmarks } from '~/composables/useBookmarks'
+import { useToast } from '~/composables/useToast'
 import { computed, ref } from 'vue'
 
 interface Props {
@@ -67,7 +68,12 @@ const props = withDefaults(defineProps<Props>(), {
   url: '',
 })
 
-const { isBookmarked: checkBookmarked, toggleBookmark } = useBookmarks()
+const {
+  isBookmarked: checkBookmarked,
+  toggleBookmark,
+  undoRemoveBookmark,
+} = useBookmarks()
+const { showSuccess } = useToast()
 
 const isBookmarked = computed(() =>
   props.resourceId ? checkBookmarked(props.resourceId) : false
@@ -95,7 +101,29 @@ const handleBookmarkToggle = () => {
     url: props.url,
   })
 
-  bookmarkStatus.value = wasBookmarked ? 'Bookmark removed' : 'Bookmark added'
+  if (wasBookmarked) {
+    // Show undo toast when removing bookmark
+    bookmarkStatus.value = 'Bookmark removed'
+    showSuccess(
+      'Bookmark removed',
+      `"${props.title}" has been removed from your favorites`,
+      [
+        {
+          label: 'Undo',
+          primary: true,
+          callback: () => {
+            undoRemoveBookmark()
+            bookmarkStatus.value = 'Bookmark restored'
+            setTimeout(() => {
+              bookmarkStatus.value = ''
+            }, 1000)
+          },
+        },
+      ]
+    )
+  } else {
+    bookmarkStatus.value = 'Bookmark added'
+  }
 
   setTimeout(() => {
     bookmarkStatus.value = ''

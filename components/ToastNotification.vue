@@ -1,10 +1,6 @@
 <template>
   <div class="toast-container">
-    <transition-group
-      name="toast"
-      tag="div"
-      class="toast-wrapper"
-    >
+    <transition-group name="toast" tag="div" class="toast-wrapper">
       <div
         v-for="toast in toasts"
         :key="toast.id"
@@ -84,12 +80,24 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p
-            v-if="toast.description"
-            class="toast__description"
-          >
+          <p v-if="toast.description" class="toast__description">
             {{ toast.description }}
           </p>
+          <div
+            v-if="toast.actions && toast.actions.length > 0"
+            class="toast__actions"
+          >
+            <button
+              v-for="action in toast.actions"
+              :key="action.label"
+              type="button"
+              class="toast__action"
+              :class="{ 'toast__action--primary': action.primary }"
+              @click="handleAction(toast.id, action)"
+            >
+              {{ action.label }}
+            </button>
+          </div>
         </div>
         <button
           type="button"
@@ -128,12 +136,19 @@ import { TOAST_DURATION, UI_TIMING } from '~/server/utils/constants'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
+export interface ToastAction {
+  label: string
+  primary?: boolean
+  callback: () => void
+}
+
 interface Toast {
   id: string
   type: ToastType
   message: string
   description?: string
   duration?: number
+  actions?: ToastAction[]
 }
 
 const toasts = ref<Toast[]>([])
@@ -183,6 +198,11 @@ const resumeToast = (id: string) => {
 
 const removeToast = (id: string) => {
   toasts.value = toasts.value.filter(toast => toast.id !== id)
+}
+
+const handleAction = (toastId: string, action: ToastAction) => {
+  action.callback()
+  removeToast(toastId)
 }
 
 // Expose methods to parent components
@@ -288,6 +308,42 @@ defineExpose({
 
 .toast__close:hover {
   opacity: 1;
+}
+
+/* Action buttons */
+.toast__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.toast__action {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: underline;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.toast__action:hover {
+  opacity: 1;
+}
+
+.toast__action--primary {
+  background-color: currentColor;
+  color: white;
+  text-decoration: none;
+  opacity: 1;
+}
+
+.toast__action--primary:hover {
+  filter: brightness(1.1);
 }
 
 /* Progress bar showing remaining time */
