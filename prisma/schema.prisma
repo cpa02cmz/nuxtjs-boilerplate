@@ -33,6 +33,18 @@ model AnalyticsEvent {
   @@index([ip, timestamp, deletedAt])
 }
 
+model RateLimit {
+  id        String   @id @default(cuid())
+  key       String   // IP address or user identifier
+  window    DateTime // Time window start (minute buckets)
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([key, window])
+  @@index([window]) // For cleanup queries
+}
+
 model Webhook {
   id          String              @id @default(cuid())
   url         String
