@@ -221,16 +221,6 @@ export default defineNuxtConfig({
         { rel: 'prefetch', href: '/api/submissions' },
         // Add preloading for critical resources
         { rel: 'preload', href: '/favicon.ico', as: 'image' },
-        // Preload critical CSS
-        {
-          rel: 'preload',
-          href: '/_nuxt/',
-          as: 'fetch',
-          crossorigin: 'anonymous',
-        },
-        // DNS prefetch for external resources
-        { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
-        { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
       ],
       script: [],
       // Add performance-related and security meta tags
