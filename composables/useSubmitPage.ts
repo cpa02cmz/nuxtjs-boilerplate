@@ -3,6 +3,9 @@ import { useNuxtApp } from '#app'
 import type { ApiClient } from '~/utils/api-client'
 import { logError } from '~/utils/errorLogger'
 import logger from '~/utils/logger'
+import { validationConfig } from '~/configs/validation.config'
+import { uiConfig } from '~/configs/ui.config'
+import { apiConfig } from '~/configs/api.config'
 
 interface FormData {
   title: string
@@ -53,16 +56,24 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
 
     if (!formData.value.title.trim()) {
       errors.value.title = 'Title is required'
-    } else if (formData.value.title.length > 200) {
-      errors.value.title = 'Title is too long (max 200 characters)'
+    } else if (
+      formData.value.title.length > validationConfig.resource.name.maxLength
+    ) {
+      errors.value.title = `Title is too long (max ${validationConfig.resource.name.maxLength} characters)`
     }
 
     if (!formData.value.description.trim()) {
       errors.value.description = 'Description is required'
-    } else if (formData.value.description.length < 10) {
-      errors.value.description = 'Description must be at least 10 characters'
-    } else if (formData.value.description.length > 1000) {
-      errors.value.description = 'Description is too long (max 1000 characters)'
+    } else if (
+      formData.value.description.length <
+      validationConfig.resource.description.minLength
+    ) {
+      errors.value.description = `Description must be at least ${validationConfig.resource.description.minLength} characters`
+    } else if (
+      formData.value.description.length >
+      validationConfig.resource.description.maxLength
+    ) {
+      errors.value.description = `Description is too long (max ${validationConfig.resource.description.maxLength} characters)`
     }
 
     if (!formData.value.url.trim()) {
@@ -98,7 +109,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
 
     setTimeout(() => {
       document.body.removeChild(announcement)
-    }, 5000)
+    }, uiConfig.feedback.announcementClearMs)
   }
 
   const processTags = (tagsString: string): string[] => {
@@ -124,7 +135,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
 
     try {
       const client = getClient()
-      const response = await client.post('/api/submissions', {
+      const response = await client.post(apiConfig.submissions.base, {
         title: formData.value.title.trim(),
         description: formData.value.description.trim(),
         url: formData.value.url.trim(),
@@ -143,7 +154,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
 
         setTimeout(() => {
           submitSuccess.value = false
-        }, 5000)
+        }, uiConfig.feedback.successMessageClearMs)
       } else {
         const responseData = response.data as
           | { errors?: { field: string; message: string }[]; message?: string }

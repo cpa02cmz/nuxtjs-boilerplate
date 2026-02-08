@@ -17,6 +17,7 @@ import logger from '~/utils/logger'
 import { UI_FEEDBACK_DURATION } from '~/server/utils/constants'
 import type { ApiClient } from '~/utils/api-client'
 import type { Webhook } from '~/types/webhook'
+import { apiConfig } from '~/configs/api.config'
 
 export interface WebhookFormData {
   url: string
@@ -65,7 +66,9 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
       errorMessage.value = ''
 
       const client = getClient()
-      const response = await client.get<{ data: Webhook[] }>('/api/v1/webhooks')
+      const response = await client.get<{ data: Webhook[] }>(
+        apiConfig.webhooks.base
+      )
 
       if (response.success && response.data) {
         webhooks.value = response.data as unknown as Webhook[]
@@ -95,7 +98,7 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
 
     try {
       const client = getClient()
-      const response = await client.post('/api/v1/webhooks', webhookData)
+      const response = await client.post(apiConfig.webhooks.base, webhookData)
 
       if (!response.success) {
         errorMessage.value =
@@ -123,7 +126,7 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
     try {
       const newStatus = !webhook.active
       const client = getClient()
-      const response = await client.put(`/api/v1/webhooks/${webhook.id}`, {
+      const response = await client.put(apiConfig.webhooks.byId(webhook.id), {
         active: newStatus,
       })
 
@@ -156,7 +159,7 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
 
     try {
       const client = getClient()
-      const response = await client.delete(`/api/v1/webhooks/${webhook.id}`)
+      const response = await client.delete(apiConfig.webhooks.byId(webhook.id))
 
       if (!response.success) {
         errorMessage.value =

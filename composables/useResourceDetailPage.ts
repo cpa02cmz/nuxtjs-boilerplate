@@ -25,6 +25,7 @@ import { generateSeoData } from '~/utils/seo'
 import { copyToClipboard } from '~/utils/clipboard'
 import type { ApiClient } from '~/utils/api-client'
 import { UI_TIMING } from '~/server/utils/constants'
+import { apiConfig } from '~/configs/api.config'
 
 export interface UseResourceDetailPageOptions {
   apiClient?: ApiClient
@@ -88,7 +89,7 @@ export const useResourceDetailPage = (
       const response = await client.get<{
         statusHistory: unknown[]
         updateHistory: unknown[]
-      }>(`/api/resources/${id}/history`)
+      }>(apiConfig.resources.history(id))
 
       if (response.success && response.data && resource.value) {
         ;(
@@ -113,7 +114,7 @@ export const useResourceDetailPage = (
     try {
       const client = getClient()
       const response = await client.get<Record<string, unknown>>(
-        `/api/analytics/resource/${id}`
+        apiConfig.analytics.resource(id)
       )
 
       if (response.success && response.data) {

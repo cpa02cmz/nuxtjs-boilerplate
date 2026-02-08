@@ -3,34 +3,38 @@ import type { FuseResult, IFuseOptions } from 'fuse.js'
 import type { Resource } from '~/types/resource'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
 import { createFuseInstance } from '~/utils/fuseHelper'
+import { searchConfig } from '~/configs/search.config'
 
-const searchConfig: Partial<IFuseOptions<Resource>> = {
+const fuseSearchConfig: Partial<IFuseOptions<Resource>> = {
   keys: [
-    { name: 'title', weight: 0.5 },
-    { name: 'description', weight: 0.3 },
-    { name: 'benefits', weight: 0.15 },
-    { name: 'tags', weight: 0.05 },
+    { name: 'title', weight: searchConfig.keys.name.weight },
+    { name: 'description', weight: searchConfig.keys.description.weight },
+    { name: 'benefits', weight: searchConfig.keys.category.weight },
+    { name: 'tags', weight: searchConfig.keys.tags.weight },
   ],
-  threshold: 0.3,
-  includeScore: true,
-  distance: 100,
+  threshold: searchConfig.fuse.threshold,
+  includeScore: searchConfig.fuse.includeScore,
+  distance: searchConfig.fuse.distance,
 }
 
 export const useResourceSearch = (resources: readonly Resource[]) => {
-  const fuse = computed(() => createFuseInstance(resources, searchConfig))
+  const fuse = computed(() => createFuseInstance(resources, fuseSearchConfig))
 
   const searchResources = (query: string): Resource[] => {
     if (!query) return [...resources]
 
-    const fuseInstance = createFuseInstance(resources, searchConfig)
+    const fuseInstance = createFuseInstance(resources, fuseSearchConfig)
     const searchResults = fuseInstance.search(query)
     return searchResults.map((item: FuseResult<Resource>) => item.item)
   }
 
-  const getSuggestions = (query: string, limit: number = 5): Resource[] => {
+  const getSuggestions = (
+    query: string,
+    limit: number = searchConfig.behavior.maxSuggestions
+  ): Resource[] => {
     if (!query) return []
 
-    const fuseInstance = createFuseInstance(resources, searchConfig)
+    const fuseInstance = createFuseInstance(resources, fuseSearchConfig)
     const searchResults = fuseInstance.search(query, { limit })
     return searchResults.map((item: FuseResult<Resource>) => item.item)
   }
