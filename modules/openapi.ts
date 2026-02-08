@@ -1,8 +1,4 @@
-import {
-  defineNuxtModule,
-  addServerHandler,
-  addRouteMiddleware,
-} from '@nuxt/kit'
+import { defineNuxtModule, addServerHandler } from '@nuxt/kit'
 import { resolve } from 'path'
 
 export default defineNuxtModule({
@@ -23,11 +19,7 @@ export default defineNuxtModule({
       handler: resolve('./server/api/api-docs/index.get.ts'),
     })
 
-    // Add a middleware to handle API key validation if needed
-    addRouteMiddleware({
-      name: 'api-auth',
-      path: resolve('./middleware/api-auth.ts'),
-      global: false,
-    })
+    // Note: Server middleware (api-auth.ts) is auto-scanned from server/middleware/
+    // by Nitro and does not need to be manually registered here
   },
 })
