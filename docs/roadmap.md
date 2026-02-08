@@ -94,7 +94,7 @@ This document defines the strategic direction for the autonomous coding system. 
 **Related Documentation**:
 
 - Feature: INFRA-001 in `docs/feature.md`
-- Task: TASK-001 in `docs/task.md`
+- Task: TASK-001
 - Current pass rate: 1467/1568 (93.5%)
 
 ---
@@ -124,7 +124,7 @@ This document defines the strategic direction for the autonomous coding system. 
 **Related Documentation**:
 
 - Feature: SEC-001 in `docs/feature.md`
-- Task: TASK-002 in `docs/task.md`
+- Task: TASK-002
 
 ---
 
@@ -347,13 +347,12 @@ Major version upgrade requiring:
 
 ### Architecture Documentation
 
-- [Architecture Blueprint](./blueprint.md) - Design patterns, decisions, best practices
+- [Architecture](./architecture.md) - Design patterns, decisions, best practices
 - [Integration Patterns](./integration-patterns.md) - Circuit breaker, retry, webhook reliability
 - [Security Implementation](./security-implementation.md) - CSP headers, sanitization
 
 ### Project Management
 
-- [Task Backlog](./task.md) - Active and completed tasks
 - [Product Backlog](./product-backlog.md) - Feature specifications
 - [Feature Specs](./feature.md) - Detailed feature requirements
 
@@ -413,7 +412,7 @@ Major version upgrade requiring:
 1. **Understand**: What problem? Who benefits? Expected outcome?
 2. **Check Blueprint**: Does it fit architecture? Updates needed?
 3. **Define Feature** in `docs/feature.md`
-4. **Create Tasks** in `docs/task.md` with clear agent assignment
+4. **Create Tasks** with clear agent assignment
 
 ### MODE B: PLANNING (Periodic review)
 

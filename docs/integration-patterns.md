@@ -746,7 +746,7 @@ function monitorCircuitBreakers() {
 - [Circuit Breaker Pattern](https://martinfowler.com/bliki/CircuitBreaker.html)
 - [Exponential Backoff](https://en.wikipedia.org/wiki/Exponential_backoff)
 - [API Documentation](./api/README.md)
-- [Architecture Blueprint](./blueprint.md#integration-architecture)
+- [Architecture](./architecture.md#integration-architecture)
 - [OpenAPI Specification](../server/api/api-docs/spec.get.ts) - See resilience patterns documented in OpenAPI spec
 
 ## OpenAPI Resilience Documentation
