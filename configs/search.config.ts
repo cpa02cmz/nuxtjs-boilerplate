@@ -36,6 +36,23 @@ export const searchConfig = {
     },
   },
 
+  // Suggestion-specific weights (used in fuseHelper.ts)
+  suggestionWeights: {
+    name: parseFloat(process.env.SUGGESTION_WEIGHT_NAME || '0.4'),
+    tags: parseFloat(process.env.SUGGESTION_WEIGHT_TAGS || '0.25'),
+    category: parseFloat(process.env.SUGGESTION_WEIGHT_CATEGORY || '0.15'),
+    description: parseFloat(process.env.SUGGESTION_WEIGHT_DESCRIPTION || '0.2'),
+  },
+
+  // Suggestion-specific settings
+  suggestions: {
+    minMatchCharLength: parseInt(
+      process.env.SUGGESTION_MIN_MATCH_LENGTH || '1'
+    ),
+    threshold: parseFloat(process.env.SUGGESTION_THRESHOLD || '0.4'),
+    distance: parseInt(process.env.SUGGESTION_DISTANCE || '100'),
+  },
+
   // Search Behavior
   behavior: {
     debounceMs: parseInt(process.env.SEARCH_DEBOUNCE_MS || '300'),
