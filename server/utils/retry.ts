@@ -1,3 +1,5 @@
+import { timeConfig } from '~/configs/time.config'
+
 interface RetryConfig {
   maxRetries: number
   baseDelayMs: number
@@ -62,10 +64,10 @@ export function isRetryableError(
 
 export function calculateBackoff(
   attempt: number,
-  baseDelayMs: number = 1000,
-  maxDelayMs: number = 30000,
+  baseDelayMs: number = timeConfig.delays.defaultRetryDelay,
+  maxDelayMs: number = timeConfig.delays.maxRetryDelay,
   jitterEnabled: boolean = true,
-  jitterFactor: number = 0.1
+  jitterFactor: number = timeConfig.delays.jitterFactor
 ): number {
   let delay = baseDelayMs * Math.pow(2, attempt)
 
@@ -100,12 +102,12 @@ export async function retryWithBackoff<T>(
 ): Promise<T> {
   const defaultConfig: RetryConfig = {
     maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
+    baseDelayMs: timeConfig.delays.defaultRetryDelay,
+    maxDelayMs: timeConfig.delays.maxRetryDelay,
     backoffMultiplier: 2,
     retryableErrors: [],
     jitterEnabled: true,
-    jitterFactor: 0.1,
+    jitterFactor: timeConfig.delays.jitterFactor,
   }
 
   const finalConfig: RetryConfig = {
@@ -139,7 +141,10 @@ export async function retryWithBackoff<T>(
       }
 
       const delay = calculateDelay(attempt, finalConfig)
-      errors[errors.length - 1].delayMs = delay
+      const lastError = errors[errors.length - 1]
+      if (lastError) {
+        lastError.delayMs = delay
+      }
 
       await new Promise(resolve => setTimeout(resolve, delay))
     }
@@ -158,12 +163,12 @@ export async function retryWithResult<T>(
 ): Promise<RetryResult<T>> {
   const defaultConfig: RetryConfig = {
     maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
+    baseDelayMs: timeConfig.delays.defaultRetryDelay,
+    maxDelayMs: timeConfig.delays.maxRetryDelay,
     backoffMultiplier: 2,
     retryableErrors: [],
     jitterEnabled: true,
-    jitterFactor: 0.1,
+    jitterFactor: timeConfig.delays.jitterFactor,
   }
 
   const finalConfig: RetryConfig = {
@@ -213,7 +218,10 @@ export async function retryWithResult<T>(
 
       const delay = calculateDelay(attempt, finalConfig)
       totalDelayMs += delay
-      errors[errors.length - 1].delayMs = delay
+      const lastError = errors[errors.length - 1]
+      if (lastError) {
+        lastError.delayMs = delay
+      }
 
       await new Promise(resolve => setTimeout(resolve, delay))
     }

@@ -9,6 +9,7 @@ import {
   updateInArrayMap,
   initializeMapFromArray,
 } from '~/utils/collection-utils'
+import { errorMessagesConfig } from '~/configs/error-messages.config'
 import type {
   Flag,
   UserProfile,
@@ -30,7 +31,7 @@ export const useModeration = (
     details: string = ''
   ): Flag => {
     if (!currentUser) {
-      throw new Error('User must be logged in to flag content')
+      throw new Error(errorMessagesConfig.community.mustBeLoggedInToFlag)
     }
 
     const flag: Flag = {
@@ -56,7 +57,7 @@ export const useModeration = (
     moderatorNote: string = ''
   ): boolean => {
     if (!currentUser || !currentUser.isModerator) {
-      throw new Error('User must be a moderator to moderate content')
+      throw new Error(errorMessagesConfig.auth.mustBeModerator)
     }
 
     const flag = flagMap.value.get(flagId)
@@ -127,7 +128,7 @@ export const useModeration = (
     resolutionNote?: string
   ): boolean => {
     if (!currentUser || !currentUser.isModerator) {
-      throw new Error('User must be a moderator to resolve flags')
+      throw new Error(errorMessagesConfig.auth.mustBeModerator)
     }
 
     const flag = flagMap.value.get(flagId)

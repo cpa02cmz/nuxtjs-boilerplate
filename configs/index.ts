@@ -25,6 +25,13 @@ import { analyticsConfig, type AnalyticsConfig } from './analytics.config'
 import { uiConfig, type UiConfig } from './ui.config'
 import { pwaConfig, type PwaConfig } from './pwa.config'
 import { apiConfig, type ApiConfig } from './api.config'
+import {
+  errorMessagesConfig,
+  type ErrorMessagesConfig,
+} from './error-messages.config'
+import { timeConfig, type TimeConfig } from './time.config'
+import { comparisonConfig, type ComparisonConfig } from './comparison.config'
+import { shareConfig, type ShareConfig } from './share.config'
 
 // Re-export individual configs
 export { appConfig, type AppConfig }
@@ -46,6 +53,10 @@ export { analyticsConfig, type AnalyticsConfig }
 export { uiConfig, type UiConfig }
 export { pwaConfig, type PwaConfig }
 export { apiConfig, type ApiConfig }
+export { errorMessagesConfig, type ErrorMessagesConfig }
+export { timeConfig, type TimeConfig }
+export { comparisonConfig, type ComparisonConfig }
+export { shareConfig, type ShareConfig }
 
 // Default export with all configs
 export const config = {
@@ -63,6 +74,10 @@ export const config = {
   ui: uiConfig,
   pwa: pwaConfig,
   api: apiConfig,
+  errorMessages: errorMessagesConfig,
+  time: timeConfig,
+  comparison: comparisonConfig,
+  share: shareConfig,
 } as const
 
 export type Config = typeof config

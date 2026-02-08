@@ -10,6 +10,7 @@ import type {
   UserProfile,
 } from '~/types/community'
 import { generateUniqueId } from '~/utils/id'
+import { errorMessagesConfig } from '~/configs/error-messages.config'
 import { updateInArray } from '~/utils/comment-utils'
 
 export const useComments = (initialComments: Comment[] = []) => {
@@ -27,7 +28,7 @@ export const useComments = (initialComments: Comment[] = []) => {
     currentUser: UserProfile
   ): Comment => {
     if (!currentUser) {
-      throw new Error('User must be logged in to comment')
+      throw new Error(errorMessagesConfig.community.mustBeLoggedInToComment)
     }
 
     const comment: Comment = {
@@ -57,7 +58,7 @@ export const useComments = (initialComments: Comment[] = []) => {
     currentUser: UserProfile
   ): Comment | null => {
     if (!currentUser) {
-      throw new Error('User must be logged in to reply')
+      throw new Error(errorMessagesConfig.community.mustBeLoggedInToReply)
     }
 
     // O(1) map lookup for parent comment

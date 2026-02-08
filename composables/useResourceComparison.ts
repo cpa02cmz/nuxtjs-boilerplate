@@ -1,6 +1,7 @@
 import { ref, computed, readonly } from 'vue'
 import type { Resource } from '~/types/resource'
 import type { ComparisonData, ComparisonCriteria } from '~/types/comparison'
+import { comparisonConfig } from '~/configs/comparison.config'
 
 // Configuration for comparison system
 interface ComparisonConfig {
@@ -15,78 +16,78 @@ export const useResourceComparison = () => {
   const selectedResources = ref<Resource[]>([])
   const comparisonCriteria = ref<ComparisonCriteria[]>([])
   const config = ref<ComparisonConfig>({
-    maxResources: 4,
-    similarityThreshold: 0.3,
+    maxResources: comparisonConfig.limits.maxResources,
+    similarityThreshold: comparisonConfig.similarity.defaultThreshold,
     defaultCriteria: [
       {
         id: 'title',
         name: 'Name',
         type: 'text',
         category: 'basic',
-        weight: 1,
+        weight: comparisonConfig.criteria.category.weight,
       },
       {
         id: 'description',
         name: 'Description',
         type: 'text',
         category: 'basic',
-        weight: 1,
+        weight: comparisonConfig.criteria.category.weight,
       },
       {
         id: 'pricingModel',
         name: 'Pricing',
         type: 'text',
         category: 'business',
-        weight: 1,
+        weight: comparisonConfig.criteria.pricing.weight,
       },
       {
         id: 'category',
         name: 'Category',
         type: 'text',
         category: 'basic',
-        weight: 0.8,
+        weight: comparisonConfig.criteria.category.weight,
       },
       {
         id: 'technology',
         name: 'Technology',
         type: 'list',
         category: 'technical',
-        weight: 1,
+        weight: comparisonConfig.criteria.technology.weight,
       },
       {
         id: 'popularity',
         name: 'Popularity',
         type: 'number',
         category: 'metrics',
-        weight: 0.7,
+        weight: comparisonConfig.criteria.difficulty.weight,
       },
       {
         id: 'benefits',
         name: 'Benefits',
         type: 'list',
         category: 'features',
-        weight: 1,
+        weight: comparisonConfig.criteria.tags.weight,
       },
       {
         id: 'limitiations',
         name: 'Limitations',
         type: 'list',
         category: 'features',
-        weight: 0.8,
+        weight: comparisonConfig.criteria.category.weight,
       },
       {
         id: 'platforms',
         name: 'Platforms',
         type: 'list',
         category: 'technical',
-        weight: 0.7,
+        weight: comparisonConfig.criteria.technology.weight,
       },
       {
         id: 'features',
         name: 'Features',
         type: 'list',
         category: 'features',
-        weight: 1,
+        weight: comparisonConfig.criteria.tags.weight,
       },
     ],
   })

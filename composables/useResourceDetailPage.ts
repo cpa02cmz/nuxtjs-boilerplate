@@ -26,6 +26,7 @@ import { copyToClipboard } from '~/utils/clipboard'
 import type { ApiClient } from '~/utils/api-client'
 import { UI_TIMING } from '~/server/utils/constants'
 import { apiConfig } from '~/configs/api.config'
+import { errorMessagesConfig } from '~/configs/error-messages.config'
 
 export interface UseResourceDetailPageOptions {
   apiClient?: ApiClient
@@ -203,13 +204,13 @@ export const useResourceDetailPage = (
   const loadResource = async () => {
     try {
       if (!resourceId.value) {
-        throw new Error('Invalid resource ID')
+        throw new Error(errorMessagesConfig.resource.invalidId)
       }
 
       const foundResource = resources.value.find(r => r.id === resourceId.value)
 
       if (!foundResource) {
-        throw new Error('Resource not found')
+        throw new Error(errorMessagesConfig.resource.notFound)
       }
 
       resource.value = foundResource

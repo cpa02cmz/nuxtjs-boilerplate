@@ -5,6 +5,7 @@
 import { ref } from 'vue'
 import type { Vote, UserProfile } from '~/types/community'
 import { generateUniqueId } from '~/utils/id'
+import { errorMessagesConfig } from '~/configs/error-messages.config'
 import type {
   UpdateVoteCountCallback,
   UpdateUserContributionsCallback,
@@ -35,7 +36,7 @@ export const useVoting = (
     changed?: boolean
   } => {
     if (!currentUser) {
-      throw new Error('User must be logged in to vote')
+      throw new Error(errorMessagesConfig.community.mustBeLoggedInToVote)
     }
 
     // O(1) map lookup for existing vote

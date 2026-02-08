@@ -1,9 +1,16 @@
 import { z } from 'zod'
 import { isValidCategory, isValidEventType } from './constants'
+import { validationConfig } from '~/configs/validation.config'
+import { errorMessagesConfig } from '~/configs/error-messages.config'
 
 export const validateUrlSchema = z.object({
-  url: z.string().url('Invalid URL format'),
-  timeout: z.number().int().positive().optional().default(10000),
+  url: z.string().url(errorMessagesConfig.validation.invalidUrl),
+  timeout: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .default(validationConfig.url.timeout),
   retries: z.number().int().min(0).max(10).optional().default(3),
   retryDelay: z.number().int().nonnegative().optional().default(1000),
   useCircuitBreaker: z.boolean().optional().default(true),
@@ -25,14 +32,42 @@ export const updateWebhookSchema = z.object({
 })
 
 export const createSubmissionSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
+  title: z
+    .string()
+    .min(1, errorMessagesConfig.validation.required)
+    .max(
+      validationConfig.resource.name.maxLength,
+      errorMessagesConfig.validation.tooLong(
+        'Title',
+        validationConfig.resource.name.maxLength
+      )
+    ),
   description: z
     .string()
-    .min(10, 'Description must be at least 10 characters')
-    .max(2000, 'Description too long'),
-  url: z.string().url('Invalid URL format'),
-  category: z.string().min(1, 'Category is required'),
-  tags: z.array(z.string()).max(20, 'Too many tags').optional().default([]),
+    .min(
+      validationConfig.resource.description.minLength,
+      errorMessagesConfig.validation.tooShort(
+        'Description',
+        validationConfig.resource.description.minLength
+      )
+    )
+    .max(
+      validationConfig.resource.description.maxLength,
+      errorMessagesConfig.validation.tooLong(
+        'Description',
+        validationConfig.resource.description.maxLength
+      )
+    ),
+  url: z.string().url(errorMessagesConfig.validation.invalidUrl),
+  category: z.string().min(1, errorMessagesConfig.validation.required),
+  tags: z
+    .array(z.string())
+    .max(
+      validationConfig.resource.tags.maxCount,
+      errorMessagesConfig.submission.tooManyTags
+    )
+    .optional()
+    .default([]),
   pricingModel: z
     .enum(['Free', 'Freemium', 'Paid', 'Open Source'])
     .optional()
@@ -43,12 +78,18 @@ export const createSubmissionSchema = z.object({
     .default('Beginner'),
   technology: z
     .array(z.string())
-    .max(20, 'Too many technologies')
+    .max(
+      validationConfig.resource.tags.maxCount,
+      errorMessagesConfig.submission.tooManyTechnologies
+    )
     .optional()
     .default([]),
   benefits: z
     .array(z.string())
-    .max(10, 'Too many benefits')
+    .max(
+      validationConfig.resource.features.maxCount,
+      errorMessagesConfig.submission.tooManyBenefits
+    )
     .optional()
     .default([]),
 })
@@ -79,8 +120,8 @@ export const updateUserPreferencesSchema = z.object({
 export const searchQuerySchema = z.object({
   query: z
     .string()
-    .min(1, 'Search query is required')
-    .max(500, 'Query too long'),
+    .min(1, errorMessagesConfig.search.queryRequired)
+    .max(500, errorMessagesConfig.search.queryTooLong),
   category: z.string().optional(),
   difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']).optional(),
   pricingModel: z.enum(['Free', 'Freemium', 'Paid', 'Open Source']).optional(),
@@ -90,8 +131,11 @@ export const searchQuerySchema = z.object({
 })
 
 export const createApiKeySchema = z.object({
-  name: z.string().min(1, 'API key name is required').max(100, 'Name too long'),
-  scopes: z.array(z.string()).min(1, 'At least one scope is required'),
+  name: z
+    .string()
+    .min(1, errorMessagesConfig.validation.required)
+    .max(100, errorMessagesConfig.validation.tooLong('Name', 100)),
+  scopes: z.array(z.string()).min(1, errorMessagesConfig.validation.required),
   expiresIn: z.number().int().positive().optional(),
 })
 
@@ -104,17 +148,20 @@ export const updateApiKeySchema = z.object({
 export const bulkStatusUpdateSchema = z.object({
   resourceIds: z
     .array(z.string())
-    .min(1, 'At least one resource ID is required')
-    .max(100, 'Too many resources'),
+    .min(1, errorMessagesConfig.validation.required)
+    .max(100, errorMessagesConfig.submission.tooManyTags),
   status: z.enum(['active', 'archived', 'deprecated']),
 })
 
 export const moderationActionSchema = z.object({
   reason: z
     .string()
-    .min(10, 'Reason must be at least 10 characters')
-    .max(500, 'Reason too long'),
-  notes: z.string().max(1000, 'Notes too long').optional(),
+    .min(10, errorMessagesConfig.moderation.reasonTooShort)
+    .max(500, errorMessagesConfig.moderation.reasonTooLong),
+  notes: z
+    .string()
+    .max(1000, errorMessagesConfig.moderation.notesTooLong)
+    .optional(),
 })
 
 export const triggerWebhookSchema = z.object({
@@ -126,40 +173,43 @@ export const triggerWebhookSchema = z.object({
 export const analyticsEventSchema = z.object({
   type: z
     .string()
-    .min(1, 'Event type is required')
-    .max(50, 'Event type too long')
+    .min(1, errorMessagesConfig.validation.required)
+    .max(50, errorMessagesConfig.validation.tooLong('Event type', 50))
     .refine(
       val => isValidEventType(val),
-      'Invalid event type. Must be one of: resource_view, search, filter_change, bookmark, comparison, submission'
+      errorMessagesConfig.validation.invalidCharacters
     ),
   resourceId: z
     .string()
-    .max(25, 'Resource ID too long')
+    .max(25, errorMessagesConfig.validation.tooLong('Resource ID', 25))
     .refine(
       val => val === '' || /^[a-zA-Z0-9_-]+$/.test(val),
-      'Resource ID contains invalid characters'
+      errorMessagesConfig.validation.invalidCharacters
     )
     .optional(),
   category: z
     .string()
-    .max(100, 'Category too long')
+    .max(100, errorMessagesConfig.validation.tooLong('Category', 100))
     .refine(
       val => isValidCategory(val),
-      'Invalid category. Must be one of: Development, Design, Productivity, Marketing, Analytics, Security, AI/ML, DevOps, Testing, Education'
+      errorMessagesConfig.validation.invalidCharacters
     )
     .optional(),
-  url: z.string().url('Invalid URL format').optional(),
-  userAgent: z.string().max(500, 'User agent too long').optional(),
+  url: z.string().url(errorMessagesConfig.validation.invalidUrl).optional(),
+  userAgent: z
+    .string()
+    .max(500, errorMessagesConfig.validation.tooLong('User agent', 500))
+    .optional(),
   ip: z
     .string()
-    .max(45, 'IP address too long')
+    .max(45, errorMessagesConfig.validation.tooLong('IP address', 45))
     .refine(val => {
       const ipv4Regex =
         /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
       const ipv6Regex =
         /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::$|^:(?::[0-9a-fA-F]{1,4}){1,7}|[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,7}|(?:[0-9a-fA-F]{1,4}:){1,7}:|:(?::[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}$/
       return ipv4Regex.test(val) || ipv6Regex.test(val) || val === 'unknown'
-    }, 'Invalid IP address format')
+    }, errorMessagesConfig.validation.invalidCharacters)
     .optional(),
   timestamp: z
     .union([z.string(), z.date(), z.number().int().positive()])
