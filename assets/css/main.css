@@ -66,6 +66,54 @@ body.mouse-nav :focus {
   border-width: 0;
 }
 
+/* Page Transition Animations */
+/* Smooth fade and slide effect when navigating between pages */
+.page-enter-active,
+.page-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* Layout transitions */
+.layout-enter-active,
+.layout-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.layout-enter-from,
+.layout-leave-to {
+  opacity: 0;
+}
+
+/* Reduced motion support for page transitions */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active,
+  .page-leave-active {
+    transition: opacity 0.1s ease;
+  }
+
+  .page-enter-from,
+  .page-leave-to {
+    transform: none;
+  }
+
+  .layout-enter-active,
+  .layout-leave-active {
+    transition: opacity 0.1s ease;
+  }
+}
+
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   body {

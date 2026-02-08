@@ -208,6 +208,15 @@ export default defineNuxtConfig({
 
   // SEO and Security Configuration - using modular config
   app: {
+    // Smooth page transitions for better UX
+    pageTransition: {
+      name: 'page',
+      mode: 'out-in',
+    },
+    layoutTransition: {
+      name: 'layout',
+      mode: 'out-in',
+    },
     head: {
       link: [
         // Preconnect to external domains
