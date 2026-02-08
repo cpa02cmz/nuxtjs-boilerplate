@@ -1,16 +1,33 @@
 import type { ApiKey } from '~/types/webhook'
 import { randomUUID } from 'node:crypto'
+import { getHeader, getQuery } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendSuccessResponse,
   sendValidationError,
+  sendUnauthorizedError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { createApiKeySchema } from '~/server/utils/validation-schemas'
 
 export default defineEventHandler(async event => {
   try {
+    // Authentication check - require valid API key
+    const authApiKey =
+      getHeader(event, 'X-API-Key') || (getQuery(event).api_key as string)
+
+    if (!authApiKey) {
+      return sendUnauthorizedError(event, 'API key required')
+    }
+
+    // Verify API key exists and is active
+    const storedKey = await webhookStorage.getApiKeyByValue(authApiKey)
+
+    if (!storedKey || !storedKey.active) {
+      return sendUnauthorizedError(event, 'Invalid or inactive API key')
+    }
+
     await rateLimit(event)
     const body = await readBody(event)
 
@@ -19,6 +36,9 @@ export default defineEventHandler(async event => {
 
     if (!validationResult.success) {
       const firstError = validationResult.error.issues[0]
+      if (!firstError) {
+        return sendValidationError(event, 'unknown', 'Validation failed')
+      }
       return sendValidationError(
         event,
         firstError.path[0] as string,
