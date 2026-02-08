@@ -1,11 +1,28 @@
 import { z } from 'zod'
-import { isValidCategory, isValidEventType } from './constants'
+import { isValidCategory, isValidEventType, TIMING } from './constants'
+import { FIELD_LIMITS } from '~/configs/validation.config'
 
 export const validateUrlSchema = z.object({
   url: z.string().url('Invalid URL format'),
-  timeout: z.number().int().positive().optional().default(10000),
-  retries: z.number().int().min(0).max(10).optional().default(3),
-  retryDelay: z.number().int().nonnegative().optional().default(1000),
+  timeout: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .default(TIMING.WEBHOOK_REQUEST_TIMEOUT),
+  retries: z
+    .number()
+    .int()
+    .min(0)
+    .max(10)
+    .optional()
+    .default(TIMING.RETRY_MAX_ATTEMPTS),
+  retryDelay: z
+    .number()
+    .int()
+    .nonnegative()
+    .optional()
+    .default(TIMING.RETRY_BASE_DELAY_MS),
   useCircuitBreaker: z.boolean().optional().default(true),
 })
 
@@ -25,14 +42,24 @@ export const updateWebhookSchema = z.object({
 })
 
 export const createSubmissionSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
+  title: z
+    .string()
+    .min(FIELD_LIMITS.name.min, 'Title is required')
+    .max(FIELD_LIMITS.name.max, 'Title too long'),
   description: z
     .string()
-    .min(10, 'Description must be at least 10 characters')
-    .max(2000, 'Description too long'),
+    .min(
+      FIELD_LIMITS.description.min,
+      `Description must be at least ${FIELD_LIMITS.description.min} characters`
+    )
+    .max(FIELD_LIMITS.description.max, 'Description too long'),
   url: z.string().url('Invalid URL format'),
   category: z.string().min(1, 'Category is required'),
-  tags: z.array(z.string()).max(20, 'Too many tags').optional().default([]),
+  tags: z
+    .array(z.string())
+    .max(FIELD_LIMITS.tags.max, 'Too many tags')
+    .optional()
+    .default([]),
   pricingModel: z
     .enum(['Free', 'Freemium', 'Paid', 'Open Source'])
     .optional()
@@ -48,7 +75,7 @@ export const createSubmissionSchema = z.object({
     .default([]),
   benefits: z
     .array(z.string())
-    .max(10, 'Too many benefits')
+    .max(FIELD_LIMITS.tags.max, 'Too many benefits')
     .optional()
     .default([]),
 })

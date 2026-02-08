@@ -8,6 +8,7 @@ import {
   sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { PAGINATION } from '~/server/utils/constants'
 
 /**
  * GET /api/v1/resources
@@ -46,11 +47,11 @@ export default defineEventHandler(async event => {
 
     // Parse query parameters with validation
     // Validate and parse limit parameter
-    let limit = 20 // default
+    let limit: number = PAGINATION.DEFAULT_PAGE_SIZE // default
     if (query.limit !== undefined) {
       const parsedLimit = parseInt(query.limit as string)
       if (!isNaN(parsedLimit) && parsedLimit > 0) {
-        limit = Math.min(parsedLimit, 100) // max 100
+        limit = Math.min(parsedLimit, PAGINATION.MAX_PAGE_SIZE) // max from config
       } else {
         return sendBadRequestError(
           event,

@@ -8,6 +8,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { defineEventHandler, getRouterParam } from 'h3'
+import { RECOMMENDATION_LIMITS } from '~/configs/recommendation.config'
 
 export default defineEventHandler(async event => {
   try {
@@ -66,7 +67,7 @@ export default defineEventHandler(async event => {
               r.tags?.some((tag: string) => resourceTags.includes(tag)) ||
               r.technology?.some((tech: string) => resourceTech.includes(tech)))
         )
-        .slice(0, 6) // Limit to 6 alternatives
+        .slice(0, RECOMMENDATION_LIMITS.alternatives) // Limit from config
     }
 
     const response = {

@@ -3,6 +3,7 @@ import type { Resource } from '~/types/resource'
 import type { SuggestionResult } from '~/types/search'
 import { useSearchHistory } from '~/composables/useSearchHistory'
 import { createFuseForSuggestions } from '~/utils/fuseHelper'
+import { SUGGESTION_CONFIG, QUERY_CONFIG } from '~/configs/search.config'
 
 // Composable for managing search suggestions engine
 export const useSearchSuggestions = (resources: readonly Resource[]) => {
@@ -39,7 +40,7 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
   // Generate suggestions based on search query
   const generateSuggestions = (
     query: string,
-    limit: number = 5
+    limit: number = SUGGESTION_CONFIG.maxSuggestions
   ): SuggestionResult[] => {
     if (!query || !fuse.value) return []
 
@@ -54,12 +55,20 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
       suggestions.push({
         text: result.item.title,
         type: 'resource',
-        score: result.score ? 1 - result.score : 0.5,
+        score: result.score
+          ? 1 - result.score
+          : SUGGESTION_CONFIG.scoring.resource,
         resourceId: result.item.id,
         metadata: {
           description:
-            result.item.description.substring(0, 100) +
-            (result.item.description.length > 100 ? '...' : ''),
+            result.item.description.substring(
+              0,
+              SUGGESTION_CONFIG.descriptionLength
+            ) +
+            (result.item.description.length >
+            SUGGESTION_CONFIG.descriptionLength
+              ? '...'
+              : ''),
           category: result.item.category,
           tags: result.item.tags,
           url: result.item.url,
@@ -86,7 +95,7 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
               suggestions.push({
                 text: tag,
                 type: 'tag',
-                score: 0.7, // Lower priority than exact resource matches
+                score: SUGGESTION_CONFIG.scoring.tags, // Lower priority than exact resource matches
                 metadata: {
                   tag: tag,
                   count: tagCountsMap.value.get(tag) || 0,
@@ -105,7 +114,7 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
         suggestions.push({
           text: resource.category,
           type: 'category',
-          score: 0.6, // Lower priority than tags
+          score: SUGGESTION_CONFIG.scoring.category, // Lower priority than tags
           metadata: {
             category: resource.category,
             count: categoryCountsMap.value.get(resource.category) || 0,
@@ -115,12 +124,12 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
     })
 
     // Add popular searches if the query is empty or short
-    if (query.length < 3) {
+    if (query.length < QUERY_CONFIG.minLength + 1) {
       popularSearches.value.slice(0, limit).forEach((popular, index) => {
         suggestions.push({
           text: popular.query,
           type: 'popular',
-          score: 0.9 - index * 0.1, // Higher priority for more popular searches
+          score: SUGGESTION_CONFIG.scoring.history - index * 0.1, // Higher priority for more popular searches
           metadata: {
             count: popular.count,
             popularity: index + 1,

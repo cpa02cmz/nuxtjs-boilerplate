@@ -26,7 +26,7 @@
         type="search"
         :value="modelValue"
         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400"
-        placeholder="Search resources by name, description, tags..."
+        :placeholder="SEARCH_TEXT.placeholder"
         aria-label="Search resources (Press / to focus)"
         aria-describedby="search-results-info search-shortcut-hint"
         :aria-expanded="
@@ -116,6 +116,8 @@ import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
 import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
+import { SEARCH_TEXT } from '~/configs/ui-text.config'
+import { KEYBOARD_SHORTCUTS } from '~/configs/app.config'
 
 interface Props {
   modelValue: string
@@ -320,11 +322,11 @@ if (typeof window !== 'undefined') {
     showToast(`Removed saved search "${name}".`, 'info')
   }
 
-  // Keyboard shortcut handler - Press "/" to focus search
+  // Keyboard shortcut handler - Press shortcut key to focus search
   const handleSlashKey = (event: KeyboardEvent) => {
-    // Only trigger if "/" is pressed and no input/textarea is focused
+    // Only trigger if search focus key is pressed and no input/textarea is focused
     if (
-      event.key === '/' &&
+      event.key === KEYBOARD_SHORTCUTS.searchFocus &&
       !isFocused.value &&
       !['INPUT', 'TEXTAREA'].includes((event.target as HTMLElement)?.tagName)
     ) {

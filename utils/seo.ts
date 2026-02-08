@@ -8,9 +8,16 @@
  * - Single Responsibility: Only handles SEO-related operations
  * - Reusability: Can be used across multiple pages
  * - Type Safety: Strongly typed structured data
+ * - Configurability: Uses centralized configuration (Flexy approved!)
  */
 
 import type { Resource } from '~/types/resource'
+import {
+  EXTERNAL_SERVICES,
+  CURRENCY_CONFIG,
+  RATING_CONFIG,
+  PLATFORM_CONFIG,
+} from '~/configs/app.config'
 
 /**
  * SEO Metadata Configuration
@@ -36,7 +43,7 @@ export function generateStructuredData(
   resource: Resource
 ): Record<string, unknown> {
   const structuredData = {
-    '@context': 'https://schema.org',
+    '@context': EXTERNAL_SERVICES.schemaOrg,
     '@type': 'SoftwareApplication',
     name: resource.title,
     description: resource.description,
@@ -46,23 +53,23 @@ export function generateStructuredData(
     datePublished: resource.dateAdded,
     offers: {
       '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock',
+      price: CURRENCY_CONFIG.defaultPrice,
+      priceCurrency: CURRENCY_CONFIG.defaultCurrency,
+      availability: `${EXTERNAL_SERVICES.schemaOrg}/InStock`,
     },
     aggregateRating: resource.rating
       ? {
           '@type': 'AggregateRating',
           ratingValue: resource.rating,
-          bestRating: 5,
-          worstRating: 1,
-          ratingCount: resource.viewCount || 10,
+          bestRating: RATING_CONFIG.maxRating,
+          worstRating: RATING_CONFIG.minRating,
+          ratingCount: resource.viewCount || RATING_CONFIG.defaultRatingCount,
         }
       : undefined,
     keywords: resource.tags.join(','),
     thumbnailUrl: resource.icon,
     operatingSystem: resource.platforms
-      ? resource.platforms.join(', ')
+      ? resource.platforms.join(PLATFORM_CONFIG.separator)
       : undefined,
   }
 

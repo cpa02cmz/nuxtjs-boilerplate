@@ -1,19 +1,27 @@
 import Fuse from 'fuse.js'
 import type { IFuseOptions } from 'fuse.js'
 import type { Resource } from '~/types/resource'
+import { FUSE_CONFIG } from '~/configs/search.config'
 
+/**
+ * Default Fuse.js configuration
+ * Uses values from centralized search config
+ */
 const DEFAULT_FUSE_CONFIG: IFuseOptions<Resource> = {
   keys: [
-    { name: 'title', weight: 0.4 },
-    { name: 'description', weight: 0.3 },
-    { name: 'benefits', weight: 0.2 },
-    { name: 'tags', weight: 0.1 },
+    { name: 'title', weight: FUSE_CONFIG.keys[0].weight },
+    { name: 'description', weight: FUSE_CONFIG.keys[1].weight },
+    { name: 'benefits', weight: FUSE_CONFIG.keys[2].weight },
+    { name: 'tags', weight: FUSE_CONFIG.keys[3].weight },
   ],
-  threshold: 0.3,
-  includeScore: true,
+  threshold: FUSE_CONFIG.threshold,
+  includeScore: FUSE_CONFIG.includeScore,
   useExtendedSearch: true,
 }
 
+/**
+ * Fuse.js configuration optimized for suggestions
+ */
 const FUSE_CONFIG_FOR_SUGGESTIONS: IFuseOptions<Resource> = {
   ...DEFAULT_FUSE_CONFIG,
   minMatchCharLength: 1,
