@@ -35,7 +35,39 @@ A production-ready Nuxt.js 3 template with authentication, search, analytics, an
 - **Analytics & Monitoring** - Comprehensive tracking and performance metrics
 - **API Integration** - RESTful API with webhook support and rate limiting
 
-### Installation
+## 🚀 Quick Start
+
+Get started in 5 minutes:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/cpa02cmz/nuxtjs-boilerplate.git
+cd nuxtjs-boilerplate
+
+# 2. Install dependencies
+npm install
+
+# 3. Set up environment
+cp .env.example .env
+
+# 4. Generate Prisma client
+npm run prisma:generate
+
+# 5. Start development server
+npm run dev
+```
+
+The application will be available at **http://localhost:3000**
+
+📚 **[Complete Development Setup Guide →](docs/development-setup.md)**
+
+### Prerequisites
+
+- Node.js 18+ (check `.nvmrc` for exact version)
+- npm 10+
+- SQLite3 (usually pre-installed)
+
+### Installation Details
 
 1. **Clone the repository**
 
@@ -56,13 +88,51 @@ pnpm install
 
 > **Note**: The project uses `packageManager: npm` in package.json, so npm is the recommended package manager.
 
-3. **Start development server**
+3. **Set up environment variables**
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your configuration:
+
+```bash
+NUXT_PUBLIC_CANONICAL_URL=http://localhost:3000
+DATABASE_URL=file:./data/dev.db
+```
+
+4. **Set up database**
+
+```bash
+# Generate Prisma client
+npm run prisma:generate
+
+# (Optional) Run migrations if needed
+npm run prisma:migrate
+
+# (Optional) Open Prisma Studio to view data
+npm run prisma:studio
+```
+
+5. **Start development server**
 
 ```bash
 npm run dev
 ```
 
 The application will be available at http://localhost:3000
+
+### Verify Setup
+
+Run tests to ensure everything is working:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+```
 
 ## 🛠️ Tech Stack
 
@@ -86,11 +156,27 @@ npm run build
 
 ## 📚 Documentation
 
-- [Getting Started](./docs/getting-started.md)
-- [Development Guide](./docs/development.md)
-- [Integration Patterns](./docs/integration-patterns.md)
-- [API Reference](./docs/api/README.md)
-- [Deployment Guide](./docs/deployment/README.md)
+### Getting Started
+
+- **[Development Setup Guide](docs/development-setup.md)** - Complete environment setup (Start here!)
+- [Getting Started](./docs/getting-started.md) - Project overview
+- [AGENTS.md](AGENTS.md) - Comprehensive guide for AI assistants and developers
+
+### Development
+
+- [Development Guide](./docs/development.md) - Development workflows and patterns
+- [Integration Patterns](./docs/integration-patterns.md) - Architecture and design patterns
+- [Testing Guide](./docs/testing.md) - Testing strategies and procedures
+
+### API & Deployment
+
+- [API Reference](./docs/api/README.md) - RESTful API documentation
+- [Deployment Guide](./docs/deployment/README.md) - Production deployment instructions
+
+### Troubleshooting
+
+- [Troubleshooting Guide](docs/development-setup.md#troubleshooting) - Common issues and solutions
+- [Repository Management](./docs/repository-management.md) - Project maintenance guidelines
 
 ## 🤝 Contributing
 
