@@ -21,7 +21,7 @@ export async function checkRateLimit(
       where: {
         ip,
         timestamp: {
-          gte: windowStart,
+          gte: new Date(windowStart),
         },
       },
     })
@@ -63,7 +63,7 @@ export async function getRateLimitStats(
       where: {
         ip,
         timestamp: {
-          gte: windowStart,
+          gte: new Date(windowStart),
         },
       },
     })

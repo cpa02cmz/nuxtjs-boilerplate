@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import { setResponseStatus } from 'h3'
+import type { ApiError } from '~/server/utils/api-error'
 import {
-  ApiError,
   ErrorCode,
   ErrorCategory,
   createApiError,

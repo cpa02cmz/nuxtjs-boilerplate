@@ -111,6 +111,7 @@ export class WebhookQueueSystem {
       priority,
       scheduledFor: new Date().toISOString(),
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       retryCount: 0,
       maxRetries,
     }

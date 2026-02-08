@@ -1,4 +1,5 @@
 import { defineNitroPlugin } from 'nitropack/runtime'
+import type { H3Event } from 'h3'
 import { randomBytes } from 'node:crypto'
 import { getSecurityHeaders } from '../utils/security-config'
 
@@ -7,9 +8,10 @@ export default defineNitroPlugin(nitroApp => {
   // Apply security headers for all requests in all environments
   // Security should be enabled in all environments, including test
   // Skip if this is an HTML response that will be handled by the HTML security plugin
-  nitroApp.hooks.hook('afterResponse', (response, { event }) => {
+  nitroApp.hooks.hook('afterResponse', (response, context) => {
     try {
       // Check if response object is available
+      const event = (context as { event?: H3Event }).event
       if (!event || !event.node || !event.node.res) {
         return
       }

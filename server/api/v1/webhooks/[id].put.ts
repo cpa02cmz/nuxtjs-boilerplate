@@ -26,14 +26,14 @@ export default defineEventHandler(async event => {
     const validatedBody = validationResult.data
 
     // Find webhook by ID
-    const existingWebhook = webhookStorage.getWebhookById(id)
+    const existingWebhook = await webhookStorage.getWebhookById(id)
     if (!existingWebhook) {
       sendNotFoundError(event, 'Webhook', id)
       return
     }
 
     // Update webhook
-    const updatedWebhook = webhookStorage.updateWebhook(id, validatedBody)
+    const updatedWebhook = await webhookStorage.updateWebhook(id, validatedBody)
     if (!updatedWebhook) {
       sendNotFoundError(event, 'Webhook', id)
       return

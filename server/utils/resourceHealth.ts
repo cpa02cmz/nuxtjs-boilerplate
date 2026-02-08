@@ -3,11 +3,11 @@
  * Tracks the health status of resources over time
  */
 
-import { Resource } from '~/types/resource'
+import type { Resource } from '~/types/resource'
 import {
   validateUrl,
   validateUrls,
-  UrlValidationResult,
+  type UrlValidationResult,
 } from '~/utils/urlValidation'
 import { logger } from '~/utils/logger'
 

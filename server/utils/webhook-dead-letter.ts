@@ -25,6 +25,7 @@ export class DeadLetterManager {
       failureReason: error?.message || 'Max retries exceeded',
       lastAttemptAt: new Date().toISOString(),
       createdAt: item.createdAt,
+      updatedAt: new Date().toISOString(),
       deliveryAttempts: failedDeliveries,
     }
 
@@ -93,6 +94,7 @@ export class DeadLetterManager {
       priority: 10,
       scheduledFor: new Date().toISOString(),
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       retryCount: 0,
       maxRetries: 3,
     }
