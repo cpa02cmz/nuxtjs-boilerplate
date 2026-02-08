@@ -1,4 +1,6 @@
 // Storage keys for localStorage/sessionStorage
+// Flexy says: These are internal constants, not user-configurable settings
+
 export const STORAGE_KEYS = {
   SEARCH_HISTORY: 'resource_search_history',
   SAVED_SEARCHES: 'resource_saved_searches',
@@ -42,98 +44,125 @@ export function isValidEventType(type: string): type is ValidEventType {
   return VALID_EVENT_TYPES.includes(type as ValidEventType)
 }
 
-// Timing constants (in milliseconds)
+// Re-export configurable constants from modular config system
+// Flexy loves modularity!
+export {
+  webhooksConfig as WEBHOOKS_CONFIG,
+  type WebhooksConfig,
+} from '~/configs/webhooks.config'
+
+export {
+  paginationConfig as PAGINATION_CONFIG,
+  type PaginationConfig,
+} from '~/configs/pagination.config'
+
+export {
+  analyticsConfig as ANALYTICS_CONFIG,
+  type AnalyticsConfig,
+} from '~/configs/analytics.config'
+
+export { uiConfig as UI_CONFIG, type UiConfig } from '~/configs/ui.config'
+
+export {
+  searchConfig as SEARCH_CONFIG,
+  type SearchConfig,
+} from '~/configs/search.config'
+
+// Backward-compatible re-exports using config values
+// These maintain the old constant names but use configurable values
+import { webhooksConfig } from '~/configs/webhooks.config'
+import { uiConfig } from '~/configs/ui.config'
+import { cacheConfig } from '~/configs/cache.config'
+import { searchConfig } from '~/configs/search.config'
+import { paginationConfig } from '~/configs/pagination.config'
+
+// Timing constants (in milliseconds) - now configurable via env vars
 export const TIMING = {
   // Webhook processing intervals
-  WEBHOOK_QUEUE_PROCESSOR_INTERVAL: 5000,
-  WEBHOOK_RETRY_DELAY_BASE: 1000,
-  WEBHOOK_RETRY_DELAY_MAX: 30000,
-  WEBHOOK_REQUEST_TIMEOUT: 10000,
+  WEBHOOK_QUEUE_PROCESSOR_INTERVAL: webhooksConfig.queue.processorIntervalMs,
+  WEBHOOK_RETRY_DELAY_BASE: webhooksConfig.retry.baseDelayMs,
+  WEBHOOK_RETRY_DELAY_MAX: webhooksConfig.retry.maxDelayMs,
+  WEBHOOK_REQUEST_TIMEOUT: webhooksConfig.request.timeoutMs,
 
   // Retry and backoff settings
-  RETRY_BASE_DELAY_MS: 1000,
-  RETRY_MAX_DELAY_MS: 30000,
-  RETRY_MAX_ATTEMPTS: 3,
+  RETRY_BASE_DELAY_MS: webhooksConfig.retry.baseDelayMs,
+  RETRY_MAX_DELAY_MS: webhooksConfig.retry.maxDelayMs,
+  RETRY_MAX_ATTEMPTS: webhooksConfig.retry.maxAttempts,
 
   // Circuit breaker settings
-  CIRCUIT_BREAKER_TIMEOUT_MS: 60000,
-  CIRCUIT_BREAKER_FAILURE_THRESHOLD: 5,
-  CIRCUIT_BREAKER_SUCCESS_THRESHOLD: 2,
+  CIRCUIT_BREAKER_TIMEOUT_MS: webhooksConfig.circuitBreaker.timeoutMs,
+  CIRCUIT_BREAKER_FAILURE_THRESHOLD:
+    webhooksConfig.circuitBreaker.failureThreshold,
+  CIRCUIT_BREAKER_SUCCESS_THRESHOLD:
+    webhooksConfig.circuitBreaker.successThreshold,
 
   // Cache and debounce settings
-  DEBOUNCE_DEFAULT_MS: 300,
-  CACHE_TTL_MS: 300000, // 5 minutes
+  DEBOUNCE_DEFAULT_MS: uiConfig.toast.animation.durationMs,
+  CACHE_TTL_MS: cacheConfig.server.defaultTtlMs,
 
   // Rate limiting windows
-  RATE_LIMIT_WINDOW_MS: 900000, // 15 minutes
-  RATE_LIMIT_API_WINDOW_MS: 300000, // 5 minutes
-  RATE_LIMIT_SEARCH_WINDOW_MS: 60000, // 1 minute
+  RATE_LIMIT_WINDOW_MS: cacheConfig.rateLimit.windowMs,
+  RATE_LIMIT_API_WINDOW_MS: cacheConfig.rateLimit.apiWindowMs,
+  RATE_LIMIT_SEARCH_WINDOW_MS: cacheConfig.rateLimit.searchWindowMs,
 } as const
 
-// Toast notification durations
+// Toast notification durations - now configurable via env vars
 export const TOAST_DURATION = {
-  SUCCESS: 5000,
-  ERROR: 10000,
-  WARNING: 7000,
-  INFO: 5000,
+  SUCCESS: uiConfig.toast.duration.success,
+  ERROR: uiConfig.toast.duration.error,
+  WARNING: uiConfig.toast.duration.warning,
+  INFO: uiConfig.toast.duration.info,
 } as const
 
-// UI feedback message duration (announcements, success messages)
+// UI feedback message duration - now configurable via env vars
 export const UI_FEEDBACK_DURATION = {
-  MESSAGE_DISPLAY: 3000,
-  ANNOUNCEMENT_CLEAR: 3000,
-  SUCCESS_MESSAGE_CLEAR: 3000,
+  MESSAGE_DISPLAY: uiConfig.feedback.displayDurationMs,
+  ANNOUNCEMENT_CLEAR: uiConfig.feedback.announcementClearMs,
+  SUCCESS_MESSAGE_CLEAR: uiConfig.feedback.successMessageClearMs,
 } as const
 
-// UI interaction timing constants
+// UI interaction timing constants - now configurable via env vars
 export const UI_TIMING = {
   // Search and input debouncing
-  SEARCH_DEBOUNCE_MS: 300,
-  SEARCH_BLUR_DELAY_MS: 200,
-  SUGGESTION_CHECK_INTERVAL_MS: 100,
+  SEARCH_DEBOUNCE_MS: searchConfig.behavior.debounceMs,
+  SEARCH_BLUR_DELAY_MS: searchConfig.behavior.blurDelayMs,
+  SUGGESTION_CHECK_INTERVAL_MS: uiConfig.toast.animation.checkIntervalMs,
 
   // Connection checking
-  CONNECTION_TIMEOUT_MS: 5000,
+  CONNECTION_TIMEOUT_MS: webhooksConfig.request.timeoutMs,
   CONNECTION_RETRY_INTERVAL_MS: 100,
 
   // Toast and notification intervals
-  TOAST_CHECK_INTERVAL_MS: 100,
+  TOAST_CHECK_INTERVAL_MS: uiConfig.toast.animation.checkIntervalMs,
 
   // Animation durations
-  ANIMATION_DURATION_MS: 300,
-  ANIMATION_LEAVE_DURATION_MS: 200,
+  ANIMATION_DURATION_MS: uiConfig.toast.animation.durationMs,
+  ANIMATION_LEAVE_DURATION_MS: uiConfig.animation.leaveDurationMs,
 } as const
 
-// Search configuration
-export const SEARCH_CONFIG = {
-  MIN_QUERY_LENGTH: 2,
-  MAX_SUGGESTIONS: 5,
-  MAX_HISTORY_ITEMS: 10,
-} as const
-
-// RSS feed configuration
+// RSS feed configuration - now configurable via env vars
 export const RSS_CONFIG = {
-  MAX_ITEMS: 50,
-  DEFAULT_LIMIT: 20,
+  MAX_ITEMS: cacheConfig.rss.maxItems,
+  DEFAULT_LIMIT: cacheConfig.rss.defaultLimit,
 } as const
 
-// Pagination and data limits
+// Pagination and data limits - now configurable via env vars
 export const PAGINATION = {
-  DEFAULT_PAGE_SIZE: 20,
-  MAX_PAGE_SIZE: 100,
-  MAX_ITEMS_PER_REQUEST: 1000,
+  DEFAULT_PAGE_SIZE: paginationConfig.defaults.pageSize,
+  MAX_PAGE_SIZE: paginationConfig.limits.maxPageSize,
+  MAX_ITEMS_PER_REQUEST: paginationConfig.limits.maxItemsPerRequest,
 } as const
 
-// Cache configuration
+// Cache configuration - now configurable via env vars
 export const CACHE_CONFIG = {
-  MAX_CACHE_SIZE: 100,
-  MAX_POPULAR_SEARCHES: 50,
-  MAX_ZERO_RESULT_SEARCHES: 50,
-  MAX_PERFORMANCE_HISTORY: 100,
-  MAX_ANALYTICS_ENTRIES: 100,
+  MAX_CACHE_SIZE: cacheConfig.server.maxCacheSize,
+  MAX_POPULAR_SEARCHES: cacheConfig.server.maxPopularSearches,
+  MAX_ZERO_RESULT_SEARCHES: cacheConfig.server.maxZeroResultSearches,
+  MAX_PERFORMANCE_HISTORY: cacheConfig.server.maxPerformanceHistory,
+  MAX_ANALYTICS_ENTRIES: cacheConfig.server.maxAnalyticsEntries,
 } as const
 
-// HTTP status code ranges
+// HTTP status code ranges - internal constants
 export const HTTP_STATUS = {
   OK_MIN: 200,
   OK_MAX: 399,
@@ -144,21 +173,21 @@ export const HTTP_STATUS = {
   SERVER_ERROR_MIN: 500,
 } as const
 
-// UI layout constants (in pixels)
+// UI layout constants (in pixels) - now configurable via env vars
 export const UI_LAYOUT = {
   // Toast/notification positioning
-  TOAST_CONTAINER_TOP: 20,
-  TOAST_CONTAINER_RIGHT: 20,
-  TOAST_MAX_WIDTH: 400,
-  TOAST_MIN_WIDTH: 300,
+  TOAST_CONTAINER_TOP: uiConfig.toast.position.top,
+  TOAST_CONTAINER_RIGHT: uiConfig.toast.position.right,
+  TOAST_MAX_WIDTH: uiConfig.toast.position.maxWidth,
+  TOAST_MIN_WIDTH: uiConfig.toast.position.minWidth,
 
   // Spacing scale (in rem units, multiplied by 0.25)
-  SPACING_XS: 0.25, // 0.25rem = 4px
-  SPACING_SM: 0.5, // 0.5rem = 8px
-  SPACING_MD: 0.75, // 0.75rem = 12px
-  SPACING_LG: 1, // 1rem = 16px
-  SPACING_XL: 1.5, // 1.5rem = 24px
-  SPACING_2XL: 2, // 2rem = 32px
+  SPACING_XS: 0.25,
+  SPACING_SM: 0.5,
+  SPACING_MD: 0.75,
+  SPACING_LG: 1,
+  SPACING_XL: 1.5,
+  SPACING_2XL: 2,
 
   // Border radius (in rem)
   BORDER_RADIUS_SM: 0.25,
@@ -176,17 +205,17 @@ export const UI_LAYOUT = {
   LINE_HEIGHT_LG: 1.5,
 } as const
 
-// Animation duration constants (in seconds)
+// Animation duration constants (in seconds) - now configurable via env vars
 export const ANIMATION_DURATION = {
-  FAST: 0.2,
-  NORMAL: 0.3,
-  SLOW: 0.5,
+  FAST: uiConfig.animation.fast,
+  NORMAL: uiConfig.animation.normal,
+  SLOW: uiConfig.animation.slow,
 } as const
 
-// Z-index scale
+// Z-index scale - now configurable via env vars
 export const Z_INDEX = {
-  TOAST: 9999,
-  MODAL: 9000,
-  DROPDOWN: 1000,
-  STICKY: 100,
+  TOAST: uiConfig.zIndex.toast,
+  MODAL: uiConfig.zIndex.modal,
+  DROPDOWN: uiConfig.zIndex.dropdown,
+  STICKY: uiConfig.zIndex.sticky,
 } as const

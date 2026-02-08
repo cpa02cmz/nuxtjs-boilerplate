@@ -1,4 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+// Flexy says: No more hardcoded values! All configuration is now modular.
+import {
+  appConfig,
+  pwaConfig,
+  seoConfig,
+  themeConfig,
+  cacheConfig,
+  securityConfig,
+} from './configs'
+
 export default defineNuxtConfig({
   devtools: { enabled: false }, // Disable in production for performance
   css: ['~/assets/css/main.css'],
@@ -28,61 +38,50 @@ export default defineNuxtConfig({
     },
   },
 
-  // PWA Configuration - merged from both branches
+  // PWA Configuration - using modular config
   pwa: {
-    strategies: 'generateSW',
-    registerType: 'autoUpdate',
+    strategies: pwaConfig.workbox.strategy as 'generateSW' | 'injectManifest',
+    registerType: pwaConfig.workbox.registerType as 'autoUpdate' | 'prompt',
     manifest: {
-      name: 'Free Stuff on the Internet',
-      short_name: 'Free Resources',
-      description:
-        'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-      theme_color: '#4f46e5',
-      lang: 'en',
-      display: 'standalone',
-      orientation: 'any',
-      background_color: '#ffffff',
-      id: '/',
-      start_url: '/',
-      scope: '/',
-      icons: [
-        {
-          src: 'pwa/icon-192x192.png',
-          sizes: '192x192',
-          type: 'image/png',
-        },
-        {
-          src: 'pwa/icon-512x512.png',
-          sizes: '512x512',
-          type: 'image/png',
-        },
-        {
-          src: 'pwa/maskable-icon-192x192.png',
-          sizes: '192x192',
-          type: 'image/png',
-          purpose: 'maskable',
-        },
-        {
-          src: 'pwa/maskable-icon-512x512.png',
-          sizes: '512x512',
-          type: 'image/png',
-          purpose: 'maskable',
-        },
-      ],
+      name: pwaConfig.manifest.name,
+      short_name: pwaConfig.manifest.short_name,
+      description: pwaConfig.manifest.description,
+      theme_color: pwaConfig.manifest.theme_color,
+      lang: pwaConfig.manifest.lang,
+      display: pwaConfig.manifest.display as
+        | 'standalone'
+        | 'fullscreen'
+        | 'minimal-ui'
+        | 'browser',
+      orientation: pwaConfig.manifest.orientation as
+        | 'any'
+        | 'natural'
+        | 'landscape'
+        | 'landscape-primary'
+        | 'landscape-secondary'
+        | 'portrait'
+        | 'portrait-primary'
+        | 'portrait-secondary'
+        | undefined,
+      background_color: pwaConfig.manifest.background_color,
+      id: pwaConfig.manifest.id,
+      start_url: pwaConfig.manifest.start_url,
+      scope: pwaConfig.manifest.scope,
+      icons: [...pwaConfig.manifest.icons],
     },
     workbox: {
       // Cache strategies for different assets
-      globPatterns: ['**/*.{js,css,html,png,svg,ico,jpg,webp,woff2}'],
+      globPatterns: cacheConfig.pwa.globPatterns,
       runtimeCaching: [
         {
           // Cache API calls with a network-first strategy
           urlPattern: '^/api/.*',
           handler: 'NetworkFirst',
           options: {
-            cacheName: 'api-cache',
+            cacheName: cacheConfig.pwa.api.name,
             expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24, // 24 hours
+              maxEntries: cacheConfig.pwa.api.maxEntries,
+              maxAgeSeconds: cacheConfig.pwa.api.maxAgeSeconds,
             },
           },
         },
@@ -91,10 +90,10 @@ export default defineNuxtConfig({
           urlPattern: '.*resources\\.json',
           handler: 'CacheFirst',
           options: {
-            cacheName: 'resources-cache',
+            cacheName: cacheConfig.pwa.resources.name,
             expiration: {
-              maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+              maxEntries: cacheConfig.pwa.resources.maxEntries,
+              maxAgeSeconds: cacheConfig.pwa.resources.maxAgeSeconds,
             },
           },
         },
@@ -103,10 +102,10 @@ export default defineNuxtConfig({
           urlPattern: '^https://fonts\\.(?:googleapis|gstatic)\\.com/.*',
           handler: 'CacheFirst',
           options: {
-            cacheName: 'google-fonts-cache',
+            cacheName: cacheConfig.pwa.fonts.name,
             expiration: {
-              maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              maxEntries: cacheConfig.pwa.fonts.maxEntries,
+              maxAgeSeconds: cacheConfig.pwa.fonts.maxAgeSeconds,
             },
           },
         },
@@ -116,10 +115,10 @@ export default defineNuxtConfig({
             '^/_nuxt/.*\\.(js|css|png|svg|jpg|jpeg|gif|webp|woff|woff2)',
           handler: 'CacheFirst',
           options: {
-            cacheName: 'nuxt-assets-cache',
+            cacheName: cacheConfig.pwa.assets.name,
             expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              maxEntries: cacheConfig.pwa.assets.maxEntries,
+              maxAgeSeconds: cacheConfig.pwa.assets.maxAgeSeconds,
             },
           },
         },
@@ -127,10 +126,10 @@ export default defineNuxtConfig({
           urlPattern: 'https://.*\\.githubusercontent\\.com/.*',
           handler: 'CacheFirst',
           options: {
-            cacheName: 'github-cdn-cache',
+            cacheName: cacheConfig.pwa.github.name,
             expiration: {
-              maxEntries: 10,
-              maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+              maxEntries: cacheConfig.pwa.github.maxEntries,
+              maxAgeSeconds: cacheConfig.pwa.github.maxAgeSeconds,
             },
             cacheableResponse: {
               statuses: [0, 200],
@@ -141,10 +140,10 @@ export default defineNuxtConfig({
           urlPattern: '^https://.*\\.(png|jpe?g|gif|svg|webp)$',
           handler: 'CacheFirst',
           options: {
-            cacheName: 'image-cache',
+            cacheName: cacheConfig.pwa.images.name,
             expiration: {
-              maxEntries: 20,
-              maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+              maxEntries: cacheConfig.pwa.images.maxEntries,
+              maxAgeSeconds: cacheConfig.pwa.images.maxAgeSeconds,
             },
             cacheableResponse: {
               statuses: [0, 200],
@@ -154,11 +153,11 @@ export default defineNuxtConfig({
       ],
     },
     devOptions: {
-      enabled: true,
-      suppressWarnings: true,
-      navigateFallback: '/',
+      enabled: pwaConfig.devOptions.enabled,
+      suppressWarnings: pwaConfig.devOptions.suppressWarnings,
+      navigateFallback: pwaConfig.devOptions.navigateFallback,
       navigateFallbackAllowlist: [/^\/$/],
-      type: 'module',
+      type: pwaConfig.devOptions.type as 'classic' | 'module',
     },
   },
 
@@ -188,11 +187,16 @@ export default defineNuxtConfig({
   },
 
   // Image optimization configuration
-  // Note: Only specify non-default values to avoid duplicate key warnings during build
-  // Nuxt Image provides sensible defaults: provider='ipx', quality=80, densities=[1,2]
   image: {
-    quality: 80,
-    format: ['webp', 'avif', 'jpeg'],
+    quality: securityConfig.image.quality,
+    format: securityConfig.image.formats as (
+      | 'webp'
+      | 'avif'
+      | 'jpeg'
+      | 'png'
+      | 'gif'
+      | 'svg'
+    )[],
   },
 
   // Additional performance optimizations
@@ -201,7 +205,7 @@ export default defineNuxtConfig({
     inlineStyles: true,
   },
 
-  // SEO and Security Configuration - using built-in meta handling
+  // SEO and Security Configuration - using modular config
   app: {
     head: {
       link: [
@@ -227,19 +231,21 @@ export default defineNuxtConfig({
         // DNS prefetch for external resources
         { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
         { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
-        // Add canonical URL - will be set dynamically in app.vue
       ],
-      script: [
-        // Add script for performance monitoring if needed
-        // Preload important scripts
-      ],
+      script: [],
       // Add performance-related and security meta tags
       meta: [
         // Note: CSP is implemented via server plugin (server/plugins/security-headers.ts)
         // with dynamic nonce generation for proper security
-        { name: 'referrer', content: 'no-referrer' },
-        { name: 'theme-color', content: '#ffffff' },
-        { name: 'msapplication-TileColor', content: '#ffffff' },
+        {
+          name: 'referrer',
+          content: securityConfig.headers['Referrer-Policy'],
+        },
+        { name: 'theme-color', content: themeConfig.pwa.themeColor },
+        {
+          name: 'msapplication-TileColor',
+          content: themeConfig.pwa.msTileColor,
+        },
         // Add Core Web Vitals meta tags
         {
           name: 'viewport',
@@ -247,46 +253,40 @@ export default defineNuxtConfig({
         },
         // Resource hints
         { name: 'format-detection', content: 'telephone=no' },
-        // SEO meta tags
+        // SEO meta tags - using modular config
         {
           name: 'description',
-          content:
-            'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+          content: seoConfig.meta.description,
         },
         {
           name: 'keywords',
-          content:
-            'free resources, AI tools, hosting, databases, CDN, VPS, web development',
+          content: seoConfig.meta.keywords,
         },
-        { name: 'author', content: 'Free Stuff on the Internet' },
-        // Open Graph tags
+        { name: 'author', content: seoConfig.meta.author },
+        // Open Graph tags - using modular config
         {
           property: 'og:title',
-          content: 'Free Stuff on the Internet - Free Resources for Developers',
+          content: seoConfig.meta.title,
         },
         {
           property: 'og:description',
-          content:
-            'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+          content: seoConfig.meta.description,
         },
-        { property: 'og:type', content: 'website' },
-        // og:url will be set dynamically in app.vue
-        { property: 'og:image', content: '/og-image.jpg' }, // This will be updated later
-        // Twitter card
-        { name: 'twitter:card', content: 'summary_large_image' },
+        { property: 'og:type', content: seoConfig.og.type },
+        { property: 'og:image', content: seoConfig.og.image },
+        // Twitter card - using modular config
+        { name: 'twitter:card', content: seoConfig.twitter.card },
         {
           name: 'twitter:title',
-          content: 'Free Stuff on the Internet - Free Resources for Developers',
+          content: seoConfig.meta.title,
         },
         {
           name: 'twitter:description',
-          content:
-            'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+          content: seoConfig.meta.description,
         },
       ],
-      // Add resource hints
       htmlAttrs: {
-        lang: 'en',
+        lang: appConfig.lang,
       },
     },
   },
@@ -318,8 +318,7 @@ export default defineNuxtConfig({
     },
   },
 
-  // Performance optimizations are included in experimental section above
-  // Explicitly use Vite for faster builds
+  // Builder configuration
   builder: 'vite',
 
   // Optimize bundle size
@@ -342,7 +341,6 @@ export default defineNuxtConfig({
           chunkFileNames: '_nuxt/[name].[hash].js',
           entryFileNames: '_nuxt/[name].[hash].js',
         },
-        // Note: @nuxt/kit should NOT be externalized as it's required by custom modules
       },
     },
     // Optimize build speed
@@ -351,25 +349,18 @@ export default defineNuxtConfig({
     },
     // Optimize module resolution
     resolve: {
-      // Enable more aggressive caching
-      alias: {
-        // Add common aliases to speed up resolution
-      },
+      alias: {},
     },
     // Additional build performance optimizations
     optimizeDeps: {
-      // Only scan necessary files
       include: ['vue', 'vue-router'],
-      // Exclude heavy dependencies that shouldn't be pre-bundled
       exclude: [],
     },
   },
 
   // Additional build optimization settings
   build: {
-    // Optimize for faster builds
     transpile: ['vue', 'entities', 'estree-walker'],
-    // Add more detailed build information
     analyze: false, // Enable only when needed for analysis
   },
 })
