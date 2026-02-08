@@ -52,7 +52,7 @@
         :value="modelValue"
         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400 focus:shadow-lg focus:-translate-y-0.5"
         :class="{ 'placeholder:text-gray-300': isSearching }"
-        placeholder="Search resources by name, description, tags..."
+        :placeholder="contentConfig.search.placeholder"
         aria-label="Search resources (Press / to focus)"
         aria-describedby="search-results-info search-shortcut-hint"
         :aria-expanded="
@@ -143,6 +143,7 @@ import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
 import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
+import { contentConfig } from '~/configs/content.config'
 
 interface Props {
   modelValue: string

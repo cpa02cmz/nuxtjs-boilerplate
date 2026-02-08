@@ -4,10 +4,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-          Search Resources
+          {{ contentConfig.navigation.items.search }}
         </h1>
         <p class="mt-4 text-xl text-gray-500">
-          Find the perfect free resources for your projects
+          {{ seoConfig.meta.description }}
         </p>
       </div>
 
@@ -185,6 +185,9 @@ import VirtualResourceList from '~/components/VirtualResourceList.vue'
 import PopularSearches from '~/components/PopularSearches.vue'
 import ZeroResultSearches from '~/components/ZeroResultSearches.vue'
 import ActiveFilters from '~/components/ActiveFilters.vue'
+import { seoConfig } from '~/configs/seo.config'
+import { contentConfig } from '~/configs/content.config'
+import { appConfig } from '~/configs/app.config'
 
 definePageMeta({
   layout: 'default',
@@ -192,15 +195,13 @@ definePageMeta({
 
 const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
-  title: 'Search Resources - Free Stuff on the Internet',
-  ogTitle: 'Search Resources - Free Stuff on the Internet',
-  description:
-    'Search and filter through our collection of free resources including AI tools, hosting services, databases, and more for developers.',
-  ogDescription:
-    'Search and filter through our collection of free resources including AI tools, hosting services, databases, and more for developers.',
-  ogImage: '/og-image.jpg',
+  title: `${contentConfig.navigation.items.search} - ${appConfig.name}`,
+  ogTitle: `${contentConfig.navigation.items.search} - ${appConfig.name}`,
+  description: seoConfig.meta.description,
+  ogDescription: seoConfig.meta.description,
+  ogImage: seoConfig.og.image,
   ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000'}/search`,
-  twitterCard: 'summary_large_image',
+  twitterCard: seoConfig.twitter.card,
 })
 
 const {

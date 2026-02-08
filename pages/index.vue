@@ -5,11 +5,10 @@
         <h1
           class="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl"
         >
-          Free Stuff on the Internet
+          {{ appConfig.name }}
         </h1>
         <p class="mt-6 max-w-lg mx-auto text-xl text-gray-600">
-          Discover amazing free resources available on the internet - from AI
-          tools to hosting services.
+          {{ appConfig.description }}
         </p>
       </div>
 
@@ -221,6 +220,8 @@ import { useUrlSync } from '~/composables/useUrlSync'
 import { useHomePage } from '~/composables/useHomePage'
 import { getButtonLabel } from '~/utils/resourceHelper'
 import ResourceSort from '~/components/ResourceSort.vue'
+import { appConfig } from '~/configs/app.config'
+import { seoConfig } from '~/configs/seo.config'
 
 definePageMeta({
   layout: 'default',
@@ -229,15 +230,16 @@ definePageMeta({
 // Set page-specific meta tags
 const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
-  title: 'Free Stuff on the Internet - Free Resources for Developers',
-  ogTitle: 'Free Stuff on the Internet - Free Resources for Developers',
-  description:
-    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-  ogDescription:
-    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-  ogImage: '/og-image.jpg',
-  ogUrl: runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000',
-  twitterCard: 'summary_large_image',
+  title: seoConfig.meta.title,
+  ogTitle: seoConfig.meta.title,
+  description: seoConfig.meta.description,
+  ogDescription: seoConfig.meta.description,
+  ogImage: seoConfig.og.image,
+  ogUrl:
+    runtimeConfig.public.siteUrl ||
+    runtimeConfig.public.canonicalUrl ||
+    'http://localhost:3000',
+  twitterCard: seoConfig.twitter.card,
 })
 
 // Use the resources composable

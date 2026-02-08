@@ -209,6 +209,25 @@ export const contentConfig = {
         'Try searching for another resource',
     },
   },
+
+  // Social Sharing - Flexy hates hardcoded sharing params!
+  socialShare: {
+    // UTM Parameters
+    utm: {
+      source: process.env.SHARE_UTM_SOURCE || 'social',
+      medium: process.env.SHARE_UTM_MEDIUM || 'share',
+      campaign: process.env.SHARE_UTM_CAMPAIGN || 'resource-sharing',
+    },
+    // Hashtags for Twitter
+    hashtags: process.env.SHARE_HASHTAGS || 'FreeResources,WebDevelopment',
+    // Platform URLs
+    platforms: {
+      twitter: 'https://twitter.com/intent/tweet',
+      facebook: 'https://www.facebook.com/sharer/sharer.php',
+      linkedin: 'https://www.linkedin.com/sharing/share-offsite/',
+      reddit: 'https://www.reddit.com/submit',
+    },
+  },
 } as const
 
 export type ContentConfig = typeof contentConfig

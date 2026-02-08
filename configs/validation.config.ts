@@ -2,6 +2,34 @@
 // Flexy hates hardcoded values! All validation settings are now configurable.
 
 export const validationConfig = {
+  // Validation Messages - Flexy hates hardcoded strings!
+  messages: {
+    required: {
+      title: process.env.VALIDATION_MSG_TITLE_REQUIRED || 'Title is required',
+      description:
+        process.env.VALIDATION_MSG_DESC_REQUIRED || 'Description is required',
+      url: process.env.VALIDATION_MSG_URL_REQUIRED || 'URL is required',
+      category:
+        process.env.VALIDATION_MSG_CATEGORY_REQUIRED || 'Category is required',
+    },
+    invalid: {
+      url: process.env.VALIDATION_MSG_URL_INVALID || 'Please enter a valid URL',
+    },
+    tooLong: {
+      title:
+        process.env.VALIDATION_MSG_TITLE_TOO_LONG ||
+        'Title is too long (max {{max}} characters)',
+      description:
+        process.env.VALIDATION_MSG_DESC_TOO_LONG ||
+        'Description is too long (max {{max}} characters)',
+    },
+    tooShort: {
+      description:
+        process.env.VALIDATION_MSG_DESC_TOO_SHORT ||
+        'Description must be at least {{min}} characters',
+    },
+  },
+
   // URL Validation
   url: {
     timeout: parseInt(process.env.VALIDATION_URL_TIMEOUT || '10000'),
