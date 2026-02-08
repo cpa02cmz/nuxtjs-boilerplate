@@ -1,4 +1,5 @@
 import type { Resource } from '~/types/resource'
+import { recommendationConfig } from '~/configs/recommendation.config'
 
 export interface RecommendationConfig {
   collaborativeWeight: number
@@ -30,6 +31,10 @@ export interface UserPreferences {
   skillLevel?: string
 }
 
+/**
+ * Calculates similarity between two resources
+ * Flexy hates hardcoded weights - uses recommendationConfig!
+ */
 export function calculateSimilarity(
   resourceA: Resource,
   resourceB: Resource
@@ -37,9 +42,10 @@ export function calculateSimilarity(
   if (resourceA.id === resourceB.id) return 1
 
   let score = 0
+  const weights = recommendationConfig.similarity
 
   if (resourceA.category === resourceB.category) {
-    score += 0.5
+    score += weights.category
   }
 
   const tagsB = new Set(resourceB.tags)
@@ -47,7 +53,7 @@ export function calculateSimilarity(
   if (commonTags > 0) {
     const tagSimilarity =
       commonTags / Math.max(resourceA.tags.length, resourceB.tags.length)
-    score += 0.3 * tagSimilarity
+    score += weights.tags * tagSimilarity
   }
 
   const techB = new Set(resourceB.technology)
@@ -56,57 +62,71 @@ export function calculateSimilarity(
     const techSimilarity =
       commonTech /
       Math.max(resourceA.technology.length, resourceB.technology.length)
-    score += 0.2 * techSimilarity
+    score += weights.technology * techSimilarity
   }
 
   return Math.min(1, score)
 }
 
+/**
+ * Calculates interest match score for a resource
+ * Flexy hates hardcoded weights - uses recommendationConfig!
+ */
 export function calculateInterestMatch(
   resource: Resource,
   userPreferences?: UserPreferences
 ): number {
   if (!userPreferences?.interests || userPreferences.interests.length === 0) {
-    return 0.5
+    return recommendationConfig.fallback.defaultInterestMatch
   }
 
   let matchScore = 0
   let totalFactors = 0
+  const weights = recommendationConfig.interestMatch
 
   const interestsSet = new Set(userPreferences.interests)
 
   if (interestsSet.has(resource.category)) {
-    matchScore += 0.4
-    totalFactors += 0.4
+    matchScore += weights.category
+    totalFactors += weights.category
   }
 
   const matchingTags = resource.tags.filter(tag => interestsSet.has(tag)).length
   if (matchingTags > 0) {
-    const tagMatch = (matchingTags / resource.tags.length) * 0.3
+    const tagMatch = (matchingTags / resource.tags.length) * weights.tags
     matchScore += tagMatch
-    totalFactors += 0.3
+    totalFactors += weights.tags
   }
 
   const matchingTech = resource.technology.filter(tech =>
     interestsSet.has(tech)
   ).length
   if (matchingTech > 0) {
-    const techMatch = (matchingTech / resource.technology.length) * 0.3
+    const techMatch =
+      (matchingTech / resource.technology.length) * weights.technology
     matchScore += techMatch
-    totalFactors += 0.3
+    totalFactors += weights.technology
   }
 
   return totalFactors > 0 ? matchScore / totalFactors : 0
 }
 
+/**
+ * Calculates skill match score for a resource
+ */
 export function calculateSkillMatch(
   resource: Resource,
   userPreferences?: UserPreferences
 ): number {
-  if (!userPreferences?.skillLevel) return 0.5
-  return 0.5
+  if (!userPreferences?.skillLevel) {
+    return recommendationConfig.thresholds.defaultSkillMatch
+  }
+  return recommendationConfig.thresholds.defaultSkillMatch
 }
 
+/**
+ * Calculates collaborative score for a resource
+ */
 export function calculateCollaborativeScore(
   resourceId: string,
   userPreferences?: UserPreferences
@@ -115,7 +135,7 @@ export function calculateCollaborativeScore(
     !userPreferences?.viewedResources &&
     !userPreferences?.bookmarkedResources
   ) {
-    return 0
+    return recommendationConfig.fallback.collaborativeBaseline
   }
 
   const allInteractedResourceIds = [
@@ -125,9 +145,17 @@ export function calculateCollaborativeScore(
 
   const interactedSet = new Set(allInteractedResourceIds)
   const interactionCount = interactedSet.has(resourceId) ? 1 : 0
-  return Math.min(1, interactionCount * 0.5)
+  return Math.min(
+    1,
+    interactionCount *
+      recommendationConfig.thresholds.interactionScoreMultiplier
+  )
 }
 
+/**
+ * Applies diversity algorithm to recommendations
+ * Flexy hates hardcoded values - uses recommendationConfig!
+ */
 export function applyDiversity(
   recommendations: RecommendationResult[],
   diversityFactor: number,
@@ -138,6 +166,7 @@ export function applyDiversity(
   const diverseRecs: RecommendationResult[] = []
   const categoriesUsed = new Set<string>()
   const technologiesUsed = new Set<string>()
+  const minDiversePool = recommendationConfig.limits.minDiversePool
 
   for (const rec of recommendations) {
     const categoryDiversity = !categoriesUsed.has(rec.resource.category)
@@ -146,7 +175,7 @@ export function applyDiversity(
     )
 
     if (
-      diverseRecs.length < 3 ||
+      diverseRecs.length < minDiversePool ||
       categoryDiversity ||
       techDiversity ||
       Math.random() > 1 - diversityFactor

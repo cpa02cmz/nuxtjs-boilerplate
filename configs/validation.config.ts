@@ -65,7 +65,28 @@ export const validationConfig = {
       max: parseInt(process.env.ANALYTICS_RATING_MAX || '5'),
     },
   },
+
+  // Quality Check Settings
+  quality: {
+    descriptionMinLength: parseInt(
+      process.env.QUALITY_DESCRIPTION_MIN_LENGTH || '20'
+    ),
+    spamKeywords: parseSpamKeywords(
+      process.env.QUALITY_SPAM_KEYWORDS ||
+        'spam, fake, scam, click here, buy now, free money, get rich, make money, casino, gambling'
+    ),
+    penalties: {
+      fail: parseInt(process.env.QUALITY_PENALTY_FAIL || '25'),
+      warn: parseInt(process.env.QUALITY_PENALTY_WARN || '10'),
+      pending: parseInt(process.env.QUALITY_PENALTY_PENDING || '5'),
+    },
+  },
 } as const
+
+// Helper function to parse spam keywords
+function parseSpamKeywords(value: string): string[] {
+  return value.split(',').map(s => s.trim().toLowerCase())
+}
 
 // Helper function to parse protocols
 function parseProtocols(value: string): string[] {
