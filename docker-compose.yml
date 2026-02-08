@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nuxtjs-boilerplate
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      - NUXT_HOST=0.0.0.0
+      - NUXT_PORT=3000
+      - NUXT_PUBLIC_CANONICAL_URL=${NUXT_PUBLIC_CANONICAL_URL:-http://localhost:3000}
+      - DATABASE_URL=${DATABASE_URL:-file:./data/dev.db}
+    volumes:
+      - ./data:/app/data
+    networks:
+      - app-network
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://localhost:3000/',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  data:
+    driver: local
