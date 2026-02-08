@@ -52,8 +52,23 @@
           /
         </kbd>
       </div>
+
+      <!-- Typing indicator - shows when user is typing (during debounce) -->
       <div
-        v-if="modelValue"
+        v-if="isTyping && modelValue.length >= SEARCH_CONFIG.MIN_QUERY_LENGTH"
+        class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
+        aria-hidden="true"
+      >
+        <div class="typing-indicator">
+          <span class="typing-indicator__dot" />
+          <span class="typing-indicator__dot" />
+          <span class="typing-indicator__dot" />
+        </div>
+      </div>
+
+      <!-- Clear button - shows when there's text and not typing -->
+      <div
+        v-if="modelValue && !isTyping"
         class="absolute inset-y-0 right-0 flex items-center pr-3"
       >
         <button
@@ -137,6 +152,7 @@ const emit = defineEmits<Emits>()
 // Reactive variables
 const searchInputRef = ref<HTMLInputElement>()
 const inputTimeout = ref<ReturnType<typeof setTimeout> | number>()
+const typingTimeout = ref<ReturnType<typeof setTimeout> | number>()
 const debouncedQuery = ref('')
 const suggestions = ref<
   Array<{ id: string; title: string; description: string; url: string }>
@@ -144,6 +160,7 @@ const suggestions = ref<
 const showSuggestions = ref(false)
 const searchHistory = ref<string[]>([])
 const isFocused = ref(false)
+const isTyping = ref(false)
 const activeIndex = ref(-1)
 
 // Use the resources composable
@@ -162,6 +179,16 @@ const handleInput = (event: Event) => {
   // Update the model value immediately
   emit('update:modelValue', value)
 
+  // Show typing indicator for immediate feedback
+  if (value.length >= SEARCH_CONFIG.MIN_QUERY_LENGTH) {
+    isTyping.value = true
+  }
+
+  // Clear previous typing timeout
+  if (typingTimeout.value) {
+    clearTimeout(typingTimeout.value)
+  }
+
   // Debounce the search to avoid constant updates
   if (inputTimeout.value) {
     clearTimeout(inputTimeout.value)
@@ -171,6 +198,8 @@ const handleInput = (event: Event) => {
     debouncedQuery.value = value
     updateSuggestions(value)
     emit('search', value)
+    // Hide typing indicator after suggestions are processed
+    isTyping.value = false
   }, props.debounceTime)
 }
 
@@ -201,6 +230,13 @@ const clearSearch = () => {
   suggestions.value = []
   showSuggestions.value = false
   activeIndex.value = -1
+  isTyping.value = false
+  if (typingTimeout.value) {
+    clearTimeout(typingTimeout.value)
+  }
+  if (inputTimeout.value) {
+    clearTimeout(inputTimeout.value)
+  }
 }
 
 const handleFocus = () => {
@@ -354,3 +390,54 @@ if (typeof window !== 'undefined') {
   })
 }
 </script>
+
+<style scoped>
+/* Typing indicator - subtle animated dots */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 8px;
+}
+
+.typing-indicator__dot {
+  width: 4px;
+  height: 4px;
+  background-color: #9ca3af;
+  border-radius: 50%;
+  animation: typing-bounce 1.4s ease-in-out infinite both;
+}
+
+.typing-indicator__dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typing-indicator__dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes typing-bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Reduced motion support for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .typing-indicator__dot {
+    animation: none;
+    opacity: 0.8;
+  }
+
+  .typing-indicator__dot:nth-child(2) {
+    opacity: 1;
+  }
+}
+</style>
