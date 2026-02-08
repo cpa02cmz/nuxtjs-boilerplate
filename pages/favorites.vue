@@ -68,12 +68,51 @@
             >
               Export
             </button>
-            <button
-              class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              @click="clearBookmarks"
+            <Transition
+              enter-active-class="transition-all duration-200 ease-out"
+              enter-from-class="opacity-0 scale-95"
+              enter-to-class="opacity-100 scale-100"
+              leave-active-class="transition-all duration-150 ease-in"
+              leave-from-class="opacity-100 scale-100"
+              leave-to-class="opacity-0 scale-95"
+              mode="out-in"
             >
-              Clear All
-            </button>
+              <div
+                v-if="showClearConfirmation"
+                key="confirmation"
+                class="flex items-center space-x-2 bg-red-50 border border-red-200 rounded-md px-3 py-2"
+                role="alert"
+                aria-live="polite"
+              >
+                <span
+                  class="text-sm text-red-700 font-medium whitespace-nowrap"
+                >
+                  Delete {{ bookmarkCount }} bookmark<span
+                    v-if="bookmarkCount !== 1"
+                  >s</span>?
+                </span>
+                <button
+                  class="text-sm text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-colors"
+                  @click="handleCancelClear"
+                >
+                  Cancel
+                </button>
+                <button
+                  class="text-sm text-red-700 font-medium px-2 py-1 rounded bg-red-100 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-colors"
+                  @click="handleConfirmClear"
+                >
+                  Delete
+                </button>
+              </div>
+              <button
+                v-else
+                key="clear-button"
+                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                @click="handleClearClick"
+              >
+                Clear All
+              </button>
+            </Transition>
           </div>
         </div>
 
@@ -118,6 +157,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useBookmarks } from '~/composables/useBookmarks'
 
 // Set page-specific meta tags
@@ -139,4 +179,20 @@ const {
   exportBookmarks,
   clearBookmarks,
 } = useBookmarks()
+
+// Confirmation state for clearing all bookmarks
+const showClearConfirmation = ref(false)
+
+const handleClearClick = () => {
+  showClearConfirmation.value = true
+}
+
+const handleCancelClear = () => {
+  showClearConfirmation.value = false
+}
+
+const handleConfirmClear = () => {
+  clearBookmarks()
+  showClearConfirmation.value = false
+}
 </script>
