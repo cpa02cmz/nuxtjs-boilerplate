@@ -116,10 +116,10 @@ model ApiKey {
   permissions String
   active      Boolean   @default(true)
   expiresAt   DateTime?
-  lastUsedAt  DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
+  lastUsedAt  DateTime?
 
   @@index([key])
   @@index([userId])
@@ -150,26 +150,26 @@ model Resource {
   id              String    @id @default(cuid())
   title           String
   description     String
-  benefits        String    // JSON array of strings
+  benefits        String
   url             String
   category        String
   pricingModel    String
   difficulty      String
-  tags            String    // JSON array of strings
-  technology      String    // JSON array of strings
+  tags            String
+  technology      String
   dateAdded       DateTime  @default(now())
   lastUpdated     DateTime  @updatedAt
   popularity      Int       @default(0)
   viewCount       Int       @default(0)
   rating          Float?
-  screenshots     String?   // JSON array of URLs
-  specifications  String?   // JSON object
-  features        String?   // JSON array of strings
-  limitations     String?   // JSON array of strings
-  platforms       String?   // JSON array of strings
+  screenshots     String?
+  specifications  String?
+  features        String?
+  limitations     String?
+  platforms       String?
   license         String?
   icon            String?
-  alternatives    String?   // JSON array of resource IDs
+  alternatives    String?
   status          String    @default("approved")
   submittedBy     String?
   reviewedBy      String?
