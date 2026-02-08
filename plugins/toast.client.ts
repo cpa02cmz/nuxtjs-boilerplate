@@ -44,16 +44,44 @@ export default defineNuxtPlugin(nuxtApp => {
       toastState.value.toasts = toastState.value.toasts.filter(t => t.id !== id)
     },
     success: (message: string, description?: string) => {
-      nuxtApp.$toast.addToast('success', message, description)
+      const toast = nuxtApp.$toast as {
+        addToast: (
+          type: ToastType,
+          message: string,
+          description?: string
+        ) => void
+      }
+      toast.addToast('success', message, description)
     },
     error: (message: string, description?: string) => {
-      nuxtApp.$toast.addToast('error', message, description)
+      const toast = nuxtApp.$toast as {
+        addToast: (
+          type: ToastType,
+          message: string,
+          description?: string
+        ) => void
+      }
+      toast.addToast('error', message, description)
     },
     warning: (message: string, description?: string) => {
-      nuxtApp.$toast.addToast('warning', message, description)
+      const toast = nuxtApp.$toast as {
+        addToast: (
+          type: ToastType,
+          message: string,
+          description?: string
+        ) => void
+      }
+      toast.addToast('warning', message, description)
     },
     info: (message: string, description?: string) => {
-      nuxtApp.$toast.addToast('info', message, description)
+      const toast = nuxtApp.$toast as {
+        addToast: (
+          type: ToastType,
+          message: string,
+          description?: string
+        ) => void
+      }
+      toast.addToast('info', message, description)
     },
   })
 })
