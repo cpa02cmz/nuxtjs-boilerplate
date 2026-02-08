@@ -97,7 +97,14 @@ export const cacheConfig = {
 } as const
 
 // Helper function to parse glob patterns
+// Note: We don't split by comma because glob patterns can contain commas inside braces
+// e.g., "**/*.{js,css,html}" is a single pattern, not multiple patterns
 function parseGlobPatterns(value: string): string[] {
+  // If the value contains brace expansion pattern, keep it as a single pattern
+  if (value.includes('{') && value.includes('}')) {
+    return [value.trim()]
+  }
+  // Otherwise split by comma for multiple patterns
   return value.split(',').map(s => s.trim())
 }
 
