@@ -16,10 +16,8 @@ export default defineNitroPlugin(nitroApp => {
         return
       }
 
-      // Skip security headers in test environment to avoid conflicts during testing
-      if (process.env.NODE_ENV === 'test') {
-        return
-      }
+      // Security headers are now enabled in test environment for proper security testing
+      // This ensures security vulnerabilities are caught during automated testing
 
       // Check if this is an HTML response - if so, the HTML security plugin will handle it
       // to avoid duplication of security headers
