@@ -71,23 +71,53 @@ components/
 
 ```
 composables/
-├── useAdvancedResourceSearch.ts  # Advanced search functionality
-├── useAlternatives.ts   # Alternative suggestions
-├── useAlternativeSuggestions.ts # Suggestion utilities
-├── useBookmarks.ts      # Bookmark management
-├── useCommunityFeatures.ts # Community features
-├── useLoading.ts        # Loading state management
-├── useRecommendationEngine.ts # Recommendation system
-├── useResourceComparison.ts # Comparison functionality
-├── useResourceData.ts   # Resource data management
-├── useResourceFilters.ts # Resource filtering
-├── useResourceRecommendations.ts # Recommendation logic
-├── useResources.ts      # Main resource composable
-├── useResourceSearch.ts # Search functionality
-├── useResourceSort.ts   # Sorting functionality
-├── useSearchHistory.ts  # Search history management
-├── useSearchSuggestions.ts # Search suggestions
-└── useUrlSync.ts        # URL state synchronization
+├── community/                          # Community-related composables
+│   ├── useComments.ts                  # Comments management
+│   ├── useModeration.ts                # Content moderation
+│   ├── useUserProfiles.ts              # User profile management
+│   └── useVoting.ts                    # Voting/rating system
+├── recommendation-strategies/          # Recommendation algorithms
+│   ├── useCategoryBasedRecommendations.ts
+│   ├── useContentBasedRecommendations.ts
+│   ├── usePersonalizedRecommendations.ts
+│   ├── usePopularRecommendations.ts
+│   └── useTrendingRecommendations.ts
+├── useAIResources.ts                   # AI resource management
+├── useAdvancedResourceSearch.ts        # Advanced search functionality
+├── useAlternativeSuggestions.ts        # Alternative suggestions
+├── useAnalyticsPage.ts                 # Analytics page logic
+├── useApiKeysManager.ts                # API key management
+├── useApiKeysPage.ts                   # API keys page logic
+├── useBookmarks.ts                     # Bookmark management
+├── useCommunityFeatures.ts             # Community features
+├── useComparisonPage.ts                # Comparison page logic
+├── useErrorHandler.ts                  # Error handling
+├── useFocusManagement.ts               # Focus management
+├── useHomePage.ts                      # Home page logic
+├── useLoading.ts                       # Loading state management
+├── useModerationDashboard.ts           # Moderation dashboard
+├── useRecommendationEngine.ts          # Recommendation system
+├── useResourceComparison.ts            # Comparison functionality
+├── useResourceData.ts                  # Resource data management
+├── useResourceDetailPage.ts            # Resource detail page
+├── useResourceFilters.ts               # Resource filtering
+├── useResourceHealth.ts                # Resource health monitoring
+├── useResourceSearch.ts                # Search functionality
+├── useResourceSearchFilter.ts          # Search filter logic
+├── useResourceSort.ts                  # Sorting functionality
+├── useResourceStatusManager.ts         # Resource status management
+├── useResources.ts                     # Main resource composable
+├── useReviewQueue.ts                   # Review queue management
+├── useSavedSearches.ts                 # Saved searches
+├── useSearchAnalytics.ts               # Search analytics
+├── useSearchHistory.ts                 # Search history management
+├── useSearchPage.ts                    # Search page logic
+├── useSearchSuggestions.ts             # Search suggestions
+├── useSubmissionReview.ts              # Submission review
+├── useSubmitPage.ts                    # Submit page logic
+├── useUrlSync.ts                       # URL state synchronization
+├── useUserPreferences.ts               # User preferences
+└── useWebhooksManager.ts               # Webhook management
 ```
 
 ## 🏗️ Module Responsibilities
@@ -213,4 +243,4 @@ composables/
 
 ---
 
-_Last Updated: 2026-11-29_
+_Last Updated: 2026-02-08_
