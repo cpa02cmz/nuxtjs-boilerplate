@@ -44,6 +44,9 @@ useSeoMeta({
 
 // Methods
 const shareComparison = () => {
+  // Guard: only run on client-side
+  if (!process.client) return
+
   // Create a shareable URL with the selected resources
   const resourceIds = selectedResources.value.map(r => r.id).join(',')
   const shareUrl = `${window.location.origin}/compare/${resourceIds}`
