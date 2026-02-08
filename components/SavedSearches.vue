@@ -3,8 +3,14 @@
     v-if="savedSearches.length > 0 || recentlyDeleted.length > 0"
     class="mb-6"
   >
-    <h4 class="text-sm font-medium text-gray-900 mb-3">Saved Searches</h4>
-    <TransitionGroup name="saved-search" tag="div" class="space-y-2">
+    <h4 class="text-sm font-medium text-gray-900 mb-3">
+      Saved Searches
+    </h4>
+    <TransitionGroup
+      name="saved-search"
+      tag="div"
+      class="space-y-2"
+    >
       <div
         v-for="search in savedSearches"
         :key="search.query"
