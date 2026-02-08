@@ -30,8 +30,7 @@ export default defineEventHandler(async event => {
     const validatedData = validationResult.data
 
     const idempotencyKey =
-      validatedData.idempotencyKey ||
-      `evt_${Date.now()}_${Math.random().toString(36).substring(7)}`
+      validatedData.idempotencyKey || `evt_${crypto.randomUUID()}`
 
     const existingDelivery =
       await webhookStorage.getDeliveryByIdempotencyKey(idempotencyKey)

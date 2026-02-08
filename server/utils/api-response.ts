@@ -137,7 +137,7 @@ export function handleApiRouteError(event: H3Event, error: unknown): void {
 }
 
 function generateRequestId(): string {
-  return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  return `req_${crypto.randomUUID()}`
 }
 
 export function wrapApiHandler<T>(handler: (_event: H3Event) => Promise<T>) {

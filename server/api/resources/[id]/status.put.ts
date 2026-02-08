@@ -46,7 +46,7 @@ export default defineEventHandler(async event => {
 
     // Create status change record
     const statusChange = {
-      id: Math.random().toString(36).substring(2, 15),
+      id: crypto.randomUUID(),
       fromStatus: (resource.status ?? 'active') as string,
       toStatus: status,
       reason: (reason ?? 'Status updated manually') as string,

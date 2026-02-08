@@ -67,7 +67,7 @@ export default defineEventHandler(async event => {
 
     // Generate comparison data
     const comparisonData: ResourceComparison = {
-      id: `cmp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `cmp_${crypto.randomUUID()}`,
       resources: requestedResources.map(r => r.id),
       criteria: [],
       scores: {},

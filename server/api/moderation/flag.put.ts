@@ -52,7 +52,7 @@ export default defineEventHandler(async event => {
 
     // Create a flag
     const newFlag: Flag = {
-      id: `flag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `flag_${crypto.randomUUID()}`,
       resourceId: body.resourceId,
       reason: body.reason,
       reportedBy: body.reportedBy,
