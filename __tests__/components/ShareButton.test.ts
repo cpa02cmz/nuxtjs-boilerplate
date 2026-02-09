@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
-import ShareButton from '../ShareButton.vue'
+import ShareButton from '~/components/ShareButton.vue'
 
 // Mock the shareUtils
 vi.mock('~/utils/shareUtils', () => ({

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
-import SearchBar from '../SearchBar.vue'
+import SearchBar from '~/components/SearchBar.vue'
 
 // Mock the composables used in SearchBar
 vi.mock('~/composables/useResourceData', () => ({

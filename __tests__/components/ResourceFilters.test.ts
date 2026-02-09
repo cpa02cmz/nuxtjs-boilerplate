@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import ResourceFilters from '../ResourceFilters.vue'
+import ResourceFilters from '~/components/ResourceFilters.vue'
 
 describe('ResourceFilters', () => {
   const defaultProps = {
