@@ -3,9 +3,6 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-// Import centralized logger utility
-import { logger } from './utils/logger.js'
-
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -13,7 +10,7 @@ if (
   process.env.NODE_ENV !== 'production' ||
   process.env.VALIDATION_LOGS === 'true'
 ) {
-  logger.info('Validating security implementation...')
+  console.log('Validating security implementation...')
 }
 
 // Check if sanitization is centralized in utils/sanitize.ts (which is the proper approach)
@@ -25,14 +22,14 @@ if (sanitizeUtilContent.includes("import DOMPurify from 'dompurify'")) {
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    logger.info('✓ DOMPurify import found in centralized utils/sanitize.ts')
+    console.log('✓ DOMPurify import found in centralized utils/sanitize.ts')
   }
 } else {
   if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    logger.info('✗ DOMPurify import NOT found in centralized utils/sanitize.ts')
+    console.log('✗ DOMPurify import NOT found in centralized utils/sanitize.ts')
   }
 }
 
@@ -49,14 +46,14 @@ if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    logger.info('✓ Centralized sanitization import found in ResourceCard.vue')
+    console.log('✓ Centralized sanitization import found in ResourceCard.vue')
   }
 } else {
   if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    logger.info(
+    console.log(
       '✗ Centralized sanitization import NOT found in ResourceCard.vue'
     )
   }
@@ -68,7 +65,7 @@ if (resourceCardContent.includes('sanitizeAndHighlight')) {
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    logger.info(
+    console.log(
       '✓ Centralized sanitization function usage found in ResourceCard.vue'
     )
   }
@@ -77,7 +74,7 @@ if (resourceCardContent.includes('sanitizeAndHighlight')) {
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    logger.info(
+    console.log(
       '✗ Centralized sanitization function usage NOT found in ResourceCard.vue'
     )
   }
@@ -89,21 +86,21 @@ const securityPluginPath = path.join(
   'server/plugins/security-headers.ts'
 )
 if (fs.existsSync(securityPluginPath)) {
-  logger.info('✓ Security headers plugin exists')
+  console.log('✓ Security headers plugin exists')
   const securityPluginContent = fs.readFileSync(securityPluginPath, 'utf8')
   if (securityPluginContent.includes('getSecurityHeaders')) {
-    logger.info(
+    console.log(
       '✓ CSP header configuration found in security headers plugin (using centralized config)'
     )
   } else if (securityPluginContent.includes('Content-Security-Policy')) {
-    logger.info('✓ CSP header configuration found in security headers plugin')
+    console.log('✓ CSP header configuration found in security headers plugin')
   } else {
-    logger.info(
+    console.log(
       '✗ CSP header configuration NOT found in security headers plugin'
     )
   }
 } else {
-  logger.info('✗ Security headers plugin does NOT exist')
+  console.log('✗ Security headers plugin does NOT exist')
 }
 
 // Check if security config file exists
@@ -112,15 +109,15 @@ const securityConfigPath = path.join(
   'server/utils/security-config.ts'
 )
 if (fs.existsSync(securityConfigPath)) {
-  logger.info('✓ Security configuration file exists')
+  console.log('✓ Security configuration file exists')
   const securityConfigContent = fs.readFileSync(securityConfigPath, 'utf8')
   if (securityConfigContent.includes('Content-Security-Policy')) {
-    logger.info('✓ CSP configuration found in security config file')
+    console.log('✓ CSP configuration found in security config file')
   } else {
-    logger.info('✗ CSP configuration NOT found in security config file')
+    console.log('✗ CSP configuration NOT found in security config file')
   }
 } else {
-  logger.info('✗ Security configuration file does NOT exist')
+  console.log('✗ Security configuration file does NOT exist')
 }
 
 // Check if security headers are in nuxt.config.ts - specifically looking for security configuration
@@ -131,9 +128,9 @@ if (
   nuxtConfigContent.includes('Security Configuration') &&
   nuxtConfigContent.includes('security-headers.ts')
 ) {
-  logger.info('✓ CSP configuration reference found in nuxt.config.ts')
+  console.log('✓ CSP configuration reference found in nuxt.config.ts')
 } else {
-  logger.info('✗ CSP configuration reference NOT found in nuxt.config.ts')
+  console.log('✗ CSP configuration reference NOT found in nuxt.config.ts')
 }
 
 if (
@@ -145,15 +142,15 @@ if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    logger.info('✓ CSP header configuration found in nuxt.config.ts')
+    console.log('✓ CSP header configuration found in nuxt.config.ts')
   }
-  logger.info('✓ CSP configuration reference found in nuxt.config.ts')
+  console.log('✓ CSP configuration reference found in nuxt.config.ts')
 } else {
   if (
     process.env.NODE_ENV !== 'production' ||
     process.env.VALIDATION_LOGS === 'true'
   ) {
-    logger.info('✗ CSP header configuration NOT found in nuxt.config.ts')
+    console.log('✗ CSP header configuration NOT found in nuxt.config.ts')
   }
-  logger.info('✗ CSP configuration reference NOT found in nuxt.config.ts')
+  console.log('✗ CSP configuration reference NOT found in nuxt.config.ts')
 }
