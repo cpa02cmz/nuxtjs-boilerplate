@@ -399,6 +399,7 @@ export function cached<T = unknown>(
 
 /**
  * Cache with tags for easier invalidation
+ * FIXED: Tag mappings now properly expire when cache entries expire
  */
 export async function cacheSetWithTags<T = unknown>(
   key: string,
@@ -406,16 +407,23 @@ export async function cacheSetWithTags<T = unknown>(
   ttl: number = 3600,
   tags: string[] = []
 ): Promise<boolean> {
-  // Store the value
-  const setResult = await cacheManager.set(key, value, ttl)
+  // Store the value with metadata for tag tracking
+  const valueWithMeta = {
+    data: value,
+    _cacheTags: tags,
+    _createdAt: Date.now(),
+  }
+  const setResult = await cacheManager.set(key, valueWithMeta, ttl)
 
-  // Create tag mappings for later invalidation
+  // Create tag mappings for later invalidation with proper expiration
   for (const tag of tags) {
     const tagKey = `tag:${tag}`
     const tagMembers: string[] = (await cacheManager.get(tagKey)) || []
     if (!tagMembers.includes(key)) {
       tagMembers.push(key)
-      await cacheManager.set(tagKey, tagMembers, ttl + 3600) // Tag mapping expires later
+      // FIXED: Tag mapping should expire at the same time as the cache entry
+      // or shortly after, not stay indefinitely
+      await cacheManager.set(tagKey, tagMembers, ttl)
     }
   }
 

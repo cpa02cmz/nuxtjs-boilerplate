@@ -21,6 +21,57 @@ const tokenBucketStore = new Map<string, TokenBucket>()
 // Lock queue for atomic operations - prevents race conditions
 const bucketLocks = new Map<string, Promise<void>>()
 
+// FIXED: Add periodic cleanup to prevent memory leaks in rate limit store
+// Cleanup runs every 10 minutes to remove expired/stale entries
+const CLEANUP_INTERVAL_MS = 10 * 60 * 1000 // 10 minutes
+const BUCKET_MAX_AGE_MS = 60 * 60 * 1000 // 1 hour max age for stale buckets
+
+/**
+ * Clean up expired rate limit entries to prevent memory leaks
+ * Removes buckets that haven't been accessed in over an hour
+ */
+function cleanupExpiredRateLimitEntries(): void {
+  const now = Date.now()
+  let cleanedCount = 0
+
+  // Clean up expired buckets
+  for (const [key, bucket] of tokenBucketStore.entries()) {
+    const timeSinceLastRefill = now - bucket.lastRefill
+    if (timeSinceLastRefill > BUCKET_MAX_AGE_MS && bucket.tokens === 0) {
+      tokenBucketStore.delete(key)
+      cleanedCount++
+    }
+  }
+
+  // Clean up orphaned locks (shouldn't happen, but safety measure)
+  for (const [key] of bucketLocks.entries()) {
+    if (!tokenBucketStore.has(key)) {
+      bucketLocks.delete(key)
+    }
+  }
+
+  if (cleanedCount > 0 && process.env.NODE_ENV !== 'test') {
+    console.log(`[RateLimit] Cleaned up ${cleanedCount} expired bucket entries`)
+  }
+}
+
+// Start periodic cleanup to prevent unbounded memory growth
+let rateLimitCleanupInterval: NodeJS.Timeout | null = null
+
+function startRateLimitCleanup(): void {
+  if (!rateLimitCleanupInterval) {
+    rateLimitCleanupInterval = setInterval(
+      cleanupExpiredRateLimitEntries,
+      CLEANUP_INTERVAL_MS
+    )
+    // Prevent the interval from keeping the process alive
+    rateLimitCleanupInterval.unref?.()
+  }
+}
+
+// Initialize cleanup on module load
+startRateLimitCleanup()
+
 /**
  * Acquire a lock for a bucket key to ensure atomic operations
  * Uses a simple Promise-based queue for async locking
@@ -201,9 +252,50 @@ interface RateLimitAnalytics {
   totalRequests: number
   blockedRequests: number
   bypassedRequests: number
+  lastUpdated: number // Track when this entry was last updated for cleanup
 }
 
 const analyticsStore = new Map<string, RateLimitAnalytics>()
+
+// FIXED: Add cleanup for analytics store to prevent memory leaks
+const ANALYTICS_MAX_AGE_MS = 24 * 60 * 60 * 1000 // 24 hours
+const ANALYTICS_CLEANUP_INTERVAL_MS = 60 * 60 * 1000 // 1 hour
+
+/**
+ * Clean up old analytics entries to prevent memory leaks
+ */
+function cleanupExpiredAnalytics(): void {
+  const now = Date.now()
+  let cleanedCount = 0
+
+  for (const [key, analytics] of analyticsStore.entries()) {
+    if (now - analytics.lastUpdated > ANALYTICS_MAX_AGE_MS) {
+      analyticsStore.delete(key)
+      cleanedCount++
+    }
+  }
+
+  if (cleanedCount > 0 && process.env.NODE_ENV !== 'test') {
+    console.log(
+      `[RateLimit] Cleaned up ${cleanedCount} expired analytics entries`
+    )
+  }
+}
+
+// Start periodic cleanup for analytics
+let analyticsCleanupInterval: NodeJS.Timeout | null = null
+
+function startAnalyticsCleanup(): void {
+  if (!analyticsCleanupInterval) {
+    analyticsCleanupInterval = setInterval(
+      cleanupExpiredAnalytics,
+      ANALYTICS_CLEANUP_INTERVAL_MS
+    )
+    analyticsCleanupInterval.unref?.()
+  }
+}
+
+startAnalyticsCleanup()
 
 function getAnalytics(path: string): RateLimitAnalytics {
   if (!analyticsStore.has(path)) {
@@ -211,9 +303,12 @@ function getAnalytics(path: string): RateLimitAnalytics {
       totalRequests: 0,
       blockedRequests: 0,
       bypassedRequests: 0,
+      lastUpdated: Date.now(),
     })
   }
-  return analyticsStore.get(path)!
+  const analytics = analyticsStore.get(path)!
+  analytics.lastUpdated = Date.now()
+  return analytics
 }
 
 // Default rate limit configurations for different endpoint types
