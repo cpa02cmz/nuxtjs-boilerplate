@@ -10,6 +10,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { defineEventHandler, getQuery } from 'h3'
+import { randomUUID } from 'node:crypto'
 
 export default defineEventHandler(async event => {
   try {
@@ -67,7 +68,7 @@ export default defineEventHandler(async event => {
 
     // Generate comparison data
     const comparisonData: ResourceComparison = {
-      id: `cmp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `cmp_${randomUUID()}`,
       resources: requestedResources.map(r => r.id),
       criteria: [],
       scores: {},

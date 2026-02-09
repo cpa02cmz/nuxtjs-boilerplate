@@ -1,6 +1,7 @@
 import { readBody } from 'h3'
 import type { Flag } from '~/types/resource'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+import { randomUUID } from 'node:crypto'
 
 const mockFlags: Flag[] = []
 const mockResources: unknown[] = []
@@ -52,7 +53,7 @@ export default defineEventHandler(async event => {
 
     // Create a flag
     const newFlag: Flag = {
-      id: `flag_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `flag_${randomUUID()}`,
       resourceId: body.resourceId,
       reason: body.reason,
       reportedBy: body.reportedBy,
