@@ -12,7 +12,7 @@
       <div
         v-for="option in options"
         :key="option"
-        class="filter-option flex items-center cursor-pointer rounded-md transition-all duration-200 ease-out hover:bg-gray-50"
+        class="filter-option flex items-center cursor-pointer rounded-md transition-all duration-200 ease-out hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500 focus-within:bg-blue-50"
         :class="{
           'justify-between': showCount,
           'bg-gray-50': selectedOptions.includes(option),
