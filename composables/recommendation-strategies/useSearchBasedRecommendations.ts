@@ -141,8 +141,7 @@ export function useSearchBasedRecommendations(
 
   const memoizedGetRecommendations = memoize(
     getRecommendations as (...args: unknown[]) => RecommendationResult[],
-    (...args: unknown[]) => {
-      const context = args[0] as RecommendationContext | undefined
+    () => {
       const analyticsKey = searchAnalytics?.data?.totalSearches || 'none'
       const queryKey = currentSearchQuery || 'none'
       const historyKey = userSearchHistory?.join(',') || 'none'
