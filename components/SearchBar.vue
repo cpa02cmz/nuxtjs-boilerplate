@@ -49,6 +49,8 @@
         id="search-input"
         ref="searchInputRef"
         type="search"
+        role="combobox"
+        aria-haspopup="listbox"
         :value="modelValue"
         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400 focus:shadow-lg focus:-translate-y-0.5"
         :class="{
@@ -60,7 +62,7 @@
         aria-describedby="search-results-info search-shortcut-hint"
         :aria-expanded="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         aria-controls="search-suggestions-dropdown"
         aria-autocomplete="list"
@@ -68,7 +70,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint -->
       <div
         v-if="!modelValue && !isFocused"
@@ -103,7 +105,8 @@
               stroke-linejoin="round"
               stroke-width="2"
               d="M6 18L18 6M6 6l12 12"
-            /></svg>
+            />
+          </svg>
         </button>
       </div>
     </div>
@@ -113,7 +116,7 @@
       <LazySearchSuggestions
         v-if="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         id="search-suggestions-dropdown"
         :suggestions="suggestions"
