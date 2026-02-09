@@ -91,7 +91,7 @@ export const securityConfig = {
   // Image Optimization
   image: {
     quality: parseInt(process.env.IMAGE_QUALITY || '80'),
-    formats: parseImageFormats(process.env.IMAGE_FORMATS || 'webp, avif, jpeg'),
+    formats: parseImageFormats(process.env.IMAGE_FORMATS || 'avif, jpeg, png'),
     densities: parseDensities(process.env.IMAGE_DENSITIES || '1, 2'),
   },
 } as const
