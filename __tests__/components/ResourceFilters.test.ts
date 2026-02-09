@@ -23,7 +23,7 @@ describe('ResourceFilters', () => {
       props: defaultProps,
     })
 
-    expect(wrapper.find('h3').text()).toBe('Filters')
+    expect(wrapper.find('h2').text()).toBe('Filters')
     expect(wrapper.text()).toContain('Category')
     expect(wrapper.text()).toContain('Pricing Model')
     expect(wrapper.text()).toContain('Difficulty')
