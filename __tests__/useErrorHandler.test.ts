@@ -271,19 +271,16 @@ describe('useErrorHandler', () => {
       expect(globalErrors.value[0].component).toBe('MyComponent')
     })
 
-    it('should limit global errors to 50 entries', () => {
-      const { globalErrors, handleError, clearGlobalErrors } = useErrorHandler()
+    it('should limit global errors to 100 entries', () => {
+      const { globalErrors, handleError } = useErrorHandler()
 
-      // Clear any existing errors first
-      clearGlobalErrors()
-
-      for (let i = 0; i < 60; i++) {
+      for (let i = 0; i < 110; i++) {
         handleError(new Error(`Error ${i}`))
       }
 
-      expect(globalErrors.value).toHaveLength(50)
+      expect(globalErrors.value).toHaveLength(100)
       expect(globalErrors.value[0].message).toBe('Error 10')
-      expect(globalErrors.value[49].message).toBe('Error 59')
+      expect(globalErrors.value[99].message).toBe('Error 109')
     })
 
     it('should clear all global errors', () => {
