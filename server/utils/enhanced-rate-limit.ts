@@ -267,10 +267,12 @@ export function getRateLimiterForPath(path: string): RateLimiter {
   } else if (
     path.includes('/api/v1/resources') ||
     path.includes('/api/categories') ||
-    path.includes('/api/v1/categories') ||
-    path.includes('/api/submissions')
+    path.includes('/api/v1/categories')
   ) {
     return rateLimitConfigs.heavy
+  } else if (path.includes('/api/submissions')) {
+    // Submissions endpoint uses API rate limit (not heavy) since it's lightweight
+    return rateLimitConfigs.api
   } else if (path.includes('/api/')) {
     return rateLimitConfigs.api
   } else {
