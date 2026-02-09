@@ -207,6 +207,50 @@ export const contentConfig = {
       tryAgain:
         process.env.CONTENT_RESOURCE_TRY_AGAIN ||
         'Try searching for another resource',
+      invalidId:
+        process.env.CONTENT_RESOURCE_INVALID_ID || 'Invalid resource ID',
+    },
+  },
+
+  // Error Messages - Flexy hates hardcoded error messages!
+  errors: {
+    authentication: {
+      required:
+        process.env.CONTENT_ERROR_AUTH_REQUIRED || 'Authentication required',
+      forbidden: process.env.CONTENT_ERROR_AUTH_FORBIDDEN || 'Access forbidden',
+      rateLimit:
+        process.env.CONTENT_ERROR_RATE_LIMIT ||
+        'Rate limit exceeded. Please try again later.',
+    },
+    validation: {
+      failed:
+        process.env.CONTENT_ERROR_VALIDATION_FAILED || 'Validation failed',
+      readBody:
+        process.env.CONTENT_ERROR_READ_BODY || 'Failed to read request body',
+    },
+    clipboard: {
+      copyFailed:
+        process.env.CONTENT_ERROR_CLIPBOARD_COPY || 'execCommand copy failed',
+    },
+    community: {
+      commentLogin:
+        process.env.CONTENT_ERROR_COMMENT_LOGIN ||
+        'User must be logged in to comment',
+      replyLogin:
+        process.env.CONTENT_ERROR_REPLY_LOGIN ||
+        'User must be logged in to reply',
+      flagLogin:
+        process.env.CONTENT_ERROR_FLAG_LOGIN ||
+        'User must be logged in to flag content',
+      moderatePermission:
+        process.env.CONTENT_ERROR_MODERATE_PERMISSION ||
+        'User must be a moderator to moderate content',
+      resolvePermission:
+        process.env.CONTENT_ERROR_RESOLVE_PERMISSION ||
+        'User must be a moderator to resolve flags',
+      voteLogin:
+        process.env.CONTENT_ERROR_VOTE_LOGIN ||
+        'User must be logged in to vote',
     },
   },
 

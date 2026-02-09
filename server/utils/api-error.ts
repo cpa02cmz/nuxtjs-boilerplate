@@ -93,8 +93,10 @@ export function createNotFoundError(
   })
 }
 
+import { contentConfig } from '../../configs/content.config'
+
 export function createUnauthorizedError(
-  message: string = 'Authentication required'
+  message: string = contentConfig.errors.authentication.required
 ): ApiError {
   return createApiError(
     ErrorCode.UNAUTHORIZED,
@@ -104,7 +106,7 @@ export function createUnauthorizedError(
 }
 
 export function createForbiddenError(
-  message: string = 'Access forbidden'
+  message: string = contentConfig.errors.authentication.forbidden
 ): ApiError {
   return createApiError(
     ErrorCode.FORBIDDEN,
@@ -116,7 +118,7 @@ export function createForbiddenError(
 export function createRateLimitError(retryAfter?: number): ApiError {
   return createApiError(
     ErrorCode.RATE_LIMIT_EXCEEDED,
-    'Rate limit exceeded. Please try again later.',
+    contentConfig.errors.authentication.rateLimit,
     ErrorCategory.RATE_LIMIT,
     { retryAfter }
   )
