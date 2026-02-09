@@ -1,5 +1,6 @@
 import { getHeader, getQuery } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
+import { sendUnauthorizedError } from '~/server/utils/api-response'
 
 export default defineEventHandler(async event => {
   // Only apply to API routes that require authentication
@@ -24,10 +25,8 @@ export default defineEventHandler(async event => {
   const storedKey = await webhookStorage.getApiKeyByValue(apiKey)
 
   if (!storedKey || !storedKey.active) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Invalid or inactive API key',
-    })
+    sendUnauthorizedError(event, 'Invalid or inactive API key')
+    return
   }
 
   // Update last used timestamp with error handling
