@@ -79,6 +79,9 @@ describe('ShareButton', () => {
     // Click the share button again
     await wrapper.find('button').trigger('click')
 
+    // Wait for Vue to update the DOM and any transitions to complete
+    await new Promise(resolve => setTimeout(resolve, 100))
+
     // The share menu should now be hidden
     expect(wrapper.find('.absolute').exists()).toBe(false)
   })
