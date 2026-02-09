@@ -19,14 +19,9 @@ export class WebhookQueueManager {
 
   async dequeue(): Promise<WebhookQueueItem | null> {
     try {
-      const queue = await webhookStorage.getQueue()
-      if (queue.length === 0) {
-        return null
-      }
-
-      const item = queue[0]
-      await webhookStorage.removeFromQueue(item.id)
-      return item
+      // Use atomic dequeue to prevent race conditions
+      // This ensures only one worker can process each item
+      return await webhookStorage.dequeueAtomic()
     } catch (error) {
       logger.error('Failed to dequeue webhook item:', error)
       return null

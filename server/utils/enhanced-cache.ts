@@ -430,14 +430,29 @@ export async function invalidateCacheByTag(tag: string): Promise<number> {
   const tagMembers: string[] = (await cacheManager.get(tagKey)) || []
   let invalidatedCount = 0
 
+  // Filter out expired keys and delete valid ones
+  const remainingMembers: string[] = []
   for (const key of tagMembers) {
-    if (await cacheManager.delete(key)) {
-      invalidatedCount++
+    // Check if the key still exists in cache
+    const value = await cacheManager.get(key)
+    if (value !== null) {
+      // Key still valid, delete it
+      if (await cacheManager.delete(key)) {
+        invalidatedCount++
+      }
+      remainingMembers.push(key)
     }
+    // If value is null, key expired - don't add to remainingMembers
   }
 
   // Clean up the tag mapping
-  await cacheManager.delete(tagKey)
+  if (remainingMembers.length > 0) {
+    // Update tag mapping with only valid keys
+    await cacheManager.set(tagKey, remainingMembers, 3600)
+  } else {
+    // No valid keys left, delete the tag mapping entirely
+    await cacheManager.delete(tagKey)
+  }
 
   return invalidatedCount
 }

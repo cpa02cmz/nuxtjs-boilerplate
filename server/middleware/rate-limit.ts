@@ -1,5 +1,6 @@
-import { getRequestIP, setResponseHeader, createError } from 'h3'
+import { getRequestIP, setResponseHeader } from 'h3'
 import { getRateLimitTier } from '~/configs/rate-limit.config'
+import { sendRateLimitError } from '~/server/utils/api-response'
 
 // Advanced in-memory rate limiter with different limits for different endpoints
 // In production, you'd want to use a more robust solution like Redis
@@ -106,9 +107,9 @@ export default defineEventHandler(event => {
 
   // Check if rate limit exceeded
   if (rateLimitStore[key].count > rateLimitConfig.maxRequests) {
-    throw createError({
-      statusCode: 429,
-      statusMessage: rateLimitConfig.message,
-    })
+    // Use standardized rate limit error response
+    const retryAfter = Math.ceil((resetTime - now) / 1000)
+    sendRateLimitError(event, retryAfter)
+    return
   }
 })

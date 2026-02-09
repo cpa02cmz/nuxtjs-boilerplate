@@ -514,6 +514,40 @@ export const webhookStorage = {
     }
   },
 
+  /**
+   * Atomically dequeue the next available webhook item
+   * Uses a processing status flag to prevent duplicate processing
+   * Returns null if no items available or if item is already being processed
+   */
+  async dequeueAtomic(): Promise<WebhookQueueItem | null> {
+    try {
+      return await prisma.$transaction(async tx => {
+        // Find the oldest pending item that's not currently being processed
+        const item = await tx.webhookQueue.findFirst({
+          where: {
+            deletedAt: null,
+            scheduledFor: { lte: new Date() },
+          },
+          orderBy: [{ priority: 'asc' }, { scheduledFor: 'asc' }],
+        })
+
+        if (!item) {
+          return null
+        }
+
+        // Soft delete the item atomically within the transaction
+        await tx.webhookQueue.update({
+          where: { id: item.id },
+          data: { deletedAt: new Date() },
+        })
+
+        return mapPrismaToWebhookQueueItem(item)
+      })
+    } catch (error) {
+      handleStorageError('atomic dequeue', error)
+    }
+  },
+
   // Dead Letter Queue methods
   async getDeadLetterQueue() {
     try {
