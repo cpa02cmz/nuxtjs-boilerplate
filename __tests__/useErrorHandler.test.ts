@@ -271,11 +271,8 @@ describe('useErrorHandler', () => {
       expect(globalErrors.value[0].component).toBe('MyComponent')
     })
 
-    it('should limit global errors to 50 entries', () => {
-      const { globalErrors, handleError, clearGlobalErrors } = useErrorHandler()
-
-      // Clear any existing errors first
-      clearGlobalErrors()
+    it('should limit global errors to maxLogs entries', () => {
+      const { globalErrors, handleError } = useErrorHandler()
 
       for (let i = 0; i < 60; i++) {
         handleError(new Error(`Error ${i}`))
