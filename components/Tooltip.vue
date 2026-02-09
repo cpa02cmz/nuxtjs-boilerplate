@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="triggerRef"
     class="relative inline-flex"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
@@ -17,6 +18,7 @@
     >
       <div
         v-if="isVisible"
+        :id="tooltipId"
         ref="tooltipRef"
         role="tooltip"
         :class="[
@@ -39,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 
 type TooltipPosition = 'top' | 'bottom' | 'left' | 'right'
 
@@ -47,17 +49,36 @@ interface Props {
   content: string
   position?: TooltipPosition
   delay?: number
+  /**
+   * Auto-dismiss tooltip after specified duration (in ms).
+   * Set to 0 to disable auto-dismiss.
+   * @default 0
+   */
+  autoDismiss?: number
+  /**
+   * Enable click-outside-to-dismiss functionality
+   * @default true
+   */
+  closeOnClickOutside?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   position: 'top',
   delay: 300,
+  autoDismiss: 0,
+  closeOnClickOutside: true,
 })
+
+// Generate unique ID for accessibility
+const uniqueId = Math.random().toString(36).substring(2, 9)
+const tooltipId = computed(() => `tooltip-${uniqueId}`)
 
 const isVisible = ref(false)
 const tooltipRef = ref<HTMLDivElement | null>(null)
+const triggerRef = ref<HTMLDivElement | null>(null)
 let showTimeout: ReturnType<typeof setTimeout> | null = null
 let hideTimeout: ReturnType<typeof setTimeout> | null = null
+let autoDismissTimeout: ReturnType<typeof setTimeout> | null = null
 
 const positionClasses: Record<TooltipPosition, string> = {
   top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
@@ -80,6 +101,16 @@ const showTooltip = () => {
   }
   showTimeout = setTimeout(() => {
     isVisible.value = true
+
+    // Set up auto-dismiss if enabled
+    if (props.autoDismiss > 0) {
+      if (autoDismissTimeout) {
+        clearTimeout(autoDismissTimeout)
+      }
+      autoDismissTimeout = setTimeout(() => {
+        hideTooltip()
+      }, props.autoDismiss)
+    }
   }, props.delay)
 }
 
@@ -88,9 +119,28 @@ const hideTooltip = () => {
     clearTimeout(showTimeout)
     showTimeout = null
   }
+  if (autoDismissTimeout) {
+    clearTimeout(autoDismissTimeout)
+    autoDismissTimeout = null
+  }
   hideTimeout = setTimeout(() => {
     isVisible.value = false
   }, 100)
+}
+
+const clearAllTimeouts = () => {
+  if (showTimeout) {
+    clearTimeout(showTimeout)
+    showTimeout = null
+  }
+  if (hideTimeout) {
+    clearTimeout(hideTimeout)
+    hideTimeout = null
+  }
+  if (autoDismissTimeout) {
+    clearTimeout(autoDismissTimeout)
+    autoDismissTimeout = null
+  }
 }
 
 const handleMouseEnter = () => {
@@ -115,14 +165,29 @@ const handleKeyDown = (e: KeyboardEvent) => {
   }
 }
 
+const handleClickOutside = (event: MouseEvent) => {
+  if (!props.closeOnClickOutside || !isVisible.value) return
+
+  const target = event.target as Node
+  const isClickInsideTooltip = tooltipRef.value?.contains(target)
+  const isClickInsideTrigger = triggerRef.value?.contains(target)
+
+  if (!isClickInsideTooltip && !isClickInsideTrigger) {
+    hideTooltip()
+  }
+}
+
 onMounted(() => {
   document.addEventListener('keydown', handleKeyDown)
+  if (props.closeOnClickOutside) {
+    document.addEventListener('click', handleClickOutside, { passive: true })
+  }
 })
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyDown)
-  if (showTimeout) clearTimeout(showTimeout)
-  if (hideTimeout) clearTimeout(hideTimeout)
+  document.removeEventListener('click', handleClickOutside)
+  clearAllTimeouts()
 })
 </script>
 
