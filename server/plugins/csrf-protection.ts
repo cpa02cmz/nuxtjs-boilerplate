@@ -11,8 +11,23 @@ import { httpConfig } from '~/configs/http.config'
  * Compares two strings in constant time regardless of content
  */
 function safeCompare(a: string, b: string): boolean {
-  if (a.length !== b.length) return false
-  return timingSafeEqual(Buffer.from(a), Buffer.from(b))
+  // Use timingSafeEqual with buffers of equal length to prevent timing attacks
+  // If lengths differ, we still compare to avoid leaking length info
+  const bufA = Buffer.from(a)
+  const bufB = Buffer.from(b)
+  const maxLen = Math.max(bufA.length, bufB.length)
+
+  // Create padded buffers of equal length
+  const paddedA = Buffer.alloc(maxLen)
+  const paddedB = Buffer.alloc(maxLen)
+
+  bufA.copy(paddedA)
+  bufB.copy(paddedB)
+
+  // Compare with timingSafeEqual and also verify actual lengths match
+  // The length check is done AFTER the timing-safe comparison
+  const equal = timingSafeEqual(paddedA, paddedB) && a.length === b.length
+  return equal
 }
 
 /**
