@@ -9,43 +9,59 @@
       <div class="flex-shrink-0 mr-4">
         <div
           class="skeleton-icon skeleton-shimmer rounded w-12 h-12"
+          :style="{ animationDelay: getStaggerDelay(0) }"
           aria-hidden="true"
         />
       </div>
       <div class="flex-1 min-w-0">
-        <!-- Title placeholder -->
-        <div
-          class="skeleton-shimmer h-5 rounded w-3/4 mb-3 skeleton-item skeleton-item-1"
-          aria-hidden="true"
-        />
+        <div class="flex items-center justify-between mb-3">
+          <!-- Title placeholder -->
+          <div
+            class="skeleton-shimmer h-5 rounded w-3/4 skeleton-item"
+            :style="{ animationDelay: getStaggerDelay(1) }"
+            aria-hidden="true"
+          />
+          <!-- New badge placeholder (occasional) -->
+          <div
+            class="skeleton-shimmer h-5 rounded w-10 skeleton-item ml-2"
+            :style="{ animationDelay: getStaggerDelay(1) }"
+            aria-hidden="true"
+          />
+        </div>
 
         <!-- Description placeholder -->
         <div
-          class="skeleton-shimmer h-4 rounded w-full mb-2 skeleton-item skeleton-item-2"
+          class="skeleton-shimmer h-4 rounded w-full mb-2 skeleton-item"
+          :style="{ animationDelay: getStaggerDelay(2) }"
           aria-hidden="true"
         />
         <div
-          class="skeleton-shimmer h-4 rounded w-5/6 mb-4 skeleton-item skeleton-item-3"
+          class="skeleton-shimmer h-4 rounded w-5/6 mb-4 skeleton-item"
+          :style="{ animationDelay: getStaggerDelay(3) }"
           aria-hidden="true"
         />
 
         <!-- Benefits section -->
         <div class="mt-3 bg-gray-50 p-3 rounded-md">
           <div
-            class="skeleton-shimmer h-4 rounded w-1/3 mb-3 skeleton-item skeleton-item-4"
+            class="skeleton-shimmer h-4 rounded w-1/3 mb-3 skeleton-item"
+            :style="{ animationDelay: getStaggerDelay(4) }"
             aria-hidden="true"
           />
           <div class="space-y-2">
             <div
-              class="skeleton-shimmer h-3 rounded w-full skeleton-item skeleton-item-5"
+              class="skeleton-shimmer h-3 rounded w-full skeleton-item"
+              :style="{ animationDelay: getStaggerDelay(5) }"
               aria-hidden="true"
             />
             <div
-              class="skeleton-shimmer h-3 rounded w-4/5 skeleton-item skeleton-item-6"
+              class="skeleton-shimmer h-3 rounded w-4/5 skeleton-item"
+              :style="{ animationDelay: getStaggerDelay(6) }"
               aria-hidden="true"
             />
             <div
-              class="skeleton-shimmer h-3 rounded w-3/4 skeleton-item skeleton-item-7"
+              class="skeleton-shimmer h-3 rounded w-3/4 skeleton-item"
+              :style="{ animationDelay: getStaggerDelay(7) }"
               aria-hidden="true"
             />
           </div>
@@ -54,7 +70,8 @@
         <!-- Button placeholder -->
         <div class="mt-4">
           <div
-            class="skeleton-shimmer h-8 rounded-md w-32 skeleton-item skeleton-item-8"
+            class="skeleton-shimmer h-8 rounded-md w-32 skeleton-item"
+            :style="{ animationDelay: getStaggerDelay(8) }"
             aria-hidden="true"
           />
         </div>
@@ -66,6 +83,16 @@
 <script setup lang="ts">
 // Skeleton loading component for ResourceCard
 // Enhanced with wave shimmer animation for better perceived performance
+import { animationConfig } from '~/configs/animation.config'
+
+// Animation timing configuration - Flexy hates hardcoded values!
+const staggerBaseDelay = animationConfig.skeleton.staggerDelayMs
+const staggerIncrement = animationConfig.skeleton.staggerIncrementMs
+
+// Calculate stagger delays for each item
+const getStaggerDelay = (index: number): string => {
+  return `${staggerBaseDelay + index * staggerIncrement}ms`
+}
 </script>
 
 <style scoped>
@@ -96,31 +123,8 @@
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
-/* Staggered animation delays for wave effect */
-.skeleton-item-1 {
-  animation-delay: 0ms;
-}
-.skeleton-item-2 {
-  animation-delay: 75ms;
-}
-.skeleton-item-3 {
-  animation-delay: 150ms;
-}
-.skeleton-item-4 {
-  animation-delay: 225ms;
-}
-.skeleton-item-5 {
-  animation-delay: 300ms;
-}
-.skeleton-item-6 {
-  animation-delay: 375ms;
-}
-.skeleton-item-7 {
-  animation-delay: 450ms;
-}
-.skeleton-item-8 {
-  animation-delay: 525ms;
-}
+/* Staggered animation delays are now set via inline styles using animationConfig */
+/* Flexy loves modularity! No more hardcoded animation-delay values */
 
 @keyframes shimmer {
   0% {
