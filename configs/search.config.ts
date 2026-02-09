@@ -42,6 +42,7 @@ export const searchConfig = {
     tags: parseFloat(process.env.SUGGESTION_WEIGHT_TAGS || '0.25'),
     category: parseFloat(process.env.SUGGESTION_WEIGHT_CATEGORY || '0.15'),
     description: parseFloat(process.env.SUGGESTION_WEIGHT_DESCRIPTION || '0.2'),
+    benefits: parseFloat(process.env.SUGGESTION_WEIGHT_BENEFITS || '0.15'),
   },
 
   // Suggestion-specific settings
@@ -51,6 +52,24 @@ export const searchConfig = {
     ),
     threshold: parseFloat(process.env.SUGGESTION_THRESHOLD || '0.4'),
     distance: parseInt(process.env.SUGGESTION_DISTANCE || '100'),
+    // Score values for different suggestion types
+    scores: {
+      default: parseFloat(process.env.SUGGESTION_SCORE_DEFAULT || '0.5'),
+      tagMatch: parseFloat(process.env.SUGGESTION_SCORE_TAG || '0.7'),
+      categoryMatch: parseFloat(process.env.SUGGESTION_SCORE_CATEGORY || '0.6'),
+      popularBase: parseFloat(
+        process.env.SUGGESTION_SCORE_POPULAR_BASE || '0.9'
+      ),
+      popularDecrement: parseFloat(
+        process.env.SUGGESTION_SCORE_POPULAR_DECREMENT || '0.1'
+      ),
+      recentBase: parseFloat(process.env.SUGGESTION_SCORE_RECENT_BASE || '0.8'),
+      recentDecrement: parseFloat(
+        process.env.SUGGESTION_SCORE_RECENT_DECREMENT || '0.1'
+      ),
+    },
+    // Multipliers for result limits
+    limitMultiplier: parseInt(process.env.SUGGESTION_LIMIT_MULTIPLIER || '2'),
   },
 
   // Search Behavior

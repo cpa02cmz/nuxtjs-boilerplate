@@ -49,6 +49,8 @@
         id="search-input"
         ref="searchInputRef"
         type="search"
+        role="combobox"
+        aria-haspopup="listbox"
         :value="modelValue"
         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400 focus:shadow-lg focus:-translate-y-0.5"
         :class="{
@@ -103,7 +105,8 @@
               stroke-linejoin="round"
               stroke-width="2"
               d="M6 18L18 6M6 6l12 12"
-            /></svg>
+            />
+          </svg>
         </button>
       </div>
     </div>

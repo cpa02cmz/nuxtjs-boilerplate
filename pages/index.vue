@@ -122,7 +122,7 @@
           </div>
 
           <!-- Resources Grid -->
-          <div class="lg:w-3/4">
+          <div class="lg:w-3/4 min-h-[400px]">
             <!-- Results Info -->
             <div class="flex justify-between items-center mb-6">
               <ResourceSort

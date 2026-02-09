@@ -25,7 +25,9 @@ const createFuseConfig = (
     },
     {
       name: 'benefits',
-      weight: isSuggestions ? 0.15 : 0.2,
+      weight: isSuggestions
+        ? searchConfig.suggestionWeights.benefits
+        : searchConfig.suggestionWeights.benefits * 1.33, // 0.2 is ~1.33x of 0.15
     },
     {
       name: 'tags',
@@ -50,7 +52,7 @@ const createFuseConfig = (
     useExtendedSearch: searchConfig.fuse.useExtendedSearch,
     distance: searchConfig.fuse.distance,
     minMatchCharLength: isSuggestions
-      ? 1
+      ? searchConfig.suggestions.minMatchCharLength
       : searchConfig.fuse.minMatchCharLength,
     includeMatches: searchConfig.fuse.includeMatches,
     findAllMatches: searchConfig.fuse.findAllMatches,

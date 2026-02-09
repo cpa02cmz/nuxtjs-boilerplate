@@ -393,8 +393,24 @@
       <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 dark:text-gray-400 text-sm transition-colors duration-200"
       >
-        © {{ new Date().getFullYear() }} Free Stuff on the Internet. All rights
-        reserved.
+        <div
+          class="flex flex-col sm:flex-row items-center justify-center gap-4"
+        >
+          <span>© {{ new Date().getFullYear() }} Free Stuff on the Internet. All
+            rights reserved.</span>
+          <button
+            class="inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1 transition-colors duration-200"
+            aria-label="View keyboard shortcuts (press ? to open)"
+            @click="openShortcutsHelp"
+          >
+            <kbd
+              class="px-1.5 py-0.5 text-xs font-semibold bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
+            >
+              ?
+            </kbd>
+            <span>Shortcuts</span>
+          </button>
+        </div>
         <p class="sr-only">
           Footer content ends
         </p>
@@ -411,6 +427,11 @@
       <LazyScrollToTop />
     </client-only>
 
+    <!-- Keyboard Shortcuts Help -->
+    <client-only>
+      <KeyboardShortcutsHelp ref="shortcutsHelpRef" />
+    </client-only>
+
     <!-- Offline Indicator -->
   </div>
 </template>
@@ -423,6 +444,7 @@ import { useResourceComparison } from '~/composables/useResourceComparison'
 import { useTheme } from '~/composables/useTheme'
 import type { NodeListOf } from 'dom'
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
+import KeyboardShortcutsHelp from '~/components/KeyboardShortcutsHelp.vue'
 
 // Theme state
 const { isDark, cycleTheme } = useTheme()
@@ -432,6 +454,13 @@ const mobileMenuButton = ref<HTMLElement | null>(null)
 const mobileMenuRef = ref<HTMLElement | null>(null)
 const firstFocusableElement = ref<HTMLElement | null>(null)
 const lastFocusableElement = ref<HTMLElement | null>(null)
+const shortcutsHelpRef = ref<InstanceType<typeof KeyboardShortcutsHelp> | null>(
+  null
+)
+
+const openShortcutsHelp = () => {
+  shortcutsHelpRef.value?.open()
+}
 
 // Comparison counter state
 const { comparisonCount } = useResourceComparison()
