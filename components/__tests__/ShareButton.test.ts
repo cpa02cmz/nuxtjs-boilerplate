@@ -65,22 +65,28 @@ describe('ShareButton', () => {
           },
         },
       },
+      attachTo: document.body,
     })
 
     // Initially, the share menu should not be visible
     expect(wrapper.find('.absolute').exists()).toBe(false)
 
-    // Click the share button
+    // Click the share button to open
     await wrapper.find('button').trigger('click')
+    await wrapper.vm.$nextTick()
 
     // The share menu should now be visible
     expect(wrapper.find('.absolute').exists()).toBe(true)
 
-    // Click the share button again
-    await wrapper.find('button').trigger('click')
+    // Test that clicking outside closes the menu
+    // Simulate clicking outside by dispatching click on document body
+    document.body.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    await wrapper.vm.$nextTick()
 
     // The share menu should now be hidden
     expect(wrapper.find('.absolute').exists()).toBe(false)
+
+    wrapper.unmount()
   })
 
   it('contains all social media links', async () => {
