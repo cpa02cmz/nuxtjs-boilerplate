@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import ShareButton from '../ShareButton.vue'
 
 // Mock the shareUtils
@@ -78,6 +79,7 @@ describe('ShareButton', () => {
 
     // Click the share button again
     await wrapper.find('button').trigger('click')
+    await nextTick()
 
     // The share menu should now be hidden
     expect(wrapper.find('.absolute').exists()).toBe(false)

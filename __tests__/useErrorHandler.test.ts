@@ -272,7 +272,10 @@ describe('useErrorHandler', () => {
     })
 
     it('should limit global errors to 50 entries', () => {
-      const { globalErrors, handleError } = useErrorHandler()
+      const { globalErrors, handleError, clearGlobalErrors } = useErrorHandler()
+
+      // Clear any existing errors first
+      clearGlobalErrors()
 
       for (let i = 0; i < 60; i++) {
         handleError(new Error(`Error ${i}`))
