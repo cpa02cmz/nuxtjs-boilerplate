@@ -164,6 +164,52 @@
                 :url="`${runtimeConfig.public.canonicalUrl}/resources/${id}`"
               />
             </ClientOnly>
+            <!-- Quick Copy button -->
+            <button
+              v-if="id"
+              :class="[
+                'p-2 rounded-full transition-all duration-200 ease-out',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+                'opacity-0 group-hover:opacity-100 focus:opacity-100',
+                isCopied
+                  ? 'bg-green-100 text-green-600 scale-110'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800',
+              ]"
+              :aria-label="
+                isCopied ? `Copied link to ${title}` : `Copy link to ${title}`
+              "
+              :title="isCopied ? 'Copied!' : 'Copy link'"
+              @click="copyResourceUrl"
+            >
+              <svg
+                v-if="!isCopied"
+                xmlns="http://www.w3.org/2000/svg"
+                :class="[
+                  'h-5 w-5 transition-transform duration-200',
+                  isCopyAnimating && 'animate-icon-pop',
+                ]"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                <path
+                  d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"
+                />
+              </svg>
+              <svg
+                v-else
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 animate-check-pop"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
             <!-- Compare button -->
             <button
               v-if="id"
@@ -263,7 +309,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
-import { useHead, useRuntimeConfig } from '#imports'
+import { useHead, useRuntimeConfig, useNuxtApp } from '#imports'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import OptimizedImage from '~/components/OptimizedImage.vue'
 import ResourceStatus from '~/components/ResourceStatus.vue'
@@ -271,8 +317,10 @@ import { trackResourceView, trackResourceClick } from '~/utils/analytics'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
 import { memoizeHighlight } from '~/utils/memoize'
 import { logError } from '~/utils/errorLogger'
+import { copyToClipboard } from '~/utils/clipboard'
 import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
+import { limitsConfig } from '~/configs/limits.config'
 import type { Resource } from '~/types/resource'
 
 interface Props {
@@ -316,6 +364,8 @@ const hasError = ref(false)
 const isAddingToComparison = ref(false)
 const isCompareAnimating = ref(false)
 const compareButtonRef = ref<HTMLButtonElement | null>(null)
+const isCopied = ref(false)
+const isCopyAnimating = ref(false)
 
 // Memoized highlight function to prevent recomputation
 const memoizedHighlight = memoizeHighlight(sanitizeAndHighlight)
@@ -395,9 +445,9 @@ const addResourceToComparison = () => {
   }
 
   // Add the resource to comparison
-  const added = addResource(resource as Resource)
+  const result = addResource(resource as Resource)
 
-  if (added) {
+  if (result.success) {
     // Show visual feedback
     isAddingToComparison.value = true
     isCompareAnimating.value = true
@@ -414,6 +464,50 @@ const addResourceToComparison = () => {
     setTimeout(() => {
       navigateTo('/compare')
     }, navigationDelay)
+  } else if (result.reason === 'limit_reached') {
+    // Show toast notification when comparison limit is reached
+    const { $toast } = useNuxtApp()
+    $toast.warning(
+      `Comparison limit reached (${limitsConfig.comparison.maxResources} resources max). Remove a resource to add another.`
+    )
+  } else if (result.reason === 'already_added') {
+    // Show toast notification when resource is already in comparison
+    const { $toast } = useNuxtApp()
+    $toast.info(`"${props.title}" is already in your comparison`)
+  }
+}
+
+// Method to copy resource URL to clipboard with visual feedback
+const copyResourceUrl = async () => {
+  if (!props.id || isCopied.value) return
+
+  const resourceUrl = `${runtimeConfig.public.canonicalUrl}/resources/${props.id}`
+  const result = await copyToClipboard(resourceUrl)
+
+  if (result.success) {
+    // Show visual feedback
+    isCopied.value = true
+    isCopyAnimating.value = true
+
+    // Show toast notification
+    const { $toast } = useNuxtApp()
+    $toast.success(`Link to "${props.title}" copied to clipboard!`)
+
+    // Reset after delay
+    setTimeout(() => {
+      isCopied.value = false
+      isCopyAnimating.value = false
+    }, 2000)
+  } else {
+    // Show error toast
+    const { $toast } = useNuxtApp()
+    $toast.error('Failed to copy link. Please try again.')
+    logError(
+      'Failed to copy resource URL to clipboard',
+      new Error(result.error),
+      'ResourceCard',
+      { resourceId: props.id, resourceTitle: props.title }
+    )
   }
 }
 

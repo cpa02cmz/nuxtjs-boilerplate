@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 /* Custom styles can be added here */
+
+/* Dark mode support - applies to entire document */
+html.dark {
+  color-scheme: dark;
+}
+
 body {
   font-family:
     Inter,
