@@ -43,10 +43,20 @@ export async function trackEvent(event: AnalyticsEvent): Promise<boolean> {
       body: JSON.stringify(event),
     })
 
+    // Check if response is OK before parsing JSON
+    if (!response.ok) {
+      const errorText = await response.text()
+      logger.error(`Analytics API error (${response.status}):`, errorText)
+      return false
+    }
+
     const result = await response.json()
 
     if (!result.success) {
-      logger.error('Failed to track analytics event:', result.message)
+      logger.error(
+        'Failed to track analytics event:',
+        result.message || 'Unknown error'
+      )
       return false
     }
 
