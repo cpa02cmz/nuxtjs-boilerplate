@@ -1,5 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div
+    class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300"
+  >
     <!-- Skip to main content link for screen readers -->
     <a
       href="#main-content"
@@ -9,7 +11,7 @@
     </a>
 
     <header
-      class="bg-white shadow"
+      class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 transition-colors duration-300"
       role="banner"
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -17,7 +19,7 @@
           <div class="flex items-center">
             <NuxtLink
               to="/"
-              class="text-xl font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
+              class="text-xl font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 focus:rounded transition-colors duration-200"
               :aria-label="'Free Stuff on the Internet - Return to home page'"
             >
               Free Stuff on the Internet
@@ -38,59 +40,104 @@
             role="navigation"
             aria-label="Main navigation"
           >
+            <!-- Theme Toggle Button -->
+            <button
+              type="button"
+              class="p-2 rounded-md text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              :aria-label="
+                isDark ? 'Switch to light mode' : 'Switch to dark mode'
+              "
+              @click="cycleTheme"
+            >
+              <!-- Sun Icon (shown in dark mode) -->
+              <svg
+                v-if="isDark"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+              <!-- Moon Icon (shown in light mode) -->
+              <svg
+                v-else
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+            </button>
+
             <NuxtLink
               to="/"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
+              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
               :aria-label="'Free Stuff on the Internet - Return to home page'"
             >
               Home
             </NuxtLink>
             <NuxtLink
               to="/search"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-100"
+              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              active-class="bg-gray-100 dark:bg-gray-800"
             >
               Search
             </NuxtLink>
             <NuxtLink
               to="/ai-keys"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-100"
+              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              active-class="bg-gray-100 dark:bg-gray-800"
             >
               AI Keys
             </NuxtLink>
             <NuxtLink
               to="/favorites"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-100"
+              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              active-class="bg-gray-100 dark:bg-gray-800"
             >
               Favorites
             </NuxtLink>
             <NuxtLink
               to="/about"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-100"
+              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              active-class="bg-gray-100 dark:bg-gray-800"
             >
               About
             </NuxtLink>
             <NuxtLink
               to="/submit"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium font-medium bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-200"
+              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium font-medium bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              active-class="bg-gray-200 dark:bg-gray-700"
             >
               Submit
             </NuxtLink>
             <NuxtLink
               to="/developer"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-100"
+              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              active-class="bg-gray-100 dark:bg-gray-800"
             >
               Developer
             </NuxtLink>
             <NuxtLink
               to="/api-analytics"
-              class="text-gray-800 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-              active-class="bg-gray-100"
+              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              active-class="bg-gray-100 dark:bg-gray-800"
             >
               API Analytics
             </NuxtLink>
@@ -127,11 +174,54 @@
           </nav>
 
           <!-- Mobile menu button -->
-          <div class="flex items-center lg:hidden">
+          <div class="flex items-center lg:hidden space-x-2">
+            <!-- Theme Toggle Button (Mobile) -->
+            <button
+              type="button"
+              class="p-2 rounded-md text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              :aria-label="
+                isDark ? 'Switch to light mode' : 'Switch to dark mode'
+              "
+              @click="cycleTheme"
+            >
+              <svg
+                v-if="isDark"
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+              <svg
+                v-else
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+            </button>
+
             <button
               ref="mobileMenuButton"
               type="button"
-              class="inline-flex items-center justify-center p-2 rounded-md text-gray-800 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-800"
+              class="inline-flex items-center justify-center p-2 rounded-md text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
               aria-controls="mobile-menu"
               :aria-expanded="mobileMenuOpen"
               :aria-label="
@@ -182,68 +272,68 @@
         v-show="mobileMenuOpen"
         id="mobile-menu"
         ref="mobileMenuRef"
-        class="lg:hidden"
+        class="lg:hidden bg-white dark:bg-gray-800 transition-colors duration-300"
       >
         <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           <NuxtLink
             to="/"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
+            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
             @click="closeMobileMenu"
           >
             Home
           </NuxtLink>
           <NuxtLink
             to="/search"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-100"
+            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
             Search
           </NuxtLink>
           <NuxtLink
             to="/ai-keys"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-100"
+            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
             AI Keys
           </NuxtLink>
           <NuxtLink
             to="/favorites"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-100"
+            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
             Favorites
           </NuxtLink>
           <NuxtLink
             to="/about"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-100"
+            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
             About
           </NuxtLink>
           <NuxtLink
             to="/submit"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-200"
+            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            active-class="bg-gray-200 dark:bg-gray-600"
             @click="closeMobileMenu"
           >
             Submit
           </NuxtLink>
           <NuxtLink
             to="/developer"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-100"
+            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
             Developer
           </NuxtLink>
           <NuxtLink
             to="/api-analytics"
-            class="text-gray-800 hover:bg-gray-100 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800"
-            active-class="bg-gray-100"
+            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
             API Analytics
@@ -251,8 +341,8 @@
           <NuxtLink
             v-if="comparisonCount > 0"
             to="/compare"
-            class="flex items-center justify-between text-gray-800 bg-blue-50 hover:bg-blue-100 text-gray-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
-            active-class="bg-blue-100"
+            class="flex items-center justify-between text-gray-800 dark:text-gray-200 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+            active-class="bg-blue-100 dark:bg-blue-900/50"
             @click="closeMobileMenu"
           >
             <span class="flex items-center">
@@ -290,24 +380,19 @@
         </div>
       </div>
     </header>
-    <main
-      id="main-content"
-      role="main"
-    >
+    <main id="main-content" role="main">
       <slot />
     </main>
     <footer
-      class="bg-white mt-8 py-6 border-t"
+      class="bg-white dark:bg-gray-800 mt-8 py-6 border-t dark:border-gray-700 transition-colors duration-300"
       role="contentinfo"
     >
       <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 text-sm"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 dark:text-gray-400 text-sm transition-colors duration-200"
       >
         © {{ new Date().getFullYear() }} Free Stuff on the Internet. All rights
         reserved.
-        <p class="sr-only">
-          Footer content ends
-        </p>
+        <p class="sr-only">Footer content ends</p>
       </div>
     </footer>
 
@@ -330,8 +415,12 @@ import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, navigateTo } from '#app'
 import { useResources } from '~/composables/useResources'
 import { useResourceComparison } from '~/composables/useResourceComparison'
+import { useTheme } from '~/composables/useTheme'
 import type { NodeListOf } from 'dom'
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
+
+// Theme state
+const { isDark, cycleTheme } = useTheme()
 
 const mobileMenuOpen = ref(false)
 const mobileMenuButton = ref<HTMLElement | null>(null)
