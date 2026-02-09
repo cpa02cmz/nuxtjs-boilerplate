@@ -12,6 +12,12 @@ interface ComparisonConfig {
   similarityThreshold: number
 }
 
+// Result type for addResource operation
+export interface AddResourceResult {
+  success: boolean
+  reason?: 'limit_reached' | 'already_added'
+}
+
 // Main composable for resource comparison
 export const useResourceComparison = () => {
   // State management for comparison
@@ -95,18 +101,18 @@ export const useResourceComparison = () => {
   })
 
   // Add a resource to comparison
-  const addResource = (resource: Resource) => {
+  const addResource = (resource: Resource): AddResourceResult => {
     if (selectedResources.value.length >= config.value.maxResources) {
-      return false
+      return { success: false, reason: 'limit_reached' }
     }
 
     // Check if resource is already in comparison
     if (selectedResources.value.some(r => r.id === resource.id)) {
-      return false
+      return { success: false, reason: 'already_added' }
     }
 
     selectedResources.value = [...selectedResources.value, resource]
-    return true
+    return { success: true }
   }
 
   // Remove a resource from comparison
