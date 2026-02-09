@@ -328,6 +328,9 @@ export default [
       'nuxt.d.ts',
       'app.config.ts',
       'scripts/**',
+      'check-console.js',
+      'lighthouse-*.js',
+      'lighthouse-*.mjs',
     ],
   },
 ]

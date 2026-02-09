@@ -148,7 +148,7 @@ export const analyticsEventSchema = z.object({
       'Invalid category. Must be one of: Development, Design, Productivity, Marketing, Analytics, Security, AI/ML, DevOps, Testing, Education'
     )
     .optional(),
-  url: z.string().url('Invalid URL format').optional(),
+  url: z.string().optional(),
   userAgent: z.string().max(500, 'User agent too long').optional(),
   ip: z
     .string()
@@ -156,12 +156,15 @@ export const analyticsEventSchema = z.object({
     .refine(val => {
       if (val === 'unknown') return true
 
+      // Accept hashed IPs (hash_ prefix followed by hex characters)
+      if (val.startsWith('hash_') && /^hash_[a-f0-9]{16}$/.test(val))
+        return true
+
       // IPv4 regex
       const ipv4Regex =
         /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
 
       // IPv6 regex supporting all valid formats including compressed notation
-      // Matches: full, compressed (::), IPv4-mapped, and various valid combinations
       const ipv6Regex =
         /^(?:(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,6}|:(?::[0-9a-fA-F]{1,4}){1,7}|::|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|::(?:[0-9a-fA-F]{1,4}:){0,5}(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4})$/
 

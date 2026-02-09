@@ -1,27 +1,34 @@
-import { PrismaClient } from '@prisma/client'
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 
+// Import PrismaClient class directly from the generated client
+// Note: We use require-like import pattern for CommonJS compatibility
+import type { PrismaClient as PrismaClientClass } from '../../../node_modules/.prisma/client/index'
+
+// Get the PrismaClient class at runtime
+import prismaClientPkg from '@prisma/client'
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const PrismaClient = (prismaClientPkg as any)
+  .PrismaClient as typeof PrismaClientClass
+
+type PrismaClientInstance = InstanceType<typeof PrismaClientClass>
+
 declare global {
-  var __dbPrisma: PrismaClient | undefined
+  var __dbPrisma: PrismaClientInstance | undefined
 }
 
 // SQLite connection configuration
-// Note: SQLite is file-based and doesn't use connection pooling like PostgreSQL/MySQL
-// The better-sqlite3 adapter handles connections differently - it's synchronous and
-// uses a single connection per database file. We configure timeout for busy handling.
 const getDatabaseConfig = () => {
   const env = process.env.NODE_ENV || 'development'
 
-  // Environment-specific configurations
   const configs = {
     development: {
-      timeout: 5000, // 5 seconds busy timeout
+      timeout: 5000,
     },
     production: {
-      timeout: 10000, // 10 seconds busy timeout for high load
+      timeout: 10000,
     },
     test: {
-      timeout: 1000, // 1 second for fast test failures
+      timeout: 1000,
     },
   }
 
@@ -30,17 +37,12 @@ const getDatabaseConfig = () => {
 
 const dbConfig = getDatabaseConfig()
 
-// FIXED: Add retry logic and error handling for database connection
 const MAX_RETRIES = 3
 
-/**
- * Create Prisma client with retry logic and error handling
- * Prevents server crashes on database connection issues
- */
-function createPrismaClient(): PrismaClient {
+function createPrismaClient(): PrismaClientInstance {
   let retries = 0
 
-  const attemptConnection = (): PrismaClient => {
+  const attemptConnection = (): PrismaClientInstance => {
     try {
       const client = new PrismaClient({
         adapter: new PrismaBetterSqlite3({
@@ -49,7 +51,6 @@ function createPrismaClient(): PrismaClient {
         }),
       })
 
-      // Log successful connection
       if (process.env.NODE_ENV !== 'test') {
         console.log('[Database] Prisma client initialized successfully')
       }
@@ -64,7 +65,6 @@ function createPrismaClient(): PrismaClient {
           error instanceof Error ? error.message : 'Unknown error'
         )
 
-        // Return a proxy that will retry on first use
         return createRetryProxy(attemptConnection)
       }
 
@@ -79,13 +79,12 @@ function createPrismaClient(): PrismaClient {
   return attemptConnection()
 }
 
-/**
- * Create a proxy that retries connection on first database operation
- */
-function createRetryProxy(retryFn: () => PrismaClient): PrismaClient {
-  let client: PrismaClient | null = null
+function createRetryProxy(
+  retryFn: () => PrismaClientInstance
+): PrismaClientInstance {
+  let client: PrismaClientInstance | null = null
 
-  return new Proxy({} as PrismaClient, {
+  return new Proxy({} as PrismaClientInstance, {
     get(target, prop: string | symbol) {
       if (!client) {
         client = retryFn()
@@ -101,13 +100,8 @@ if (process.env.NODE_ENV !== 'production') {
   global.__dbPrisma = prisma
 }
 
-/**
- * Health check function to verify database connectivity
- * Returns true if database is accessible, false otherwise
- */
 export async function checkDatabaseHealth(): Promise<boolean> {
   try {
-    // Simple query to check connection
     await prisma.$queryRaw`SELECT 1`
     return true
   } catch (error) {
@@ -116,10 +110,6 @@ export async function checkDatabaseHealth(): Promise<boolean> {
   }
 }
 
-/**
- * Graceful shutdown handler for Prisma client
- * Should be called when the server is shutting down
- */
 export async function disconnectDatabase(): Promise<void> {
   try {
     await prisma.$disconnect()
