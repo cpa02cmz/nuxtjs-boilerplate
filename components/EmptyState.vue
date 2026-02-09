@@ -5,10 +5,7 @@
     aria-live="polite"
   >
     <!-- Animated Illustration -->
-    <div
-      class="relative w-48 h-48 mb-8"
-      aria-hidden="true"
-    >
+    <div class="relative w-48 h-48 mb-8" aria-hidden="true">
       <!-- Background Circle -->
       <div
         class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full animate-pulse-slow"
@@ -77,10 +74,7 @@
     </p>
 
     <!-- Suggestions Section -->
-    <div
-      v-if="suggestions.length"
-      class="w-full max-w-lg mb-8"
-    >
+    <div v-if="suggestions.length" class="w-full max-w-lg mb-8">
       <p
         class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4"
       >
@@ -91,7 +85,9 @@
           v-for="(suggestion, index) in suggestions"
           :key="index"
           class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-          :style="{ animationDelay: `${index * 100}ms` }"
+          :style="{
+            animationDelay: `${index * uiConfig.timing.suggestionAnimationDelayMs}ms`,
+          }"
           :class="{ 'animate-fade-in-up': !reducedMotion }"
           @click="$emit('suggestion-click', suggestion)"
         >
@@ -159,10 +155,7 @@
     </div>
 
     <!-- Tips Section -->
-    <div
-      v-if="showTips"
-      class="mt-10 p-4 bg-gray-50 rounded-xl max-w-lg"
-    >
+    <div v-if="showTips" class="mt-10 p-4 bg-gray-50 rounded-xl max-w-lg">
       <div class="flex items-start">
         <svg
           class="w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0"
@@ -178,9 +171,7 @@
           />
         </svg>
         <div class="text-left">
-          <p class="text-sm font-medium text-gray-900 mb-1">
-            Search Tips
-          </p>
+          <p class="text-sm font-medium text-gray-900 mb-1">Search Tips</p>
           <ul class="text-sm text-gray-500 space-y-1">
             <li>• Use fewer filters to see more results</li>
             <li>• Try synonyms or related terms</li>
@@ -194,6 +185,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   title?: string

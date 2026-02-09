@@ -4,6 +4,7 @@ import { logError } from '~/utils/errorLogger'
 import type { ApiClient } from '~/utils/api-client'
 import { limitsConfig } from '~/configs/limits.config'
 import { iconsConfig } from '~/configs/icons.config'
+import { TIME_MS } from '~/configs/time.config'
 
 export interface ActivityItem {
   id: string
@@ -59,25 +60,25 @@ export const useModerationDashboard = (
           id: '1',
           type: 'approve',
           message: 'Approved "React Best Practices Guide" submission',
-          timestamp: new Date(Date.now() - 3600000).toISOString(),
+          timestamp: new Date(Date.now() - TIME_MS.HOUR).toISOString(),
         },
         {
           id: '2',
           type: 'reject',
           message: 'Rejected "Fake Resource" submission - spam',
-          timestamp: new Date(Date.now() - 7200000).toISOString(),
+          timestamp: new Date(Date.now() - 2 * TIME_MS.HOUR).toISOString(),
         },
         {
           id: '3',
           type: 'flag',
           message: 'Resource "Old Tool" flagged for being deprecated',
-          timestamp: new Date(Date.now() - 10800000).toISOString(),
+          timestamp: new Date(Date.now() - 3 * TIME_MS.HOUR).toISOString(),
         },
         {
           id: '4',
           type: 'submit',
           message: 'New submission "Vue 3 Components Library" received',
-          timestamp: new Date(Date.now() - 14400000).toISOString(),
+          timestamp: new Date(Date.now() - 4 * TIME_MS.HOUR).toISOString(),
         },
       ]
     } catch (err) {

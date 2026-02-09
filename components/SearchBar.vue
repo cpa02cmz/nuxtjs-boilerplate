@@ -60,7 +60,7 @@
         aria-describedby="search-results-info search-shortcut-hint"
         :aria-expanded="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         aria-controls="search-suggestions-dropdown"
         aria-autocomplete="list"
@@ -68,7 +68,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint -->
       <div
         v-if="!modelValue && !isFocused"
@@ -103,7 +103,8 @@
               stroke-linejoin="round"
               stroke-width="2"
               d="M6 18L18 6M6 6l12 12"
-            /></svg>
+            />
+          </svg>
         </button>
       </div>
     </div>
@@ -113,7 +114,7 @@
       <LazySearchSuggestions
         v-if="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         id="search-suggestions-dropdown"
         :suggestions="suggestions"
@@ -147,6 +148,7 @@ import { useResourceData } from '~/composables/useResourceData'
 import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { searchConfig } from '~/configs/search.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   modelValue: string
@@ -385,7 +387,7 @@ if (typeof window !== 'undefined') {
         showFocusPulse.value = true
         setTimeout(() => {
           showFocusPulse.value = false
-        }, 600)
+        }, uiConfig.timing.focusPulseMs)
       }
     }
   }

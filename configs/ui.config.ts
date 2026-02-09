@@ -140,6 +140,17 @@ export const uiConfig = {
     searchTrackingDelayMs: parseInt(
       process.env.TIMING_SEARCH_TRACKING || '500'
     ),
+    navigationDelayMs: parseInt(process.env.TIMING_NAVIGATION_DELAY || '400'),
+    focusPulseMs: parseInt(process.env.TIMING_FOCUS_PULSE || '600'),
+    suggestionAnimationDelayMs: parseInt(
+      process.env.TIMING_SUGGESTION_ANIMATION_DELAY || '100'
+    ),
+  },
+
+  // Social Sharing Window Settings
+  socialShare: {
+    windowWidth: parseInt(process.env.SOCIAL_SHARE_WINDOW_WIDTH || '600'),
+    windowHeight: parseInt(process.env.SOCIAL_SHARE_WINDOW_HEIGHT || '400'),
   },
 
   // Data Loading

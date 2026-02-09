@@ -1,4 +1,5 @@
 import { sanitizeAndHighlight } from '~/utils/sanitize'
+import { searchConfig } from '~/configs/search.config'
 
 export const highlightSearchTerms = (
   text: string,
@@ -12,7 +13,7 @@ export const highlightSearchTerms = (
 export const createSearchSnippet = (
   text: string,
   searchQuery: string,
-  maxLength: number = 160
+  maxLength: number = searchConfig.behavior.maxSnippetLength
 ): string => {
   if (!searchQuery || !text) return text?.substring(0, maxLength) || ''
 
@@ -24,13 +25,15 @@ export const createSearchSnippet = (
   let bestEnd = -1
   let bestScore = -1
 
+  const windowDivisor = searchConfig.behavior.snippetWindowDivisor
+
   for (const term of queryTerms) {
     let pos = 0
     while ((pos = lowerText.indexOf(term, pos)) !== -1) {
-      let start = Math.max(0, pos - Math.floor(maxLength / 4))
+      let start = Math.max(0, pos - Math.floor(maxLength / windowDivisor))
       let end = Math.min(
         text.length,
-        pos + term.length + Math.floor(maxLength / 4)
+        pos + term.length + Math.floor(maxLength / windowDivisor)
       )
 
       while (

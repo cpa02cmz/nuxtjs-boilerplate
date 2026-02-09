@@ -1,5 +1,7 @@
 import { ref } from 'vue'
 import { logError } from '~/utils/errorLogger'
+import { uiConfig } from '~/configs/ui.config'
+import { contentConfig } from '~/configs/content.config'
 
 export interface ShareEvent {
   platform: string
@@ -129,10 +131,10 @@ export function getShareUrl(
   const description = encodeURIComponent(metadata.description)
 
   const urls: Record<string, string> = {
-    twitter: `https://twitter.com/intent/tweet?text=${title}&url=${url}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-    reddit: `https://www.reddit.com/submit?title=${title}&url=${url}`,
+    twitter: `${contentConfig.socialShare.platforms.twitter}?text=${title}&url=${url}`,
+    linkedin: `${contentConfig.socialShare.platforms.linkedin}?url=${url}`,
+    facebook: `${contentConfig.socialShare.platforms.facebook}?u=${url}`,
+    reddit: `${contentConfig.socialShare.platforms.reddit}?title=${title}&url=${url}`,
     email: `mailto:?subject=${title}&body=${description}%0A%0A${url}`,
   }
 
@@ -186,8 +188,8 @@ export function useSocialSharing() {
 
       // Open share window for web platforms
       if (platform !== 'email') {
-        const width = 600
-        const height = 400
+        const width = uiConfig.socialShare.windowWidth
+        const height = uiConfig.socialShare.windowHeight
         const left = window.screenX + (window.outerWidth - width) / 2
         const top = window.screenY + (window.outerHeight - height) / 2
 

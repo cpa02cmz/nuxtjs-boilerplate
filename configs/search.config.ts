@@ -64,6 +64,10 @@ export const searchConfig = {
     descriptionTruncateLength: parseInt(
       process.env.SEARCH_DESCRIPTION_TRUNCATE || '100'
     ),
+    // Divisor for calculating snippet window around matched terms (e.g., 4 means quarter of maxLength on each side)
+    snippetWindowDivisor: parseInt(
+      process.env.SEARCH_SNIPPET_WINDOW_DIVISOR || '4'
+    ),
   },
 
   // Cache Settings
