@@ -30,6 +30,8 @@ import { limitsConfig, type LimitsConfig } from './limits.config'
 import { comparisonConfig, type ComparisonConfig } from './comparison.config'
 
 // New modular configs - Flexy loves modularity!
+import { socialConfig, type SocialConfig } from './social.config'
+import { dateConfig, type DateConfig } from './date.config'
 import {
   csrfConfig,
   isSafeMethod,
@@ -118,6 +120,8 @@ export { limitsConfig, type LimitsConfig }
 export { comparisonConfig, type ComparisonConfig }
 
 // Re-export new modular configs
+export { socialConfig, type SocialConfig }
+export { dateConfig, type DateConfig }
 export {
   csrfConfig,
   isSafeMethod,
@@ -201,6 +205,8 @@ export const config = {
   limits: limitsConfig,
   comparison: comparisonConfig,
   // New modular configs
+  social: socialConfig,
+  date: dateConfig,
   csrf: csrfConfig,
   http: httpConfig,
   time: timeConfig,

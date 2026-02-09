@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { logError } from '~/utils/errorLogger'
+import { socialConfig } from '~/configs/social.config'
 
 export interface ShareEvent {
   platform: string
@@ -28,7 +29,7 @@ export interface SocialMetadata {
  */
 export async function trackSocialShare(event: ShareEvent): Promise<void> {
   try {
-    const response = await fetch('/api/v1/social/share', {
+    const response = await fetch(socialConfig.endpoints.trackShare, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -58,7 +59,9 @@ export function generateOpenGraphTags(metadata: SocialMetadata): string {
     `<meta property="og:description" content="${escapeHtml(metadata.description)}">`
   )
   tags.push(`<meta property="og:url" content="${metadata.url}">`)
-  tags.push(`<meta property="og:type" content="${metadata.type || 'website'}">`)
+  tags.push(
+    `<meta property="og:type" content="${metadata.type || socialConfig.openGraph.defaultType}">`
+  )
 
   if (metadata.siteName) {
     tags.push(
@@ -81,7 +84,7 @@ export function generateTwitterCardTags(metadata: SocialMetadata): string {
 
   // Twitter Card type
   tags.push(
-    `<meta name="twitter:card" content="${metadata.twitterCard || 'summary'}">`
+    `<meta name="twitter:card" content="${metadata.twitterCard || socialConfig.twitter.defaultCard}">`
   )
   tags.push(
     `<meta name="twitter:title" content="${escapeHtml(metadata.title)}">`
@@ -129,11 +132,11 @@ export function getShareUrl(
   const description = encodeURIComponent(metadata.description)
 
   const urls: Record<string, string> = {
-    twitter: `https://twitter.com/intent/tweet?text=${title}&url=${url}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-    reddit: `https://www.reddit.com/submit?title=${title}&url=${url}`,
-    email: `mailto:?subject=${title}&body=${description}%0A%0A${url}`,
+    twitter: `${socialConfig.platforms.twitter.url}?text=${title}&url=${url}`,
+    linkedin: `${socialConfig.platforms.linkedin.url}?url=${url}`,
+    facebook: `${socialConfig.platforms.facebook.url}?u=${url}`,
+    reddit: `${socialConfig.platforms.reddit.url}?title=${title}&url=${url}`,
+    email: `${socialConfig.platforms.email.url}?subject=${title}&body=${description}%0A%0A${url}`,
   }
 
   return urls[platform] || ''
@@ -186,8 +189,8 @@ export function useSocialSharing() {
 
       // Open share window for web platforms
       if (platform !== 'email') {
-        const width = 600
-        const height = 400
+        const width = socialConfig.share.windowWidth
+        const height = socialConfig.share.windowHeight
         const left = window.screenX + (window.outerWidth - width) / 2
         const top = window.screenY + (window.outerHeight - height) / 2
 
@@ -203,7 +206,10 @@ export function useSocialSharing() {
 
       return true
     } catch (error) {
-      lastError.value = error instanceof Error ? error.message : 'Share failed'
+      lastError.value =
+        error instanceof Error
+          ? error.message
+          : socialConfig.messages.shareFailed
       logError('Social share failed:', error as Error, 'useSocialSharing')
       return false
     } finally {
@@ -234,7 +240,10 @@ export function useSocialSharing() {
 
       return true
     } catch (error) {
-      lastError.value = error instanceof Error ? error.message : 'Copy failed'
+      lastError.value =
+        error instanceof Error
+          ? error.message
+          : socialConfig.messages.copyFailed
       return false
     }
   }
@@ -247,7 +256,7 @@ export function useSocialSharing() {
   ): Promise<Record<string, number>> => {
     try {
       const response = await fetch(
-        `/api/v1/social/counts?url=${encodeURIComponent(url)}`
+        `${socialConfig.endpoints.getCounts}?url=${encodeURIComponent(url)}`
       )
       if (response.ok) {
         return await response.json()
