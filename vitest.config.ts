@@ -1,6 +1,6 @@
 import { defineConfig, type UserConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
-import path from 'path'
+import { vitestAliases } from './vitest.shared.config'
 
 // Determine test profile from environment variable
 const testProfile = process.env.VITEST_PROFILE || 'default'
@@ -61,7 +61,6 @@ const defaultConfig: UserConfig = {
       },
     },
   },
-}
 
 // Integration profile configuration
 const integrationConfig: UserConfig = {
@@ -72,6 +71,7 @@ const integrationConfig: UserConfig = {
     testTimeout: 10000,
     setupFiles: ['./test-setup.ts'],
     include: ['**/*.integration.test.ts', '**/__tests__/*integration*.test.ts'],
+>>>>>>> origin/main
   },
 }
 
