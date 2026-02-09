@@ -23,7 +23,15 @@
     "analyze": "nuxi build --config-file nuxt.config.analyze.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "brocula": "tsx scripts/brocula/brocula.ts",
+    "brocula:lint": "tsx scripts/brocula/brocula.ts lint",
+    "brocula:build": "tsx scripts/brocula/brocula.ts build",
+    "brocula:monitor": "tsx scripts/brocula/brocula.ts monitor",
+    "brocula:lighthouse": "tsx scripts/brocula/brocula.ts lighthouse",
+    "brocula:full": "tsx scripts/brocula/brocula.ts full",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
@@ -64,6 +72,7 @@
     "prisma": "^7.3.0",
     "rollup-plugin-visualizer": "^6.0.5",
     "stylelint": "^17.1.0",
+    "tsx": "^4.19.0",
     "stylelint-config-css-modules": "^4.4.0",
     "stylelint-config-recommended": "^18.0.0",
     "stylelint-config-standard": "^40.0.0",
