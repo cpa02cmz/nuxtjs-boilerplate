@@ -167,6 +167,7 @@
                     createSearchSnippet(resource.description, searchQuery)
                   "
                   :search-query="searchQuery"
+                  :date-added="resource.dateAdded"
                 />
               </template>
             </VirtualResourceList>

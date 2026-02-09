@@ -155,6 +155,7 @@
                   :highlighted-description="
                     highlightSearchTerms(resource.description, searchQuery)
                   "
+                  :date-added="resource.dateAdded"
                 />
               </div>
             </div>
@@ -208,6 +209,7 @@
                   :highlighted-description="
                     highlightSearchTerms(resource.description, searchQuery)
                   "
+                  :date-added="resource.dateAdded"
                 />
               </div>
             </div>

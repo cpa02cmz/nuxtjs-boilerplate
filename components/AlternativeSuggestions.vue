@@ -21,6 +21,7 @@
         :button-label="getButtonLabel(alternative.resource.category)"
         :similarity-score="alternative.score"
         :similarity-reason="alternative.reason"
+        :date-added="alternative.resource.dateAdded"
       />
     </div>
   </div>

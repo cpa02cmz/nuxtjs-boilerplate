@@ -51,6 +51,27 @@
               <span v-else>{{ title }}</span>
             </span>
           </h3>
+          <!-- New badge -->
+          <span
+            v-if="isNew"
+            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-sm animate-new-pulse mr-2"
+            role="status"
+            aria-label="New resource added within the last 7 days"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-3 w-3 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            New
+          </span>
           <!-- Resource status badge -->
           <ResourceStatus
             v-if="status"
@@ -342,6 +363,7 @@ interface Props {
   similarityReason?: string
   status?: string
   healthScore?: number
+  dateAdded?: string
 }
 
 // Get the comparison composable
@@ -360,6 +382,7 @@ const props = withDefaults(defineProps<Props>(), {
   healthScore: undefined,
   similarityScore: undefined,
   similarityReason: undefined,
+  dateAdded: undefined,
 })
 
 const hasError = ref(false)
@@ -368,6 +391,18 @@ const isCompareAnimating = ref(false)
 const compareButtonRef = ref<HTMLButtonElement | null>(null)
 const isCopied = ref(false)
 const isCopyAnimating = ref(false)
+
+// Check if resource is new (added within the last 7 days)
+const isNew = computed(() => {
+  if (!props.dateAdded) return false
+
+  const addedDate = new Date(props.dateAdded)
+  const now = new Date()
+  const diffTime = Math.abs(now.getTime() - addedDate.getTime())
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+  return diffDays <= 7
+})
 
 // Memoized highlight function to prevent recomputation
 const memoizedHighlight = memoizeHighlight(sanitizeAndHighlight)
@@ -611,10 +646,28 @@ if (typeof useHead === 'function') {
   }
 }
 
+/* New badge pulse animation */
+.animate-new-pulse {
+  animation: new-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes new-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .animate-icon-pop,
-  .animate-check-pop {
+  .animate-check-pop,
+  .animate-new-pulse {
     animation: none;
   }
 }
