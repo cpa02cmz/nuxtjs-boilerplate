@@ -3,6 +3,8 @@ import { randomUUID } from 'node:crypto'
 import { webhookStorage } from './webhookStorage'
 import { webhookSigner } from './webhook-signer'
 import { TIMING } from './constants'
+import { getCircuitBreaker } from './circuit-breaker'
+import { createCircuitBreakerError } from './api-error'
 
 export interface WebhookDeliveryOptions {
   maxRetries?: number
@@ -12,6 +14,8 @@ export interface WebhookDeliveryOptions {
 const DEFAULT_TIMEOUT_MS = TIMING.WEBHOOK_REQUEST_TIMEOUT
 
 export class WebhookDeliveryService {
+  private circuitBreakerKeys: Map<string, string> = new Map()
+
   async deliver(
     webhook: Webhook,
     payload: WebhookPayload
@@ -22,25 +26,44 @@ export class WebhookDeliveryService {
     )
     const payloadWithSignature = { ...payload, signature }
 
+    // Get circuit breaker per hostname to prevent cascading failures
+    const circuitBreakerKey = this.getCircuitBreakerKey(webhook)
+    const circuitBreaker = getCircuitBreaker(circuitBreakerKey, {
+      failureThreshold: 5,
+      successThreshold: 2,
+      timeoutMs: 60000,
+    })
+
     let responseCode: number | undefined
     let responseMessage: string | undefined
     let success = false
 
     try {
-      await $fetch(webhook.url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Webhook-Event': payload.event,
-          'X-Webhook-Signature': signature,
-          'X-Webhook-Timestamp': payload.timestamp,
-          ...(payload.idempotencyKey && {
-            'X-Webhook-Idempotency-Key': payload.idempotencyKey,
-          }),
+      await circuitBreaker.execute(
+        async () => {
+          await $fetch(webhook.url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Webhook-Event': payload.event,
+              'X-Webhook-Signature': signature,
+              'X-Webhook-Timestamp': payload.timestamp,
+              ...(payload.idempotencyKey && {
+                'X-Idempotency-Key': payload.idempotencyKey,
+              }),
+            },
+            body: JSON.stringify(payloadWithSignature),
+            timeout: DEFAULT_TIMEOUT_MS,
+          })
         },
-        body: JSON.stringify(payloadWithSignature),
-        timeout: DEFAULT_TIMEOUT_MS,
-      })
+        () => {
+          const lastFailureTime = circuitBreaker.getStats().lastFailureTime
+          const lastFailureTimeIso = lastFailureTime
+            ? new Date(lastFailureTime).toISOString()
+            : undefined
+          throw createCircuitBreakerError(webhook.url, lastFailureTimeIso)
+        }
+      )
 
       responseCode = 200
       responseMessage = 'OK'
@@ -83,6 +106,8 @@ export class WebhookDeliveryService {
         responseMessage = `Client error ${responseCode}: ${err.message || 'HTTP client error'}`
       } else if (responseCode >= 500) {
         responseMessage = `Server error ${responseCode}: ${err.message || 'HTTP server error'}`
+      } else if (err.message?.includes('Circuit breaker is OPEN')) {
+        responseMessage = `Circuit breaker open: ${err.message || 'Service temporarily unavailable'}`
       } else {
         responseMessage = `Network error: ${err.message || 'Unknown error'}`
       }
@@ -204,6 +229,14 @@ export class WebhookDeliveryService {
     delay += jitter
 
     return Math.max(0, Math.floor(delay))
+  }
+
+  private getCircuitBreakerKey(webhook: Webhook): string {
+    if (!this.circuitBreakerKeys.has(webhook.id)) {
+      const key = `webhook:${webhook.url}`
+      this.circuitBreakerKeys.set(webhook.id, key)
+    }
+    return this.circuitBreakerKeys.get(webhook.id)!
   }
 }
 
