@@ -1,13 +1,7 @@
-// Generate unique ID with timestamp prefix (base36)
-// Format: <timestamp-base36><8-random-chars>
+<<// Generate unique ID with timestamp + random component
+// Format: base36(timestamp) + 8-char base36(random)
 export const generateUniqueId = (): string => {
   const timestamp = Date.now().toString(36)
-
-  // Generate 8 random characters in base36
-  let random = ''
-  for (let i = 0; i < 8; i++) {
-    random += Math.floor(Math.random() * 36).toString(36)
-  }
-
+  const random = Math.random().toString(36).substring(2, 10)
   return timestamp + random
 }

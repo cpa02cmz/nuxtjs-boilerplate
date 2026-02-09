@@ -1,19 +1,7 @@
 // Error logging service for consistent error tracking
+import { generateUniqueId } from './id'
 import { logger } from './logger'
 import { limitsConfig } from '~/configs/limits.config'
-
-// Browser-compatible UUID generation
-function generateUUID(): string {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID()
-  }
-  // Fallback for older browsers
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = (Math.random() * 16) | 0
-    const v = c === 'x' ? r : (r & 0x3) | 0x8
-    return v.toString(16)
-  })
-}
 
 export interface ErrorLog {
   id: string
@@ -40,7 +28,7 @@ class ErrorLogger {
     additionalInfo?: Record<string, unknown>
   ): void {
     const log: ErrorLog = {
-      id: generateUUID(),
+      id: generateUniqueId(),
       timestamp: new Date(),
       message,
       stack: error?.stack,
