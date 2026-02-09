@@ -3,6 +3,7 @@ import type { H3Event } from 'h3'
 import { randomBytes } from 'node:crypto'
 import { getSecurityHeaders } from '../utils/security-config'
 import { logger } from '~/utils/logger'
+import { timeConfig } from '~/configs/time.config'
 
 // Comprehensive security headers plugin
 export default defineNitroPlugin(nitroApp => {
@@ -56,7 +57,7 @@ export default defineNitroPlugin(nitroApp => {
         ) {
           event.node.res.setHeader(
             'cache-control',
-            'max-age=300, public, s-maxage=300' // 5 minutes
+            `max-age=${timeConfig.cache.maxAge.api}, public, s-maxage=${timeConfig.cache.maxAge.api}`
           )
         }
       }
@@ -69,7 +70,7 @@ export default defineNitroPlugin(nitroApp => {
         ) {
           event.node.res.setHeader(
             'cache-control',
-            'max-age=31536000, immutable' // 1 year
+            `max-age=${timeConfig.cache.maxAge.static}, immutable`
           )
         }
       }
@@ -84,7 +85,7 @@ export default defineNitroPlugin(nitroApp => {
         ) {
           event.node.res.setHeader(
             'cache-control',
-            'max-age=3600, s-maxage=3600, public' // 1 hour
+            `max-age=${timeConfig.cache.maxAge.page}, s-maxage=${timeConfig.cache.maxAge.page}, public`
           )
         }
       }

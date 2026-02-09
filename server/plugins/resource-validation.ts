@@ -6,6 +6,7 @@
 import { defineNitroPlugin } from 'nitropack/runtime'
 import { updateAllResourceHealth } from '../utils/resourceHealth'
 import logger from '~/utils/logger'
+import { timeConfig } from '~/configs/time.config'
 
 // Extended NitroApp interface for resource validation
 interface ExtendedNitroApp {
@@ -53,19 +54,16 @@ export default defineNitroPlugin(async nitroApp => {
   await validateAllResources()
 
   // Set up periodic validation (every hour)
-  const validationInterval = setInterval(
-    async () => {
-      try {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.info('Starting scheduled resource validation...')
-        }
-        await validateAllResources()
-      } catch (error) {
-        logger.error('Scheduled resource validation failed:', error)
+  const validationInterval = setInterval(async () => {
+    try {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.info('Starting scheduled resource validation...')
       }
-    },
-    60 * 60 * 1000
-  ) // 1 hour in milliseconds
+      await validateAllResources()
+    } catch (error) {
+      logger.error('Scheduled resource validation failed:', error)
+    }
+  }, timeConfig.validation.resourceIntervalMs)
 
   // Also run validation on server start after a short delay
   setTimeout(async () => {
@@ -74,7 +72,7 @@ export default defineNitroPlugin(async nitroApp => {
     } catch (error) {
       logger.error('Initial resource validation failed:', error)
     }
-  }, 5000) // 5 seconds delay to allow server to fully start
+  }, timeConfig.validation.startupDelayMs)
 
   // Store the validation interval in nitroApp for potential cleanup
   const extendedApp = nitroApp as ExtendedNitroApp

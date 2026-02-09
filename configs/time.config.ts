@@ -44,12 +44,18 @@ export const TIME_SECONDS = {
 
 // Time configuration for various features
 export const timeConfig = {
-  // Cache TTL values
+  // Cache TTL values (in seconds for HTTP headers)
   cache: {
     short: TIME_MS.MINUTE * 5,
     medium: TIME_MS.HOUR,
     long: TIME_MS.DAY,
     veryLong: TIME_MS.WEEK,
+    // HTTP Cache-Control max-age values (seconds)
+    maxAge: {
+      api: parseInt(process.env.CACHE_MAX_AGE_API || '300'), // 5 minutes
+      static: parseInt(process.env.CACHE_MAX_AGE_STATIC || '31536000'), // 1 year
+      page: parseInt(process.env.CACHE_MAX_AGE_PAGE || '3600'), // 1 hour
+    },
   },
 
   // Rate limiting windows
@@ -108,6 +114,34 @@ export const timeConfig = {
     input: parseInt(process.env.DEBOUNCE_INPUT_MS || '150'),
     resize: parseInt(process.env.DEBOUNCE_RESIZE_MS || '200'),
     scroll: parseInt(process.env.DEBOUNCE_SCROLL_MS || '100'),
+  },
+
+  // Validation and cleanup intervals
+  validation: {
+    // Resource validation interval (default: 1 hour)
+    resourceIntervalMs: parseInt(
+      process.env.RESOURCE_VALIDATION_INTERVAL_MS || `${TIME_MS.HOUR}`
+    ),
+    // Startup delay for initial validation (default: 5 seconds)
+    startupDelayMs: parseInt(
+      process.env.RESOURCE_VALIDATION_STARTUP_DELAY_MS || '5000'
+    ),
+  },
+
+  cleanup: {
+    // Rate limit cleanup interval (default: 5 minutes)
+    rateLimitIntervalMs: parseInt(
+      process.env.RATE_LIMIT_CLEANUP_INTERVAL_MS || `${TIME_MS.FIVE_MINUTES}`
+    ),
+    // Analytics cleanup interval (default: 24 hours)
+    analyticsIntervalMs: parseInt(
+      process.env.ANALYTICS_CLEANUP_INTERVAL_MS ||
+        `${TIME_MS.TWENTY_FOUR_HOURS}`
+    ),
+    // Cache cleanup interval (default: 5 minutes)
+    cacheIntervalMs: parseInt(
+      process.env.CACHE_CLEANUP_INTERVAL_MS || `${TIME_MS.FIVE_MINUTES}`
+    ),
   },
 
   // Animation durations

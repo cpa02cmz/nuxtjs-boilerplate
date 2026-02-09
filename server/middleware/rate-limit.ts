@@ -1,6 +1,7 @@
 import { getRequestIP, setResponseHeader } from 'h3'
 import { getRateLimitTier } from '~/configs/rate-limit.config'
 import { sendRateLimitError } from '~/server/utils/api-response'
+import { timeConfig } from '~/configs/time.config'
 
 // Advanced in-memory rate limiter with different limits for different endpoints
 // In production, you'd want to use a more robust solution like Redis
@@ -16,7 +17,7 @@ const rateLimitStore: RateLimitStore = {}
 
 // FIXED: Add periodic cleanup to prevent memory leak
 // Cleanup runs every 5 minutes to remove expired entries
-const CLEANUP_INTERVAL_MS = 5 * 60 * 1000 // 5 minutes
+const CLEANUP_INTERVAL_MS = timeConfig.cleanup.rateLimitIntervalMs
 
 /**
  * Clean up expired rate limit entries to prevent memory leaks
