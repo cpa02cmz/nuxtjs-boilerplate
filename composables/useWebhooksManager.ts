@@ -18,6 +18,7 @@ import { UI_FEEDBACK_DURATION } from '~/server/utils/constants'
 import type { ApiClient } from '~/utils/api-client'
 import type { Webhook } from '~/types/webhook'
 import { apiConfig } from '~/configs/api.config'
+import { validationConfig } from '~/configs/validation.config'
 
 export interface WebhookFormData {
   url: string
@@ -73,11 +74,11 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
       if (response.success && response.data) {
         webhooks.value = response.data as unknown as Webhook[]
       } else {
-        errorMessage.value = 'Failed to fetch webhooks. Please try again.'
+        errorMessage.value = validationConfig.messages.error.fetchWebhooks
       }
     } catch (error) {
       logger.error('Error fetching webhooks:', error)
-      errorMessage.value = 'Failed to fetch webhooks. Please try again.'
+      errorMessage.value = validationConfig.messages.error.fetchWebhooks
     } finally {
       loading.value = false
     }
@@ -87,12 +88,12 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
     errorMessage.value = ''
 
     if (!webhookData.url) {
-      errorMessage.value = 'Webhook URL is required.'
+      errorMessage.value = validationConfig.messages.required.webhookUrl
       return false
     }
 
     if (!webhookData.events || webhookData.events.length === 0) {
-      errorMessage.value = 'At least one event must be selected.'
+      errorMessage.value = validationConfig.messages.required.events
       return false
     }
 
@@ -103,11 +104,11 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
       if (!response.success) {
         errorMessage.value =
           response.error?.message ||
-          'Failed to create webhook. Please try again.'
+          validationConfig.messages.error.createWebhook
         return false
       }
 
-      announcement.value = 'Webhook created successfully'
+      announcement.value = validationConfig.messages.success.webhookCreated
 
       setTimeout(() => {
         announcement.value = ''
@@ -117,7 +118,7 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
       return true
     } catch (error) {
       logger.error('Error creating webhook:', error)
-      errorMessage.value = 'Failed to create webhook. Please try again.'
+      errorMessage.value = validationConfig.messages.error.createWebhook
       return false
     }
   }
@@ -133,13 +134,13 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
       if (!response.success) {
         errorMessage.value =
           response.error?.message ||
-          'Failed to update webhook status. Please try again.'
+          validationConfig.messages.error.updateWebhook
         return
       }
 
       announcement.value = newStatus
-        ? 'Webhook activated'
-        : 'Webhook deactivated'
+        ? validationConfig.messages.success.webhookActivated
+        : validationConfig.messages.success.webhookDeactivated
 
       setTimeout(() => {
         announcement.value = ''
@@ -148,7 +149,7 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
       await fetchWebhooks()
     } catch (error) {
       logger.error('Error toggling webhook:', error)
-      errorMessage.value = 'Failed to update webhook status. Please try again.'
+      errorMessage.value = validationConfig.messages.error.updateWebhook
     }
   }
 
@@ -164,11 +165,11 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
       if (!response.success) {
         errorMessage.value =
           response.error?.message ||
-          'Failed to delete webhook. Please try again.'
+          validationConfig.messages.error.deleteWebhook
         return
       }
 
-      announcement.value = 'Webhook deleted successfully'
+      announcement.value = validationConfig.messages.success.webhookDeleted
 
       setTimeout(() => {
         announcement.value = ''
@@ -177,7 +178,7 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
       await fetchWebhooks()
     } catch (error) {
       logger.error('Error deleting webhook:', error)
-      errorMessage.value = 'Failed to delete webhook. Please try again.'
+      errorMessage.value = validationConfig.messages.error.deleteWebhook
     }
   }
 

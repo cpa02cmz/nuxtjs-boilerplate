@@ -11,6 +11,12 @@ export const validationConfig = {
       url: process.env.VALIDATION_MSG_URL_REQUIRED || 'URL is required',
       category:
         process.env.VALIDATION_MSG_CATEGORY_REQUIRED || 'Category is required',
+      webhookUrl:
+        process.env.VALIDATION_MSG_WEBHOOK_URL_REQUIRED ||
+        'Webhook URL is required',
+      events:
+        process.env.VALIDATION_MSG_EVENTS_REQUIRED ||
+        'At least one event must be selected',
     },
     invalid: {
       url: process.env.VALIDATION_MSG_URL_INVALID || 'Please enter a valid URL',
@@ -27,6 +33,42 @@ export const validationConfig = {
       description:
         process.env.VALIDATION_MSG_DESC_TOO_SHORT ||
         'Description must be at least {{min}} characters',
+    },
+    error: {
+      fetchWebhooks:
+        process.env.ERROR_MSG_FETCH_WEBHOOKS ||
+        'Failed to fetch webhooks. Please try again.',
+      createWebhook:
+        process.env.ERROR_MSG_CREATE_WEBHOOK ||
+        'Failed to create webhook. Please try again.',
+      updateWebhook:
+        process.env.ERROR_MSG_UPDATE_WEBHOOK ||
+        'Failed to update webhook status. Please try again.',
+      deleteWebhook:
+        process.env.ERROR_MSG_DELETE_WEBHOOK ||
+        'Failed to delete webhook. Please try again.',
+      fetchApiKeys:
+        process.env.ERROR_MSG_FETCH_API_KEYS ||
+        'Failed to load API keys. Please try again.',
+      createApiKey:
+        process.env.ERROR_MSG_CREATE_API_KEY ||
+        'Failed to create API key. Please try again.',
+      revokeApiKey:
+        process.env.ERROR_MSG_REVOKE_API_KEY ||
+        'Failed to revoke API key. Please try again.',
+      generic: process.env.ERROR_MSG_GENERIC || 'An error occurred',
+    },
+    success: {
+      webhookCreated:
+        process.env.SUCCESS_MSG_WEBHOOK_CREATED ||
+        'Webhook created successfully',
+      webhookActivated:
+        process.env.SUCCESS_MSG_WEBHOOK_ACTIVATED || 'Webhook activated',
+      webhookDeactivated:
+        process.env.SUCCESS_MSG_WEBHOOK_DEACTIVATED || 'Webhook deactivated',
+      webhookDeleted:
+        process.env.SUCCESS_MSG_WEBHOOK_DELETED ||
+        'Webhook deleted successfully',
     },
   },
 
