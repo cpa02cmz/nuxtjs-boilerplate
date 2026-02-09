@@ -73,12 +73,12 @@
               'hover:bg-gray-100 rounded-md',
               isDismissing && 'opacity-50 cursor-not-allowed',
             ]"
-            aria-label="Cancel app installation (press Escape to dismiss)"
+            :aria-label="contentConfig.pwa.aria.dismissButton"
             :disabled="isDismissing"
             @click="cancelInstall"
           >
             <span class="flex items-center gap-1">
-              Not now
+              {{ contentConfig.pwa.notNow }}
               <kbd
                 class="hidden sm:inline-flex items-center px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded text-gray-500"
                 aria-hidden="true"
@@ -93,7 +93,7 @@
               'hover:shadow-md hover:-translate-y-0.5 active:translate-y-0',
               isInstalling && 'opacity-75 cursor-wait',
             ]"
-            aria-label="Install app to home screen"
+            :aria-label="contentConfig.pwa.aria.installButton"
             :disabled="isInstalling"
             @click="installPWA"
           >
@@ -120,7 +120,11 @@
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              {{ isInstalling ? 'Installing...' : 'Install' }}
+              {{
+                isInstalling
+                  ? contentConfig.pwa.installing
+                  : contentConfig.pwa.install
+              }}
             </span>
           </button>
         </div>
@@ -150,6 +154,8 @@
 <script setup lang="ts">
 import { useNuxtApp } from '#app'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { contentConfig } from '../configs/content.config'
+import { animationConfig } from '../configs/animation.config'
 
 // Storage key constants
 const STORAGE_KEYS = {
@@ -270,7 +276,7 @@ const clearAutoDismiss = (): void => {
 const setupAutoDismiss = (): void => {
   if (autoDismissDuration.value <= 0) return
 
-  const updateInterval = 50 // Update every 50ms
+  const updateInterval = animationConfig.pwaInstall.autoDismissIntervalMs // Update every 50ms
   const decrement = (100 / autoDismissDuration.value) * updateInterval
 
   autoDismissInterval = setInterval(() => {
@@ -300,7 +306,7 @@ onMounted(async () => {
     showIconPulse.value = true
     setTimeout(() => {
       showIconPulse.value = false
-    }, 1000)
+    }, animationConfig.pwaInstall.iconPulseDurationSec * 1000)
   }
 
   // Focus management for accessibility
@@ -325,7 +331,8 @@ onUnmounted(() => {
 <style scoped>
 /* Icon pulse animation for initial appearance */
 .animate-icon-pulse {
-  animation: icon-pulse 1s ease-in-out;
+  animation: icon-pulse
+    v-bind('`${animationConfig.pwaInstall.iconPulseDurationSec}s`') ease-in-out;
 }
 
 @keyframes icon-pulse {
@@ -342,7 +349,8 @@ onUnmounted(() => {
 
 /* Spinner animation for loading state */
 .animate-spin {
-  animation: spin 1s linear infinite;
+  animation: spin v-bind('`${animationConfig.pwaInstall.spinDurationSec}s`')
+    linear infinite;
 }
 
 @keyframes spin {

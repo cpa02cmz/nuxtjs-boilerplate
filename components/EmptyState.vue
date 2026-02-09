@@ -194,6 +194,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { animationConfig } from '../configs/animation.config'
+import { contentConfig } from '../configs/content.config'
 
 interface Props {
   title?: string
@@ -205,9 +207,8 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  title: 'No resources found',
-  description:
-    "Try adjusting your search or filter criteria to find what you're looking for.",
+  title: contentConfig.searchResults.noResults.title,
+  description: contentConfig.searchResults.noResults.message,
   suggestions: () => [],
   showReset: true,
   showBrowseAll: true,
@@ -307,32 +308,44 @@ const reducedMotion = computed(() => {
 }
 
 .animate-draw {
-  animation: draw 1s ease-out forwards;
+  animation: draw v-bind('`${animationConfig.emptyState.floatDurationSec}s`')
+    ease-out forwards;
 }
 
 .animate-draw-delayed {
-  animation: draw-delayed 1.2s ease-out forwards;
+  animation: draw-delayed
+    v-bind('`${animationConfig.emptyState.floatDelaySec + 0.8}s`') ease-out
+    forwards;
 }
 
 .animate-float {
-  animation: float 3s ease-in-out infinite;
+  animation: float v-bind('`${animationConfig.emptyState.floatDurationSec}s`')
+    ease-in-out infinite;
 }
 
 .animate-float-delayed {
-  animation: float-delayed 3.5s ease-in-out infinite;
-  animation-delay: 0.5s;
+  animation: float-delayed
+    v-bind('`${animationConfig.emptyState.floatDelaySec + 3}s`') ease-in-out
+    infinite;
+  animation-delay: v-bind('`${animationConfig.emptyState.staggerDelayMs}ms`');
 }
 
 .animate-pulse-slow {
-  animation: pulse-slow 4s ease-in-out infinite;
+  animation: pulse-slow
+    v-bind('`${animationConfig.emptyState.ringDurationSec}s`') ease-in-out
+    infinite;
 }
 
 .animate-bounce-subtle {
-  animation: bounce-subtle 2s ease-in-out infinite;
+  animation: bounce-subtle
+    v-bind('`${animationConfig.emptyState.iconPulseDurationSec}s`') ease-in-out
+    infinite;
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 0.4s ease-out forwards;
+  animation: fade-in-up
+    v-bind('`${animationConfig.emptyState.particleDelaySec}s`') ease-out
+    forwards;
   opacity: 0;
 }
 

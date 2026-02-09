@@ -94,6 +94,38 @@ export const animationConfig = {
       endSpread: parseInt(process.env.BOOKMARK_PULSE_END_SPREAD || '4'),
     },
   },
+
+  // Empty State Animations
+  emptyState: {
+    floatDurationSec: parseInt(process.env.EMPTY_FLOAT_DURATION_SEC || '3'),
+    floatDelaySec: parseFloat(process.env.EMPTY_FLOAT_DELAY_SEC || '0.4'),
+    pulseDurationSec: parseInt(process.env.EMPTY_PULSE_DURATION_SEC || '3'),
+    pulseDelaySec: parseFloat(process.env.EMPTY_PULSE_DELAY_SEC || '0.5'),
+    scanDurationSec: parseInt(process.env.EMPTY_SCAN_DURATION_SEC || '3'),
+    scanDelaySec: parseFloat(process.env.EMPTY_SCAN_DELAY_SEC || '1.2'),
+    ringDurationSec: parseInt(process.env.EMPTY_RING_DURATION_SEC || '4'),
+    ringDelaySec: parseFloat(process.env.EMPTY_RING_DELAY_SEC || '1.5'),
+    particleDurationSec: parseInt(
+      process.env.EMPTY_PARTICLE_DURATION_SEC || '2'
+    ),
+    particleDelaySec: parseFloat(process.env.EMPTY_PARTICLE_DELAY_SEC || '2'),
+    iconPulseDurationSec: parseInt(
+      process.env.EMPTY_ICON_PULSE_DURATION_SEC || '2'
+    ),
+    spinDurationSec: parseInt(process.env.EMPTY_SPIN_DURATION_SEC || '4'),
+    staggerDelayMs: parseInt(process.env.EMPTY_STAGGER_DELAY_MS || '100'),
+  },
+
+  // PWA Install Prompt Animations
+  pwaInstall: {
+    iconPulseDurationSec: parseInt(
+      process.env.PWA_ICON_PULSE_DURATION_SEC || '1'
+    ),
+    spinDurationSec: parseInt(process.env.PWA_SPIN_DURATION_SEC || '1'),
+    autoDismissIntervalMs: parseInt(
+      process.env.PWA_AUTO_DISMISS_INTERVAL_MS || '50'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

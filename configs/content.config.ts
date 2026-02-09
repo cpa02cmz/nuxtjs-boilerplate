@@ -114,6 +114,18 @@ export const contentConfig = {
       process.env.CONTENT_PWA_INSTALL_DESC || 'Add to your home screen',
     notNow: process.env.CONTENT_PWA_NOT_NOW || 'Not now',
     install: process.env.CONTENT_PWA_INSTALL || 'Install',
+    installing: process.env.CONTENT_PWA_INSTALLING || 'Installing...',
+    // ARIA labels
+    aria: {
+      installPrompt:
+        process.env.CONTENT_PWA_ARIA_PROMPT || 'Install app prompt',
+      dismissButton:
+        process.env.CONTENT_PWA_ARIA_DISMISS || 'Dismiss install prompt',
+      installButton:
+        process.env.CONTENT_PWA_ARIA_INSTALL || 'Install application',
+      closeButton: process.env.CONTENT_PWA_ARIA_CLOSE || 'Close install prompt',
+      appIcon: process.env.CONTENT_PWA_ARIA_ICON || 'App icon',
+    },
   },
 
   // Submit Page

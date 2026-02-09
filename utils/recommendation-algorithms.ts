@@ -240,23 +240,28 @@ export function calculateSearchTermMatch(
 
   let score = 0
 
+  const weights = recommendationConfig.searchTermMatch
+
   // Title match (highest weight)
   const titleLower = resource.title.toLowerCase()
   if (titleLower.includes(query)) {
-    score += 0.4
+    score += weights.exactTitleMatch
   } else {
     // Partial title match
     const matchingTerms = queryTerms.filter(term => titleLower.includes(term))
-    score += (matchingTerms.length / queryTerms.length) * 0.25
+    score +=
+      (matchingTerms.length / queryTerms.length) * weights.partialTitleMatch
   }
 
   // Description match
   const descLower = resource.description.toLowerCase()
   if (descLower.includes(query)) {
-    score += 0.2
+    score += weights.exactDescriptionMatch
   } else {
     const matchingTerms = queryTerms.filter(term => descLower.includes(term))
-    score += (matchingTerms.length / queryTerms.length) * 0.1
+    score +=
+      (matchingTerms.length / queryTerms.length) *
+      weights.partialDescriptionMatch
   }
 
   // Tags match
@@ -265,7 +270,7 @@ export function calculateSearchTermMatch(
   )
   score +=
     (matchingTags.length / Math.max(resource.tags.length, queryTerms.length)) *
-    0.2
+    weights.tagsMatch
 
   // Technology match
   const matchingTech = resource.technology.filter(tech =>
@@ -274,11 +279,11 @@ export function calculateSearchTermMatch(
   score +=
     (matchingTech.length /
       Math.max(resource.technology.length, queryTerms.length)) *
-    0.15
+    weights.technologyMatch
 
   // Category match
   if (queryTerms.some(term => resource.category.toLowerCase().includes(term))) {
-    score += 0.05
+    score += weights.categoryMatch
   }
 
   return Math.min(1, score)
@@ -296,15 +301,20 @@ export function calculateTrendingSearchBoost(
     return 0
   }
 
+  const searchHistoryConfig = recommendationConfig.searchHistory
+
   // Sort by count to identify trending searches
   const sortedSearches = [...popularSearches].sort((a, b) => b.count - a.count)
-  const topSearches = sortedSearches.slice(0, 5) // Top 5 trending searches
+  const topSearches = sortedSearches.slice(
+    0,
+    searchHistoryConfig.topSearchesLimit
+  ) // Top N trending searches
 
   let trendingScore = 0
 
   for (let i = 0; i < topSearches.length; i++) {
     const search = topSearches[i]
-    const positionWeight = 1 - i * 0.15 // Higher weight for top searches
+    const positionWeight = 1 - i * searchHistoryConfig.positionWeightDecrement // Higher weight for top searches
     const matchScore = calculateSearchTermMatch(resource, search.query)
     trendingScore += matchScore * positionWeight
   }
@@ -324,24 +334,10 @@ export function createUserSearchProfile(searchHistory: string[]): {
     return { interests: [], skillLevel: 'intermediate' }
   }
 
+  const userProfileConfig = recommendationConfig.userProfile
+
   // Extract potential interests from search queries
   const interests = new Set<string>()
-  const skillIndicators = {
-    beginner: [
-      'tutorial',
-      'beginner',
-      'introduction',
-      'getting started',
-      ' basics',
-    ],
-    advanced: [
-      'advanced',
-      'expert',
-      'performance',
-      'optimization',
-      'architecture',
-    ],
-  }
 
   let beginnerCount = 0
   let advancedCount = 0
@@ -350,33 +346,17 @@ export function createUserSearchProfile(searchHistory: string[]): {
     const queryLower = query.toLowerCase()
 
     // Extract technology terms as interests
-    const techTerms = [
-      'javascript',
-      'typescript',
-      'python',
-      'react',
-      'vue',
-      'nuxt',
-      'node',
-      'database',
-      'api',
-      'frontend',
-      'backend',
-      'devops',
-      'testing',
-    ]
-
-    for (const term of techTerms) {
+    for (const term of userProfileConfig.techTerms) {
       if (queryLower.includes(term)) {
         interests.add(term)
       }
     }
 
     // Check skill level indicators
-    for (const indicator of skillIndicators.beginner) {
+    for (const indicator of userProfileConfig.beginnerIndicators) {
       if (queryLower.includes(indicator)) beginnerCount++
     }
-    for (const indicator of skillIndicators.advanced) {
+    for (const indicator of userProfileConfig.advancedIndicators) {
       if (queryLower.includes(indicator)) advancedCount++
     }
   }
