@@ -11,6 +11,7 @@
  */
 
 import type { Resource, FilterOptions } from '~/types/resource'
+import { TIME_MS } from '~/configs/time.config'
 
 /**
  * Check if a filter array has active values
@@ -120,7 +121,8 @@ export const matchesDateRange = (
   const now = new Date()
   const resourceDate = new Date(resource.dateAdded || now)
   const timeDiff = now.getTime() - resourceDate.getTime()
-  const daysDiff = timeDiff / (1000 * 60 * 60 * 24)
+  // Flexy hates hardcoded time calculations! Using TIME_MS constants
+  const daysDiff = timeDiff / TIME_MS.DAY
 
   switch (dateRange) {
     case 'lastWeek':

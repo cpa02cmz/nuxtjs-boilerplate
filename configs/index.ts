@@ -81,6 +81,17 @@ import {
   type SitemapPageEntry,
 } from './sitemap.config'
 import { iconsConfig, type IconsConfig } from './icons.config'
+import {
+  ROUTE_PATTERNS,
+  routesConfig,
+  isApiRoute,
+  isProtectedApiRoute,
+  isPublicApiRoute,
+  isStaticBuildPath,
+  isCacheablePage,
+  type RoutePatterns,
+  type RoutesConfig,
+} from './routes.config'
 
 // Re-export individual configs
 export { appConfig, type AppConfig }
@@ -158,6 +169,17 @@ export {
   type SitemapPageEntry,
 }
 export { iconsConfig, type IconsConfig }
+export {
+  ROUTE_PATTERNS,
+  routesConfig,
+  isApiRoute,
+  isProtectedApiRoute,
+  isPublicApiRoute,
+  isStaticBuildPath,
+  isCacheablePage,
+  type RoutePatterns,
+  type RoutesConfig,
+}
 
 // Default export with all configs
 export const config = {
@@ -185,6 +207,7 @@ export const config = {
   cacheTags: cacheTagsConfig,
   sitemap: sitemapConfig,
   icons: iconsConfig,
+  routes: routesConfig,
 } as const
 
 export type Config = typeof config
