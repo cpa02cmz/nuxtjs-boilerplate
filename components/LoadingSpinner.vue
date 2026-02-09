@@ -47,6 +47,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { themeConfig } from '../configs/theme.config'
 
 interface Props {
   label?: string
@@ -173,7 +174,7 @@ watch(
 
 .loading-spinner__label {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: v-bind('themeConfig.loadingSpinner.labelColor');
 }
 
 @keyframes rotate {

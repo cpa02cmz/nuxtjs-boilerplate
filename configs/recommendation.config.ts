@@ -60,6 +60,87 @@ export const recommendationConfig = {
     ),
     collaborativeBaseline: 0,
   },
+
+  // Search Term Matching Weights - Flexy hates hardcoded algorithm weights!
+  searchTermMatch: {
+    exactTitleMatch: parseFloat(process.env.REC_SEARCH_EXACT_TITLE || '0.4'),
+    partialTitleMatch: parseFloat(
+      process.env.REC_SEARCH_PARTIAL_TITLE || '0.25'
+    ),
+    exactDescriptionMatch: parseFloat(
+      process.env.REC_SEARCH_EXACT_DESC || '0.2'
+    ),
+    partialDescriptionMatch: parseFloat(
+      process.env.REC_SEARCH_PARTIAL_DESC || '0.1'
+    ),
+    tagsMatch: parseFloat(process.env.REC_SEARCH_TAGS || '0.2'),
+    technologyMatch: parseFloat(process.env.REC_SEARCH_TECH || '0.15'),
+    categoryMatch: parseFloat(process.env.REC_SEARCH_CATEGORY || '0.05'),
+  },
+
+  // Search History Settings
+  searchHistory: {
+    topSearchesLimit: parseInt(process.env.REC_TOP_SEARCHES_LIMIT || '5'),
+    positionWeightDecrement: parseFloat(
+      process.env.REC_POSITION_WEIGHT_DEC || '0.15'
+    ),
+  },
+
+  // User Profile Creation
+  userProfile: {
+    // Skill level indicators
+    beginnerIndicators: [
+      'tutorial',
+      'beginner',
+      'basic',
+      'getting started',
+      'learn',
+      'introduction',
+      'guide',
+      'how to',
+      'simple',
+      'easy',
+    ],
+    advancedIndicators: [
+      'advanced',
+      'expert',
+      'complex',
+      'enterprise',
+      'api',
+      'integration',
+      'sdk',
+      'professional',
+      'performance',
+      'scale',
+    ],
+    // Tech terms for interest extraction
+    techTerms: [
+      'javascript',
+      'typescript',
+      'python',
+      'react',
+      'vue',
+      'angular',
+      'node',
+      'docker',
+      'kubernetes',
+      'aws',
+      'gcp',
+      'azure',
+      'database',
+      'api',
+      'graphql',
+      'rest',
+      'frontend',
+      'backend',
+      'devops',
+      'ai',
+      'machine learning',
+      'cloud',
+      'serverless',
+      'microservices',
+    ],
+  },
 } as const
 
 export type RecommendationConfig = typeof recommendationConfig

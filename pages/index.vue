@@ -167,16 +167,16 @@
             class="text-center py-12"
           >
             <h3 class="text-xl font-medium text-gray-900 mb-2">
-              No resources found
+              {{ contentConfig.searchResults.noResults.title }}
             </h3>
             <p class="text-gray-500 mb-6">
-              Try adjusting your search or filter criteria
+              {{ contentConfig.searchResults.noResults.message }}
             </p>
             <button
               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900"
               @click="resetAllFilters"
             >
-              Reset Filters
+              {{ contentConfig.filters.resetAll }}
             </button>
           </div>
 
@@ -239,6 +239,7 @@ import ResourceSort from '~/components/ResourceSort.vue'
 import { appConfig } from '~/configs/app.config'
 import { seoConfig } from '~/configs/seo.config'
 import { animationConfig } from '~/configs/animation.config'
+import { contentConfig } from '~/configs/content.config'
 
 definePageMeta({
   layout: 'default',

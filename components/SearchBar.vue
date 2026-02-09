@@ -431,7 +431,8 @@ if (typeof window !== 'undefined') {
 }
 
 .animate-focus-pulse {
-  animation: focus-pulse 0.6s ease-out;
+  animation: focus-pulse v-bind('`${uiConfig.timing.focusPulseDurationMs}ms`')
+    ease-out;
 }
 
 /* Respect reduced motion preferences for accessibility */
