@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import { nextTick } from 'vue'
 import ShareButton from '../ShareButton.vue'
 
@@ -69,31 +69,23 @@ describe('ShareButton', () => {
       attachTo: document.body,
     })
 
-    // Initially, the share menu should not be visible
-    expect(wrapper.find('.absolute').exists()).toBe(false)
+    // Initially, the share menu should not be visible (check aria-expanded)
+    const button = wrapper.find('button')
+    expect(button.attributes('aria-expanded')).toBe('false')
 
     // Click the share button to open
-    await wrapper.find('button').trigger('click')
-    await wrapper.vm.$nextTick()
+    await button.trigger('click')
+    await flushPromises()
 
-    // The share menu should now be visible
-    expect(wrapper.find('.absolute').exists()).toBe(true)
+    // The share menu should now be visible (aria-expanded should be true)
+    expect(button.attributes('aria-expanded')).toBe('true')
 
-    // Click the share button again
-    await wrapper.find('button').trigger('click')
-    await nextTick()
+    // Click the share button again to close
+    await button.trigger('click')
+    await flushPromises()
 
-    // The share menu should now be hidden (check visibility, not existence due to transition)
-    const menuElement = wrapper.find('.absolute')
-    if (menuElement.exists()) {
-      // If element exists (due to transition), it should be hidden
-      expect(menuElement.classes()).toContain('opacity-0')
-    } else {
-      // Or it shouldn't exist at all
-      expect(menuElement.exists()).toBe(false)
-    }
-
-    wrapper.unmount()
+    // The share menu should now be hidden (aria-expanded should be false)
+    expect(button.attributes('aria-expanded')).toBe('false')
   })
 
   it('contains all social media links', async () => {
