@@ -3,12 +3,19 @@
     <!-- Share button -->
     <button
       ref="shareButtonRef"
-      :aria-label="`Share ${title}`"
+      :aria-label="copySuccess ? 'Link copied!' : `Share ${title}`"
       :aria-expanded="showShareMenu"
-      class="p-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+      :class="[
+        'p-2 rounded-full transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500',
+        copySuccess
+          ? 'bg-green-100 text-green-600 hover:bg-green-200'
+          : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
+      ]"
       @click.stop="toggleShareMenu"
     >
+      <!-- Share icon - shown by default -->
       <svg
+        v-if="!copySuccess"
         xmlns="http://www.w3.org/2000/svg"
         :class="[
           'h-5 w-5 transition-transform duration-200 ease-out',
@@ -19,6 +26,20 @@
       >
         <path
           d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"
+        />
+      </svg>
+      <!-- Checkmark icon - shown briefly after successful copy -->
+      <svg
+        v-else
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5 animate-check-bounce"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+          clip-rule="evenodd"
         />
       </svg>
     </button>
@@ -42,10 +63,7 @@
         aria-labelledby="share-menu"
         @keydown="handleMenuKeydown"
       >
-        <div
-          class="py-1"
-          role="none"
-        >
+        <div class="py-1" role="none">
           <!-- Twitter -->
           <a
             :href="twitterUrl"
@@ -360,17 +378,17 @@ const showCopySuccess = async () => {
   copySuccess.value = true
   showToast('Link copied to clipboard!', 'success')
 
+  // Close the menu immediately to show button feedback
+  showShareMenu.value = false
+
   // Clear any existing timeout
   if (copySuccessTimeout) {
     clearTimeout(copySuccessTimeout)
   }
 
-  // Reset after 2 seconds, then close menu
+  // Reset after 2 seconds to clear the button success state
   copySuccessTimeout = setTimeout(async () => {
     copySuccess.value = false
-    showShareMenu.value = false
-    await nextTick()
-    shareButtonRef.value?.focus()
   }, 2000)
 }
 
@@ -384,10 +402,32 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* Checkmark bounce animation for successful copy feedback */
+.animate-check-bounce {
+  animation: check-bounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes check-bounce {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  .transition-transform {
+  .transition-transform,
+  .animate-check-bounce {
     transition: none !important;
+    animation: none !important;
   }
 }
 </style>
