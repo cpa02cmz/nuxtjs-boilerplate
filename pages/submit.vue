@@ -11,11 +11,7 @@
       </div>
 
       <div class="bg-white shadow-xl rounded-lg p-6 sm:p-8">
-        <form
-          class="space-y-6"
-          novalidate
-          @submit.prevent="submitResource"
-        >
+        <form class="space-y-6" novalidate @submit.prevent="submitResource">
           <div>
             <label
               for="title"
@@ -36,13 +32,25 @@
               :aria-invalid="errors.title ? 'true' : 'false'"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
               placeholder="e.g., OpenAI API"
-            >
-            <p
-              id="title-description"
-              class="mt-1 text-sm text-gray-500"
-            >
-              The name of the resource or service
-            </p>
+            />
+            <div class="mt-1 flex justify-between items-start">
+              <p id="title-description" class="text-sm text-gray-500">
+                The name of the resource or service
+              </p>
+              <span
+                :class="[
+                  'text-xs transition-colors duration-200 font-medium',
+                  formData.title.length > maxTitleLength * 0.8
+                    ? 'text-amber-600'
+                    : 'text-gray-400',
+                  formData.title.length >= maxTitleLength ? 'text-red-600' : '',
+                ]"
+                aria-live="polite"
+                :aria-label="`${formData.title.length} of ${maxTitleLength} characters used`"
+              >
+                {{ formData.title.length }}/{{ maxTitleLength }}
+              </span>
+            </div>
             <div
               v-if="errors.title"
               id="title-error"
@@ -73,13 +81,27 @@
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
               placeholder="Describe the resource and its benefits..."
             />
-            <p
-              id="description-description"
-              class="mt-1 text-sm text-gray-500"
-            >
-              At least 10 characters. Explain what this resource offers and why
-              it's valuable.
-            </p>
+            <div class="mt-1 flex justify-between items-start">
+              <p id="description-description" class="text-sm text-gray-500">
+                At least 10 characters. Explain what this resource offers and
+                why it's valuable.
+              </p>
+              <span
+                :class="[
+                  'text-xs transition-colors duration-200 font-medium',
+                  formData.description.length > maxDescriptionLength * 0.8
+                    ? 'text-amber-600'
+                    : 'text-gray-400',
+                  formData.description.length >= maxDescriptionLength
+                    ? 'text-red-600'
+                    : '',
+                ]"
+                aria-live="polite"
+                :aria-label="`${formData.description.length} of ${maxDescriptionLength} characters used`"
+              >
+                {{ formData.description.length }}/{{ maxDescriptionLength }}
+              </span>
+            </div>
             <div
               v-if="errors.description"
               id="description-error"
@@ -108,11 +130,8 @@
               :aria-invalid="errors.url ? 'true' : 'false'"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
               placeholder="https://example.com"
-            >
-            <p
-              id="url-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            />
+            <p id="url-description" class="mt-1 text-sm text-gray-500">
               The official website or page for this resource
             </p>
             <div
@@ -142,41 +161,21 @@
               :aria-invalid="errors.category ? 'true' : 'false'"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
             >
-              <option
-                value=""
-                disabled
-              >
-                Select a category
-              </option>
+              <option value="" disabled>Select a category</option>
               <option value="AI & Machine Learning">
                 AI & Machine Learning
               </option>
-              <option value="Cloud & Hosting">
-                Cloud & Hosting
-              </option>
-              <option value="Databases & Storage">
-                Databases & Storage
-              </option>
-              <option value="Development Tools">
-                Development Tools
-              </option>
-              <option value="Design & UI">
-                Design & UI
-              </option>
-              <option value="Learning Resources">
-                Learning Resources
-              </option>
+              <option value="Cloud & Hosting">Cloud & Hosting</option>
+              <option value="Databases & Storage">Databases & Storage</option>
+              <option value="Development Tools">Development Tools</option>
+              <option value="Design & UI">Design & UI</option>
+              <option value="Learning Resources">Learning Resources</option>
               <option value="Productivity & Utilities">
                 Productivity & Utilities
               </option>
-              <option value="Other">
-                Other
-              </option>
+              <option value="Other">Other</option>
             </select>
-            <p
-              id="category-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="category-description" class="mt-1 text-sm text-gray-500">
               Choose the most appropriate category for this resource
             </p>
             <div
@@ -203,11 +202,8 @@
               aria-describedby="tags-description"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
               placeholder="Enter tags separated by commas"
-            >
-            <p
-              id="tags-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            />
+            <p id="tags-description" class="mt-1 text-sm text-gray-500">
               Add relevant tags to help categorize this resource (e.g., "api,
               free-tier, openai")
             </p>
@@ -222,10 +218,7 @@
               class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span v-if="!isSubmitting">Submit Resource</span>
-              <span
-                v-else
-                class="flex items-center"
-              >
+              <span v-else class="flex items-center">
                 <svg
                   class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                   xmlns="http://www.w3.org/2000/svg"
