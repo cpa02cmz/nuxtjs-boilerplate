@@ -122,8 +122,9 @@ class RateLimiter {
         return {
           allowed: true,
           remaining: Math.floor(bucket.tokens),
-          resetTime:
-            Math.floor(bucket.lastRefill + this.config.intervalMs) / 1000,
+          resetTime: Math.floor(
+            (bucket.lastRefill + this.config.intervalMs) / 1000
+          ),
         }
       } else {
         // No tokens available, rate limit exceeded
@@ -131,8 +132,9 @@ class RateLimiter {
           allowed: false,
           message: this.config.message,
           remaining: 0,
-          resetTime:
-            Math.floor(bucket.lastRefill + this.config.intervalMs) / 1000,
+          resetTime: Math.floor(
+            (bucket.lastRefill + this.config.intervalMs) / 1000
+          ),
         }
       }
     } finally {
