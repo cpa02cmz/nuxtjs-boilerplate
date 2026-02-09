@@ -16,7 +16,7 @@
       :aria-label="healthLabel"
     >
       <svg
-        v-if="healthScore >= 90"
+        v-if="healthScore >= healthThresholds.excellent"
         xmlns="http://www.w3.org/2000/svg"
         class="h-5 w-5"
         viewBox="0 0 20 20"
@@ -30,7 +30,7 @@
         />
       </svg>
       <svg
-        v-else-if="healthScore >= 70"
+        v-else-if="healthScore >= healthThresholds.good"
         xmlns="http://www.w3.org/2000/svg"
         class="h-5 w-5"
         viewBox="0 0 20 20"
@@ -44,7 +44,7 @@
         />
       </svg>
       <svg
-        v-else-if="healthScore >= 50"
+        v-else-if="healthScore >= healthThresholds.fair"
         xmlns="http://www.w3.org/2000/svg"
         class="h-5 w-5"
         viewBox="0 0 20 20"
@@ -78,6 +78,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { statusConfig } from '~/configs/status.config'
+import { colorsConfig } from '~/configs/colors.config'
 
 interface Props {
   status?:
@@ -94,6 +96,9 @@ const props = withDefaults(defineProps<Props>(), {
   status: 'active',
   healthScore: undefined,
 })
+
+// Get health thresholds from config
+const healthThresholds = statusConfig.healthThresholds
 
 const statusClass = computed(() => {
   switch (props.status) {
@@ -113,56 +118,41 @@ const statusClass = computed(() => {
 })
 
 const statusText = computed(() => {
-  switch (props.status) {
-    case 'active':
-      return 'Active'
-    case 'deprecated':
-      return 'Deprecated'
-    case 'discontinued':
-      return 'Discontinued'
-    case 'updated':
-      return 'Updated'
-    case 'pending':
-      return 'Pending'
-    default:
-      return 'Unknown'
-  }
+  const normalizedStatus = props.status as keyof typeof statusConfig.statuses
+  return (
+    statusConfig.statuses[normalizedStatus]?.label ||
+    statusConfig.statuses.unknown.label
+  )
 })
 
 const statusTitle = computed(() => {
-  switch (props.status) {
-    case 'active':
-      return 'This resource is currently active and maintained'
-    case 'deprecated':
-      return 'This resource is deprecated and no longer recommended'
-    case 'discontinued':
-      return 'This resource has been discontinued'
-    case 'updated':
-      return 'This resource has been recently updated'
-    case 'pending':
-      return 'This resource is pending review'
-    default:
-      return 'Status unknown'
-  }
+  const normalizedStatus = props.status as keyof typeof statusConfig.statuses
+  return (
+    statusConfig.statuses[normalizedStatus]?.title ||
+    statusConfig.statuses.unknown.title
+  )
 })
 
 const healthClass = computed(() => {
   if (props.healthScore === undefined) return 'health-unknown'
-  if (props.healthScore >= 90) return 'health-good'
-  if (props.healthScore >= 70) return 'health-warning'
+  if (props.healthScore >= healthThresholds.excellent) return 'health-good'
+  if (props.healthScore >= healthThresholds.good) return 'health-warning'
   return 'health-bad'
 })
 
 const healthText = computed(() => {
-  if (props.healthScore === undefined) return 'Health status unknown'
-  if (props.healthScore >= 90) return 'Health: Excellent'
-  if (props.healthScore >= 70) return 'Health: Good'
-  if (props.healthScore >= 50) return 'Health: Fair'
-  return 'Health: Poor'
+  if (props.healthScore === undefined) return statusConfig.healthLabels.unknown
+  if (props.healthScore >= healthThresholds.excellent)
+    return statusConfig.healthLabels.excellent
+  if (props.healthScore >= healthThresholds.good)
+    return statusConfig.healthLabels.good
+  if (props.healthScore >= healthThresholds.fair)
+    return statusConfig.healthLabels.fair
+  return statusConfig.healthLabels.poor
 })
 
 const healthLabel = computed(() => {
-  if (props.healthScore === undefined) return 'Health status unknown'
+  if (props.healthScore === undefined) return statusConfig.healthLabels.unknown
   return `Health score: ${props.healthScore}%`
 })
 </script>
@@ -191,39 +181,39 @@ const healthLabel = computed(() => {
 }
 
 .status-active {
-  background-color: #dcfce7;
-  color: #166534;
-  border: 1px solid #bbf7d0;
+  background-color: v-bind('colorsConfig.status.active.bg');
+  color: v-bind('colorsConfig.status.active.text');
+  border: 1px solid v-bind('colorsConfig.status.active.border');
 }
 
 .status-deprecated {
-  background-color: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fde68a;
+  background-color: v-bind('colorsConfig.status.deprecated.bg');
+  color: v-bind('colorsConfig.status.deprecated.text');
+  border: 1px solid v-bind('colorsConfig.status.deprecated.border');
 }
 
 .status-discontinued {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border: 1px solid #fca5a5;
+  background-color: v-bind('colorsConfig.status.discontinued.bg');
+  color: v-bind('colorsConfig.status.discontinued.text');
+  border: 1px solid v-bind('colorsConfig.status.discontinued.border');
 }
 
 .status-updated {
-  background-color: #dbeafe;
-  color: #1e40af;
-  border: 1px solid #bfdbfe;
+  background-color: v-bind('colorsConfig.status.updated.bg');
+  color: v-bind('colorsConfig.status.updated.text');
+  border: 1px solid v-bind('colorsConfig.status.updated.border');
 }
 
 .status-pending {
-  background-color: #e5e7eb;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background-color: v-bind('colorsConfig.status.pending.bg');
+  color: v-bind('colorsConfig.status.pending.text');
+  border: 1px solid v-bind('colorsConfig.status.pending.border');
 }
 
 .status-unknown {
-  background-color: #e5e7eb;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background-color: v-bind('colorsConfig.status.unknown.bg');
+  color: v-bind('colorsConfig.status.unknown.text');
+  border: 1px solid v-bind('colorsConfig.status.unknown.border');
 }
 
 .health-indicator {
@@ -238,18 +228,18 @@ const healthLabel = computed(() => {
 }
 
 .health-good {
-  color: #22c55e;
+  color: v-bind('colorsConfig.health.good');
 }
 
 .health-warning {
-  color: #f59e0b;
+  color: v-bind('colorsConfig.health.fair');
 }
 
 .health-bad {
-  color: #ef4444;
+  color: v-bind('colorsConfig.health.poor');
 }
 
 .health-unknown {
-  color: #9ca3af;
+  color: v-bind('colorsConfig.health.unknown');
 }
 </style>

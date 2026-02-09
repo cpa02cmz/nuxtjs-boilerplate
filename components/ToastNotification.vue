@@ -23,7 +23,7 @@
           class="toast__progress"
           :class="{ 'toast__progress--paused': pausedToastIds.has(toast.id) }"
           :style="{
-            animationDuration: `${toast.duration || (toast.type === 'error' ? TOAST_DURATION.ERROR : TOAST_DURATION.SUCCESS)}ms`,
+            animationDuration: `${toast.duration || uiConfig.toast.duration[toast.type]}ms`,
           }"
         />
         <div class="toast__icon">
@@ -115,7 +115,7 @@
           class="toast__progress"
           :class="{ 'toast__progress--paused': pausedToastIds.has(toast.id) }"
           :style="{
-            animationDuration: `${toast.duration || (toast.type === 'error' ? TOAST_DURATION.ERROR : TOAST_DURATION.SUCCESS)}ms`,
+            animationDuration: `${toast.duration || uiConfig.toast.duration[toast.type]}ms`,
           }"
         />
       </div>
@@ -124,7 +124,9 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { TOAST_DURATION, UI_TIMING } from '~/server/utils/constants'
+import { uiConfig } from '~/configs/ui.config'
+import { colorsConfig } from '~/configs/colors.config'
+import { animationConfig } from '~/configs/animation.config'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -145,9 +147,7 @@ const addToast = (toast: Omit<Toast, 'id'>) => {
   toasts.value.push(newToast)
 
   // Auto remove toast after duration (respects pause state)
-  const duration =
-    toast.duration ||
-    (toast.type === 'error' ? TOAST_DURATION.ERROR : TOAST_DURATION.SUCCESS)
+  const duration = toast.duration || uiConfig.toast.duration[toast.type]
   if (duration > 0) {
     const startTime = Date.now()
     const checkAndRemove = () => {
@@ -155,7 +155,7 @@ const addToast = (toast: Omit<Toast, 'id'>) => {
 
       if (pausedToastIds.value.has(id)) {
         // Toast is paused, check again
-        setTimeout(checkAndRemove, UI_TIMING.TOAST_CHECK_INTERVAL_MS)
+        setTimeout(checkAndRemove, uiConfig.toast.animation.checkIntervalMs)
       } else if (Date.now() - startTime >= duration) {
         removeToast(id)
       } else {
@@ -163,7 +163,7 @@ const addToast = (toast: Omit<Toast, 'id'>) => {
         setTimeout(
           checkAndRemove,
           Math.min(
-            UI_TIMING.TOAST_CHECK_INTERVAL_MS,
+            uiConfig.toast.animation.checkIntervalMs,
             duration - (Date.now() - startTime)
           )
         )
@@ -197,10 +197,10 @@ defineExpose({
 <style scoped>
 .toast-container {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-  max-width: 400px;
+  top: v-bind('uiConfig.toast.position.top + "px"');
+  right: v-bind('uiConfig.toast.position.right + "px"');
+  z-index: v-bind('uiConfig.zIndex.toast');
+  max-width: v-bind('uiConfig.toast.position.maxWidth + "px"');
   width: 100%;
 }
 
@@ -218,35 +218,35 @@ defineExpose({
   box-shadow:
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  min-width: 300px;
+  min-width: v-bind('uiConfig.toast.position.minWidth + "px"');
   max-width: 100%;
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn v-bind('animationConfig.duration.normal + "ms"') ease-out;
   position: relative;
   overflow: hidden;
 }
 
 .toast--success {
-  background-color: #f0fdf4;
-  border-left: 4px solid #22c55e;
-  color: #166534;
+  background-color: v-bind('colorsConfig.toast.success.bg');
+  border-left: 4px solid v-bind('colorsConfig.toast.success.border');
+  color: v-bind('colorsConfig.toast.success.text');
 }
 
 .toast--error {
-  background-color: #fef2f2;
-  border-left: 4px solid #ef4444;
-  color: #b91c1c;
+  background-color: v-bind('colorsConfig.toast.error.bg');
+  border-left: 4px solid v-bind('colorsConfig.toast.error.border');
+  color: v-bind('colorsConfig.toast.error.text');
 }
 
 .toast--warning {
-  background-color: #fffbeb;
-  border-left: 4px solid #f59e0b;
-  color: #92400e;
+  background-color: v-bind('colorsConfig.toast.warning.bg');
+  border-left: 4px solid v-bind('colorsConfig.toast.warning.border');
+  color: v-bind('colorsConfig.toast.warning.text');
 }
 
 .toast--info {
-  background-color: #eff6ff;
-  border-left: 4px solid #3b82f6;
-  color: #1e40af;
+  background-color: v-bind('colorsConfig.toast.info.bg');
+  border-left: 4px solid v-bind('colorsConfig.toast.info.border');
+  color: v-bind('colorsConfig.toast.info.text');
 }
 
 .toast__icon {
@@ -283,7 +283,7 @@ defineExpose({
   padding: 0.25rem;
   border-radius: 0.25rem;
   opacity: 0.7;
-  transition: opacity 0.2s;
+  transition: opacity v-bind('animationConfig.duration.fast + "ms"');
 }
 
 .toast__close:hover {
@@ -324,7 +324,7 @@ defineExpose({
   }
 
   .toast {
-    animation: fadeIn 0.2s ease-out;
+    animation: fadeIn v-bind('animationConfig.duration.fast + "ms"') ease-out;
   }
 
   @keyframes fadeIn {
@@ -338,7 +338,7 @@ defineExpose({
 
   .toast-enter-active,
   .toast-leave-active {
-    transition: opacity 0.2s ease;
+    transition: opacity v-bind('animationConfig.duration.fast + "ms"') ease;
   }
 
   .toast-enter-from,
@@ -361,7 +361,7 @@ defineExpose({
 
 .toast-enter-active,
 .toast-leave-active {
-  transition: all 0.3s ease;
+  transition: all v-bind('animationConfig.duration.normal + "ms"') ease;
 }
 
 .toast-enter-from {

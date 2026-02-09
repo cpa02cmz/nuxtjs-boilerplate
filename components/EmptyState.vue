@@ -91,7 +91,9 @@
           v-for="(suggestion, index) in suggestions"
           :key="index"
           class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-          :style="{ animationDelay: `${index * 100}ms` }"
+          :style="{
+            animationDelay: `${index * animationConfig.components.emptyState.staggerDelay}ms`,
+          }"
           :class="{ 'animate-fade-in-up': !reducedMotion }"
           @click="$emit('suggestion-click', suggestion)"
         >
@@ -194,6 +196,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   title?: string

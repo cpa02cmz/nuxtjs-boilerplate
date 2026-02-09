@@ -35,6 +35,8 @@
 <script setup lang="ts" generic="T">
 import { ref, computed } from 'vue'
 import { useVirtualizer } from '@tanstack/vue-virtual'
+import { uiConfig } from '~/configs/ui.config'
+import { colorsConfig } from '~/configs/colors.config'
 
 interface Props {
   items: T[]
@@ -44,8 +46,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props<T>>(), {
-  itemHeight: 320,
-  overscan: 5,
+  itemHeight: uiConfig.virtualList.itemHeight,
+  overscan: uiConfig.virtualList.overscan,
   containerHeight: 'calc(100vh - 200px)',
 })
 
@@ -64,24 +66,25 @@ const virtualizer = useVirtualizer({
 <style scoped>
 .virtual-scroll-container {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 #f1f5f9;
+  scrollbar-color: v-bind('colorsConfig.scrollbar.thumb')
+    v-bind('colorsConfig.scrollbar.track');
 }
 
 .virtual-scroll-container::-webkit-scrollbar {
-  width: 8px;
+  width: v-bind('uiConfig.scrollbar.width');
 }
 
 .virtual-scroll-container::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: v-bind('colorsConfig.scrollbar.track');
   border-radius: 4px;
 }
 
 .virtual-scroll-container::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: v-bind('colorsConfig.scrollbar.thumb');
   border-radius: 4px;
 }
 
 .virtual-scroll-container::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: v-bind('colorsConfig.scrollbar.thumbHover');
 }
 </style>

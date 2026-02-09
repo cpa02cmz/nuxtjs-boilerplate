@@ -138,7 +138,9 @@
                 v-for="(resource, index) in filteredResources"
                 :key="resource.id"
                 class="resource-card-wrapper"
-                :style="{ animationDelay: `${Math.min(index * 50, 500)}ms` }"
+                :style="{
+                  animationDelay: `${Math.min(index * animationConfig.pageAnimations.index.staggerDelay, animationConfig.pageAnimations.index.staggerMaxDelay)}ms`,
+                }"
               >
                 <LazyResourceCard
                   :id="resource.id"
@@ -190,7 +192,9 @@
                 v-for="(resource, index) in trendingResources"
                 :key="resource.id"
                 class="resource-card-wrapper"
-                :style="{ animationDelay: `${Math.min(index * 50, 500)}ms` }"
+                :style="{
+                  animationDelay: `${Math.min(index * animationConfig.pageAnimations.index.staggerDelay, animationConfig.pageAnimations.index.staggerMaxDelay)}ms`,
+                }"
               >
                 <LazyResourceCard
                   :title="resource.title"
@@ -232,6 +236,7 @@ import { getButtonLabel } from '~/utils/resourceHelper'
 import ResourceSort from '~/components/ResourceSort.vue'
 import { appConfig } from '~/configs/app.config'
 import { seoConfig } from '~/configs/seo.config'
+import { animationConfig } from '~/configs/animation.config'
 
 definePageMeta({
   layout: 'default',
@@ -303,7 +308,8 @@ const resetAllFilters = () => {
 /* Staggered entrance animation for resource cards */
 .resource-card-wrapper {
   opacity: 0;
-  animation: card-enter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: card-enter v-bind('animationConfig.duration.slow + "ms"')
+    v-bind('animationConfig.easing.bounce') forwards;
 }
 
 @keyframes card-enter {
