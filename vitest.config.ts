@@ -1,6 +1,6 @@
 import { defineConfig, type UserConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
-import { vitestAliases } from './vitest.shared.config'
+import { resolve } from 'path'
 
 // Determine test profile from environment variable
 const testProfile = process.env.VITEST_PROFILE || 'default'
@@ -10,11 +10,11 @@ const baseConfig: UserConfig = {
   plugins: [vue()],
   resolve: {
     alias: {
-      '~': path.resolve(__dirname, '.'),
-      '@': path.resolve(__dirname, '.'),
-      '#app': path.resolve(__dirname, 'test-mocks/nuxt-app.ts'),
-      '#imports': path.resolve(__dirname, 'test-mocks/nuxt-imports.ts'),
-      '#build': path.resolve(__dirname, 'test-mocks/nuxt-app.ts'),
+      '~': resolve(__dirname, '.'),
+      '@': resolve(__dirname, '.'),
+      '#app': resolve(__dirname, 'test-mocks/nuxt-app.ts'),
+      '#imports': resolve(__dirname, 'test-mocks/nuxt-imports.ts'),
+      '#build': resolve(__dirname, 'test-mocks/nuxt-app.ts'),
     },
   },
 }
@@ -61,6 +61,7 @@ const defaultConfig: UserConfig = {
       },
     },
   },
+}
 
 // Integration profile configuration
 const integrationConfig: UserConfig = {
@@ -71,7 +72,6 @@ const integrationConfig: UserConfig = {
     testTimeout: 10000,
     setupFiles: ['./test-setup.ts'],
     include: ['**/*.integration.test.ts', '**/__tests__/*integration*.test.ts'],
->>>>>>> origin/main
   },
 }
 
