@@ -47,10 +47,12 @@ export default defineConfig({
       use: { ...devices['iPhone 12'] },
     },
   ],
-  webServer: {
-    command: 'npm run build && npm run preview',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 300000,
-  },
+  webServer: process.env.SKIP_WEBSERVER
+    ? undefined
+    : {
+        command: 'npm run build && npm run preview',
+        url: 'http://localhost:3000',
+        reuseExistingServer: true,
+        timeout: 300000,
+      },
 })
