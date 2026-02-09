@@ -91,6 +91,24 @@ export {
   type ComparisonConfig,
 } from '~/configs/comparison.config'
 
+// Re-export URL config for centralized URL management
+export {
+  urlConfig,
+  getBaseUrl,
+  getCanonicalUrl,
+  buildUrl,
+  buildResourceUrl,
+  buildApiUrl,
+  buildSocialShareUrl,
+  isExternalUrl,
+  isInternalUrl,
+  normalizeUrl,
+  type UrlConfig,
+  type ExternalUrl,
+  type ApiPath,
+  type PagePath,
+} from '~/configs/url.config'
+
 // Backward-compatible re-exports using config values
 // These maintain the old constant names but use configurable values
 import { webhooksConfig } from '~/configs/webhooks.config'

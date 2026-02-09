@@ -94,6 +94,22 @@ import {
   type RoutePatterns,
   type RoutesConfig,
 } from './routes.config'
+import {
+  urlConfig,
+  getBaseUrl,
+  getCanonicalUrl,
+  buildUrl,
+  buildResourceUrl,
+  buildApiUrl,
+  buildSocialShareUrl,
+  isExternalUrl,
+  isInternalUrl,
+  normalizeUrl,
+  type UrlConfig,
+  type ExternalUrl,
+  type ApiPath,
+  type PagePath,
+} from './url.config'
 
 // Re-export individual configs
 export { appConfig, type AppConfig }
@@ -184,6 +200,22 @@ export {
   type RoutePatterns,
   type RoutesConfig,
 }
+export {
+  urlConfig,
+  getBaseUrl,
+  getCanonicalUrl,
+  buildUrl,
+  buildResourceUrl,
+  buildApiUrl,
+  buildSocialShareUrl,
+  isExternalUrl,
+  isInternalUrl,
+  normalizeUrl,
+  type UrlConfig,
+  type ExternalUrl,
+  type ApiPath,
+  type PagePath,
+}
 
 // Default export with all configs
 export const config = {
@@ -214,6 +246,7 @@ export const config = {
   sitemap: sitemapConfig,
   icons: iconsConfig,
   routes: routesConfig,
+  url: urlConfig,
 } as const
 
 export type Config = typeof config

@@ -1,15 +1,12 @@
 import { defineEventHandler } from 'h3'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+import { getBaseUrl } from '~/configs/url.config'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
 
-  // Flexy hates hardcoded URLs! Using runtime config for dynamic server URLs
-  const config = useRuntimeConfig()
-  const siteUrl =
-    config.public.siteUrl ||
-    config.public.canonicalUrl ||
-    'http://localhost:3000'
+  // Flexy hates hardcoded URLs! Using modular config for dynamic server URLs
+  const siteUrl = getBaseUrl()
 
   const openApiSpec = {
     openapi: '3.0.3',

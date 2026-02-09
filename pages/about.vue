@@ -113,12 +113,13 @@
 </template>
 
 <script setup>
+import { getBaseUrl } from '~/configs/url.config'
+
 definePageMeta({
   layout: 'default',
 })
 
 // Set page-specific meta tags
-const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
   title: 'About - Free Stuff on the Internet',
   ogTitle: 'About - Free Stuff on the Internet',
@@ -127,7 +128,7 @@ useSeoMeta({
   ogDescription:
     'Learn more about Free Stuff on the Internet - a curated collection of free resources for developers, students, and anyone looking to save money while accessing powerful tools and services.',
   ogImage: '/og-image.jpg',
-  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000'}/about`,
+  ogUrl: `${getBaseUrl()}/about`,
   twitterCard: 'summary_large_image',
 })
 </script>

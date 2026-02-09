@@ -8,13 +8,7 @@
  * - Orchestrator Pattern: Manages data flow between utilities
  */
 import { computed, ref, onMounted } from 'vue'
-import {
-  useRoute,
-  useRuntimeConfig,
-  useNuxtApp,
-  useSeoMeta,
-  useHead,
-} from '#app'
+import { useRoute, useNuxtApp, useSeoMeta, useHead } from '#app'
 import logger from '~/utils/logger'
 import type { Resource } from '~/types/resource'
 import { useResources } from '~/composables/useResources'
@@ -26,6 +20,7 @@ import { copyToClipboard } from '~/utils/clipboard'
 import type { ApiClient } from '~/utils/api-client'
 import { UI_TIMING } from '~/server/utils/constants'
 import { apiConfig } from '~/configs/api.config'
+import { getCanonicalUrl } from '~/configs/url.config'
 
 export interface UseResourceDetailPageOptions {
   apiClient?: ApiClient
@@ -45,7 +40,6 @@ export const useResourceDetailPage = (
   }
 
   const route = useRoute()
-  const runtimeConfig = useRuntimeConfig()
   const { resources, loading: resourcesLoading } = useResources()
   const { $analytics } = useNuxtApp()
 
@@ -60,7 +54,7 @@ export const useResourceDetailPage = (
   })
 
   const currentUrl = computed(() => {
-    const baseUrl = runtimeConfig.public.canonicalUrl || 'http://localhost:3000'
+    const baseUrl = getCanonicalUrl()
     return `${baseUrl}/resources/${resourceId.value}`
   })
 

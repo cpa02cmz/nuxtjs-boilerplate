@@ -4,6 +4,7 @@ import {
   getStaticPages,
   getResourceSitemapDefaults,
 } from '~/configs/sitemap.config'
+import { getBaseUrl } from '~/configs/url.config'
 
 export interface SitemapEntry {
   url: string
@@ -12,21 +13,10 @@ export interface SitemapEntry {
   lastmod?: string
 }
 
-export function getBaseUrl(): string {
-  return getBaseUrlFromConfig()
-}
+export { getBaseUrl }
 
 export function getBaseUrlFromConfig(): string {
-  try {
-    const config = useRuntimeConfig()
-    return (
-      config.public.siteUrl ||
-      config.public.canonicalUrl ||
-      'http://localhost:3000'
-    )
-  } catch {
-    return 'http://localhost:3000'
-  }
+  return getBaseUrl()
 }
 
 // Export static pages using config

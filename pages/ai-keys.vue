@@ -12,30 +12,19 @@
 
       <!-- Search Bar -->
       <div class="mb-8">
-        <LazySearchBar
-          v-model="searchQuery"
-          @search="handleSearch"
-        />
+        <LazySearchBar v-model="searchQuery" @search="handleSearch" />
       </div>
 
       <!-- Loading State -->
-      <div
-        v-if="loading"
-        class="flex justify-center items-center py-12"
-      >
+      <div v-if="loading" class="flex justify-center items-center py-12">
         <div
           class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-800"
         />
       </div>
 
       <!-- Error State -->
-      <div
-        v-else-if="error"
-        class="text-center py-12"
-      >
-        <p class="text-red-600 text-lg">
-          Error loading resources: {{ error }}
-        </p>
+      <div v-else-if="error" class="text-center py-12">
+        <p class="text-red-600 text-lg">Error loading resources: {{ error }}</p>
       </div>
 
       <!-- Resources Grid -->
@@ -82,10 +71,7 @@
         </div>
 
         <!-- No Results Message -->
-        <div
-          v-if="!hasAIResources && !loading"
-          class="text-center py-12"
-        >
+        <div v-if="!hasAIResources && !loading" class="text-center py-12">
           <h3 class="text-xl font-medium text-gray-900 mb-2">
             No AI resources found
           </h3>
@@ -108,12 +94,12 @@
 import { useAIResources } from '~/composables/useAIResources'
 import { useUrlSync } from '~/composables/useUrlSync'
 import ResourceSort from '~/components/ResourceSort.vue'
+import { getBaseUrl } from '~/configs/url.config'
 
 definePageMeta({
   layout: 'default',
 })
 
-const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
   title: 'Free AI API Keys - Free Stuff on Internet',
   ogTitle: 'Free AI API Keys - Free Stuff on Internet',
@@ -122,7 +108,7 @@ useSeoMeta({
   ogDescription:
     'Access powerful AI models with these free API keys and tools. Discover OpenAI, Hugging Face, Google AI Studio, and more free AI resources.',
   ogImage: '/og-image.jpg',
-  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000'}/ai-keys`,
+  ogUrl: `${getBaseUrl()}/ai-keys`,
   twitterCard: 'summary_large_image',
 })
 
