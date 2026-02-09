@@ -380,7 +380,10 @@
         </div>
       </div>
     </header>
-    <main id="main-content" role="main">
+    <main
+      id="main-content"
+      role="main"
+    >
       <slot />
     </main>
     <footer
@@ -392,7 +395,9 @@
       >
         © {{ new Date().getFullYear() }} Free Stuff on the Internet. All rights
         reserved.
-        <p class="sr-only">Footer content ends</p>
+        <p class="sr-only">
+          Footer content ends
+        </p>
       </div>
     </footer>
 
