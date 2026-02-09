@@ -14,6 +14,7 @@
         <form
           class="space-y-6"
           novalidate
+          :class="{ 'opacity-75': isSubmitting }"
           @submit.prevent="submitResource"
         >
           <div>
@@ -31,11 +32,12 @@
                 v-model="formData.title"
                 type="text"
                 required
+                :disabled="isSubmitting"
                 :maxlength="maxTitleLength"
                 aria-required="true"
                 aria-describedby="title-description title-counter title-error"
                 :aria-invalid="errors.title ? 'true' : 'false'"
-                class="w-full px-4 py-2 pr-16 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200"
+                class="w-full px-4 py-2 pr-16 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed"
                 placeholder="e.g., OpenAI API"
                 @focus="isTitleFocused = true"
                 @blur="isTitleFocused = false"
@@ -78,12 +80,13 @@
                 id="description"
                 v-model="formData.description"
                 required
+                :disabled="isSubmitting"
                 rows="4"
                 :maxlength="maxDescriptionLength"
                 aria-required="true"
                 aria-describedby="description-description description-counter description-error"
                 :aria-invalid="errors.description ? 'true' : 'false'"
-                class="w-full px-4 py-2 pr-16 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200 resize-none"
+                class="w-full px-4 py-2 pr-16 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 resize-none disabled:bg-gray-100 disabled:cursor-not-allowed"
                 placeholder="Describe the resource and its benefits..."
                 @focus="isDescriptionFocused = true"
                 @blur="isDescriptionFocused = false"
@@ -127,10 +130,11 @@
               v-model="formData.url"
               type="url"
               required
+              :disabled="isSubmitting"
               aria-required="true"
               aria-describedby="url-description url-error"
               :aria-invalid="errors.url ? 'true' : 'false'"
-              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed"
               placeholder="https://example.com"
             >
             <p
@@ -161,10 +165,11 @@
               id="category"
               v-model="formData.category"
               required
+              :disabled="isSubmitting"
               aria-required="true"
               aria-describedby="category-description category-error"
               :aria-invalid="errors.category ? 'true' : 'false'"
-              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed"
             >
               <option
                 value=""
@@ -224,8 +229,9 @@
               id="tags"
               v-model="tagsInput"
               type="text"
+              :disabled="isSubmitting"
               aria-describedby="tags-description"
-              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed"
               placeholder="Enter tags separated by commas"
             >
             <p
@@ -240,14 +246,42 @@
           <div class="pt-4">
             <button
               type="submit"
-              :disabled="isSubmitting"
+              :disabled="isSubmitting || submitSuccess"
               :aria-busy="isSubmitting"
               aria-live="polite"
-              class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              :class="[
+                'w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white',
+                'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500',
+                'disabled:opacity-50 disabled:cursor-not-allowed',
+                'transition-all duration-300 ease-out transform',
+                submitSuccess
+                  ? 'bg-green-600 hover:bg-green-700 scale-[0.98]'
+                  : 'bg-gray-800 hover:bg-gray-900 hover:scale-[1.02] active:scale-[0.98]',
+              ]"
             >
-              <span v-if="!isSubmitting">Submit Resource</span>
+              <!-- Success State -->
               <span
-                v-else
+                v-if="submitSuccess"
+                class="flex items-center animate-success-bounce"
+              >
+                <svg
+                  class="h-5 w-5 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                Submitted Successfully!
+              </span>
+
+              <!-- Loading State -->
+              <span
+                v-else-if="isSubmitting"
                 class="flex items-center"
               >
                 <svg
@@ -273,6 +307,9 @@
                 </svg>
                 Submitting...
               </span>
+
+              <!-- Default State -->
+              <span v-else>Submit Resource</span>
             </button>
           </div>
         </form>
