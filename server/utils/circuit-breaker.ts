@@ -81,6 +81,7 @@ export class CircuitBreaker {
     if (this.state.isOpen) {
       if (this.state.successCount >= this.config.successThreshold) {
         this.state.isOpen = false
+        this.state.isHalfOpen = false
         this.state.failureCount = 0
         this.state.successCount = 0
       }
