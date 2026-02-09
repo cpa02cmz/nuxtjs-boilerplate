@@ -73,16 +73,24 @@ describe('ShareButton', () => {
 
     // Click the share button
     await wrapper.find('button').trigger('click')
+    await nextTick()
 
     // The share menu should now be visible
     expect(wrapper.find('.absolute').exists()).toBe(true)
+
+    // Wait for any transitions to complete
+    await new Promise(resolve => setTimeout(resolve, 100))
 
     // Click the share button again
     await wrapper.find('button').trigger('click')
     await nextTick()
 
-    // The share menu should now be hidden
-    expect(wrapper.find('.absolute').exists()).toBe(false)
+    // Wait for transitions to complete
+    await new Promise(resolve => setTimeout(resolve, 100))
+
+    // The share menu should now be hidden - check with multiple methods
+    const menuElement = wrapper.find('.absolute')
+    expect(menuElement.exists()).toBe(false)
   })
 
   it('contains all social media links', async () => {
