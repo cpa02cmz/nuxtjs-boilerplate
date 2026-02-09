@@ -19,7 +19,7 @@ concurrency:
 jobs:
   ci:
     name: on-pull
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-22.04-arm
     timeout-minutes: 30
 
     env:
