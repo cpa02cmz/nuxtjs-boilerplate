@@ -187,8 +187,8 @@ export default defineNuxtConfig({
   },
 
   // Image optimization configuration
+  // Note: IPX is the default provider, no need to specify explicitly
   image: {
-    provider: 'ipx',
     quality: securityConfig.image.quality,
     format: securityConfig.image.formats as (
       | 'webp'
