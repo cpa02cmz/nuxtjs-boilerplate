@@ -84,8 +84,22 @@ describe('ShareButton', () => {
     await button.trigger('click')
     await flushPromises()
 
+<<<<<<< HEAD
     // The share menu should now be hidden (aria-expanded should be false)
     expect(button.attributes('aria-expanded')).toBe('false')
+=======
+    // The share menu should now be hidden (check visibility, not existence due to transition)
+    const menuElement = wrapper.find('.absolute')
+    if (menuElement.exists()) {
+      // If element exists (due to transition), it should be hidden
+      expect(menuElement.classes()).toContain('opacity-0')
+    } else {
+      // Or it shouldn't exist at all
+      expect(menuElement.exists()).toBe(false)
+    }
+
+    wrapper.unmount()
+>>>>>>> 4fe521e (fix: resolve ShareButton toggle and error log limit issues)
   })
 
   it('contains all social media links', async () => {
