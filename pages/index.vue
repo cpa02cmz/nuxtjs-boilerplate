@@ -14,17 +14,11 @@
 
       <!-- Search Bar -->
       <div class="mt-8 max-w-2xl mx-auto">
-        <LazySearchBar
-          v-model="searchQuery"
-          @search="handleSearch"
-        />
+        <LazySearchBar v-model="searchQuery" @search="handleSearch" />
       </div>
 
       <!-- Loading State with Skeletons -->
-      <div
-        v-if="loading"
-        class="mt-16"
-      >
+      <div v-if="loading" class="mt-16">
         <div class="flex flex-wrap gap-2 mb-8 justify-center">
           <div
             v-for="i in 5"
@@ -40,18 +34,12 @@
 
         <!-- Resources Grid with Skeletons -->
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <ResourceCardSkeleton
-            v-for="i in 6"
-            :key="`skeleton-${i}`"
-          />
+          <ResourceCardSkeleton v-for="i in 6" :key="`skeleton-${i}`" />
         </div>
       </div>
 
       <!-- Error State -->
-      <div
-        v-else-if="error"
-        class="mt-16"
-      >
+      <div v-else-if="error" class="mt-16">
         <ErrorMessage
           :message="errorMessage || error"
           variant="error"
@@ -60,10 +48,7 @@
       </div>
 
       <!-- Resources Grid -->
-      <div
-        v-else
-        class="mt-16"
-      >
+      <div v-else class="mt-16">
         <!-- ARIA live region for search results -->
         <div
           id="search-results-status"
@@ -134,22 +119,27 @@
 
             <!-- Resources Grid -->
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              <LazyResourceCard
-                v-for="resource in filteredResources"
-                :id="resource.id"
+              <div
+                v-for="(resource, index) in filteredResources"
                 :key="resource.id"
-                :title="resource.title"
-                :description="resource.description"
-                :benefits="resource.benefits"
-                :url="resource.url"
-                :button-label="getButtonLabel(resource.category)"
-                :highlighted-title="
-                  highlightSearchTerms(resource.title, searchQuery)
-                "
-                :highlighted-description="
-                  highlightSearchTerms(resource.description, searchQuery)
-                "
-              />
+                class="resource-card-wrapper"
+                :style="{ animationDelay: `${Math.min(index * 50, 500)}ms` }"
+              >
+                <LazyResourceCard
+                  :id="resource.id"
+                  :title="resource.title"
+                  :description="resource.description"
+                  :benefits="resource.benefits"
+                  :url="resource.url"
+                  :button-label="getButtonLabel(resource.category)"
+                  :highlighted-title="
+                    highlightSearchTerms(resource.title, searchQuery)
+                  "
+                  :highlighted-description="
+                    highlightSearchTerms(resource.description, searchQuery)
+                  "
+                />
+              </div>
             </div>
           </div>
 
@@ -173,38 +163,37 @@
           </div>
 
           <!-- Trending Resources Section -->
-          <div
-            v-if="filteredResources.length > 0 && !loading"
-            class="mt-16"
-          >
+          <div v-if="filteredResources.length > 0 && !loading" class="mt-16">
             <h2 class="text-2xl font-bold text-gray-900 mb-6">
               Trending Resources
             </h2>
             <div class="grid grid-cols-1 gap-6">
-              <LazyResourceCard
-                v-for="resource in trendingResources"
+              <div
+                v-for="(resource, index) in trendingResources"
                 :key="resource.id"
-                :title="resource.title"
-                :description="resource.description"
-                :benefits="resource.benefits"
-                :url="resource.url"
-                :button-label="getButtonLabel(resource.category)"
-                :highlighted-title="
-                  highlightSearchTerms(resource.title, searchQuery)
-                "
-                :highlighted-description="
-                  highlightSearchTerms(resource.description, searchQuery)
-                "
-              />
+                class="resource-card-wrapper"
+                :style="{ animationDelay: `${Math.min(index * 50, 500)}ms` }"
+              >
+                <LazyResourceCard
+                  :title="resource.title"
+                  :description="resource.description"
+                  :benefits="resource.benefits"
+                  :url="resource.url"
+                  :button-label="getButtonLabel(resource.category)"
+                  :highlighted-title="
+                    highlightSearchTerms(resource.title, searchQuery)
+                  "
+                  :highlighted-description="
+                    highlightSearchTerms(resource.description, searchQuery)
+                  "
+                />
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Recommendations Section -->
-        <div
-          v-if="filteredResources.length > 0 && !loading"
-          class="mt-16"
-        >
+        <div v-if="filteredResources.length > 0 && !loading" class="mt-16">
           <ClientOnly>
             <LazyRecommendationsSection />
           </ClientOnly>
@@ -288,3 +277,31 @@ const resetAllFilters = () => {
   searchQuery.value = ''
 }
 </script>
+
+<style>
+/* Staggered entrance animation for resource cards */
+.resource-card-wrapper {
+  opacity: 0;
+  animation: card-enter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Respect reduced motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .resource-card-wrapper {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+</style>
