@@ -11,6 +11,7 @@
  */
 
 import type { Resource } from '~/types/resource'
+import { seoConfig } from '~/configs/seo.config'
 
 /**
  * SEO Metadata Configuration
@@ -46,17 +47,18 @@ export function generateStructuredData(
     datePublished: resource.dateAdded,
     offers: {
       '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
+      price: seoConfig.resourceSchema.price,
+      priceCurrency: seoConfig.resourceSchema.currency,
       availability: 'https://schema.org/InStock',
     },
     aggregateRating: resource.rating
       ? {
           '@type': 'AggregateRating',
           ratingValue: resource.rating,
-          bestRating: 5,
-          worstRating: 1,
-          ratingCount: resource.viewCount || 10,
+          bestRating: seoConfig.resourceSchema.ratingMin,
+          worstRating: seoConfig.resourceSchema.ratingMax,
+          ratingCount:
+            resource.viewCount || seoConfig.resourceSchema.ratingCount,
         }
       : undefined,
     keywords: resource.tags.join(','),
@@ -104,11 +106,11 @@ export function generateResourceSeoConfig(
   const { title, description } = resource
 
   return {
-    title: `${title} - Free Resources for Developers`,
-    description: `${description} - Discover this and other amazing free resources on Free Stuff on Internet.`,
+    title: `${title} - ${seoConfig.meta.title}`,
+    description: `${description} - Discover this and other amazing free resources on ${seoConfig.structuredData.name}.`,
     url: currentUrl,
-    ogType: 'website',
-    twitterCard: 'summary_large_image',
+    ogType: seoConfig.og.type,
+    twitterCard: seoConfig.twitter.card,
     articlePublishedTime: resource.dateAdded,
     articleModifiedTime: resource.dateAdded,
   }

@@ -1,6 +1,7 @@
 import { retryWithResult, retryPresets } from '~/server/utils/retry'
 import { getCircuitBreaker } from '~/server/utils/circuit-breaker'
 import { TIMING } from '~/server/utils/constants'
+import { httpConfig } from '~/configs/http.config'
 
 export interface UrlValidationResult {
   url: string
@@ -159,7 +160,7 @@ async function fetchUrlWithTimeout(
         method: 'HEAD',
         redirect: 'follow',
         headers: {
-          'User-Agent': 'NuxtResourceValidator/1.0',
+          'User-Agent': httpConfig.userAgent.full,
         },
       }),
       timeoutPromise,
@@ -174,7 +175,7 @@ async function fetchUrlWithTimeout(
           method: 'GET',
           redirect: 'follow',
           headers: {
-            'User-Agent': 'NuxtResourceValidator/1.0',
+            'User-Agent': httpConfig.userAgent.full,
           },
         }),
         timeoutPromise,
@@ -207,7 +208,7 @@ async function fetchUrlWithTimeout(
           method: 'GET',
           redirect: 'follow',
           headers: {
-            'User-Agent': 'NuxtResourceValidator/1.0',
+            'User-Agent': httpConfig.userAgent.full,
           },
         }),
         timeoutPromise,
