@@ -192,10 +192,9 @@
               :class="[
                 'p-2 rounded-full transition-all duration-200 ease-out',
                 'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
-                'opacity-0 group-hover:opacity-100 focus:opacity-100',
                 isCopied
                   ? 'bg-green-100 text-green-600 scale-110'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800',
+                  : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-500 dark:hover:text-gray-200 dark:hover:bg-gray-800',
               ]"
               :aria-label="
                 isCopied ? `Copied link to ${title}` : `Copy link to ${title}`
