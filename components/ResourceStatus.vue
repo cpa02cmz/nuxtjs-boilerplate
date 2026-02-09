@@ -16,7 +16,7 @@
       :aria-label="healthLabel"
     >
       <svg
-        v-if="healthScore >= 90"
+        v-if="healthScore >= limitsConfig.healthScore.excellent"
         xmlns="http://www.w3.org/2000/svg"
         class="h-5 w-5"
         viewBox="0 0 20 20"
@@ -30,7 +30,7 @@
         />
       </svg>
       <svg
-        v-else-if="healthScore >= 70"
+        v-else-if="healthScore >= limitsConfig.healthScore.good"
         xmlns="http://www.w3.org/2000/svg"
         class="h-5 w-5"
         viewBox="0 0 20 20"
@@ -44,7 +44,7 @@
         />
       </svg>
       <svg
-        v-else-if="healthScore >= 50"
+        v-else-if="healthScore >= limitsConfig.healthScore.fair"
         xmlns="http://www.w3.org/2000/svg"
         class="h-5 w-5"
         viewBox="0 0 20 20"
@@ -78,6 +78,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { uiConfig } from '../configs/ui.config'
+import { limitsConfig } from '../configs/limits.config'
 
 interface Props {
   status?:
@@ -115,49 +117,52 @@ const statusClass = computed(() => {
 const statusText = computed(() => {
   switch (props.status) {
     case 'active':
-      return 'Active'
+      return uiConfig.resourceStatus.labels.active
     case 'deprecated':
-      return 'Deprecated'
+      return uiConfig.resourceStatus.labels.deprecated
     case 'discontinued':
-      return 'Discontinued'
+      return uiConfig.resourceStatus.labels.discontinued
     case 'updated':
       return 'Updated'
     case 'pending':
       return 'Pending'
     default:
-      return 'Unknown'
+      return uiConfig.resourceStatus.labels.unknown
   }
 })
 
 const statusTitle = computed(() => {
   switch (props.status) {
     case 'active':
-      return 'This resource is currently active and maintained'
+      return uiConfig.resourceStatus.descriptions.active
     case 'deprecated':
-      return 'This resource is deprecated and no longer recommended'
+      return uiConfig.resourceStatus.descriptions.deprecated
     case 'discontinued':
-      return 'This resource has been discontinued'
+      return uiConfig.resourceStatus.descriptions.discontinued
     case 'updated':
       return 'This resource has been recently updated'
     case 'pending':
       return 'This resource is pending review'
     default:
-      return 'Status unknown'
+      return uiConfig.resourceStatus.descriptions.unknown
   }
 })
 
 const healthClass = computed(() => {
   if (props.healthScore === undefined) return 'health-unknown'
-  if (props.healthScore >= 90) return 'health-good'
-  if (props.healthScore >= 70) return 'health-warning'
+  if (props.healthScore >= limitsConfig.healthScore.excellent)
+    return 'health-good'
+  if (props.healthScore >= limitsConfig.healthScore.good)
+    return 'health-warning'
   return 'health-bad'
 })
 
 const healthText = computed(() => {
   if (props.healthScore === undefined) return 'Health status unknown'
-  if (props.healthScore >= 90) return 'Health: Excellent'
-  if (props.healthScore >= 70) return 'Health: Good'
-  if (props.healthScore >= 50) return 'Health: Fair'
+  if (props.healthScore >= limitsConfig.healthScore.excellent)
+    return 'Health: Excellent'
+  if (props.healthScore >= limitsConfig.healthScore.good) return 'Health: Good'
+  if (props.healthScore >= limitsConfig.healthScore.fair) return 'Health: Fair'
   return 'Health: Poor'
 })
 

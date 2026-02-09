@@ -74,10 +74,11 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { uiConfig } from '../configs/ui.config'
 
-// Constants
-const SCROLL_THRESHOLD = 200 // Show button after scrolling 200px
-const CIRCLE_RADIUS = 20
+// Constants - Flexy hates hardcoded values! Using config instead.
+const SCROLL_THRESHOLD = uiConfig.scrollToTop.thresholdPx
+const CIRCLE_RADIUS = uiConfig.scrollToTop.circleRadius
 const CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS
 
 // Reactive state
@@ -129,10 +130,10 @@ const scrollToTop = () => {
   })
 
   // Announce to screen readers
-  announcementText.value = 'Scrolling to top of page'
+  announcementText.value = uiConfig.scrollToTop.announcementText
   setTimeout(() => {
     announcementText.value = ''
-  }, 1000)
+  }, uiConfig.scrollToTop.announcementTimeoutMs)
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {
@@ -197,10 +198,10 @@ onMounted(() => {
 <style scoped>
 .scroll-to-top {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: 48px;
-  height: 48px;
+  bottom: v-bind('uiConfig.scrollToTop.bottomPosition');
+  right: v-bind('uiConfig.scrollToTop.rightPosition');
+  width: v-bind('uiConfig.scrollToTop.buttonWidth');
+  height: v-bind('uiConfig.scrollToTop.buttonHeight');
   border-radius: 50%;
   background: white;
   border: none;
