@@ -320,6 +320,7 @@ import { logError } from '~/utils/errorLogger'
 import { copyToClipboard } from '~/utils/clipboard'
 import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
+import { limitsConfig } from '~/configs/limits.config'
 import type { Resource } from '~/types/resource'
 
 interface Props {
@@ -444,9 +445,9 @@ const addResourceToComparison = () => {
   }
 
   // Add the resource to comparison
-  const added = addResource(resource as Resource)
+  const result = addResource(resource as Resource)
 
-  if (added) {
+  if (result.success) {
     // Show visual feedback
     isAddingToComparison.value = true
     isCompareAnimating.value = true
@@ -463,6 +464,16 @@ const addResourceToComparison = () => {
     setTimeout(() => {
       navigateTo('/compare')
     }, navigationDelay)
+  } else if (result.reason === 'limit_reached') {
+    // Show toast notification when comparison limit is reached
+    const { $toast } = useNuxtApp()
+    $toast.warning(
+      `Comparison limit reached (${limitsConfig.comparison.maxResources} resources max). Remove a resource to add another.`
+    )
+  } else if (result.reason === 'already_added') {
+    // Show toast notification when resource is already in comparison
+    const { $toast } = useNuxtApp()
+    $toast.info(`"${props.title}" is already in your comparison`)
   }
 }
 
