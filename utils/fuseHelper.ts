@@ -14,25 +14,29 @@ const createFuseConfig = (
     {
       name: 'title',
       weight: isSuggestions
-        ? searchConfig.keys.name.weight * 0.9
+        ? searchConfig.keys.name.weight *
+          searchConfig.suggestionMultipliers.title
         : searchConfig.keys.name.weight,
     },
     {
       name: 'description',
       weight: isSuggestions
-        ? searchConfig.keys.description.weight * 0.9
+        ? searchConfig.keys.description.weight *
+          searchConfig.suggestionMultipliers.description
         : searchConfig.keys.description.weight,
     },
     {
       name: 'benefits',
       weight: isSuggestions
         ? searchConfig.suggestionWeights.benefits
-        : searchConfig.suggestionWeights.benefits * 1.33, // 0.2 is ~1.33x of 0.15
+        : searchConfig.suggestionWeights.benefits *
+          searchConfig.suggestionMultipliers.benefitsRegular,
     },
     {
       name: 'tags',
       weight: isSuggestions
-        ? searchConfig.keys.tags.weight * 0.4
+        ? searchConfig.keys.tags.weight *
+          searchConfig.suggestionMultipliers.tags
         : searchConfig.keys.tags.weight,
     },
   ]

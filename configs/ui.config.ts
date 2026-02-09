@@ -140,6 +140,14 @@ export const uiConfig = {
     searchTrackingDelayMs: parseInt(
       process.env.TIMING_SEARCH_TRACKING || '500'
     ),
+
+    // Focus and interaction animations
+    focusPulseDurationMs: parseInt(process.env.TIMING_FOCUS_PULSE || '600'),
+
+    // Navigation delays
+    comparisonNavigationDelayMs: parseInt(
+      process.env.TIMING_COMPARISON_NAVIGATION || '400'
+    ),
   },
 
   // Data Loading

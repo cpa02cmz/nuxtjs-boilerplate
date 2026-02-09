@@ -150,6 +150,7 @@ import { useResourceData } from '~/composables/useResourceData'
 import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { searchConfig } from '~/configs/search.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   modelValue: string
@@ -388,7 +389,7 @@ if (typeof window !== 'undefined') {
         showFocusPulse.value = true
         setTimeout(() => {
           showFocusPulse.value = false
-        }, 600)
+        }, uiConfig.timing.focusPulseDurationMs)
       }
     }
   }

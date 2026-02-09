@@ -2,6 +2,7 @@ import { computed, readonly, ref } from 'vue'
 import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import type { ApiKey } from '~/types/webhook'
+import { dateConfig } from '~/configs/date.config'
 
 interface ApiKeyDisplay extends ApiKey {
   showFullKey?: boolean
@@ -128,12 +129,17 @@ export const useApiKeysPage = () => {
 
   const formatDate = (dateString: string): string => {
     try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
+      return new Date(dateString).toLocaleDateString(dateConfig.locale, {
+        year: dateConfig.formats.full.year as 'numeric' | '2-digit',
+        month: dateConfig.formats.full.month as
+          | 'short'
+          | 'long'
+          | 'narrow'
+          | 'numeric'
+          | '2-digit',
+        day: dateConfig.formats.full.day as 'numeric' | '2-digit',
+        hour: dateConfig.formats.full.hour as 'numeric' | '2-digit',
+        minute: dateConfig.formats.full.minute as 'numeric' | '2-digit',
       })
     } catch (err) {
       logError('Error formatting date', err as Error, 'useApiKeysPage', {
