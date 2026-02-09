@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
-import path from 'path'
+import { vitestAliases } from './vitest.shared.config'
 
 export default defineConfig({
   plugins: [vue()],
@@ -44,12 +44,6 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
-      '~': path.resolve(__dirname, '.'),
-      '@': path.resolve(__dirname, '.'),
-      '#app': path.resolve(__dirname, 'test-mocks/nuxt-app.ts'),
-      '#imports': path.resolve(__dirname, 'test-mocks/nuxt-imports.ts'),
-      '#build': path.resolve(__dirname, 'test-mocks/nuxt-app.ts'),
-    },
+    alias: vitestAliases,
   },
 })
