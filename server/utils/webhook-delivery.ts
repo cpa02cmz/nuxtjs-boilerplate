@@ -46,10 +46,46 @@ export class WebhookDeliveryService {
       responseMessage = 'OK'
       success = true
     } catch (error: unknown) {
-      const err = error as { status?: number; message?: string }
+      const err = error as {
+        status?: number
+        message?: string
+        code?: string
+        name?: string
+      }
       responseCode = err.status || 0
-      responseMessage = err.message || 'Unknown error'
       success = false
+
+      // Categorize error types for better retry logic and monitoring
+      if (
+        err.message?.includes('timeout') ||
+        err.code === 'ETIMEDOUT' ||
+        err.code === 'ECONNABORTED'
+      ) {
+        responseMessage = `Timeout error: ${err.message || 'Request timed out'}`
+      } else if (
+        err.message?.includes('ECONNREFUSED') ||
+        err.code === 'ECONNREFUSED'
+      ) {
+        responseMessage = `Connection refused: ${err.message || 'Connection refused'}`
+      } else if (
+        err.message?.includes('ENOTFOUND') ||
+        err.message?.includes('dns') ||
+        err.code === 'ENOTFOUND'
+      ) {
+        responseMessage = `DNS resolution error: ${err.message || 'DNS lookup failed'}`
+      } else if (
+        err.message?.includes('SSL') ||
+        err.message?.includes('certificate') ||
+        err.code === 'UNABLE_TO_VERIFY_LEAF_SIGNATURE'
+      ) {
+        responseMessage = `SSL/TLS error: ${err.message || 'SSL certificate verification failed'}`
+      } else if (responseCode >= 400 && responseCode < 500) {
+        responseMessage = `Client error ${responseCode}: ${err.message || 'HTTP client error'}`
+      } else if (responseCode >= 500) {
+        responseMessage = `Server error ${responseCode}: ${err.message || 'HTTP server error'}`
+      } else {
+        responseMessage = `Network error: ${err.message || 'Unknown error'}`
+      }
     }
 
     const delivery: WebhookDelivery = {
@@ -101,6 +137,11 @@ export class WebhookDeliveryService {
           return { success, delivery: lastDelivery }
         }
 
+        // Check if error is retryable based on response message
+        if (!this.isRetryableError(lastDelivery.responseBody)) {
+          return { success, delivery: lastDelivery }
+        }
+
         if (attempt < maxRetries) {
           await new Promise(resolve =>
             setTimeout(resolve, this.calculateRetryDelay(attempt))
@@ -118,6 +159,37 @@ export class WebhookDeliveryService {
     }
 
     return { success, delivery: lastDelivery! }
+  }
+
+  private isRetryableError(responseMessage?: string): boolean {
+    if (!responseMessage) return true
+
+    // Don't retry client errors (4xx) except for specific cases
+    if (responseMessage.includes('Client error 4')) {
+      // Retry on 408 (timeout), 429 (rate limit), 409 (conflict)
+      if (/Client error (408|429|409):/.test(responseMessage)) {
+        return true
+      }
+      return false
+    }
+
+    // Always retry server errors (5xx), timeouts, connection issues
+    if (
+      responseMessage.includes('Server error') ||
+      responseMessage.includes('Timeout error') ||
+      responseMessage.includes('Connection refused') ||
+      responseMessage.includes('DNS resolution error') ||
+      responseMessage.includes('Network error')
+    ) {
+      return true
+    }
+
+    // Don't retry SSL errors (likely configuration issue)
+    if (responseMessage.includes('SSL/TLS error')) {
+      return false
+    }
+
+    return true
   }
 
   private calculateRetryDelay(attempt: number): number {

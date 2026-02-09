@@ -30,10 +30,15 @@ export default defineEventHandler(async event => {
     })
   }
 
-  // Update last used timestamp
-  await webhookStorage.updateApiKey(storedKey.id, {
-    lastUsedAt: new Date().toISOString(),
-  })
+  // Update last used timestamp with error handling
+  try {
+    await webhookStorage.updateApiKey(storedKey.id, {
+      lastUsedAt: new Date().toISOString(),
+    })
+  } catch (error) {
+    // Log error but don't fail the request - the API key is still valid
+    console.warn('Failed to update API key lastUsedAt:', error)
+  }
 
   // Add key info to event context for use in handlers
   event.context.apiKey = storedKey
