@@ -52,6 +52,19 @@ The following environment variables are now used for configuring URLs:
 - `server/plugins/security-headers.ts`
 - `components/ResourceCard.vue`
 
+## Known Security Considerations
+
+### Dependency Vulnerabilities (As of 2026-02-08)
+
+There are 8 moderate severity vulnerabilities related to lodash prototype pollution in transitive dependencies:
+
+- **Path**: `@mrleebo/prisma-ast` → `chevrotain` → `@chevrotain/gast` → `lodash`
+- **Impact**: Development-only dependency (Prisma schema parsing)
+- **Status**: Monitored - These are development dependencies used for Prisma schema parsing and do not affect production runtime
+- **Note**: Awaiting upstream updates from `@mrleebo/prisma-ast` and `chevrotain` packages
+
 ## Testing
 
 All changes maintain backward compatibility and include proper fallbacks to ensure the application continues to function correctly in all environments.
+
+_Last Updated: 2026-02-08_
