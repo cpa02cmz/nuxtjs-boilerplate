@@ -1,7 +1,7 @@
 import { defineNitroPlugin } from 'nitropack/runtime'
 import type { H3Event } from 'h3'
 import { setCookie, getCookie } from 'h3'
-import { randomBytes } from 'node:crypto'
+import { randomBytes, timingSafeEqual } from 'node:crypto'
 
 /**
  * CSRF Protection Plugin
@@ -20,6 +20,19 @@ const CSRF_COOKIE_MAX_AGE = 60 * 60 * 24 // 24 hours
 // Generate a cryptographically secure CSRF token
 function generateCsrfToken(): string {
   return randomBytes(32).toString('hex')
+}
+
+/**
+ * Timing-safe comparison of two strings
+ * Prevents timing attacks by comparing all bytes regardless of mismatch
+ */
+function timingSafeCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    return false
+  }
+  const bufA = Buffer.from(a)
+  const bufB = Buffer.from(b)
+  return timingSafeEqual(bufA, bufB)
 }
 
 export default defineNitroPlugin(nitroApp => {
@@ -54,8 +67,11 @@ export default defineNitroPlugin(nitroApp => {
         const headerToken =
           event.node.req.headers[CSRF_HEADER_NAME.toLowerCase()]
 
-        // Check if token matches
-        if (!headerToken || headerToken !== csrfToken) {
+        // Check if token matches using timing-safe comparison
+        if (
+          !headerToken ||
+          !timingSafeCompare(String(headerToken), csrfToken)
+        ) {
           // Token mismatch - reject the request
           event.node.res.statusCode = 403
           event.node.res.setHeader('Content-Type', 'application/json')
