@@ -14,12 +14,20 @@
         />
       </div>
       <div class="flex-1 min-w-0">
-        <!-- Title placeholder -->
-        <div
-          class="skeleton-shimmer h-5 rounded w-3/4 mb-3 skeleton-item"
-          :style="{ animationDelay: getStaggerDelay(1) }"
-          aria-hidden="true"
-        />
+        <div class="flex items-center justify-between mb-3">
+          <!-- Title placeholder -->
+          <div
+            class="skeleton-shimmer h-5 rounded w-3/4 skeleton-item"
+            :style="{ animationDelay: getStaggerDelay(1) }"
+            aria-hidden="true"
+          />
+          <!-- New badge placeholder (occasional) -->
+          <div
+            class="skeleton-shimmer h-5 rounded w-10 skeleton-item ml-2"
+            :style="{ animationDelay: getStaggerDelay(1) }"
+            aria-hidden="true"
+          />
+        </div>
 
         <!-- Description placeholder -->
         <div

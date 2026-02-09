@@ -8,15 +8,13 @@
         <p class="mt-4 text-xl text-gray-600">
           {{ bookmarkCount }} bookmarked resource<span
             v-if="bookmarkCount !== 1"
-          >s</span>
+            >s</span
+          >
         </p>
       </div>
 
       <!-- Empty state -->
-      <div
-        v-if="bookmarkCount === 0"
-        class="text-center py-16"
-      >
+      <div v-if="bookmarkCount === 0" class="text-center py-16">
         <div class="mx-auto h-24 w-24 text-gray-400">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -33,9 +31,7 @@
             />
           </svg>
         </div>
-        <h3 class="mt-4 text-xl font-medium text-gray-900">
-          No bookmarks yet
-        </h3>
+        <h3 class="mt-4 text-xl font-medium text-gray-900">No bookmarks yet</h3>
         <p class="mt-2 text-gray-600">
           Start bookmarking resources by clicking the star icon on any resource
           card.
@@ -58,7 +54,8 @@
             <div class="text-sm text-gray-700">
               Showing {{ getAllBookmarks.length }} bookmarked resource<span
                 v-if="getAllBookmarks.length !== 1"
-              >s</span>
+                >s</span
+              >
             </div>
           </div>
           <div class="flex space-x-3">
@@ -89,7 +86,8 @@
                 >
                   Delete {{ bookmarkCount }} bookmark<span
                     v-if="bookmarkCount !== 1"
-                  >s</span>?
+                    >s</span
+                  >?
                 </span>
                 <button
                   class="text-sm text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-colors"
@@ -127,6 +125,7 @@
             :benefits="['Bookmarked resource']"
             :url="bookmark.url"
             :button-label="'Visit Resource'"
+            :date-added="bookmark.dateAdded"
           >
             <template #actions>
               <button

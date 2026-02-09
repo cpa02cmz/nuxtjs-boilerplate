@@ -1,12 +1,7 @@
 <template>
-  <div
-    v-if="resources && resources.length > 0"
-    class="mt-12"
-  >
+  <div v-if="resources && resources.length > 0" class="mt-12">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold text-gray-900">
-        Related Resources
-      </h2>
+      <h2 class="text-2xl font-bold text-gray-900">Related Resources</h2>
       <NuxtLink
         to="/"
         class="text-sm text-blue-600 hover:text-blue-800 font-medium"
@@ -23,6 +18,7 @@
         :benefits="[...resource.benefits]"
         :url="resource.url"
         :button-label="getButtonLabel(resource.category)"
+        :date-added="resource.dateAdded"
       />
     </div>
   </div>
