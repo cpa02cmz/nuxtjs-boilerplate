@@ -127,6 +127,7 @@ useSeoMeta({
 
 const {
   aiResources,
+  filteredResources,
   hasAIResources,
   loading,
   error,

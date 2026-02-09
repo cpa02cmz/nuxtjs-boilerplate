@@ -6,7 +6,7 @@
       :aria-label="`Share ${title}`"
       :aria-expanded="showShareMenu"
       class="p-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-      @click="toggleShareMenu"
+      @click.stop="toggleShareMenu"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -278,6 +278,9 @@ const toggleShareMenu = async () => {
 
 // Close menu when clicking outside
 const handleClickOutside = (event: Event) => {
+  // Don't process if menu is already closed
+  if (!showShareMenu.value) return
+
   if (
     shareButtonRef.value &&
     !shareButtonRef.value.contains(event.target as Node) &&
@@ -372,11 +375,11 @@ const showCopySuccess = async () => {
 }
 
 onMounted(() => {
-  document.addEventListener('mousedown', handleClickOutside)
+  document.addEventListener('click', handleClickOutside)
 })
 
 onUnmounted(() => {
-  document.removeEventListener('mousedown', handleClickOutside)
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 

@@ -42,7 +42,7 @@ export const limitsConfig = {
   // Error logging limits
   errorLog: {
     // Maximum number of logs to keep
-    maxLogs: parseInt(process.env.ERROR_LOG_MAX_LOGS || '100'),
+    maxLogs: parseInt(process.env.ERROR_LOG_MAX_LOGS || '50'),
   },
 
   // Analytics limits
