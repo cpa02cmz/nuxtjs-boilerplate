@@ -24,19 +24,31 @@
               Resource Title <span aria-hidden="true">*</span>
               <span class="sr-only">(required)</span>
             </label>
-            <input
-              id="title"
-              ref="titleInput"
-              v-model="formData.title"
-              type="text"
-              required
-              :maxlength="maxTitleLength"
-              aria-required="true"
-              aria-describedby="title-description title-error"
-              :aria-invalid="errors.title ? 'true' : 'false'"
-              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
-              placeholder="e.g., OpenAI API"
-            >
+            <div class="relative">
+              <input
+                id="title"
+                ref="titleInput"
+                v-model="formData.title"
+                type="text"
+                required
+                :maxlength="maxTitleLength"
+                aria-required="true"
+                aria-describedby="title-description title-counter title-error"
+                :aria-invalid="errors.title ? 'true' : 'false'"
+                class="w-full px-4 py-2 pr-16 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200"
+                placeholder="e.g., OpenAI API"
+                @focus="isTitleFocused = true"
+                @blur="isTitleFocused = false"
+              >
+              <div
+                id="title-counter"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium tabular-nums transition-all duration-200"
+                :class="titleCounterClass"
+                aria-live="polite"
+              >
+                {{ formData.title.length }}/{{ maxTitleLength }}
+              </div>
+            </div>
             <p
               id="title-description"
               class="mt-1 text-sm text-gray-500"
@@ -61,18 +73,30 @@
               Description <span aria-hidden="true">*</span>
               <span class="sr-only">(required)</span>
             </label>
-            <textarea
-              id="description"
-              v-model="formData.description"
-              required
-              rows="4"
-              :maxlength="maxDescriptionLength"
-              aria-required="true"
-              aria-describedby="description-description description-error"
-              :aria-invalid="errors.description ? 'true' : 'false'"
-              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
-              placeholder="Describe the resource and its benefits..."
-            />
+            <div class="relative">
+              <textarea
+                id="description"
+                v-model="formData.description"
+                required
+                rows="4"
+                :maxlength="maxDescriptionLength"
+                aria-required="true"
+                aria-describedby="description-description description-counter description-error"
+                :aria-invalid="errors.description ? 'true' : 'false'"
+                class="w-full px-4 py-2 pr-16 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200 resize-none"
+                placeholder="Describe the resource and its benefits..."
+                @focus="isDescriptionFocused = true"
+                @blur="isDescriptionFocused = false"
+              />
+              <div
+                id="description-counter"
+                class="absolute right-3 bottom-2 text-xs font-medium tabular-nums transition-all duration-200"
+                :class="descriptionCounterClass"
+                aria-live="polite"
+              >
+                {{ formData.description.length }}/{{ maxDescriptionLength }}
+              </div>
+            </div>
             <p
               id="description-description"
               class="mt-1 text-sm text-gray-500"
@@ -347,6 +371,43 @@ const maxTitleLength = validationConfig.resource.name.maxLength
 const maxDescriptionLength = validationConfig.resource.description.maxLength
 
 const titleInput = ref<HTMLInputElement | null>(null)
+
+// Focus states for character counters
+const isTitleFocused = ref(false)
+const isDescriptionFocused = ref(false)
+
+// Character counter styling with accessibility considerations
+const titleCounterClass = computed(() => {
+  const length = formData.value.title.length
+  const remaining = maxTitleLength - length
+
+  // Always visible when field has content, fade in/out based on focus
+  const baseClasses = length > 0 ? 'opacity-100' : 'opacity-0'
+
+  // Color coding based on remaining characters
+  if (remaining <= 10) {
+    return `${baseClasses} text-red-500`
+  } else if (remaining <= 20) {
+    return `${baseClasses} text-amber-500`
+  }
+  return `${baseClasses} text-gray-400`
+})
+
+const descriptionCounterClass = computed(() => {
+  const length = formData.value.description.length
+  const remaining = maxDescriptionLength - length
+
+  // Always visible when field has content, fade in/out based on focus
+  const baseClasses = length > 0 ? 'opacity-100' : 'opacity-0'
+
+  // Color coding based on remaining characters
+  if (remaining <= 50) {
+    return `${baseClasses} text-red-500`
+  } else if (remaining <= 100) {
+    return `${baseClasses} text-amber-500`
+  }
+  return `${baseClasses} text-gray-400`
+})
 
 onMounted(() => {
   titleInput.value?.focus()
