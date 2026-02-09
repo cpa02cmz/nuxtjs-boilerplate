@@ -4,12 +4,13 @@
 export const recommendationConfig = {
   // Algorithm Weights
   weights: {
-    collaborative: parseFloat(process.env.REC_WEIGHT_COLLABORATIVE || '0.3'),
-    contentBased: parseFloat(process.env.REC_WEIGHT_CONTENT_BASED || '0.3'),
-    popularity: parseFloat(process.env.REC_WEIGHT_POPULARITY || '0.2'),
+    collaborative: parseFloat(process.env.REC_WEIGHT_COLLABORATIVE || '0.25'),
+    contentBased: parseFloat(process.env.REC_WEIGHT_CONTENT_BASED || '0.25'),
+    popularity: parseFloat(process.env.REC_WEIGHT_POPULARITY || '0.15'),
     personalization: parseFloat(
       process.env.REC_WEIGHT_PERSONALIZATION || '0.2'
     ),
+    searchBased: parseFloat(process.env.REC_WEIGHT_SEARCH_BASED || '0.15'),
   },
 
   // Similarity Calculation Weights

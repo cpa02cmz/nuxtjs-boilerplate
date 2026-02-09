@@ -1,5 +1,6 @@
 import { defineConfig, type UserConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
+import path from 'path'
 
 // Determine test profile from environment variable
 const testProfile = process.env.VITEST_PROFILE || 'default'
