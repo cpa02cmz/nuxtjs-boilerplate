@@ -18,6 +18,7 @@ export default defineConfig({
       '**/__tests__/server/**', // Server-side tests require database, run as integration tests
       '**/__tests__/*integration*.test.ts',
       '**/performance/*.test.ts', // Performance tests run separately to keep CI fast
+      '**/tests/brocula/**', // BroCula E2E tests use Playwright, not Vitest
     ],
     coverage: {
       provider: 'v8',
