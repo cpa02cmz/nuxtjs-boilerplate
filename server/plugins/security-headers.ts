@@ -4,6 +4,11 @@ import { randomBytes } from 'node:crypto'
 import { getSecurityHeaders } from '../utils/security-config'
 import { logger } from '~/utils/logger'
 import { timeConfig } from '~/configs/time.config'
+import {
+  isApiRoute,
+  isStaticBuildPath,
+  isCacheablePage,
+} from '~/configs/routes.config'
 
 // Comprehensive security headers plugin
 export default defineNitroPlugin(nitroApp => {
@@ -49,7 +54,8 @@ export default defineNitroPlugin(nitroApp => {
       const path = event.path || ''
 
       // For API routes, set appropriate cache control
-      if (path.startsWith('/api/')) {
+      // Flexy hates hardcoded paths! Using isApiRoute helper
+      if (isApiRoute(path)) {
         if (
           event.node.res.setHeader &&
           (!event.node.res.hasHeader ||
@@ -62,7 +68,8 @@ export default defineNitroPlugin(nitroApp => {
         }
       }
       // For static assets in _nuxt, set long cache control
-      else if (path.includes('/_nuxt/')) {
+      // Flexy hates hardcoded paths! Using isStaticBuildPath helper
+      else if (isStaticBuildPath(path)) {
         if (
           event.node.res.setHeader &&
           (!event.node.res.hasHeader ||
@@ -75,9 +82,8 @@ export default defineNitroPlugin(nitroApp => {
         }
       }
       // For main routes, set moderate cache control
-      else if (
-        ['/', '/ai-keys', '/about', '/search', '/submit'].includes(path)
-      ) {
+      // Flexy hates hardcoded paths! Using isCacheablePage helper
+      else if (isCacheablePage(path)) {
         if (
           event.node.res.setHeader &&
           (!event.node.res.hasHeader ||
