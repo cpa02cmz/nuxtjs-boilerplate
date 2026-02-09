@@ -1,41 +1,47 @@
 <template>
   <div>
-    <button
-      ref="buttonRef"
-      :class="[
-        'flex items-center justify-center w-10 h-10 rounded-full',
-        'transition-all duration-200 ease-out',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500',
-        'active:scale-95',
-        isBookmarked
-          ? 'text-yellow-500 bg-yellow-50 hover:bg-yellow-100 bookmarked'
-          : 'text-gray-400 hover:text-yellow-500 hover:bg-gray-100',
-        isAnimating && 'animate-bounce-scale',
-      ]"
-      :aria-label="isBookmarked ? 'Remove bookmark' : 'Bookmark resource'"
-      :title="isBookmarked ? 'Remove bookmark' : 'Bookmark resource'"
-      :aria-pressed="isBookmarked"
-      @click="handleBookmarkToggle"
+    <Tooltip
+      :content="isBookmarked ? 'Remove from favorites' : 'Add to favorites'"
+      position="top"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
+      <button
+        ref="buttonRef"
         :class="[
-          'w-5 h-5 transition-transform duration-200',
-          isBookmarked ? 'fill-current' : 'stroke-current',
-          isAnimating && 'animate-heart-pop',
+          'flex items-center justify-center w-10 h-10 rounded-full',
+          'transition-all duration-200 ease-out',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500',
+          'active:scale-95',
+          isBookmarked
+            ? 'text-yellow-500 bg-yellow-50 hover:bg-yellow-100 bookmarked'
+            : 'text-gray-400 hover:text-yellow-500 hover:bg-gray-100',
+          isAnimating && 'animate-bounce-scale',
         ]"
-        :stroke-width="isBookmarked ? '0' : '1.5'"
-        viewBox="0 0 24 24"
-        fill="none"
-        aria-hidden="true"
+        :aria-label="
+          isBookmarked ? 'Remove from favorites' : 'Add to favorites'
+        "
+        :aria-pressed="isBookmarked"
+        @click="handleBookmarkToggle"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-        />
-      </svg>
-    </button>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          :class="[
+            'w-5 h-5 transition-transform duration-200',
+            isBookmarked ? 'fill-current' : 'stroke-current',
+            isAnimating && 'animate-heart-pop',
+          ]"
+          :stroke-width="isBookmarked ? '0' : '1.5'"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+          />
+        </svg>
+      </button>
+    </Tooltip>
 
     <div
       :id="`bookmark-announcement-${resourceId}`"
