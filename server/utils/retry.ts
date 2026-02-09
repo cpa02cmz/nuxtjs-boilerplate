@@ -262,6 +262,7 @@ export const retryPresets = {
     baseDelayMs: 1000,
     maxDelayMs: 30000,
     backoffMultiplier: 2,
+    retryableErrors: getRetryableHttpCodes(),
     jitterEnabled: true,
     jitterFactor: 0.1,
   },
