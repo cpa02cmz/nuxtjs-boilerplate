@@ -1,7 +1,8 @@
-// Generate unique ID with timestamp + random component
-// Format: base36(timestamp) + 8-char base36(random)
+/**
+ * Generate cryptographically secure unique ID
+ * Uses crypto.randomUUID() for security (replaces insecure Math.random())
+ * Available in Node.js 14.17+ and all modern browsers
+ */
 export const generateUniqueId = (): string => {
-  const timestamp = Date.now().toString(36)
-  const random = Math.random().toString(36).substring(2, 10)
-  return timestamp + random
+  return crypto.randomUUID()
 }
