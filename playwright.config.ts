@@ -48,12 +48,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command:
-      process.env.NODE_ENV === 'production'
-        ? 'npm run build && npm run preview'
-        : 'npm run dev',
+    command: 'npm run build && npm run preview',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 120000,
+    timeout: 300000,
   },
 })
