@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify'
+import { themeConfig } from '~/configs/theme.config'
 
 const FORBID_TAGS = [
   'script',
@@ -252,9 +253,10 @@ export const sanitizeAndHighlight = (
   const regex = new RegExp(`(${escapedQuery})`, 'gi')
 
   // Create highlighted text - only highlighting the already sanitized text
+  const highlightClasses = `${themeConfig.search.highlightBg} ${themeConfig.search.highlightText}`
   const highlighted = sanitizedText.replace(
     regex,
-    '<mark class="bg-yellow-200 text-gray-900">$&</mark>'
+    `<mark class="${highlightClasses}">$&</mark>`
   )
 
   const fullySanitized = DOMPurify.sanitize(highlighted, {

@@ -223,7 +223,7 @@ npm run prisma:generate
 ### Issue: Build Warnings - Duplicate Keys
 
 **Error**: `[esbuild] Duplicate key "provider"`
-**Solution**: Already fixed in nuxt.config.ts. Ensure image config doesn't duplicate defaults.
+**Solution**: Fixed by explicitly setting `provider: 'ipx'` in the image configuration in nuxt.config.ts. This prevents the duplicate key that occurs when @nuxt/image merges its default configuration with the custom configuration.
 
 ### Issue: Vue Component Resolution in Tests
 

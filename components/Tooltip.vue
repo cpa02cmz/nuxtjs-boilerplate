@@ -39,12 +39,7 @@
     </Transition>
 
     <!-- Screen reader announcement - announces tooltip content when visible -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ isVisible ? content : '' }}
     </div>
   </div>
@@ -52,6 +47,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { animationConfig } from '~/configs/animation.config'
 
 type TooltipPosition = 'top' | 'bottom' | 'left' | 'right'
 
@@ -74,7 +70,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   position: 'top',
-  delay: 300,
+  delay: animationConfig.tooltip.showDelayMs,
   autoDismiss: 0,
   closeOnClickOutside: true,
 })
@@ -135,7 +131,7 @@ const hideTooltip = () => {
   }
   hideTimeout = setTimeout(() => {
     isVisible.value = false
-  }, 100)
+  }, animationConfig.tooltip.hideDelayMs)
 }
 
 const clearAllTimeouts = () => {

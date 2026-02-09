@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+import { databaseConfig } from '~/configs/database.config'
 
 declare global {
   var __dbPrisma: PrismaClient | undefined
@@ -12,16 +13,16 @@ declare global {
 const getDatabaseConfig = () => {
   const env = process.env.NODE_ENV || 'development'
 
-  // Environment-specific configurations
+  // Environment-specific configurations - now using modular databaseConfig
   const configs = {
     development: {
-      timeout: 5000, // 5 seconds busy timeout
+      timeout: databaseConfig.timeouts.development,
     },
     production: {
-      timeout: 10000, // 10 seconds busy timeout for high load
+      timeout: databaseConfig.timeouts.production,
     },
     test: {
-      timeout: 1000, // 1 second for fast test failures
+      timeout: databaseConfig.timeouts.test,
     },
   }
 
@@ -31,7 +32,7 @@ const getDatabaseConfig = () => {
 const dbConfig = getDatabaseConfig()
 
 // FIXED: Add retry logic and error handling for database connection
-const MAX_RETRIES = 3
+const MAX_RETRIES = databaseConfig.retries.maxAttempts
 
 /**
  * Create Prisma client with retry logic and error handling

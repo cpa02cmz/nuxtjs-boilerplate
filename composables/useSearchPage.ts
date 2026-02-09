@@ -5,6 +5,7 @@ import { useAdvancedResourceSearch } from './useAdvancedResourceSearch'
 import { toggleArrayItem } from '~/utils/filter-utils'
 import { useResourceSort } from './useResourceSort'
 import { trackSearch, trackFilter } from '~/utils/analytics'
+import { animationConfig } from '~/configs/animation.config'
 
 // Extended filter options for search page
 export interface SearchPageFilterOptions {
@@ -186,7 +187,7 @@ export const useSearchPage = () => {
 
     setTimeout(() => {
       trackSearch(query, filteredResources.value.length)
-    }, 500)
+    }, animationConfig.analytics.trackingDelayMs)
   }
 
   return {

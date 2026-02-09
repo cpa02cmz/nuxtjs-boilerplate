@@ -433,6 +433,9 @@
     </client-only>
 
     <!-- Offline Indicator -->
+    <client-only>
+      <OfflineIndicator />
+    </client-only>
   </div>
 </template>
 
@@ -445,6 +448,7 @@ import { useTheme } from '~/composables/useTheme'
 import type { NodeListOf } from 'dom'
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
 import KeyboardShortcutsHelp from '~/components/KeyboardShortcutsHelp.vue'
+import OfflineIndicator from '~/components/OfflineIndicator.vue'
 
 // Theme state
 const { isDark, cycleTheme } = useTheme()

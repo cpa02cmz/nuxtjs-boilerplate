@@ -12,6 +12,7 @@
 
 import type { Resource, FilterOptions } from '~/types/resource'
 import { TIME_MS } from '~/configs/time.config'
+import { limitsConfig } from '~/configs/limits.config'
 
 /**
  * Check if a filter array has active values
@@ -128,11 +129,11 @@ export const matchesDateRange = (
 
   switch (dateRange) {
     case 'lastWeek':
-      return daysDiff <= 7
+      return daysDiff <= limitsConfig.dateRange.weekDays
     case 'lastMonth':
-      return daysDiff <= 30
+      return daysDiff <= limitsConfig.dateRange.monthDays
     case 'lastYear':
-      return daysDiff <= 365
+      return daysDiff <= limitsConfig.dateRange.yearDays
     default:
       return true
   }
