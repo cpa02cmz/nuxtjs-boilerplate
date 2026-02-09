@@ -1,13 +1,12 @@
 import { getHeader, getQuery } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import { sendUnauthorizedError } from '~/server/utils/api-response'
+import { isProtectedApiRoute } from '~/configs/routes.config'
 
 export default defineEventHandler(async event => {
   // Only apply to API routes that require authentication
-  if (
-    !event.path?.startsWith('/api/v1/') ||
-    event.path?.startsWith('/api/v1/auth/')
-  ) {
+  // Flexy hates hardcoded paths! Using isProtectedApiRoute helper
+  if (!isProtectedApiRoute(event.path || '')) {
     return
   }
 

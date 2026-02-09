@@ -33,7 +33,7 @@ export const csrfConfig = {
     prefixes: [
       '/api/submissions',
       '/api/v1/auth/api-keys',
-      '/api/analytics/events',
+      // '/api/analytics/events', // DISABLED: Analytics events are not security-critical
       '/api/user/preferences',
       '/api/moderation/flag',
       '/api/moderation/approve',

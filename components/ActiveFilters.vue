@@ -303,6 +303,41 @@
           aria-hidden="true"
         />
       </button>
+
+      <!-- Undo button for recently removed filter -->
+      <button
+        v-if="lastRemovedFilter"
+        key="undo-filter"
+        class="filter-chip filter-chip-undo"
+        :aria-label="`Undo removal of ${lastRemovedFilter.displayLabel} filter. Press Control Z to undo`"
+        @click="undoRemove"
+      >
+        <svg
+          class="w-3.5 h-3.5 mr-1.5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+          />
+        </svg>
+        <span class="truncate max-w-[150px]">Undo {{ lastRemovedFilter.type }}</span>
+        <kbd
+          class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
+          aria-hidden="true"
+        >Ctrl+Z</kbd>
+        <!-- Progress bar for undo window -->
+        <span
+          class="undo-progress-bar"
+          :style="{ width: `${undoProgress}%` }"
+          aria-hidden="true"
+        />
+      </button>
     </TransitionGroup>
 
     <!-- Clear all button with keyboard shortcut hint -->
@@ -321,7 +356,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 
 interface Props {
   searchQuery?: string
@@ -332,6 +367,14 @@ interface Props {
   selectedTags: string[]
   selectedBenefits: string[]
   selectedDateRange?: string
+}
+
+interface RemovedFilter {
+  type: string
+  value: string
+  timestamp: number
+  displayLabel: string
+  chipClass: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -353,6 +396,13 @@ const emit = defineEmits<{
 
 // Announcement state for screen readers
 const announcement = ref('')
+
+// Undo feature state
+const lastRemovedFilter = ref<RemovedFilter | null>(null)
+const undoTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null)
+const undoProgress = ref(100)
+const progressIntervalId = ref<ReturnType<typeof setInterval> | null>(null)
+const UNDO_WINDOW_MS = 5000 // 5 seconds to undo
 
 // Track removing chips for animation (used in future undo feature)
 const _removingChips = ref<Set<string>>(new Set())
@@ -398,9 +448,42 @@ const handleRemove = (type: string, value: string, _event: Event) => {
     navigator.vibrate(10)
   }
 
-  // Announce to screen readers
+  // Store the removed filter for potential undo
+  lastRemovedFilter.value = {
+    type,
+    value,
+    timestamp: Date.now(),
+    displayLabel: getFilterDisplayLabel(type, value),
+    chipClass: getFilterChipClass(type),
+  }
+
+  // Start progress countdown
+  undoProgress.value = 100
+  if (progressIntervalId.value) {
+    clearInterval(progressIntervalId.value)
+  }
+  progressIntervalId.value = setInterval(() => {
+    undoProgress.value -= 2 // Decrease by 2% every 100ms = 5 seconds total
+    if (undoProgress.value <= 0) {
+      undoProgress.value = 0
+      if (progressIntervalId.value) {
+        clearInterval(progressIntervalId.value)
+        progressIntervalId.value = null
+      }
+    }
+  }, 100)
+
+  // Set timeout to clear undo state after window expires
+  if (undoTimeoutId.value) {
+    clearTimeout(undoTimeoutId.value)
+  }
+  undoTimeoutId.value = setTimeout(() => {
+    clearUndoState()
+  }, UNDO_WINDOW_MS)
+
+  // Announce to screen readers with undo hint
   const remainingCount = activeFilterCount.value - 1
-  announcement.value = `${type} filter removed. ${remainingCount} filter${remainingCount !== 1 ? 's' : ''} active.`
+  announcement.value = `${type} filter removed. ${remainingCount} filter${remainingCount !== 1 ? 's' : ''} active. Press Control Z to undo.`
 
   // Clear announcement after screen reader has time to read it
   setTimeout(() => {
@@ -437,6 +520,9 @@ const handleRemove = (type: string, value: string, _event: Event) => {
 }
 
 const handleClearAll = () => {
+  // Clear any pending undo first
+  clearUndoState()
+
   // Announce to screen readers
   announcement.value = 'All filters cleared.'
 
@@ -448,6 +534,107 @@ const handleClearAll = () => {
   emit('reset-filters')
 }
 
+// Clear undo state and timers
+const clearUndoState = () => {
+  if (undoTimeoutId.value) {
+    clearTimeout(undoTimeoutId.value)
+    undoTimeoutId.value = null
+  }
+  if (progressIntervalId.value) {
+    clearInterval(progressIntervalId.value)
+    progressIntervalId.value = null
+  }
+  lastRemovedFilter.value = null
+  undoProgress.value = 100
+}
+
+// Restore the last removed filter
+const undoRemove = () => {
+  if (!lastRemovedFilter.value) return
+
+  const filter = lastRemovedFilter.value
+
+  // Clear undo state first
+  clearUndoState()
+
+  // Announce to screen readers
+  announcement.value = `${filter.displayLabel} filter restored.`
+  setTimeout(() => {
+    announcement.value = ''
+  }, 1000)
+
+  // Re-add the filter by emitting the appropriate event
+  switch (filter.type) {
+    case 'search':
+      // For search, we can't easily restore - emit clear-search (noop)
+      // Search restoration would require a different approach
+      break
+    case 'category':
+      emit('toggle-category', filter.value)
+      break
+    case 'pricing':
+      emit('toggle-pricing-model', filter.value)
+      break
+    case 'difficulty':
+      emit('toggle-difficulty-level', filter.value)
+      break
+    case 'technology':
+      emit('toggle-technology', filter.value)
+      break
+    case 'tag':
+      emit('toggle-tag', filter.value)
+      break
+    case 'benefit':
+      emit('toggle-benefit', filter.value)
+      break
+    case 'date':
+      // Date range restoration
+      break
+  }
+}
+
+// Handle keyboard shortcut for undo (Ctrl+Z / Cmd+Z)
+const handleKeydown = (event: KeyboardEvent) => {
+  if (
+    (event.ctrlKey || event.metaKey) &&
+    event.key === 'z' &&
+    lastRemovedFilter.value
+  ) {
+    event.preventDefault()
+    undoRemove()
+  }
+}
+
+// Get display label for filter type
+const getFilterDisplayLabel = (type: string, value: string): string => {
+  const typeLabels: Record<string, string> = {
+    search: value,
+    category: value,
+    pricing: value,
+    difficulty: value,
+    technology: value,
+    tag: value,
+    benefit: value,
+    date: formatDateRange(value),
+  }
+  return typeLabels[type] || value
+}
+
+// Get chip class based on filter type
+const getFilterChipClass = (type: string): string => {
+  const classMap: Record<string, string> = {
+    search: 'filter-chip-blue',
+    category: 'filter-chip-gray',
+    pricing: 'filter-chip-green',
+    difficulty: 'filter-chip-purple',
+    technology: 'filter-chip-orange',
+    tag: 'filter-chip-pink',
+    benefit: 'filter-chip-teal',
+    date: 'filter-chip-indigo',
+  }
+  return classMap[type] || 'filter-chip-gray'
+}
+
 // Handle before leave to fix layout shift during transition
 const handleBeforeLeave = (el: Element) => {
   const htmlEl = el as HTMLElement
@@ -455,6 +642,16 @@ const handleBeforeLeave = (el: Element) => {
   htmlEl.style.width = `${width}px`
   htmlEl.style.height = `${height}px`
 }
+
+// Setup and cleanup keyboard event listeners
+onMounted(() => {
+  document.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown)
+  clearUndoState()
+})
 </script>
 
 <style scoped>
@@ -522,6 +719,32 @@ const handleBeforeLeave = (el: Element) => {
 
 .filter-chip-indigo {
   @apply bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 focus:ring-indigo-500;
+}
+
+/* Undo filter chip styles */
+.filter-chip-undo {
+  @apply relative bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100 focus:ring-amber-500;
+  @apply overflow-hidden;
+  animation: undo-chip-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Progress bar for undo countdown */
+.undo-progress-bar {
+  @apply absolute bottom-0 left-0 h-0.5 bg-amber-400/60 transition-all duration-100 ease-linear;
+}
+
+@keyframes undo-chip-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(-4px);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 /* Vue Transition Group animations */

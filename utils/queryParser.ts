@@ -1,7 +1,8 @@
 import type { SearchQuery } from '~/types/search'
+import { patternsConfig } from '~/configs/patterns.config'
 
 const removeQuotes = (term: string): string => {
-  return term.replace(/^"|"$/g, '')
+  return term.replace(patternsConfig.search.quotePattern, '')
 }
 
 export const parseQuery = (query: string): SearchQuery => {
@@ -9,14 +10,14 @@ export const parseQuery = (query: string): SearchQuery => {
     return { terms: [], operators: [], filters: {} }
   }
 
-  const hasOperators = /\b(?:AND|OR|NOT)\b/i.test(query)
+  const hasOperators = patternsConfig.search.operatorPattern.test(query)
 
   if (hasOperators) {
     const terms: string[] = []
     const operators: ('AND' | 'OR' | 'NOT')[] = []
 
     const parts = query
-      .split(/\b(AND|OR|NOT)\b/gi)
+      .split(patternsConfig.search.operatorSplitPattern)
       .map(part => part.trim())
       .filter(Boolean)
 

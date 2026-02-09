@@ -30,6 +30,8 @@ import { limitsConfig, type LimitsConfig } from './limits.config'
 import { comparisonConfig, type ComparisonConfig } from './comparison.config'
 
 // New modular configs - Flexy loves modularity!
+import { socialConfig, type SocialConfig } from './social.config'
+import { dateConfig, type DateConfig } from './date.config'
 import {
   csrfConfig,
   isSafeMethod,
@@ -81,6 +83,17 @@ import {
   type SitemapPageEntry,
 } from './sitemap.config'
 import { iconsConfig, type IconsConfig } from './icons.config'
+import {
+  ROUTE_PATTERNS,
+  routesConfig,
+  isApiRoute,
+  isProtectedApiRoute,
+  isPublicApiRoute,
+  isStaticBuildPath,
+  isCacheablePage,
+  type RoutePatterns,
+  type RoutesConfig,
+} from './routes.config'
 
 // Re-export individual configs
 export { appConfig, type AppConfig }
@@ -107,6 +120,8 @@ export { limitsConfig, type LimitsConfig }
 export { comparisonConfig, type ComparisonConfig }
 
 // Re-export new modular configs
+export { socialConfig, type SocialConfig }
+export { dateConfig, type DateConfig }
 export {
   csrfConfig,
   isSafeMethod,
@@ -158,6 +173,17 @@ export {
   type SitemapPageEntry,
 }
 export { iconsConfig, type IconsConfig }
+export {
+  ROUTE_PATTERNS,
+  routesConfig,
+  isApiRoute,
+  isProtectedApiRoute,
+  isPublicApiRoute,
+  isStaticBuildPath,
+  isCacheablePage,
+  type RoutePatterns,
+  type RoutesConfig,
+}
 
 // Default export with all configs
 export const config = {
@@ -179,12 +205,15 @@ export const config = {
   limits: limitsConfig,
   comparison: comparisonConfig,
   // New modular configs
+  social: socialConfig,
+  date: dateConfig,
   csrf: csrfConfig,
   http: httpConfig,
   time: timeConfig,
   cacheTags: cacheTagsConfig,
   sitemap: sitemapConfig,
   icons: iconsConfig,
+  routes: routesConfig,
 } as const
 
 export type Config = typeof config

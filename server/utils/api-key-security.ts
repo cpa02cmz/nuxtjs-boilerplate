@@ -2,6 +2,7 @@
  * API Key Security Utilities
  * Functions for securely handling API keys - masking, validation, etc.
  */
+import { patternsConfig } from '~/configs/patterns.config'
 
 /**
  * Mask an API key for logging/display purposes
@@ -11,11 +12,11 @@
  */
 export function maskApiKey(apiKey: string): string {
   if (!apiKey || apiKey.length < 12) {
-    return '***'
+    return patternsConfig.apiKey.mask.placeholder
   }
 
-  const prefix = apiKey.slice(0, 8) // e.g., "ak_1a2b"
-  const suffix = apiKey.slice(-4) // e.g., "x9y8"
+  const prefix = apiKey.slice(0, patternsConfig.apiKey.mask.visiblePrefixLength)
+  const suffix = apiKey.slice(-patternsConfig.apiKey.mask.visibleSuffixLength)
   return `${prefix}...${suffix}`
 }
 
@@ -29,8 +30,7 @@ export function isApiKey(value: string): boolean {
     return false
   }
 
-  const apiKeyPrefixes = ['ak_', 'sk_', 'pk_', 'api_']
-  return apiKeyPrefixes.some(prefix => value.startsWith(prefix))
+  return patternsConfig.apiKey.prefixes.some(prefix => value.startsWith(prefix))
 }
 
 /**
@@ -55,7 +55,7 @@ export function maskApiKeysInObject<T>(obj: T): T {
     const masked: Record<string, unknown> = {}
     for (const [key, value] of Object.entries(obj)) {
       // Check if the key name suggests this is an API key field
-      const isApiKeyField = /api[_-]?key|key|token|secret|password/i.test(key)
+      const isApiKeyField = patternsConfig.apiKey.fieldPattern.test(key)
 
       if (isApiKeyField && typeof value === 'string') {
         masked[key] = maskApiKey(value)
@@ -78,6 +78,7 @@ export function sanitizeErrorMessage(message: string): string {
   if (!message) return message
 
   // Match patterns that look like API keys and mask them
-  const apiKeyPattern = /\b(ak_|sk_|pk_|api_)[a-zA-Z0-9]{20,}\b/g
-  return message.replace(apiKeyPattern, match => maskApiKey(match))
+  return message.replace(patternsConfig.apiKey.pattern, match =>
+    maskApiKey(match)
+  )
 }

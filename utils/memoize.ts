@@ -1,3 +1,5 @@
+import { patternsConfig } from '~/configs/patterns.config'
+
 const generateCacheKey = (text: string, searchQuery: string): string => {
   return `${text}:${searchQuery}`
 }
@@ -10,15 +12,15 @@ const generateArgsKey = (args: unknown[]): string => {
   if (args.length === 1) {
     const arg = args[0]
     if (arg === null || arg === undefined) {
-      return 'null'
+      return patternsConfig.memoization.nullKey
     }
     if (typeof arg === 'object') {
       // For objects, use reference to avoid caching by structure
       // This is a unique identifier per object instance
-      return `obj:${Math.random().toString(36).substr(2, 9)}`
+      return `${patternsConfig.memoization.objectKeyPrefix}${Math.random().toString(36).substr(2, patternsConfig.memoization.cacheKeyLength)}`
     }
     if (typeof arg === 'function') {
-      return 'func'
+      return patternsConfig.memoization.functionKeyPrefix
     }
     return String(arg)
   }
@@ -27,14 +29,14 @@ const generateArgsKey = (args: unknown[]): string => {
   return args
     .map(arg => {
       if (arg === null || arg === undefined) {
-        return 'null'
+        return patternsConfig.memoization.nullKey
       }
       if (typeof arg === 'object') {
         // Use unique identifier for each object instance
-        return `obj:${Math.random().toString(36).substr(2, 9)}`
+        return `${patternsConfig.memoization.objectKeyPrefix}${Math.random().toString(36).substr(2, patternsConfig.memoization.cacheKeyLength)}`
       }
       if (typeof arg === 'function') {
-        return 'func'
+        return patternsConfig.memoization.functionKeyPrefix
       }
       return String(arg)
     })

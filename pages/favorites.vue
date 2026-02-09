@@ -127,6 +127,7 @@
             :benefits="['Bookmarked resource']"
             :url="bookmark.url"
             :button-label="'Visit Resource'"
+            :date-added="bookmark.dateAdded"
           >
             <template #actions>
               <button

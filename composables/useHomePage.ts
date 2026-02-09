@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import type { Resource } from '~/types/resource'
+import { homepageConfig } from '~/configs/homepage.config'
 
 export const useHomePage = (resources: Resource[]) => {
   const trendingResources = computed(() => {
@@ -7,7 +8,7 @@ export const useHomePage = (resources: Resource[]) => {
 
     return [...resources]
       .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
-      .slice(0, 5)
+      .slice(0, homepageConfig.resources.trendingLimit)
   })
 
   const getRelatedResources = (
@@ -22,13 +23,13 @@ export const useHomePage = (resources: Resource[]) => {
           resource.category === currentResource.category &&
           resource.id !== currentResource.id
       )
-      .slice(0, 3)
+      .slice(0, homepageConfig.resources.relatedLimit)
   }
 
   const getTrendingResources = (allResources: Resource[]): Resource[] => {
     return [...allResources]
       .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
-      .slice(0, 5)
+      .slice(0, homepageConfig.resources.trendingLimit)
   }
 
   return {

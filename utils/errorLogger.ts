@@ -1,4 +1,5 @@
 // Error logging service for consistent error tracking
+import { generateUniqueId } from './id'
 import { logger } from './logger'
 import { limitsConfig } from '~/configs/limits.config'
 
@@ -27,7 +28,7 @@ class ErrorLogger {
     additionalInfo?: Record<string, unknown>
   ): void {
     const log: ErrorLog = {
-      id: Math.random().toString(36).substring(2, 15),
+      id: generateUniqueId(),
       timestamp: new Date(),
       message,
       stack: error?.stack,

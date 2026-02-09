@@ -122,7 +122,7 @@
           </div>
 
           <!-- Resources Grid -->
-          <div class="lg:w-3/4">
+          <div class="lg:w-3/4 min-h-[400px]">
             <!-- Results Info -->
             <div class="flex justify-between items-center mb-6">
               <ResourceSort
@@ -138,7 +138,9 @@
                 v-for="(resource, index) in filteredResources"
                 :key="resource.id"
                 class="resource-card-wrapper"
-                :style="{ animationDelay: `${Math.min(index * 50, 500)}ms` }"
+                :style="{
+                  animationDelay: `${Math.min(index * animationConfig.card.staggerDelayMs, animationConfig.card.maxDelayMs)}ms`,
+                }"
               >
                 <LazyResourceCard
                   :id="resource.id"
@@ -153,6 +155,7 @@
                   :highlighted-description="
                     highlightSearchTerms(resource.description, searchQuery)
                   "
+                  :date-added="resource.dateAdded"
                 />
               </div>
             </div>
@@ -190,7 +193,9 @@
                 v-for="(resource, index) in trendingResources"
                 :key="resource.id"
                 class="resource-card-wrapper"
-                :style="{ animationDelay: `${Math.min(index * 50, 500)}ms` }"
+                :style="{
+                  animationDelay: `${Math.min(index * animationConfig.card.staggerDelayMs, animationConfig.card.maxDelayMs)}ms`,
+                }"
               >
                 <LazyResourceCard
                   :title="resource.title"
@@ -204,6 +209,7 @@
                   :highlighted-description="
                     highlightSearchTerms(resource.description, searchQuery)
                   "
+                  :date-added="resource.dateAdded"
                 />
               </div>
             </div>
@@ -232,6 +238,7 @@ import { getButtonLabel } from '~/utils/resourceHelper'
 import ResourceSort from '~/components/ResourceSort.vue'
 import { appConfig } from '~/configs/app.config'
 import { seoConfig } from '~/configs/seo.config'
+import { animationConfig } from '~/configs/animation.config'
 
 definePageMeta({
   layout: 'default',

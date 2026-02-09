@@ -7,6 +7,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { triggerWebhookSchema } from '~/server/utils/validation-schemas'
+import { randomUUID } from 'node:crypto'
 
 export default defineEventHandler(async event => {
   try {
@@ -29,9 +30,7 @@ export default defineEventHandler(async event => {
 
     const validatedData = validationResult.data
 
-    const idempotencyKey =
-      validatedData.idempotencyKey ||
-      `evt_${Date.now()}_${Math.random().toString(36).substring(7)}`
+    const idempotencyKey = validatedData.idempotencyKey || `evt_${randomUUID()}`
 
     const existingDelivery =
       await webhookStorage.getDeliveryByIdempotencyKey(idempotencyKey)

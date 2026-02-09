@@ -27,6 +27,8 @@ import { useUserProfiles } from './community/useUserProfiles'
 import { useComments } from './community/useComments'
 import { useVoting } from './community/useVoting'
 import { useModeration } from './community/useModeration'
+import { limitsConfig } from '~/configs/limits.config'
+import { contentConfig } from '~/configs/content.config'
 
 export const useCommunityFeatures = (
   initialUsers: UserProfile[] = [],
@@ -89,7 +91,7 @@ export const useCommunityFeatures = (
   const addComment = (commentData: CommentData) => {
     const user = userProfilesComposable.currentUser.value
     if (!user) {
-      throw new Error('User must be logged in to comment')
+      throw new Error(contentConfig.errors.community.commentLogin)
     }
 
     const comment = commentsComposable.addComment(commentData, user)
@@ -103,7 +105,7 @@ export const useCommunityFeatures = (
   const addReply = (commentId: string, replyData: ReplyData) => {
     const user = userProfilesComposable.currentUser.value
     if (!user) {
-      throw new Error('User must be logged in to reply')
+      throw new Error(contentConfig.errors.community.replyLogin)
     }
 
     return commentsComposable.addReply(commentId, replyData, user)
@@ -112,7 +114,7 @@ export const useCommunityFeatures = (
   const editComment = (commentId: string, newContent: string) => {
     const user = userProfilesComposable.currentUser.value
     if (!user) {
-      throw new Error('User must be logged in')
+      throw new Error(contentConfig.errors.community.commentLogin)
     }
     return commentsComposable.editComment(commentId, newContent, user)
   }
@@ -120,7 +122,7 @@ export const useCommunityFeatures = (
   const deleteComment = (commentId: string) => {
     const user = userProfilesComposable.currentUser.value
     if (!user) {
-      throw new Error('User must be logged in')
+      throw new Error(contentConfig.errors.community.commentLogin)
     }
     return commentsComposable.deleteComment(commentId, user)
   }
@@ -137,7 +139,7 @@ export const useCommunityFeatures = (
   ) => {
     const user = userProfilesComposable.currentUser.value
     if (!user) {
-      throw new Error('User must be logged in to vote')
+      throw new Error(contentConfig.errors.community.voteLogin)
     }
     return votingComposable.vote(targetType, targetId, voteType, user)
   }
@@ -151,7 +153,7 @@ export const useCommunityFeatures = (
   ) => {
     const user = userProfilesComposable.currentUser.value
     if (!user) {
-      throw new Error('User must be logged in to flag content')
+      throw new Error(contentConfig.errors.community.flagLogin)
     }
     return moderationComposable.flagContent(
       targetType,
@@ -169,7 +171,7 @@ export const useCommunityFeatures = (
   ) => {
     const user = userProfilesComposable.currentUser.value
     if (!user) {
-      throw new Error('User must be logged in to moderate content')
+      throw new Error(contentConfig.errors.community.moderatePermission)
     }
     return moderationComposable.moderateContent(
       flagId,
@@ -193,7 +195,9 @@ export const useCommunityFeatures = (
 
   const getTopContributors = (limit?: number) => {
     const getContributorsFunc = userProfilesComposable.getTopContributors.value
-    return getContributorsFunc(limit || 10)
+    return getContributorsFunc(
+      limit || limitsConfig.community.defaultTopContributorsLimit
+    )
   }
 
   // Return composable functions (maintaining backward compatibility)
