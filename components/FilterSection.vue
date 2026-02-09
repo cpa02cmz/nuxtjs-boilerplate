@@ -9,13 +9,11 @@
       class="space-y-2"
       :class="scrollableClass"
     >
-      <label
+      <div
         v-for="option in options"
         :key="option"
         class="flex items-center cursor-pointer"
         :class="{ 'justify-between': showCount }"
-        @keydown.enter="toggleOption(option)"
-        @keydown.space.prevent="toggleOption(option)"
       >
         <div class="flex items-center">
           <input
@@ -41,7 +39,7 @@
         >
           {{ getCountForOption(option) }}
         </span>
-      </label>
+      </div>
     </div>
   </fieldset>
 </template>

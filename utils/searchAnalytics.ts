@@ -24,14 +24,14 @@ export interface PerformanceMetrics {
 export interface PopularSearch {
   query: string
   count: number
-  lastUsed: Date
+  lastUsed?: Date
 }
 
 // Interface for zero-result search items
 export interface ZeroResultSearch {
   query: string
   count: number
-  lastUsed: Date
+  lastUsed?: Date
 }
 
 // Search analytics utility class

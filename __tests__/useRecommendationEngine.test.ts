@@ -84,10 +84,11 @@ describe('useRecommendationEngine', () => {
 
   describe('initialization', () => {
     it('should initialize with default config', () => {
-      expect(engine.config.collaborativeWeight).toBe(0.3)
-      expect(engine.config.contentBasedWeight).toBe(0.3)
-      expect(engine.config.popularityWeight).toBe(0.2)
+      expect(engine.config.collaborativeWeight).toBe(0.25)
+      expect(engine.config.contentBasedWeight).toBe(0.25)
+      expect(engine.config.popularityWeight).toBe(0.15)
       expect(engine.config.personalizationWeight).toBe(0.2)
+      expect(engine.config.searchBasedWeight).toBe(0.15)
       expect(engine.config.maxRecommendations).toBe(10)
       expect(engine.config.minSimilarityScore).toBe(0.3)
       expect(engine.config.diversityFactor).toBe(0.3)
