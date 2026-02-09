@@ -13,6 +13,38 @@ interface RateLimitStore {
 
 const rateLimitStore: RateLimitStore = {}
 
+// FIXED: Add periodic cleanup to prevent memory leak
+// Cleanup runs every 5 minutes to remove expired entries
+const CLEANUP_INTERVAL_MS = 5 * 60 * 1000 // 5 minutes
+
+/**
+ * Clean up expired rate limit entries to prevent memory leaks
+ * Removes entries where resetTime has passed
+ */
+function cleanupExpiredEntries(): void {
+  const now = Date.now()
+  Object.keys(rateLimitStore).forEach(k => {
+    const entry = rateLimitStore[k]
+    if (entry && entry.resetTime < now) {
+      delete rateLimitStore[k]
+    }
+  })
+}
+
+// Start periodic cleanup to prevent unbounded memory growth
+let cleanupInterval: NodeJS.Timeout | null = null
+
+function startCleanupInterval(): void {
+  if (!cleanupInterval) {
+    cleanupInterval = setInterval(cleanupExpiredEntries, CLEANUP_INTERVAL_MS)
+    // Prevent the interval from keeping the process alive
+    cleanupInterval.unref?.()
+  }
+}
+
+// Initialize cleanup on module load
+startCleanupInterval()
+
 export default defineEventHandler(event => {
   // Only apply rate limiting to API routes
   if (!event.path?.startsWith('/api/')) {

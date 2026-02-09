@@ -18,6 +18,33 @@ interface RateLimitConfig {
 // In-memory store for token buckets
 const tokenBucketStore = new Map<string, TokenBucket>()
 
+// Lock queue for atomic operations - prevents race conditions
+const bucketLocks = new Map<string, Promise<void>>()
+
+/**
+ * Acquire a lock for a bucket key to ensure atomic operations
+ * Uses a simple Promise-based queue for async locking
+ */
+async function acquireLock(key: string): Promise<() => void> {
+  // Wait for existing lock to be released
+  while (bucketLocks.has(key)) {
+    await bucketLocks.get(key)
+  }
+
+  // Create a new lock
+  let release: () => void
+  const lockPromise = new Promise<void>(resolve => {
+    release = resolve
+  })
+  bucketLocks.set(key, lockPromise)
+
+  // Return release function
+  return () => {
+    bucketLocks.delete(key)
+    release!()
+  }
+}
+
 // Admin bypass keys - loaded from environment variable at startup
 // Only used when valid bypass key is provided in request headers
 const adminBypassKeys = new Set<string>()
@@ -41,6 +68,7 @@ class RateLimiter {
 
   /**
    * Check if a request should be allowed based on token bucket algorithm
+   * FIXED: Uses atomic locking to prevent race conditions under concurrent load
    */
   async isAllowed(
     key: string,
@@ -60,48 +88,56 @@ class RateLimiter {
       }
     }
 
-    const now = Date.now()
-    let bucket = tokenBucketStore.get(key)
+    // Acquire lock for atomic bucket operations
+    const release = await acquireLock(key)
 
-    // If no bucket exists, create a new one
-    if (!bucket) {
-      bucket = {
-        tokens: this.config.tokensPerInterval,
-        lastRefill: now,
+    try {
+      const now = Date.now()
+      let bucket = tokenBucketStore.get(key)
+
+      // If no bucket exists, create a new one
+      if (!bucket) {
+        bucket = {
+          tokens: this.config.tokensPerInterval,
+          lastRefill: now,
+        }
+        tokenBucketStore.set(key, bucket)
+      } else {
+        // Refill tokens based on time passed
+        const timePassed = now - bucket.lastRefill
+        const intervalsPassed = Math.floor(timePassed / this.config.intervalMs)
+
+        // Add tokens based on intervals passed, but don't exceed max
+        bucket.tokens = Math.min(
+          this.config.maxRequests,
+          bucket.tokens + intervalsPassed * this.config.tokensPerInterval
+        )
+
+        bucket.lastRefill = now
       }
-      tokenBucketStore.set(key, bucket)
-    } else {
-      // Refill tokens based on time passed
-      const timePassed = now - bucket.lastRefill
-      const intervalsPassed = Math.floor(timePassed / this.config.intervalMs)
 
-      // Add tokens based on intervals passed, but don't exceed max
-      bucket.tokens = Math.min(
-        this.config.maxRequests,
-        bucket.tokens + intervalsPassed * this.config.tokensPerInterval
-      )
-
-      bucket.lastRefill = now
-    }
-
-    // Check if we have tokens available
-    if (bucket.tokens > 0) {
-      bucket.tokens-- // Consume a token
-      return {
-        allowed: true,
-        remaining: Math.floor(bucket.tokens),
-        resetTime:
-          Math.floor(bucket.lastRefill + this.config.intervalMs) / 1000,
+      // Check if we have tokens available
+      if (bucket.tokens > 0) {
+        bucket.tokens-- // Consume a token
+        return {
+          allowed: true,
+          remaining: Math.floor(bucket.tokens),
+          resetTime:
+            Math.floor(bucket.lastRefill + this.config.intervalMs) / 1000,
+        }
+      } else {
+        // No tokens available, rate limit exceeded
+        return {
+          allowed: false,
+          message: this.config.message,
+          remaining: 0,
+          resetTime:
+            Math.floor(bucket.lastRefill + this.config.intervalMs) / 1000,
+        }
       }
-    } else {
-      // No tokens available, rate limit exceeded
-      return {
-        allowed: false,
-        message: this.config.message,
-        remaining: 0,
-        resetTime:
-          Math.floor(bucket.lastRefill + this.config.intervalMs) / 1000,
-      }
+    } finally {
+      // Always release the lock
+      release()
     }
   }
 
