@@ -74,7 +74,9 @@ export {
 
 export { uiConfig as UI_CONFIG, type UiConfig } from '~/configs/ui.config'
 
+// Re-export searchConfig with backward-compatible SEARCH_CONFIG alias
 export {
+  searchConfig,
   searchConfig as SEARCH_CONFIG,
   type SearchConfig,
 } from '~/configs/search.config'
