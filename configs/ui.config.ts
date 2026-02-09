@@ -181,6 +181,8 @@ export const uiConfig = {
       deprecated: process.env.STATUS_LABEL_DEPRECATED || 'Deprecated',
       discontinued: process.env.STATUS_LABEL_DISCONTINUED || 'Discontinued',
       unstable: process.env.STATUS_LABEL_UNSTABLE || 'Unstable',
+      updated: process.env.STATUS_LABEL_UPDATED || 'Updated',
+      pending: process.env.STATUS_LABEL_PENDING || 'Pending',
       unknown: process.env.STATUS_LABEL_UNKNOWN || 'Unknown',
     },
     // Status descriptions
@@ -197,10 +199,69 @@ export const uiConfig = {
       unstable:
         process.env.STATUS_DESC_UNSTABLE ||
         'This resource is currently experiencing issues.',
+      updated:
+        process.env.STATUS_DESC_UPDATED ||
+        'This resource has been recently updated.',
+      pending:
+        process.env.STATUS_DESC_PENDING || 'This resource is pending review.',
       unknown:
         process.env.STATUS_DESC_UNKNOWN ||
         'The status of this resource is unknown.',
     },
+  },
+
+  // Health Status
+  healthStatus: {
+    labels: {
+      excellent: process.env.HEALTH_LABEL_EXCELLENT || 'Health: Excellent',
+      good: process.env.HEALTH_LABEL_GOOD || 'Health: Good',
+      fair: process.env.HEALTH_LABEL_FAIR || 'Health: Fair',
+      poor: process.env.HEALTH_LABEL_POOR || 'Health: Poor',
+      unknown: process.env.HEALTH_LABEL_UNKNOWN || 'Health status unknown',
+    },
+  },
+
+  // Animation Durations (CSS values in seconds)
+  animationDuration: {
+    fast: parseFloat(process.env.ANIMATION_DURATION_FAST_CSS || '0.2'),
+    normal: parseFloat(process.env.ANIMATION_DURATION_NORMAL_CSS || '0.3'),
+    slow: parseFloat(process.env.ANIMATION_DURATION_SLOW_CSS || '0.5'),
+    draw: parseFloat(process.env.ANIMATION_DURATION_DRAW || '1.0'),
+    drawDelayed: parseFloat(
+      process.env.ANIMATION_DURATION_DRAW_DELAYED || '1.2'
+    ),
+    float: parseFloat(process.env.ANIMATION_DURATION_FLOAT || '3.0'),
+    floatDelayed: parseFloat(
+      process.env.ANIMATION_DURATION_FLOAT_DELAYED || '3.5'
+    ),
+    pulseSlow: parseFloat(process.env.ANIMATION_DURATION_PULSE_SLOW || '4.0'),
+    bounceSubtle: parseFloat(
+      process.env.ANIMATION_DURATION_BOUNCE_SUBTLE || '2.0'
+    ),
+    fadeInUp: parseFloat(process.env.ANIMATION_DURATION_FADE_IN_UP || '0.4'),
+    iconPulse: parseFloat(process.env.ANIMATION_DURATION_ICON_PULSE || '1.0'),
+    spin: parseFloat(process.env.ANIMATION_DURATION_SPIN || '1.0'),
+  },
+
+  // Stagger delays
+  staggerDelay: {
+    suggestionMs: parseInt(process.env.STAGGER_DELAY_SUGGESTION_MS || '100'),
+    cardEnterMs: parseInt(process.env.STAGGER_DELAY_CARD_ENTER_MS || '50'),
+    cardEnterMaxMs: parseInt(
+      process.env.STAGGER_DELAY_CARD_ENTER_MAX_MS || '500'
+    ),
+  },
+
+  // PWA Install Prompt
+  pwaInstall: {
+    updateIntervalMs: parseInt(process.env.PWA_UPDATE_INTERVAL_MS || '50'),
+    iconPulseDurationMs: parseInt(
+      process.env.PWA_ICON_PULSE_DURATION_MS || '1000'
+    ),
+    focusDelayMs: parseInt(process.env.PWA_FOCUS_DELAY_MS || '100'),
+    announcementClearMs: parseInt(
+      process.env.PWA_ANNOUNCEMENT_CLEAR_MS || '1000'
+    ),
   },
 } as const
 

@@ -42,9 +42,9 @@
       <!-- No Results State -->
       <LazyEmptyState
         v-else-if="!filteredResources.length && !loading"
-        title="No resources found"
-        description="We couldn't find any resources matching your search. Try adjusting your filters or search terms to discover more great free tools."
-        :suggestions="['AI Tools', 'Web Hosting', 'Databases', 'APIs', 'VPS']"
+        :title="contentConfig.searchResults.noResults.title"
+        :description="contentConfig.searchResults.noResults.message"
+        :suggestions="contentConfig.searchResults.noResults.defaultSuggestions"
         show-reset
         show-browse-all
         show-tips
@@ -148,8 +148,8 @@
           <div class="mt-6">
             <VirtualResourceList
               :items="filteredResources"
-              :item-height="340"
-              :overscan="3"
+              :item-height="uiConfig.virtualList.pageItemHeight"
+              :overscan="uiConfig.virtualList.pageOverscan"
             >
               <template #default="{ item: resource }">
                 <LazyResourceCard
@@ -188,6 +188,7 @@ import ActiveFilters from '~/components/ActiveFilters.vue'
 import { seoConfig } from '~/configs/seo.config'
 import { contentConfig } from '~/configs/content.config'
 import { appConfig } from '~/configs/app.config'
+import { uiConfig } from '~/configs/ui.config'
 
 definePageMeta({
   layout: 'default',
@@ -330,19 +331,10 @@ const handleSuggestionClick = (suggestion: string) => {
 }
 
 const getButtonLabel = (category: string) => {
-  switch (category.toLowerCase()) {
-    case 'ai tools':
-      return 'Explore AI Tools'
-    case 'vps':
-      return 'Get VPS'
-    case 'web hosting':
-      return 'Find Hosting'
-    case 'databases':
-      return 'Explore Databases'
-    case 'cdn':
-      return 'Get CDN'
-    default:
-      return 'Get Free Access'
-  }
+  const label =
+    uiConfig.resourceCard.categoryButtonLabels[
+      category.toLowerCase() as keyof typeof uiConfig.resourceCard.categoryButtonLabels
+    ]
+  return label || uiConfig.resourceCard.defaultButtonLabel
 }
 </script>

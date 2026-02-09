@@ -195,7 +195,33 @@ export const contentConfig = {
       message:
         process.env.CONTENT_NO_RESULTS_MSG ||
         'Try adjusting your filters or search terms',
+      suggestionsLabel:
+        process.env.CONTENT_NO_RESULTS_SUGGESTIONS_LABEL || 'Try searching for',
+      defaultSuggestions: process.env.CONTENT_NO_RESULTS_SUGGESTIONS
+        ? process.env.CONTENT_NO_RESULTS_SUGGESTIONS.split(',')
+        : ['AI Tools', 'Web Hosting', 'Databases', 'APIs', 'VPS'],
     },
+  },
+
+  // Empty State Component
+  emptyState: {
+    defaultTitle: process.env.CONTENT_EMPTY_STATE_TITLE || 'No resources found',
+    defaultDescription:
+      process.env.CONTENT_EMPTY_STATE_DESC ||
+      "Try adjusting your search or filter criteria to find what you're looking for.",
+    resetButtonLabel:
+      process.env.CONTENT_EMPTY_STATE_RESET_LABEL || 'Reset Filters',
+    browseAllButtonLabel:
+      process.env.CONTENT_EMPTY_STATE_BROWSE_LABEL || 'Browse All Resources',
+    searchTipsTitle:
+      process.env.CONTENT_EMPTY_STATE_TIPS_TITLE || 'Search Tips',
+    searchTips: process.env.CONTENT_EMPTY_STATE_TIPS
+      ? process.env.CONTENT_EMPTY_STATE_TIPS.split(';')
+      : [
+          'Use fewer filters to see more results',
+          'Try synonyms or related terms',
+          'Check spelling and try broader keywords',
+        ],
   },
 
   // Resource Detail Page

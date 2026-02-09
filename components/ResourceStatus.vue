@@ -123,9 +123,9 @@ const statusText = computed(() => {
     case 'discontinued':
       return uiConfig.resourceStatus.labels.discontinued
     case 'updated':
-      return 'Updated'
+      return uiConfig.resourceStatus.labels.updated
     case 'pending':
-      return 'Pending'
+      return uiConfig.resourceStatus.labels.pending
     default:
       return uiConfig.resourceStatus.labels.unknown
   }
@@ -140,9 +140,9 @@ const statusTitle = computed(() => {
     case 'discontinued':
       return uiConfig.resourceStatus.descriptions.discontinued
     case 'updated':
-      return 'This resource has been recently updated'
+      return uiConfig.resourceStatus.descriptions.updated
     case 'pending':
-      return 'This resource is pending review'
+      return uiConfig.resourceStatus.descriptions.pending
     default:
       return uiConfig.resourceStatus.descriptions.unknown
   }
@@ -158,16 +158,20 @@ const healthClass = computed(() => {
 })
 
 const healthText = computed(() => {
-  if (props.healthScore === undefined) return 'Health status unknown'
+  if (props.healthScore === undefined)
+    return uiConfig.healthStatus.labels.unknown
   if (props.healthScore >= limitsConfig.healthScore.excellent)
-    return 'Health: Excellent'
-  if (props.healthScore >= limitsConfig.healthScore.good) return 'Health: Good'
-  if (props.healthScore >= limitsConfig.healthScore.fair) return 'Health: Fair'
-  return 'Health: Poor'
+    return uiConfig.healthStatus.labels.excellent
+  if (props.healthScore >= limitsConfig.healthScore.good)
+    return uiConfig.healthStatus.labels.good
+  if (props.healthScore >= limitsConfig.healthScore.fair)
+    return uiConfig.healthStatus.labels.fair
+  return uiConfig.healthStatus.labels.poor
 })
 
 const healthLabel = computed(() => {
-  if (props.healthScore === undefined) return 'Health status unknown'
+  if (props.healthScore === undefined)
+    return uiConfig.healthStatus.labels.unknown
   return `Health score: ${props.healthScore}%`
 })
 </script>

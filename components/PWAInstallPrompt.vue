@@ -150,6 +150,7 @@
 <script setup lang="ts">
 import { useNuxtApp } from '#app'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { uiConfig } from '../configs/ui.config'
 
 // Storage key constants
 const STORAGE_KEYS = {
@@ -201,7 +202,7 @@ const announce = (message: string): void => {
   announcement.value = message
   setTimeout(() => {
     announcement.value = ''
-  }, 1000)
+  }, uiConfig.pwaInstall.announcementClearMs)
 }
 
 // Handle escape key
@@ -270,7 +271,7 @@ const clearAutoDismiss = (): void => {
 const setupAutoDismiss = (): void => {
   if (autoDismissDuration.value <= 0) return
 
-  const updateInterval = 50 // Update every 50ms
+  const updateInterval = uiConfig.pwaInstall.updateIntervalMs
   const decrement = (100 / autoDismissDuration.value) * updateInterval
 
   autoDismissInterval = setInterval(() => {
@@ -300,7 +301,7 @@ onMounted(async () => {
     showIconPulse.value = true
     setTimeout(() => {
       showIconPulse.value = false
-    }, 1000)
+    }, uiConfig.pwaInstall.iconPulseDurationMs)
   }
 
   // Focus management for accessibility
@@ -309,7 +310,7 @@ onMounted(async () => {
     // Small delay to allow transition to start
     setTimeout(() => {
       dismissButtonRef.value?.focus()
-    }, 100)
+    }, uiConfig.pwaInstall.focusDelayMs)
 
     // Setup auto-dismiss if enabled
     setupAutoDismiss()

@@ -84,14 +84,16 @@
       <p
         class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4"
       >
-        Try searching for
+        {{ contentConfig.searchResults.noResults.suggestionsLabel }}
       </p>
       <div class="flex flex-wrap justify-center gap-2">
         <button
           v-for="(suggestion, index) in suggestions"
           :key="index"
           class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-          :style="{ animationDelay: `${index * 100}ms` }"
+          :style="{
+            animationDelay: `${index * uiConfig.staggerDelay.suggestionMs}ms`,
+          }"
           :class="{ 'animate-fade-in-up': !reducedMotion }"
           @click="$emit('suggestion-click', suggestion)"
         >
@@ -133,7 +135,7 @@
             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
           />
         </svg>
-        Reset Filters
+        {{ contentConfig.emptyState.resetButtonLabel }}
       </button>
 
       <button
@@ -154,7 +156,7 @@
             d="M4 6h16M4 12h16M4 18h16"
           />
         </svg>
-        Browse All Resources
+        {{ contentConfig.emptyState.browseAllButtonLabel }}
       </button>
     </div>
 
@@ -179,12 +181,15 @@
         </svg>
         <div class="text-left">
           <p class="text-sm font-medium text-gray-900 mb-1">
-            Search Tips
+            {{ contentConfig.emptyState.searchTipsTitle }}
           </p>
           <ul class="text-sm text-gray-500 space-y-1">
-            <li>• Use fewer filters to see more results</li>
-            <li>• Try synonyms or related terms</li>
-            <li>• Check spelling and try broader keywords</li>
+            <li
+              v-for="(tip, index) in contentConfig.emptyState.searchTips"
+              :key="index"
+            >
+              • {{ tip }}
+            </li>
           </ul>
         </div>
       </div>
@@ -194,6 +199,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { contentConfig } from '../configs/content.config'
+import { uiConfig } from '../configs/ui.config'
 
 interface Props {
   title?: string
@@ -205,9 +212,8 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  title: 'No resources found',
-  description:
-    "Try adjusting your search or filter criteria to find what you're looking for.",
+  title: contentConfig.emptyState.defaultTitle,
+  description: contentConfig.emptyState.defaultDescription,
   suggestions: () => [],
   showReset: true,
   showBrowseAll: true,
