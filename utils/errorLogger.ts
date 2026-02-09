@@ -1,5 +1,5 @@
 // Error logging service for consistent error tracking
-import { randomUUID } from 'node:crypto'
+import { generateUniqueId } from './id'
 import { logger } from './logger'
 import { limitsConfig } from '~/configs/limits.config'
 
@@ -28,7 +28,7 @@ class ErrorLogger {
     additionalInfo?: Record<string, unknown>
   ): void {
     const log: ErrorLog = {
-      id: randomUUID(),
+      id: generateUniqueId(),
       timestamp: new Date(),
       message,
       stack: error?.stack,
