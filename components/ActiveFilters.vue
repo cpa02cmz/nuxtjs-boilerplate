@@ -41,7 +41,10 @@
         @click="handleRemove('search', searchQuery, $event)"
       >
         <span class="truncate max-w-[200px]">{{ searchQuery }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
             fill="none"
@@ -57,7 +60,10 @@
           </svg>
         </span>
         <!-- Shimmer effect on hover -->
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Category chips -->
@@ -70,7 +76,10 @@
       >
         <span class="text-gray-500 mr-1.5">Category:</span>
         <span class="truncate max-w-[150px]">{{ category }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
             fill="none"
@@ -85,7 +94,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Pricing model chips -->
@@ -98,7 +110,10 @@
       >
         <span class="text-green-600 mr-1.5">Pricing:</span>
         <span class="truncate max-w-[150px]">{{ pricing }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
             fill="none"
@@ -113,7 +128,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Difficulty chips -->
@@ -126,7 +144,10 @@
       >
         <span class="text-purple-600 mr-1.5">Difficulty:</span>
         <span class="truncate max-w-[150px]">{{ difficulty }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
             fill="none"
@@ -141,7 +162,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Technology chips -->
@@ -154,7 +178,10 @@
       >
         <span class="text-orange-600 mr-1.5">Tech:</span>
         <span class="truncate max-w-[150px]">{{ tech }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
             fill="none"
@@ -169,7 +196,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Tag chips -->
@@ -182,7 +212,10 @@
       >
         <span class="text-pink-600 mr-1.5">Tag:</span>
         <span class="truncate max-w-[150px]">{{ tag }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
             fill="none"
@@ -197,7 +230,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Benefit chips -->
@@ -210,7 +246,10 @@
       >
         <span class="text-teal-600 mr-1.5">Benefit:</span>
         <span class="truncate max-w-[150px]">{{ benefit }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
             fill="none"
@@ -225,7 +264,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Date range chip -->
@@ -238,7 +280,10 @@
       >
         <span class="text-indigo-600 mr-1.5">Date:</span>
         <span>{{ formatDateRange(selectedDateRange) }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
             fill="none"
@@ -253,7 +298,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Undo button for recently removed filter -->
@@ -278,14 +326,11 @@
             d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
           />
         </svg>
-        <span class="truncate max-w-[150px]"
-          >Undo {{ lastRemovedFilter.type }}</span
-        >
+        <span class="truncate max-w-[150px]">Undo {{ lastRemovedFilter.type }}</span>
         <kbd
           class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
           aria-hidden="true"
-          >Ctrl+Z</kbd
-        >
+        >Ctrl+Z</kbd>
         <!-- Progress bar for undo window -->
         <span
           class="undo-progress-bar"
@@ -305,8 +350,7 @@
       <kbd
         class="hidden sm:inline-block ml-1.5 px-1.5 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded group-hover:bg-gray-200 transition-colors"
         aria-hidden="true"
-        >Esc</kbd
-      >
+      >Esc</kbd>
     </button>
   </div>
 </template>
