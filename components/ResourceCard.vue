@@ -150,7 +150,7 @@
             :href="url"
             :target="newTab ? '_blank' : '_self'"
             rel="noopener noreferrer"
-            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 hover:scale-105 active:scale-95 transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 hover:scale-105 active:bg-gray-950 active:scale-95 transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
             :aria-label="`Visit ${title} - opens in ${newTab ? 'new tab' : 'same window'}`"
             @click="handleLinkClick"
           >
