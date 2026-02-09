@@ -81,7 +81,7 @@ describe('generateUniqueId', () => {
       const timestampLength = Date.now().toString(36).length
       const idParts = id.slice(timestampLength)
 
-      expect(idParts.length).toBe(5)
+      expect(idParts.length).toBe(8)
     })
   })
 
