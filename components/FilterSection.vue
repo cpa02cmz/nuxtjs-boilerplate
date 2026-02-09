@@ -34,7 +34,7 @@
               }"
               @change="toggleOption(option)"
               @click.stop
-            />
+            >
           </div>
           <label
             :for="`${id}-${option}`"
