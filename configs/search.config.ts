@@ -45,6 +45,22 @@ export const searchConfig = {
     benefits: parseFloat(process.env.SUGGESTION_WEIGHT_BENEFITS || '0.15'),
   },
 
+  // Weight multipliers for suggestions mode
+  suggestionMultipliers: {
+    // Multiplier for title weight in suggestions
+    title: parseFloat(process.env.SUGGESTION_MULTIPLIER_TITLE || '0.9'),
+    // Multiplier for description weight in suggestions
+    description: parseFloat(
+      process.env.SUGGESTION_MULTIPLIER_DESCRIPTION || '0.9'
+    ),
+    // Multiplier for tags weight in suggestions
+    tags: parseFloat(process.env.SUGGESTION_MULTIPLIER_TAGS || '0.4'),
+    // Multiplier for benefits in regular search (benefits weight * 1.33)
+    benefitsRegular: parseFloat(
+      process.env.SUGGESTION_MULTIPLIER_BENEFITS_REGULAR || '1.33'
+    ),
+  },
+
   // Suggestion-specific settings
   suggestions: {
     minMatchCharLength: parseInt(

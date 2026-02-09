@@ -1,8 +1,9 @@
 import { ref, onMounted } from 'vue'
+import { patternsConfig } from '~/configs/patterns.config'
 
 type Theme = 'light' | 'dark' | 'system'
 
-const STORAGE_KEY = 'theme-preference'
+const STORAGE_KEY = patternsConfig.storageKeys.themePreference
 
 export function useTheme() {
   const theme = ref<Theme>('system')
@@ -20,7 +21,7 @@ export function useTheme() {
     } else {
       // System preference
       const systemPrefersDark = window.matchMedia(
-        '(prefers-color-scheme: dark)'
+        patternsConfig.mediaQueries.prefersDark
       ).matches
       if (systemPrefersDark) {
         root.classList.add('dark')
@@ -66,7 +67,9 @@ export function useTheme() {
     updateThemeClass()
 
     // Listen for system preference changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const mediaQuery = window.matchMedia(
+      patternsConfig.mediaQueries.prefersDark
+    )
     const handleChange = () => {
       if (theme.value === 'system') {
         updateThemeClass()

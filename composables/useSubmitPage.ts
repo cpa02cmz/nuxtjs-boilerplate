@@ -7,6 +7,7 @@ import { validationConfig } from '~/configs/validation.config'
 import { uiConfig } from '~/configs/ui.config'
 import { apiConfig } from '~/configs/api.config'
 import { contentConfig } from '~/configs/content.config'
+import { patternsConfig } from '~/configs/patterns.config'
 
 interface FormData {
   title: string
@@ -191,7 +192,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
       submitError.value =
         errorData.data?.message ||
         errorData.message ||
-        'An unexpected error occurred'
+        patternsConfig.errors.genericErrorMessage
       logError(
         `Failed to submit resource: ${submitError.value}`,
         errorData.data instanceof Error
