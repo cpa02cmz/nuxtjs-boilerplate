@@ -95,6 +95,96 @@ export const webhooksConfig = {
         'resource.created, resource.updated, resource.deleted, resource.approved, resource.rejected'
     ),
   },
+
+  // Retry Presets - Flexy hates hardcoded retry configs!
+  presets: {
+    quick: {
+      maxRetries: parseInt(process.env.RETRY_PRESET_QUICK_MAX_RETRIES || '2'),
+      baseDelayMs: parseInt(
+        process.env.RETRY_PRESET_QUICK_BASE_DELAY_MS || '500'
+      ),
+      maxDelayMs: parseInt(
+        process.env.RETRY_PRESET_QUICK_MAX_DELAY_MS || '5000'
+      ),
+      backoffMultiplier: parseFloat(
+        process.env.RETRY_PRESET_QUICK_BACKOFF_MULTIPLIER || '2'
+      ),
+      jitterEnabled: process.env.RETRY_PRESET_QUICK_JITTER_ENABLED !== 'false',
+      jitterFactor: parseFloat(
+        process.env.RETRY_PRESET_QUICK_JITTER_FACTOR || '0.1'
+      ),
+    },
+    standard: {
+      maxRetries: parseInt(
+        process.env.RETRY_PRESET_STANDARD_MAX_RETRIES || '3'
+      ),
+      baseDelayMs: parseInt(
+        process.env.RETRY_PRESET_STANDARD_BASE_DELAY_MS || '1000'
+      ),
+      maxDelayMs: parseInt(
+        process.env.RETRY_PRESET_STANDARD_MAX_DELAY_MS || '30000'
+      ),
+      backoffMultiplier: parseFloat(
+        process.env.RETRY_PRESET_STANDARD_BACKOFF_MULTIPLIER || '2'
+      ),
+      jitterEnabled:
+        process.env.RETRY_PRESET_STANDARD_JITTER_ENABLED !== 'false',
+      jitterFactor: parseFloat(
+        process.env.RETRY_PRESET_STANDARD_JITTER_FACTOR || '0.1'
+      ),
+    },
+    slow: {
+      maxRetries: parseInt(process.env.RETRY_PRESET_SLOW_MAX_RETRIES || '5'),
+      baseDelayMs: parseInt(
+        process.env.RETRY_PRESET_SLOW_BASE_DELAY_MS || '2000'
+      ),
+      maxDelayMs: parseInt(
+        process.env.RETRY_PRESET_SLOW_MAX_DELAY_MS || '60000'
+      ),
+      backoffMultiplier: parseFloat(
+        process.env.RETRY_PRESET_SLOW_BACKOFF_MULTIPLIER || '2'
+      ),
+      jitterEnabled: process.env.RETRY_PRESET_SLOW_JITTER_ENABLED !== 'false',
+      jitterFactor: parseFloat(
+        process.env.RETRY_PRESET_SLOW_JITTER_FACTOR || '0.15'
+      ),
+    },
+    aggressive: {
+      maxRetries: parseInt(
+        process.env.RETRY_PRESET_AGGRESSIVE_MAX_RETRIES || '3'
+      ),
+      baseDelayMs: parseInt(
+        process.env.RETRY_PRESET_AGGRESSIVE_BASE_DELAY_MS || '100'
+      ),
+      maxDelayMs: parseInt(
+        process.env.RETRY_PRESET_AGGRESSIVE_MAX_DELAY_MS || '5000'
+      ),
+      backoffMultiplier: parseFloat(
+        process.env.RETRY_PRESET_AGGRESSIVE_BACKOFF_MULTIPLIER || '1.5'
+      ),
+      jitterEnabled:
+        process.env.RETRY_PRESET_AGGRESSIVE_JITTER_ENABLED !== 'false',
+      jitterFactor: parseFloat(
+        process.env.RETRY_PRESET_AGGRESSIVE_JITTER_FACTOR || '0.2'
+      ),
+    },
+    httpRetry: {
+      maxRetries: parseInt(process.env.RETRY_PRESET_HTTP_MAX_RETRIES || '3'),
+      baseDelayMs: parseInt(
+        process.env.RETRY_PRESET_HTTP_BASE_DELAY_MS || '1000'
+      ),
+      maxDelayMs: parseInt(
+        process.env.RETRY_PRESET_HTTP_MAX_DELAY_MS || '30000'
+      ),
+      backoffMultiplier: parseFloat(
+        process.env.RETRY_PRESET_HTTP_BACKOFF_MULTIPLIER || '2'
+      ),
+      jitterEnabled: process.env.RETRY_PRESET_HTTP_JITTER_ENABLED !== 'false',
+      jitterFactor: parseFloat(
+        process.env.RETRY_PRESET_HTTP_JITTER_FACTOR || '0.1'
+      ),
+    },
+  },
 } as const
 
 // Helper function to parse status codes

@@ -72,6 +72,13 @@ export const searchConfig = {
     maxZeroResultSearches: parseInt(process.env.SEARCH_CACHE_MAX_ZERO || '50'),
     maxPerformanceHistory: parseInt(process.env.SEARCH_CACHE_MAX_PERF || '100'),
   },
+
+  // Date Filter Ranges - Flexy hates hardcoded days!
+  dateRanges: {
+    lastWeek: parseInt(process.env.DATE_RANGE_LAST_WEEK_DAYS || '7'),
+    lastMonth: parseInt(process.env.DATE_RANGE_LAST_MONTH_DAYS || '30'),
+    lastYear: parseInt(process.env.DATE_RANGE_LAST_YEAR_DAYS || '365'),
+  },
 } as const
 
 export type SearchConfig = typeof searchConfig

@@ -249,45 +249,12 @@ export function isRetryableHttpCode(statusCode: number): boolean {
 }
 
 export const retryPresets = {
-  quick: {
-    maxRetries: 2,
-    baseDelayMs: 500,
-    maxDelayMs: 5000,
-    backoffMultiplier: 2,
-    jitterEnabled: true,
-    jitterFactor: 0.1,
-  },
-  standard: {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
-    jitterEnabled: true,
-    jitterFactor: 0.1,
-  },
-  slow: {
-    maxRetries: 5,
-    baseDelayMs: 2000,
-    maxDelayMs: 60000,
-    backoffMultiplier: 2,
-    jitterEnabled: true,
-    jitterFactor: 0.15,
-  },
-  aggressive: {
-    maxRetries: 3,
-    baseDelayMs: 100,
-    maxDelayMs: 5000,
-    backoffMultiplier: 1.5,
-    jitterEnabled: true,
-    jitterFactor: 0.2,
-  },
+  quick: webhooksConfig.presets.quick,
+  standard: webhooksConfig.presets.standard,
+  slow: webhooksConfig.presets.slow,
+  aggressive: webhooksConfig.presets.aggressive,
   httpRetry: {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
+    ...webhooksConfig.presets.httpRetry,
     retryableErrors: getRetryableHttpCodes(),
-    jitterEnabled: true,
-    jitterFactor: 0.1,
   },
 }

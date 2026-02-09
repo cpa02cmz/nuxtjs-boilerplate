@@ -1,11 +1,31 @@
 import { z } from 'zod'
-import { isValidCategory, isValidEventType } from './constants'
+import {
+  isValidCategory,
+  isValidEventType,
+  VALIDATION_CONFIG,
+} from './constants'
 
 export const validateUrlSchema = z.object({
   url: z.string().url('Invalid URL format'),
-  timeout: z.number().int().positive().optional().default(10000),
-  retries: z.number().int().min(0).max(10).optional().default(3),
-  retryDelay: z.number().int().nonnegative().optional().default(1000),
+  timeout: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .default(VALIDATION_CONFIG.urlValidation.timeout),
+  retries: z
+    .number()
+    .int()
+    .min(VALIDATION_CONFIG.urlValidation.retries.min)
+    .max(VALIDATION_CONFIG.urlValidation.retries.max)
+    .optional()
+    .default(VALIDATION_CONFIG.urlValidation.retries.default),
+  retryDelay: z
+    .number()
+    .int()
+    .nonnegative()
+    .optional()
+    .default(VALIDATION_CONFIG.urlValidation.retryDelay),
   useCircuitBreaker: z.boolean().optional().default(true),
 })
 
@@ -25,14 +45,27 @@ export const updateWebhookSchema = z.object({
 })
 
 export const createSubmissionSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
+  title: z
+    .string()
+    .min(VALIDATION_CONFIG.resource.name.minLength, 'Title is required')
+    .max(VALIDATION_CONFIG.resource.name.maxLength, 'Title too long'),
   description: z
     .string()
-    .min(10, 'Description must be at least 10 characters')
-    .max(2000, 'Description too long'),
+    .min(
+      VALIDATION_CONFIG.resource.description.minLength,
+      `Description must be at least ${VALIDATION_CONFIG.resource.description.minLength} characters`
+    )
+    .max(
+      VALIDATION_CONFIG.resource.description.maxLength,
+      'Description too long'
+    ),
   url: z.string().url('Invalid URL format'),
   category: z.string().min(1, 'Category is required'),
-  tags: z.array(z.string()).max(20, 'Too many tags').optional().default([]),
+  tags: z
+    .array(z.string())
+    .max(VALIDATION_CONFIG.resource.tags.maxCount, 'Too many tags')
+    .optional()
+    .default([]),
   pricingModel: z
     .enum(['Free', 'Freemium', 'Paid', 'Open Source'])
     .optional()
@@ -43,12 +76,12 @@ export const createSubmissionSchema = z.object({
     .default('Beginner'),
   technology: z
     .array(z.string())
-    .max(20, 'Too many technologies')
+    .max(VALIDATION_CONFIG.resource.features.maxCount, 'Too many technologies')
     .optional()
     .default([]),
   benefits: z
     .array(z.string())
-    .max(10, 'Too many benefits')
+    .max(VALIDATION_CONFIG.resource.features.maxCount, 'Too many benefits')
     .optional()
     .default([]),
 })
@@ -79,24 +112,37 @@ export const updateUserPreferencesSchema = z.object({
 export const searchQuerySchema = z.object({
   query: z
     .string()
-    .min(1, 'Search query is required')
-    .max(500, 'Query too long'),
+    .min(VALIDATION_CONFIG.search.query.minLength, 'Search query is required')
+    .max(VALIDATION_CONFIG.search.query.maxLength, 'Query too long'),
   category: z.string().optional(),
   difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']).optional(),
   pricingModel: z.enum(['Free', 'Freemium', 'Paid', 'Open Source']).optional(),
   technology: z.string().optional(),
-  limit: z.number().int().min(1).max(100).optional().default(20),
+  limit: z
+    .number()
+    .int()
+    .min(VALIDATION_CONFIG.search.limit.min)
+    .max(VALIDATION_CONFIG.search.limit.max)
+    .optional()
+    .default(VALIDATION_CONFIG.search.limit.default),
   offset: z.number().int().nonnegative().optional().default(0),
 })
 
 export const createApiKeySchema = z.object({
-  name: z.string().min(1, 'API key name is required').max(100, 'Name too long'),
+  name: z
+    .string()
+    .min(VALIDATION_CONFIG.apiKey.name.minLength, 'API key name is required')
+    .max(VALIDATION_CONFIG.apiKey.name.maxLength, 'Name too long'),
   scopes: z.array(z.string()).min(1, 'At least one scope is required'),
   expiresIn: z.number().int().positive().optional(),
 })
 
 export const updateApiKeySchema = z.object({
-  name: z.string().min(1).max(100).optional(),
+  name: z
+    .string()
+    .min(VALIDATION_CONFIG.apiKey.name.minLength)
+    .max(VALIDATION_CONFIG.apiKey.name.maxLength)
+    .optional(),
   scopes: z.array(z.string()).min(1).optional(),
   active: z.boolean().optional(),
 })
@@ -105,16 +151,22 @@ export const bulkStatusUpdateSchema = z.object({
   resourceIds: z
     .array(z.string())
     .min(1, 'At least one resource ID is required')
-    .max(100, 'Too many resources'),
+    .max(VALIDATION_CONFIG.bulk.maxResourceIds, 'Too many resources'),
   status: z.enum(['active', 'archived', 'deprecated']),
 })
 
 export const moderationActionSchema = z.object({
   reason: z
     .string()
-    .min(10, 'Reason must be at least 10 characters')
-    .max(500, 'Reason too long'),
-  notes: z.string().max(1000, 'Notes too long').optional(),
+    .min(
+      VALIDATION_CONFIG.moderation.reason.minLength,
+      `Reason must be at least ${VALIDATION_CONFIG.moderation.reason.minLength} characters`
+    )
+    .max(VALIDATION_CONFIG.moderation.reason.maxLength, 'Reason too long'),
+  notes: z
+    .string()
+    .max(VALIDATION_CONFIG.moderation.notes.maxLength, 'Notes too long')
+    .optional(),
 })
 
 export const triggerWebhookSchema = z.object({

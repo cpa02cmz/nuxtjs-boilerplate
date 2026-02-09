@@ -11,6 +11,7 @@
  */
 
 import type { Resource, FilterOptions } from '~/types/resource'
+import { searchConfig } from '~/configs/search.config'
 
 /**
  * Check if a filter array has active values
@@ -124,11 +125,11 @@ export const matchesDateRange = (
 
   switch (dateRange) {
     case 'lastWeek':
-      return daysDiff <= 7
+      return daysDiff <= searchConfig.dateRanges.lastWeek
     case 'lastMonth':
-      return daysDiff <= 30
+      return daysDiff <= searchConfig.dateRanges.lastMonth
     case 'lastYear':
-      return daysDiff <= 365
+      return daysDiff <= searchConfig.dateRanges.lastYear
     default:
       return true
   }

@@ -81,8 +81,13 @@ export const validationConfig = {
   // Search Validation
   search: {
     query: {
-      minLength: parseInt(process.env.SEARCH_QUERY_MIN_LENGTH || '2'),
-      maxLength: parseInt(process.env.SEARCH_QUERY_MAX_LENGTH || '100'),
+      minLength: parseInt(process.env.SEARCH_QUERY_MIN_LENGTH || '1'),
+      maxLength: parseInt(process.env.SEARCH_QUERY_MAX_LENGTH || '500'),
+    },
+    limit: {
+      min: parseInt(process.env.SEARCH_LIMIT_MIN || '1'),
+      max: parseInt(process.env.SEARCH_LIMIT_MAX || '100'),
+      default: parseInt(process.env.SEARCH_LIMIT_DEFAULT || '20'),
     },
   },
 
@@ -108,6 +113,41 @@ export const validationConfig = {
       warn: parseInt(process.env.QUALITY_PENALTY_WARN || '10'),
       pending: parseInt(process.env.QUALITY_PENALTY_PENDING || '5'),
     },
+  },
+
+  // API Key Validation
+  apiKey: {
+    name: {
+      minLength: parseInt(process.env.API_KEY_NAME_MIN_LENGTH || '1'),
+      maxLength: parseInt(process.env.API_KEY_NAME_MAX_LENGTH || '100'),
+    },
+  },
+
+  // Bulk Operations
+  bulk: {
+    maxResourceIds: parseInt(process.env.BULK_MAX_RESOURCE_IDS || '100'),
+  },
+
+  // Moderation Validation
+  moderation: {
+    reason: {
+      minLength: parseInt(process.env.MODERATION_REASON_MIN_LENGTH || '10'),
+      maxLength: parseInt(process.env.MODERATION_REASON_MAX_LENGTH || '500'),
+    },
+    notes: {
+      maxLength: parseInt(process.env.MODERATION_NOTES_MAX_LENGTH || '1000'),
+    },
+  },
+
+  // URL Validation
+  urlValidation: {
+    timeout: parseInt(process.env.URL_VALIDATION_TIMEOUT || '10000'),
+    retries: {
+      min: parseInt(process.env.URL_VALIDATION_RETRIES_MIN || '0'),
+      max: parseInt(process.env.URL_VALIDATION_RETRIES_MAX || '10'),
+      default: parseInt(process.env.URL_VALIDATION_RETRIES_DEFAULT || '3'),
+    },
+    retryDelay: parseInt(process.env.URL_VALIDATION_RETRY_DELAY || '1000'),
   },
 } as const
 

@@ -85,6 +85,11 @@ export {
 } from '~/configs/limits.config'
 
 export {
+  validationConfig as VALIDATION_CONFIG,
+  type ValidationConfig,
+} from '~/configs/validation.config'
+
+export {
   comparisonConfig as COMPARISON_CONFIG,
   type ComparisonConfig,
 } from '~/configs/comparison.config'
