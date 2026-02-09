@@ -13,30 +13,19 @@
 
       <!-- Search Bar -->
       <div class="mb-8">
-        <LazySearchBar
-          v-model="searchQuery"
-          @search="handleSearch"
-        />
+        <LazySearchBar v-model="searchQuery" @search="handleSearch" />
       </div>
 
       <!-- Loading State -->
-      <div
-        v-if="loading"
-        class="flex justify-center items-center py-12"
-      >
+      <div v-if="loading" class="flex justify-center items-center py-12">
         <div
           class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-800"
         />
       </div>
 
       <!-- Error State -->
-      <div
-        v-else-if="error"
-        class="text-center py-12"
-      >
-        <p class="text-red-600 text-lg">
-          Error loading resources: {{ error }}
-        </p>
+      <div v-else-if="error" class="text-center py-12">
+        <p class="text-red-600 text-lg">Error loading resources: {{ error }}</p>
       </div>
 
       <!-- No Results State -->
@@ -54,10 +43,7 @@
       />
 
       <!-- Results with Filters -->
-      <div
-        v-else
-        class="flex flex-col lg:flex-row gap-8"
-      >
+      <div v-else class="flex flex-col lg:flex-row gap-8">
         <!-- ARIA live region for search results -->
         <div
           id="search-results-status"
@@ -188,6 +174,8 @@ import ActiveFilters from '~/components/ActiveFilters.vue'
 import { seoConfig } from '~/configs/seo.config'
 import { contentConfig } from '~/configs/content.config'
 import { appConfig } from '~/configs/app.config'
+// Flexy hates hardcoded values! Import modular utility function
+import { getButtonLabel } from '~/utils/resourceHelper'
 
 definePageMeta({
   layout: 'default',
@@ -329,20 +317,6 @@ const handleSuggestionClick = (suggestion: string) => {
   updateSearchQuery(suggestion)
 }
 
-const getButtonLabel = (category: string) => {
-  switch (category.toLowerCase()) {
-    case 'ai tools':
-      return 'Explore AI Tools'
-    case 'vps':
-      return 'Get VPS'
-    case 'web hosting':
-      return 'Find Hosting'
-    case 'databases':
-      return 'Explore Databases'
-    case 'cdn':
-      return 'Get CDN'
-    default:
-      return 'Get Free Access'
-  }
-}
+// Flexy hates hardcoded values! Using imported getButtonLabel from utils/resourceHelper.ts
+// which reads from uiConfig.resourceCard.categoryButtonLabels
 </script>

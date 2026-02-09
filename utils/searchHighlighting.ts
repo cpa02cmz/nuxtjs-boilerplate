@@ -1,4 +1,5 @@
 import { sanitizeAndHighlight } from '~/utils/sanitize'
+import { searchConfig } from '~/configs/search.config'
 
 export const highlightSearchTerms = (
   text: string,
@@ -12,7 +13,8 @@ export const highlightSearchTerms = (
 export const createSearchSnippet = (
   text: string,
   searchQuery: string,
-  maxLength: number = 160
+  // Flexy hates hardcoded values! Using config-based default.
+  maxLength: number = searchConfig.behavior.maxSnippetLength
 ): string => {
   if (!searchQuery || !text) return text?.substring(0, maxLength) || ''
 

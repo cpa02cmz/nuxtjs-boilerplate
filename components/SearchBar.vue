@@ -150,6 +150,7 @@ import { useResourceData } from '~/composables/useResourceData'
 import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { searchConfig } from '~/configs/search.config'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   modelValue: string
@@ -388,7 +389,7 @@ if (typeof window !== 'undefined') {
         showFocusPulse.value = true
         setTimeout(() => {
           showFocusPulse.value = false
-        }, 600)
+        }, animationConfig.focusPulse.durationMs)
       }
     }
   }
@@ -430,7 +431,8 @@ if (typeof window !== 'undefined') {
 }
 
 .animate-focus-pulse {
-  animation: focus-pulse 0.6s ease-out;
+  animation: focus-pulse v-bind('animationConfig.focusPulse.durationCss')
+    ease-out;
 }
 
 /* Respect reduced motion preferences for accessibility */

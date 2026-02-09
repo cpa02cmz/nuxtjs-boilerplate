@@ -66,6 +66,10 @@
 <script setup lang="ts">
 // Skeleton loading component for ResourceCard
 // Enhanced with wave shimmer animation for better perceived performance
+import { animationConfig } from '~/configs/animation.config'
+
+// Destructure config values for template use
+const { skeleton } = animationConfig
 </script>
 
 <style scoped>
@@ -73,53 +77,55 @@
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
-    #e5e7eb 0%,
-    #f3f4f6 25%,
-    #e5e7eb 50%,
-    #f3f4f6 75%,
-    #e5e7eb 100%
+    v-bind('skeleton.colors.primary') 0%,
+    v-bind('skeleton.colors.secondary') 25%,
+    v-bind('skeleton.colors.primary') 50%,
+    v-bind('skeleton.colors.secondary') 75%,
+    v-bind('skeleton.colors.primary') 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer v-bind('skeleton.shimmerDurationSec + "s"') ease-in-out
+    infinite;
 }
 
 .skeleton-icon {
   background: linear-gradient(
     90deg,
-    #d1d5db 0%,
-    #e5e7eb 25%,
-    #d1d5db 50%,
-    #e5e7eb 75%,
-    #d1d5db 100%
+    v-bind('skeleton.colors.icon') 0%,
+    v-bind('skeleton.colors.primary') 25%,
+    v-bind('skeleton.colors.icon') 50%,
+    v-bind('skeleton.colors.primary') 75%,
+    v-bind('skeleton.colors.icon') 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer v-bind('skeleton.shimmerDurationSec + "s"') ease-in-out
+    infinite;
 }
 
-/* Staggered animation delays for wave effect */
+/* Staggered animation delays for wave effect - Flexy hates hardcoded values! */
 .skeleton-item-1 {
-  animation-delay: 0ms;
+  animation-delay: v-bind('skeleton.staggerDelaysMs[0] + "ms"');
 }
 .skeleton-item-2 {
-  animation-delay: 75ms;
+  animation-delay: v-bind('skeleton.staggerDelaysMs[1] + "ms"');
 }
 .skeleton-item-3 {
-  animation-delay: 150ms;
+  animation-delay: v-bind('skeleton.staggerDelaysMs[2] + "ms"');
 }
 .skeleton-item-4 {
-  animation-delay: 225ms;
+  animation-delay: v-bind('skeleton.staggerDelaysMs[3] + "ms"');
 }
 .skeleton-item-5 {
-  animation-delay: 300ms;
+  animation-delay: v-bind('skeleton.staggerDelaysMs[4] + "ms"');
 }
 .skeleton-item-6 {
-  animation-delay: 375ms;
+  animation-delay: v-bind('skeleton.staggerDelaysMs[5] + "ms"');
 }
 .skeleton-item-7 {
-  animation-delay: 450ms;
+  animation-delay: v-bind('skeleton.staggerDelaysMs[6] + "ms"');
 }
 .skeleton-item-8 {
-  animation-delay: 525ms;
+  animation-delay: v-bind('skeleton.staggerDelaysMs[7] + "ms"');
 }
 
 @keyframes shimmer {
@@ -133,7 +139,8 @@
 
 /* Pulse animation for reduced motion fallback */
 .skeleton-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse v-bind('skeleton.pulseDurationSec + "s"')
+    cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes pulse {

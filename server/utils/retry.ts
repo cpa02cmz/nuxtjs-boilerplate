@@ -240,14 +240,18 @@ export async function retryWithResult<T>(
   }
 }
 
+import { httpConfig } from '~/configs/http.config'
+
+// Flexy hates hardcoded values! Using config-based retryable HTTP codes
 export function getRetryableHttpCodes(): number[] {
-  return [408, 429, 500, 502, 503, 504]
+  return [...httpConfig.retry.retryableStatusCodes]
 }
 
 export function isRetryableHttpCode(statusCode: number): boolean {
   return getRetryableHttpCodes().includes(statusCode)
 }
 
+// Flexy hates hardcoded values! Using config-based defaults for standard preset
 export const retryPresets = {
   quick: {
     maxRetries: 2,
@@ -258,13 +262,13 @@ export const retryPresets = {
     jitterFactor: 0.1,
   },
   standard: {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
+    maxRetries: httpConfig.api.maxRetries,
+    baseDelayMs: httpConfig.retry.baseDelayMs,
+    maxDelayMs: httpConfig.retry.maxDelayMs,
+    backoffMultiplier: httpConfig.retry.backoffMultiplier,
     retryableErrors: getRetryableHttpCodes(),
-    jitterEnabled: true,
-    jitterFactor: 0.1,
+    jitterEnabled: httpConfig.retry.jitterEnabled,
+    jitterFactor: httpConfig.retry.jitterFactor,
   },
   slow: {
     maxRetries: 5,

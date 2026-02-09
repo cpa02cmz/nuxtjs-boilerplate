@@ -1,6 +1,14 @@
 // Security Configuration - CSP, Headers, and Security Policies
 // Flexy hates hardcoded values! All security settings are now configurable.
 
+import {
+  SANITIZE_FORBID_TAGS,
+  SANITIZE_FORBID_ATTR,
+  SANITIZE_FORBID_CONTENTS,
+  SANITIZE_ALLOWED_TAGS,
+  SANITIZE_ALLOWED_ATTR,
+} from './sanitization.config'
+
 // Parse environment variable for allowed origins
 const parseAllowedOrigins = (): string[] => {
   const origins =
@@ -93,6 +101,25 @@ export const securityConfig = {
     quality: parseInt(process.env.IMAGE_QUALITY || '80'),
     formats: parseImageFormats(process.env.IMAGE_FORMATS || 'avif, jpeg, png'),
     densities: parseDensities(process.env.IMAGE_DENSITIES || '1, 2'),
+  },
+
+  // XSS Sanitization Configuration - Flexy hates hardcoded security rules!
+  sanitize: {
+    // Tags to forbid during sanitization
+    forbidTags: SANITIZE_FORBID_TAGS,
+    // Attributes to forbid during sanitization
+    forbidAttrs: SANITIZE_FORBID_ATTR,
+    // Contents to forbid during sanitization
+    forbidContents: SANITIZE_FORBID_CONTENTS,
+    // Tags explicitly allowed (whitelist approach)
+    allowedTags: SANITIZE_ALLOWED_TAGS,
+    // Attributes explicitly allowed
+    allowedAttrs: SANITIZE_ALLOWED_ATTR,
+    // Enable DOM sanitization
+    sanitizeDom: process.env.SANITIZE_DOM !== 'false',
+    // Highlight CSS class for search results
+    highlightClass:
+      process.env.SEARCH_HIGHLIGHT_CLASS || 'bg-yellow-200 text-gray-900',
   },
 } as const
 

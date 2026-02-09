@@ -99,6 +99,25 @@ export const httpConfig = {
     maxRedirects: parseInt(process.env.HTTP_MAX_REDIRECTS || '5'),
     maxRetries: parseInt(process.env.HTTP_MAX_RETRIES || '3'),
   },
+
+  // Retry configuration - Flexy hates hardcoded retry codes!
+  retry: {
+    // HTTP status codes that are considered retryable
+    retryableStatusCodes: [
+      408, // Request Timeout
+      429, // Too Many Requests
+      500, // Internal Server Error
+      502, // Bad Gateway
+      503, // Service Unavailable
+      504, // Gateway Timeout
+    ] as const,
+    // Default retry delays
+    baseDelayMs: parseInt(process.env.RETRY_BASE_DELAY_MS || '1000'),
+    maxDelayMs: parseInt(process.env.RETRY_MAX_DELAY_MS || '30000'),
+    backoffMultiplier: parseInt(process.env.RETRY_BACKOFF_MULTIPLIER || '2'),
+    jitterEnabled: process.env.RETRY_JITTER_ENABLED !== 'false',
+    jitterFactor: parseFloat(process.env.RETRY_JITTER_FACTOR || '0.1'),
+  },
 } as const
 
 // Type exports
