@@ -44,6 +44,16 @@ export default defineNitroPlugin(nitroApp => {
         return
       }
 
+      // Check if this path requires CSRF protection
+      const requiresProtection = csrfConfig.protectedPaths.prefixes.some(
+        prefix => path.startsWith(prefix)
+      )
+
+      // Skip CSRF processing for non-protected paths
+      if (!requiresProtection) {
+        return
+      }
+
       // Get or create CSRF token
       let csrfToken = getCookie(event, csrfConfig.cookie.name)
 

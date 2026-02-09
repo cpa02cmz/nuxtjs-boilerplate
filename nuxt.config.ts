@@ -226,9 +226,8 @@ export default defineNuxtConfig({
           href: 'https://fonts.gstatic.com',
           crossorigin: 'anonymous',
         },
-        // Prefetch resources that might be needed later
-        { rel: 'prefetch', href: '/api/resources.json' },
-        { rel: 'prefetch', href: '/api/submissions' },
+        // Prefetch static resources only - API endpoints should not be prefetched
+        // { rel: 'prefetch', href: '/api/resources.json' }, // DISABLED: Causes rate limiting issues
         // Note: Critical CSS is automatically injected by Nuxt
         // Do not preload /_nuxt/ directory as it causes 404 errors
         // DNS prefetch for external resources
