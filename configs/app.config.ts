@@ -23,6 +23,13 @@ export const appConfig = {
     enableSearch: process.env.ENABLE_SEARCH !== 'false',
     enableBookmarks: process.env.ENABLE_BOOKMARKS !== 'false',
   },
+
+  // Analytics Settings
+  analytics: {
+    defaultUserAgent:
+      process.env.ANALYTICS_DEFAULT_USER_AGENT || 'test-environment',
+    defaultReferrer: process.env.ANALYTICS_DEFAULT_REFERRER || '',
+  },
 } as const
 
 export type AppConfig = typeof appConfig
