@@ -1,7 +1,11 @@
 import { retryWithResult, retryPresets } from '~/server/utils/retry'
 import { getCircuitBreaker } from '~/server/utils/circuit-breaker'
 import { TIMING } from '~/server/utils/constants'
-import { httpConfig, isSuccessStatus } from '~/configs/http.config'
+import {
+  httpConfig,
+  isSuccessStatus,
+  isRedirectStatus,
+} from '~/configs/http.config'
 
 export interface UrlValidationResult {
   url: string
@@ -187,7 +191,9 @@ async function fetchUrlWithTimeout(
         url,
         status: getResponse.status,
         statusText: getResponse.statusText,
-        isAccessible: isSuccessStatus(getResponse.status),
+        isAccessible:
+          isSuccessStatus(getResponse.status) ||
+          isRedirectStatus(getResponse.status),
         responseTime: getResponseTime,
         timestamp: new Date().toISOString(),
       }
@@ -197,7 +203,8 @@ async function fetchUrlWithTimeout(
       url,
       status: response.status,
       statusText: response.statusText,
-      isAccessible: isSuccessStatus(response.status),
+      isAccessible:
+        isSuccessStatus(response.status) || isRedirectStatus(response.status),
       responseTime,
       timestamp: new Date().toISOString(),
     }
@@ -220,7 +227,9 @@ async function fetchUrlWithTimeout(
         url,
         status: getResponse.status,
         statusText: getResponse.statusText,
-        isAccessible: isSuccessStatus(getResponse.status),
+        isAccessible:
+          isSuccessStatus(getResponse.status) ||
+          isRedirectStatus(getResponse.status),
         responseTime,
         timestamp: new Date().toISOString(),
       }
@@ -268,6 +277,6 @@ export async function validateUrls(
  */
 export function isUrlHealthy(status: number | null): boolean {
   if (status === null) return false
-  // Consider 2xx and 3xx status codes as healthy
-  return isSuccessStatus(status)
+  // Consider 2xx and 3xx status codes as healthy (accessible)
+  return isSuccessStatus(status) || isRedirectStatus(status)
 }
