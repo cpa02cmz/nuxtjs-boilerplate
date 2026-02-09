@@ -1,5 +1,6 @@
 import type { WebhookQueueItem } from '~/types/webhook'
 import { webhookStorage } from './webhookStorage'
+import { webhooksConfig } from '~/configs/webhooks.config'
 import { logger } from '~/utils/logger'
 
 export class WebhookQueueManager {
@@ -61,7 +62,7 @@ export class WebhookQueueManager {
     this.isProcessing = true
     this.processorInterval = setInterval(() => {
       this.processQueue()
-    }, 5000)
+    }, webhooksConfig.queue.processorIntervalMs)
   }
 
   stopProcessor(): void {
