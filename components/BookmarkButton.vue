@@ -58,6 +58,7 @@
 <script setup lang="ts">
 import { useBookmarks } from '~/composables/useBookmarks'
 import { computed, ref } from 'vue'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   resourceId?: string
@@ -83,6 +84,9 @@ const bookmarkStatus = ref('')
 const isAnimating = ref(false)
 const buttonRef = ref<HTMLButtonElement | null>(null)
 
+// Flexy hates hardcoded values! Using configurable animation durations.
+const { heartPopDurationMs, statusClearDelayMs } = animationConfig.bookmark
+
 const handleBookmarkToggle = () => {
   const wasBookmarked = isBookmarked.value
 
@@ -91,7 +95,7 @@ const handleBookmarkToggle = () => {
     isAnimating.value = true
     setTimeout(() => {
       isAnimating.value = false
-    }, 400)
+    }, heartPopDurationMs)
   }
 
   toggleBookmark({
@@ -105,29 +109,41 @@ const handleBookmarkToggle = () => {
 
   setTimeout(() => {
     bookmarkStatus.value = ''
-  }, 1000)
+  }, statusClearDelayMs)
 }
 </script>
 
 <style scoped>
-/* Bookmarked state pulse animation */
+/* Bookmarked state pulse animation - Flexy hates hardcoded values! */
 .bookmarked {
-  animation: subtle-pulse 2s ease-in-out infinite;
+  animation: subtle-pulse
+    v-bind('`${animationConfig.bookmark.pulseDurationSec}s`') ease-in-out
+    infinite;
 }
 
 @keyframes subtle-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.2);
+    box-shadow: 0 0 0 0
+      rgba(
+        234,
+        179,
+        8,
+        v-bind('animationConfig.bookmark.pulseShadow.startOpacity')
+      );
   }
   50% {
-    box-shadow: 0 0 0 4px rgba(234, 179, 8, 0);
+    box-shadow: 0 0 0
+      v-bind('`${animationConfig.bookmark.pulseShadow.endSpread}px`')
+      rgba(234, 179, 8, 0);
   }
 }
 
 /* Heart pop animation when bookmarking */
 .animate-heart-pop {
-  animation: heart-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: heart-pop
+    v-bind('`${animationConfig.bookmark.heartPopDurationMs}ms`')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes heart-pop {
@@ -135,7 +151,7 @@ const handleBookmarkToggle = () => {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.3);
+    transform: scale(v-bind('animationConfig.bookmark.heartPopScale'));
   }
   100% {
     transform: scale(1);
@@ -144,7 +160,9 @@ const handleBookmarkToggle = () => {
 
 /* Bounce scale animation for button */
 .animate-bounce-scale {
-  animation: bounce-scale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: bounce-scale
+    v-bind('`${animationConfig.bookmark.bounceScaleDurationMs}ms`')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes bounce-scale {
@@ -152,10 +170,10 @@ const handleBookmarkToggle = () => {
     transform: scale(1);
   }
   40% {
-    transform: scale(0.9);
+    transform: scale(v-bind('animationConfig.bookmark.bounceScale.shrink'));
   }
   80% {
-    transform: scale(1.05);
+    transform: scale(v-bind('animationConfig.bookmark.bounceScale.expand'));
   }
   100% {
     transform: scale(1);

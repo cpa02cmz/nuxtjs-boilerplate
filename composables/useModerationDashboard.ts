@@ -4,6 +4,7 @@ import { logError } from '~/utils/errorLogger'
 import type { ApiClient } from '~/utils/api-client'
 import { limitsConfig } from '~/configs/limits.config'
 import { iconsConfig } from '~/configs/icons.config'
+import { dateConfig } from '~/configs/date.config'
 
 export interface ActivityItem {
   id: string
@@ -54,30 +55,34 @@ export const useModerationDashboard = (
       rejectedCount.value = limitsConfig.moderation.mockRejectedCount
       flaggedCount.value = limitsConfig.moderation.mockFlaggedCount
 
+      // Flexy hates hardcoded timestamps! Using configurable values.
+      const { msPerHour } = dateConfig.intervals
+      const { recent, moderate, older, oldest } = dateConfig.activityTiming
+
       recentActivity.value = [
         {
           id: '1',
           type: 'approve',
           message: 'Approved "React Best Practices Guide" submission',
-          timestamp: new Date(Date.now() - 3600000).toISOString(),
+          timestamp: new Date(Date.now() - recent * msPerHour).toISOString(),
         },
         {
           id: '2',
           type: 'reject',
           message: 'Rejected "Fake Resource" submission - spam',
-          timestamp: new Date(Date.now() - 7200000).toISOString(),
+          timestamp: new Date(Date.now() - moderate * msPerHour).toISOString(),
         },
         {
           id: '3',
           type: 'flag',
           message: 'Resource "Old Tool" flagged for being deprecated',
-          timestamp: new Date(Date.now() - 10800000).toISOString(),
+          timestamp: new Date(Date.now() - older * msPerHour).toISOString(),
         },
         {
           id: '4',
           type: 'submit',
           message: 'New submission "Vue 3 Components Library" received',
-          timestamp: new Date(Date.now() - 14400000).toISOString(),
+          timestamp: new Date(Date.now() - oldest * msPerHour).toISOString(),
         },
       ]
     } catch (err) {
