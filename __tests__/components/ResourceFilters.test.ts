@@ -217,7 +217,7 @@ describe('ResourceFilters', () => {
     })
 
     // Testing category should show 5, others should show 0
-    const countElements = wrapper.findAll('span.ml-2.text-xs')
+    const countElements = wrapper.findAll('span.mr-2.text-xs')
     expect(countElements[0].text()).toBe('5') // Testing
     expect(countElements[1].text()).toBe('0') // Development (not in counts)
     expect(countElements[2].text()).toBe('0') // Design (not in counts)
@@ -229,7 +229,7 @@ describe('ResourceFilters', () => {
     })
 
     // All counts should be 0 when no facetCounts are provided
-    const countElements = wrapper.findAll('span.ml-2.text-xs')
+    const countElements = wrapper.findAll('span.mr-2.text-xs')
     countElements.forEach(countElement => {
       expect(countElement.text()).toBe('0')
     })

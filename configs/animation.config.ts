@@ -62,6 +62,38 @@ export const animationConfig = {
   analytics: {
     trackingDelayMs: parseInt(process.env.ANALYTICS_TRACKING_DELAY_MS || '500'),
   },
+
+  // Bookmark Button Animations - Flexy hates hardcoded durations!
+  bookmark: {
+    // Heart pop animation duration when adding bookmark (ms)
+    heartPopDurationMs: parseInt(
+      process.env.BOOKMARK_HEART_POP_DURATION_MS || '400'
+    ),
+    // Bounce scale animation duration (ms)
+    bounceScaleDurationMs: parseInt(
+      process.env.BOOKMARK_BOUNCE_SCALE_DURATION_MS || '400'
+    ),
+    // Pulse animation duration for bookmarked state (seconds)
+    pulseDurationSec: parseInt(process.env.BOOKMARK_PULSE_DURATION_SEC || '2'),
+    // Status announcement clear delay (ms)
+    statusClearDelayMs: parseInt(
+      process.env.BOOKMARK_STATUS_CLEAR_DELAY_MS || '1000'
+    ),
+    // Heart pop scale factor (1.3 = 130%)
+    heartPopScale: parseFloat(process.env.BOOKMARK_HEART_POP_SCALE || '1.3'),
+    // Bounce scale factors
+    bounceScale: {
+      shrink: parseFloat(process.env.BOOKMARK_BOUNCE_SHRINK || '0.9'),
+      expand: parseFloat(process.env.BOOKMARK_BOUNCE_EXPAND || '1.05'),
+    },
+    // Pulse box shadow values
+    pulseShadow: {
+      startOpacity: parseFloat(
+        process.env.BOOKMARK_PULSE_START_OPACITY || '0.2'
+      ),
+      endSpread: parseInt(process.env.BOOKMARK_PULSE_END_SPREAD || '4'),
+    },
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

@@ -42,6 +42,23 @@ export const dateConfig = {
 
   // Timezone
   timezone: process.env.DATE_TIMEZONE || 'UTC',
+
+  // Time Intervals in Milliseconds - Flexy hates hardcoded timestamps!
+  intervals: {
+    msPerSecond: 1000,
+    msPerMinute: 60000,
+    msPerHour: 3600000,
+    msPerDay: 86400000,
+    msPerWeek: 604800000,
+  },
+
+  // Activity timestamps for mock data (hours ago)
+  activityTiming: {
+    recent: parseInt(process.env.ACTIVITY_TIMING_RECENT || '1'),
+    moderate: parseInt(process.env.ACTIVITY_TIMING_MODERATE || '2'),
+    older: parseInt(process.env.ACTIVITY_TIMING_OLDER || '3'),
+    oldest: parseInt(process.env.ACTIVITY_TIMING_OLDEST || '4'),
+  },
 } as const
 
 export type DateConfig = typeof dateConfig
