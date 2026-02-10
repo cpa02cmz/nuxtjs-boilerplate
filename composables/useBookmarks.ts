@@ -50,7 +50,13 @@ export const useBookmarks = () => {
     }
   }
 
-  // Initialize only on client-side to avoid hydration mismatch
+  // Initialize on client-side immediately if not already initialized
+  // This handles both SSR (onMounted) and test environments
+  if (typeof window !== 'undefined' && bookmarks.value.length === 0) {
+    initBookmarks()
+  }
+
+  // Also initialize on mount for SSR hydration safety
   onMounted(() => {
     initBookmarks()
   })
