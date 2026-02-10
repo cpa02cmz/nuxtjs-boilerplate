@@ -34,6 +34,11 @@ export const apiConfig = {
     byId: (id: string) => `/api/resources/${id}`,
     history: (id: string) => `/api/resources/${id}/history`,
     analytics: (id: string) => `/api/analytics/resource/${id}`,
+    // Sort defaults - Flexy hates hardcoded sort values!
+    defaultSortField: process.env.API_RESOURCES_SORT_FIELD || 'popularity',
+    defaultSortOrder:
+      (process.env.API_RESOURCES_SORT_ORDER as 'asc' | 'desc') || 'desc',
+    validSortFields: ['title', 'dateAdded', 'popularity'] as const,
   },
 
   // Submission endpoints

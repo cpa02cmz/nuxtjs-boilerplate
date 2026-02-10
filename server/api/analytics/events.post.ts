@@ -14,6 +14,7 @@ import {
 } from '~/server/utils/api-error'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { logger } from '~/utils/logger'
+import { rateLimitConfig } from '~/configs/rate-limit.config'
 
 /**
  * Hashes an IP address for privacy protection
@@ -96,6 +97,7 @@ export default defineEventHandler(async event => {
     const rateLimitReset = event.node.res?.getHeader('X-RateLimit-Reset')
 
     // Use standardized success response helper
+    // Flexy hates hardcoded values! Using rateLimitConfig for fallback
     return sendSuccessResponse(
       event,
       {
@@ -104,7 +106,9 @@ export default defineEventHandler(async event => {
           remaining: rateLimitRemaining
             ? parseInt(rateLimitRemaining as string, 10)
             : 0,
-          limit: rateLimitLimit ? parseInt(rateLimitLimit as string, 10) : 10,
+          limit: rateLimitLimit
+            ? parseInt(rateLimitLimit as string, 10)
+            : rateLimitConfig.defaults.maxRequests,
           reset: rateLimitReset
             ? new Date(
                 parseInt(rateLimitReset as string, 10) * 1000
