@@ -209,7 +209,6 @@ export default defineNuxtConfig({
 
   // Image optimization configuration
   image: {
-    provider: 'ipx', // Explicitly set provider to prevent duplicate key warning
     quality: securityConfig.image.quality,
     format: securityConfig.image.formats as (
       | 'webp'
