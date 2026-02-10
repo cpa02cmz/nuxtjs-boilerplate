@@ -456,7 +456,7 @@ if (typeof window !== 'undefined') {
     if (!isFocused.value && !props.modelValue && !prefersReducedMotion.value) {
       showIdlePulse.value = true
     }
-  }, uiConfig.timing.idlePulseDelayMs || 3000)
+  }, uiConfig.timing.idlePulseDelayMs)
 
   // Add event listeners
   window.addEventListener('saved-search-added', savedSearchAddedHandler)

@@ -4,6 +4,7 @@ import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { handleApiRouteError } from '~/server/utils/api-response'
 import { RSS_CONFIG } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
+import { DEFAULT_DEV_URL } from '~/configs/url.config'
 
 /**
  * GET /api/v1/rss
@@ -44,9 +45,7 @@ export default defineEventHandler(async event => {
 function generateRssFeed(resources: Resource[]): string {
   const config = useRuntimeConfig()
   const siteUrl =
-    config.public.siteUrl ||
-    config.public.canonicalUrl ||
-    'http://localhost:3000'
+    config.public.siteUrl || config.public.canonicalUrl || DEFAULT_DEV_URL
   // Flexy hates hardcoded values! Using contentConfig for RSS feed metadata
   const title = contentConfig.rss.title
   const description = contentConfig.rss.description
