@@ -1,15 +1,36 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-lg font-medium text-gray-900">
-        Filters
-      </h2>
+      <h2 class="text-lg font-medium text-gray-900">Filters</h2>
       <button
-        class="text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
-        aria-label="Reset all filters"
-        @click="onResetFilters"
+        :class="[
+          'text-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded px-2 py-1 rounded',
+          resetConfirming
+            ? 'text-green-600 bg-green-50'
+            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
+        ]"
+        :aria-label="
+          resetConfirming ? 'Filters reset successfully' : 'Reset all filters'
+        "
+        @click="handleResetWithFeedback"
       >
-        Reset all
+        <span class="flex items-center">
+          <svg
+            v-if="resetConfirming"
+            class="w-4 h-4 mr-1.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          {{ resetConfirming ? 'Reset!' : 'Reset all' }}
+        </span>
       </button>
     </div>
 
@@ -81,18 +102,13 @@
     />
 
     <fieldset class="mb-6">
-      <legend class="text-sm font-medium text-gray-900 mb-3">
-        Date Added
-      </legend>
+      <legend class="text-sm font-medium text-gray-900 mb-3">Date Added</legend>
       <div
         role="radiogroup"
         aria-label="Filter by date added"
         class="space-y-2"
       >
-        <label
-          class="flex items-center"
-          :for="'date-anytime'"
-        >
+        <label class="flex items-center" :for="'date-anytime'">
           <input
             id="date-anytime"
             type="radio"
@@ -101,13 +117,10 @@
             :checked="selectedDateRange === 'anytime'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('anytime')"
-          >
+          />
           <span class="ml-2 text-sm text-gray-800">Any time</span>
         </label>
-        <label
-          class="flex items-center"
-          :for="'date-last-week'"
-        >
+        <label class="flex items-center" :for="'date-last-week'">
           <input
             id="date-last-week"
             type="radio"
@@ -116,13 +129,10 @@
             :checked="selectedDateRange === 'lastWeek'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastWeek')"
-          >
+          />
           <span class="ml-2 text-sm text-gray-800">Last week</span>
         </label>
-        <label
-          class="flex items-center"
-          :for="'date-last-month'"
-        >
+        <label class="flex items-center" :for="'date-last-month'">
           <input
             id="date-last-month"
             type="radio"
@@ -131,13 +141,10 @@
             :checked="selectedDateRange === 'lastMonth'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastMonth')"
-          >
+          />
           <span class="ml-2 text-sm text-gray-800">Last month</span>
         </label>
-        <label
-          class="flex items-center"
-          :for="'date-last-year'"
-        >
+        <label class="flex items-center" :for="'date-last-year'">
           <input
             id="date-last-year"
             type="radio"
@@ -146,7 +153,7 @@
             :checked="selectedDateRange === 'lastYear'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastYear')"
-          >
+          />
           <span class="ml-2 text-sm text-gray-800">Last year</span>
         </label>
       </div>
@@ -163,7 +170,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import SavedSearches from '~/components/SavedSearches.vue'
 import FilterSection from '~/components/FilterSection.vue'
 
@@ -220,6 +227,27 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<Emits>()
+
+const resetConfirming = ref(false)
+let resetTimeout: ReturnType<typeof setTimeout> | null = null
+
+const handleResetWithFeedback = () => {
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    navigator.vibrate(20)
+  }
+
+  onResetFilters()
+
+  resetConfirming.value = true
+
+  if (resetTimeout) {
+    clearTimeout(resetTimeout)
+  }
+
+  resetTimeout = setTimeout(() => {
+    resetConfirming.value = false
+  }, 1500)
+}
 
 const toggleCategory = (category: string) => {
   emit('toggle-category', category)
