@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="suggestions.length > 0 || searchHistory.length > 0"
+    v-if="suggestions.length > 0 || searchHistory.length > 0 || hasQuery"
     :id="id"
     :class="[
       'absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 overflow-auto border border-gray-200',
@@ -133,6 +133,40 @@
           {{ contentConfig.search.suggestions.clearHistory }}
         </button>
       </div>
+
+      <!-- Empty State - Show when no suggestions or history but user has typed -->
+      <div
+        v-if="suggestions.length === 0 && searchHistory.length === 0 && hasQuery"
+        class="px-4 py-6 text-center"
+        role="status"
+        aria-live="polite"
+      >
+        <svg
+          class="mx-auto h-10 w-10 text-gray-300 mb-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <p class="text-sm text-gray-500 mb-3">
+          No matching resources found
+        </p>
+        <button
+          type="button"
+          class="text-sm text-blue-600 hover:text-blue-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-3 py-1.5 transition-colors duration-150"
+          @click="handleClearSearch"
+        >
+          Clear search
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -155,6 +189,7 @@ interface Props {
   visible: boolean
   id?: string
   focusedIndex?: number
+  hasQuery?: boolean
 }
 
 interface Emits {
@@ -162,12 +197,14 @@ interface Emits {
   (event: 'select-history', history: string): void
   (event: 'clear-history'): void
   (event: 'navigate', direction: 'up' | 'down'): void
+  (event: 'clear-search'): void
 }
 const props = withDefaults(defineProps<Props>(), {
   suggestions: () => [],
   searchHistory: () => [],
   id: undefined,
   focusedIndex: -1,
+  hasQuery: false,
 })
 const emit = defineEmits<Emits>()
 
@@ -216,6 +253,10 @@ const selectHistory = (history: string) => {
 
 const clearHistory = () => {
   emit('clear-history')
+}
+
+const handleClearSearch = () => {
+  emit('clear-search')
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {
