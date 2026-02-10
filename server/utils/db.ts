@@ -86,12 +86,12 @@ function createPrismaClient(): PrismaClient {
 function createRetryProxy(retryFn: () => PrismaClient): PrismaClient {
   let client: PrismaClient | null = null
 
-  return new Proxy({} as PrismaClient, {
+  return new Proxy({} as unknown as PrismaClient, {
     get(target, prop: string | symbol) {
       if (!client) {
         client = retryFn()
       }
-      return (client as Record<string | symbol, unknown>)[prop]
+      return (client as unknown as Record<string | symbol, unknown>)[prop]
     },
   })
 }

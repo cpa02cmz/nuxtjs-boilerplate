@@ -25,7 +25,6 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'default',
-  middleware: ['auth'], // This would require authentication in a real implementation
 })
 
 useHead({
