@@ -14,6 +14,9 @@ export const webhooksConfig = {
 
     // Maximum queue size
     maxQueueSize: parseInt(process.env.WEBHOOK_MAX_QUEUE_SIZE || '1000'),
+
+    // Default priority for queue items
+    defaultPriority: parseInt(process.env.WEBHOOK_DEFAULT_PRIORITY || '0'),
   },
 
   // Retry Settings
@@ -93,6 +96,47 @@ export const webhooksConfig = {
     validTypes: parseEventTypes(
       process.env.WEBHOOK_VALID_EVENT_TYPES ||
         'resource.created, resource.updated, resource.deleted, resource.approved, resource.rejected'
+    ),
+  },
+
+  // Delivery Defaults - Flexy hates hardcoded defaults!
+  delivery: {
+    // Default max retries for webhook delivery
+    maxRetries: parseInt(process.env.WEBHOOK_DELIVERY_MAX_RETRIES || '3'),
+    // Default initial delay in milliseconds
+    initialDelayMs: parseInt(
+      process.env.WEBHOOK_DELIVERY_INITIAL_DELAY_MS || '1000'
+    ),
+    // Default priority for queue items
+    priority: parseInt(process.env.WEBHOOK_DELIVERY_PRIORITY || '0'),
+    // Default success status code
+    successStatusCode: parseInt(
+      process.env.WEBHOOK_SUCCESS_STATUS_CODE || '200'
+    ),
+    // Default success message
+    successMessage: process.env.WEBHOOK_SUCCESS_MESSAGE || 'OK',
+  },
+
+  // Circuit Breaker Key Management - Flexy hates hardcoded limits!
+  circuitBreakerKeys: {
+    // Maximum number of circuit breaker keys to store
+    maxKeys: parseInt(process.env.CIRCUIT_BREAKER_MAX_KEYS || '1000'),
+    // Percentage of keys to remove when limit reached (0.2 = 20%)
+    cleanupPercentage: parseFloat(
+      process.env.CIRCUIT_BREAKER_CLEANUP_PERCENTAGE || '0.2'
+    ),
+  },
+
+  // Retry Error Codes - Flexy hates hardcoded error lists!
+  retryableErrors: {
+    // HTTP status codes that should trigger retry
+    httpCodes: parseStatusCodes(
+      process.env.WEBHOOK_RETRYABLE_HTTP_CODES || '408, 429, 500, 502, 503, 504'
+    ),
+    // Error codes that should trigger retry
+    errorCodes: parseErrorCodes(
+      process.env.WEBHOOK_RETRYABLE_ERROR_CODES ||
+        'ECONNRESET, ETIMEDOUT, ENOTFOUND'
     ),
   },
 
@@ -197,6 +241,11 @@ export const webhooksConfig = {
 // Helper function to parse status codes
 function parseStatusCodes(value: string): number[] {
   return value.split(',').map(s => parseInt(s.trim()))
+}
+
+// Helper function to parse error codes
+function parseErrorCodes(value: string): string[] {
+  return value.split(',').map(s => s.trim())
 }
 
 // Helper function to parse event types

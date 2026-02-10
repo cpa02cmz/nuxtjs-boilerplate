@@ -147,6 +147,36 @@ export const animationConfig = {
     durationVariationMs: parseInt(
       process.env.CONFETTI_DURATION_VARIATION_MS || '1500'
     ),
+    // Brand colors for confetti particles - Flexy hates hardcoded hex codes!
+    colors: [
+      process.env.CONFETTI_COLOR_BLUE || '#3b82f6',
+      process.env.CONFETTI_COLOR_PURPLE || '#8b5cf6',
+      process.env.CONFETTI_COLOR_GREEN || '#10b981',
+      process.env.CONFETTI_COLOR_AMBER || '#f59e0b',
+      process.env.CONFETTI_COLOR_RED || '#ef4444',
+      process.env.CONFETTI_COLOR_CYAN || '#06b6d4',
+      process.env.CONFETTI_COLOR_ORANGE || '#f97316',
+      process.env.CONFETTI_COLOR_PINK || '#ec4899',
+    ],
+    // Maximum random delay for particle generation (seconds)
+    delayMaxSec: parseFloat(process.env.CONFETTI_DELAY_MAX_SEC || '0.5'),
+    // Minimum animation duration (seconds)
+    durationMinSec: parseFloat(process.env.CONFETTI_DURATION_MIN_SEC || '1.5'),
+    // Maximum animation duration (seconds)
+    durationMaxSec: parseFloat(process.env.CONFETTI_DURATION_MAX_SEC || '3.0'),
+    // Shape probabilities - Flexy hates magic numbers!
+    shapeProbability: {
+      // If random > threshold, use circle
+      circle: parseFloat(process.env.CONFETTI_CIRCLE_THRESHOLD || '0.6'),
+      // If random > threshold, use square (else rectangle)
+      square: parseFloat(process.env.CONFETTI_SQUARE_THRESHOLD || '0.5'),
+    },
+    // Cleanup buffer time after animation completes (ms)
+    cleanupBufferMs: parseInt(process.env.CONFETTI_CLEANUP_BUFFER_MS || '1000'),
+    // Rectangle height ratio (percentage of width)
+    rectangleHeightRatio: parseFloat(
+      process.env.CONFETTI_RECTANGLE_HEIGHT_RATIO || '0.6'
+    ),
   },
 } as const
 

@@ -1,4 +1,4 @@
-import { patternsConfig } from '~/configs/patterns.config'
+import { memoizeConfig } from '~/configs/memoize.config'
 
 /**
  * Generate a cryptographically secure random ID using Web Crypto API
@@ -6,7 +6,7 @@ import { patternsConfig } from '~/configs/patterns.config'
  */
 const generateSecureId = (): string => {
   // Use Web Crypto API available in both browser and Node.js
-  const array = new Uint8Array(16)
+  const array = new Uint8Array(memoizeConfig.id.length)
   if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
     crypto.getRandomValues(array)
   } else {
@@ -35,16 +35,16 @@ const generateArgsKey = (args: unknown[]): string => {
   if (args.length === 1) {
     const arg = args[0]
     if (arg === null || arg === undefined) {
-      return patternsConfig.memoization.nullKey
+      return memoizeConfig.keys.nullKey
     }
     if (typeof arg === 'object') {
       // For objects, use reference to avoid caching by structure
       // This is a unique identifier per object instance
       // FIXED: Use cryptographically secure random ID instead of Math.random()
-      return `${patternsConfig.memoization.objectKeyPrefix}${generateSecureId()}`
+      return `${memoizeConfig.keys.objectPrefix}${generateSecureId()}`
     }
     if (typeof arg === 'function') {
-      return patternsConfig.memoization.functionKeyPrefix
+      return memoizeConfig.keys.functionKey
     }
     return String(arg)
   }
@@ -53,22 +53,20 @@ const generateArgsKey = (args: unknown[]): string => {
   return args
     .map(arg => {
       if (arg === null || arg === undefined) {
-        return patternsConfig.memoization.nullKey
+        return memoizeConfig.keys.nullKey
       }
       if (typeof arg === 'object') {
         // Use unique identifier for each object instance
         // FIXED: Use cryptographically secure random ID instead of Math.random()
-        return `${patternsConfig.memoization.objectKeyPrefix}${generateSecureId()}`
+        return `${memoizeConfig.keys.objectPrefix}${generateSecureId()}`
       }
       if (typeof arg === 'function') {
-        return patternsConfig.memoization.functionKeyPrefix
+        return memoizeConfig.keys.functionKey
       }
       return String(arg)
     })
-    .join('|')
+    .join(memoizeConfig.keys.separator)
 }
-
-const MAX_MEMOIZE_CACHE_SIZE = 1000
 
 export const memoize = <T extends (...args: unknown[]) => ReturnType<T>>(
   fn: T,
@@ -90,8 +88,11 @@ export const memoize = <T extends (...args: unknown[]) => ReturnType<T>>(
     }
 
     // Prevent unbounded cache growth - remove oldest entries if cache is full
-    if (cache.size >= MAX_MEMOIZE_CACHE_SIZE) {
-      const keysToRemove = Math.floor(MAX_MEMOIZE_CACHE_SIZE * 0.2)
+    if (cache.size >= memoizeConfig.cache.maxSize) {
+      // Flexy uses configurable eviction percentage!
+      const keysToRemove = Math.floor(
+        memoizeConfig.cache.maxSize * memoizeConfig.cache.trimRatio
+      )
       let removed = 0
       for (const k of cache.keys()) {
         if (removed >= keysToRemove) break
@@ -120,8 +121,11 @@ export const memoizeHighlight = (
     }
 
     // Prevent unbounded cache growth - remove oldest entries if cache is full
-    if (cache.size >= MAX_MEMOIZE_CACHE_SIZE) {
-      const keysToRemove = Math.floor(MAX_MEMOIZE_CACHE_SIZE * 0.2)
+    if (cache.size >= memoizeConfig.cache.maxSize) {
+      // Flexy uses configurable eviction percentage!
+      const keysToRemove = Math.floor(
+        memoizeConfig.cache.maxSize * memoizeConfig.cache.trimRatio
+      )
       let removed = 0
       for (const k of cache.keys()) {
         if (removed >= keysToRemove) break
