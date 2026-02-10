@@ -14,17 +14,11 @@
 
       <!-- Search Bar -->
       <div class="mt-8 max-w-2xl mx-auto">
-        <LazySearchBar
-          v-model="searchQuery"
-          @search="handleSearch"
-        />
+        <LazySearchBar v-model="searchQuery" @search="handleSearch" />
       </div>
 
       <!-- Loading State with Skeletons -->
-      <div
-        v-if="loading"
-        class="mt-16"
-      >
+      <div v-if="loading" class="mt-16">
         <div class="flex flex-wrap gap-2 mb-8 justify-center">
           <div
             v-for="i in 5"
@@ -40,18 +34,12 @@
 
         <!-- Resources Grid with Skeletons -->
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <ResourceCardSkeleton
-            v-for="i in 6"
-            :key="`skeleton-${i}`"
-          />
+          <ResourceCardSkeleton v-for="i in 6" :key="`skeleton-${i}`" />
         </div>
       </div>
 
       <!-- Error State -->
-      <div
-        v-else-if="error"
-        class="mt-16"
-      >
+      <div v-else-if="error" class="mt-16">
         <ErrorMessage
           :message="errorMessage || error"
           variant="error"
@@ -60,10 +48,7 @@
       </div>
 
       <!-- Resources Grid -->
-      <div
-        v-else
-        class="mt-16"
-      >
+      <div v-else class="mt-16">
         <!-- ARIA live region for search results -->
         <div
           id="search-results-status"
@@ -79,16 +64,30 @@
           <!-- Resource Filters Component -->
           <div class="lg:w-1/4">
             <LazyResourceFilters
-              :categories="categories"
-              :pricing-models="pricingModels"
-              :difficulty-levels="difficultyLevels"
-              :technologies="technologies"
-              :tags="allTags"
-              :selected-categories="filterOptions.categories"
-              :selected-pricing-models="filterOptions.pricingModels"
-              :selected-difficulty-levels="filterOptions.difficultyLevels"
-              :selected-technologies="filterOptions.technologies"
-              :selected-tags="filterOptions.tags"
+              :categories="[...categories]"
+              :pricing-models="[...pricingModels]"
+              :difficulty-levels="[...difficultyLevels]"
+              :technologies="[...technologies]"
+              :tags="[...allTags]"
+              :selected-categories="
+                filterOptions.categories ? [...filterOptions.categories] : []
+              "
+              :selected-pricing-models="
+                filterOptions.pricingModels
+                  ? [...filterOptions.pricingModels]
+                  : []
+              "
+              :selected-difficulty-levels="
+                filterOptions.difficultyLevels
+                  ? [...filterOptions.difficultyLevels]
+                  : []
+              "
+              :selected-technologies="
+                filterOptions.technologies
+                  ? [...filterOptions.technologies]
+                  : []
+              "
+              :selected-tags="filterOptions.tags ? [...filterOptions.tags] : []"
               @toggle-category="toggleCategory"
               @toggle-pricing-model="togglePricingModel"
               @toggle-difficulty-level="toggleDifficultyLevel"
@@ -128,7 +127,9 @@
               <ResourceSort
                 :selected-sort-option="sortOption"
                 :total-resources="filteredResources.length"
-                @update-sort-option="setSortOption"
+                @update-sort-option="
+                  (option: string) => setSortOption(option as SortOption)
+                "
               />
             </div>
 
@@ -146,7 +147,7 @@
                   :id="resource.id"
                   :title="resource.title"
                   :description="resource.description"
-                  :benefits="resource.benefits"
+                  :benefits="[...resource.benefits]"
                   :url="resource.url"
                   :button-label="getButtonLabel(resource.category)"
                   :highlighted-title="
@@ -181,10 +182,7 @@
           </div>
 
           <!-- Trending Resources Section -->
-          <div
-            v-if="filteredResources.length > 0 && !loading"
-            class="mt-16"
-          >
+          <div v-if="filteredResources.length > 0 && !loading" class="mt-16">
             <h2 class="text-2xl font-bold text-gray-900 mb-6">
               Trending Resources
             </h2>
@@ -200,7 +198,7 @@
                 <LazyResourceCard
                   :title="resource.title"
                   :description="resource.description"
-                  :benefits="resource.benefits"
+                  :benefits="[...resource.benefits]"
                   :url="resource.url"
                   :button-label="getButtonLabel(resource.category)"
                   :highlighted-title="
@@ -217,10 +215,7 @@
         </div>
 
         <!-- Recommendations Section -->
-        <div
-          v-if="filteredResources.length > 0 && !loading"
-          class="mt-16"
-        >
+        <div v-if="filteredResources.length > 0 && !loading" class="mt-16">
           <ClientOnly>
             <LazyRecommendationsSection />
           </ClientOnly>
@@ -231,6 +226,7 @@
 </template>
 
 <script setup lang="ts">
+import type { SortOption } from '~/types/resource'
 import { useResources } from '~/composables/useResources'
 import { useUrlSync } from '~/composables/useUrlSync'
 import { useHomePage } from '~/composables/useHomePage'
@@ -257,7 +253,11 @@ useSeoMeta({
     runtimeConfig.public.siteUrl ||
     runtimeConfig.public.canonicalUrl ||
     'http://localhost:3000',
-  twitterCard: seoConfig.twitter.card,
+  twitterCard: seoConfig.twitter.card as
+    | 'summary'
+    | 'summary_large_image'
+    | 'app'
+    | 'player',
 })
 
 // Use the resources composable
@@ -286,7 +286,7 @@ const {
   retryResources,
 } = useResources()
 
-const { trendingResources } = useHomePage(resources.value)
+const { trendingResources } = useHomePage([...resources.value])
 
 useUrlSync(filterOptions, sortOption)
 

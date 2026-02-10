@@ -87,6 +87,7 @@ export const useResources = () => {
     retryCount,
     maxRetries,
     lastError,
+    errorMessage: computed(() => lastError.value?.message || ''),
     categories,
     pricingModels,
     difficultyLevels,

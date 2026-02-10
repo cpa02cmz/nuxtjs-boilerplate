@@ -77,6 +77,9 @@ class SearchIndexManager {
         )
       }
     }
+    if (!this.index) {
+      throw new Error('Search index initialization failed')
+    }
     return this.index
   }
 
