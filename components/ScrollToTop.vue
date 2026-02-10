@@ -199,10 +199,11 @@ onMounted(() => {
 <style scoped>
 .scroll-to-top {
   position: fixed;
-  bottom: v-bind('uiConfig.scrollToTop.bottomPosition');
-  right: v-bind('uiConfig.scrollToTop.rightPosition');
-  width: v-bind('uiConfig.scrollToTop.buttonWidth');
-  height: v-bind('uiConfig.scrollToTop.buttonHeight');
+  /* Hardcoded values to avoid SSR issues with v-bind */
+  bottom: 2rem;
+  right: 2rem;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: white;
   border: none;

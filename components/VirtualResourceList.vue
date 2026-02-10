@@ -67,25 +67,25 @@ const virtualizer = useVirtualizer({
 <style scoped>
 .virtual-scroll-container {
   scrollbar-width: thin;
-  scrollbar-color: v-bind('uiConfig.scrollbar.thumbColor')
-    v-bind('uiConfig.scrollbar.trackColor');
+  /* Hardcoded values to avoid SSR issues with v-bind */
+  scrollbar-color: #cbd5e1 #f1f5f9;
 }
 
 .virtual-scroll-container::-webkit-scrollbar {
-  width: v-bind('uiConfig.scrollbar.width');
+  width: 8px;
 }
 
 .virtual-scroll-container::-webkit-scrollbar-track {
-  background: v-bind('uiConfig.scrollbar.trackColor');
+  background: #f1f5f9;
   border-radius: 4px;
 }
 
 .virtual-scroll-container::-webkit-scrollbar-thumb {
-  background: v-bind('uiConfig.scrollbar.thumbColor');
+  background: #cbd5e1;
   border-radius: 4px;
 }
 
 .virtual-scroll-container::-webkit-scrollbar-thumb:hover {
-  background: v-bind('uiConfig.scrollbar.thumbHoverColor');
+  background: #94a3b8;
 }
 </style>
