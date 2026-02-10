@@ -136,7 +136,9 @@
 
       <!-- Empty State - Show when no suggestions or history but user has typed -->
       <div
-        v-if="suggestions.length === 0 && searchHistory.length === 0 && hasQuery"
+        v-if="
+          suggestions.length === 0 && searchHistory.length === 0 && hasQuery
+        "
         class="px-4 py-6 text-center"
         role="status"
         aria-live="polite"
@@ -236,7 +238,7 @@ watch(focusedIndex, newIndex => {
         `[data-suggestion-index="${newIndex}"]`
       )
       focusedElement?.scrollIntoView({
-        behavior: 'smooth',
+        behavior: 'auto',
         block: 'nearest',
       })
     })
