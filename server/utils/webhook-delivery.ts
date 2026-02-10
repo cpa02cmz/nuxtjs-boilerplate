@@ -2,7 +2,6 @@ import type { Webhook, WebhookPayload, WebhookDelivery } from '~/types/webhook'
 import { randomUUID } from 'node:crypto'
 import { webhookStorage } from './webhookStorage'
 import { webhookSigner } from './webhook-signer'
-import { TIMING } from './constants'
 import { getCircuitBreaker } from './circuit-breaker'
 import { createCircuitBreakerError } from './api-error'
 import { webhooksConfig } from '~/configs/webhooks.config'
@@ -12,10 +11,11 @@ export interface WebhookDeliveryOptions {
   timeoutMs?: number
 }
 
-const DEFAULT_TIMEOUT_MS = TIMING.WEBHOOK_REQUEST_TIMEOUT
+const DEFAULT_TIMEOUT_MS = webhooksConfig.request.timeoutMs
 
 export class WebhookDeliveryService {
   private circuitBreakerKeys: Map<string, string> = new Map()
+  private static readonly MAX_CIRCUIT_BREAKER_KEYS = 1000
 
   async deliver(
     webhook: Webhook,
@@ -236,6 +236,23 @@ export class WebhookDeliveryService {
   }
 
   private getCircuitBreakerKey(webhook: Webhook): string {
+    // Prevent unbounded memory growth by limiting map size
+    if (
+      this.circuitBreakerKeys.size >=
+      WebhookDeliveryService.MAX_CIRCUIT_BREAKER_KEYS
+    ) {
+      // Remove oldest entries (first 20%) to make room
+      const keysToRemove = Math.floor(
+        WebhookDeliveryService.MAX_CIRCUIT_BREAKER_KEYS * 0.2
+      )
+      let removed = 0
+      for (const key of this.circuitBreakerKeys.keys()) {
+        if (removed >= keysToRemove) break
+        this.circuitBreakerKeys.delete(key)
+        removed++
+      }
+    }
+
     if (!this.circuitBreakerKeys.has(webhook.id)) {
       const key = `webhook:${webhook.url}`
       this.circuitBreakerKeys.set(webhook.id, key)
