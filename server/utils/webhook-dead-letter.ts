@@ -5,6 +5,7 @@ import type {
 } from '~/types/webhook'
 import { randomUUID } from 'node:crypto'
 import { webhookStorage } from './webhookStorage'
+import { webhooksConfig } from '~/configs/webhooks.config'
 
 export class DeadLetterManager {
   async addToDeadLetter(
@@ -96,7 +97,7 @@ export class DeadLetterManager {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       retryCount: 0,
-      maxRetries: 3,
+      maxRetries: webhooksConfig.delivery.maxRetries,
     }
 
     await enqueueCallback(queueItem)

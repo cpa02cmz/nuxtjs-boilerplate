@@ -1,6 +1,7 @@
 import { readonly, computed } from 'vue'
 import type { FuseResult, IFuseOptions } from 'fuse.js'
 import type { Resource } from '~/types/resource'
+import type Fuse from 'fuse.js'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
 import { createFuseInstance } from '~/utils/fuseHelper'
 import { searchConfig } from '~/configs/search.config'
@@ -18,13 +19,26 @@ const fuseSearchConfig: Partial<IFuseOptions<Resource>> = {
 }
 
 export const useResourceSearch = (resources: readonly Resource[]) => {
-  const fuse = computed(() => createFuseInstance(resources, fuseSearchConfig))
+  // Cache the Fuse instance - only rebuild when resources change
+  let fuseInstance: Fuse<Resource> | null = null
+  let cachedResources: readonly Resource[] = []
+
+  const getFuseInstance = (): Fuse<Resource> => {
+    // Only rebuild if resources changed (reference check)
+    if (!fuseInstance || cachedResources !== resources) {
+      cachedResources = resources
+      fuseInstance = createFuseInstance(resources, fuseSearchConfig)
+    }
+    return fuseInstance
+  }
+
+  const fuse = computed(() => getFuseInstance())
 
   const searchResources = (query: string): Resource[] => {
     if (!query) return [...resources]
 
-    const fuseInstance = createFuseInstance(resources, fuseSearchConfig)
-    const searchResults = fuseInstance.search(query)
+    const fuse = getFuseInstance()
+    const searchResults = fuse.search(query)
     return searchResults.map((item: FuseResult<Resource>) => item.item)
   }
 
@@ -34,8 +48,8 @@ export const useResourceSearch = (resources: readonly Resource[]) => {
   ): Resource[] => {
     if (!query) return []
 
-    const fuseInstance = createFuseInstance(resources, fuseSearchConfig)
-    const searchResults = fuseInstance.search(query, { limit })
+    const fuse = getFuseInstance()
+    const searchResults = fuse.search(query, { limit })
     return searchResults.map((item: FuseResult<Resource>) => item.item)
   }
 
