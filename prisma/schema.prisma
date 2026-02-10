@@ -131,7 +131,8 @@ model DeadLetterWebhook {
 
 model ApiKey {
   id          String    @id @default(cuid())
-  key         String    @unique
+  keyHash     String    @unique // Bcrypt hash of the API key (never store plaintext)
+  keyPrefix   String    // First 8 chars of key for identification (not secret)
   userId      String?
   name        String
   permissions String
@@ -142,12 +143,12 @@ model ApiKey {
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
 
-  @@index([key])
+  @@index([keyPrefix])
   @@index([userId])
   @@index([active])
   @@index([expiresAt])
   @@index([deletedAt])
-  @@index([key, deletedAt, active])
+  @@index([keyPrefix, deletedAt, active])
 }
 
 model IdempotencyKey {
