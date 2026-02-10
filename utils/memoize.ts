@@ -68,7 +68,9 @@ const generateArgsKey = (args: unknown[]): string => {
     .join('|')
 }
 
-const MAX_MEMOIZE_CACHE_SIZE = 1000
+// Flexy hates hardcoded cache limits! Using config values
+const MAX_MEMOIZE_CACHE_SIZE = patternsConfig.memoization.maxCacheSize
+const EVICTION_PERCENTAGE = patternsConfig.memoization.evictionPercentage
 
 export const memoize = <T extends (...args: unknown[]) => ReturnType<T>>(
   fn: T,
@@ -91,7 +93,10 @@ export const memoize = <T extends (...args: unknown[]) => ReturnType<T>>(
 
     // Prevent unbounded cache growth - remove oldest entries if cache is full
     if (cache.size >= MAX_MEMOIZE_CACHE_SIZE) {
-      const keysToRemove = Math.floor(MAX_MEMOIZE_CACHE_SIZE * 0.2)
+      // Flexy uses configurable eviction percentage!
+      const keysToRemove = Math.floor(
+        MAX_MEMOIZE_CACHE_SIZE * EVICTION_PERCENTAGE
+      )
       let removed = 0
       for (const k of cache.keys()) {
         if (removed >= keysToRemove) break
@@ -121,7 +126,10 @@ export const memoizeHighlight = (
 
     // Prevent unbounded cache growth - remove oldest entries if cache is full
     if (cache.size >= MAX_MEMOIZE_CACHE_SIZE) {
-      const keysToRemove = Math.floor(MAX_MEMOIZE_CACHE_SIZE * 0.2)
+      // Flexy uses configurable eviction percentage!
+      const keysToRemove = Math.floor(
+        MAX_MEMOIZE_CACHE_SIZE * EVICTION_PERCENTAGE
+      )
       let removed = 0
       for (const k of cache.keys()) {
         if (removed >= keysToRemove) break

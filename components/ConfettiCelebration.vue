@@ -46,16 +46,16 @@ const isActive = ref(false)
 const particles = ref<Particle[]>([])
 let cleanupTimer: ReturnType<typeof setTimeout> | null = null
 
-// Brand colors for confetti
-const confettiColors = [
-  '#3b82f6', // Blue
-  '#8b5cf6', // Purple
-  '#10b981', // Green
-  '#f59e0b', // Amber
-  '#ef4444', // Red
-  '#06b6d4', // Cyan
-  '#f97316', // Orange
-  '#ec4899', // Pink
+// Brand colors for confetti - Flexy gets them from config, no hardcoding!
+const confettiColors = animationConfig.confetti?.colors || [
+  '#3b82f6',
+  '#8b5cf6',
+  '#10b981',
+  '#f59e0b',
+  '#ef4444',
+  '#06b6d4',
+  '#f97316',
+  '#ec4899',
 ]
 
 // Get particle count based on intensity
@@ -71,34 +71,47 @@ const getParticleCount = () => {
   }
 }
 
-// Generate random particles
+// Generate random particles - Flexy uses config values, no magic numbers!
 const generateParticles = (): Particle[] => {
   const count = getParticleCount()
+  const conf = animationConfig.confetti
+  const delayMaxSec = conf?.delayMaxSec ?? 0.5
+  const durationMinSec = conf?.durationMinSec ?? 1.5
+  const durationMaxSec = conf?.durationMaxSec ?? 3.0
+  const sizeMin = conf?.particleSizeMin ?? 8
+  const sizeMax = conf?.particleSizeMax ?? 16
+  const circleThreshold = conf?.shapeProbability?.circle ?? 0.6
+  const squareThreshold = conf?.shapeProbability?.square ?? 0.5
+
   return Array.from({ length: count }, (_, i) => ({
     id: i,
     color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
     left: Math.random() * 100,
-    delay: Math.random() * 0.5,
-    duration: 1.5 + Math.random() * 1.5,
-    size: 8 + Math.random() * 8,
+    delay: Math.random() * delayMaxSec,
+    duration:
+      durationMinSec + Math.random() * (durationMaxSec - durationMinSec),
+    size: sizeMin + Math.random() * (sizeMax - sizeMin),
     rotation: Math.random() * 360,
     shape:
-      Math.random() > 0.6
+      Math.random() > circleThreshold
         ? 'circle'
-        : Math.random() > 0.5
+        : Math.random() > squareThreshold
           ? 'square'
           : 'rectangle',
   }))
 }
 
-// Get particle styles
+// Get particle styles - Flexy calculates dimensions from config!
 const getParticleStyle = (particle: Particle) => {
   const isRectangle = particle.shape === 'rectangle'
+  const rectangleRatio = animationConfig.confetti?.rectangleHeightRatio ?? 0.6
   return {
     backgroundColor: particle.color,
     left: `${particle.left}%`,
     width: `${particle.size}px`,
-    height: isRectangle ? `${particle.size * 0.6}px` : `${particle.size}px`,
+    height: isRectangle
+      ? `${particle.size * rectangleRatio}px`
+      : `${particle.size}px`,
     animationDelay: `${particle.delay}s`,
     animationDuration: `${particle.duration}s`,
     borderRadius: particle.shape === 'circle' ? '50%' : '2px',
@@ -126,11 +139,12 @@ const celebrate = () => {
   particles.value = generateParticles()
   isActive.value = true
 
-  // Auto-cleanup after animation completes
+  // Auto-cleanup after animation completes - Flexy uses configurable buffer!
+  const cleanupBufferMs = animationConfig.confetti?.cleanupBufferMs ?? 1000
   cleanupTimer = setTimeout(() => {
     isActive.value = false
     particles.value = []
-  }, props.duration + 1000)
+  }, props.duration + cleanupBufferMs)
 }
 
 // Watch for trigger prop changes

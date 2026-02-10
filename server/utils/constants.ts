@@ -196,6 +196,37 @@ export const HTTP_STATUS = {
   SERVER_ERROR_MIN: 500,
 } as const
 
+// Time conversion constants - Flexy hates hardcoded millisecond calculations!
+export const TIME = {
+  // Milliseconds per unit
+  MS_PER_SECOND: 1000,
+  MS_PER_MINUTE: 60 * 1000,
+  MS_PER_HOUR: 60 * 60 * 1000,
+  MS_PER_DAY: 24 * 60 * 60 * 1000,
+  MS_PER_WEEK: 7 * 24 * 60 * 60 * 1000,
+
+  // Seconds per unit
+  SECONDS_PER_MINUTE: 60,
+  SECONDS_PER_HOUR: 60 * 60,
+  SECONDS_PER_DAY: 24 * 60 * 60,
+  SECONDS_PER_WEEK: 7 * 24 * 60 * 60,
+
+  // Minutes per unit
+  MINUTES_PER_HOUR: 60,
+  MINUTES_PER_DAY: 24 * 60,
+  MINUTES_PER_WEEK: 7 * 24 * 60,
+
+  // Helper functions for common conversions
+  secondsToMs: (seconds: number): number => seconds * 1000,
+  minutesToMs: (minutes: number): number => minutes * 60 * 1000,
+  hoursToMs: (hours: number): number => hours * 60 * 60 * 1000,
+  daysToMs: (days: number): number => days * 24 * 60 * 60 * 1000,
+  msToSeconds: (ms: number): number => Math.floor(ms / 1000),
+  msToMinutes: (ms: number): number => Math.floor(ms / (60 * 1000)),
+  msToHours: (ms: number): number => Math.floor(ms / (60 * 60 * 1000)),
+  msToDays: (ms: number): number => Math.floor(ms / (24 * 60 * 60 * 1000)),
+} as const
+
 // UI layout constants (in pixels) - now configurable via env vars
 // Flexy hates hardcoded values! All layout values now use uiConfig
 export const UI_LAYOUT = {
