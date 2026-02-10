@@ -126,6 +126,28 @@ export const animationConfig = {
       process.env.PWA_AUTO_DISMISS_INTERVAL_MS || '50'
     ),
   },
+
+  // Confetti Celebration Animations - Palette's delightful micro-UX touch!
+  confetti: {
+    // Duration of confetti animation in milliseconds
+    durationMs: parseInt(process.env.CONFETTI_DURATION_MS || '3000'),
+    // Number of particles for light celebration
+    particleCountLight: parseInt(process.env.CONFETTI_PARTICLE_LIGHT || '30'),
+    // Number of particles for medium celebration
+    particleCountMedium: parseInt(process.env.CONFETTI_PARTICLE_MEDIUM || '60'),
+    // Number of particles for heavy celebration
+    particleCountHeavy: parseInt(process.env.CONFETTI_PARTICLE_HEAVY || '100'),
+    // Minimum particle size in pixels
+    particleSizeMin: parseInt(process.env.CONFETTI_SIZE_MIN || '8'),
+    // Maximum particle size in pixels
+    particleSizeMax: parseInt(process.env.CONFETTI_SIZE_MAX || '16'),
+    // Delay between particle generation (stagger effect)
+    staggerDelayMs: parseInt(process.env.CONFETTI_STAGGER_DELAY_MS || '50'),
+    // Duration variation for particles (adds randomness)
+    durationVariationMs: parseInt(
+      process.env.CONFETTI_DURATION_VARIATION_MS || '1500'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
