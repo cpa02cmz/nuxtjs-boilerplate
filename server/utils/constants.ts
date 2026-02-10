@@ -92,6 +92,19 @@ export {
   type ComparisonConfig,
 } from '~/configs/comparison.config'
 
+// Re-export apiConfig and contentConfig - Flexy hates hardcoded values!
+export { apiConfig as API_CONFIG, type ApiConfig } from '~/configs/api.config'
+
+export {
+  contentConfig as CONTENT_CONFIG,
+  type ContentConfig,
+} from '~/configs/content.config'
+
+export {
+  rateLimitConfig as RATE_LIMIT_CONFIG,
+  type RateLimitConfig,
+} from '~/configs/rate-limit.config'
+
 // Backward-compatible re-exports using config values
 // These maintain the old constant names but use configurable values
 import { webhooksConfig } from '~/configs/webhooks.config'
