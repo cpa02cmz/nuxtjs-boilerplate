@@ -183,7 +183,7 @@ describe('useUserPreferences', () => {
       expect(result).toBe(false)
     })
 
-    it.skip('should handle storage errors gracefully - BUG: Returns true when storage fails', async () => {
+    it('should handle storage errors gracefully', async () => {
       mockSetResult.value = false
 
       const result = await composable.updatePreferences({
@@ -282,7 +282,7 @@ describe('useUserPreferences', () => {
       expect(result).toBe(false)
     })
 
-    it.skip('should handle storage errors gracefully - BUG: Returns true when storage fails', async () => {
+    it('should handle storage errors gracefully', async () => {
       mockSetResult.value = false
 
       const result = await composable.trackInteraction({

@@ -4,6 +4,7 @@ import {
   getStaticPages,
   getResourceSitemapDefaults,
 } from '~/configs/sitemap.config'
+import { DEFAULT_DEV_URL } from '~/configs/url.config'
 
 export interface SitemapEntry {
   url: string
@@ -20,12 +21,10 @@ export function getBaseUrlFromConfig(): string {
   try {
     const config = useRuntimeConfig()
     return (
-      config.public.siteUrl ||
-      config.public.canonicalUrl ||
-      'http://localhost:3000'
+      config.public.siteUrl || config.public.canonicalUrl || DEFAULT_DEV_URL
     )
   } catch {
-    return 'http://localhost:3000'
+    return DEFAULT_DEV_URL
   }
 }
 

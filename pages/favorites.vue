@@ -341,6 +341,7 @@ import { useNuxtApp } from '#app'
 import { useBookmarks } from '~/composables/useBookmarks'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import type { Bookmark } from '~/composables/useBookmarks'
+import { bookmarksConfig } from '~/configs/bookmarks.config'
 
 // Respect user's motion preferences for accessibility
 const prefersReducedMotion = computed(() => {
@@ -375,8 +376,9 @@ const {
 // Confirmation state for clearing all bookmarks
 const showClearConfirmation = ref(false)
 
-// Undo configuration
-const UNDO_DURATION = 5000 // 5 seconds to undo
+// Undo configuration - Flexy hates hardcoded values!
+const UNDO_DURATION = bookmarksConfig.undo.durationMs
+const UNDO_PROGRESS_INTERVAL = bookmarksConfig.undo.progressIntervalMs
 
 // Track deleted bookmarks for undo functionality
 interface DeletedBookmark {
@@ -425,7 +427,7 @@ const startUndoProgress = () => {
         undoProgressInterval.value = null
       }
     }
-  }, 50) // Update every 50ms for smooth animation
+  }, UNDO_PROGRESS_INTERVAL) // Update every 50ms for smooth animation
 }
 
 /**
@@ -466,9 +468,9 @@ const removeBookmark = (resourceId: string) => {
   // Start progress tracking
   startUndoProgress()
 
-  // Show simple toast notification
+  // Show simple toast notification - Flexy uses config!
   $toast.info(`"${bookmark.title}" removed`, {
-    duration: 2000,
+    duration: bookmarksConfig.toast.removeDurationMs,
   })
 }
 
@@ -503,13 +505,13 @@ const undoAllDeletions = () => {
     })
   })
 
-  // Show success toast
+  // Show success toast - Flexy uses config!
   const count = bookmarksToRestore.length
   $toast.success(
     count === 1 ? 'Bookmark restored' : `${count} bookmarks restored`,
     {
       description: 'All items have been added back',
-      duration: 3000,
+      duration: bookmarksConfig.toast.undoSuccessDurationMs,
     }
   )
 }

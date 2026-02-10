@@ -67,7 +67,11 @@ export const useUserPreferences = () => {
       }
       userProfile.value.lastActive = new Date().toISOString()
 
-      storage.set(userProfile.value)
+      const success = storage.set(userProfile.value)
+      if (!success) {
+        error.value = 'Failed to save preferences to storage'
+        return false
+      }
 
       return true
     } catch (err) {
@@ -91,7 +95,11 @@ export const useUserPreferences = () => {
       userProfile.value.interactions.push(newInteraction)
       userProfile.value.lastActive = new Date().toISOString()
 
-      storage.set(userProfile.value)
+      const success = storage.set(userProfile.value)
+      if (!success) {
+        error.value = 'Failed to save interaction to storage'
+        return false
+      }
 
       return true
     } catch (err) {

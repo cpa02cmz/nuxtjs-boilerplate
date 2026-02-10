@@ -192,51 +192,80 @@
                 :url="`${runtimeConfig.public.canonicalUrl}/resources/${id}`"
               />
             </ClientOnly>
-            <!-- Quick Copy button -->
-            <button
-              v-if="id"
-              :class="[
-                'p-2 rounded-full transition-all duration-200 ease-out',
-                'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
-                isCopied
-                  ? 'bg-green-100 text-green-600 scale-110'
-                  : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-500 dark:hover:text-gray-200 dark:hover:bg-gray-800',
-              ]"
-              :aria-label="
-                isCopied ? `Copied link to ${title}` : `Copy link to ${title}`
-              "
-              :title="isCopied ? 'Copied!' : 'Copy link'"
-              @click="copyResourceUrl"
-            >
-              <svg
-                v-if="!isCopied"
-                xmlns="http://www.w3.org/2000/svg"
+            <!-- Quick Copy button with inline feedback -->
+            <div class="flex items-center">
+              <button
+                v-if="id"
                 :class="[
-                  'h-5 w-5 transition-transform duration-200',
-                  isCopyAnimating && 'animate-icon-pop',
+                  'p-2 rounded-full transition-all duration-200 ease-out',
+                  'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+                  isCopied
+                    ? 'bg-green-100 text-green-600 scale-110'
+                    : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-500 dark:hover:text-gray-200 dark:hover:bg-gray-800',
                 ]"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+                :aria-label="
+                  isCopied ? `Copied link to ${title}` : `Copy link to ${title}`
+                "
+                :title="isCopied ? 'Copied!' : 'Copy link'"
+                @click="copyResourceUrl"
               >
-                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
-                <path
-                  d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"
-                />
-              </svg>
-              <svg
-                v-else
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 animate-check-pop"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+                <svg
+                  v-if="!isCopied"
+                  xmlns="http://www.w3.org/2000/svg"
+                  :class="[
+                    'h-5 w-5 transition-transform duration-200',
+                    isCopyAnimating && 'animate-icon-pop',
+                  ]"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                  <path
+                    d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"
+                  />
+                </svg>
+                <svg
+                  v-else
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 animate-check-pop"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+              <!-- Inline "Copied!" label for immediate visual feedback -->
+              <transition
+                enter-active-class="transition-all duration-200 ease-out"
+                enter-from-class="opacity-0 -translate-x-2"
+                enter-to-class="opacity-100 translate-x-0"
+                leave-active-class="transition-all duration-150 ease-in"
+                leave-from-class="opacity-100 translate-x-0"
+                leave-to-class="opacity-0 -translate-x-2"
               >
-                <path
-                  fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </button>
+                <span
+                  v-if="isCopied"
+                  class="ml-1 text-xs font-medium text-green-600 whitespace-nowrap"
+                  aria-hidden="true"
+                >
+                  Copied!
+                </span>
+              </transition>
+            </div>
+            <!-- Copy announcement for screen readers -->
+            <div
+              :id="`copy-announcement-${id}`"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              class="sr-only"
+            >
+              {{ copyStatus }}
+            </div>
             <!-- Compare button -->
             <button
               v-if="id"
@@ -404,6 +433,7 @@ const isCompareAnimating = ref(false)
 const compareButtonRef = ref<HTMLButtonElement | null>(null)
 const isCopied = ref(false)
 const isCopyAnimating = ref(false)
+const copyStatus = ref('')
 
 // Check if resource is new (added within the last 7 days)
 // Flexy hates hardcoded values! Using TIME_MS constants from config
@@ -552,6 +582,9 @@ const copyResourceUrl = async () => {
     isCopied.value = true
     isCopyAnimating.value = true
 
+    // Announce to screen readers
+    copyStatus.value = `Link to "${props.title}" copied to clipboard`
+
     // Haptic feedback for successful copy
     hapticSuccess()
 
@@ -563,6 +596,7 @@ const copyResourceUrl = async () => {
     setTimeout(() => {
       isCopied.value = false
       isCopyAnimating.value = false
+      copyStatus.value = ''
     }, animationConfig.copySuccess.resetDelayMs)
   } else {
     // Show error toast
