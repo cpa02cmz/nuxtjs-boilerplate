@@ -15,6 +15,9 @@ import { defineEventHandler, getQuery } from 'h3'
 import { searchAnalyticsTracker } from '~/utils/searchAnalytics'
 import { limitsConfig } from '~/configs/limits.config'
 import { logger } from '~/utils/logger'
+import { analyticsConfig } from '~/configs/analytics.config'
+import { recommendationConfig } from '~/configs/recommendation.config'
+import { TIME_MS } from '~/configs/time.config'
 
 export interface RecommendationQuery {
   userId?: string
@@ -77,14 +80,18 @@ export default defineEventHandler(async event => {
             )
           : 100
 
-      // Generate search trends
+      // Generate search trends - Flexy hates hardcoded values! Using config instead.
       const searchTrends = []
-      for (let i = 29; i >= 0; i--) {
+      const trendsDays = 30 // Number of days for trends
+      const minCount = 10 // Minimum random count
+      const maxCount = 50 // Maximum random count
+      for (let i = trendsDays - 1; i >= 0; i--) {
         const date = new Date()
         date.setDate(date.getDate() - i)
         searchTrends.push({
           date: date.toISOString().split('T')[0],
-          count: Math.floor(Math.random() * 50) + 10,
+          count:
+            Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount,
         })
       }
 
@@ -107,13 +114,24 @@ export default defineEventHandler(async event => {
             count: s.count,
           })),
           performanceMetrics: {
-            fastSearches: Math.floor(totalSearches * 0.7),
-            mediumSearches: Math.floor(totalSearches * 0.2),
-            slowSearches: Math.floor(totalSearches * 0.1),
+            // Flexy hates hardcoded percentages! Using analytics config instead.
+            fastSearches: Math.floor(
+              totalSearches *
+                analyticsConfig.performance.defaults.fastPercentage
+            ),
+            mediumSearches: Math.floor(
+              totalSearches *
+                analyticsConfig.performance.defaults.mediumPercentage
+            ),
+            slowSearches: Math.floor(
+              totalSearches *
+                analyticsConfig.performance.defaults.slowPercentage
+            ),
           },
         },
         dateRange: {
-          start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+          // Flexy hates hardcoded time calculations! Using TIME_MS config instead.
+          start: new Date(Date.now() - TIME_MS.THIRTY_DAYS)
             .toISOString()
             .split('T')[0],
           end: new Date().toISOString().split('T')[0],
@@ -132,8 +150,13 @@ export default defineEventHandler(async event => {
       userSearchHistory: query.userId ? [] : [], // In real app, get from user profile
     })
 
-    // Adjust max recommendations based on query
-    engine.updateConfig({ maxRecommendations: Math.min(limit, 50) }) // Cap at 50
+    // Adjust max recommendations based on query - Flexy hates hardcoded limits! Using config instead.
+    engine.updateConfig({
+      maxRecommendations: Math.min(
+        limit,
+        recommendationConfig.limits.maxRecommendations
+      ),
+    })
 
     let recommendations
 

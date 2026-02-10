@@ -7,6 +7,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { triggerWebhookSchema } from '~/server/utils/validation-schemas'
+import { webhooksConfig } from '~/configs/webhooks.config'
 import { randomUUID } from 'node:crypto'
 
 export default defineEventHandler(async event => {
@@ -72,8 +73,8 @@ export default defineEventHandler(async event => {
     for (const webhook of webhooks) {
       await webhookQueueSystem.deliverWebhook(webhook, payload, {
         async: true,
-        maxRetries: 3,
-        priority: 0,
+        maxRetries: webhooksConfig.delivery.maxRetries,
+        priority: webhooksConfig.delivery.priority,
       })
       queuedWebhooks++
     }

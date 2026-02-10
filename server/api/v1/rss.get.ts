@@ -3,6 +3,7 @@ import type { Resource } from '~/types/resource'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { handleApiRouteError } from '~/server/utils/api-response'
 import { RSS_CONFIG } from '~/server/utils/constants'
+import { contentConfig } from '~/configs/content.config'
 
 /**
  * GET /api/v1/rss
@@ -46,8 +47,10 @@ function generateRssFeed(resources: Resource[]): string {
     config.public.siteUrl ||
     config.public.canonicalUrl ||
     'http://localhost:3000'
-  const title = 'Free Developer Resources'
-  const description = 'A collection of free resources for developers'
+  // Flexy hates hardcoded values! Using contentConfig for RSS feed metadata
+  const title = contentConfig.rss.title
+  const description = contentConfig.rss.description
+  const language = contentConfig.rss.language
   const date = new Date().toUTCString()
 
   let rss = `<?xml version="1.0" encoding="UTF-8"?>
@@ -57,7 +60,7 @@ function generateRssFeed(resources: Resource[]): string {
     <description><![CDATA[${description}]]></description>
     <link>${siteUrl}</link>
     <lastBuildDate>${date}</lastBuildDate>
-    <language>en</language>
+    <language>${language}</language>
   `
 
   for (const resource of resources) {

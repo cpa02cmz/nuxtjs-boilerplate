@@ -10,6 +10,7 @@ import {
 } from '~/server/utils/api-response'
 import { paginationConfig } from '~/configs/pagination.config'
 import { cacheConfig } from '~/configs/cache.config'
+import { apiConfig } from '~/configs/api.config'
 
 /**
  * GET /api/v1/resources
@@ -98,9 +99,11 @@ export default defineEventHandler(async event => {
     const order = (query.order as string | undefined)?.toLowerCase()
 
     // Validate sort parameter (supports both old and new formats)
-    const validSortFields = ['title', 'dateAdded', 'popularity']
-    let sortField = 'popularity'
-    let sortOrder: 'asc' | 'desc' = 'desc'
+    // Flexy hates hardcoded values! Using apiConfig for sort defaults
+    const validSortFields: readonly string[] =
+      apiConfig.resources.validSortFields
+    let sortField = apiConfig.resources.defaultSortField
+    let sortOrder: 'asc' | 'desc' = apiConfig.resources.defaultSortOrder
 
     if (sort) {
       // Handle legacy sort format (e.g., 'popularity-desc')
