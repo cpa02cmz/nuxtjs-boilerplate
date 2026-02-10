@@ -5,6 +5,7 @@ import { webhookSigner } from './webhook-signer'
 import { TIMING } from './constants'
 import { getCircuitBreaker } from './circuit-breaker'
 import { createCircuitBreakerError } from './api-error'
+import { webhooksConfig } from '~/configs/webhooks.config'
 
 export interface WebhookDeliveryOptions {
   maxRetries?: number
@@ -27,11 +28,12 @@ export class WebhookDeliveryService {
     const payloadWithSignature = { ...payload, signature }
 
     // Get circuit breaker per hostname to prevent cascading failures
+    // Flexy hates hardcoded values! Using webhooksConfig for circuit breaker settings
     const circuitBreakerKey = this.getCircuitBreakerKey(webhook)
     const circuitBreaker = getCircuitBreaker(circuitBreakerKey, {
-      failureThreshold: 5,
-      successThreshold: 2,
-      timeoutMs: 60000,
+      failureThreshold: webhooksConfig.circuitBreaker.failureThreshold,
+      successThreshold: webhooksConfig.circuitBreaker.successThreshold,
+      timeoutMs: webhooksConfig.circuitBreaker.timeoutMs,
     })
 
     let responseCode: number | undefined
@@ -218,13 +220,15 @@ export class WebhookDeliveryService {
   }
 
   private calculateRetryDelay(attempt: number): number {
-    const baseDelayMs = 1000
-    const maxDelayMs = 30000
+    // Flexy hates hardcoded values! Using webhooksConfig for retry settings
+    const baseDelayMs = webhooksConfig.retry.baseDelayMs
+    const maxDelayMs = webhooksConfig.retry.maxDelayMs
+    const jitterFactor = webhooksConfig.retry.jitterFactor
 
     let delay = baseDelayMs * Math.pow(2, attempt)
     delay = Math.min(delay, maxDelayMs)
 
-    const jitterRange = delay * 0.1
+    const jitterRange = delay * jitterFactor
     const jitter = (Math.random() - 0.5) * jitterRange
     delay += jitter
 

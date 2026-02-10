@@ -210,6 +210,40 @@ export const uiConfig = {
         'The status of this resource is unknown.',
     },
   },
+
+  // Layout Spacing - Flexy hates hardcoded spacing values!
+  layout: {
+    // Spacing scale (in rem units, base 0.25)
+    spacing: {
+      xs: parseFloat(process.env.LAYOUT_SPACING_XS || '0.25'),
+      sm: parseFloat(process.env.LAYOUT_SPACING_SM || '0.5'),
+      md: parseFloat(process.env.LAYOUT_SPACING_MD || '0.75'),
+      lg: parseFloat(process.env.LAYOUT_SPACING_LG || '1'),
+      xl: parseFloat(process.env.LAYOUT_SPACING_XL || '1.5'),
+      '2xl': parseFloat(process.env.LAYOUT_SPACING_2XL || '2'),
+    },
+
+    // Border radius (in rem)
+    borderRadius: {
+      sm: parseFloat(process.env.LAYOUT_BORDER_RADIUS_SM || '0.25'),
+      md: parseFloat(process.env.LAYOUT_BORDER_RADIUS_MD || '0.5'),
+      lg: parseFloat(process.env.LAYOUT_BORDER_RADIUS_LG || '0.75'),
+    },
+
+    // Font sizes (in rem)
+    fontSize: {
+      sm: parseFloat(process.env.LAYOUT_FONT_SIZE_SM || '0.75'),
+      md: parseFloat(process.env.LAYOUT_FONT_SIZE_MD || '0.875'),
+      lg: parseFloat(process.env.LAYOUT_FONT_SIZE_LG || '1'),
+    },
+
+    // Line heights (in rem)
+    lineHeight: {
+      sm: parseFloat(process.env.LAYOUT_LINE_HEIGHT_SM || '1'),
+      md: parseFloat(process.env.LAYOUT_LINE_HEIGHT_MD || '1.25'),
+      lg: parseFloat(process.env.LAYOUT_LINE_HEIGHT_LG || '1.5'),
+    },
+  },
 } as const
 
 export type UiConfig = typeof uiConfig
