@@ -14,6 +14,7 @@ import {
 import { defineEventHandler, getQuery } from 'h3'
 import { searchAnalyticsTracker } from '~/utils/searchAnalytics'
 import { limitsConfig } from '~/configs/limits.config'
+import { logger } from '~/utils/logger'
 
 export interface RecommendationQuery {
   userId?: string
@@ -119,7 +120,7 @@ export default defineEventHandler(async event => {
         },
       }
     } catch (error) {
-      console.warn('Failed to fetch search analytics:', error)
+      logger.warn('Failed to fetch search analytics:', error)
       // Continue without search analytics
     }
 

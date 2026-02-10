@@ -4,11 +4,12 @@ import {
   randomBytes,
   scryptSync,
 } from 'node:crypto'
+import { logger } from '~/utils/logger'
 
 const ENCRYPTION_KEY = process.env.WEBHOOK_SECRET_ENCRYPTION_KEY
 
 if (!ENCRYPTION_KEY && process.env.NODE_ENV === 'production') {
-  console.warn(
+  logger.warn(
     'Warning: WEBHOOK_SECRET_ENCRYPTION_KEY not set. Webhook secrets will not be encrypted.'
   )
 }
@@ -70,7 +71,7 @@ export function decryptSecret(encrypted: string): string | null {
     // Sanitize error logging to prevent potential sensitive data exposure
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error'
-    console.error('Failed to decrypt webhook secret:', errorMessage)
+    logger.error('Failed to decrypt webhook secret:', errorMessage)
     return null
   }
 }
