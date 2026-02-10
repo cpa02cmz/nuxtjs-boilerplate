@@ -31,6 +31,7 @@ jobs:
   # STEP 1 – Pilih PR dulu (PR event / dispatch / schedule).
   select_pr:
     runs-on: ubuntu-22.04
+    timeout-minutes: 10
     outputs:
       pr_number: ${{ steps.select.outputs.pr_number }}
       pr_title: ${{ steps.select.outputs.pr_title }}
@@ -104,6 +105,7 @@ jobs:
     # Hanya jalan kalau ada PR terpilih
     if: needs.select_pr.outputs.pr_number != ''
     runs-on: ubuntu-22.04
+    timeout-minutes: 30
     outputs:
       build_result: ${{ steps.set_result.outputs.result }}
 
@@ -211,6 +213,7 @@ jobs:
   autofix:
     needs: [select_pr, build]
     runs-on: ubuntu-22.04
+    timeout-minutes: 60
 
     # Jalan hanya kalau:
     # - Ada PR terpilih
