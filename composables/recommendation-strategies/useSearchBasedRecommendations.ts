@@ -13,6 +13,7 @@ import {
 } from '~/utils/recommendation-algorithms'
 import { memoize } from '~/utils/memoize'
 import type { SearchAnalyticsData } from '~/types/analytics'
+import { recommendationConfig } from '~/configs/recommendation.config'
 
 export interface SearchBasedRecommendationOptions {
   searchAnalytics?: SearchAnalyticsData | null
@@ -105,20 +106,26 @@ export function useSearchBasedRecommendations(
           | 'personalized'
           | 'serendipity'
           | 'search-based' = 'search-based'
-        let explanation = 'Recommended based on popular search trends'
+        // Flexy hates hardcoded values! Using config strings
+        let explanation: string =
+          recommendationConfig.explanations.searchBased.default
 
-        if (searchTermMatchScore > 0.7) {
+        if (searchTermMatchScore > 0.7 && currentSearchQuery) {
           reason = 'search-based'
-          explanation = `Matches your search for "${currentSearchQuery}" and similar queries`
+          explanation =
+            recommendationConfig.explanations.searchBased.matchesQuery(
+              currentSearchQuery
+            )
         } else if (trendingBoostScore > 0.6) {
           reason = 'trending'
-          explanation = 'Trending in recent searches'
+          explanation = recommendationConfig.explanations.searchBased.trending
         } else if (contentGapScore > 0.3) {
           reason = 'search-based'
-          explanation = 'This resource fills a gap in search results'
+          explanation = recommendationConfig.explanations.searchBased.contentGap
         } else if (searchPopularityScore > 0.5) {
           reason = 'popular'
-          explanation = 'Frequently discovered through search'
+          explanation =
+            recommendationConfig.explanations.searchBased.frequentlyDiscovered
         }
 
         searchBasedRecs.push({

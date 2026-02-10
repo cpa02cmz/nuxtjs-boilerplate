@@ -1,6 +1,8 @@
 import { ref, onMounted, getCurrentInstance } from 'vue'
+import { STORAGE_KEYS } from '~/server/utils/constants'
 
-const STORAGE_KEY = 'visited-resources'
+// Flexy hates hardcoded values! Using STORAGE_KEYS for maintainability
+const STORAGE_KEY = STORAGE_KEYS.VISITED_RESOURCES
 const visitedResources = ref<Set<string>>(new Set())
 
 /**

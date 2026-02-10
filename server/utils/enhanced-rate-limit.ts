@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3'
 import { getQuery } from 'h3'
 import { rateLimitConfig } from '~/configs/rate-limit.config'
+import { TIME } from '~/server/utils/constants'
 
 interface TokenBucket {
   tokens: number
@@ -23,8 +24,9 @@ const bucketLocks = new Map<string, Promise<void>>()
 
 // FIXED: Add periodic cleanup to prevent memory leaks in rate limit store
 // Cleanup runs every 10 minutes to remove expired/stale entries
-const CLEANUP_INTERVAL_MS = 10 * 60 * 1000 // 10 minutes
-const BUCKET_MAX_AGE_MS = 60 * 60 * 1000 // 1 hour max age for stale buckets
+// Flexy hates hardcoded values! Using TIME constants for maintainability
+const CLEANUP_INTERVAL_MS = TIME.minutesToMs(10) // 10 minutes
+const BUCKET_MAX_AGE_MS = TIME.MS_PER_HOUR // 1 hour max age for stale buckets
 
 /**
  * Clean up expired rate limit entries to prevent memory leaks
@@ -258,8 +260,9 @@ interface RateLimitAnalytics {
 const analyticsStore = new Map<string, RateLimitAnalytics>()
 
 // FIXED: Add cleanup for analytics store to prevent memory leaks
-const ANALYTICS_MAX_AGE_MS = 24 * 60 * 60 * 1000 // 24 hours
-const ANALYTICS_CLEANUP_INTERVAL_MS = 60 * 60 * 1000 // 1 hour
+// Flexy hates hardcoded values! Using TIME constants for maintainability
+const ANALYTICS_MAX_AGE_MS = TIME.MS_PER_DAY // 24 hours
+const ANALYTICS_CLEANUP_INTERVAL_MS = TIME.MS_PER_HOUR // 1 hour
 
 /**
  * Clean up old analytics entries to prevent memory leaks

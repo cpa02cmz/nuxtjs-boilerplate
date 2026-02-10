@@ -141,6 +141,30 @@ export const recommendationConfig = {
       'microservices',
     ],
   },
+
+  // Explanation strings for recommendations - Flexy hates hardcoded strings!
+  explanations: {
+    personalized: {
+      default: 'Recommended based on your interests and preferences',
+      interestMatch: (category: string) =>
+        `This resource matches your interests in ${category} and related technologies`,
+    },
+    contentBased: {
+      default: 'Based on similarity to resources you might like',
+      similarTo: (title: string) =>
+        `Similar to ${title} based on category, tags, and technology`,
+    },
+    collaborative: 'Users with similar interests also liked this',
+    popular: 'Popular among all users',
+    searchBased: {
+      default: 'Recommended based on popular search trends',
+      matchesQuery: (query: string) =>
+        `Matches your search for "${query}" and similar queries`,
+      trending: 'Trending in recent searches',
+      contentGap: 'This resource fills a gap in search results',
+      frequentlyDiscovered: 'Frequently discovered through search',
+    },
+  },
 } as const
 
 export type RecommendationConfig = typeof recommendationConfig
