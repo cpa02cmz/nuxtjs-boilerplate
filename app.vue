@@ -53,9 +53,8 @@ const websiteSchema = {
 // Add JSON-LD structured data to the head
 useHead({
   link: [
-    // Add resource hints for performance
-    { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
-    { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
+    // Note: Google Fonts dns-prefetch removed - not used by this application
+    // Fonts are loaded via system font stack for better performance
     // Add canonical URL
     {
       rel: 'canonical',
