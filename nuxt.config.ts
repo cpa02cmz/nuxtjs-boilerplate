@@ -240,20 +240,12 @@ export default defineNuxtConfig({
     },
     head: {
       link: [
-        // Preconnect to external domains
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        {
-          rel: 'preconnect',
-          href: 'https://fonts.gstatic.com',
-          crossorigin: 'anonymous',
-        },
+        // Note: Google Fonts preconnect removed - not used by this application
+        // Fonts are loaded via system font stack for better performance
         // Prefetch static resources only - API endpoints should not be prefetched
         // { rel: 'prefetch', href: '/api/resources.json' }, // DISABLED: Causes rate limiting issues
         // Note: Critical CSS is automatically injected by Nuxt
         // Do not preload /_nuxt/ directory as it causes 404 errors
-        // DNS prefetch for external resources
-        { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
-        { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
       ],
       script: [],
       // Add performance-related and security meta tags

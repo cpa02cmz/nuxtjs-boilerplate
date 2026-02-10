@@ -6,10 +6,14 @@ type Theme = 'light' | 'dark' | 'system'
 const STORAGE_KEY = patternsConfig.storageKeys.themePreference
 
 export function useTheme() {
+  // Initialize as null to indicate "not yet determined" - prevents hydration mismatches
   const theme = ref<Theme>('system')
-  const isDark = ref(false)
+  const isDark = ref<boolean | null>(null)
+  const isMounted = ref(false)
 
   const updateThemeClass = () => {
+    if (typeof document === 'undefined') return
+
     const root = document.documentElement
 
     if (theme.value === 'dark') {
@@ -57,6 +61,8 @@ export function useTheme() {
 
   // Watch for system preference changes
   onMounted(() => {
+    isMounted.value = true
+
     if (typeof localStorage !== 'undefined') {
       const saved = localStorage.getItem(STORAGE_KEY) as Theme | null
       if (saved && ['light', 'dark', 'system'].includes(saved)) {
@@ -86,6 +92,7 @@ export function useTheme() {
   return {
     theme,
     isDark,
+    isMounted,
     setTheme,
     toggleTheme,
     cycleTheme,
