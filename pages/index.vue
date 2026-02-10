@@ -5,11 +5,10 @@
         <h1
           class="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl"
         >
-          Free Stuff on the Internet
+          {{ appConfig.name }}
         </h1>
         <p class="mt-6 max-w-lg mx-auto text-xl text-gray-600">
-          Discover amazing free resources available on the internet - from AI
-          tools to hosting services.
+          {{ appConfig.description }}
         </p>
       </div>
 
@@ -123,7 +122,7 @@
           </div>
 
           <!-- Resources Grid -->
-          <div class="lg:w-3/4">
+          <div class="lg:w-3/4 min-h-[400px]">
             <!-- Results Info -->
             <div class="flex justify-between items-center mb-6">
               <ResourceSort
@@ -135,22 +134,30 @@
 
             <!-- Resources Grid -->
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              <LazyResourceCard
-                v-for="resource in filteredResources"
-                :id="resource.id"
+              <div
+                v-for="(resource, index) in filteredResources"
                 :key="resource.id"
-                :title="resource.title"
-                :description="resource.description"
-                :benefits="resource.benefits"
-                :url="resource.url"
-                :button-label="getButtonLabel(resource.category)"
-                :highlighted-title="
-                  highlightSearchTerms(resource.title, searchQuery)
-                "
-                :highlighted-description="
-                  highlightSearchTerms(resource.description, searchQuery)
-                "
-              />
+                class="resource-card-wrapper"
+                :style="{
+                  animationDelay: `${Math.min(index * animationConfig.card.staggerDelayMs, animationConfig.card.maxDelayMs)}ms`,
+                }"
+              >
+                <LazyResourceCard
+                  :id="resource.id"
+                  :title="resource.title"
+                  :description="resource.description"
+                  :benefits="resource.benefits"
+                  :url="resource.url"
+                  :button-label="getButtonLabel(resource.category)"
+                  :highlighted-title="
+                    highlightSearchTerms(resource.title, searchQuery)
+                  "
+                  :highlighted-description="
+                    highlightSearchTerms(resource.description, searchQuery)
+                  "
+                  :date-added="resource.dateAdded"
+                />
+              </div>
             </div>
           </div>
 
@@ -160,16 +167,16 @@
             class="text-center py-12"
           >
             <h3 class="text-xl font-medium text-gray-900 mb-2">
-              No resources found
+              {{ contentConfig.searchResults.noResults.title }}
             </h3>
             <p class="text-gray-500 mb-6">
-              Try adjusting your search or filter criteria
+              {{ contentConfig.searchResults.noResults.message }}
             </p>
             <button
               class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900"
               @click="resetAllFilters"
             >
-              Reset Filters
+              {{ contentConfig.filters.resetAll }}
             </button>
           </div>
 
@@ -182,21 +189,29 @@
               Trending Resources
             </h2>
             <div class="grid grid-cols-1 gap-6">
-              <LazyResourceCard
-                v-for="resource in trendingResources"
+              <div
+                v-for="(resource, index) in trendingResources"
                 :key="resource.id"
-                :title="resource.title"
-                :description="resource.description"
-                :benefits="resource.benefits"
-                :url="resource.url"
-                :button-label="getButtonLabel(resource.category)"
-                :highlighted-title="
-                  highlightSearchTerms(resource.title, searchQuery)
-                "
-                :highlighted-description="
-                  highlightSearchTerms(resource.description, searchQuery)
-                "
-              />
+                class="resource-card-wrapper"
+                :style="{
+                  animationDelay: `${Math.min(index * animationConfig.card.staggerDelayMs, animationConfig.card.maxDelayMs)}ms`,
+                }"
+              >
+                <LazyResourceCard
+                  :title="resource.title"
+                  :description="resource.description"
+                  :benefits="resource.benefits"
+                  :url="resource.url"
+                  :button-label="getButtonLabel(resource.category)"
+                  :highlighted-title="
+                    highlightSearchTerms(resource.title, searchQuery)
+                  "
+                  :highlighted-description="
+                    highlightSearchTerms(resource.description, searchQuery)
+                  "
+                  :date-added="resource.dateAdded"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -221,6 +236,10 @@ import { useUrlSync } from '~/composables/useUrlSync'
 import { useHomePage } from '~/composables/useHomePage'
 import { getButtonLabel } from '~/utils/resourceHelper'
 import ResourceSort from '~/components/ResourceSort.vue'
+import { appConfig } from '~/configs/app.config'
+import { seoConfig } from '~/configs/seo.config'
+import { animationConfig } from '~/configs/animation.config'
+import { contentConfig } from '~/configs/content.config'
 
 definePageMeta({
   layout: 'default',
@@ -229,15 +248,16 @@ definePageMeta({
 // Set page-specific meta tags
 const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
-  title: 'Free Stuff on the Internet - Free Resources for Developers',
-  ogTitle: 'Free Stuff on the Internet - Free Resources for Developers',
-  description:
-    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-  ogDescription:
-    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-  ogImage: '/og-image.jpg',
-  ogUrl: runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000',
-  twitterCard: 'summary_large_image',
+  title: seoConfig.meta.title,
+  ogTitle: seoConfig.meta.title,
+  description: seoConfig.meta.description,
+  ogDescription: seoConfig.meta.description,
+  ogImage: seoConfig.og.image,
+  ogUrl:
+    runtimeConfig.public.siteUrl ||
+    runtimeConfig.public.canonicalUrl ||
+    'http://localhost:3000',
+  twitterCard: seoConfig.twitter.card,
 })
 
 // Use the resources composable
@@ -286,3 +306,31 @@ const resetAllFilters = () => {
   searchQuery.value = ''
 }
 </script>
+
+<style>
+/* Staggered entrance animation for resource cards */
+.resource-card-wrapper {
+  opacity: 0;
+  animation: card-enter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Respect reduced motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .resource-card-wrapper {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+</style>

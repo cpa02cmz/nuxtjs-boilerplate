@@ -13,11 +13,11 @@
         <OptimizedImage
           :src="icon"
           :alt="title"
-          width="48"
-          height="48"
+          :width="uiConfig.images.defaultWidth"
+          :height="uiConfig.images.defaultHeight"
           format="webp"
           loading="lazy"
-          quality="80"
+          :quality="uiConfig.images.quality"
           img-class="w-12 h-12 rounded object-contain"
           @error="handleImageError"
         />
@@ -26,12 +26,13 @@
         <div class="flex items-center justify-between">
           <h3
             id="resource-title"
+            :title="title"
             class="text-lg font-medium text-gray-900 truncate"
           >
             <NuxtLink
               v-if="id"
               :to="`/resources/${id}`"
-              class="hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:rounded-sm transition-colors duration-200"
+              class="resource-link hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:rounded-sm transition-colors duration-200"
               :aria-label="`View details for ${title}`"
             >
               <span
@@ -50,6 +51,27 @@
               <span v-else>{{ title }}</span>
             </span>
           </h3>
+          <!-- New badge -->
+          <span
+            v-if="isNew"
+            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-sm animate-new-pulse mr-2"
+            role="status"
+            aria-label="New resource added within the last 7 days"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-3 w-3 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            New
+          </span>
           <!-- Resource status badge -->
           <ResourceStatus
             v-if="status"
@@ -77,7 +99,7 @@
             id="free-tier-label"
             class="font-medium text-gray-900 text-sm"
           >
-            Free Tier:
+            {{ contentConfig.resourceCard.freeTier }}
           </p>
           <ul
             class="mt-1 space-y-1 text-xs text-gray-800"
@@ -128,7 +150,7 @@
             :href="url"
             :target="newTab ? '_blank' : '_self'"
             rel="noopener noreferrer"
-            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 hover:scale-105 active:scale-95 transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 hover:scale-105 active:bg-gray-950 active:scale-95 transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
             :aria-label="`Visit ${title} - opens in ${newTab ? 'new tab' : 'same window'}`"
             @click="handleLinkClick"
           >
@@ -136,7 +158,9 @@
             <span
               v-if="newTab"
               class="ml-1 text-xs"
-            >(new tab)</span>
+            >{{
+              contentConfig.resourceCard.newTab
+            }}</span>
           </a>
           <div
             class="flex items-center space-x-2"
@@ -162,17 +186,82 @@
                 :url="`${runtimeConfig.public.canonicalUrl}/resources/${id}`"
               />
             </ClientOnly>
+            <!-- Quick Copy button -->
+            <button
+              v-if="id"
+              :class="[
+                'p-2 rounded-full transition-all duration-200 ease-out',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+                isCopied
+                  ? 'bg-green-100 text-green-600 scale-110'
+                  : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-500 dark:hover:text-gray-200 dark:hover:bg-gray-800',
+              ]"
+              :aria-label="
+                isCopied ? `Copied link to ${title}` : `Copy link to ${title}`
+              "
+              :title="isCopied ? 'Copied!' : 'Copy link'"
+              @click="copyResourceUrl"
+            >
+              <svg
+                v-if="!isCopied"
+                xmlns="http://www.w3.org/2000/svg"
+                :class="[
+                  'h-5 w-5 transition-transform duration-200',
+                  isCopyAnimating && 'animate-icon-pop',
+                ]"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                <path
+                  d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"
+                />
+              </svg>
+              <svg
+                v-else
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 animate-check-pop"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
             <!-- Compare button -->
             <button
               v-if="id"
-              class="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 rounded-full transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-              :aria-label="`Add ${title} to comparison`"
-              title="Add to comparison"
+              ref="compareButtonRef"
+              :class="[
+                'p-2 rounded-full transition-all duration-200 ease-out',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+                isAddingToComparison
+                  ? 'bg-blue-100 text-blue-600 scale-110'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800',
+              ]"
+              :aria-label="
+                isAddingToComparison
+                  ? `Added ${title} to comparison`
+                  : `Add ${title} to comparison`
+              "
+              :title="
+                isAddingToComparison
+                  ? 'Added to comparison'
+                  : 'Add to comparison'
+              "
+              :aria-pressed="isAddingToComparison"
               @click="addResourceToComparison"
             >
               <svg
+                v-if="!isAddingToComparison"
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
+                :class="[
+                  'h-5 w-5 transition-transform duration-200',
+                  isCompareAnimating && 'animate-icon-pop',
+                ]"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -180,6 +269,19 @@
                 <path
                   fill-rule="evenodd"
                   d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <svg
+                v-else
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 animate-check-pop"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                   clip-rule="evenodd"
                 />
               </svg>
@@ -228,7 +330,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
-import { useHead, useRuntimeConfig } from '#imports'
+import { useHead, useRuntimeConfig, useNuxtApp } from '#imports'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import OptimizedImage from '~/components/OptimizedImage.vue'
 import ResourceStatus from '~/components/ResourceStatus.vue'
@@ -236,6 +338,17 @@ import { trackResourceView, trackResourceClick } from '~/utils/analytics'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
 import { memoizeHighlight } from '~/utils/memoize'
 import { logError } from '~/utils/errorLogger'
+import { copyToClipboard } from '~/utils/clipboard'
+import {
+  hapticSuccess,
+  hapticError,
+  hapticWarning,
+} from '~/utils/hapticFeedback'
+import { uiConfig } from '~/configs/ui.config'
+import { contentConfig } from '~/configs/content.config'
+import { limitsConfig } from '~/configs/limits.config'
+import { animationConfig } from '~/configs/animation.config'
+import { TIME_MS } from '~/configs/time.config'
 import type { Resource } from '~/types/resource'
 
 interface Props {
@@ -255,6 +368,7 @@ interface Props {
   similarityReason?: string
   status?: string
   healthScore?: number
+  dateAdded?: string
 }
 
 // Get the comparison composable
@@ -264,7 +378,7 @@ const props = withDefaults(defineProps<Props>(), {
   id: undefined,
   category: 'unknown',
   newTab: true,
-  buttonLabel: 'Get Free Access',
+  buttonLabel: uiConfig.resourceCard.defaultButtonLabel,
   highlightedTitle: undefined,
   highlightedDescription: undefined,
   icon: undefined,
@@ -273,9 +387,28 @@ const props = withDefaults(defineProps<Props>(), {
   healthScore: undefined,
   similarityScore: undefined,
   similarityReason: undefined,
+  dateAdded: undefined,
 })
 
 const hasError = ref(false)
+const isAddingToComparison = ref(false)
+const isCompareAnimating = ref(false)
+const compareButtonRef = ref<HTMLButtonElement | null>(null)
+const isCopied = ref(false)
+const isCopyAnimating = ref(false)
+
+// Check if resource is new (added within the last 7 days)
+// Flexy hates hardcoded values! Using TIME_MS constants from config
+const isNew = computed(() => {
+  if (!props.dateAdded) return false
+
+  const addedDate = new Date(props.dateAdded)
+  const now = new Date()
+  const diffTime = Math.abs(now.getTime() - addedDate.getTime())
+  const diffDays = Math.ceil(diffTime / TIME_MS.DAY)
+
+  return diffDays <= 7
+})
 
 // Memoized highlight function to prevent recomputation
 const memoizedHighlight = memoizeHighlight(sanitizeAndHighlight)
@@ -340,9 +473,9 @@ const handleLinkClick = (event: Event) => {
 // Get runtime config for canonical URL
 const runtimeConfig = useRuntimeConfig()
 
-// Method to add resource to comparison
+// Method to add resource to comparison with UX feedback
 const addResourceToComparison = () => {
-  if (!props.id) return
+  if (!props.id || isAddingToComparison.value) return
 
   // Create a resource object with the required properties
   const resource: Partial<Resource> = {
@@ -355,11 +488,83 @@ const addResourceToComparison = () => {
   }
 
   // Add the resource to comparison
-  const added = addResource(resource as Resource)
+  const result = addResource(resource as Resource)
 
-  if (added) {
-    // Navigate to comparison page
-    navigateTo('/compare')
+  if (result.success) {
+    // Show visual feedback
+    isAddingToComparison.value = true
+    isCompareAnimating.value = true
+
+    // Haptic feedback for successful addition
+    hapticSuccess()
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches
+
+    // Navigate after brief delay to allow users to see feedback
+    // Skip delay for users who prefer reduced motion
+    const navigationDelay = prefersReducedMotion
+      ? 0
+      : animationConfig.navigation.reducedMotionDelayMs
+
+    setTimeout(() => {
+      navigateTo('/compare')
+    }, navigationDelay)
+  } else if (result.reason === 'limit_reached') {
+    // Show toast notification when comparison limit is reached
+    const { $toast } = useNuxtApp()
+    $toast.warning(
+      `Comparison limit reached (${limitsConfig.comparison.maxResources} resources max). Remove a resource to add another.`
+    )
+    // Haptic feedback for warning
+    hapticWarning()
+  } else if (result.reason === 'already_added') {
+    // Show toast notification when resource is already in comparison
+    const { $toast } = useNuxtApp()
+    $toast.info(`"${props.title}" is already in your comparison`)
+    // Light haptic for already added
+    hapticWarning()
+  }
+}
+
+// Method to copy resource URL to clipboard with visual feedback
+const copyResourceUrl = async () => {
+  if (!props.id || isCopied.value) return
+
+  const resourceUrl = `${runtimeConfig.public.canonicalUrl}/resources/${props.id}`
+  const result = await copyToClipboard(resourceUrl)
+
+  if (result.success) {
+    // Show visual feedback
+    isCopied.value = true
+    isCopyAnimating.value = true
+
+    // Haptic feedback for successful copy
+    hapticSuccess()
+
+    // Show toast notification
+    const { $toast } = useNuxtApp()
+    $toast.success(`Link to "${props.title}" copied to clipboard!`)
+
+    // Reset after delay using animationConfig
+    setTimeout(() => {
+      isCopied.value = false
+      isCopyAnimating.value = false
+    }, animationConfig.copySuccess.resetDelayMs)
+  } else {
+    // Show error toast
+    const { $toast } = useNuxtApp()
+    $toast.error('Failed to copy link. Please try again.')
+    // Haptic feedback for error
+    hapticError()
+    logError(
+      'Failed to copy resource URL to clipboard',
+      new Error(result.error),
+      'ResourceCard',
+      { resourceId: props.id, resourceTitle: props.title }
+    )
   }
 }
 
@@ -420,3 +625,95 @@ if (typeof useHead === 'function') {
   })
 }
 </script>
+
+<style scoped>
+/* Icon pop animation when clicking compare button */
+.animate-icon-pop {
+  animation: icon-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes icon-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Checkmark pop animation when added to comparison */
+.animate-check-pop {
+  animation: check-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes check-pop {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* New badge pulse animation */
+.animate-new-pulse {
+  animation: new-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes new-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
+}
+
+/* Visited resource link state - subtle indicator for explored resources */
+.resource-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.resource-link:visited {
+  color: #6b7280; /* gray-500 */
+}
+
+.resource-link:visited::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  background-color: #9ca3af; /* gray-400 */
+  border-radius: 50%;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.resource-link:hover:visited {
+  color: #4b5563; /* gray-600 */
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-icon-pop,
+  .animate-check-pop,
+  .animate-new-pulse {
+    animation: none;
+  }
+}
+</style>

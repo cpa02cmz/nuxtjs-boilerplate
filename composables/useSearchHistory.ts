@@ -1,10 +1,11 @@
 import { ref, computed } from 'vue'
 import { createStorage } from '~/utils/storage'
 import { STORAGE_KEYS } from '~/server/utils/constants'
+import { limitsConfig } from '~/configs/limits.config'
 
 export const useSearchHistory = () => {
   const SEARCH_HISTORY_KEY = STORAGE_KEYS.SEARCH_HISTORY
-  const MAX_HISTORY_ITEMS = 10
+  const MAX_HISTORY_ITEMS = limitsConfig.search.maxHistoryItems
 
   const storage = createStorage<string[]>(SEARCH_HISTORY_KEY, [])
   const searchHistory = ref<string[]>([])

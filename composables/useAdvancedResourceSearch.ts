@@ -11,10 +11,11 @@ import {
 } from '~/utils/searchHighlighting'
 import { useFacetUtils } from '~/utils/facet-utils'
 import { filterByAllCriteriaWithDateRange } from '~/utils/filter-utils'
+import { limitsConfig } from '~/configs/limits.config'
 
 type FacetCounts = Record<string, number>
 
-const MAX_CACHE_SIZE = 100
+const MAX_CACHE_SIZE = limitsConfig.search.maxCacheSize
 
 export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
   const { addSearchToHistory } = useSearchHistory()
@@ -155,7 +156,7 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
 
   const getAdvancedSuggestions = (
     query: string,
-    limit: number = 5
+    limit: number = limitsConfig.search.defaultSuggestionsLimit
   ): Resource[] => {
     if (!query || !fuse) return []
 
@@ -165,15 +166,22 @@ export const useAdvancedResourceSearch = (resources: readonly Resource[]) => {
 
   const addToSearchHistory = addSearchToHistory
 
-  const getPopularSearches = (limit: number = 10) => {
+  const getPopularSearches = (
+    limit: number = limitsConfig.search.defaultPopularSearchesLimit
+  ) => {
     return searchAnalyticsTracker.getPopularSearches(limit)
   }
 
-  const getZeroResultSearches = (limit: number = 10) => {
+  const getZeroResultSearches = (
+    limit: number = limitsConfig.search.defaultZeroResultLimit
+  ) => {
     return searchAnalyticsTracker.getZeroResultSearches(limit)
   }
 
-  const getRelatedSearches = (query: string, limit: number = 5) => {
+  const getRelatedSearches = (
+    query: string,
+    limit: number = limitsConfig.search.defaultRelatedSearchesLimit
+  ) => {
     return searchAnalyticsTracker.getRelatedSearches(query, limit)
   }
 

@@ -47,6 +47,15 @@ export const rateLimitConfig = {
       'Too many webhook requests, please slow down.',
   },
 
+  // General API Endpoints (for analytics, submissions, etc.)
+  api: {
+    windowMs: parseInt(process.env.RATE_LIMIT_API_WINDOW_MS || '60000'), // 1 minute
+    maxRequests: parseInt(process.env.RATE_LIMIT_API_MAX || '60'),
+    message:
+      process.env.RATE_LIMIT_API_MESSAGE ||
+      'Too many API requests, please slow down.',
+  },
+
   // API Key Management
   apiKey: {
     windowMs: parseInt(process.env.RATE_LIMIT_API_KEY_WINDOW_MS || '900000'), // 15 minutes
@@ -62,6 +71,7 @@ export const rateLimitConfig = {
     windowSeconds: parseInt(
       process.env.RATE_LIMIT_DEFAULT_WINDOW_SECONDS || '60'
     ),
+    maxAgeHours: parseInt(process.env.RATE_LIMIT_MAX_AGE_HOURS || '24'),
   },
 
   // Rate Limit Headers
@@ -97,6 +107,8 @@ export function getRateLimitTier(path: string): RateLimitTier {
     path.includes('/api/categories')
   ) {
     return rateLimitConfig.heavy
+  } else if (path.includes('/api/analytics')) {
+    return rateLimitConfig.api
   } else {
     return rateLimitConfig.general
   }

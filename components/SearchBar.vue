@@ -4,7 +4,32 @@
       <div
         class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
       >
+        <!-- Loading spinner shown during debounce -->
         <svg
+          v-if="isSearching"
+          class="w-5 h-5 text-blue-500 animate-spin"
+          fill="none"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          />
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          />
+        </svg>
+        <!-- Search icon shown when not searching -->
+        <svg
+          v-else
           class="w-5 h-5 text-gray-400"
           fill="none"
           stroke="currentColor"
@@ -24,14 +49,20 @@
         id="search-input"
         ref="searchInputRef"
         type="search"
+        role="combobox"
+        aria-haspopup="listbox"
         :value="modelValue"
-        class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400"
-        placeholder="Search resources by name, description, tags..."
+        class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400 focus:shadow-lg focus:-translate-y-0.5"
+        :class="{
+          'placeholder:text-gray-300': isSearching,
+          'animate-focus-pulse': showFocusPulse,
+        }"
+        :placeholder="contentConfig.search.placeholder"
         aria-label="Search resources (Press / to focus)"
         aria-describedby="search-results-info search-shortcut-hint"
         :aria-expanded="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         aria-controls="search-suggestions-dropdown"
         aria-autocomplete="list"
@@ -39,14 +70,14 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint -->
       <div
         v-if="!modelValue && !isFocused"
-        class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none group"
+        class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
       >
         <kbd
-          class="hidden sm:inline-block px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded-md shadow-sm transition-all duration-150 group-hover:bg-gray-100 group-hover:border-gray-300 group-hover:shadow"
+          class="hidden sm:inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded-md shadow-sm transition-all duration-200 ease-out hover:bg-gray-100 hover:border-gray-300 hover:shadow-md hover:scale-105"
           aria-hidden="true"
         >
           /
@@ -60,37 +91,33 @@
         leave-from-class="opacity-100 scale-100"
         leave-to-class="opacity-0 scale-75"
       >
-        <div
+        <button
           v-if="modelValue"
-          class="absolute inset-y-0 right-0 flex items-center pr-3"
+          ref="clearButtonRef"
+          type="button"
+          class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none transition-all duration-200 ease-out rounded-full p-0.5 hover:bg-gray-100 hover:rotate-90 focus:ring-2 focus:ring-blue-500 active:scale-90"
+          aria-label="Clear search"
+          :aria-keyshortcuts="'Escape'"
+          @click="clearSearch"
+          @keydown.enter.prevent="clearSearch"
+          @keydown.space.prevent="clearSearch"
         >
-          <button
-            ref="clearButtonRef"
-            type="button"
-            class="text-gray-400 hover:text-gray-600 focus:outline-none transition-all duration-150 rounded-full p-1 hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-            aria-label="Clear search"
-            :aria-keyshortcuts="'Escape'"
-            @click="clearSearch"
-            @keydown.enter.prevent="clearSearch"
-            @keydown.space.prevent="clearSearch"
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
           >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
       </transition>
     </div>
 
@@ -99,7 +126,7 @@
       <LazySearchSuggestions
         v-if="
           showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
+          (suggestions.length > 0 || searchHistory.length > 0)
         "
         id="search-suggestions-dropdown"
         :suggestions="suggestions"
@@ -119,7 +146,8 @@
       aria-live="polite"
       class="sr-only"
     >
-      Search results will be updated automatically
+      <span v-if="isSearching">Searching...</span>
+      <span v-else>Search results will be updated automatically</span>
     </div>
   </div>
 </template>
@@ -130,6 +158,9 @@ import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
 import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
+import { contentConfig } from '~/configs/content.config'
+import { searchConfig } from '~/configs/search.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   modelValue: string
@@ -160,6 +191,8 @@ const showSuggestions = ref(false)
 const searchHistory = ref<string[]>([])
 const isFocused = ref(false)
 const activeIndex = ref(-1)
+const isSearching = ref(false)
+const showFocusPulse = ref(false)
 
 // Use the resources composable
 const { resources } = useResourceData()
@@ -177,6 +210,9 @@ const handleInput = (event: Event) => {
   // Update the model value immediately
   emit('update:modelValue', value)
 
+  // Show searching state for immediate feedback
+  isSearching.value = true
+
   // Debounce the search to avoid constant updates
   if (inputTimeout.value) {
     clearTimeout(inputTimeout.value)
@@ -186,6 +222,7 @@ const handleInput = (event: Event) => {
     debouncedQuery.value = value
     updateSuggestions(value)
     emit('search', value)
+    isSearching.value = false
   }, props.debounceTime)
 }
 
@@ -201,8 +238,14 @@ const updateSuggestions = (query: string) => {
       id: resource.id,
       title: resource.title,
       description:
-        resource.description.substring(0, 100) +
-        (resource.description.length > 100 ? '...' : ''),
+        resource.description.substring(
+          0,
+          searchConfig.behavior.descriptionTruncateLength
+        ) +
+        (resource.description.length >
+        searchConfig.behavior.descriptionTruncateLength
+          ? '...'
+          : ''),
       url: resource.url,
     }))
   } else {
@@ -216,6 +259,7 @@ const clearSearch = () => {
   suggestions.value = []
   showSuggestions.value = false
   activeIndex.value = -1
+  isSearching.value = false
 
   // Return focus to search input for seamless keyboard navigation
   nextTick(() => {
@@ -356,6 +400,19 @@ if (typeof window !== 'undefined') {
     ) {
       event.preventDefault()
       searchInputRef.value?.focus()
+
+      // Check for reduced motion preference
+      const prefersReducedMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches
+
+      // Trigger focus pulse animation for visual feedback (skip if reduced motion)
+      if (!prefersReducedMotion) {
+        showFocusPulse.value = true
+        setTimeout(() => {
+          showFocusPulse.value = false
+        }, uiConfig.timing.focusPulseDurationMs)
+      }
     }
   }
 
@@ -380,3 +437,45 @@ if (typeof window !== 'undefined') {
   })
 }
 </script>
+
+<style scoped>
+/* Focus pulse animation for keyboard shortcut feedback */
+@keyframes focus-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.animate-focus-pulse {
+  animation: focus-pulse v-bind('`${uiConfig.timing.focusPulseDurationMs}ms`')
+    ease-out;
+}
+
+/* Respect reduced motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  input {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  kbd {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  button {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .animate-focus-pulse {
+    animation: none !important;
+  }
+}
+</style>

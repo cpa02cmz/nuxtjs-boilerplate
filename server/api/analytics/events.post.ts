@@ -1,10 +1,9 @@
 import { defineEventHandler, readBody, getHeaders, getRequestIP } from 'h3'
-import { randomUUID } from 'node:crypto'
+import { randomUUID, createHash } from 'node:crypto'
 import { insertAnalyticsEvent } from '~/server/utils/analytics-db'
 import { analyticsEventSchema } from '~/server/utils/validation-schemas'
 import {
   sendValidationError,
-  sendRateLimitError,
   sendApiError,
   sendSuccessResponse,
 } from '~/server/utils/api-response'
@@ -13,29 +12,32 @@ import {
   ErrorCode,
   ErrorCategory,
 } from '~/server/utils/api-error'
-import {
-  checkRateLimit,
-  recordRateLimitedEvent,
-} from '~/server/utils/rate-limiter'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { logger } from '~/utils/logger'
+
+/**
+ * Hashes an IP address for privacy protection
+ * Uses SHA-256 with a daily rotating salt to prevent tracking across days
+ * while still allowing daily analytics
+ */
+function hashIP(ip: string): string {
+  // Create a daily salt based on current date (changes every day)
+  const dailySalt = new Date().toISOString().split('T')[0] // YYYY-MM-DD
+  const hash = createHash('sha256')
+    .update(ip + dailySalt)
+    .digest('hex')
+    .substring(0, 16) // Use first 16 chars for shorter storage
+  return `hash_${hash}`
+}
 
 export default defineEventHandler(async event => {
   try {
     const body = await readBody(event)
     const headers = getHeaders(event)
-    const clientIP = getRequestIP(event) || 'unknown'
+    const rawIP = getRequestIP(event) || 'unknown'
+    const clientIP = hashIP(rawIP) // Hash IP for privacy protection
 
-    const rateLimitCheck = await checkRateLimit(clientIP, 10, 60)
-
-    if (!rateLimitCheck.allowed) {
-      await recordRateLimitedEvent(clientIP, '/api/analytics/events')
-
-      const retryAfter = Math.ceil(
-        (rateLimitCheck.resetTime - Date.now()) / 1000
-      )
-
-      return sendRateLimitError(event, retryAfter)
-    }
+    await rateLimit(event, rawIP) // Use raw IP for rate limiting only
 
     const validationResult = analyticsEventSchema.safeParse({
       type: body.type,
@@ -86,15 +88,28 @@ export default defineEventHandler(async event => {
     // Generate unique event ID using UUID
     const eventId = randomUUID()
 
+    // Get rate limit info from response headers set by rateLimit()
+    const rateLimitRemaining = event.node.res?.getHeader(
+      'X-RateLimit-Remaining'
+    )
+    const rateLimitLimit = event.node.res?.getHeader('X-RateLimit-Limit')
+    const rateLimitReset = event.node.res?.getHeader('X-RateLimit-Reset')
+
     // Use standardized success response helper
     return sendSuccessResponse(
       event,
       {
         eventId,
         rateLimit: {
-          remaining: rateLimitCheck.remainingRequests - 1,
-          limit: 10,
-          reset: new Date(rateLimitCheck.resetTime).toISOString(),
+          remaining: rateLimitRemaining
+            ? parseInt(rateLimitRemaining as string, 10)
+            : 0,
+          limit: rateLimitLimit ? parseInt(rateLimitLimit as string, 10) : 10,
+          reset: rateLimitReset
+            ? new Date(
+                parseInt(rateLimitReset as string, 10) * 1000
+              ).toISOString()
+            : new Date().toISOString(),
         },
       },
       201

@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import { setResponseStatus } from 'h3'
+import { randomUUID } from 'node:crypto'
 import type { ApiError } from '~/server/utils/api-error'
 import {
   ErrorCode,
@@ -137,7 +138,7 @@ export function handleApiRouteError(event: H3Event, error: unknown): void {
 }
 
 function generateRequestId(): string {
-  return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  return `req_${randomUUID()}`
 }
 
 export function wrapApiHandler<T>(handler: (_event: H3Event) => Promise<T>) {

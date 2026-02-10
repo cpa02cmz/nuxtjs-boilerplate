@@ -56,6 +56,41 @@ export const themeConfig = {
     toastMaxWidth: parseInt(process.env.TOAST_MAX_WIDTH || '400'),
     toastMinWidth: parseInt(process.env.TOAST_MIN_WIDTH || '300'),
   },
+
+  // Scroll To Top Component Colors
+  scrollToTop: {
+    progressBg: process.env.SCROLL_PROGRESS_BG || '#e5e7eb',
+    progressFill: process.env.SCROLL_PROGRESS_FILL || '#3b82f6',
+    iconColor: process.env.SCROLL_ICON_COLOR || '#374151',
+    iconBg: process.env.SCROLL_ICON_BG || '#f3f4f6',
+    darkProgressBg: process.env.SCROLL_DARK_PROGRESS_BG || '#374151',
+    darkIconColor: process.env.SCROLL_DARK_ICON_COLOR || '#1f2937',
+    darkIconBg: process.env.SCROLL_DARK_ICON_BG || '#f3f4f6',
+  },
+
+  // Loading Spinner Colors
+  loadingSpinner: {
+    labelColor: process.env.SPINNER_LABEL_COLOR || '#6b7280',
+  },
+
+  // Error Message Colors (CSS Variable compatible)
+  errorMessage: {
+    error: {
+      bg: process.env.ERROR_MSG_ERROR_BG || '#fef2f2',
+      border: process.env.ERROR_MSG_ERROR_BORDER || '#fecaca',
+      text: process.env.ERROR_MSG_ERROR_TEXT || '#b91c1c',
+    },
+    warning: {
+      bg: process.env.ERROR_MSG_WARNING_BG || '#fffbeb',
+      border: process.env.ERROR_MSG_WARNING_BORDER || '#fde68a',
+      text: process.env.ERROR_MSG_WARNING_TEXT || '#92400e',
+    },
+    success: {
+      bg: process.env.ERROR_MSG_SUCCESS_BG || '#f0fdf4',
+      border: process.env.ERROR_MSG_SUCCESS_BORDER || '#bbf7d0',
+      text: process.env.ERROR_MSG_SUCCESS_TEXT || '#166534',
+    },
+  },
 } as const
 
 export type ThemeConfig = typeof themeConfig

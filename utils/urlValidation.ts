@@ -1,6 +1,11 @@
 import { retryWithResult, retryPresets } from '~/server/utils/retry'
 import { getCircuitBreaker } from '~/server/utils/circuit-breaker'
 import { TIMING } from '~/server/utils/constants'
+import {
+  httpConfig,
+  isSuccessStatus,
+  isRedirectStatus,
+} from '~/configs/http.config'
 
 export interface UrlValidationResult {
   url: string
@@ -159,7 +164,7 @@ async function fetchUrlWithTimeout(
         method: 'HEAD',
         redirect: 'follow',
         headers: {
-          'User-Agent': 'NuxtResourceValidator/1.0',
+          'User-Agent': httpConfig.userAgent.full,
         },
       }),
       timeoutPromise,
@@ -174,7 +179,7 @@ async function fetchUrlWithTimeout(
           method: 'GET',
           redirect: 'follow',
           headers: {
-            'User-Agent': 'NuxtResourceValidator/1.0',
+            'User-Agent': httpConfig.userAgent.full,
           },
         }),
         timeoutPromise,
@@ -186,7 +191,9 @@ async function fetchUrlWithTimeout(
         url,
         status: getResponse.status,
         statusText: getResponse.statusText,
-        isAccessible: getResponse.status >= 200 && getResponse.status < 400,
+        isAccessible:
+          isSuccessStatus(getResponse.status) ||
+          isRedirectStatus(getResponse.status),
         responseTime: getResponseTime,
         timestamp: new Date().toISOString(),
       }
@@ -196,7 +203,8 @@ async function fetchUrlWithTimeout(
       url,
       status: response.status,
       statusText: response.statusText,
-      isAccessible: response.status >= 200 && response.status < 400,
+      isAccessible:
+        isSuccessStatus(response.status) || isRedirectStatus(response.status),
       responseTime,
       timestamp: new Date().toISOString(),
     }
@@ -207,7 +215,7 @@ async function fetchUrlWithTimeout(
           method: 'GET',
           redirect: 'follow',
           headers: {
-            'User-Agent': 'NuxtResourceValidator/1.0',
+            'User-Agent': httpConfig.userAgent.full,
           },
         }),
         timeoutPromise,
@@ -219,7 +227,9 @@ async function fetchUrlWithTimeout(
         url,
         status: getResponse.status,
         statusText: getResponse.statusText,
-        isAccessible: getResponse.status >= 200 && getResponse.status < 400,
+        isAccessible:
+          isSuccessStatus(getResponse.status) ||
+          isRedirectStatus(getResponse.status),
         responseTime,
         timestamp: new Date().toISOString(),
       }
@@ -237,13 +247,15 @@ async function fetchUrlWithTimeout(
   }
 }
 
+import { limitsConfig } from '~/configs/limits.config'
+
 /**
  * Validates multiple URLs concurrently with a limit on concurrent requests
  */
 export async function validateUrls(
   urls: string[],
   options: ValidationOptions = {},
-  concurrencyLimit: number = 5
+  concurrencyLimit: number = limitsConfig.search.maxConcurrentValidations || 5
 ): Promise<UrlValidationResult[]> {
   const results: UrlValidationResult[] = []
 
@@ -265,6 +277,6 @@ export async function validateUrls(
  */
 export function isUrlHealthy(status: number | null): boolean {
   if (status === null) return false
-  // Consider 2xx and 3xx status codes as healthy
-  return status >= 200 && status < 400
+  // Consider 2xx and 3xx status codes as healthy (accessible)
+  return isSuccessStatus(status) || isRedirectStatus(status)
 }

@@ -187,6 +187,18 @@ export async function getAnalyticsEventsForResource(
   }
 }
 
+function validateDateRange(startDate: Date, endDate: Date): void {
+  if (!(startDate instanceof Date) || isNaN(startDate.getTime())) {
+    throw new Error('Invalid startDate: must be a valid Date object')
+  }
+  if (!(endDate instanceof Date) || isNaN(endDate.getTime())) {
+    throw new Error('Invalid endDate: must be a valid Date object')
+  }
+  if (startDate > endDate) {
+    throw new Error('Invalid date range: startDate must be before endDate')
+  }
+}
+
 export async function getAggregatedAnalytics(
   startDate: Date,
   endDate: Date
@@ -198,6 +210,9 @@ export async function getAggregatedAnalytics(
   dailyTrends: Array<{ date: string; count: number }>
 }> {
   try {
+    // Validate date inputs to prevent SQL injection via type coercion
+    validateDateRange(startDate, endDate)
+
     const [
       totalEvents,
       eventsByType,
@@ -318,6 +333,20 @@ export async function getResourceAnalytics(
   dailyViews: Array<{ date: string; count: number }>
 }> {
   try {
+    // Validate date inputs to prevent SQL injection via type coercion
+    validateDateRange(startDate, endDate)
+
+    // Validate resourceId format to prevent injection
+    if (
+      !resourceId ||
+      typeof resourceId !== 'string' ||
+      resourceId.length > 255
+    ) {
+      throw new Error(
+        'Invalid resourceId: must be a non-empty string with max length 255'
+      )
+    }
+
     const [viewCount, uniqueVisitorsGroups, lastViewed, dailyViews] =
       await Promise.all([
         prisma.analyticsEvent.count({

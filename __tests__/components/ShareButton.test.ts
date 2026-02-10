@@ -1,0 +1,188 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { mount, flushPromises } from '@vue/test-utils'
+import ShareButton from '~/components/ShareButton.vue'
+
+// Mock the shareUtils
+vi.mock('~/utils/shareUtils', () => ({
+  generateResourceShareUrls: vi.fn((url, title, description) => ({
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}&hashtags=FreeResources,WebDevelopment`,
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(`Check out ${title} - ${description || ''}`)}`,
+    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description || '')}`,
+    reddit: `https://www.reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
+    email: `mailto:?subject=${encodeURIComponent(title)}&body=Check out this resource: ${url}%0D%0A%0D%0A${encodeURIComponent(description || '')}`,
+  })),
+}))
+
+describe('ShareButton', () => {
+  const defaultProps = {
+    title: 'Test Resource',
+    description: 'Test description',
+    url: 'https://example.com/resource',
+  }
+
+  beforeEach(() => {
+    // Clear all mocks before each test
+    vi.clearAllMocks()
+  })
+
+  it('renders correctly with props', () => {
+    const wrapper = mount(ShareButton, {
+      props: defaultProps,
+      global: {
+        // Add the same global configuration as other component tests
+        config: {
+          globalProperties: {
+            $config: {
+              public: {
+                canonicalUrl: 'http://localhost:3000',
+                siteUrl: 'http://localhost:3000',
+              },
+            },
+          },
+        },
+      },
+    })
+
+    expect(wrapper.exists()).toBe(true)
+    expect(wrapper.find('button').attributes('aria-label')).toBe(
+      'Share Test Resource'
+    )
+  })
+
+  it('toggles share menu when clicked', async () => {
+    const wrapper = mount(ShareButton, {
+      props: defaultProps,
+      global: {
+        // Add the same global configuration as other component tests
+        config: {
+          globalProperties: {
+            $config: {
+              public: {
+                canonicalUrl: 'http://localhost:3000',
+                siteUrl: 'http://localhost:3000',
+              },
+            },
+          },
+        },
+      },
+      attachTo: document.body,
+    })
+
+    // Initially, the share menu should not be visible (check aria-expanded)
+    const button = wrapper.find('button')
+    expect(button.attributes('aria-expanded')).toBe('false')
+
+    // Click the share button to open
+    await button.trigger('click')
+    await flushPromises()
+
+    // The share menu should now be visible (aria-expanded should be true)
+    expect(button.attributes('aria-expanded')).toBe('true')
+
+    // Click the share button again to close
+    await button.trigger('click')
+    await flushPromises()
+
+    // The share menu should now be hidden (aria-expanded should be false)
+    expect(button.attributes('aria-expanded')).toBe('false')
+  })
+
+  it('contains all social media links', async () => {
+    const wrapper = mount(ShareButton, {
+      props: defaultProps,
+      global: {
+        // Add the same global configuration as other component tests
+        config: {
+          globalProperties: {
+            $config: {
+              public: {
+                canonicalUrl: 'http://localhost:3000',
+                siteUrl: 'http://localhost:3000',
+              },
+            },
+          },
+        },
+      },
+    })
+
+    // Open the share menu
+    await wrapper.find('button').trigger('click')
+
+    // Check that all social media links are present
+    const links = wrapper.findAll('a')
+    expect(links).toHaveLength(4) // Twitter, LinkedIn, Facebook, Reddit
+    expect(links[0].attributes('href')).toContain('twitter.com')
+    expect(links[1].attributes('href')).toContain('linkedin.com')
+    expect(links[2].attributes('href')).toContain('facebook.com')
+    expect(links[3].attributes('href')).toContain('reddit.com')
+  })
+
+  it('has copy link button', async () => {
+    const wrapper = mount(ShareButton, {
+      props: defaultProps,
+      global: {
+        // Add the same global configuration as other component tests
+        config: {
+          globalProperties: {
+            $config: {
+              public: {
+                canonicalUrl: 'http://localhost:3000',
+                siteUrl: 'http://localhost:3000',
+              },
+            },
+          },
+        },
+      },
+    })
+
+    // Open the share menu
+    await wrapper.find('button').trigger('click')
+
+    // Check for the copy link button
+    const copyButton = wrapper.find('button[role="menuitem"]')
+    expect(copyButton.exists()).toBe(true)
+    expect(copyButton.text()).toContain('Copy link')
+  })
+
+  it('copies URL to clipboard when copy button is clicked', async () => {
+    // Mock the clipboard API using a more robust approach
+    const writeTextMock = vi.fn()
+
+    // Create a mock navigator with clipboard that has writeText method
+    const mockClipboard = {
+      writeText: writeTextMock,
+    }
+
+    Object.defineProperty(navigator, 'clipboard', {
+      value: mockClipboard,
+      writable: true,
+    })
+
+    const wrapper = mount(ShareButton, {
+      props: defaultProps,
+      global: {
+        // Add the same global configuration as other component tests
+        config: {
+          globalProperties: {
+            $config: {
+              public: {
+                canonicalUrl: 'http://localhost:3000',
+                siteUrl: 'http://localhost:3000',
+              },
+            },
+          },
+        },
+      },
+    })
+
+    // Open the share menu
+    await wrapper.find('button').trigger('click')
+
+    // Click the copy link button
+    const copyButton = wrapper.find('button[role="menuitem"]')
+    await copyButton.trigger('click')
+
+    // Verify that navigator.clipboard.writeText was called with the URL
+    expect(writeTextMock).toHaveBeenCalledWith(defaultProps.url)
+  })
+})

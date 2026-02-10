@@ -1,5 +1,7 @@
-import { getRequestIP, setResponseHeader, createError } from 'h3'
+import { getRequestIP, setResponseHeader } from 'h3'
 import { getRateLimitTier } from '~/configs/rate-limit.config'
+import { sendRateLimitError } from '~/server/utils/api-response'
+import { timeConfig } from '~/configs/time.config'
 
 // Advanced in-memory rate limiter with different limits for different endpoints
 // In production, you'd want to use a more robust solution like Redis
@@ -12,6 +14,38 @@ interface RateLimitStore {
 }
 
 const rateLimitStore: RateLimitStore = {}
+
+// FIXED: Add periodic cleanup to prevent memory leak
+// Cleanup runs every 5 minutes to remove expired entries
+const CLEANUP_INTERVAL_MS = timeConfig.cleanup.rateLimitIntervalMs
+
+/**
+ * Clean up expired rate limit entries to prevent memory leaks
+ * Removes entries where resetTime has passed
+ */
+function cleanupExpiredEntries(): void {
+  const now = Date.now()
+  Object.keys(rateLimitStore).forEach(k => {
+    const entry = rateLimitStore[k]
+    if (entry && entry.resetTime < now) {
+      delete rateLimitStore[k]
+    }
+  })
+}
+
+// Start periodic cleanup to prevent unbounded memory growth
+let cleanupInterval: NodeJS.Timeout | null = null
+
+function startCleanupInterval(): void {
+  if (!cleanupInterval) {
+    cleanupInterval = setInterval(cleanupExpiredEntries, CLEANUP_INTERVAL_MS)
+    // Prevent the interval from keeping the process alive
+    cleanupInterval.unref?.()
+  }
+}
+
+// Initialize cleanup on module load
+startCleanupInterval()
 
 export default defineEventHandler(event => {
   // Only apply rate limiting to API routes
@@ -74,9 +108,9 @@ export default defineEventHandler(event => {
 
   // Check if rate limit exceeded
   if (rateLimitStore[key].count > rateLimitConfig.maxRequests) {
-    throw createError({
-      statusCode: 429,
-      statusMessage: rateLimitConfig.message,
-    })
+    // Use standardized rate limit error response
+    const retryAfter = Math.ceil((resetTime - now) / 1000)
+    sendRateLimitError(event, retryAfter)
+    return
   }
 })

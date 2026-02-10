@@ -11,70 +11,77 @@
  */
 
 import type { Resource, FilterOptions } from '~/types/resource'
+import { TIME_MS } from '~/configs/time.config'
+import { limitsConfig } from '~/configs/limits.config'
 
 /**
  * Check if a filter array has active values
  */
-export const hasActiveFilter = (filters: string[] | undefined): boolean =>
-  Boolean(filters && filters.length > 0)
+export const hasActiveFilter = (
+  filters: string[] | readonly string[] | undefined
+): boolean => Boolean(filters && filters.length > 0)
 
 /**
  * Match resource by category
  */
 export const matchesCategory = (
   resource: Resource,
-  categories: string[] | undefined
+  categories: string[] | readonly string[] | undefined
 ): boolean =>
-  !hasActiveFilter(categories) || categories!.includes(resource.category)
+  !hasActiveFilter(categories) ||
+  (categories?.includes(resource.category) ?? false)
 
 /**
  * Match resource by pricing model
  */
 export const matchesPricingModel = (
   resource: Resource,
-  pricingModels: string[] | undefined
+  pricingModels: string[] | readonly string[] | undefined
 ): boolean =>
-  !hasActiveFilter(pricingModels) ||
-  pricingModels!.includes(resource.pricingModel)
+  !hasActiveFilter(pricingModels as string[] | undefined) ||
+  (pricingModels?.includes(resource.pricingModel) ?? false)
 
 /**
  * Match resource by difficulty level
  */
 export const matchesDifficultyLevel = (
   resource: Resource,
-  difficultyLevels: string[] | undefined
+  difficultyLevels: string[] | readonly string[] | undefined
 ): boolean =>
-  !hasActiveFilter(difficultyLevels) ||
-  difficultyLevels!.includes(resource.difficulty)
+  !hasActiveFilter(difficultyLevels as string[] | undefined) ||
+  (difficultyLevels?.includes(resource.difficulty) ?? false)
 
 /**
  * Match resource by technology
  */
 export const matchesTechnology = (
   resource: Resource,
-  technologies: string[] | undefined
+  technologies: string[] | readonly string[] | undefined
 ): boolean =>
-  !hasActiveFilter(technologies) ||
-  resource.technology.some(tech => technologies!.includes(tech))
+  !hasActiveFilter(technologies as string[] | undefined) ||
+  resource.technology.some(tech => technologies?.includes(tech) ?? false)
 
 /**
  * Match resource by tag
  */
 export const matchesTag = (
   resource: Resource,
-  tags: string[] | undefined
+  tags: string[] | readonly string[] | undefined
 ): boolean =>
-  !hasActiveFilter(tags) || resource.tags.some(tag => tags!.includes(tag))
+  !hasActiveFilter(tags) ||
+  resource.tags.some(tag => tags?.includes(tag) ?? false)
 
 /**
  * Match resource by benefit
  */
 export const matchesBenefit = (
   resource: Resource,
-  benefits: string[] | undefined
+  benefits: string[] | readonly string[] | undefined
 ): boolean =>
   !hasActiveFilter(benefits) ||
-  (resource.benefits || []).some(benefit => benefits!.includes(benefit))
+  (resource.benefits || []).some(
+    benefit => benefits?.includes(benefit) ?? false
+  )
 
 /**
  * Filter resources by all criteria (without date range or benefits)
@@ -88,14 +95,11 @@ export const filterByAllCriteria = (
 
   return resources.filter(
     resource =>
-      matchesCategory(resource, categories as string[] | undefined) &&
-      matchesPricingModel(resource, pricingModels as string[] | undefined) &&
-      matchesDifficultyLevel(
-        resource,
-        difficultyLevels as string[] | undefined
-      ) &&
-      matchesTechnology(resource, technologies as string[] | undefined) &&
-      matchesTag(resource, tags as string[] | undefined)
+      matchesCategory(resource, categories) &&
+      matchesPricingModel(resource, pricingModels) &&
+      matchesDifficultyLevel(resource, difficultyLevels) &&
+      matchesTechnology(resource, technologies) &&
+      matchesTag(resource, tags)
   )
 }
 
@@ -120,15 +124,16 @@ export const matchesDateRange = (
   const now = new Date()
   const resourceDate = new Date(resource.dateAdded || now)
   const timeDiff = now.getTime() - resourceDate.getTime()
-  const daysDiff = timeDiff / (1000 * 60 * 60 * 24)
+  // Flexy hates hardcoded time calculations! Using TIME_MS constants
+  const daysDiff = timeDiff / TIME_MS.DAY
 
   switch (dateRange) {
     case 'lastWeek':
-      return daysDiff <= 7
+      return daysDiff <= limitsConfig.dateRange.weekDays
     case 'lastMonth':
-      return daysDiff <= 30
+      return daysDiff <= limitsConfig.dateRange.monthDays
     case 'lastYear':
-      return daysDiff <= 365
+      return daysDiff <= limitsConfig.dateRange.yearDays
     default:
       return true
   }
@@ -156,15 +161,12 @@ export const filterByAllCriteriaWithDateRange = (
 
   return resources.filter(
     resource =>
-      matchesCategory(resource, categories as string[] | undefined) &&
-      matchesPricingModel(resource, pricingModels as string[] | undefined) &&
-      matchesDifficultyLevel(
-        resource,
-        difficultyLevels as string[] | undefined
-      ) &&
-      matchesTechnology(resource, technologies as string[] | undefined) &&
-      matchesTag(resource, tags as string[] | undefined) &&
-      matchesBenefit(resource, benefits as string[] | undefined) &&
+      matchesCategory(resource, categories) &&
+      matchesPricingModel(resource, pricingModels) &&
+      matchesDifficultyLevel(resource, difficultyLevels) &&
+      matchesTechnology(resource, technologies) &&
+      matchesTag(resource, tags) &&
+      matchesBenefit(resource, benefits) &&
       matchesDateRange(resource, dateRange)
   )
 }

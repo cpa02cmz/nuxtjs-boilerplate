@@ -15,6 +15,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { prisma } from '~/server/utils/db'
+import { safeJsonParse } from '~/server/utils/safeJsonParse'
 
 // Validation schema for approve submission request
 const approveSubmissionSchema = z.object({
@@ -51,10 +52,11 @@ export default defineEventHandler(async event => {
       return sendNotFoundError(event, 'Submission', submissionId)
     }
 
-    // Parse resource data from JSON
-    const resourceData = JSON.parse(
-      submission.resourceData
-    ) as Partial<Resource>
+    // Parse resource data from JSON safely
+    const resourceData = safeJsonParse<Partial<Resource>>(
+      submission.resourceData,
+      {}
+    )
 
     // Run quality checks on the resource
     const qualityChecks = runQualityChecks(resourceData as Resource)
@@ -105,9 +107,9 @@ export default defineEventHandler(async event => {
       message: 'Submission approved successfully',
       resource: {
         ...resource,
-        benefits: JSON.parse(resource.benefits),
-        tags: JSON.parse(resource.tags),
-        technology: JSON.parse(resource.technology),
+        benefits: safeJsonParse<string[]>(resource.benefits, []),
+        tags: safeJsonParse<string[]>(resource.tags, []),
+        technology: safeJsonParse<string[]>(resource.technology, []),
       },
       qualityChecks,
       qualityScore,

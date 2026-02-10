@@ -14,23 +14,29 @@ const createFuseConfig = (
     {
       name: 'title',
       weight: isSuggestions
-        ? searchConfig.keys.name.weight * 0.9
+        ? searchConfig.keys.name.weight *
+          searchConfig.suggestionMultipliers.title
         : searchConfig.keys.name.weight,
     },
     {
       name: 'description',
       weight: isSuggestions
-        ? searchConfig.keys.description.weight * 0.9
+        ? searchConfig.keys.description.weight *
+          searchConfig.suggestionMultipliers.description
         : searchConfig.keys.description.weight,
     },
     {
       name: 'benefits',
-      weight: isSuggestions ? 0.15 : 0.2,
+      weight: isSuggestions
+        ? searchConfig.suggestionWeights.benefits
+        : searchConfig.suggestionWeights.benefits *
+          searchConfig.suggestionMultipliers.benefitsRegular,
     },
     {
       name: 'tags',
       weight: isSuggestions
-        ? searchConfig.keys.tags.weight * 0.4
+        ? searchConfig.keys.tags.weight *
+          searchConfig.suggestionMultipliers.tags
         : searchConfig.keys.tags.weight,
     },
   ]
@@ -50,7 +56,7 @@ const createFuseConfig = (
     useExtendedSearch: searchConfig.fuse.useExtendedSearch,
     distance: searchConfig.fuse.distance,
     minMatchCharLength: isSuggestions
-      ? 1
+      ? searchConfig.suggestions.minMatchCharLength
       : searchConfig.fuse.minMatchCharLength,
     includeMatches: searchConfig.fuse.includeMatches,
     findAllMatches: searchConfig.fuse.findAllMatches,

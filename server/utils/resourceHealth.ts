@@ -10,6 +10,7 @@ import {
   type UrlValidationResult,
 } from '~/utils/urlValidation'
 import { logger } from '~/utils/logger'
+import { limitsConfig } from '~/configs/limits.config'
 
 interface ResourceHealthStatus {
   id: string
@@ -39,9 +40,13 @@ export async function updateResourceHealth(
     const existingHealth = resourceHealthMap.get(resource.id)
     const validationHistory = existingHealth?.validationHistory || []
 
-    // Add the new validation result to history (keep last 10 results)
+    // Add the new validation result to history
+    // Flexy hates hardcoded values! Using limitsConfig for history limit
     validationHistory.push(validationResult)
-    if (validationHistory.length > 10) {
+    if (
+      validationHistory.length >
+      limitsConfig.resourceHealth.maxValidationHistory
+    ) {
       validationHistory.shift() // Remove oldest result
     }
 
@@ -97,9 +102,13 @@ export async function updateAllResourceHealth(
       const existingHealth = resourceHealthMap.get(resource.id)
       const validationHistory = existingHealth?.validationHistory || []
 
-      // Add the new validation result to history (keep last 10 results)
+      // Add the new validation result to history
+      // Flexy hates hardcoded values! Using limitsConfig for history limit
       validationHistory.push(validationResult)
-      if (validationHistory.length > 10) {
+      if (
+        validationHistory.length >
+        limitsConfig.resourceHealth.maxValidationHistory
+      ) {
         validationHistory.shift() // Remove oldest result
       }
 

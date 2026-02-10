@@ -10,6 +10,8 @@
  * - Testability: Can be easily mocked in tests
  */
 
+import { patternsConfig } from '~/configs/patterns.config'
+
 /**
  * HTTP Methods supported by API client
  */
@@ -175,12 +177,12 @@ export const createFetchApiClient = (
       return {
         success: false,
         error: {
-          code: 'NETWORK_ERROR',
+          code: patternsConfig.errors.networkErrorCode,
           message:
             error instanceof Error
               ? error.message
-              : 'An unknown error occurred',
-          category: 'network',
+              : patternsConfig.errors.genericErrorMessage,
+          category: patternsConfig.errors.networkErrorCategory,
           timestamp: new Date().toISOString(),
         },
       }

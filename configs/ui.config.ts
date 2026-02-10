@@ -89,6 +89,259 @@ export const uiConfig = {
       cdn: process.env.RESOURCE_CARD_BTN_CDN || 'Get CDN',
     },
   },
+
+  // Dropdown and Suggestion Settings
+  dropdown: {
+    maxHeight: process.env.DROPDOWN_MAX_HEIGHT || 'max-h-96',
+    filterMaxHeight: process.env.FILTER_MAX_HEIGHT || 'max-h-40',
+  },
+
+  // Icon Sizes
+  iconSizes: {
+    suggestion: process.env.ICON_SUGGESTION_SIZE || 'w-4 h-4',
+    default: process.env.ICON_DEFAULT_CLASS || 'w-5 h-5',
+  },
+
+  // Filter Chip Settings
+  chips: {
+    queryMaxWidth: process.env.CHIP_QUERY_MAX_WIDTH || 'max-w-[200px]',
+    valueMaxWidth: process.env.CHIP_VALUE_MAX_WIDTH || 'max-w-[150px]',
+    badgePadding: process.env.CHIP_BADGE_PADDING || 'px-2 py-0.5',
+  },
+
+  // Virtual List Settings
+  virtualList: {
+    itemHeight: parseInt(process.env.VIRTUAL_LIST_ITEM_HEIGHT || '320'),
+    overscan: parseInt(process.env.VIRTUAL_LIST_OVERSCAN || '5'),
+    pageItemHeight: parseInt(
+      process.env.VIRTUAL_LIST_PAGE_ITEM_HEIGHT || '340'
+    ),
+    pageOverscan: parseInt(process.env.VIRTUAL_LIST_PAGE_OVERSCAN || '3'),
+  },
+
+  // Scrollbar Settings
+  scrollbar: {
+    width: process.env.SCROLLBAR_WIDTH || '8px',
+    trackColor: process.env.SCROLLBAR_TRACK_COLOR || '#f1f5f9',
+    thumbColor: process.env.SCROLLBAR_THUMB_COLOR || '#cbd5e1',
+    thumbHoverColor: process.env.SCROLLBAR_THUMB_HOVER_COLOR || '#94a3b8',
+  },
+
+  // Timing Values (ms)
+  timing: {
+    // Animation timeouts
+    bookmarkAnimationMs: parseInt(
+      process.env.TIMING_BOOKMARK_ANIMATION || '400'
+    ),
+    bookmarkStatusClearMs: parseInt(
+      process.env.TIMING_BOOKMARK_STATUS_CLEAR || '1000'
+    ),
+    copySuccessTimeoutMs: parseInt(process.env.TIMING_COPY_SUCCESS || '2000'),
+    searchTrackingDelayMs: parseInt(
+      process.env.TIMING_SEARCH_TRACKING || '500'
+    ),
+
+    // Focus and interaction animations
+    focusPulseDurationMs: parseInt(process.env.TIMING_FOCUS_PULSE || '600'),
+
+    // Navigation delays
+    comparisonNavigationDelayMs: parseInt(
+      process.env.TIMING_COMPARISON_NAVIGATION || '400'
+    ),
+  },
+
+  // Data Loading
+  dataLoading: {
+    maxRetries: parseInt(process.env.DATA_LOADING_MAX_RETRIES || '3'),
+    retryDelayMs: parseInt(process.env.DATA_LOADING_RETRY_DELAY || '1000'),
+  },
+
+  // Scroll To Top Button - Flexy hates hardcoded scroll values!
+  scrollToTop: {
+    // Scroll threshold in pixels before showing button
+    thresholdPx: parseInt(process.env.SCROLL_THRESHOLD_PX || '200'),
+    // Circle radius for SVG progress indicator
+    circleRadius: parseInt(process.env.SCROLL_CIRCLE_RADIUS || '20'),
+    // Button position from bottom
+    bottomPosition: process.env.SCROLL_BOTTOM_POSITION || '2rem',
+    // Button position from right
+    rightPosition: process.env.SCROLL_RIGHT_POSITION || '2rem',
+    // Button width
+    buttonWidth: process.env.SCROLL_BUTTON_WIDTH || '48px',
+    // Button height
+    buttonHeight: process.env.SCROLL_BUTTON_HEIGHT || '48px',
+    // Animation duration when scrolling
+    scrollDurationMs: parseInt(process.env.SCROLL_DURATION_MS || '1000'),
+    // Announcement timeout
+    announcementTimeoutMs: parseInt(
+      process.env.SCROLL_ANNOUNCEMENT_TIMEOUT || '1000'
+    ),
+    // Accessibility announcement text
+    announcementText:
+      process.env.SCROLL_ANNOUNCEMENT_TEXT || 'Scrolling to top of page',
+  },
+
+  // Resource Status Component
+  resourceStatus: {
+    // Status labels
+    labels: {
+      active: process.env.STATUS_LABEL_ACTIVE || 'Active',
+      deprecated: process.env.STATUS_LABEL_DEPRECATED || 'Deprecated',
+      discontinued: process.env.STATUS_LABEL_DISCONTINUED || 'Discontinued',
+      unstable: process.env.STATUS_LABEL_UNSTABLE || 'Unstable',
+      unknown: process.env.STATUS_LABEL_UNKNOWN || 'Unknown',
+    },
+    // Status descriptions
+    descriptions: {
+      active:
+        process.env.STATUS_DESC_ACTIVE ||
+        'This resource is currently active and fully maintained.',
+      deprecated:
+        process.env.STATUS_DESC_DEPRECATED ||
+        'This resource is deprecated and may be discontinued soon.',
+      discontinued:
+        process.env.STATUS_DESC_DISCONTINUED ||
+        'This resource has been discontinued and is no longer available.',
+      unstable:
+        process.env.STATUS_DESC_UNSTABLE ||
+        'This resource is currently experiencing issues.',
+      unknown:
+        process.env.STATUS_DESC_UNKNOWN ||
+        'The status of this resource is unknown.',
+    },
+  },
+
+  // Layout Spacing - Flexy hates hardcoded spacing values!
+  layout: {
+    // Spacing scale (in rem units, base 0.25)
+    spacing: {
+      xs: parseFloat(process.env.LAYOUT_SPACING_XS || '0.25'),
+      sm: parseFloat(process.env.LAYOUT_SPACING_SM || '0.5'),
+      md: parseFloat(process.env.LAYOUT_SPACING_MD || '0.75'),
+      lg: parseFloat(process.env.LAYOUT_SPACING_LG || '1'),
+      xl: parseFloat(process.env.LAYOUT_SPACING_XL || '1.5'),
+      '2xl': parseFloat(process.env.LAYOUT_SPACING_2XL || '2'),
+    },
+
+    // Border radius (in rem)
+    borderRadius: {
+      sm: parseFloat(process.env.LAYOUT_BORDER_RADIUS_SM || '0.25'),
+      md: parseFloat(process.env.LAYOUT_BORDER_RADIUS_MD || '0.5'),
+      lg: parseFloat(process.env.LAYOUT_BORDER_RADIUS_LG || '0.75'),
+    },
+
+    // Font sizes (in rem)
+    fontSize: {
+      sm: parseFloat(process.env.LAYOUT_FONT_SIZE_SM || '0.75'),
+      md: parseFloat(process.env.LAYOUT_FONT_SIZE_MD || '0.875'),
+      lg: parseFloat(process.env.LAYOUT_FONT_SIZE_LG || '1'),
+    },
+
+    // Line heights (in rem)
+    lineHeight: {
+      sm: parseFloat(process.env.LAYOUT_LINE_HEIGHT_SM || '1'),
+      md: parseFloat(process.env.LAYOUT_LINE_HEIGHT_MD || '1.25'),
+      lg: parseFloat(process.env.LAYOUT_LINE_HEIGHT_LG || '1.5'),
+    },
+  },
+
+  // Haptic Feedback Patterns (ms)
+  // Haptic Feedback Patterns (ms)
+  haptics: {
+    patterns: {
+      light: parseInt(process.env.HAPTIC_LIGHT_MS || '10'),
+      medium: parseInt(process.env.HAPTIC_MEDIUM_MS || '25'),
+      heavy: parseInt(process.env.HAPTIC_HEAVY_MS || '50'),
+      success: process.env.HAPTIC_SUCCESS_PATTERN || '50,100,50',
+      warning: process.env.HAPTIC_WARNING_PATTERN || '30,50,30',
+      error: process.env.HAPTIC_ERROR_PATTERN || '100,50,100',
+    },
+  },
+
+  // UI Style Classes - Flexy hates hardcoded Tailwind classes!
+  styles: {
+    card: {
+      base: process.env.UI_CARD_BASE || 'bg-white rounded-lg shadow',
+      hover:
+        process.env.UI_CARD_HOVER ||
+        'bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-300',
+      bordered:
+        process.env.UI_CARD_BORDERED ||
+        'bg-white rounded-lg shadow border border-gray-200',
+      skeleton:
+        process.env.UI_CARD_SKELETON ||
+        'bg-white p-6 rounded-lg shadow animate-pulse',
+    },
+    button: {
+      primary:
+        process.env.UI_BUTTON_PRIMARY ||
+        'inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 transition-colors duration-200',
+      secondary:
+        process.env.UI_BUTTON_SECONDARY ||
+        'inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
+      menuItem:
+        process.env.UI_BUTTON_MENU_ITEM ||
+        'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500',
+      icon:
+        process.env.UI_BUTTON_ICON ||
+        'p-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500',
+    },
+    input: {
+      base:
+        process.env.UI_INPUT_BASE ||
+        'block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+      search:
+        process.env.UI_INPUT_SEARCH ||
+        'block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400',
+    },
+    iconSizes: {
+      sm: process.env.UI_ICON_SIZE_SM || 'w-4 h-4',
+      md: process.env.UI_ICON_SIZE_MD || 'w-5 h-5',
+      lg: process.env.UI_ICON_SIZE_LG || 'w-6 h-6',
+    },
+    spacing: {
+      cardPadding: process.env.UI_SPACING_CARD_PADDING || 'p-6',
+      sectionGap: process.env.UI_SPACING_SECTION_GAP || 'mt-6',
+      elementGap: process.env.UI_SPACING_ELEMENT_GAP || 'mt-3',
+    },
+  },
+
+  // Filter Chip Settings
+  filterChip: {
+    iconSize: process.env.FILTER_CHIP_ICON_SIZE || 'w-3.5 h-3.5',
+    undoWindowMs: parseInt(process.env.FILTER_UNDO_WINDOW_MS || '5000'),
+    undoProgressIntervalMs: parseInt(
+      process.env.FILTER_UNDO_PROGRESS_INTERVAL || '100'
+    ),
+    undoProgressDecrement: parseInt(
+      process.env.FILTER_UNDO_PROGRESS_DECREMENT || '2'
+    ),
+    announcementClearMs: parseInt(
+      process.env.FILTER_ANNOUNCEMENT_CLEAR_MS || '1000'
+    ),
+  },
+
+  // Offline Indicator Settings
+  offlineIndicator: {
+    backOnlineTimeoutMs: parseInt(
+      process.env.OFFLINE_BACK_ONLINE_TIMEOUT || '3000'
+    ),
+    reconnectingTimeoutMs: parseInt(
+      process.env.OFFLINE_RECONNECTING_TIMEOUT || '5000'
+    ),
+  },
+
+  // PWA Install Prompt Settings
+  pwaInstall: {
+    promptDelayMs: parseInt(process.env.PWA_PROMPT_DELAY_MS || '1000'),
+  },
+
+  // User Preference Settings
+  userPreference: {
+    saveMessageTimeoutMs: parseInt(
+      process.env.USER_PREF_SAVE_TIMEOUT || '3000'
+    ),
+  },
 } as const
 
 export type UiConfig = typeof uiConfig

@@ -20,6 +20,9 @@ export default defineEventHandler(async event => {
 
     if (!validationResult.success) {
       const firstError = validationResult.error.issues[0]
+      if (!firstError) {
+        return sendValidationError(event, 'unknown', 'Validation failed')
+      }
       return sendValidationError(
         event,
         firstError.path[0] as string,

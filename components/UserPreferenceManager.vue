@@ -180,6 +180,7 @@
 import { ref, onMounted } from 'vue'
 import logger from '~/utils/logger'
 import { useUserPreferences } from '~/composables/useUserPreferences'
+import { uiConfig } from '~/configs/ui.config'
 
 interface SkillLevel {
   value: 'beginner' | 'intermediate' | 'advanced' | 'expert'
@@ -291,7 +292,7 @@ const savePreferences = async () => {
       saveSuccess.value = true
       setTimeout(() => {
         saveSuccess.value = false
-      }, 3000)
+      }, uiConfig.userPreference.saveMessageTimeoutMs)
     } else {
       error.value = 'Failed to save preferences'
     }

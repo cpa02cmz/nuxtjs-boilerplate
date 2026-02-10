@@ -8,7 +8,7 @@ This document outlines the dependency management strategy for the Nuxt.js boiler
 
 ### Vitest and @nuxt/test-utils Compatibility
 
-- **Current stable configuration**: `vitest@^3.2.4` with `@nuxt/test-utils@^3.20.1`
+- **Current stable configuration**: `vitest@^3.2.0` with `@nuxt/test-utils@^3.23.0`
 - **Compatibility constraint**: `@nuxt/test-utils` requires `vitest@^3.2.0`
 - **Important**: Do not upgrade `vitest` to 4.x series without confirming `@nuxt/test-utils` compatibility
 - **Version alignment**: All `@vitest/*` packages must match the main `vitest` version

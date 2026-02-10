@@ -1,11 +1,13 @@
 import type { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
-import { cacheManager } from '~/server/utils/enhanced-cache'
+import { cacheManager, cacheSetWithTags } from '~/server/utils/enhanced-cache'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { generateCacheTags, cacheTagsConfig } from '~/configs/cache-tags.config'
+import { timeConfig, toSeconds } from '~/configs/time.config'
 
 /**
  * GET /api/v1/categories
@@ -43,9 +45,14 @@ export default defineEventHandler(async event => {
       })
     )
 
-    // Cache result for 1 hour (3600 seconds) since categories don't change often
+    // Cache result for 1 hour since categories don't change often
     const response = { success: true, data: categories }
-    await cacheManager.set(cacheKey, response, 3600)
+    await cacheSetWithTags(
+      cacheKey,
+      response,
+      toSeconds(timeConfig.cache.long),
+      generateCacheTags(cacheTagsConfig.categories.all)
+    )
 
     // Set cache miss header
     event.node.res?.setHeader('X-Cache', 'MISS')
