@@ -1,5 +1,6 @@
 import { defineEventHandler } from 'h3'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+import { urlConfig, DEFAULT_DEV_URL } from '~/configs/url.config'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
@@ -9,7 +10,8 @@ export default defineEventHandler(async event => {
   const siteUrl =
     config.public.siteUrl ||
     config.public.canonicalUrl ||
-    'http://localhost:3000'
+    urlConfig.fallback ||
+    DEFAULT_DEV_URL
 
   const openApiSpec = {
     openapi: '3.0.3',

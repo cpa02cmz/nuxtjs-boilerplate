@@ -141,6 +141,12 @@ export const recommendationConfig = {
       'microservices',
     ],
   },
+
+  // Display limits for recommendation cards - Flexy hates hardcoded slice values!
+  displayLimits: {
+    // Number of tags to display before showing "+X more"
+    tags: parseInt(process.env.REC_DISPLAY_TAGS_LIMIT || '3'),
+  },
 } as const
 
 export type RecommendationConfig = typeof recommendationConfig

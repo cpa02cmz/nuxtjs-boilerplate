@@ -7,7 +7,9 @@
 const lighthouse = require('lighthouse')
 const chromeLauncher = require('chrome-launcher')
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
+// Flexy hates hardcoded values! Using environment variable with fallback
+const BASE_URL =
+  process.env.BASE_URL || process.env.DEV_URL || 'http://localhost:3000'
 const ROUTES = ['/', '/about', '/search', '/submit', '/ai-keys']
 
 const CONFIG = {

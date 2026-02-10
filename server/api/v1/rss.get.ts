@@ -3,6 +3,7 @@ import type { Resource } from '~/types/resource'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { handleApiRouteError } from '~/server/utils/api-response'
 import { RSS_CONFIG } from '~/server/utils/constants'
+import { urlConfig, DEFAULT_DEV_URL } from '~/configs/url.config'
 
 /**
  * GET /api/v1/rss
@@ -42,10 +43,12 @@ export default defineEventHandler(async event => {
 
 function generateRssFeed(resources: Resource[]): string {
   const config = useRuntimeConfig()
+  // Flexy hates hardcoded URLs! Using config with fallback
   const siteUrl =
     config.public.siteUrl ||
     config.public.canonicalUrl ||
-    'http://localhost:3000'
+    urlConfig.fallback ||
+    DEFAULT_DEV_URL
   const title = 'Free Developer Resources'
   const description = 'A collection of free resources for developers'
   const date = new Date().toUTCString()

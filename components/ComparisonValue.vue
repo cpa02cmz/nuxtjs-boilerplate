@@ -59,7 +59,7 @@
           v-if="hasMoreItems"
           class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
         >
-          +{{ value.length - 3 }} more
+          +{{ value.length - LIST_ITEMS_LIMIT }} more
         </span>
       </div>
       <span
@@ -72,6 +72,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { comparisonConfig } from '../configs/comparison.config'
 
 interface Props {
   value?: string | number | boolean | string[]
@@ -83,12 +84,15 @@ const props = withDefaults(defineProps<Props>(), {
   type: 'text',
 })
 
+// Flexy hates hardcoded values! Using config for display limits
+const LIST_ITEMS_LIMIT = comparisonConfig.displayLimits.listItems
+
 const displayItems = computed(() => {
   if (!Array.isArray(props.value)) return []
-  return props.value.slice(0, 3)
+  return props.value.slice(0, LIST_ITEMS_LIMIT)
 })
 
 const hasMoreItems = computed(() => {
-  return Array.isArray(props.value) && props.value.length > 3
+  return Array.isArray(props.value) && props.value.length > LIST_ITEMS_LIMIT
 })
 </script>

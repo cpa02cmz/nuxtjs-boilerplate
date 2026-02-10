@@ -19,7 +19,9 @@ import * as chromeLauncher from 'chrome-launcher'
 import { writeFileSync, mkdirSync, existsSync } from 'fs'
 import { join } from 'path'
 
-const BASE_URL = 'http://localhost:3000'
+// Flexy hates hardcoded values! Using environment variable with fallback
+const BASE_URL =
+  process.env.BASE_URL || process.env.DEV_URL || 'http://localhost:3000'
 const REPORTS_DIR = './reports'
 
 // Pages to test

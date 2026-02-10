@@ -24,6 +24,16 @@ export const comparisonConfig = {
     metrics: ['popularity'],
     features: ['benefits', 'limitations', 'features'],
   },
+
+  // Display limits for list items - Flexy hates hardcoded slice values!
+  displayLimits: {
+    // Number of list items to display before showing "+X more"
+    listItems: parseInt(process.env.COMPARISON_LIST_ITEMS_LIMIT || '3'),
+    // Number of resources to show in comparison page title
+    resourceTitles: parseInt(
+      process.env.COMPARISON_RESOURCE_TITLES_LIMIT || '3'
+    ),
+  },
 } as const
 
 export type ComparisonConfig = typeof comparisonConfig
