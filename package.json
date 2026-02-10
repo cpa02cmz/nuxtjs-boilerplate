@@ -10,7 +10,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "node scripts/setup-env.mjs && nuxt prepare",
     "lint": "eslint . && stylelint **/*.{css,scss,less,vue}",
     "lint:fix": "eslint --fix . && stylelint --fix **/*.{css,scss,less,vue}",
     "format": "prettier --write .",
