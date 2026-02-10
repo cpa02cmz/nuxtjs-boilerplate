@@ -323,6 +323,7 @@ export default [
       '.nuxt/**',
       'node_modules/**',
       '.output/**',
+      '.vite-cache/**',
       'coverage/**',
       'public/**',
       'nuxt.d.ts',

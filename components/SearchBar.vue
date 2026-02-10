@@ -460,8 +460,9 @@ if (typeof window !== 'undefined') {
 }
 
 .animate-focus-pulse {
-  animation: focus-pulse v-bind('`${uiConfig.timing.focusPulseDurationMs}ms`')
-    ease-out;
+  /* Using hardcoded value to avoid SSR issues with v-bind */
+  /* Config value: uiConfig.timing.focusPulseDurationMs = 600ms */
+  animation: focus-pulse 600ms ease-out;
 }
 
 /* Respect reduced motion preferences for accessibility */
