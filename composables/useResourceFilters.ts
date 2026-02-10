@@ -11,6 +11,7 @@ export const useResourceFilters = () => {
     difficultyLevels: [],
     technologies: [],
     tags: [],
+    dateRange: 'anytime',
   })
 
   const updateSearchQuery = (query: string) => {
@@ -52,6 +53,10 @@ export const useResourceFilters = () => {
     )
   }
 
+  const setDateRange = (dateRange: string) => {
+    filterOptions.value.dateRange = dateRange
+  }
+
   const resetFilters = () => {
     filterOptions.value = {
       searchQuery: '',
@@ -60,6 +65,7 @@ export const useResourceFilters = () => {
       difficultyLevels: [],
       technologies: [],
       tags: [],
+      dateRange: 'anytime',
     }
   }
 
@@ -71,6 +77,7 @@ export const useResourceFilters = () => {
     toggleDifficultyLevel,
     toggleTechnology,
     toggleTag,
+    setDateRange,
     resetFilters,
   }
 }
