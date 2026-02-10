@@ -224,6 +224,33 @@ export const contentConfig = {
     },
   },
 
+  // Similar Resources Section - Flexy hates hardcoded category labels!
+  similarResources: {
+    title: process.env.CONTENT_SIMILAR_TITLE || 'Related Resources',
+    viewAll: process.env.CONTENT_SIMILAR_VIEW_ALL || 'View All',
+    // Category-specific button labels
+    categoryLabels: {
+      'AI Tools': process.env.CONTENT_SIMILAR_BTN_AI_TOOLS || 'Try AI Tool',
+      Hosting: process.env.CONTENT_SIMILAR_BTN_HOSTING || 'Get Hosting',
+      Databases:
+        process.env.CONTENT_SIMILAR_BTN_DATABASES || 'Connect Database',
+      CDN: process.env.CONTENT_SIMILAR_BTN_CDN || 'Use CDN',
+      VPS: process.env.CONTENT_SIMILAR_BTN_VPS || 'Get VPS',
+      Analytics: process.env.CONTENT_SIMILAR_BTN_ANALYTICS || 'Use Analytics',
+      APIs: process.env.CONTENT_SIMILAR_BTN_APIS || 'Use API',
+      'Developer Tools':
+        process.env.CONTENT_SIMILAR_BTN_DEV_TOOLS || 'Use Tool',
+      Design: process.env.CONTENT_SIMILAR_BTN_DESIGN || 'Use Design Tool',
+      Productivity:
+        process.env.CONTENT_SIMILAR_BTN_PRODUCTIVITY || 'Boost Productivity',
+    },
+    // Default button label when category not found
+    defaultButtonLabel:
+      process.env.CONTENT_SIMILAR_DEFAULT_BTN || 'Get Resource',
+    // "More" text for truncated lists
+    moreItemsText: process.env.CONTENT_SIMILAR_MORE_TEXT || 'more',
+  },
+
   // RSS Feed Configuration - Flexy hates hardcoded RSS values!
   rss: {
     title: process.env.CONTENT_RSS_TITLE || 'Free Developer Resources',

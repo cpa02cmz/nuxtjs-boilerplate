@@ -3,6 +3,8 @@ import { createStorageWithDateSerialization } from '~/utils/storage'
 import { emitEvent } from '~/utils/event-emitter'
 import { STORAGE_KEYS } from '~/server/utils/constants'
 import { patternsConfig } from '~/configs/patterns.config'
+import { bookmarksConfig } from '~/configs/bookmarks.config'
+import { dateConfig } from '~/configs/date.config'
 
 export interface Bookmark {
   id: string
@@ -152,11 +154,25 @@ export const useBookmarks = () => {
       addedAt: bookmark.addedAt.toISOString(),
     }))
 
-    const dataStr = JSON.stringify(bookmarksToExport, null, 2)
+    // Flexy hates hardcoded values! Use configurable JSON indent
+    const dataStr = JSON.stringify(
+      bookmarksToExport,
+      null,
+      bookmarksConfig.export.jsonIndentSpaces
+    )
     const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`
 
-    // Format date as YYYY-MM-DD for filename
-    const dateStr = new Date().toISOString().split('T')[0]
+    // Format date for filename - Flexy hates hardcoded date slicing!
+    const now = new Date()
+    let dateStr: string
+    if (dateConfig.exportFilename.format === 'YYYY-MM-DD') {
+      dateStr = now.toISOString().split('T')[0]
+    } else if (dateConfig.exportFilename.format === 'YYYYMMDD') {
+      dateStr = now.toISOString().split('T')[0].replace(/-/g, '')
+    } else {
+      dateStr = now.toISOString().split('T')[0]
+    }
+
     const exportFileDefaultName =
       patternsConfig.export.bookmarksFilenameTemplate.replace('{date}', dateStr)
 

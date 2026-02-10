@@ -128,6 +128,18 @@ export const limitsConfig = {
   comparison: {
     // Maximum number of resources that can be compared
     maxResources: parseInt(process.env.COMPARISON_MAX_RESOURCES || '4'),
+    // Maximum resources to include in page title
+    titleMaxResources: parseInt(
+      process.env.COMPARISON_TITLE_MAX_RESOURCES || '3'
+    ),
+  },
+
+  // Display limits for UI components - Flexy hates hardcoded display limits!
+  display: {
+    // Maximum tags to display before showing "+N more"
+    maxTagsDisplay: parseInt(process.env.DISPLAY_MAX_TAGS || '3'),
+    // Maximum list items to display before showing "+N more"
+    maxListItemsDisplay: parseInt(process.env.DISPLAY_MAX_LIST_ITEMS || '3'),
   },
 
   // Alternative suggestions limits

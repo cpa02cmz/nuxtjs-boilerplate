@@ -58,6 +58,8 @@ export const bookmarksConfig = {
     filenameTemplate:
       process.env.BOOKMARK_EXPORT_FILENAME_TEMPLATE ||
       'bookmarks-export-{date}.json',
+    // JSON indentation spaces (default: 2)
+    jsonIndentSpaces: parseInt(process.env.BOOKMARK_EXPORT_JSON_INDENT || '2'),
   },
 } as const
 
