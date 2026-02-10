@@ -1,205 +1,366 @@
 <template>
-  <Transition
-    enter-active-class="transform transition ease-out duration-300"
-    enter-from-class="-translate-y-full opacity-0"
-    enter-to-class="translate-y-0 opacity-100"
-    leave-active-class="transform transition ease-in duration-200"
-    leave-from-class="translate-y-0 opacity-100"
-    leave-to-class="-translate-y-full opacity-0"
-  >
-    <div
-      v-if="isOffline && !isDismissed"
-      role="alert"
-      aria-live="assertive"
-      aria-atomic="true"
-      class="fixed top-0 left-0 right-0 bg-yellow-100 border-b border-yellow-300 p-2 z-50"
+  <Teleport to="body">
+    <!-- Offline Banner -->
+    <Transition
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="opacity-0 -translate-y-full"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition-all duration-200 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 -translate-y-full"
     >
-      <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
-        <div class="flex items-center flex-1 justify-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 text-yellow-600 mr-2 flex-shrink-0"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <span class="text-yellow-800 text-sm font-medium">
-            You are offline. Some features may be limited.
-            <span
-              v-if="lastOnlineTime"
-              class="text-yellow-700 text-xs ml-1"
-            >
-              (Last online: {{ lastOnlineTime }})
-            </span>
-          </span>
-        </div>
-        <div class="flex items-center gap-2 ml-4">
-          <button
-            type="button"
-            class="text-yellow-700 hover:text-yellow-900 text-sm font-medium px-2 py-1 rounded hover:bg-yellow-200 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-1"
-            :disabled="isChecking"
-            @click="checkConnection"
-          >
-            <span
-              v-if="isChecking"
-              class="flex items-center"
-            >
-              <svg
-                class="animate-spin h-4 w-4 mr-1"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
+      <div
+        v-if="isOffline"
+        class="fixed top-0 left-0 right-0 z-[100]"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div
+          class="bg-amber-50 border-b border-amber-200 shadow-md"
+          :class="{
+            'animate-pulse-subtle': !prefersReducedMotion && !wasOffline,
+          }"
+        >
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <!-- Animated offline icon -->
+                <div
+                  class="flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center"
+                  :class="{ 'animate-icon-pulse': !prefersReducedMotion }"
+                  aria-hidden="true"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-amber-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-amber-900">
+                    You're offline
+                  </p>
+                  <p class="text-xs text-amber-700">
+                    Some features may be unavailable
+                  </p>
+                </div>
+              </div>
+
+              <!-- Reconnecting indicator -->
+              <div
+                v-if="isReconnecting"
+                class="flex items-center gap-2 text-xs text-amber-700"
               >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                />
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              Checking...
-            </span>
-            <span v-else>Retry</span>
-          </button>
-          <button
-            type="button"
-            class="text-yellow-600 hover:text-yellow-800 p-1 rounded hover:bg-yellow-200 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-1"
-            aria-label="Dismiss offline notification"
-            @click="dismiss"
+                <svg
+                  class="animate-spin h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  />
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                <span>Reconnecting...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Back Online Toast -->
+    <Transition
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="opacity-0 translate-y-4 scale-95"
+      enter-to-class="opacity-100 translate-y-0 scale-100"
+      leave-active-class="transition-all duration-200 ease-in"
+      leave-from-class="opacity-100 translate-y-0 scale-100"
+      leave-to-class="opacity-0 translate-y-4 scale-95"
+    >
+      <div
+        v-if="showBackOnline"
+        class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[100]"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <div
+          class="bg-green-50 border border-green-200 rounded-full shadow-lg px-4 py-2 flex items-center gap-2"
+          :class="{ 'animate-bounce-subtle': !prefersReducedMotion }"
+        >
+          <div
+            class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center"
+            aria-hidden="true"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
+              class="h-4 w-4 text-green-600 animate-check-pop"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
             >
               <path
-                fill-rule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clip-rule="evenodd"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7"
               />
             </svg>
-          </button>
+          </div>
+          <span class="text-sm font-medium text-green-900"> Back online! </span>
         </div>
       </div>
-    </div>
-  </Transition>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, onMounted } from 'vue'
-import { UI_TIMING } from '~/server/utils/constants'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { uiConfig } from '~/configs/ui.config'
 
+// Reactive state
 const isOffline = ref(false)
-const isDismissed = ref(false)
-const isChecking = ref(false)
-const lastOnlineTime = ref<string>('')
+const isReconnecting = ref(false)
+const showBackOnline = ref(false)
+const wasOffline = ref(false)
+const prefersReducedMotion = ref(false)
 
-// Format the last online time in a user-friendly way
-const formatLastOnline = (date: Date): string => {
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffMins = Math.floor(diffMs / 60000)
-  const diffHours = Math.floor(diffMs / 3600000)
-  const diffDays = Math.floor(diffMs / 86400000)
+// Timers
+let backOnlineTimeout: ReturnType<typeof setTimeout> | null = null
+let reconnectingTimeout: ReturnType<typeof setTimeout> | null = null
 
-  if (diffMins < 1) return 'just now'
-  if (diffMins < 60) return `${diffMins}m ago`
-  if (diffHours < 24) return `${diffHours}h ago`
-  if (diffDays < 7) return `${diffDays}d ago`
-  return date.toLocaleDateString()
+// Check reduced motion preference
+const checkReducedMotion = () => {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-// Check connection status and update UI
-const checkConnection = async () => {
-  if (isChecking.value) return
-
-  isChecking.value = true
-
-  // Try to fetch a small resource to verify connection
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(
-      () => controller.abort(),
-      UI_TIMING.CONNECTION_TIMEOUT_MS
-    )
-
-    await fetch('/favicon.ico', {
-      method: 'HEAD',
-      cache: 'no-store',
-      signal: controller.signal,
-    })
-
-    clearTimeout(timeoutId)
-
-    // If fetch succeeds, we're online
-    isOffline.value = false
-    isDismissed.value = false
-  } catch {
-    // Still offline
-    isOffline.value = true
-  } finally {
-    isChecking.value = false
+// Trigger haptic feedback if available
+const triggerHaptic = (pattern: number | number[] = 10): void => {
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    navigator.vibrate(pattern)
   }
 }
 
-// Dismiss the notification
-const dismiss = () => {
-  isDismissed.value = true
+// Handle going offline
+const handleOffline = () => {
+  isOffline.value = true
+  wasOffline.value = true
+  isReconnecting.value = false
+  triggerHaptic([30, 50, 30]) // Alert pattern
+}
+
+// Handle coming back online
+const handleOnline = () => {
+  if (!isOffline.value) return // Wasn't offline, no need to show toast
+
+  isOffline.value = false
+  isReconnecting.value = false
+  showBackOnline.value = true
+  triggerHaptic(20) // Success pattern
+
+  // Clear any existing timeout
+  if (backOnlineTimeout) {
+    clearTimeout(backOnlineTimeout)
+  }
+
+  // Auto-hide the back online message
+  backOnlineTimeout = setTimeout(() => {
+    showBackOnline.value = false
+    wasOffline.value = false
+  }, uiConfig.offlineIndicator.backOnlineTimeoutMs)
+}
+
+// Handle connection status check (for detecting reconnection attempts)
+const handleConnectionChange = () => {
+  const connection = (
+    navigator as Navigator & { connection?: NetworkInformation }
+  ).connection
+  if (connection && 'effectiveType' in connection) {
+    // Connection changed, might be reconnecting
+    if (isOffline.value) {
+      isReconnecting.value = true
+
+      // Clear existing timeout
+      if (reconnectingTimeout) {
+        clearTimeout(reconnectingTimeout)
+      }
+
+      // Hide reconnecting indicator after a moment if still offline
+      reconnectingTimeout = setTimeout(() => {
+        if (isOffline.value) {
+          isReconnecting.value = false
+        }
+      }, uiConfig.offlineIndicator.reconnectingTimeoutMs)
+    }
+  }
 }
 
 onMounted(() => {
-  if (process.client) {
-    // Check initial connection status
-    isOffline.value = !navigator.onLine
+  // Check initial state
+  prefersReducedMotion.value = checkReducedMotion()
+  isOffline.value = !navigator.onLine
 
-    // Set initial last online time if currently offline
-    if (isOffline.value) {
-      const stored = localStorage.getItem('lastOnlineTime')
-      if (stored) {
-        lastOnlineTime.value = formatLastOnline(new Date(stored))
-      }
-    }
+  // Listen for online/offline events
+  window.addEventListener('offline', handleOffline)
+  window.addEventListener('online', handleOnline)
 
-    // Listen for online/offline events
-    const handleOnline = () => {
-      isOffline.value = false
-      isDismissed.value = false
-      const now = new Date().toISOString()
-      localStorage.setItem('lastOnlineTime', now)
-      lastOnlineTime.value = ''
-    }
+  // Listen for connection changes (if supported)
+  const connection = (
+    navigator as Navigator & { connection?: NetworkInformation }
+  ).connection
+  if (connection && 'addEventListener' in connection) {
+    connection.addEventListener('change', handleConnectionChange)
+  }
 
-    const handleOffline = () => {
-      isOffline.value = true
-      isDismissed.value = false
-      // Store the time we went offline
-      localStorage.setItem('lastOnlineTime', new Date().toISOString())
-    }
+  // Listen for reduced motion preference changes
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const handleMotionChange = (e: MediaQueryListEvent) => {
+    prefersReducedMotion.value = e.matches
+  }
+  mediaQuery.addEventListener('change', handleMotionChange)
+})
 
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
+onUnmounted(() => {
+  // Clean up event listeners
+  window.removeEventListener('offline', handleOffline)
+  window.removeEventListener('online', handleOnline)
 
-    // Cleanup event listeners on component unmount
-    onUnmounted(() => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-    })
+  const connection = (
+    navigator as Navigator & { connection?: NetworkInformation }
+  ).connection
+  if (connection && 'removeEventListener' in connection) {
+    connection.removeEventListener('change', handleConnectionChange)
+  }
+
+  // Clear timeouts
+  if (backOnlineTimeout) {
+    clearTimeout(backOnlineTimeout)
+  }
+  if (reconnectingTimeout) {
+    clearTimeout(reconnectingTimeout)
   }
 })
 </script>
+
+<style scoped>
+/* Subtle pulse animation for offline banner */
+@keyframes pulse-subtle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Icon pulse animation */
+@keyframes icon-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 8px rgba(217, 119, 6, 0);
+  }
+}
+
+.animate-icon-pulse {
+  animation: icon-pulse 2s ease-in-out infinite;
+}
+
+/* Bounce animation for back online toast */
+@keyframes bounce-subtle {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-4px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 0.5s ease-in-out;
+}
+
+/* Checkmark pop animation */
+@keyframes check-pop {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.animate-check-pop {
+  animation: check-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-subtle,
+  .animate-icon-pulse,
+  .animate-bounce-subtle,
+  .animate-check-pop {
+    animation: none !important;
+  }
+}
+
+/* Spinner animation */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+</style>

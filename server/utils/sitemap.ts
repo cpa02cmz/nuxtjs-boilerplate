@@ -1,4 +1,9 @@
 import type { Resource } from '~/types/resource'
+import {
+  sitemapConfig,
+  getStaticPages,
+  getResourceSitemapDefaults,
+} from '~/configs/sitemap.config'
 
 export interface SitemapEntry {
   url: string
@@ -24,18 +29,20 @@ export function getBaseUrlFromConfig(): string {
   }
 }
 
-export const STATIC_PAGES: SitemapEntry[] = [
-  { url: '/', priority: '1.0', changefreq: 'daily' },
-  { url: '/ai-keys', priority: '0.9', changefreq: 'weekly' },
-  { url: '/about', priority: '0.8', changefreq: 'monthly' },
-  { url: '/search', priority: '0.9', changefreq: 'daily' },
-  { url: '/submit', priority: '0.7', changefreq: 'monthly' },
-]
+// Export static pages using config
+export const STATIC_PAGES: SitemapEntry[] = getStaticPages(false).map(page => ({
+  url: page.path,
+  priority: page.priority,
+  changefreq: page.changefreq,
+}))
 
-export const STATIC_PAGES_WITH_FAVORITES: SitemapEntry[] = [
-  ...STATIC_PAGES,
-  { url: '/favorites', priority: '0.8', changefreq: 'weekly' },
-]
+export const STATIC_PAGES_WITH_FAVORITES: SitemapEntry[] = getStaticPages(
+  true
+).map(page => ({
+  url: page.path,
+  priority: page.priority,
+  changefreq: page.changefreq,
+}))
 
 export function buildSitemapUrlEntry(
   baseUrl: string,
@@ -57,17 +64,18 @@ export function buildResourceUrlEntry(
   baseUrl: string,
   resource: Resource
 ): string {
+  const defaults = getResourceSitemapDefaults()
   return `  <url>
     <loc>${baseUrl}/resources/${resource.id}</loc>
-    <priority>0.7</priority>
-    <changefreq>weekly</changefreq>
+    <priority>${defaults.priority}</priority>
+    <changefreq>${defaults.changefreq}</changefreq>
     <lastmod>${new Date(resource.dateAdded).toISOString().split('T')[0]}</lastmod>
   </url>`
 }
 
 export function generateSitemapXML(entries: string[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="${sitemapConfig.namespaces.sitemap}">
 ${entries.join('\n')}
 </urlset>`
 }
@@ -75,6 +83,6 @@ ${entries.join('\n')}
 export function generateSitemapErrorXML(): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <error>
-  <message>Failed to generate sitemap</message>
+  <message>${sitemapConfig.error.message}</message>
 </error>`
 }

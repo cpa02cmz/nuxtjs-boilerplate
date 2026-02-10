@@ -14,6 +14,7 @@ import type {
   CreateUserData,
   UpdateUserData,
 } from '~/types/community'
+import { limitsConfig } from '~/configs/limits.config'
 
 export const useUserProfiles = (initialUsers: UserProfile[] = []) => {
   const users = ref<UserProfile[]>([...initialUsers])
@@ -37,12 +38,12 @@ export const useUserProfiles = (initialUsers: UserProfile[] = []) => {
       isModerator: false,
       joinDate: new Date().toISOString(),
       joinedAt: new Date().toISOString(),
-      reputation: 0,
-      contributions: 0,
+      reputation: limitsConfig.community.initialReputation,
+      contributions: limitsConfig.community.initialContributions,
       contributionsDetail: {
-        comments: 0,
-        resources: 0,
-        votes: 0,
+        comments: limitsConfig.community.initialContributions,
+        resources: limitsConfig.community.initialContributions,
+        votes: limitsConfig.community.initialContributions,
       },
       privacy: {
         showEmail: false,
@@ -78,7 +79,7 @@ export const useUserProfiles = (initialUsers: UserProfile[] = []) => {
   const incrementContributions = (
     userId: string,
     type: 'comments' | 'resources' | 'votes',
-    amount: number = 1
+    amount: number = limitsConfig.community.defaultReputationIncrement
   ): void => {
     const user = userMap.value.get(userId)
     if (!user) return
@@ -119,11 +120,14 @@ export const useUserProfiles = (initialUsers: UserProfile[] = []) => {
     return true
   }
 
-  const getTopContributors = computed(() => (limit: number = 10) => {
-    return [...users.value]
-      .sort((a, b) => (b.reputation || 0) - (a.reputation || 0))
-      .slice(0, limit)
-  })
+  const getTopContributors = computed(
+    () =>
+      (limit: number = limitsConfig.community.defaultTopContributorsLimit) => {
+        return [...users.value]
+          .sort((a, b) => (b.reputation || 0) - (a.reputation || 0))
+          .slice(0, limit)
+      }
+  )
 
   return {
     // State

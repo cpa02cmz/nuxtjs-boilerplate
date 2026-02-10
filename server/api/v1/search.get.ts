@@ -12,6 +12,9 @@ import {
   sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { generateCacheTags, cacheTagsConfig } from '~/configs/cache-tags.config'
+import { paginationConfig } from '~/configs/pagination.config'
+import { cacheConfig } from '~/configs/cache.config'
 
 /**
  * GET /api/v1/search
@@ -51,11 +54,11 @@ export default defineEventHandler(async event => {
 
     // Parse query parameters with validation
     // Validate and parse limit parameter
-    let limit = 20 // default
+    let limit = paginationConfig.search.defaultLimit // Use config instead of hardcoded
     if (query.limit !== undefined) {
       const parsedLimit = parseInt(query.limit as string)
       if (!isNaN(parsedLimit) && parsedLimit > 0) {
-        limit = Math.min(parsedLimit, 100) // max 100
+        limit = Math.min(parsedLimit, paginationConfig.search.maxLimit) // Use config instead of hardcoded
       } else {
         return sendBadRequestError(
           event,
@@ -65,7 +68,7 @@ export default defineEventHandler(async event => {
     }
 
     // Validate and parse offset parameter
-    let offset = 0 // default
+    let offset = paginationConfig.defaults.offset // Use config instead of hardcoded
     if (query.offset !== undefined) {
       const parsedOffset = parseInt(query.offset as string)
       if (!isNaN(parsedOffset) && parsedOffset >= 0) {
@@ -216,11 +219,15 @@ export default defineEventHandler(async event => {
 
     // Cache the result with tags for easier invalidation
     // Use shorter TTL for search results since they change more frequently
-    await cacheSetWithTags(cacheKey, response, 120, [
-      'search',
-      'api-v1',
-      'search-results',
-    ])
+    await cacheSetWithTags(
+      cacheKey,
+      response,
+      cacheConfig.server.defaultTtlMs / 1000,
+      generateCacheTags(
+        cacheTagsConfig.search.results,
+        cacheTagsConfig.resources.list
+      )
+    )
 
     // Set cache miss header
     event.node.res?.setHeader('X-Cache', 'MISS')

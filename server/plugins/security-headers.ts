@@ -2,6 +2,13 @@ import { defineNitroPlugin } from 'nitropack/runtime'
 import type { H3Event } from 'h3'
 import { randomBytes } from 'node:crypto'
 import { getSecurityHeaders } from '../utils/security-config'
+import { logger } from '~/utils/logger'
+import { timeConfig } from '~/configs/time.config'
+import {
+  isApiRoute,
+  isStaticBuildPath,
+  isCacheablePage,
+} from '~/configs/routes.config'
 
 // Comprehensive security headers plugin
 export default defineNitroPlugin(nitroApp => {
@@ -16,10 +23,8 @@ export default defineNitroPlugin(nitroApp => {
         return
       }
 
-      // Skip security headers in test environment to avoid conflicts during testing
-      if (process.env.NODE_ENV === 'test') {
-        return
-      }
+      // Security headers are now enabled in test environment for proper security testing
+      // This ensures security vulnerabilities are caught during automated testing
 
       // Check if this is an HTML response - if so, the HTML security plugin will handle it
       // to avoid duplication of security headers
@@ -49,7 +54,8 @@ export default defineNitroPlugin(nitroApp => {
       const path = event.path || ''
 
       // For API routes, set appropriate cache control
-      if (path.startsWith('/api/')) {
+      // Flexy hates hardcoded paths! Using isApiRoute helper
+      if (isApiRoute(path)) {
         if (
           event.node.res.setHeader &&
           (!event.node.res.hasHeader ||
@@ -57,12 +63,13 @@ export default defineNitroPlugin(nitroApp => {
         ) {
           event.node.res.setHeader(
             'cache-control',
-            'max-age=300, public, s-maxage=300' // 5 minutes
+            `max-age=${timeConfig.cache.maxAge.api}, public, s-maxage=${timeConfig.cache.maxAge.api}`
           )
         }
       }
       // For static assets in _nuxt, set long cache control
-      else if (path.includes('/_nuxt/')) {
+      // Flexy hates hardcoded paths! Using isStaticBuildPath helper
+      else if (isStaticBuildPath(path)) {
         if (
           event.node.res.setHeader &&
           (!event.node.res.hasHeader ||
@@ -70,14 +77,13 @@ export default defineNitroPlugin(nitroApp => {
         ) {
           event.node.res.setHeader(
             'cache-control',
-            'max-age=31536000, immutable' // 1 year
+            `max-age=${timeConfig.cache.maxAge.static}, immutable`
           )
         }
       }
       // For main routes, set moderate cache control
-      else if (
-        ['/', '/ai-keys', '/about', '/search', '/submit'].includes(path)
-      ) {
+      // Flexy hates hardcoded paths! Using isCacheablePage helper
+      else if (isCacheablePage(path)) {
         if (
           event.node.res.setHeader &&
           (!event.node.res.hasHeader ||
@@ -85,16 +91,16 @@ export default defineNitroPlugin(nitroApp => {
         ) {
           event.node.res.setHeader(
             'cache-control',
-            'max-age=3600, s-maxage=3600, public' // 1 hour
+            `max-age=${timeConfig.cache.maxAge.page}, s-maxage=${timeConfig.cache.maxAge.page}, public`
           )
         }
       }
     } catch (error) {
       // Log errors in any environment but don't expose detailed errors in production
       if (process.env.NODE_ENV !== 'production') {
-        console.warn('Failed to set security headers in afterResponse:', error)
+        logger.warn('Failed to set security headers in afterResponse:', error)
       } else {
-        console.error('Security header setting failed')
+        logger.error('Security header setting failed')
       }
     }
   })

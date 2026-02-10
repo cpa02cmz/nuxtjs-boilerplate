@@ -68,7 +68,13 @@ export const pwaConfig = {
 } as const
 
 // Helper function to parse glob patterns
+// Supports both comma-separated patterns and brace expansion patterns
 function parseGlobPatterns(value: string): string[] {
+  // If the value contains brace expansion (e.g., **/*.{js,css}), keep it as a single pattern
+  if (value.includes('{') && value.includes('}')) {
+    return [value.trim()]
+  }
+  // Otherwise, split by comma for multiple patterns
   return value.split(',').map(s => s.trim())
 }
 

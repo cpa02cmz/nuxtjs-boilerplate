@@ -45,6 +45,7 @@ Get paginated list of resources with filtering and sorting options.
 
 ```json
 {
+  "success": true,
   "data": [
     {
       "id": "res_123",
@@ -53,18 +54,21 @@ Get paginated list of resources with filtering and sorting options.
       "url": "https://example.com",
       "category": "development",
       "tags": ["free", "tools"],
-      "featured": false,
-      "createdAt": "2025-01-01T00:00:00Z",
-      "upvotes": 5,
-      "downvotes": 1,
-      "healthStatus": "active"
+      "pricingModel": "free",
+      "difficulty": "beginner",
+      "benefits": ["Easy to use", "Open source"],
+      "technology": ["javascript", "vue"],
+      "dateAdded": "2026-01-01",
+      "popularity": 85,
+      "icon": "https://example.com/icon.png"
     }
   ],
   "pagination": {
-    "page": 1,
-    "limit": 20,
     "total": 150,
-    "pages": 8
+    "limit": 20,
+    "offset": 0,
+    "hasNext": true,
+    "hasPrev": false
   }
 }
 ```
@@ -77,34 +81,24 @@ Get a specific resource by ID.
 
 ```json
 {
-  "id": "res_123",
-  "title": "Example Resource",
-  "description": "Resource description",
-  "url": "https://example.com",
-  "category": "development",
-  "tags": ["free", "tools"],
-  "featured": false,
-  "createdAt": "2025-01-01T00:00:00Z",
-  "upvotes": 5,
-  "downvotes": 1,
-  "healthStatus": "active",
-  "alternatives": [
-    {
-      "id": "res_456",
-      "title": "Alternative Resource",
-      "url": "https://alternative.com"
-    }
-  ],
-  "comments": [
-    {
-      "id": "comment_1",
-      "author": "user_456",
-      "authorName": "Jane Doe",
-      "content": "Great resource!",
-      "createdAt": "2025-01-02T00:00:00Z",
-      "upvotes": 2
-    }
-  ]
+  "success": true,
+  "data": {
+    "id": "res_123",
+    "title": "Example Resource",
+    "description": "Resource description",
+    "url": "https://example.com",
+    "category": "development",
+    "tags": ["free", "tools"],
+    "pricingModel": "free",
+    "difficulty": "beginner",
+    "benefits": ["Easy to use", "Open source"],
+    "technology": ["javascript", "vue"],
+    "dateAdded": "2026-01-01",
+    "popularity": 85,
+    "icon": "https://example.com/icon.png",
+    "alternatives": ["res_456", "res_789"],
+    "status": "approved"
+  }
 }
 ```
 
@@ -233,8 +227,8 @@ Get user's API keys.
       "id": "key_123",
       "name": "Production Key",
       "key": "sk_live_abc123",
-      "lastUsed": "2025-11-29T12:00:00Z",
-      "createdAt": "2025-11-01T00:00:00Z"
+      "lastUsed": "2026-11-29T12:00:00Z",
+      "createdAt": "2026-11-01T00:00:00Z"
     }
   ]
 }
@@ -262,7 +256,7 @@ Create a new API key.
     "id": "key_456",
     "name": "Production Key",
     "key": "sk_live_xyz789",
-    "createdAt": "2025-11-29T12:00:00Z"
+    "createdAt": "2026-11-29T12:00:00Z"
   }
 }
 ```
@@ -357,7 +351,7 @@ Get list of submissions.
       },
       "status": "pending",
       "submittedBy": "user_123",
-      "submittedAt": "2025-11-29T12:00:00Z"
+      "submittedAt": "2026-11-29T12:00:00Z"
     }
   ],
   "pagination": {
@@ -508,7 +502,7 @@ Add a comment to a resource.
     "authorName": "John Doe",
     "content": "This is a great resource for learning!",
     "parentId": "comment_456",
-    "createdAt": "2025-11-29T12:00:00Z",
+    "createdAt": "2026-11-29T12:00:00Z",
     "upvotes": 0,
     "downvotes": 0
   }
@@ -539,7 +533,7 @@ Vote on a resource or comment.
     "targetType": "resource",
     "userId": "user_123",
     "voteType": "up",
-    "createdAt": "2025-11-29T12:00:00Z"
+    "createdAt": "2026-11-29T12:00:00Z"
   }
 }
 ```
@@ -572,7 +566,7 @@ Report inappropriate content.
     "reason": "spam",
     "details": "This resource appears to be promoting a commercial product",
     "status": "pending",
-    "createdAt": "2025-11-29T12:00:00Z"
+    "createdAt": "2026-11-29T12:00:00Z"
   }
 }
 ```
@@ -594,7 +588,7 @@ Get moderation queue.
       "details": "This resource appears to be promoting a commercial product",
       "status": "pending",
       "reportedBy": "user_456",
-      "createdAt": "2025-11-29T12:00:00Z",
+      "createdAt": "2026-11-29T12:00:00Z",
       "targetData": {
         "title": "Example Resource",
         "description": "Resource description",
@@ -621,7 +615,7 @@ Track user events and interactions.
     "userId": "user_456",
     "page": "/resources/res_123"
   },
-  "timestamp": "2025-11-29T12:00:00Z"
+  "timestamp": "2026-11-29T12:00:00Z"
 }
 ```
 

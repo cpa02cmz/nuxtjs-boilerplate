@@ -3,6 +3,11 @@ import { useNuxtApp } from '#app'
 import type { ApiClient } from '~/utils/api-client'
 import { logError } from '~/utils/errorLogger'
 import logger from '~/utils/logger'
+import { validationConfig } from '~/configs/validation.config'
+import { uiConfig } from '~/configs/ui.config'
+import { apiConfig } from '~/configs/api.config'
+import { contentConfig } from '~/configs/content.config'
+import { patternsConfig } from '~/configs/patterns.config'
 
 interface FormData {
   title: string
@@ -52,31 +57,50 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
     errors.value = {}
 
     if (!formData.value.title.trim()) {
-      errors.value.title = 'Title is required'
-    } else if (formData.value.title.length > 200) {
-      errors.value.title = 'Title is too long (max 200 characters)'
+      errors.value.title = validationConfig.messages.required.title
+    } else if (
+      formData.value.title.length > validationConfig.resource.name.maxLength
+    ) {
+      errors.value.title = validationConfig.messages.tooLong.title.replace(
+        '{{max}}',
+        validationConfig.resource.name.maxLength.toString()
+      )
     }
 
     if (!formData.value.description.trim()) {
-      errors.value.description = 'Description is required'
-    } else if (formData.value.description.length < 10) {
-      errors.value.description = 'Description must be at least 10 characters'
-    } else if (formData.value.description.length > 1000) {
-      errors.value.description = 'Description is too long (max 1000 characters)'
+      errors.value.description = validationConfig.messages.required.description
+    } else if (
+      formData.value.description.length <
+      validationConfig.resource.description.minLength
+    ) {
+      errors.value.description =
+        validationConfig.messages.tooShort.description.replace(
+          '{{min}}',
+          validationConfig.resource.description.minLength.toString()
+        )
+    } else if (
+      formData.value.description.length >
+      validationConfig.resource.description.maxLength
+    ) {
+      errors.value.description =
+        validationConfig.messages.tooLong.description.replace(
+          '{{max}}',
+          validationConfig.resource.description.maxLength.toString()
+        )
     }
 
     if (!formData.value.url.trim()) {
-      errors.value.url = 'URL is required'
+      errors.value.url = validationConfig.messages.required.url
     } else {
       try {
         new URL(formData.value.url)
       } catch {
-        errors.value.url = 'Please enter a valid URL'
+        errors.value.url = validationConfig.messages.invalid.url
       }
     }
 
     if (!formData.value.category) {
-      errors.value.category = 'Category is required'
+      errors.value.category = validationConfig.messages.required.category
     }
 
     if (Object.keys(errors.value).length > 0) {
@@ -98,7 +122,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
 
     setTimeout(() => {
       document.body.removeChild(announcement)
-    }, 5000)
+    }, uiConfig.feedback.announcementClearMs)
   }
 
   const processTags = (tagsString: string): string[] => {
@@ -124,7 +148,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
 
     try {
       const client = getClient()
-      const response = await client.post('/api/submissions', {
+      const response = await client.post(apiConfig.submissions.base, {
         title: formData.value.title.trim(),
         description: formData.value.description.trim(),
         url: formData.value.url.trim(),
@@ -143,7 +167,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
 
         setTimeout(() => {
           submitSuccess.value = false
-        }, 5000)
+        }, uiConfig.feedback.successMessageClearMs)
       } else {
         const responseData = response.data as
           | { errors?: { field: string; message: string }[]; message?: string }
@@ -158,7 +182,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
         submitError.value =
           responseData?.message ||
           response.error?.message ||
-          'An error occurred while submitting resource'
+          contentConfig.submit.error.message
       }
     } catch (error: unknown) {
       const errorData = error as {
@@ -168,7 +192,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
       submitError.value =
         errorData.data?.message ||
         errorData.message ||
-        'An unexpected error occurred'
+        patternsConfig.errors.genericErrorMessage
       logError(
         `Failed to submit resource: ${submitError.value}`,
         errorData.data instanceof Error

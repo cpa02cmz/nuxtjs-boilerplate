@@ -104,8 +104,8 @@ const stats = getAllCircuitBreakerStats()
     state: 'closed' | 'open' | 'half-open',
     failureCount: 2,
     successCount: 10,
-    lastFailureTime: '2025-01-07T12:00:00Z',
-    lastSuccessTime: '2025-01-07T12:05:00Z',
+    lastFailureTime: '2026-01-07T12:00:00Z',
+    lastSuccessTime: '2026-01-07T12:05:00Z',
     failureRate: 0.16
   }
 }
@@ -341,7 +341,7 @@ export default defineEventHandler(event => {
       "email": "Invalid email format",
       "password": "Password must be at least 8 characters"
     },
-    "timestamp": "2025-01-07T12:00:00Z",
+    "timestamp": "2026-01-07T12:00:00Z",
     "requestId": "req_abc123",
     "path": "/api/auth/register"
   }
@@ -355,7 +355,7 @@ export default defineEventHandler(event => {
     "message": "Too many requests",
     "category": "rate_limit",
     "details": "Please wait 60 seconds before making another request",
-    "timestamp": "2025-01-07T12:00:00Z",
+    "timestamp": "2026-01-07T12:00:00Z",
     "requestId": "req_def456"
   }
 }

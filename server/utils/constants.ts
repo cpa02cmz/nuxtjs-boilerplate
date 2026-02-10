@@ -36,6 +36,17 @@ export const VALID_EVENT_TYPES = [
   'bookmark',
   'comparison',
   'submission',
+  'page_view',
+  'resource_click',
+  'advanced_search',
+  'zero_result_search',
+  'search_result_click',
+  'filter_applied',
+  'recommendation_click',
+  'resource_rating',
+  'time_spent',
+  'bookmark_action',
+  'resource_shared',
 ] as const
 
 export type ValidEventType = (typeof VALID_EVENT_TYPES)[number]
@@ -63,10 +74,22 @@ export {
 
 export { uiConfig as UI_CONFIG, type UiConfig } from '~/configs/ui.config'
 
+// Re-export searchConfig with backward-compatible SEARCH_CONFIG alias
 export {
+  searchConfig,
   searchConfig as SEARCH_CONFIG,
   type SearchConfig,
 } from '~/configs/search.config'
+
+export {
+  limitsConfig as LIMITS_CONFIG,
+  type LimitsConfig,
+} from '~/configs/limits.config'
+
+export {
+  comparisonConfig as COMPARISON_CONFIG,
+  type ComparisonConfig,
+} from '~/configs/comparison.config'
 
 // Backward-compatible re-exports using config values
 // These maintain the old constant names but use configurable values
@@ -174,6 +197,7 @@ export const HTTP_STATUS = {
 } as const
 
 // UI layout constants (in pixels) - now configurable via env vars
+// Flexy hates hardcoded values! All layout values now use uiConfig
 export const UI_LAYOUT = {
   // Toast/notification positioning
   TOAST_CONTAINER_TOP: uiConfig.toast.position.top,
@@ -181,28 +205,28 @@ export const UI_LAYOUT = {
   TOAST_MAX_WIDTH: uiConfig.toast.position.maxWidth,
   TOAST_MIN_WIDTH: uiConfig.toast.position.minWidth,
 
-  // Spacing scale (in rem units, multiplied by 0.25)
-  SPACING_XS: 0.25,
-  SPACING_SM: 0.5,
-  SPACING_MD: 0.75,
-  SPACING_LG: 1,
-  SPACING_XL: 1.5,
-  SPACING_2XL: 2,
+  // Spacing scale (in rem units) - now configurable
+  SPACING_XS: uiConfig.layout.spacing.xs,
+  SPACING_SM: uiConfig.layout.spacing.sm,
+  SPACING_MD: uiConfig.layout.spacing.md,
+  SPACING_LG: uiConfig.layout.spacing.lg,
+  SPACING_XL: uiConfig.layout.spacing.xl,
+  SPACING_2XL: uiConfig.layout.spacing['2xl'],
 
-  // Border radius (in rem)
-  BORDER_RADIUS_SM: 0.25,
-  BORDER_RADIUS_MD: 0.5,
-  BORDER_RADIUS_LG: 0.75,
+  // Border radius (in rem) - now configurable
+  BORDER_RADIUS_SM: uiConfig.layout.borderRadius.sm,
+  BORDER_RADIUS_MD: uiConfig.layout.borderRadius.md,
+  BORDER_RADIUS_LG: uiConfig.layout.borderRadius.lg,
 
-  // Font sizes (in rem)
-  FONT_SIZE_SM: 0.75,
-  FONT_SIZE_MD: 0.875,
-  FONT_SIZE_LG: 1,
+  // Font sizes (in rem) - now configurable
+  FONT_SIZE_SM: uiConfig.layout.fontSize.sm,
+  FONT_SIZE_MD: uiConfig.layout.fontSize.md,
+  FONT_SIZE_LG: uiConfig.layout.fontSize.lg,
 
-  // Line heights (in rem)
-  LINE_HEIGHT_SM: 1,
-  LINE_HEIGHT_MD: 1.25,
-  LINE_HEIGHT_LG: 1.5,
+  // Line heights (in rem) - now configurable
+  LINE_HEIGHT_SM: uiConfig.layout.lineHeight.sm,
+  LINE_HEIGHT_MD: uiConfig.layout.lineHeight.md,
+  LINE_HEIGHT_LG: uiConfig.layout.lineHeight.lg,
 } as const
 
 // Animation duration constants (in seconds) - now configurable via env vars
@@ -219,3 +243,11 @@ export const Z_INDEX = {
   DROPDOWN: uiConfig.zIndex.dropdown,
   STICKY: uiConfig.zIndex.sticky,
 } as const
+
+// Re-export test timing configuration
+// Flexy hates hardcoded test timing values!
+export {
+  testTimingConfig as TEST_TIMING_CONFIG,
+  TEST_TIMING,
+  type TestTimingConfig,
+} from '~/configs/test-timing.config'

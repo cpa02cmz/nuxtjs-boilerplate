@@ -1,5 +1,6 @@
 import type { WebhookQueueItem } from '~/types/webhook'
 import { webhookStorage } from './webhookStorage'
+import { webhooksConfig } from '~/configs/webhooks.config'
 import { logger } from '~/utils/logger'
 
 export class WebhookQueueManager {
@@ -19,14 +20,9 @@ export class WebhookQueueManager {
 
   async dequeue(): Promise<WebhookQueueItem | null> {
     try {
-      const queue = await webhookStorage.getQueue()
-      if (queue.length === 0) {
-        return null
-      }
-
-      const item = queue[0]
-      await webhookStorage.removeFromQueue(item.id)
-      return item
+      // Use atomic dequeue to prevent race conditions
+      // This ensures only one worker can process each item
+      return await webhookStorage.dequeueAtomic()
     } catch (error) {
       logger.error('Failed to dequeue webhook item:', error)
       return null
@@ -61,7 +57,7 @@ export class WebhookQueueManager {
     this.isProcessing = true
     this.processorInterval = setInterval(() => {
       this.processQueue()
-    }, 5000)
+    }, webhooksConfig.queue.processorIntervalMs)
   }
 
   stopProcessor(): void {

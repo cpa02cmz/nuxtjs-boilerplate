@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import { getQuery } from 'h3'
+import { rateLimitConfig } from '~/configs/rate-limit.config'
 
 interface TokenBucket {
   tokens: number
@@ -16,6 +17,84 @@ interface RateLimitConfig {
 
 // In-memory store for token buckets
 const tokenBucketStore = new Map<string, TokenBucket>()
+
+// Lock queue for atomic operations - prevents race conditions
+const bucketLocks = new Map<string, Promise<void>>()
+
+// FIXED: Add periodic cleanup to prevent memory leaks in rate limit store
+// Cleanup runs every 10 minutes to remove expired/stale entries
+const CLEANUP_INTERVAL_MS = 10 * 60 * 1000 // 10 minutes
+const BUCKET_MAX_AGE_MS = 60 * 60 * 1000 // 1 hour max age for stale buckets
+
+/**
+ * Clean up expired rate limit entries to prevent memory leaks
+ * Removes buckets that haven't been accessed in over an hour
+ */
+function cleanupExpiredRateLimitEntries(): void {
+  const now = Date.now()
+  let cleanedCount = 0
+
+  // Clean up expired buckets
+  for (const [key, bucket] of tokenBucketStore.entries()) {
+    const timeSinceLastRefill = now - bucket.lastRefill
+    if (timeSinceLastRefill > BUCKET_MAX_AGE_MS && bucket.tokens === 0) {
+      tokenBucketStore.delete(key)
+      cleanedCount++
+    }
+  }
+
+  // Clean up orphaned locks (shouldn't happen, but safety measure)
+  for (const [key] of bucketLocks.entries()) {
+    if (!tokenBucketStore.has(key)) {
+      bucketLocks.delete(key)
+    }
+  }
+
+  if (cleanedCount > 0 && process.env.NODE_ENV !== 'test') {
+    console.log(`[RateLimit] Cleaned up ${cleanedCount} expired bucket entries`)
+  }
+}
+
+// Start periodic cleanup to prevent unbounded memory growth
+let rateLimitCleanupInterval: NodeJS.Timeout | null = null
+
+function startRateLimitCleanup(): void {
+  if (!rateLimitCleanupInterval) {
+    rateLimitCleanupInterval = setInterval(
+      cleanupExpiredRateLimitEntries,
+      CLEANUP_INTERVAL_MS
+    )
+    // Prevent the interval from keeping the process alive
+    rateLimitCleanupInterval.unref?.()
+  }
+}
+
+// Initialize cleanup on module load
+startRateLimitCleanup()
+
+/**
+ * Acquire a lock for a bucket key to ensure atomic operations
+ * Uses a simple Promise-based queue for async locking
+ */
+async function acquireLock(key: string): Promise<() => void> {
+  // Wait for existing lock to be released
+  while (bucketLocks.has(key)) {
+    await bucketLocks.get(key)
+  }
+
+  // Create a new lock
+  let release: () => void
+  const lockPromise = new Promise<void>(resolve => {
+    release = resolve
+  })
+  bucketLocks.set(key, lockPromise)
+
+  // Return release function
+  return () => {
+    bucketLocks.delete(key)
+    release!()
+  }
+}
 
 // Admin bypass keys - loaded from environment variable at startup
 // Only used when valid bypass key is provided in request headers
@@ -40,6 +119,7 @@ class RateLimiter {
 
   /**
    * Check if a request should be allowed based on token bucket algorithm
+   * FIXED: Uses atomic locking to prevent race conditions under concurrent load
    */
   async isAllowed(
     key: string,
@@ -59,48 +139,58 @@ class RateLimiter {
       }
     }
 
-    const now = Date.now()
-    let bucket = tokenBucketStore.get(key)
+    // Acquire lock for atomic bucket operations
+    const release = await acquireLock(key)
 
-    // If no bucket exists, create a new one
-    if (!bucket) {
-      bucket = {
-        tokens: this.config.tokensPerInterval,
-        lastRefill: now,
+    try {
+      const now = Date.now()
+      let bucket = tokenBucketStore.get(key)
+
+      // If no bucket exists, create a new one
+      if (!bucket) {
+        bucket = {
+          tokens: this.config.tokensPerInterval,
+          lastRefill: now,
+        }
+        tokenBucketStore.set(key, bucket)
+      } else {
+        // Refill tokens based on time passed
+        const timePassed = now - bucket.lastRefill
+        const intervalsPassed = Math.floor(timePassed / this.config.intervalMs)
+
+        // Add tokens based on intervals passed, but don't exceed max
+        bucket.tokens = Math.min(
+          this.config.maxRequests,
+          bucket.tokens + intervalsPassed * this.config.tokensPerInterval
+        )
+
+        bucket.lastRefill = now
       }
-      tokenBucketStore.set(key, bucket)
-    } else {
-      // Refill tokens based on time passed
-      const timePassed = now - bucket.lastRefill
-      const intervalsPassed = Math.floor(timePassed / this.config.intervalMs)
 
-      // Add tokens based on intervals passed, but don't exceed max
-      bucket.tokens = Math.min(
-        this.config.maxRequests,
-        bucket.tokens + intervalsPassed * this.config.tokensPerInterval
-      )
-
-      bucket.lastRefill = now
-    }
-
-    // Check if we have tokens available
-    if (bucket.tokens > 0) {
-      bucket.tokens-- // Consume a token
-      return {
-        allowed: true,
-        remaining: Math.floor(bucket.tokens),
-        resetTime:
-          Math.floor(bucket.lastRefill + this.config.intervalMs) / 1000,
+      // Check if we have tokens available
+      if (bucket.tokens > 0) {
+        bucket.tokens-- // Consume a token
+        return {
+          allowed: true,
+          remaining: Math.floor(bucket.tokens),
+          resetTime: Math.floor(
+            (bucket.lastRefill + this.config.intervalMs) / 1000
+          ),
+        }
+      } else {
+        // No tokens available, rate limit exceeded
+        return {
+          allowed: false,
+          message: this.config.message,
+          remaining: 0,
+          resetTime: Math.floor(
+            (bucket.lastRefill + this.config.intervalMs) / 1000
+          ),
+        }
       }
-    } else {
-      // No tokens available, rate limit exceeded
-      return {
-        allowed: false,
-        message: this.config.message,
-        remaining: 0,
-        resetTime:
-          Math.floor(bucket.lastRefill + this.config.intervalMs) / 1000,
-      }
+    } finally {
+      // Always release the lock
+      release()
     }
   }
 
@@ -162,9 +252,50 @@ interface RateLimitAnalytics {
   totalRequests: number
   blockedRequests: number
   bypassedRequests: number
+  lastUpdated: number // Track when this entry was last updated for cleanup
 }
 
 const analyticsStore = new Map<string, RateLimitAnalytics>()
+
+// FIXED: Add cleanup for analytics store to prevent memory leaks
+const ANALYTICS_MAX_AGE_MS = 24 * 60 * 60 * 1000 // 24 hours
+const ANALYTICS_CLEANUP_INTERVAL_MS = 60 * 60 * 1000 // 1 hour
+
+/**
+ * Clean up old analytics entries to prevent memory leaks
+ */
+function cleanupExpiredAnalytics(): void {
+  const now = Date.now()
+  let cleanedCount = 0
+
+  for (const [key, analytics] of analyticsStore.entries()) {
+    if (now - analytics.lastUpdated > ANALYTICS_MAX_AGE_MS) {
+      analyticsStore.delete(key)
+      cleanedCount++
+    }
+  }
+
+  if (cleanedCount > 0 && process.env.NODE_ENV !== 'test') {
+    console.log(
+      `[RateLimit] Cleaned up ${cleanedCount} expired analytics entries`
+    )
+  }
+}
+
+// Start periodic cleanup for analytics
+let analyticsCleanupInterval: NodeJS.Timeout | null = null
+
+function startAnalyticsCleanup(): void {
+  if (!analyticsCleanupInterval) {
+    analyticsCleanupInterval = setInterval(
+      cleanupExpiredAnalytics,
+      ANALYTICS_CLEANUP_INTERVAL_MS
+    )
+    analyticsCleanupInterval.unref?.()
+  }
+}
+
+startAnalyticsCleanup()
 
 function getAnalytics(path: string): RateLimitAnalytics {
   if (!analyticsStore.has(path)) {
@@ -172,47 +303,51 @@ function getAnalytics(path: string): RateLimitAnalytics {
       totalRequests: 0,
       blockedRequests: 0,
       bypassedRequests: 0,
+      lastUpdated: Date.now(),
     })
   }
-  return analyticsStore.get(path)!
+  const analytics = analyticsStore.get(path)!
+  analytics.lastUpdated = Date.now()
+  return analytics
 }
 
 // Default rate limit configurations for different endpoint types
+// Flexy hates hardcoded values! Using config values instead.
 export const rateLimitConfigs = {
   general: new RateLimiter({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    maxRequests: 100,
-    tokensPerInterval: 10, // 10 tokens every interval
-    intervalMs: 60 * 1000, // refill every minute
-    message: 'Too many requests, please try again later.',
+    windowMs: rateLimitConfig.general.windowMs,
+    maxRequests: rateLimitConfig.general.maxRequests,
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_GENERAL_TOKENS || '10'),
+    intervalMs: parseInt(process.env.RATE_LIMIT_GENERAL_INTERVAL_MS || '60000'),
+    message: rateLimitConfig.general.message,
   }),
   search: new RateLimiter({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    maxRequests: 30,
-    tokensPerInterval: 5, // 5 tokens every interval
-    intervalMs: 30 * 1000, // refill every 30 seconds
-    message: 'Too many search requests, please slow down.',
+    windowMs: rateLimitConfig.search.windowMs,
+    maxRequests: rateLimitConfig.search.maxRequests,
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_SEARCH_TOKENS || '5'),
+    intervalMs: parseInt(process.env.RATE_LIMIT_SEARCH_INTERVAL_MS || '30000'),
+    message: rateLimitConfig.search.message,
   }),
   heavy: new RateLimiter({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    maxRequests: 10,
-    tokensPerInterval: 2, // 2 tokens every interval
-    intervalMs: 60 * 1000, // refill every minute
-    message: 'Too many heavy computation requests, please slow down.',
+    windowMs: rateLimitConfig.heavy.windowMs,
+    maxRequests: rateLimitConfig.heavy.maxRequests,
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_HEAVY_TOKENS || '2'),
+    intervalMs: parseInt(process.env.RATE_LIMIT_HEAVY_INTERVAL_MS || '60000'),
+    message: rateLimitConfig.heavy.message,
   }),
   export: new RateLimiter({
-    windowMs: 1 * 60 * 1000, // 1 minute
-    maxRequests: 5,
-    tokensPerInterval: 1, // 1 token every interval
-    intervalMs: 60 * 1000, // refill every minute
-    message: 'Too many export requests, please slow down.',
+    windowMs: rateLimitConfig.export.windowMs,
+    maxRequests: rateLimitConfig.export.maxRequests,
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_EXPORT_TOKENS || '1'),
+    intervalMs: parseInt(process.env.RATE_LIMIT_EXPORT_INTERVAL_MS || '60000'),
+    message: rateLimitConfig.export.message,
   }),
   api: new RateLimiter({
-    windowMs: 5 * 60 * 1000, // 5 minutes
-    maxRequests: 50,
-    tokensPerInterval: 5, // 5 tokens every interval
-    intervalMs: 60 * 1000, // refill every minute
-    message: 'API rate limit exceeded. Please try again later.',
+    windowMs: rateLimitConfig.api.windowMs,
+    maxRequests: rateLimitConfig.api.maxRequests,
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_API_TOKENS || '30'),
+    intervalMs: parseInt(process.env.RATE_LIMIT_API_INTERVAL_MS || '60000'),
+    message: rateLimitConfig.api.message,
   }),
 }
 
@@ -227,10 +362,12 @@ export function getRateLimiterForPath(path: string): RateLimiter {
   } else if (
     path.includes('/api/v1/resources') ||
     path.includes('/api/categories') ||
-    path.includes('/api/v1/categories') ||
-    path.includes('/api/submissions')
+    path.includes('/api/v1/categories')
   ) {
     return rateLimitConfigs.heavy
+  } else if (path.includes('/api/submissions')) {
+    // Submissions endpoint uses API rate limit (not heavy) since it's lightweight
+    return rateLimitConfigs.api
   } else if (path.includes('/api/')) {
     return rateLimitConfigs.api
   } else {

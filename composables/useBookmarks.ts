@@ -1,7 +1,8 @@
-import { ref, computed, readonly } from 'vue'
+import { ref, computed, readonly, onMounted } from 'vue'
 import { createStorageWithDateSerialization } from '~/utils/storage'
 import { emitEvent } from '~/utils/event-emitter'
 import { STORAGE_KEYS } from '~/server/utils/constants'
+import { patternsConfig } from '~/configs/patterns.config'
 
 export interface Bookmark {
   id: string
@@ -44,8 +45,21 @@ export const useBookmarks = () => {
   bookmarksRef = bookmarks
 
   const initBookmarks = () => {
-    bookmarks.value = storage.get()
+    if (typeof window !== 'undefined') {
+      bookmarks.value = storage.get()
+    }
   }
+
+  // Initialize on client-side immediately if not already initialized
+  // This handles both SSR (onMounted) and test environments
+  if (typeof window !== 'undefined' && bookmarks.value.length === 0) {
+    initBookmarks()
+  }
+
+  // Also initialize on mount for SSR hydration safety
+  onMounted(() => {
+    initBookmarks()
+  })
 
   const saveBookmarks = () => {
     storage.set(bookmarks.value)
@@ -137,7 +151,10 @@ export const useBookmarks = () => {
     const dataStr = JSON.stringify(bookmarksToExport, null, 2)
     const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`
 
-    const exportFileDefaultName = `bookmarks-${new Date().toISOString().split('T')[0]}.json`
+    // Format date as YYYY-MM-DD for filename
+    const dateStr = new Date().toISOString().split('T')[0]
+    const exportFileDefaultName =
+      patternsConfig.export.bookmarksFilenameTemplate.replace('{date}', dateStr)
 
     const linkElement = document.createElement('a')
     linkElement.setAttribute('href', dataUri)
@@ -176,8 +193,6 @@ export const useBookmarks = () => {
     saveBookmarks()
   }
 
-  initBookmarks()
-
   return {
     bookmarks: readonly(bookmarks),
     isBookmarked,
@@ -192,5 +207,6 @@ export const useBookmarks = () => {
     exportBookmarks,
     importBookmarks,
     clearBookmarks,
+    initBookmarks,
   }
 }

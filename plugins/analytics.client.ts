@@ -2,6 +2,7 @@
 // Client-side analytics plugin for automatic tracking
 
 import { defineNuxtPlugin } from '#app'
+import type { RouteLocationNormalized, Router } from 'vue-router'
 
 export default defineNuxtPlugin(nuxtApp => {
   // Track initial page view
@@ -15,8 +16,8 @@ export default defineNuxtPlugin(nuxtApp => {
       }
 
       // Track route changes
-      nuxtApp.$router?.afterEach(
-        (to: { path: string }, from: { path: string }) => {
+      ;(nuxtApp.$router as Router | undefined)?.afterEach(
+        (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
           // Only track if route actually changed
           if (to.path !== from.path) {
             setTimeout(() => {

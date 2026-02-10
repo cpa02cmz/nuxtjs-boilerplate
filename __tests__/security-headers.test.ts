@@ -19,12 +19,10 @@ describe('Security Headers Implementation', () => {
     })
 
     it('should have additional security headers', () => {
-      expect(securityConfig.additionalHeaders).toBeDefined()
-      expect(securityConfig.additionalHeaders['X-Frame-Options']).toBe('DENY')
-      expect(securityConfig.additionalHeaders['X-Content-Type-Options']).toBe(
-        'nosniff'
-      )
-      expect(securityConfig.additionalHeaders['Referrer-Policy']).toBe(
+      expect(securityConfig.headers).toBeDefined()
+      expect(securityConfig.headers['X-Frame-Options']).toBe('DENY')
+      expect(securityConfig.headers['X-Content-Type-Options']).toBe('nosniff')
+      expect(securityConfig.headers['Referrer-Policy']).toBe(
         'strict-origin-when-cross-origin'
       )
     })

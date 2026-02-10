@@ -2,6 +2,7 @@ import { ref, computed, readonly } from 'vue'
 import { logError } from '~/utils/errorLogger'
 import logger from '~/utils/logger'
 import { TIMING } from '~/server/utils/constants'
+import { uiConfig } from '~/configs/ui.config'
 import type { Resource } from '~/types/resource'
 
 // Main composable for managing resource data
@@ -10,7 +11,7 @@ export const useResourceData = () => {
   const loading = ref(true)
   const error = ref<string | null>(null)
   const retryCount = ref(0)
-  const maxRetries = 3
+  const maxRetries = uiConfig.dataLoading.maxRetries // Flexy hates hardcoded 3! Using config now
   const lastError = ref<Error | null>(null)
 
   // Initialize resources
@@ -24,19 +25,47 @@ export const useResourceData = () => {
 
       // Import resources from JSON
       const resourcesModule = await import('~/data/resources.json')
-      resources.value = resourcesModule.default || resourcesModule
+      const rawData = resourcesModule.default || resourcesModule
+
+      // Type validation to ensure data integrity
+      if (!Array.isArray(rawData)) {
+        throw new Error('Invalid resource data format: expected array')
+      }
+
+      // Validate each resource has required properties
+      const validatedResources: Resource[] = []
+      for (const item of rawData) {
+        if (
+          item !== null &&
+          typeof item === 'object' &&
+          typeof item.id === 'string' &&
+          typeof item.title === 'string' &&
+          typeof item.category === 'string' &&
+          Array.isArray(item.tags) &&
+          Array.isArray(item.technology)
+        ) {
+          validatedResources.push(item as Resource)
+        }
+      }
+
+      if (validatedResources.length === 0 && rawData.length > 0) {
+        throw new Error('Invalid resource data: no valid resources found')
+      }
+
+      resources.value = validatedResources
 
       loading.value = false
       error.value = null
       lastError.value = null
     } catch (err) {
-      // Store the actual error object
-      lastError.value = err as Error
+      // Ensure we have a proper Error object
+      const errorObj = err instanceof Error ? err : new Error(String(err))
+      lastError.value = errorObj
 
       // Log error using our error logging service
       logError(
-        `Failed to load resources (attempt ${attempt}/${maxRetries}): ${err instanceof Error ? err.message : 'Unknown error'}`,
-        err as Error,
+        `Failed to load resources (attempt ${attempt}/${maxRetries}): ${errorObj.message}`,
+        errorObj,
         'useResourceData',
         { attempt, maxRetries, errorType: err?.constructor?.name }
       )

@@ -7,6 +7,7 @@
 import { validateUrl } from '~/utils/urlValidation'
 import { logger } from '~/utils/logger'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+import { validateUrlSchema } from '~/server/utils/validation-schemas'
 import {
   sendBadRequestError,
   sendSuccessResponse,
@@ -20,19 +21,26 @@ export default defineEventHandler(async event => {
     await rateLimit(event)
     const body = await readBody(event)
 
-    if (!body || !body.url) {
-      sendBadRequestError(event, 'URL is required in request body')
+    const validationResult = validateUrlSchema.safeParse(body)
+
+    if (!validationResult.success) {
+      const errorMessages = validationResult.error.issues
+        .map(e => e.message)
+        .join(', ')
+      sendBadRequestError(event, errorMessages)
       return
     }
 
-    const validationResult = await validateUrl(body.url, {
-      timeout: body.timeout || 10000,
-      retries: body.retries || 3,
-      retryDelay: body.retryDelay || 1000,
-      useCircuitBreaker: body.useCircuitBreaker !== false,
+    const validatedBody = validationResult.data
+
+    const urlValidationResult = await validateUrl(validatedBody.url, {
+      timeout: validatedBody.timeout,
+      retries: validatedBody.retries,
+      retryDelay: validatedBody.retryDelay,
+      useCircuitBreaker: validatedBody.useCircuitBreaker,
     })
 
-    sendSuccessResponse(event, { validationResult })
+    sendSuccessResponse(event, { validationResult: urlValidationResult })
   } catch (error) {
     logger.error('Error validating URL:', error)
     handleApiRouteError(event, error)

@@ -31,19 +31,80 @@
       v-else
       class="sr-only"
     >Loading</span>
+
+    <!-- Live region for status announcement to screen readers -->
+    <div
+      :id="`loading-status-${uniqueId}`"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >
+      {{ statusMessage }}
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+import { themeConfig } from '../configs/theme.config'
+
 interface Props {
   label?: string
   size?: 'small' | 'medium' | 'large'
+  /**
+   * Controls the loading state announcement.
+   * 'loading' - announces loading has started
+   * 'complete' - announces loading has finished
+   * 'error' - announces loading failed
+   * null/undefined - no announcement
+   */
+  state?: 'loading' | 'complete' | 'error' | null
+  /** Custom message to announce when state changes. Overrides default messages. */
+  customMessage?: string
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   label: undefined,
   size: 'medium',
+  state: null,
+  customMessage: undefined,
 })
+
+// Generate unique ID for this spinner instance
+const uniqueId = ref(`spinner-${Math.random().toString(36).substring(2, 9)}`)
+
+// Track the last announced state to prevent duplicate announcements
+const lastAnnouncedState = ref<string | null>(null)
+
+// Computed status message based on state
+const statusMessage = computed(() => {
+  if (props.customMessage) {
+    return props.customMessage
+  }
+
+  switch (props.state) {
+    case 'loading':
+      return props.label ? `${props.label} in progress` : 'Loading in progress'
+    case 'complete':
+      return props.label ? `${props.label} complete` : 'Loading complete'
+    case 'error':
+      return props.label ? `${props.label} failed` : 'Loading failed'
+    default:
+      return ''
+  }
+})
+
+// Watch for state changes and update last announced state
+watch(
+  () => props.state,
+  newState => {
+    if (newState && newState !== lastAnnouncedState.value) {
+      lastAnnouncedState.value = newState
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>
@@ -113,7 +174,7 @@ withDefaults(defineProps<Props>(), {
 
 .loading-spinner__label {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: v-bind('themeConfig.loadingSpinner.labelColor');
 }
 
 @keyframes rotate {

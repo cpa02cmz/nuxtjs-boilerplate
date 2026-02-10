@@ -1,12 +1,13 @@
 import { getHeader, getQuery } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
+import { sendUnauthorizedError } from '~/server/utils/api-response'
+import { isProtectedApiRoute } from '~/configs/routes.config'
+import { logger } from '~/utils/logger'
 
 export default defineEventHandler(async event => {
   // Only apply to API routes that require authentication
-  if (
-    !event.path?.startsWith('/api/v1/') ||
-    event.path?.startsWith('/api/v1/auth/')
-  ) {
+  // Flexy hates hardcoded paths! Using isProtectedApiRoute helper
+  if (!isProtectedApiRoute(event.path || '')) {
     return
   }
 
@@ -24,16 +25,19 @@ export default defineEventHandler(async event => {
   const storedKey = await webhookStorage.getApiKeyByValue(apiKey)
 
   if (!storedKey || !storedKey.active) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Invalid or inactive API key',
-    })
+    sendUnauthorizedError(event, 'Invalid or inactive API key')
+    return
   }
 
-  // Update last used timestamp
-  await webhookStorage.updateApiKey(storedKey.id, {
-    lastUsedAt: new Date().toISOString(),
-  })
+  // Update last used timestamp with error handling
+  try {
+    await webhookStorage.updateApiKey(storedKey.id, {
+      lastUsedAt: new Date().toISOString(),
+    })
+  } catch (error) {
+    // Log error but don't fail the request - the API key is still valid
+    logger.warn('Failed to update API key lastUsedAt:', error)
+  }
 
   // Add key info to event context for use in handlers
   event.context.apiKey = storedKey

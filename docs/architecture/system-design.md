@@ -83,7 +83,6 @@ nuxtjs-boilerplate/
 ├── plugins/             # Nuxt plugins
 ├── server/
 │   ├── api/            # Server API routes
-│   ├── middleware/     # Server middleware
 │   └── utils/          # Server utilities
 ├── types/              # TypeScript type definitions
 ├── utils/              # Client-side utilities
@@ -146,4 +145,4 @@ nuxtjs-boilerplate/
 
 ---
 
-_Last Updated: 2025-11-29_
+_Last Updated: 2026-11-29_

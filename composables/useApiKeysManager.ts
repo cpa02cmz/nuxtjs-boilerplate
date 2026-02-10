@@ -3,6 +3,8 @@ import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import type { ApiClient } from '~/utils/api-client'
 import type { ApiKey } from '~/types/webhook'
+import { apiConfig } from '~/configs/api.config'
+import { validationConfig } from '~/configs/validation.config'
 
 export interface NewApiKey {
   name: string
@@ -36,18 +38,18 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
       const response = await client.get<{
         apiKeys: ApiKey[]
         data?: ApiKey[]
-      }>('/api/v1/auth/api-keys')
+      }>(apiConfig.auth.apiKeys)
 
       if (response.success) {
         apiKeys.value = response.data?.apiKeys ?? response.data?.data ?? []
       } else {
         error.value =
           response.error?.message ||
-          'Failed to load API keys. Please try again.'
+          validationConfig.messages.error.fetchApiKeys
         apiKeys.value = []
       }
     } catch (err) {
-      error.value = 'Failed to load API keys. Please try again.'
+      error.value = validationConfig.messages.error.fetchApiKeys
       logError('Error fetching API keys', err as Error, 'useApiKeysManager', {
         operation: 'fetchApiKeys',
       })
@@ -65,14 +67,14 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
 
       const client = getClient()
       const response = await client.post<{ apiKey: ApiKey; data?: ApiKey }>(
-        '/api/v1/auth/api-keys',
+        apiConfig.auth.apiKeys,
         newApiKey
       )
 
       if (!response.success) {
         error.value =
           response.error?.message ||
-          'Failed to create API key. Please try again.'
+          validationConfig.messages.error.createApiKey
         return null
       }
 
@@ -84,7 +86,7 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
 
       return createdKey ?? null
     } catch (err) {
-      error.value = 'Failed to create API key. Please try again.'
+      error.value = validationConfig.messages.error.createApiKey
       logError('Error creating API key', err as Error, 'useApiKeysManager', {
         operation: 'createApiKey',
         keyName: newApiKey.name,
@@ -102,12 +104,12 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
       error.value = null
 
       const client = getClient()
-      const response = await client.delete(`/api/v1/auth/api-keys/${keyId}`)
+      const response = await client.delete(apiConfig.auth.apiKeyById(keyId))
 
       if (!response.success) {
         error.value =
           response.error?.message ||
-          'Failed to revoke API key. Please try again.'
+          validationConfig.messages.error.revokeApiKey
         return false
       }
 
@@ -115,7 +117,7 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
 
       return true
     } catch (err) {
-      error.value = 'Failed to revoke API key. Please try again.'
+      error.value = validationConfig.messages.error.revokeApiKey
       logError('Error revoking API key', err as Error, 'useApiKeysManager', {
         operation: 'revokeApiKey',
         keyId,

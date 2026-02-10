@@ -28,27 +28,66 @@
               <div class="text-xs text-gray-400 dark:text-gray-500">
                 {{ resource.category }}
               </div>
-              <button
-                class="mt-1 text-red-500 hover:text-red-700 text-xs flex items-center focus:outline-none focus:ring-2 focus:ring-red-500 focus:rounded"
-                :aria-label="`Remove ${resource.title} from comparison`"
-                @click="removeResource(resource.id)"
+              <Transition
+                enter-active-class="transition-all duration-200 ease-out"
+                enter-from-class="opacity-0 scale-95"
+                enter-to-class="opacity-100 scale-100"
+                leave-active-class="transition-all duration-150 ease-in"
+                leave-from-class="opacity-100 scale-100"
+                leave-to-class="opacity-0 scale-95"
+                mode="out-in"
               >
-                <svg
-                  class="w-3 h-3 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
+                <div
+                  v-if="confirmingRemove === resource.id"
+                  key="confirmation"
+                  class="mt-1 flex flex-col items-center space-y-1 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md px-2 py-1"
+                  role="alert"
+                  aria-live="polite"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-                Remove
-              </button>
+                  <span
+                    class="text-xs text-red-700 dark:text-red-400 font-medium"
+                  >
+                    Remove?
+                  </span>
+                  <div class="flex space-x-1">
+                    <button
+                      class="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 px-1.5 py-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 transition-colors"
+                      @click="cancelRemove"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      class="text-xs text-red-700 dark:text-red-400 font-medium px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 transition-colors"
+                      @click="confirmRemove(resource.id)"
+                    >
+                      Yes
+                    </button>
+                  </div>
+                </div>
+                <button
+                  v-else
+                  key="remove-button"
+                  class="mt-1 text-red-500 hover:text-red-700 text-xs flex items-center focus:outline-none focus:ring-2 focus:ring-red-500 focus:rounded"
+                  :aria-label="`Remove ${resource.title} from comparison`"
+                  @click="requestRemove(resource.id)"
+                >
+                  <svg
+                    class="w-3 h-3 mr-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                  Remove
+                </button>
+              </Transition>
             </div>
           </th>
         </tr>
@@ -109,6 +148,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { Resource } from '~/types/resource'
 import type { ComparisonCriteria } from '~/types/comparison'
 
@@ -120,8 +160,20 @@ interface Props {
 defineProps<Props>()
 const emit = defineEmits(['remove-resource'])
 
-const removeResource = (resourceId: string) => {
+// Track which resource is being confirmed for removal
+const confirmingRemove = ref<string | null>(null)
+
+const requestRemove = (resourceId: string) => {
+  confirmingRemove.value = resourceId
+}
+
+const cancelRemove = () => {
+  confirmingRemove.value = null
+}
+
+const confirmRemove = (resourceId: string) => {
   emit('remove-resource', resourceId)
+  confirmingRemove.value = null
 }
 
 const getResourceValue = (resource: Resource, field: string) => {

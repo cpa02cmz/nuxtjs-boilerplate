@@ -26,6 +26,7 @@ class CacheManager {
   private hitCount: number = 0
   private missCount: number = 0
   private redisConnected: boolean = false
+  private cleanupIntervalId: NodeJS.Timeout | null = null
 
   constructor(config: CacheConfig = {}) {
     const {
@@ -96,11 +97,22 @@ class CacheManager {
 
   /**
    * Start periodic cleanup of expired cache entries
+   * FIXED: Store interval reference to prevent memory leaks
    */
   private startCleanup() {
-    setInterval(() => {
+    this.cleanupIntervalId = setInterval(() => {
       this.cleanupExpired()
     }, this.cleanupInterval)
+  }
+
+  /**
+   * Stop the cleanup interval to prevent memory leaks
+   */
+  private stopCleanup(): void {
+    if (this.cleanupIntervalId) {
+      clearInterval(this.cleanupIntervalId)
+      this.cleanupIntervalId = null
+    }
   }
 
   /**
@@ -310,13 +322,17 @@ class CacheManager {
 
   /**
    * Simple pattern matching for cache invalidation
+   * FIXED: Properly escape regex special characters to prevent regex injection
    */
   private matchPattern(key: string, pattern: string): boolean {
+    // First escape all regex special characters, then convert glob patterns
+    const escapeRegex = (str: string) =>
+      str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
     // Convert glob pattern to regex
-    const regexPattern = pattern
-      .replace(/\./g, '\\.') // Escape dots
-      .replace(/\*/g, '.*') // Convert * to .*
-      .replace(/\?/g, '.') // Convert ? to .
+    const regexPattern = escapeRegex(pattern)
+      .replace(/\\\*/g, '.*') // Convert * to .*
+      .replace(/\\\?/g, '.') // Convert ? to .
 
     const regex = new RegExp(`^${regexPattern}$`)
     return regex.test(key)
@@ -324,8 +340,12 @@ class CacheManager {
 
   /**
    * Close Redis connection properly
+   * FIXED: Also stop cleanup interval to prevent memory leaks
    */
   async disconnect(): Promise<void> {
+    // Stop cleanup interval to prevent memory leaks
+    this.stopCleanup()
+
     if (this.redisClient) {
       try {
         await this.redisClient.quit()
@@ -399,6 +419,7 @@ export function cached<T = unknown>(
 
 /**
  * Cache with tags for easier invalidation
+ * FIXED: Tag mappings now properly expire when cache entries expire
  */
 export async function cacheSetWithTags<T = unknown>(
   key: string,
@@ -406,16 +427,23 @@ export async function cacheSetWithTags<T = unknown>(
   ttl: number = 3600,
   tags: string[] = []
 ): Promise<boolean> {
-  // Store the value
-  const setResult = await cacheManager.set(key, value, ttl)
+  // Store the value with metadata for tag tracking
+  const valueWithMeta = {
+    data: value,
+    _cacheTags: tags,
+    _createdAt: Date.now(),
+  }
+  const setResult = await cacheManager.set(key, valueWithMeta, ttl)
 
-  // Create tag mappings for later invalidation
+  // Create tag mappings for later invalidation with proper expiration
   for (const tag of tags) {
     const tagKey = `tag:${tag}`
     const tagMembers: string[] = (await cacheManager.get(tagKey)) || []
     if (!tagMembers.includes(key)) {
       tagMembers.push(key)
-      await cacheManager.set(tagKey, tagMembers, ttl + 3600) // Tag mapping expires later
+      // FIXED: Tag mapping should expire at the same time as the cache entry
+      // or shortly after, not stay indefinitely
+      await cacheManager.set(tagKey, tagMembers, ttl)
     }
   }
 
@@ -430,14 +458,29 @@ export async function invalidateCacheByTag(tag: string): Promise<number> {
   const tagMembers: string[] = (await cacheManager.get(tagKey)) || []
   let invalidatedCount = 0
 
+  // Filter out expired keys and delete valid ones
+  const remainingMembers: string[] = []
   for (const key of tagMembers) {
-    if (await cacheManager.delete(key)) {
-      invalidatedCount++
+    // Check if the key still exists in cache
+    const value = await cacheManager.get(key)
+    if (value !== null) {
+      // Key still valid, delete it
+      if (await cacheManager.delete(key)) {
+        invalidatedCount++
+      }
+      remainingMembers.push(key)
     }
+    // If value is null, key expired - don't add to remainingMembers
   }
 
   // Clean up the tag mapping
-  await cacheManager.delete(tagKey)
+  if (remainingMembers.length > 0) {
+    // Update tag mapping with only valid keys
+    await cacheManager.set(tagKey, remainingMembers, 3600)
+  } else {
+    // No valid keys left, delete the tag mapping entirely
+    await cacheManager.delete(tagKey)
+  }
 
   return invalidatedCount
 }

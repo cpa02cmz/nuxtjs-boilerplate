@@ -8,6 +8,8 @@ import {
   sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { paginationConfig } from '~/configs/pagination.config'
+import { cacheConfig } from '~/configs/cache.config'
 
 /**
  * GET /api/v1/resources
@@ -15,13 +17,16 @@ import {
  * Retrieve a list of resources with optional filtering and pagination
  *
  * Query parameters:
+ * - page: Page number (default: 1, alternative to offset)
  * - limit: Number of resources to return (default: 20, max: 100)
- * - offset: Number of resources to skip (default: 0)
+ * - offset: Number of resources to skip (default: 0, alternative to page)
  * - category: Filter by category
  * - pricing: Filter by pricing model
  * - difficulty: Filter by difficulty level
+ * - tag: Filter by specific tag
  * - search: Search term to filter by title/description
- * - sort: Sort option (default: 'popularity-desc')
+ * - sort: Sort field (default: 'popularity', options: title, dateAdded, popularity)
+ * - order: Sort order (default: 'desc', options: asc, desc)
  */
 export default defineEventHandler(async event => {
   try {
@@ -46,11 +51,11 @@ export default defineEventHandler(async event => {
 
     // Parse query parameters with validation
     // Validate and parse limit parameter
-    let limit = 20 // default
+    let limit = paginationConfig.defaults.pageSize // Use config instead of hardcoded
     if (query.limit !== undefined) {
       const parsedLimit = parseInt(query.limit as string)
       if (!isNaN(parsedLimit) && parsedLimit > 0) {
-        limit = Math.min(parsedLimit, 100) // max 100
+        limit = Math.min(parsedLimit, paginationConfig.limits.maxPageSize) // Use config instead of hardcoded
       } else {
         return sendBadRequestError(
           event,
@@ -59,9 +64,19 @@ export default defineEventHandler(async event => {
       }
     }
 
-    // Validate and parse offset parameter
-    let offset = 0 // default
-    if (query.offset !== undefined) {
+    // Validate and parse offset/page parameter (page takes precedence over offset)
+    let offset = paginationConfig.defaults.offset // Use config instead of hardcoded
+    if (query.page !== undefined) {
+      const parsedPage = parseInt(query.page as string)
+      if (!isNaN(parsedPage) && parsedPage >= 1) {
+        offset = (parsedPage - 1) * limit
+      } else {
+        return sendBadRequestError(
+          event,
+          'Invalid page parameter. Must be a positive integer (1 or greater).'
+        )
+      }
+    } else if (query.offset !== undefined) {
       const parsedOffset = parseInt(query.offset as string)
       if (!isNaN(parsedOffset) && parsedOffset >= 0) {
         offset = parsedOffset
@@ -78,20 +93,50 @@ export default defineEventHandler(async event => {
     const pricing = query.pricing as string | undefined
     const difficulty = query.difficulty as string | undefined
     const search = query.search as string | undefined
+    const tag = query.tag as string | undefined
     const sort = query.sort as string | undefined
+    const order = (query.order as string | undefined)?.toLowerCase()
 
-    // Validate sort parameter
-    const validSortOptions = [
-      'alphabetical-asc',
-      'alphabetical-desc',
-      'date-added-desc',
-      'popularity-desc',
-    ]
-    if (sort && !validSortOptions.includes(sort)) {
-      return sendBadRequestError(
-        event,
-        `Invalid sort parameter. Valid options: ${validSortOptions.join(', ')}`
-      )
+    // Validate sort parameter (supports both old and new formats)
+    const validSortFields = ['title', 'dateAdded', 'popularity']
+    let sortField = 'popularity'
+    let sortOrder: 'asc' | 'desc' = 'desc'
+
+    if (sort) {
+      // Handle legacy sort format (e.g., 'popularity-desc')
+      if (sort.includes('-')) {
+        const parts = sort.split('-')
+        const field = parts[0]
+        const dir = parts[1]
+        if (
+          field &&
+          dir &&
+          validSortFields.includes(field) &&
+          ['asc', 'desc'].includes(dir)
+        ) {
+          sortField = field
+          sortOrder = dir as 'asc' | 'desc'
+        }
+      } else if (validSortFields.includes(sort)) {
+        sortField = sort
+      } else {
+        return sendBadRequestError(
+          event,
+          `Invalid sort parameter. Valid options: ${validSortFields.join(', ')}`
+        )
+      }
+    }
+
+    // Override sort order if order parameter is provided
+    if (order) {
+      if (['asc', 'desc'].includes(order)) {
+        sortOrder = order as 'asc' | 'desc'
+      } else {
+        return sendBadRequestError(
+          event,
+          'Invalid order parameter. Must be "asc" or "desc".'
+        )
+      }
     }
 
     // Apply filters
@@ -115,33 +160,42 @@ export default defineEventHandler(async event => {
       )
     }
 
+    // Filter by specific tag (exact match)
+    if (tag) {
+      const tagLower = tag.toLowerCase()
+      resources = resources.filter(resource =>
+        resource.tags.some(t => t.toLowerCase() === tagLower)
+      )
+    }
+
     if (search) {
       const searchTerm = search.toLowerCase()
       resources = resources.filter(
         resource =>
           resource.title.toLowerCase().includes(searchTerm) ||
           resource.description.toLowerCase().includes(searchTerm) ||
-          resource.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+          resource.tags.some(t => t.toLowerCase().includes(searchTerm))
       )
     }
 
-    // Apply sorting
-    switch (sort) {
-      case 'alphabetical-asc':
-        resources.sort((a, b) => a.title.localeCompare(b.title))
-        break
-      case 'alphabetical-desc':
-        resources.sort((a, b) => b.title.localeCompare(a.title))
-        break
-      case 'date-added-desc':
+    // Apply sorting based on sortField and sortOrder
+    const sortMultiplier = sortOrder === 'asc' ? 1 : -1
+    switch (sortField) {
+      case 'title':
         resources.sort(
-          (a, b) =>
-            new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()
+          (a, b) => sortMultiplier * a.title.localeCompare(b.title)
         )
         break
-      case 'popularity-desc':
+      case 'dateAdded':
+        resources.sort(
+          (a, b) =>
+            sortMultiplier *
+            (new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime())
+        )
+        break
+      case 'popularity':
       default:
-        resources.sort((a, b) => b.popularity - a.popularity)
+        resources.sort((a, b) => sortMultiplier * (a.popularity - b.popularity))
         break
     }
 
@@ -163,11 +217,12 @@ export default defineEventHandler(async event => {
     }
 
     // Cache the result with tags for easier invalidation
-    await cacheSetWithTags(cacheKey, response, 300, [
-      'resources',
-      'api-v1',
-      'list',
-    ])
+    await cacheSetWithTags(
+      cacheKey,
+      response,
+      cacheConfig.server.defaultTtlMs / 1000,
+      ['resources', 'api-v1', 'list']
+    )
 
     // Set cache miss header
     event.node.res?.setHeader('X-Cache', 'MISS')

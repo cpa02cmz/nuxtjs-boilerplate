@@ -39,7 +39,7 @@ All API endpoints use a standardized error response format for consistent client
     "message": "Error description",
     "category": "validation",
     "details": {},
-    "timestamp": "2025-01-07T12:00:00Z",
+    "timestamp": "2026-01-07T12:00:00Z",
     "requestId": "req_abc123"
   }
 }

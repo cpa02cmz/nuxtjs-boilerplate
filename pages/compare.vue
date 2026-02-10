@@ -1,5 +1,10 @@
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Confetti celebration when reaching max comparison limit -->
+    <ConfettiCelebration
+      ref="confettiRef"
+      intensity="heavy"
+    />
     <div class="mb-8">
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
         Resource Comparison
@@ -21,14 +26,37 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import { useNuxtApp } from '#app'
 import logger from '~/utils/logger'
 import ComparisonBuilder from '~/components/ComparisonBuilder.vue'
+import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
 // Use the comparison composable
 const { selectedResources, removeResource, clearComparison } =
   useResourceComparison()
+
+const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
+const hasCelebratedMaxComparison = ref(false)
+
+// Watch for reaching maximum comparison limit (4 resources)
+watch(
+  () => selectedResources.value.length,
+  newCount => {
+    const maxResources = 4
+    if (newCount === maxResources && !hasCelebratedMaxComparison.value) {
+      // Trigger confetti celebration when reaching max - Palette's delightful touch!
+      setTimeout(() => {
+        confettiRef.value?.celebrate()
+      }, 200)
+      hasCelebratedMaxComparison.value = true
+    } else if (newCount < maxResources) {
+      // Reset celebration flag when below max
+      hasCelebratedMaxComparison.value = false
+    }
+  }
+)
 
 // Page metadata
 useSeoMeta({

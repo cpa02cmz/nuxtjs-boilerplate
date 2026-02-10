@@ -1,3 +1,5 @@
+import { webhooksConfig } from '~/configs/webhooks.config'
+
 interface RetryConfig {
   maxRetries: number
   baseDelayMs: number
@@ -99,19 +101,19 @@ export async function retryWithBackoff<T>(
   config: Partial<RetryConfig> = {}
 ): Promise<T> {
   const defaultConfig: RetryConfig = {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
+    maxRetries: webhooksConfig.retry.maxAttempts,
+    baseDelayMs: webhooksConfig.retry.baseDelayMs,
+    maxDelayMs: webhooksConfig.retry.maxDelayMs,
     backoffMultiplier: 2,
     retryableErrors: [],
     jitterEnabled: true,
-    jitterFactor: 0.1,
+    jitterFactor: webhooksConfig.retry.jitterFactor,
   }
 
   const finalConfig: RetryConfig = {
     ...defaultConfig,
     ...config,
-    retryableErrors: config.retryableErrors || defaultConfig.retryableErrors,
+    retryableErrors: config.retryableErrors ?? defaultConfig.retryableErrors,
   }
 
   const errors: RetryAttempt[] = []
@@ -139,7 +141,10 @@ export async function retryWithBackoff<T>(
       }
 
       const delay = calculateDelay(attempt, finalConfig)
-      errors[errors.length - 1].delayMs = delay
+      const lastError = errors[errors.length - 1]
+      if (lastError) {
+        lastError.delayMs = delay
+      }
 
       await new Promise(resolve => setTimeout(resolve, delay))
     }
@@ -157,19 +162,19 @@ export async function retryWithResult<T>(
   config: Partial<RetryConfig> = {}
 ): Promise<RetryResult<T>> {
   const defaultConfig: RetryConfig = {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
+    maxRetries: webhooksConfig.retry.maxAttempts,
+    baseDelayMs: webhooksConfig.retry.baseDelayMs,
+    maxDelayMs: webhooksConfig.retry.maxDelayMs,
     backoffMultiplier: 2,
     retryableErrors: [],
     jitterEnabled: true,
-    jitterFactor: 0.1,
+    jitterFactor: webhooksConfig.retry.jitterFactor,
   }
 
   const finalConfig: RetryConfig = {
     ...defaultConfig,
     ...config,
-    retryableErrors: config.retryableErrors || defaultConfig.retryableErrors,
+    retryableErrors: config.retryableErrors ?? defaultConfig.retryableErrors,
   }
 
   const errors: RetryAttempt[] = []
@@ -213,7 +218,10 @@ export async function retryWithResult<T>(
 
       const delay = calculateDelay(attempt, finalConfig)
       totalDelayMs += delay
-      errors[errors.length - 1].delayMs = delay
+      const lastError = errors[errors.length - 1]
+      if (lastError) {
+        lastError.delayMs = delay
+      }
 
       await new Promise(resolve => setTimeout(resolve, delay))
     }
@@ -240,46 +248,49 @@ export function isRetryableHttpCode(statusCode: number): boolean {
   return getRetryableHttpCodes().includes(statusCode)
 }
 
+// Retry presets - Flexy hates hardcoded values!
+// All presets now use configurable values from webhooksConfig
 export const retryPresets = {
   quick: {
-    maxRetries: 2,
-    baseDelayMs: 500,
-    maxDelayMs: 5000,
-    backoffMultiplier: 2,
-    jitterEnabled: true,
-    jitterFactor: 0.1,
+    maxRetries: webhooksConfig.retryPresets.quick.maxRetries,
+    baseDelayMs: webhooksConfig.retryPresets.quick.baseDelayMs,
+    maxDelayMs: webhooksConfig.retryPresets.quick.maxDelayMs,
+    backoffMultiplier: webhooksConfig.retryPresets.quick.backoffMultiplier,
+    jitterEnabled: webhooksConfig.retryPresets.quick.jitterEnabled,
+    jitterFactor: webhooksConfig.retryPresets.quick.jitterFactor,
   },
   standard: {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
-    jitterEnabled: true,
-    jitterFactor: 0.1,
+    maxRetries: webhooksConfig.retryPresets.standard.maxRetries,
+    baseDelayMs: webhooksConfig.retryPresets.standard.baseDelayMs,
+    maxDelayMs: webhooksConfig.retryPresets.standard.maxDelayMs,
+    backoffMultiplier: webhooksConfig.retryPresets.standard.backoffMultiplier,
+    retryableErrors: getRetryableHttpCodes(),
+    jitterEnabled: webhooksConfig.retryPresets.standard.jitterEnabled,
+    jitterFactor: webhooksConfig.retryPresets.standard.jitterFactor,
   },
   slow: {
-    maxRetries: 5,
-    baseDelayMs: 2000,
-    maxDelayMs: 60000,
-    backoffMultiplier: 2,
-    jitterEnabled: true,
-    jitterFactor: 0.15,
+    maxRetries: webhooksConfig.retryPresets.slow.maxRetries,
+    baseDelayMs: webhooksConfig.retryPresets.slow.baseDelayMs,
+    maxDelayMs: webhooksConfig.retryPresets.slow.maxDelayMs,
+    backoffMultiplier: webhooksConfig.retryPresets.slow.backoffMultiplier,
+    jitterEnabled: webhooksConfig.retryPresets.slow.jitterEnabled,
+    jitterFactor: webhooksConfig.retryPresets.slow.jitterFactor,
   },
   aggressive: {
-    maxRetries: 3,
-    baseDelayMs: 100,
-    maxDelayMs: 5000,
-    backoffMultiplier: 1.5,
-    jitterEnabled: true,
-    jitterFactor: 0.2,
+    maxRetries: webhooksConfig.retryPresets.aggressive.maxRetries,
+    baseDelayMs: webhooksConfig.retryPresets.aggressive.baseDelayMs,
+    maxDelayMs: webhooksConfig.retryPresets.aggressive.maxDelayMs,
+    backoffMultiplier: webhooksConfig.retryPresets.aggressive.backoffMultiplier,
+    jitterEnabled: webhooksConfig.retryPresets.aggressive.jitterEnabled,
+    jitterFactor: webhooksConfig.retryPresets.aggressive.jitterFactor,
   },
   httpRetry: {
-    maxRetries: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 30000,
-    backoffMultiplier: 2,
+    maxRetries: webhooksConfig.retryPresets.http.maxRetries,
+    baseDelayMs: webhooksConfig.retryPresets.http.baseDelayMs,
+    maxDelayMs: webhooksConfig.retryPresets.http.maxDelayMs,
+    backoffMultiplier: webhooksConfig.retryPresets.http.backoffMultiplier,
     retryableErrors: getRetryableHttpCodes(),
-    jitterEnabled: true,
-    jitterFactor: 0.1,
+    jitterEnabled: webhooksConfig.retryPresets.http.jitterEnabled,
+    jitterFactor: webhooksConfig.retryPresets.http.jitterFactor,
   },
 }

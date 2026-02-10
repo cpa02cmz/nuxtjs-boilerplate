@@ -44,6 +44,7 @@ export const useAIResources = () => {
 
   return {
     aiResources,
+    filteredResources,
     hasAIResources,
     loading,
     error,

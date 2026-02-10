@@ -33,6 +33,18 @@ model AnalyticsEvent {
   @@index([ip, timestamp, deletedAt])
 }
 
+model RateLimit {
+  id        String   @id @default(cuid())
+  key       String   // IP address or user identifier
+  window    DateTime // Time window start (minute buckets)
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([key, window])
+  @@index([window]) // For cleanup queries
+}
+
 model Webhook {
   id          String              @id @default(cuid())
   url         String
@@ -185,6 +197,8 @@ model Resource {
   rejectionReason String?
   qualityScore    Float?
   deletedAt       DateTime?
+  submission      Submission? @relation(fields: [submissionId], references: [id])
+  submissionId    String?   @unique
 
   @@index([category])
   @@index([status])
@@ -192,5 +206,25 @@ model Resource {
   @@index([popularity])
   @@index([deletedAt])
   @@index([category, status])
+  @@index([status, deletedAt])
+}
+
+model Submission {
+  id            String   @id @default(cuid())
+  resourceData  String   // JSON string of Partial<Resource>
+  status        String   @default("pending") // pending, approved, rejected
+  submittedBy   String
+  submittedAt   DateTime @default(now())
+  reviewedBy    String?
+  reviewedAt    DateTime?
+  notes         String?
+  rejectionReason String?
+  resource      Resource?
+  deletedAt     DateTime?
+
+  @@index([status])
+  @@index([submittedBy])
+  @@index([submittedAt])
+  @@index([deletedAt])
   @@index([status, deletedAt])
 }

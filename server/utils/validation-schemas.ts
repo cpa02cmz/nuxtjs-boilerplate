@@ -130,7 +130,7 @@ export const analyticsEventSchema = z.object({
     .max(50, 'Event type too long')
     .refine(
       val => isValidEventType(val),
-      'Invalid event type. Must be one of: resource_view, search, filter_change, bookmark, comparison, submission'
+      'Invalid event type. Must be one of: resource_view, search, filter_change, bookmark, comparison, submission, page_view, resource_click, advanced_search, zero_result_search, search_result_click, filter_applied, recommendation_click, resource_rating, time_spent, bookmark_action, resource_shared'
     ),
   resourceId: z
     .string()
@@ -148,17 +148,46 @@ export const analyticsEventSchema = z.object({
       'Invalid category. Must be one of: Development, Design, Productivity, Marketing, Analytics, Security, AI/ML, DevOps, Testing, Education'
     )
     .optional(),
-  url: z.string().url('Invalid URL format').optional(),
+  url: z
+    .string()
+    .refine(
+      val => {
+        // Allow relative paths (e.g., "/", "/search", "/about")
+        if (val.startsWith('/')) {
+          return true
+        }
+        // Allow absolute URLs
+        try {
+          new URL(val)
+          return true
+        } catch {
+          return false
+        }
+      },
+      { message: 'Invalid URL format' }
+    )
+    .optional(),
   userAgent: z.string().max(500, 'User agent too long').optional(),
   ip: z
     .string()
     .max(45, 'IP address too long')
     .refine(val => {
+      if (val === 'unknown') return true
+
+      // Allow hashed IP format (hash_ + 16 hex chars)
+      if (val.startsWith('hash_') && /^hash_[a-f0-9]{16}$/.test(val)) {
+        return true
+      }
+
+      // IPv4 regex
       const ipv4Regex =
         /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+
+      // IPv6 regex supporting all valid formats including compressed notation
       const ipv6Regex =
-        /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::$|^:(?::[0-9a-fA-F]{1,4}){1,7}|[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,7}|(?:[0-9a-fA-F]{1,4}:){1,7}:|:(?::[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4}$/
-      return ipv4Regex.test(val) || ipv6Regex.test(val) || val === 'unknown'
+        /^(?:(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?::[0-9a-fA-F]{1,4}){1,6}|:(?::[0-9a-fA-F]{1,4}){1,7}|::|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|::(?:[0-9a-fA-F]{1,4}:){0,5}(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|::(?:[0-9a-fA-F]{1,4}:){0,6}[0-9a-fA-F]{1,4})$/
+
+      return ipv4Regex.test(val) || ipv6Regex.test(val)
     }, 'Invalid IP address format')
     .optional(),
   timestamp: z

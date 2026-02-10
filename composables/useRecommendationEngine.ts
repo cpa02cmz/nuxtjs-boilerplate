@@ -6,33 +6,52 @@ import type {
 } from '~/types/recommendation'
 import {
   calculateSimilarity,
-  type RecommendationConfig,
+  type RecommendationConfig as AlgRecommendationConfig,
   type UserPreferences,
 } from '~/utils/recommendation-algorithms'
+import { recommendationConfig } from '~/configs/recommendation.config'
 
 import { useContentBasedRecommendations } from './recommendation-strategies/useContentBasedRecommendations'
 import { useTrendingRecommendations } from './recommendation-strategies/useTrendingRecommendations'
 import { usePopularRecommendations } from './recommendation-strategies/usePopularRecommendations'
 import { useCategoryBasedRecommendations } from './recommendation-strategies/useCategoryBasedRecommendations'
 import { usePersonalizedRecommendations } from './recommendation-strategies/usePersonalizedRecommendations'
+import { useSearchBasedRecommendations } from './recommendation-strategies/useSearchBasedRecommendations'
+import type { SearchAnalyticsData } from '~/types/analytics'
 
-export const useRecommendationEngine = (
-  allResources: readonly Resource[],
+export interface UseRecommendationEngineOptions {
   userPreferences?: {
     interests?: string[]
     viewedResources?: string[]
     bookmarkedResources?: string[]
     skillLevel?: string
   }
+  searchAnalytics?: SearchAnalyticsData | null
+  currentSearchQuery?: string
+  userSearchHistory?: string[]
+}
+
+export const useRecommendationEngine = (
+  allResources: readonly Resource[],
+  options: UseRecommendationEngineOptions = {}
 ) => {
-  const config = ref<RecommendationConfig>({
-    collaborativeWeight: 0.3,
-    contentBasedWeight: 0.3,
-    popularityWeight: 0.2,
-    personalizationWeight: 0.2,
-    maxRecommendations: 10,
-    minSimilarityScore: 0.3,
-    diversityFactor: 0.3,
+  const {
+    userPreferences,
+    searchAnalytics,
+    currentSearchQuery,
+    userSearchHistory,
+  } = options
+
+  // Flexy hates hardcoded values - all from recommendationConfig!
+  const config = ref<AlgRecommendationConfig>({
+    collaborativeWeight: recommendationConfig.weights.collaborative,
+    contentBasedWeight: recommendationConfig.weights.contentBased,
+    popularityWeight: recommendationConfig.weights.popularity,
+    personalizationWeight: recommendationConfig.weights.personalization,
+    searchBasedWeight: recommendationConfig.weights.searchBased,
+    maxRecommendations: recommendationConfig.limits.maxRecommendations,
+    minSimilarityScore: recommendationConfig.thresholds.minSimilarityScore,
+    diversityFactor: recommendationConfig.limits.diversityFactor,
   })
 
   const strategies: Record<string, RecommendationStrategy> = {
@@ -46,6 +65,11 @@ export const useRecommendationEngine = (
       userPreferences as UserPreferences,
       undefined
     ),
+    searchBased: useSearchBasedRecommendations(allResources, config.value, {
+      searchAnalytics,
+      currentSearchQuery,
+      userSearchHistory,
+    }),
   }
 
   const getContext = (
@@ -90,7 +114,10 @@ export const useRecommendationEngine = (
     )
     const uniqueTrendingRecs = trendingRecs
       .filter(rec => !seenResourceIds.has(rec.resource.id))
-      .slice(0, Math.min(3, trendingRecs.length))
+      .slice(
+        0,
+        Math.min(recommendationConfig.limits.trendingLimit, trendingRecs.length)
+      )
     recommendations.push(...uniqueTrendingRecs)
     uniqueTrendingRecs.forEach(rec => seenResourceIds.add(rec.resource.id))
 
@@ -99,9 +126,23 @@ export const useRecommendationEngine = (
     )
     const uniquePopularRecs = popularRecs
       .filter(rec => !seenResourceIds.has(rec.resource.id))
-      .slice(0, Math.min(3, popularRecs.length))
+      .slice(
+        0,
+        Math.min(recommendationConfig.limits.popularLimit, popularRecs.length)
+      )
     recommendations.push(...uniquePopularRecs)
     uniquePopularRecs.forEach(rec => seenResourceIds.add(rec.resource.id))
+
+    // Add search-based recommendations if search analytics available
+    if (searchAnalytics?.data) {
+      const searchBasedRecs = strategies.searchBased.getRecommendations(
+        getContext(currentResource, currentCategory)
+      )
+      const uniqueSearchBasedRecs = searchBasedRecs.filter(
+        rec => !seenResourceIds.has(rec.resource.id)
+      )
+      recommendations.push(...uniqueSearchBasedRecs)
+    }
 
     return recommendations
       .sort((a, b) => b.score - a.score)
@@ -141,7 +182,19 @@ export const useRecommendationEngine = (
     )
   }
 
-  const updateConfig = (newConfig: Partial<RecommendationConfig>) => {
+  const getSearchBasedRecommendations = (
+    currentResource?: Resource,
+    currentCategory?: string
+  ): RecommendationResult[] => {
+    if (!searchAnalytics?.data) {
+      return []
+    }
+    return strategies.searchBased.getRecommendations(
+      getContext(currentResource, currentCategory)
+    )
+  }
+
+  const updateConfig = (newConfig: Partial<AlgRecommendationConfig>) => {
     config.value = { ...config.value, ...newConfig }
   }
 
@@ -157,6 +210,7 @@ export const useRecommendationEngine = (
     getTrendingRecommendations,
     getPopularRecommendations,
     getCategoryBasedRecommendations,
+    getSearchBasedRecommendations,
     strategies,
   }
 }

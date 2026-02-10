@@ -60,9 +60,9 @@ describe('useResourceComparison', () => {
   it('should add a resource to comparison', () => {
     const { selectedResources, addResource } = useResourceComparison()
 
-    const success = addResource(resources[0])
+    const result = addResource(resources[0])
 
-    expect(success).toBe(true)
+    expect(result.success).toBe(true)
     expect(selectedResources.value).toHaveLength(1)
     expect(selectedResources.value[0]).toEqual(resources[0])
   })
@@ -71,11 +71,12 @@ describe('useResourceComparison', () => {
     const { selectedResources, addResource } = useResourceComparison()
 
     // Add the same resource twice
-    const success1 = addResource(resources[0])
-    const success2 = addResource(resources[0])
+    const result1 = addResource(resources[0])
+    const result2 = addResource(resources[0])
 
-    expect(success1).toBe(true)
-    expect(success2).toBe(false)
+    expect(result1.success).toBe(true)
+    expect(result2.success).toBe(false)
+    expect(result2.reason).toBe('already_added')
     expect(selectedResources.value).toHaveLength(1)
   })
 
@@ -84,20 +85,21 @@ describe('useResourceComparison', () => {
 
     // Add resources up to the max limit
     for (let i = 0; i < config.value.maxResources; i++) {
-      const success = addResource({
+      const result = addResource({
         ...resources[0],
         id: `resource-${i}`,
       })
-      expect(success).toBe(true)
+      expect(result.success).toBe(true)
     }
 
     // Try to add another resource beyond the limit
-    const success = addResource({
+    const result = addResource({
       ...resources[0],
       id: 'resource-beyond-limit',
     })
 
-    expect(success).toBe(false)
+    expect(result.success).toBe(false)
+    expect(result.reason).toBe('limit_reached')
     expect(selectedResources.value).toHaveLength(config.value.maxResources)
   })
 

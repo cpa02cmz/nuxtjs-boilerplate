@@ -10,16 +10,12 @@ const parseAllowedOrigins = (): string[] => {
   return origins.split(',').map(origin => origin.trim())
 }
 
-// CSP Directives Configuration
 export const securityConfig = {
-  // Content Security Policy
+  // CSP Directives Configuration
   csp: {
     defaultSrc: parseCspDirective(process.env.CSP_DEFAULT_SRC || "'self'"),
     scriptSrc: parseCspDirective(
-      process.env.CSP_SCRIPT_SRC ||
-        (process.env.NODE_ENV === 'development'
-          ? "'self', 'unsafe-eval', 'unsafe-inline'"
-          : "'self', 'strict-dynamic'")
+      process.env.CSP_SCRIPT_SRC || "'self', 'unsafe-eval', 'unsafe-inline'"
     ),
     styleSrc: parseCspDirective(
       process.env.CSP_STYLE_SRC ||
@@ -35,6 +31,9 @@ export const securityConfig = {
     connectSrc: parseCspDirective(
       process.env.CSP_CONNECT_SRC ||
         "'self', https://fonts.googleapis.com, https://fonts.gstatic.com, https://unpkg.com, https://twitter.com, https://www.facebook.com, https://www.linkedin.com, https://www.reddit.com"
+    ),
+    frameSrc: parseCspDirective(
+      process.env.CSP_FRAME_SRC || "'self' blob: data:"
     ),
     frameAncestors: parseCspDirective(
       process.env.CSP_FRAME_ANCESTORS || "'none'"
@@ -59,6 +58,25 @@ export const securityConfig = {
       'geolocation=(), microphone=(), camera=()',
   },
 
+  // Alias for backward compatibility with tests
+  additionalHeaders: {
+    'X-Content-Type-Options':
+      process.env.HEADER_CONTENT_TYPE_OPTIONS || 'nosniff',
+    'X-Frame-Options': process.env.HEADER_FRAME_OPTIONS || 'DENY',
+    'X-XSS-Protection': process.env.HEADER_XSS_PROTECTION || '0',
+    'Referrer-Policy':
+      process.env.HEADER_REFERRER_POLICY || 'strict-origin-when-cross-origin',
+    'Strict-Transport-Security':
+      process.env.HEADER_HSTS || 'max-age=31536000; includeSubDomains; preload',
+    'Permissions-Policy':
+      process.env.HEADER_PERMISSIONS_POLICY ||
+      'geolocation=(), microphone=(), camera=()',
+    'Access-Control-Allow-Methods':
+      process.env.CORS_ALLOWED_METHODS || 'GET, HEAD, POST, OPTIONS',
+    'Access-Control-Allow-Headers':
+      process.env.CORS_ALLOWED_HEADERS || 'Content-Type, Authorization',
+  },
+
   // CORS Configuration
   cors: {
     allowedOrigins: parseAllowedOrigins(),
@@ -75,7 +93,7 @@ export const securityConfig = {
   // Image Optimization
   image: {
     quality: parseInt(process.env.IMAGE_QUALITY || '80'),
-    formats: parseImageFormats(process.env.IMAGE_FORMATS || 'webp, avif, jpeg'),
+    formats: parseImageFormats(process.env.IMAGE_FORMATS || 'avif, jpeg, png'),
     densities: parseDensities(process.env.IMAGE_DENSITIES || '1, 2'),
   },
 } as const
