@@ -99,6 +99,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
   label: string
@@ -133,6 +134,9 @@ const scrollableClass = computed(() =>
 )
 
 const toggleOption = (option: string) => {
+  // Provide haptic feedback for mobile users
+  hapticLight()
+
   // Trigger animation if selecting (not deselecting)
   if (!props.selectedOptions.includes(option)) {
     recentlySelected.value = option
@@ -160,6 +164,9 @@ const ariaLabelOption = (option: string): string => {
 
 // Bulk selection actions
 const selectAll = () => {
+  // Provide haptic feedback for bulk action
+  hapticLight()
+
   // Emit toggle for each unselected option
   props.options.forEach(option => {
     if (!props.selectedOptions.includes(option)) {
@@ -169,6 +176,9 @@ const selectAll = () => {
 }
 
 const clearAll = () => {
+  // Provide haptic feedback for bulk action
+  hapticLight()
+
   // Emit toggle for each selected option to deselect
   props.selectedOptions.forEach(option => {
     emit('toggle', option)
