@@ -7,6 +7,7 @@ import { createCircuitBreakerError } from './api-error'
 import { webhookQueueManager } from './webhook-queue-manager'
 import { webhookDeliveryService } from './webhook-delivery'
 import { deadLetterManager } from './webhook-dead-letter'
+import { webhooksConfig } from '~/configs/webhooks.config'
 
 interface WebhookDeliveryOptions {
   maxRetries?: number
@@ -14,10 +15,6 @@ interface WebhookDeliveryOptions {
   priority?: number
   async?: boolean
 }
-
-const DEFAULT_MAX_RETRIES = 3
-const DEFAULT_INITIAL_DELAY = 1000
-const DEFAULT_PRIORITY = 0
 
 export class WebhookQueueSystem {
   private circuitBreakerKeys: Map<string, string> = new Map()
@@ -28,9 +25,9 @@ export class WebhookQueueSystem {
     options: WebhookDeliveryOptions = {}
   ): Promise<boolean> {
     const {
-      maxRetries = DEFAULT_MAX_RETRIES,
-      initialDelayMs = DEFAULT_INITIAL_DELAY,
-      priority = DEFAULT_PRIORITY,
+      maxRetries = webhooksConfig.retry.maxAttempts,
+      initialDelayMs = webhooksConfig.retry.baseDelayMs,
+      priority = webhooksConfig.queue.defaultPriority,
       async = false,
     } = options
 
@@ -133,9 +130,9 @@ export class WebhookQueueSystem {
 
     const circuitBreakerKey = this.getCircuitBreakerKey(webhook)
     const circuitBreaker = getCircuitBreaker(circuitBreakerKey, {
-      failureThreshold: 5,
-      successThreshold: 2,
-      timeoutMs: 60000,
+      failureThreshold: webhooksConfig.circuitBreaker.failureThreshold,
+      successThreshold: webhooksConfig.circuitBreaker.successThreshold,
+      timeoutMs: webhooksConfig.circuitBreaker.timeoutMs,
     })
 
     let success = false
@@ -195,13 +192,12 @@ export class WebhookQueueSystem {
   }
 
   private calculateRetryDelay(retryCount: number): number {
-    const baseDelayMs = 1000
-    const maxDelayMs = 30000
+    const { baseDelayMs, maxDelayMs, jitterFactor } = webhooksConfig.retry
 
     let delay = baseDelayMs * Math.pow(2, retryCount)
     delay = Math.min(delay, maxDelayMs)
 
-    const jitterRange = delay * 0.1
+    const jitterRange = delay * jitterFactor
     const jitter = (Math.random() - 0.5) * jitterRange
     delay += jitter
 
