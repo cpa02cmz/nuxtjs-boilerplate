@@ -13,6 +13,8 @@ import {
 } from '~/server/utils/api-response'
 import { defineEventHandler, getQuery } from 'h3'
 import { searchAnalyticsTracker } from '~/utils/searchAnalytics'
+import { limitsConfig } from '~/configs/limits.config'
+import { logger } from '~/utils/logger'
 
 export interface RecommendationQuery {
   userId?: string
@@ -27,7 +29,10 @@ export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
     const query = getQuery<RecommendationQuery>(event)
-    const limit = parseInt(query.limit || '10', 10)
+    const limit = parseInt(
+      query.limit || String(limitsConfig.search.defaultPopularSearchesLimit),
+      10
+    )
 
     // Get all resources
     const { resources } = useResourceData()
@@ -115,7 +120,7 @@ export default defineEventHandler(async event => {
         },
       }
     } catch (error) {
-      console.warn('Failed to fetch search analytics:', error)
+      logger.warn('Failed to fetch search analytics:', error)
       // Continue without search analytics
     }
 

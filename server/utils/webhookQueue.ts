@@ -16,11 +16,6 @@ interface WebhookDeliveryOptions {
   async?: boolean
 }
 
-// Flexy hates hardcoded defaults! Using webhooksConfig instead
-const DEFAULT_MAX_RETRIES = webhooksConfig.delivery.maxRetries
-const DEFAULT_INITIAL_DELAY = webhooksConfig.delivery.initialDelayMs
-const DEFAULT_PRIORITY = webhooksConfig.delivery.priority
-
 export class WebhookQueueSystem {
   private circuitBreakerKeys: Map<string, string> = new Map()
 
@@ -30,9 +25,9 @@ export class WebhookQueueSystem {
     options: WebhookDeliveryOptions = {}
   ): Promise<boolean> {
     const {
-      maxRetries = DEFAULT_MAX_RETRIES,
-      initialDelayMs = DEFAULT_INITIAL_DELAY,
-      priority = DEFAULT_PRIORITY,
+      maxRetries = webhooksConfig.retry.maxAttempts,
+      initialDelayMs = webhooksConfig.retry.baseDelayMs,
+      priority = webhooksConfig.queue.defaultPriority,
       async = false,
     } = options
 
@@ -194,9 +189,7 @@ export class WebhookQueueSystem {
 
   private calculateRetryDelay(retryCount: number): number {
     // Flexy hates hardcoded retry calculations! Using config instead
-    const baseDelayMs = webhooksConfig.retry.baseDelayMs
-    const maxDelayMs = webhooksConfig.retry.maxDelayMs
-    const jitterFactor = webhooksConfig.retry.jitterFactor
+    const { baseDelayMs, maxDelayMs, jitterFactor } = webhooksConfig.retry
 
     let delay = baseDelayMs * Math.pow(2, retryCount)
     delay = Math.min(delay, maxDelayMs)

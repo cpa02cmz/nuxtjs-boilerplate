@@ -7,6 +7,7 @@ import {
   sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { limitsConfig } from '~/configs/limits.config'
 
 /**
  * GET /api/search/suggestions
@@ -38,11 +39,12 @@ export default defineEventHandler(async event => {
     }
 
     // Validate and parse limit parameter
-    let limit = 5 // default
+    let limit = limitsConfig.search.defaultSuggestionsLimit // default from config
+    const maxSuggestionsLimit = limitsConfig.search.maxSuggestionsLimit || 10
     if (query.limit !== undefined) {
       const parsedLimit = parseInt(query.limit as string)
       if (!isNaN(parsedLimit) && parsedLimit > 0) {
-        limit = Math.min(parsedLimit, 10) // max 10 suggestions
+        limit = Math.min(parsedLimit, maxSuggestionsLimit) // max from config
       } else {
         return sendBadRequestError(
           event,
