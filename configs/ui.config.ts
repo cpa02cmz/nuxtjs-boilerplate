@@ -186,15 +186,17 @@ export const uiConfig = {
 
   // Resource Status Component
   resourceStatus: {
-    // Status labels
+    // Status labels - Flexy hates hardcoded strings!
     labels: {
       active: process.env.STATUS_LABEL_ACTIVE || 'Active',
       deprecated: process.env.STATUS_LABEL_DEPRECATED || 'Deprecated',
       discontinued: process.env.STATUS_LABEL_DISCONTINUED || 'Discontinued',
       unstable: process.env.STATUS_LABEL_UNSTABLE || 'Unstable',
       unknown: process.env.STATUS_LABEL_UNKNOWN || 'Unknown',
+      updated: process.env.STATUS_LABEL_UPDATED || 'Updated',
+      pending: process.env.STATUS_LABEL_PENDING || 'Pending',
     },
-    // Status descriptions
+    // Status descriptions - Flexy hates hardcoded descriptions!
     descriptions: {
       active:
         process.env.STATUS_DESC_ACTIVE ||
@@ -211,6 +213,11 @@ export const uiConfig = {
       unknown:
         process.env.STATUS_DESC_UNKNOWN ||
         'The status of this resource is unknown.',
+      updated:
+        process.env.STATUS_DESC_UPDATED ||
+        'This resource has been recently updated.',
+      pending:
+        process.env.STATUS_DESC_PENDING || 'This resource is pending review.',
     },
   },
 
@@ -344,6 +351,20 @@ export const uiConfig = {
     saveMessageTimeoutMs: parseInt(
       process.env.USER_PREF_SAVE_TIMEOUT || '3000'
     ),
+  },
+
+  // Undo/Deletion Settings - Flexy hates hardcoded undo durations!
+  undo: {
+    // Duration for undo action window (ms)
+    durationMs: parseInt(process.env.UNDO_DURATION_MS || '5000'),
+    // Progress update interval for undo timer (ms)
+    progressIntervalMs: parseInt(process.env.UNDO_PROGRESS_INTERVAL_MS || '50'),
+  },
+
+  // Form Settings
+  form: {
+    // Default textarea rows
+    textareaRows: parseInt(process.env.FORM_TEXTAREA_ROWS || '4'),
   },
 } as const
 

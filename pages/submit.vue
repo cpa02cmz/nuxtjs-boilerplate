@@ -105,7 +105,7 @@
                 id="description"
                 v-model="formData.description"
                 required
-                rows="4"
+                :rows="uiConfig.form.textareaRows"
                 :maxlength="maxDescriptionLength"
                 aria-required="true"
                 aria-describedby="description-description description-counter description-error"
@@ -405,6 +405,8 @@ import { ref, watch, computed } from 'vue'
 import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
 import { animationConfig } from '~/configs/animation.config'
+import { thresholdsConfig } from '~/configs/thresholds.config'
+import { uiConfig } from '~/configs/ui.config'
 import { categoriesConfig } from '~/configs/categories.config'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
@@ -488,7 +490,7 @@ watch(submitSuccess, success => {
     // Small delay to let the success message appear first
     setTimeout(() => {
       confettiRef.value?.celebrate()
-    }, 100)
+    }, animationConfig.confetti.submissionDelayMs)
   }
 })
 
@@ -503,12 +505,14 @@ const isTitleFocused = ref(false)
 const isDescriptionFocused = ref(false)
 
 // Character counter styling with accessibility considerations
-// Progress bar color based on character usage percentage
+// Progress bar color based on character usage percentage - using config thresholds
 const titleProgressClass = computed(() => {
   const percentage = (formData.value.title.length / maxTitleLength) * 100
-  if (percentage >= 90) {
+  const { errorPercent, warningPercent } =
+    thresholdsConfig.characterCounter.progress
+  if (percentage >= errorPercent) {
     return 'bg-red-500'
-  } else if (percentage >= 80) {
+  } else if (percentage >= warningPercent) {
     return 'bg-amber-500'
   }
   return 'bg-green-500'
@@ -521,22 +525,26 @@ const titleCounterClass = computed(() => {
   // Always visible when field has content, fade in/out based on focus
   const baseClasses = length > 0 ? 'opacity-100' : 'opacity-0'
 
-  // Color coding based on remaining characters
-  if (remaining <= 10) {
+  // Color coding based on remaining characters - using config thresholds
+  const { titleError, titleWarning } =
+    thresholdsConfig.characterCounter.remaining
+  if (remaining <= titleError) {
     return `${baseClasses} text-red-500`
-  } else if (remaining <= 20) {
+  } else if (remaining <= titleWarning) {
     return `${baseClasses} text-amber-500`
   }
   return `${baseClasses} text-gray-400`
 })
 
-// Progress bar color based on character usage percentage
+// Progress bar color based on character usage percentage - using config thresholds
 const descriptionProgressClass = computed(() => {
   const percentage =
     (formData.value.description.length / maxDescriptionLength) * 100
-  if (percentage >= 90) {
+  const { errorPercent, warningPercent } =
+    thresholdsConfig.characterCounter.progress
+  if (percentage >= errorPercent) {
     return 'bg-red-500'
-  } else if (percentage >= 80) {
+  } else if (percentage >= warningPercent) {
     return 'bg-amber-500'
   }
   return 'bg-green-500'
@@ -549,10 +557,12 @@ const descriptionCounterClass = computed(() => {
   // Always visible when field has content, fade in/out based on focus
   const baseClasses = length > 0 ? 'opacity-100' : 'opacity-0'
 
-  // Color coding based on remaining characters
-  if (remaining <= 50) {
+  // Color coding based on remaining characters - using config thresholds
+  const { descriptionError, descriptionWarning } =
+    thresholdsConfig.characterCounter.remaining
+  if (remaining <= descriptionError) {
     return `${baseClasses} text-red-500`
-  } else if (remaining <= 100) {
+  } else if (remaining <= descriptionWarning) {
     return `${baseClasses} text-amber-500`
   }
   return `${baseClasses} text-gray-400`

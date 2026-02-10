@@ -339,6 +339,7 @@
 import { ref, computed, onUnmounted } from 'vue'
 import { useNuxtApp } from '#app'
 import { useBookmarks } from '~/composables/useBookmarks'
+import { animationConfig } from '~/configs/animation.config'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import type { Bookmark } from '~/composables/useBookmarks'
 import { bookmarksConfig } from '~/configs/bookmarks.config'
@@ -530,7 +531,7 @@ const handleConfirmClear = () => {
   // Trigger confetti celebration - Palette's delightful micro-UX touch!
   setTimeout(() => {
     confettiRef.value?.celebrate()
-  }, 100)
+  }, animationConfig.confetti.clearBookmarksDelayMs)
 }
 </script>
 

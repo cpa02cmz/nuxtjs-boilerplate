@@ -81,6 +81,32 @@ export const thresholdsConfig = {
       process.env.PAGE_GRID_MIN_HEIGHT_PX || '400'
     ),
   },
+
+  // Character Counter Thresholds - Flexy hates hardcoded percentage values!
+  characterCounter: {
+    // Progress bar color change thresholds (percentage)
+    progress: {
+      // Warning threshold - yellow/amber color (80%)
+      warningPercent: parseInt(
+        process.env.CHAR_COUNTER_WARNING_PERCENT || '80'
+      ),
+      // Error threshold - red color (90%)
+      errorPercent: parseInt(process.env.CHAR_COUNTER_ERROR_PERCENT || '90'),
+    },
+    // Remaining characters warning thresholds (absolute count)
+    remaining: {
+      // Title field - warning when 20 or fewer characters remain
+      titleWarning: parseInt(process.env.CHAR_COUNTER_TITLE_WARNING || '20'),
+      // Title field - error when 10 or fewer characters remain
+      titleError: parseInt(process.env.CHAR_COUNTER_TITLE_ERROR || '10'),
+      // Description field - warning when 100 or fewer characters remain
+      descriptionWarning: parseInt(
+        process.env.CHAR_COUNTER_DESC_WARNING || '100'
+      ),
+      // Description field - error when 50 or fewer characters remain
+      descriptionError: parseInt(process.env.CHAR_COUNTER_DESC_ERROR || '50'),
+    },
+  },
 } as const
 
 export type ThresholdsConfig = typeof thresholdsConfig

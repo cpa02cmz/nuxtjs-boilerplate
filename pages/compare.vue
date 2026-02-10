@@ -16,7 +16,7 @@
 
     <ComparisonBuilder
       :selected-resources="selectedResources"
-      :max-resources="4"
+      :max-resources="maxResources"
       @remove-resource="removeResource"
       @clear-comparison="clearComparison"
       @share-comparison="shareComparison"
@@ -32,6 +32,8 @@ import { useNuxtApp } from '#app'
 import logger from '~/utils/logger'
 import ComparisonBuilder from '~/components/ComparisonBuilder.vue'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
+import { limitsConfig } from '~/configs/limits.config'
+import { animationConfig } from '~/configs/animation.config'
 
 // Use the comparison composable
 const { selectedResources, removeResource, clearComparison } =
@@ -40,16 +42,18 @@ const { selectedResources, removeResource, clearComparison } =
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
 const hasCelebratedMaxComparison = ref(false)
 
-// Watch for reaching maximum comparison limit (4 resources)
+// Use config for max resources - Flexy hates hardcoded values!
+const maxResources = limitsConfig.comparison.maxResources
+
+// Watch for reaching maximum comparison limit
 watch(
   () => selectedResources.value.length,
   newCount => {
-    const maxResources = 4
     if (newCount === maxResources && !hasCelebratedMaxComparison.value) {
       // Trigger confetti celebration when reaching max - Palette's delightful touch!
       setTimeout(() => {
         confettiRef.value?.celebrate()
-      }, 200)
+      }, animationConfig.confetti.comparisonDelayMs)
       hasCelebratedMaxComparison.value = true
     } else if (newCount < maxResources) {
       // Reset celebration flag when below max
