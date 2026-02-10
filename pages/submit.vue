@@ -60,6 +60,21 @@
             >
               The name of the resource or service
             </p>
+            <!-- Character limit progress bar for visual feedback -->
+            <div
+              v-if="formData.title.length > 0"
+              class="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden"
+              aria-hidden="true"
+            >
+              <div
+                class="h-full transition-all duration-300 ease-out rounded-full"
+                :class="titleProgressClass"
+                :style="{
+                  width: `${(formData.title.length / maxTitleLength) * 100}%`,
+                }"
+              />
+            </div>
+
             <div
               v-if="errors.title"
               id="title-error"
@@ -109,6 +124,21 @@
               At least 10 characters. Explain what this resource offers and why
               it's valuable.
             </p>
+            <!-- Character limit progress bar for visual feedback -->
+            <div
+              v-if="formData.description.length > 0"
+              class="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden"
+              aria-hidden="true"
+            >
+              <div
+                class="h-full transition-all duration-300 ease-out rounded-full"
+                :class="descriptionProgressClass"
+                :style="{
+                  width: `${(formData.description.length / maxDescriptionLength) * 100}%`,
+                }"
+              />
+            </div>
+
             <div
               v-if="errors.description"
               id="description-error"
@@ -395,6 +425,17 @@ const isTitleFocused = ref(false)
 const isDescriptionFocused = ref(false)
 
 // Character counter styling with accessibility considerations
+// Progress bar color based on character usage percentage
+const titleProgressClass = computed(() => {
+  const percentage = (formData.value.title.length / maxTitleLength) * 100
+  if (percentage >= 90) {
+    return 'bg-red-500'
+  } else if (percentage >= 80) {
+    return 'bg-amber-500'
+  }
+  return 'bg-green-500'
+})
+
 const titleCounterClass = computed(() => {
   const length = formData.value.title.length
   const remaining = maxTitleLength - length
@@ -409,6 +450,18 @@ const titleCounterClass = computed(() => {
     return `${baseClasses} text-amber-500`
   }
   return `${baseClasses} text-gray-400`
+})
+
+// Progress bar color based on character usage percentage
+const descriptionProgressClass = computed(() => {
+  const percentage =
+    (formData.value.description.length / maxDescriptionLength) * 100
+  if (percentage >= 90) {
+    return 'bg-red-500'
+  } else if (percentage >= 80) {
+    return 'bg-amber-500'
+  }
+  return 'bg-green-500'
 })
 
 const descriptionCounterClass = computed(() => {
