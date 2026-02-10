@@ -227,29 +227,12 @@
               >
                 Select a category
               </option>
-              <option value="AI & Machine Learning">
-                AI & Machine Learning
-              </option>
-              <option value="Cloud & Hosting">
-                Cloud & Hosting
-              </option>
-              <option value="Databases & Storage">
-                Databases & Storage
-              </option>
-              <option value="Development Tools">
-                Development Tools
-              </option>
-              <option value="Design & UI">
-                Design & UI
-              </option>
-              <option value="Learning Resources">
-                Learning Resources
-              </option>
-              <option value="Productivity & Utilities">
-                Productivity & Utilities
-              </option>
-              <option value="Other">
-                Other
+              <option
+                v-for="category in categoryOptions"
+                :key="category.value"
+                :value="category.value"
+              >
+                {{ category.label }}
               </option>
             </select>
             <p
@@ -412,9 +395,13 @@ import { ref, watch, computed } from 'vue'
 import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
 import { animationConfig } from '~/configs/animation.config'
+import { categoriesConfig } from '~/configs/categories.config'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
+
+// Category options from config - Flexy hates hardcoded values!
+const categoryOptions = categoriesConfig.resourceFormCategories
 
 const {
   formData,
