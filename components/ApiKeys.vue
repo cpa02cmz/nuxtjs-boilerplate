@@ -182,6 +182,7 @@ import type { ApiKey } from '~/types/webhook'
 import type { NewApiKey } from '~/composables/useApiKeysManager'
 import { useApiKeysManager } from '~/composables/useApiKeysManager'
 import logger from '~/utils/logger'
+import { permissionsConfig } from '~/configs/permissions.config'
 
 const {
   apiKeys,
@@ -258,7 +259,7 @@ const closeModal = () => {
 
 const newApiKey = reactive<NewApiKey>({
   name: '',
-  permissions: ['read'],
+  permissions: permissionsConfig.apiKey.defaultPermissions,
 })
 
 // Create new API key
@@ -272,7 +273,7 @@ const createApiKey = async () => {
 
     // Reset form
     newApiKey.name = ''
-    newApiKey.permissions = ['read']
+    newApiKey.permissions = permissionsConfig.apiKey.defaultPermissions
     showCreateForm.value = false
   }
 }

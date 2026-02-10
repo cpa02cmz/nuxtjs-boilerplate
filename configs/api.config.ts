@@ -39,6 +39,14 @@ export const apiConfig = {
   // Submission endpoints
   submissions: {
     base: '/api/submissions',
+    byId: (id: string) => `/api/submissions/${id}`,
+  },
+
+  // Moderation endpoints
+  moderation: {
+    approve: '/api/moderation/approve',
+    reject: '/api/moderation/reject',
+    base: '/api/moderation',
   },
 
   // Comparison endpoints
