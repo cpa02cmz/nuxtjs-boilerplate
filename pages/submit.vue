@@ -1,10 +1,7 @@
 <template>
   <div class="py-12">
     <!-- Confetti celebration for successful submission -->
-    <ConfettiCelebration
-      ref="confettiRef"
-      intensity="medium"
-    />
+    <ConfettiCelebration ref="confettiRef" intensity="medium" />
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
@@ -16,11 +13,7 @@
       </div>
 
       <div class="bg-white shadow-xl rounded-lg p-6 sm:p-8">
-        <form
-          class="space-y-6"
-          novalidate
-          @submit.prevent="submitResource"
-        >
+        <form class="space-y-6" novalidate @submit.prevent="submitResource">
           <div>
             <label
               for="title"
@@ -44,7 +37,7 @@
                 placeholder="e.g., OpenAI API"
                 @focus="isTitleFocused = true"
                 @blur="isTitleFocused = false"
-              >
+              />
               <div
                 id="title-counter"
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium tabular-nums transition-all duration-200"
@@ -54,12 +47,24 @@
                 {{ formData.title.length }}/{{ maxTitleLength }}
               </div>
             </div>
-            <p
-              id="title-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="title-description" class="mt-1 text-sm text-gray-500">
               The name of the resource or service
             </p>
+            <!-- Character limit progress bar for visual feedback -->
+            <div
+              v-if="formData.title.length > 0"
+              class="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden"
+              aria-hidden="true"
+            >
+              <div
+                class="h-full transition-all duration-300 ease-out rounded-full"
+                :class="titleProgressClass"
+                :style="{
+                  width: `${(formData.title.length / maxTitleLength) * 100}%`,
+                }"
+              />
+            </div>
+
             <div
               v-if="errors.title"
               id="title-error"
@@ -102,13 +107,25 @@
                 {{ formData.description.length }}/{{ maxDescriptionLength }}
               </div>
             </div>
-            <p
-              id="description-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="description-description" class="mt-1 text-sm text-gray-500">
               At least 10 characters. Explain what this resource offers and why
               it's valuable.
             </p>
+            <!-- Character limit progress bar for visual feedback -->
+            <div
+              v-if="formData.description.length > 0"
+              class="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden"
+              aria-hidden="true"
+            >
+              <div
+                class="h-full transition-all duration-300 ease-out rounded-full"
+                :class="descriptionProgressClass"
+                :style="{
+                  width: `${(formData.description.length / maxDescriptionLength) * 100}%`,
+                }"
+              />
+            </div>
+
             <div
               v-if="errors.description"
               id="description-error"
@@ -137,11 +154,8 @@
               :aria-invalid="errors.url ? 'true' : 'false'"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
               placeholder="https://example.com"
-            >
-            <p
-              id="url-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            />
+            <p id="url-description" class="mt-1 text-sm text-gray-500">
               The official website or page for this resource
             </p>
             <div
@@ -171,41 +185,21 @@
               :aria-invalid="errors.category ? 'true' : 'false'"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
             >
-              <option
-                value=""
-                disabled
-              >
-                Select a category
-              </option>
+              <option value="" disabled>Select a category</option>
               <option value="AI & Machine Learning">
                 AI & Machine Learning
               </option>
-              <option value="Cloud & Hosting">
-                Cloud & Hosting
-              </option>
-              <option value="Databases & Storage">
-                Databases & Storage
-              </option>
-              <option value="Development Tools">
-                Development Tools
-              </option>
-              <option value="Design & UI">
-                Design & UI
-              </option>
-              <option value="Learning Resources">
-                Learning Resources
-              </option>
+              <option value="Cloud & Hosting">Cloud & Hosting</option>
+              <option value="Databases & Storage">Databases & Storage</option>
+              <option value="Development Tools">Development Tools</option>
+              <option value="Design & UI">Design & UI</option>
+              <option value="Learning Resources">Learning Resources</option>
               <option value="Productivity & Utilities">
                 Productivity & Utilities
               </option>
-              <option value="Other">
-                Other
-              </option>
+              <option value="Other">Other</option>
             </select>
-            <p
-              id="category-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="category-description" class="mt-1 text-sm text-gray-500">
               Choose the most appropriate category for this resource
             </p>
             <div
@@ -232,11 +226,8 @@
               aria-describedby="tags-description"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
               placeholder="Enter tags separated by commas"
-            >
-            <p
-              id="tags-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            />
+            <p id="tags-description" class="mt-1 text-sm text-gray-500">
               Add relevant tags to help categorize this resource (e.g., "api,
               free-tier, openai")
             </p>
@@ -251,10 +242,7 @@
               class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span v-if="!isSubmitting">Submit Resource</span>
-              <span
-                v-else
-                class="flex items-center"
-              >
+              <span v-else class="flex items-center">
                 <svg
                   class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                   xmlns="http://www.w3.org/2000/svg"
@@ -395,6 +383,17 @@ const isTitleFocused = ref(false)
 const isDescriptionFocused = ref(false)
 
 // Character counter styling with accessibility considerations
+// Progress bar color based on character usage percentage
+const titleProgressClass = computed(() => {
+  const percentage = (formData.value.title.length / maxTitleLength) * 100
+  if (percentage >= 90) {
+    return 'bg-red-500'
+  } else if (percentage >= 80) {
+    return 'bg-amber-500'
+  }
+  return 'bg-green-500'
+})
+
 const titleCounterClass = computed(() => {
   const length = formData.value.title.length
   const remaining = maxTitleLength - length
@@ -409,6 +408,18 @@ const titleCounterClass = computed(() => {
     return `${baseClasses} text-amber-500`
   }
   return `${baseClasses} text-gray-400`
+})
+
+// Progress bar color based on character usage percentage
+const descriptionProgressClass = computed(() => {
+  const percentage =
+    (formData.value.description.length / maxDescriptionLength) * 100
+  if (percentage >= 90) {
+    return 'bg-red-500'
+  } else if (percentage >= 80) {
+    return 'bg-amber-500'
+  }
+  return 'bg-green-500'
 })
 
 const descriptionCounterClass = computed(() => {
