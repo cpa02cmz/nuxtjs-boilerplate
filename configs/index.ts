@@ -100,6 +100,7 @@ import {
   type CategoriesConfig,
   type CategoryOption,
 } from './categories.config'
+import { bookmarksConfig, type BookmarksConfig } from './bookmarks.config'
 
 // URL config - Flexy hates hardcoded URLs!
 import {
@@ -208,6 +209,7 @@ export {
 }
 export { memoizeConfig, type MemoizeConfig }
 export { categoriesConfig, type CategoriesConfig, type CategoryOption }
+export { bookmarksConfig, type BookmarksConfig }
 
 // Re-export URL config - Flexy hates hardcoded URLs!
 export {
@@ -258,6 +260,8 @@ export const config = {
   categories: categoriesConfig,
   // URL config - Flexy hates hardcoded URLs!
   url: urlConfig,
+  // Bookmarks config - Flexy hates hardcoded bookmark values!
+  bookmarks: bookmarksConfig,
 } as const
 
 export type Config = typeof config

@@ -1,10 +1,7 @@
 <template>
   <div class="py-12">
     <!-- Confetti celebration for successful submission -->
-    <ConfettiCelebration
-      ref="confettiRef"
-      intensity="medium"
-    />
+    <ConfettiCelebration ref="confettiRef" intensity="medium" />
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
@@ -51,7 +48,7 @@
                 placeholder="e.g., OpenAI API"
                 @focus="isTitleFocused = true"
                 @blur="handleTitleBlur"
-              >
+              />
               <div
                 id="title-counter"
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium tabular-nums transition-all duration-200"
@@ -61,10 +58,7 @@
                 {{ formData.title.length }}/{{ maxTitleLength }}
               </div>
             </div>
-            <p
-              id="title-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="title-description" class="mt-1 text-sm text-gray-500">
               The name of the resource or service
             </p>
             <!-- Character limit progress bar for visual feedback -->
@@ -131,10 +125,7 @@
                 {{ formData.description.length }}/{{ maxDescriptionLength }}
               </div>
             </div>
-            <p
-              id="description-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="description-description" class="mt-1 text-sm text-gray-500">
               At least 10 characters. Explain what this resource offers and why
               it's valuable.
             </p>
@@ -189,11 +180,8 @@
               ]"
               placeholder="https://example.com"
               @blur="handleUrlBlur"
-            >
-            <p
-              id="url-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            />
+            <p id="url-description" class="mt-1 text-sm text-gray-500">
               The official website or page for this resource
             </p>
             <div
@@ -231,12 +219,7 @@
               ]"
               @blur="handleCategoryBlur"
             >
-              <option
-                value=""
-                disabled
-              >
-                Select a category
-              </option>
+              <option value="" disabled>Select a category</option>
               <option
                 v-for="category in categoryOptions"
                 :key="category.value"
@@ -245,10 +228,7 @@
                 {{ category.label }}
               </option>
             </select>
-            <p
-              id="category-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="category-description" class="mt-1 text-sm text-gray-500">
               Choose the most appropriate category for this resource
             </p>
             <div
@@ -275,11 +255,8 @@
               aria-describedby="tags-description"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
               placeholder="Enter tags separated by commas"
-            >
-            <p
-              id="tags-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            />
+            <p id="tags-description" class="mt-1 text-sm text-gray-500">
               Add relevant tags to help categorize this resource (e.g., "api,
               free-tier, openai")
             </p>
@@ -294,10 +271,7 @@
               class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span v-if="!isSubmitting">Submit Resource</span>
-              <span
-                v-else
-                class="flex items-center"
-              >
+              <span v-else class="flex items-center">
                 <svg
                   class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                   xmlns="http://www.w3.org/2000/svg"
@@ -410,6 +384,10 @@ import { DEFAULT_DEV_URL } from '~/configs/url.config'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
+
+// Animation config values for CSS variables - Flexy hates hardcoded values!
+const shakeDurationMs = `${animationConfig.validation.shakeDurationMs}ms`
+const shakeIntensityPx = `${animationConfig.validation.shakeIntensityPx}px`
 
 // Category options from config - Flexy hates hardcoded values!
 const categoryOptions = categoriesConfig.resourceFormCategories
@@ -578,10 +556,10 @@ useSeoMeta({
 
 <style scoped>
 /* Gentle shake animation for form validation errors */
-/* Using scoped CSS variables for configurable values */
+/* Using scoped CSS variables for configurable values - Flexy hates hardcoded values! */
 .animate-form-shake {
-  --shake-intensity: 8px;
-  --shake-duration: 500ms;
+  --shake-intensity: v-bind('shakeIntensityPx');
+  --shake-duration: v-bind('shakeDurationMs');
   animation: form-shake var(--shake-duration) ease-in-out;
 }
 
