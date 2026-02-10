@@ -32,7 +32,7 @@
             <NuxtLink
               v-if="id"
               :to="`/resources/${id}`"
-              class="hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:rounded-sm transition-colors duration-200"
+              class="resource-link hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:rounded-sm transition-colors duration-200"
               :aria-label="`View details for ${title}`"
             >
               <span
@@ -677,6 +677,33 @@ if (typeof useHead === 'function') {
     opacity: 0.85;
     transform: scale(1.05);
   }
+}
+
+/* Visited resource link state - subtle indicator for explored resources */
+.resource-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.resource-link:visited {
+  color: #6b7280; /* gray-500 */
+}
+
+.resource-link:visited::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  background-color: #9ca3af; /* gray-400 */
+  border-radius: 50%;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.resource-link:hover:visited {
+  color: #4b5563; /* gray-600 */
 }
 
 /* Reduced motion support */
