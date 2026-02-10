@@ -18,6 +18,7 @@ import { PAGINATION } from './constants'
 import { safeJsonParse } from './safeJsonParse'
 import { logger } from '~/utils/logger'
 import { encryptSecret, decryptSecret } from './encryption'
+import { hashApiKey, verifyApiKey, getKeyPrefix } from './api-key-crypto'
 
 function mapPrismaToWebhook(webhook: PrismaWebhook): Webhook {
   // Decrypt secret when mapping from database
@@ -64,12 +65,13 @@ function mapPrismaToWebhookDelivery(
 function mapPrismaToApiKey(apiKey: PrismaApiKey): ApiKey {
   return {
     id: apiKey.id,
-    key: apiKey.key,
+    key: '', // Key is never returned from storage - only shown once during creation
     userId: apiKey.userId ?? undefined,
     name: apiKey.name,
     permissions: safeJsonParse<string[]>(apiKey.permissions, []),
     active: apiKey.active,
     expiresAt: apiKey.expiresAt?.toISOString(),
+    lastUsedAt: apiKey.lastUsedAt?.toISOString(),
     createdAt: apiKey.createdAt.toISOString(),
     updatedAt: apiKey.updatedAt.toISOString(),
   }
@@ -371,31 +373,55 @@ export const webhookStorage = {
     }
   },
 
-  async getApiKeyByValue(key: string) {
+  async getApiKeyByValue(plaintextKey: string) {
     try {
-      const apiKey = await prisma.apiKey.findFirst({
+      // Get prefix for efficient database lookup
+      const keyPrefix = getKeyPrefix(plaintextKey)
+
+      // Find candidate keys by prefix (usually only 1 match)
+      const candidates = await prisma.apiKey.findMany({
         where: {
-          key,
+          keyPrefix,
           deletedAt: null,
           active: true,
           OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
         },
       })
 
-      if (!apiKey) return null
+      // Verify each candidate by comparing bcrypt hashes
+      for (const candidate of candidates) {
+        const isValid = await verifyApiKey(plaintextKey, candidate.keyHash)
+        if (isValid) {
+          // Update last used timestamp asynchronously (don't await)
+          prisma.apiKey
+            .update({
+              where: { id: candidate.id },
+              data: { lastUsedAt: new Date() },
+            })
+            .catch(() => {
+              // Silently fail - lastUsedAt is not critical
+            })
+          return mapPrismaToApiKey(candidate)
+        }
+      }
 
-      return mapPrismaToApiKey(apiKey)
+      return null
     } catch (error) {
       handleStorageError('get API key by value', error)
     }
   },
 
-  async createApiKey(apiKey: ApiKey) {
+  async createApiKey(apiKey: ApiKey, plaintextKey: string) {
     try {
+      // Hash the API key before storing - NEVER store plaintext
+      const keyHash = await hashApiKey(plaintextKey)
+      const keyPrefix = getKeyPrefix(plaintextKey)
+
       const created = await prisma.apiKey.create({
         data: {
           id: apiKey.id,
-          key: apiKey.key,
+          keyHash: keyHash,
+          keyPrefix: keyPrefix,
           userId: apiKey.userId,
           name: apiKey.name,
           permissions: JSON.stringify(apiKey.permissions),
