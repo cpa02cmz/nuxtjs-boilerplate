@@ -198,7 +198,7 @@ model Resource {
   rejectionReason String?
   qualityScore    Float?
   deletedAt       DateTime?
-  submission      Submission? @relation(fields: [submissionId], references: [id])
+  submission      Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
   submissionId    String?   @unique
 
   @@index([category])
