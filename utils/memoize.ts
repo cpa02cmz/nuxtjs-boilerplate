@@ -1,5 +1,28 @@
 import { patternsConfig } from '~/configs/patterns.config'
 
+/**
+ * Generate a cryptographically secure random ID using Web Crypto API
+ * Works in both browser and Node.js environments
+ */
+const generateSecureId = (): string => {
+  // Use Web Crypto API available in both browser and Node.js
+  const array = new Uint8Array(16)
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    crypto.getRandomValues(array)
+  } else {
+    // Fallback for environments without crypto (shouldn't happen in modern browsers/Node)
+    for (let i = 0; i < array.length; i++) {
+      array[i] = Math.floor(Math.random() * 256)
+    }
+  }
+
+  // Convert to hex string and format as UUID-like
+  const hex = Array.from(array, byte =>
+    byte.toString(16).padStart(2, '0')
+  ).join('')
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`
+}
+
 const generateCacheKey = (text: string, searchQuery: string): string => {
   return `${text}:${searchQuery}`
 }
@@ -17,7 +40,8 @@ const generateArgsKey = (args: unknown[]): string => {
     if (typeof arg === 'object') {
       // For objects, use reference to avoid caching by structure
       // This is a unique identifier per object instance
-      return `${patternsConfig.memoization.objectKeyPrefix}${Math.random().toString(36).substr(2, patternsConfig.memoization.cacheKeyLength)}`
+      // FIXED: Use cryptographically secure random ID instead of Math.random()
+      return `${patternsConfig.memoization.objectKeyPrefix}${generateSecureId()}`
     }
     if (typeof arg === 'function') {
       return patternsConfig.memoization.functionKeyPrefix
@@ -33,7 +57,8 @@ const generateArgsKey = (args: unknown[]): string => {
       }
       if (typeof arg === 'object') {
         // Use unique identifier for each object instance
-        return `${patternsConfig.memoization.objectKeyPrefix}${Math.random().toString(36).substr(2, patternsConfig.memoization.cacheKeyLength)}`
+        // FIXED: Use cryptographically secure random ID instead of Math.random()
+        return `${patternsConfig.memoization.objectKeyPrefix}${generateSecureId()}`
       }
       if (typeof arg === 'function') {
         return patternsConfig.memoization.functionKeyPrefix
