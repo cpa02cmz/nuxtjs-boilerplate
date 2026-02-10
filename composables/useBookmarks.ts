@@ -1,4 +1,4 @@
-import { ref, computed, readonly } from 'vue'
+import { ref, computed, readonly, onMounted } from 'vue'
 import { createStorageWithDateSerialization } from '~/utils/storage'
 import { emitEvent } from '~/utils/event-emitter'
 import { STORAGE_KEYS } from '~/server/utils/constants'
@@ -45,8 +45,15 @@ export const useBookmarks = () => {
   bookmarksRef = bookmarks
 
   const initBookmarks = () => {
-    bookmarks.value = storage.get()
+    if (typeof window !== 'undefined') {
+      bookmarks.value = storage.get()
+    }
   }
+
+  // Initialize only on client-side to avoid hydration mismatch
+  onMounted(() => {
+    initBookmarks()
+  })
 
   const saveBookmarks = () => {
     storage.set(bookmarks.value)
@@ -179,8 +186,6 @@ export const useBookmarks = () => {
     bookmarks.value = []
     saveBookmarks()
   }
-
-  initBookmarks()
 
   return {
     bookmarks: readonly(bookmarks),
