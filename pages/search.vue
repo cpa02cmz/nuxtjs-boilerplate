@@ -193,6 +193,7 @@ import { seoConfig } from '~/configs/seo.config'
 import { contentConfig } from '~/configs/content.config'
 import { appConfig } from '~/configs/app.config'
 import { uiConfig } from '~/configs/ui.config'
+import { DEFAULT_DEV_URL } from '~/configs/url.config'
 
 definePageMeta({
   layout: 'default',
@@ -205,7 +206,7 @@ useSeoMeta({
   description: seoConfig.meta.description,
   ogDescription: seoConfig.meta.description,
   ogImage: seoConfig.og.image,
-  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000'}/search`,
+  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || DEFAULT_DEV_URL}/search`,
   twitterCard: seoConfig.twitter.card as
     | 'summary'
     | 'summary_large_image'

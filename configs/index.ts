@@ -101,6 +101,22 @@ import {
   type CategoryOption,
 } from './categories.config'
 
+// URL config - Flexy hates hardcoded URLs!
+import {
+  urlConfig,
+  DEFAULT_DEV_URL,
+  DEFAULT_PROD_URL,
+  DEV_PORTS,
+  getBaseUrl,
+  getFallbackUrl,
+  buildUrl,
+  buildApiUrl,
+  isLocalhost,
+  getSeoUrl,
+  type UrlConfig,
+  type DevPorts,
+} from './url.config'
+
 // Re-export individual configs
 export { appConfig, type AppConfig }
 export { themeConfig, type ThemeConfig }
@@ -193,6 +209,22 @@ export {
 export { memoizeConfig, type MemoizeConfig }
 export { categoriesConfig, type CategoriesConfig, type CategoryOption }
 
+// Re-export URL config - Flexy hates hardcoded URLs!
+export {
+  urlConfig,
+  DEFAULT_DEV_URL,
+  DEFAULT_PROD_URL,
+  DEV_PORTS,
+  getBaseUrl,
+  getFallbackUrl,
+  buildUrl,
+  buildApiUrl,
+  isLocalhost,
+  getSeoUrl,
+  type UrlConfig,
+  type DevPorts,
+}
+
 // Default export with all configs
 export const config = {
   app: appConfig,
@@ -224,6 +256,8 @@ export const config = {
   routes: routesConfig,
   memoize: memoizeConfig,
   categories: categoriesConfig,
+  // URL config - Flexy hates hardcoded URLs!
+  url: urlConfig,
 } as const
 
 export type Config = typeof config

@@ -26,6 +26,7 @@ import { copyToClipboard } from '~/utils/clipboard'
 import type { ApiClient } from '~/utils/api-client'
 import { UI_TIMING } from '~/server/utils/constants'
 import { apiConfig } from '~/configs/api.config'
+import { DEFAULT_DEV_URL } from '~/configs/url.config'
 
 export interface UseResourceDetailPageOptions {
   apiClient?: ApiClient
@@ -60,7 +61,7 @@ export const useResourceDetailPage = (
   })
 
   const currentUrl = computed(() => {
-    const baseUrl = runtimeConfig.public.canonicalUrl || 'http://localhost:3000'
+    const baseUrl = runtimeConfig.public.canonicalUrl || DEFAULT_DEV_URL
     return `${baseUrl}/resources/${resourceId.value}`
   })
 
