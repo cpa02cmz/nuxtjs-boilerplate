@@ -264,6 +264,7 @@ import { seoConfig } from '~/configs/seo.config'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
 import { thresholdsConfig } from '~/configs/thresholds.config'
+import { DEFAULT_DEV_URL } from '~/configs/url.config'
 
 definePageMeta({
   layout: 'default',
@@ -280,7 +281,7 @@ useSeoMeta({
   ogUrl:
     runtimeConfig.public.siteUrl ||
     runtimeConfig.public.canonicalUrl ||
-    'http://localhost:3000',
+    DEFAULT_DEV_URL,
   twitterCard: seoConfig.twitter.card as
     | 'summary'
     | 'summary_large_image'

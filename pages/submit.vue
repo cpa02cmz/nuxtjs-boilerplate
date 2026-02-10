@@ -396,6 +396,7 @@ import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
 import { animationConfig } from '~/configs/animation.config'
 import { categoriesConfig } from '~/configs/categories.config'
+import { DEFAULT_DEV_URL } from '~/configs/url.config'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
@@ -537,7 +538,7 @@ useSeoMeta({
   ogDescription:
     'Share valuable free resources with the community. Submit free AI tools, hosting services, databases, and other developer resources.',
   ogImage: '/og-image.jpg',
-  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000'}/submit`,
+  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || DEFAULT_DEV_URL}/submit`,
   twitterCard: 'summary_large_image',
 })
 </script>

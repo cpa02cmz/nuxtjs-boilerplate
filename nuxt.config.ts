@@ -7,6 +7,7 @@ import {
   themeConfig,
   cacheConfig,
   securityConfig,
+  DEFAULT_DEV_URL,
 } from './configs'
 
 export default defineNuxtConfig({
@@ -30,11 +31,11 @@ export default defineNuxtConfig({
         process.env.CANONICAL_URL ||
         process.env.HOST ||
         process.env.VERCEL_URL ||
-        'http://localhost:3000',
+        DEFAULT_DEV_URL,
       canonicalUrl:
         process.env.NUXT_PUBLIC_CANONICAL_URL ||
         process.env.CANONICAL_URL ||
-        'http://localhost:3000',
+        DEFAULT_DEV_URL,
     },
   },
 

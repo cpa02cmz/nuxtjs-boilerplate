@@ -1,11 +1,12 @@
 // Mock for #app Nuxt alias in tests
 import { vi } from 'vitest'
+import { DEFAULT_DEV_URL } from '../configs/url.config'
 
 export const useNuxtApp = vi.fn(() => ({
   $config: {
     public: {
       apiBase: '/api',
-      siteUrl: 'http://localhost:3000',
+      siteUrl: DEFAULT_DEV_URL,
     },
   },
 }))
@@ -13,7 +14,7 @@ export const useNuxtApp = vi.fn(() => ({
 export const useRuntimeConfig = vi.fn(() => ({
   public: {
     apiBase: '/api',
-    siteUrl: 'http://localhost:3000',
+    siteUrl: DEFAULT_DEV_URL,
   },
 }))
 

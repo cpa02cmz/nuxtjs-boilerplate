@@ -1,12 +1,14 @@
 // Security Configuration - CSP, Headers, and Security Policies
 // Flexy hates hardcoded values! All security settings are now configurable.
 
+import { DEFAULT_DEV_URL } from './url.config'
+
 // Parse environment variable for allowed origins
 const parseAllowedOrigins = (): string[] => {
   const origins =
     process.env.ALLOWED_ORIGINS ||
     process.env.NUXT_PUBLIC_SITE_URL ||
-    'http://localhost:3000'
+    DEFAULT_DEV_URL
   return origins.split(',').map(origin => origin.trim())
 }
 
