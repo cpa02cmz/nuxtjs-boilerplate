@@ -142,44 +142,46 @@ export default defineEventHandler(async event => {
       }
     }
 
-    // Apply filters
-    if (category) {
-      resources = resources.filter(
-        resource => resource.category.toLowerCase() === category.toLowerCase()
-      )
-    }
-
-    if (pricing) {
-      resources = resources.filter(
-        resource =>
-          resource.pricingModel.toLowerCase() === pricing.toLowerCase()
-      )
-    }
-
-    if (difficulty) {
-      resources = resources.filter(
-        resource =>
-          resource.difficulty.toLowerCase() === difficulty.toLowerCase()
-      )
-    }
-
-    // Filter by specific tag (exact match)
-    if (tag) {
-      const tagLower = tag.toLowerCase()
-      resources = resources.filter(resource =>
-        resource.tags.some(t => t.toLowerCase() === tagLower)
-      )
-    }
-
-    if (search) {
-      const searchTerm = search.toLowerCase()
-      resources = resources.filter(
-        resource =>
-          resource.title.toLowerCase().includes(searchTerm) ||
-          resource.description.toLowerCase().includes(searchTerm) ||
-          resource.tags.some(t => t.toLowerCase().includes(searchTerm))
-      )
-    }
+    // Apply all filters in a single pass for better performance
+    resources = resources.filter(resource => {
+      if (
+        category &&
+        resource.category.toLowerCase() !== category.toLowerCase()
+      ) {
+        return false
+      }
+      if (
+        pricing &&
+        resource.pricingModel.toLowerCase() !== pricing.toLowerCase()
+      ) {
+        return false
+      }
+      if (
+        difficulty &&
+        resource.difficulty.toLowerCase() !== difficulty.toLowerCase()
+      ) {
+        return false
+      }
+      if (tag) {
+        const tagLower = tag.toLowerCase()
+        if (!resource.tags.some(t => t.toLowerCase() === tagLower)) {
+          return false
+        }
+      }
+      if (search) {
+        const searchTerm = search.toLowerCase()
+        if (
+          !(
+            resource.title.toLowerCase().includes(searchTerm) ||
+            resource.description.toLowerCase().includes(searchTerm) ||
+            resource.tags.some(t => t.toLowerCase().includes(searchTerm))
+          )
+        ) {
+          return false
+        }
+      }
+      return true
+    })
 
     // Apply sorting based on sortField and sortOrder
     const sortMultiplier = sortOrder === 'asc' ? 1 : -1
