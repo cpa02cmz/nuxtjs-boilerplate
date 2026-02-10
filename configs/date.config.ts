@@ -66,6 +66,18 @@ export const dateConfig = {
 
   // Default date/time for createdAt and updatedAt fields
   defaultTimestamp: process.env.DEFAULT_TIMESTAMP || '2025-01-01T00:00:00.000Z',
+
+  // Export filename date format - Flexy hates hardcoded date slicing!
+  exportFilename: {
+    // Format for export filenames (e.g., 'YYYY-MM-DD', 'YYYYMMDD', 'iso')
+    format: process.env.DATE_EXPORT_FORMAT || 'YYYY-MM-DD',
+    // Separator between date parts
+    separator: process.env.DATE_EXPORT_SEPARATOR || '-',
+    // Whether to include time in export filenames
+    includeTime: process.env.DATE_EXPORT_INCLUDE_TIME === 'true',
+    // Time separator (if includeTime is true)
+    timeSeparator: process.env.DATE_EXPORT_TIME_SEPARATOR || '-',
+  },
 } as const
 
 export type DateConfig = typeof dateConfig

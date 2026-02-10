@@ -43,7 +43,8 @@
           v-if="hasMoreTags"
           class="text-xs text-gray-500 dark:text-gray-400"
         >
-          +{{ resource.tags.length - 3 }} more
+          +{{ resource.tags.length - displayLimit }}
+          {{ contentConfig.similarResources.moreItemsText }}
         </span>
       </div>
 
@@ -59,7 +60,8 @@
               fill-rule="evenodd"
               d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
               clip-rule="evenodd"
-            /></svg>
+            />
+          </svg>
           <span>{{ resource.popularity }} views</span>
         </div>
         <div
@@ -84,7 +86,8 @@
               fill-rule="evenodd"
               d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
               clip-rule="evenodd"
-            /></svg>
+            />
+          </svg>
           <p class="ml-2 text-xs text-gray-600 dark:text-gray-400 italic">
             {{ explanation || `Recommended because: ${reason}` }}
           </p>
@@ -117,7 +120,8 @@
               stroke-linejoin="round"
               stroke-width="2"
               d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-            /></svg>
+            />
+          </svg>
         </button>
       </div>
     </div>
@@ -127,6 +131,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Resource } from '~/types/resource'
+import { limitsConfig } from '~/configs/limits.config'
+import { contentConfig } from '~/configs/content.config'
 
 interface Props {
   resource?: Resource
@@ -147,13 +153,16 @@ const emit = defineEmits<{
   bookmark: [resource: Resource]
 }>()
 
+// Flexy hates hardcoded limits! Use configurable display limit
+const displayLimit = limitsConfig.display.maxTagsDisplay
+
 const displayTags = computed(() => {
   if (!props.resource?.tags) return []
-  return props.resource.tags.slice(0, 3)
+  return props.resource.tags.slice(0, displayLimit)
 })
 
 const hasMoreTags = computed(() => {
-  return (props.resource?.tags?.length || 0) > 3
+  return (props.resource?.tags?.length || 0) > displayLimit
 })
 </script>
 

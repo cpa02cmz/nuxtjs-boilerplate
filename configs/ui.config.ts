@@ -88,6 +88,9 @@ export const uiConfig = {
       databases: process.env.RESOURCE_CARD_BTN_DATABASES || 'Explore Databases',
       cdn: process.env.RESOURCE_CARD_BTN_CDN || 'Get CDN',
     },
+    // Default button label for similar resources section - Flexy hates hardcoded defaults!
+    defaultSimilarButtonLabel:
+      process.env.RESOURCE_CARD_DEFAULT_SIMILAR_LABEL || 'Get Resource',
   },
 
   // Dropdown and Suggestion Settings

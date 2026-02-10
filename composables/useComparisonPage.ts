@@ -5,6 +5,7 @@ import logger from '~/utils/logger'
 import type { Resource } from '~/types/resource'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import { apiConfig } from '~/configs/api.config'
+import { limitsConfig } from '~/configs/limits.config'
 
 interface UseComparisonPageOptions {
   autoFetch?: boolean
@@ -77,11 +78,16 @@ export const useComparisonPage = (options?: UseComparisonPageOptions) => {
   }
 
   // Page metadata
+  // Flexy hates hardcoded limits! Use configurable title limit
+  const titleMaxResources = limitsConfig.comparison.titleMaxResources
+
   const title = computed(() => {
     if (resources.value.length > 0) {
-      const titles = resources.value.slice(0, 3).map(r => r.title)
-      if (resources.value.length > 3) {
-        return `Compare ${titles.join(' vs ')} and ${resources.value.length - 3} more`
+      const titles = resources.value
+        .slice(0, titleMaxResources)
+        .map(r => r.title)
+      if (resources.value.length > titleMaxResources) {
+        return `Compare ${titles.join(' vs ')} and ${resources.value.length - titleMaxResources} more`
       }
       return `Compare ${titles.join(' vs ')}`
     }
