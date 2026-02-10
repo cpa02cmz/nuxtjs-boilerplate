@@ -1,4 +1,4 @@
-import { watch, onMounted, type Ref } from 'vue'
+import { watch, onMounted, onUnmounted, type Ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { FilterOptions, SortOption } from '~/types/resource'
 
@@ -108,8 +108,12 @@ export const useUrlSync = (
     router.replace({ query: params })
   }
 
+  // Store watcher stop functions for cleanup
+  let stopFilterWatcher: (() => void) | null = null
+  let stopSortWatcher: (() => void) | null = null
+
   // Watch for changes and update URL
-  watch(
+  stopFilterWatcher = watch(
     filterOptions,
     () => {
       updateUrlParams()
@@ -117,13 +121,19 @@ export const useUrlSync = (
     { deep: true }
   )
 
-  watch(sortOption, () => {
+  stopSortWatcher = watch(sortOption, () => {
     updateUrlParams()
   })
 
   // Parse initial URL params on mount
   onMounted(() => {
     parseUrlParams()
+  })
+
+  // Clean up watchers on unmount to prevent memory leaks
+  onUnmounted(() => {
+    stopFilterWatcher?.()
+    stopSortWatcher?.()
   })
 
   return {
