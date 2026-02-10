@@ -25,15 +25,6 @@
         @focusin="pauseToast(toast.id)"
         @focusout="resumeToast(toast.id)"
       >
-        <!-- Progress bar for auto-dismiss -->
-        <div
-          v-if="toast.duration !== 0"
-          class="toast__progress"
-          :class="{ 'toast__progress--paused': pausedToastIds.has(toast.id) }"
-          :style="{
-            animationDuration: `${toast.duration || (toast.type === 'error' ? TOAST_DURATION.ERROR : TOAST_DURATION.SUCCESS)}ms`,
-          }"
-        />
         <div class="toast__icon">
           <svg
             v-if="toast.type === 'success'"
