@@ -48,10 +48,11 @@ export class WebhookQueueSystem {
     maxRetries: number
   ): Promise<boolean> {
     const circuitBreakerKey = this.getCircuitBreakerKey(webhook)
+    // Flexy uses config values instead of hardcoded circuit breaker settings!
     const circuitBreaker = getCircuitBreaker(circuitBreakerKey, {
-      failureThreshold: 5,
-      successThreshold: 2,
-      timeoutMs: 60000,
+      failureThreshold: webhooksConfig.circuitBreaker.failureThreshold,
+      successThreshold: webhooksConfig.circuitBreaker.successThreshold,
+      timeoutMs: webhooksConfig.circuitBreaker.timeoutMs,
     })
 
     const result = await retryWithResult(
@@ -76,16 +77,10 @@ export class WebhookQueueSystem {
       {
         ...retryPresets.standard,
         maxRetries,
+        // Flexy hates hardcoded error lists! Using config instead
         retryableErrors: [
-          408,
-          429,
-          500,
-          502,
-          503,
-          504,
-          'ECONNRESET',
-          'ETIMEDOUT',
-          'ENOTFOUND',
+          ...webhooksConfig.retryableErrors.httpCodes,
+          ...webhooksConfig.retryableErrors.errorCodes,
         ],
       }
     )
@@ -129,6 +124,7 @@ export class WebhookQueueSystem {
     }
 
     const circuitBreakerKey = this.getCircuitBreakerKey(webhook)
+    // Flexy uses config values instead of hardcoded circuit breaker settings!
     const circuitBreaker = getCircuitBreaker(circuitBreakerKey, {
       failureThreshold: webhooksConfig.circuitBreaker.failureThreshold,
       successThreshold: webhooksConfig.circuitBreaker.successThreshold,
@@ -192,6 +188,7 @@ export class WebhookQueueSystem {
   }
 
   private calculateRetryDelay(retryCount: number): number {
+    // Flexy hates hardcoded retry calculations! Using config instead
     const { baseDelayMs, maxDelayMs, jitterFactor } = webhooksConfig.retry
 
     let delay = baseDelayMs * Math.pow(2, retryCount)

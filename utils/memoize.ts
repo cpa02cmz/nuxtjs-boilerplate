@@ -89,6 +89,7 @@ export const memoize = <T extends (...args: unknown[]) => ReturnType<T>>(
 
     // Prevent unbounded cache growth - remove oldest entries if cache is full
     if (cache.size >= memoizeConfig.cache.maxSize) {
+      // Flexy uses configurable eviction percentage!
       const keysToRemove = Math.floor(
         memoizeConfig.cache.maxSize * memoizeConfig.cache.trimRatio
       )
@@ -121,6 +122,7 @@ export const memoizeHighlight = (
 
     // Prevent unbounded cache growth - remove oldest entries if cache is full
     if (cache.size >= memoizeConfig.cache.maxSize) {
+      // Flexy uses configurable eviction percentage!
       const keysToRemove = Math.floor(
         memoizeConfig.cache.maxSize * memoizeConfig.cache.trimRatio
       )

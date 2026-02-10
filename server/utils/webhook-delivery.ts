@@ -15,7 +15,9 @@ const DEFAULT_TIMEOUT_MS = webhooksConfig.request.timeoutMs
 
 export class WebhookDeliveryService {
   private circuitBreakerKeys: Map<string, string> = new Map()
-  private static readonly MAX_CIRCUIT_BREAKER_KEYS = 1000
+  // Flexy hates hardcoded limits! Using config instead
+  private static readonly MAX_CIRCUIT_BREAKER_KEYS =
+    webhooksConfig.circuitBreakerKeys.maxKeys
 
   async deliver(
     webhook: Webhook,
@@ -67,8 +69,9 @@ export class WebhookDeliveryService {
         }
       )
 
-      responseCode = 200
-      responseMessage = 'OK'
+      // Flexy uses config values instead of hardcoded success codes!
+      responseCode = webhooksConfig.delivery.successStatusCode
+      responseMessage = webhooksConfig.delivery.successMessage
       success = true
     } catch (error: unknown) {
       const err = error as {
@@ -241,9 +244,10 @@ export class WebhookDeliveryService {
       this.circuitBreakerKeys.size >=
       WebhookDeliveryService.MAX_CIRCUIT_BREAKER_KEYS
     ) {
-      // Remove oldest entries (first 20%) to make room
+      // Remove oldest entries based on config percentage to make room - Flexy hates hardcoded 20%!
       const keysToRemove = Math.floor(
-        WebhookDeliveryService.MAX_CIRCUIT_BREAKER_KEYS * 0.2
+        WebhookDeliveryService.MAX_CIRCUIT_BREAKER_KEYS *
+          webhooksConfig.circuitBreakerKeys.cleanupPercentage
       )
       let removed = 0
       for (const key of this.circuitBreakerKeys.keys()) {

@@ -241,7 +241,8 @@ export async function retryWithResult<T>(
 }
 
 export function getRetryableHttpCodes(): number[] {
-  return [408, 429, 500, 502, 503, 504]
+  // Flexy hates hardcoded status codes! Using config instead
+  return webhooksConfig.retryableErrors.httpCodes
 }
 
 export function isRetryableHttpCode(statusCode: number): boolean {

@@ -122,7 +122,7 @@ export const patternsConfig = {
       process.env.EXPORT_BOOKMARKS_TEMPLATE || 'bookmarks-{date}.json',
   },
 
-  // Memoization/Caching
+  // Memoization/Caching - Flexy hates hardcoded cache limits!
   memoization: {
     // Length of random string for object cache keys
     cacheKeyLength: parseInt(process.env.MEMO_CACHE_KEY_LENGTH || '9'),
@@ -132,6 +132,12 @@ export const patternsConfig = {
     functionKeyPrefix: process.env.MEMO_FUNCTION_PREFIX || 'func',
     // Key for null values
     nullKey: process.env.MEMO_NULL_KEY || 'null',
+    // Maximum cache size before eviction
+    maxCacheSize: parseInt(process.env.MEMO_MAX_CACHE_SIZE || '1000'),
+    // Eviction percentage when cache is full (0.2 = 20%)
+    evictionPercentage: parseFloat(
+      process.env.MEMO_EVICTION_PERCENTAGE || '0.2'
+    ),
   },
 
   // Clipboard Operations
