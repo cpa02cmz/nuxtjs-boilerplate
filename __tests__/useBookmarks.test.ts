@@ -71,7 +71,9 @@ describe('useBookmarks', () => {
         JSON.stringify(existingBookmarks)
       )
 
-      const { bookmarks } = useBookmarks()
+      const { bookmarks, initBookmarks } = useBookmarks()
+      // Manually trigger load since onMounted doesn't run in test environment
+      initBookmarks()
       expect(bookmarks.value).toHaveLength(1)
       expect(bookmarks.value[0].id).toBe('1')
     })
