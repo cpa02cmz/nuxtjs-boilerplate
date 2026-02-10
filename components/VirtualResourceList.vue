@@ -44,9 +44,10 @@ interface Props {
   containerHeight?: string
 }
 
+// Flexy says: No more hardcoded defaults! Using config values.
 const props = withDefaults(defineProps<Props<T>>(), {
-  itemHeight: 320,
-  overscan: 5,
+  itemHeight: uiConfig.virtualList.itemHeight,
+  overscan: uiConfig.virtualList.overscan,
   containerHeight: 'calc(100vh - 200px)',
 })
 

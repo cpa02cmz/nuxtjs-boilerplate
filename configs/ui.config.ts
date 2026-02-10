@@ -244,6 +244,104 @@ export const uiConfig = {
       lg: parseFloat(process.env.LAYOUT_LINE_HEIGHT_LG || '1.5'),
     },
   },
+
+  // Haptic Feedback Patterns (ms)
+  // Haptic Feedback Patterns (ms)
+  haptics: {
+    patterns: {
+      light: parseInt(process.env.HAPTIC_LIGHT_MS || '10'),
+      medium: parseInt(process.env.HAPTIC_MEDIUM_MS || '25'),
+      heavy: parseInt(process.env.HAPTIC_HEAVY_MS || '50'),
+      success: process.env.HAPTIC_SUCCESS_PATTERN || '50,100,50',
+      warning: process.env.HAPTIC_WARNING_PATTERN || '30,50,30',
+      error: process.env.HAPTIC_ERROR_PATTERN || '100,50,100',
+    },
+  },
+
+  // UI Style Classes - Flexy hates hardcoded Tailwind classes!
+  styles: {
+    card: {
+      base: process.env.UI_CARD_BASE || 'bg-white rounded-lg shadow',
+      hover:
+        process.env.UI_CARD_HOVER ||
+        'bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-300',
+      bordered:
+        process.env.UI_CARD_BORDERED ||
+        'bg-white rounded-lg shadow border border-gray-200',
+      skeleton:
+        process.env.UI_CARD_SKELETON ||
+        'bg-white p-6 rounded-lg shadow animate-pulse',
+    },
+    button: {
+      primary:
+        process.env.UI_BUTTON_PRIMARY ||
+        'inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 transition-colors duration-200',
+      secondary:
+        process.env.UI_BUTTON_SECONDARY ||
+        'inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
+      menuItem:
+        process.env.UI_BUTTON_MENU_ITEM ||
+        'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500',
+      icon:
+        process.env.UI_BUTTON_ICON ||
+        'p-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500',
+    },
+    input: {
+      base:
+        process.env.UI_INPUT_BASE ||
+        'block w-full px-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+      search:
+        process.env.UI_INPUT_SEARCH ||
+        'block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400',
+    },
+    iconSizes: {
+      sm: process.env.UI_ICON_SIZE_SM || 'w-4 h-4',
+      md: process.env.UI_ICON_SIZE_MD || 'w-5 h-5',
+      lg: process.env.UI_ICON_SIZE_LG || 'w-6 h-6',
+    },
+    spacing: {
+      cardPadding: process.env.UI_SPACING_CARD_PADDING || 'p-6',
+      sectionGap: process.env.UI_SPACING_SECTION_GAP || 'mt-6',
+      elementGap: process.env.UI_SPACING_ELEMENT_GAP || 'mt-3',
+    },
+  },
+
+  // Filter Chip Settings
+  filterChip: {
+    iconSize: process.env.FILTER_CHIP_ICON_SIZE || 'w-3.5 h-3.5',
+    undoWindowMs: parseInt(process.env.FILTER_UNDO_WINDOW_MS || '5000'),
+    undoProgressIntervalMs: parseInt(
+      process.env.FILTER_UNDO_PROGRESS_INTERVAL || '100'
+    ),
+    undoProgressDecrement: parseInt(
+      process.env.FILTER_UNDO_PROGRESS_DECREMENT || '2'
+    ),
+    announcementClearMs: parseInt(
+      process.env.FILTER_ANNOUNCEMENT_CLEAR_MS || '1000'
+    ),
+  },
+
+  // Offline Indicator Settings
+  offlineIndicator: {
+    backOnlineTimeoutMs: parseInt(
+      process.env.OFFLINE_BACK_ONLINE_TIMEOUT || '3000'
+    ),
+    reconnectingTimeoutMs: parseInt(
+      process.env.OFFLINE_RECONNECTING_TIMEOUT || '5000'
+    ),
+  },
+
+  // PWA Install Prompt Settings
+  pwaInstall: {
+    promptDelayMs: parseInt(process.env.PWA_PROMPT_DELAY_MS || '1000'),
+  },
+
+  // User Preference Settings
+  userPreference: {
+    saveMessageTimeoutMs: parseInt(
+      process.env.USER_PREF_SAVE_TIMEOUT || '3000'
+    ),
+  },
 } as const
 
 export type UiConfig = typeof uiConfig
