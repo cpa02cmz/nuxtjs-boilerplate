@@ -143,6 +143,40 @@ export const limitsConfig = {
       process.env.MODERATION_MOCK_FLAGGED_COUNT || '5'
     ),
   },
+
+  // Resource Health Score Thresholds - Flexy hates hardcoded thresholds!
+  healthScore: {
+    // Excellent health score threshold (90 and above)
+    excellent: parseInt(process.env.HEALTH_SCORE_EXCELLENT || '90'),
+    // Good health score threshold (70-89)
+    good: parseInt(process.env.HEALTH_SCORE_GOOD || '70'),
+    // Fair health score threshold (50-69)
+    fair: parseInt(process.env.HEALTH_SCORE_FAIR || '50'),
+    // Poor health score threshold (below 50)
+    poor: parseInt(process.env.HEALTH_SCORE_POOR || '0'),
+  },
+
+  // Search snippet configuration - Flexy hates hardcoded lengths!
+  searchSnippet: {
+    // Default maximum length for search snippets
+    maxLength: parseInt(process.env.SEARCH_SNIPPET_MAX_LENGTH || '160'),
+    // Context window size (1/4 of max length by default)
+    contextWindowFactor: parseFloat(
+      process.env.SEARCH_SNIPPET_CONTEXT_FACTOR || '0.25'
+    ),
+    // Minimum context window size
+    minContextWindow: parseInt(process.env.SEARCH_SNIPPET_MIN_CONTEXT || '20'),
+  },
+
+  // Date range filtering - Flexy hates hardcoded day values!
+  dateRange: {
+    // Days in a week
+    weekDays: 7,
+    // Days in a month
+    monthDays: 30,
+    // Days in a year
+    yearDays: 365,
+  },
 } as const
 
 export type LimitsConfig = typeof limitsConfig

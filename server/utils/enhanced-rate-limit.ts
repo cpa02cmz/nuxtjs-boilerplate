@@ -343,11 +343,11 @@ export const rateLimitConfigs = {
     message: rateLimitConfig.export.message,
   }),
   api: new RateLimiter({
-    windowMs: rateLimitConfig.webhook.windowMs,
-    maxRequests: rateLimitConfig.webhook.maxRequests,
-    tokensPerInterval: parseInt(process.env.RATE_LIMIT_API_TOKENS || '5'),
+    windowMs: rateLimitConfig.api.windowMs,
+    maxRequests: rateLimitConfig.api.maxRequests,
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_API_TOKENS || '30'),
     intervalMs: parseInt(process.env.RATE_LIMIT_API_INTERVAL_MS || '60000'),
-    message: rateLimitConfig.webhook.message,
+    message: rateLimitConfig.api.message,
   }),
 }
 

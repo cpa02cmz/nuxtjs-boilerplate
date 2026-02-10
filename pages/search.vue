@@ -42,8 +42,8 @@
       <!-- No Results State -->
       <LazyEmptyState
         v-else-if="!filteredResources.length && !loading"
-        title="No resources found"
-        description="We couldn't find any resources matching your search. Try adjusting your filters or search terms to discover more great free tools."
+        :title="contentConfig.searchResults.noResults.title"
+        :description="contentConfig.searchResults.noResults.message"
         :suggestions="['AI Tools', 'Web Hosting', 'Databases', 'APIs', 'VPS']"
         show-reset
         show-browse-all
@@ -167,6 +167,7 @@
                     createSearchSnippet(resource.description, searchQuery)
                   "
                   :search-query="searchQuery"
+                  :date-added="resource.dateAdded"
                 />
               </template>
             </VirtualResourceList>
@@ -188,6 +189,7 @@ import ActiveFilters from '~/components/ActiveFilters.vue'
 import { seoConfig } from '~/configs/seo.config'
 import { contentConfig } from '~/configs/content.config'
 import { appConfig } from '~/configs/app.config'
+import { uiConfig } from '~/configs/ui.config'
 
 definePageMeta({
   layout: 'default',
@@ -330,19 +332,11 @@ const handleSuggestionClick = (suggestion: string) => {
 }
 
 const getButtonLabel = (category: string) => {
-  switch (category.toLowerCase()) {
-    case 'ai tools':
-      return 'Explore AI Tools'
-    case 'vps':
-      return 'Get VPS'
-    case 'web hosting':
-      return 'Find Hosting'
-    case 'databases':
-      return 'Explore Databases'
-    case 'cdn':
-      return 'Get CDN'
-    default:
-      return 'Get Free Access'
-  }
+  const labels = uiConfig.resourceCard.categoryButtonLabels
+  const normalizedCategory = category.toLowerCase()
+  return (
+    labels[normalizedCategory as keyof typeof labels] ||
+    uiConfig.resourceCard.defaultButtonLabel
+  )
 }
 </script>

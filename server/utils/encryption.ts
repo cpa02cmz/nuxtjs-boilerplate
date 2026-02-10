@@ -67,7 +67,10 @@ export function decryptSecret(encrypted: string): string | null {
 
     return decrypted
   } catch (error) {
-    console.error('Failed to decrypt webhook secret:', error)
+    // Sanitize error logging to prevent potential sensitive data exposure
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error'
+    console.error('Failed to decrypt webhook secret:', errorMessage)
     return null
   }
 }

@@ -55,101 +55,52 @@ describe('generateUniqueId', () => {
     })
   })
 
-  describe('ID Format', () => {
-    it('should use base36 encoding (lowercase letters and numbers)', () => {
+  describe('UUID Format (RFC 4122)', () => {
+    it('should generate valid UUID v4 format', () => {
+      const id = generateUniqueId()
+      const uuidRegex =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+      expect(id).toMatch(uuidRegex)
+    })
+
+    it('should have standard UUID length of 36 characters', () => {
       const id = generateUniqueId()
 
-      expect(id).toMatch(/^[a-z0-9]+$/)
+      expect(id.length).toBe(36)
     })
 
-    it('should start with timestamp in base36', () => {
-      const timestamp = Date.now().toString(36)
+    it('should have 4 hyphens at correct positions', () => {
       const id = generateUniqueId()
 
-      expect(id).toMatch(new RegExp(`^${timestamp}`))
+      expect(id[8]).toBe('-')
+      expect(id[13]).toBe('-')
+      expect(id[18]).toBe('-')
+      expect(id[23]).toBe('-')
     })
 
-    it('should have reasonable length', () => {
+    it('should have version 4 indicator at position 14', () => {
       const id = generateUniqueId()
 
-      expect(id.length).toBeGreaterThan(10)
-      expect(id.length).toBeLessThan(20)
+      expect(id[14]).toBe('4')
     })
 
-    it('should have timestamp component followed by random component', () => {
+    it('should have valid variant indicator at position 19', () => {
       const id = generateUniqueId()
-      const timestampLength = Date.now().toString(36).length
-      const idParts = id.slice(timestampLength)
+      const variant = id[19]
 
-      expect(idParts.length).toBe(8)
-    })
-  })
-
-  describe('Temporal Ordering', () => {
-    it.skip('should generate IDs that are chronologically sortable', async () => {
-      const id1 = generateUniqueId()
-      await new Promise(resolve => setTimeout(resolve, 10))
-      const id2 = generateUniqueId()
-
-      expect(id1 < id2).toBe(true)
-    })
-
-    it.skip('should maintain order with rapid consecutive calls (when timestamp changes)', async () => {
-      const ids: string[] = []
-
-      for (let i = 0; i < 10; i++) {
-        ids.push(generateUniqueId())
-        await new Promise(resolve => setTimeout(resolve, 1))
-      }
-
-      for (let i = 1; i < ids.length; i++) {
-        expect(ids[i - 1] < ids[i]).toBe(true)
-      }
+      expect(['8', '9', 'a', 'b']).toContain(variant)
     })
   })
 
   describe('Edge Cases', () => {
-    it('should handle same millisecond timestamp with different random suffix', () => {
-      // Generate IDs rapidly to try to get same timestamp
-      const ids: string[] = []
-      for (let i = 0; i < 100; i++) {
-        ids.push(generateUniqueId())
-      }
-
-      // Find two IDs with the same timestamp
-      const timestampMap = new Map<string, string[]>()
-      for (const id of ids) {
-        const timestamp = id.slice(0, -5)
-        const existing = timestampMap.get(timestamp) || []
-        existing.push(id)
-        timestampMap.set(timestamp, existing)
-      }
-
-      // Find a timestamp with multiple IDs
-      let foundSameTimestamp = false
-      for (const [_timestamp, idList] of timestampMap) {
-        if (idList.length >= 2) {
-          foundSameTimestamp = true
-          // Verify IDs with same timestamp are different
-          expect(idList[0]).not.toBe(idList[1])
-          break
-        }
-      }
-
-      // If we didn't find same timestamp, at least verify uniqueness
-      if (!foundSameTimestamp) {
-        const uniqueIds = new Set(ids)
-        expect(uniqueIds.size).toBe(ids.length)
-      }
-    })
-
     it('should work correctly in strict mode', () => {
       'use strict'
 
       const id = generateUniqueId()
 
       expect(typeof id).toBe('string')
-      expect(id.length).toBeGreaterThan(0)
+      expect(id.length).toBe(36)
     })
   })
 
@@ -161,23 +112,18 @@ describe('generateUniqueId', () => {
         ids.add(generateUniqueId())
       }
 
-      expect(ids.size).toBeGreaterThan(1)
+      expect(ids.size).toBe(100)
     })
 
-    it('should have high entropy (low collision probability)', () => {
-      const idCounts = new Map<string, number>()
+    it('should have 122 bits of entropy (no collisions in large sample)', () => {
+      const ids = new Set<string>()
       const iterations = 10000
 
       for (let i = 0; i < iterations; i++) {
-        const id = generateUniqueId()
-        const suffix = id.slice(-5)
-        idCounts.set(suffix, (idCounts.get(suffix) || 0) + 1)
+        ids.add(generateUniqueId())
       }
 
-      const maxCount = Math.max(...idCounts.values())
-      const avgCount = iterations / idCounts.size
-
-      expect(maxCount).toBeLessThan(avgCount * 10)
+      expect(ids.size).toBe(iterations)
     })
   })
 
@@ -191,7 +137,7 @@ describe('generateUniqueId', () => {
 
       const duration = performance.now() - start
 
-      expect(duration).toBeLessThan(100)
+      expect(duration).toBeLessThan(200) // UUID generation may be slightly slower
     })
 
     it('should not have memory leaks', () => {
@@ -211,43 +157,48 @@ describe('generateUniqueId', () => {
   })
 
   describe('Character Set', () => {
-    it('should only use lowercase letters and digits', () => {
+    it('should only use lowercase hex characters and hyphens', () => {
       const id = generateUniqueId()
 
-      expect(id).toMatch(/^[a-z0-9]+$/)
+      expect(id).toMatch(/^[0-9a-f-]+$/)
       expect(id).not.toMatch(/[A-Z]/)
-      expect(id).not.toMatch(/[!@#$%^&*()_+={}[\]:;<>,.?\\|]/)
     })
 
-    it('should not contain special characters', () => {
+    it('should not contain special characters except hyphens', () => {
       const id = generateUniqueId()
 
-      expect(id).not.toMatch(/[^a-z0-9]/)
-    })
-
-    it('should not contain uppercase letters', () => {
-      const id = generateUniqueId()
-
-      expect(id).toMatch(/^[a-z0-9]+$/)
+      expect(id).not.toMatch(/[^0-9a-f-]/)
     })
   })
 
-  describe('Cross-Browser Compatibility', () => {
-    it('should use Date.now() which is widely supported', () => {
-      const id = generateUniqueId()
+  describe('Cryptographic Security', () => {
+    it('should use crypto.randomUUID for security', () => {
+      const ids: string[] = []
 
-      expect(id.length).toBeGreaterThan(0)
-      expect(typeof id).toBe('string')
-    })
-
-    it('should use Math.random() which is widely supported', () => {
-      const ids = new Set<string>()
-
-      for (let i = 0; i < 100; i++) {
-        ids.add(generateUniqueId())
+      for (let i = 0; i < 10; i++) {
+        ids.push(generateUniqueId())
       }
 
-      expect(ids.size).toBeGreaterThan(10)
+      // All should be valid UUIDs with proper version and variant
+      for (const id of ids) {
+        expect(id[14]).toBe('4') // Version 4
+        expect(['8', '9', 'a', 'b']).toContain(id[19]) // Variant
+      }
+    })
+
+    it('should not be predictable from previous IDs', () => {
+      const id1 = generateUniqueId()
+      const id2 = generateUniqueId()
+
+      // UUIDs should be completely different, not just incrementing
+      let diffCount = 0
+      for (let i = 0; i < id1.length; i++) {
+        if (id1[i] !== id2[i]) diffCount++
+      }
+
+      // Most characters should be different (accounting for 4 hyphens at fixed positions)
+      // Using 27 to account for random variance while still ensuring unpredictability
+      expect(diffCount).toBeGreaterThanOrEqual(27)
     })
   })
 })

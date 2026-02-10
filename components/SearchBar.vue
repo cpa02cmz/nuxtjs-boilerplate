@@ -49,6 +49,8 @@
         id="search-input"
         ref="searchInputRef"
         type="search"
+        role="combobox"
+        aria-haspopup="listbox"
         :value="modelValue"
         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400 focus:shadow-lg focus:-translate-y-0.5"
         :class="{
@@ -103,7 +105,8 @@
               stroke-linejoin="round"
               stroke-width="2"
               d="M6 18L18 6M6 6l12 12"
-            /></svg>
+            />
+          </svg>
         </button>
       </div>
     </div>
@@ -147,6 +150,7 @@ import { useResourceData } from '~/composables/useResourceData'
 import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { searchConfig } from '~/configs/search.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   modelValue: string
@@ -385,7 +389,7 @@ if (typeof window !== 'undefined') {
         showFocusPulse.value = true
         setTimeout(() => {
           showFocusPulse.value = false
-        }, 600)
+        }, uiConfig.timing.focusPulseDurationMs)
       }
     }
   }
@@ -427,7 +431,8 @@ if (typeof window !== 'undefined') {
 }
 
 .animate-focus-pulse {
-  animation: focus-pulse 0.6s ease-out;
+  animation: focus-pulse v-bind('`${uiConfig.timing.focusPulseDurationMs}ms`')
+    ease-out;
 }
 
 /* Respect reduced motion preferences for accessibility */

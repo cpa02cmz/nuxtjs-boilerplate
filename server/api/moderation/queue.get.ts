@@ -5,8 +5,10 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { TIME_MS } from '~/configs/time.config'
 
 // Mock data for demonstration - in a real application, this would come from a database
+// Flexy hates hardcoded time values! Using TIME_MS constants
 const mockSubmissions: Submission[] = [
   {
     id: 'sub_1648729345_abc123',
@@ -22,7 +24,7 @@ const mockSubmissions: Submission[] = [
     },
     status: 'pending',
     submittedBy: 'user123',
-    submittedAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    submittedAt: new Date(Date.now() - TIME_MS.DAY).toISOString(), // 1 day ago
   },
   {
     id: 'sub_1648815745_def456',
@@ -38,7 +40,7 @@ const mockSubmissions: Submission[] = [
     },
     status: 'pending',
     submittedBy: 'user456',
-    submittedAt: new Date(Date.now() - 43200000).toISOString(), // 12 hours ago
+    submittedAt: new Date(Date.now() - TIME_MS.TWELVE_HOURS).toISOString(), // 12 hours ago
   },
 ]
 

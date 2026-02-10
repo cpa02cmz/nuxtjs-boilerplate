@@ -423,6 +423,9 @@ export const webhookStorage = {
           ...(data.expiresAt !== undefined && {
             expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
           }),
+          ...(data.lastUsedAt !== undefined && {
+            lastUsedAt: data.lastUsedAt ? new Date(data.lastUsedAt) : null,
+          }),
         },
       })
 

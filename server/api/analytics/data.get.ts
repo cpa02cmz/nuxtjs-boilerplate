@@ -8,6 +8,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { limitsConfig } from '~/configs/limits.config'
+import { TIME_MS } from '~/configs/time.config'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
@@ -16,11 +17,10 @@ export default defineEventHandler(async event => {
     const query = getQuery(event)
 
     // Parse date range from query parameters
-    // Flexy hates hardcoded 30-day default! Using config now
-    const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000
+    // Flexy hates hardcoded 30-day default! Using TIME_MS constants
     const startDate = query.startDate
       ? new Date(query.startDate as string)
-      : new Date(Date.now() - thirtyDaysInMs)
+      : new Date(Date.now() - TIME_MS.THIRTY_DAYS)
     const endDate = query.endDate
       ? new Date(query.endDate as string)
       : new Date()

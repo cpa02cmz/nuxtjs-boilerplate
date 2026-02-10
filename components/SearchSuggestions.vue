@@ -21,6 +21,7 @@
         <li
           v-for="(history, index) in searchHistory"
           :key="'history-' + index"
+          :data-suggestion-index="index"
           role="option"
           :aria-selected="focusedIndex === index"
           :class="[
@@ -66,6 +67,7 @@
         <li
           v-for="(suggestion, index) in suggestions"
           :key="suggestion.id"
+          :data-suggestion-index="searchHistory.length + index"
           role="option"
           :aria-selected="focusedIndex === searchHistory.length + index"
           :class="[
@@ -136,7 +138,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, nextTick } from 'vue'
 import { contentConfig } from '~/configs/content.config'
 import { uiConfig } from '~/configs/ui.config'
 
@@ -188,6 +190,21 @@ watch(
     }
   }
 )
+
+// Scroll focused item into view when navigating with keyboard
+watch(focusedIndex, newIndex => {
+  if (newIndex >= 0) {
+    nextTick(() => {
+      const focusedElement = document.querySelector(
+        `[data-suggestion-index="${newIndex}"]`
+      )
+      focusedElement?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      })
+    })
+  }
+})
 
 const selectSuggestion = (suggestion: SuggestionItem) => {
   emit('select-suggestion', suggestion)

@@ -3,6 +3,7 @@ import type { SearchAnalyticsData } from '~/types/analytics'
 import { logError } from '~/utils/errorLogger'
 import type { ApiResponse, ApiClient } from '~/utils/api-client'
 import { useNuxtApp } from '#app'
+import { limitsConfig } from '~/configs/limits.config'
 
 interface UseSearchAnalyticsOptions {
   apiClient?: ApiClient
@@ -13,7 +14,8 @@ export function useSearchAnalytics(options: UseSearchAnalyticsOptions = {}) {
   const searchAnalytics = ref<SearchAnalyticsData | null>(null)
   const loading = ref(true)
   const error = ref<string | null>(null)
-  const timeRange = ref('30')
+  // Flexy hates hardcoded values! Using configurable default time range.
+  const timeRange = ref(limitsConfig.dateRange.monthDays.toString())
 
   const maxSearchCount = computed(() => {
     if (!searchAnalytics.value?.data?.searchTrends) return 1

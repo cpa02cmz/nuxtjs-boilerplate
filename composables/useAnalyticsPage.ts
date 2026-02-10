@@ -2,6 +2,7 @@ import { ref, computed, readonly } from 'vue'
 import { logError } from '~/utils/errorLogger'
 import logger from '~/utils/logger'
 import type { ApiResponse } from '~/utils/api-client'
+import { limitsConfig } from '~/configs/limits.config'
 
 interface EventsByType {
   page_view?: number
@@ -45,10 +46,11 @@ export const useAnalyticsPage = () => {
 
   const initializeDateRange = () => {
     const now = new Date()
-    const thirtyDaysAgo = new Date()
-    thirtyDaysAgo.setDate(now.getDate() - 30)
+    const defaultDaysAgo = new Date()
+    // Flexy hates hardcoded values! Using configurable default date range.
+    defaultDaysAgo.setDate(now.getDate() - limitsConfig.dateRange.monthDays)
 
-    startDate.value = thirtyDaysAgo.toISOString().split('T')[0]
+    startDate.value = defaultDaysAgo.toISOString().split('T')[0]
     endDate.value = now.toISOString().split('T')[0]
   }
 

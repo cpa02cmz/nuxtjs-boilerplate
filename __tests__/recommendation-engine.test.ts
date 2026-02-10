@@ -78,10 +78,9 @@ describe('useRecommendationEngine', () => {
         skillLevel: 'intermediate' as const,
       }
 
-      const personalizedEngine = useRecommendationEngine(
-        mockResources,
-        userPreferences
-      )
+      const personalizedEngine = useRecommendationEngine(mockResources, {
+        userPreferences,
+      })
       const recommendations =
         personalizedEngine.getPersonalizedRecommendations()
 
@@ -110,10 +109,9 @@ describe('useRecommendationEngine', () => {
         skillLevel: 'intermediate' as const,
       }
 
-      const personalizedEngine = useRecommendationEngine(
-        mockResources,
-        userPreferences
-      )
+      const personalizedEngine = useRecommendationEngine(mockResources, {
+        userPreferences,
+      })
       const recommendations =
         personalizedEngine.getPersonalizedRecommendations()
 

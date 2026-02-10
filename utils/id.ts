@@ -1,6 +1,8 @@
+/**
+ * Generate cryptographically secure unique ID
+ * Uses crypto.randomUUID() for security (replaces insecure Math.random())
+ * Available in Node.js 14.17+ and all modern browsers
+ */
 export const generateUniqueId = (): string => {
-  const timestamp = Date.now().toString(36)
-  const randomPart = Math.random().toString(36).substring(2, 8)
-  const extraRandom = Math.random().toString(36).substring(2, 4)
-  return timestamp + randomPart + extraRandom
+  return crypto.randomUUID()
 }

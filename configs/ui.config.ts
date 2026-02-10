@@ -140,12 +140,75 @@ export const uiConfig = {
     searchTrackingDelayMs: parseInt(
       process.env.TIMING_SEARCH_TRACKING || '500'
     ),
+
+    // Focus and interaction animations
+    focusPulseDurationMs: parseInt(process.env.TIMING_FOCUS_PULSE || '600'),
+
+    // Navigation delays
+    comparisonNavigationDelayMs: parseInt(
+      process.env.TIMING_COMPARISON_NAVIGATION || '400'
+    ),
   },
 
   // Data Loading
   dataLoading: {
     maxRetries: parseInt(process.env.DATA_LOADING_MAX_RETRIES || '3'),
     retryDelayMs: parseInt(process.env.DATA_LOADING_RETRY_DELAY || '1000'),
+  },
+
+  // Scroll To Top Button - Flexy hates hardcoded scroll values!
+  scrollToTop: {
+    // Scroll threshold in pixels before showing button
+    thresholdPx: parseInt(process.env.SCROLL_THRESHOLD_PX || '200'),
+    // Circle radius for SVG progress indicator
+    circleRadius: parseInt(process.env.SCROLL_CIRCLE_RADIUS || '20'),
+    // Button position from bottom
+    bottomPosition: process.env.SCROLL_BOTTOM_POSITION || '2rem',
+    // Button position from right
+    rightPosition: process.env.SCROLL_RIGHT_POSITION || '2rem',
+    // Button width
+    buttonWidth: process.env.SCROLL_BUTTON_WIDTH || '48px',
+    // Button height
+    buttonHeight: process.env.SCROLL_BUTTON_HEIGHT || '48px',
+    // Animation duration when scrolling
+    scrollDurationMs: parseInt(process.env.SCROLL_DURATION_MS || '1000'),
+    // Announcement timeout
+    announcementTimeoutMs: parseInt(
+      process.env.SCROLL_ANNOUNCEMENT_TIMEOUT || '1000'
+    ),
+    // Accessibility announcement text
+    announcementText:
+      process.env.SCROLL_ANNOUNCEMENT_TEXT || 'Scrolling to top of page',
+  },
+
+  // Resource Status Component
+  resourceStatus: {
+    // Status labels
+    labels: {
+      active: process.env.STATUS_LABEL_ACTIVE || 'Active',
+      deprecated: process.env.STATUS_LABEL_DEPRECATED || 'Deprecated',
+      discontinued: process.env.STATUS_LABEL_DISCONTINUED || 'Discontinued',
+      unstable: process.env.STATUS_LABEL_UNSTABLE || 'Unstable',
+      unknown: process.env.STATUS_LABEL_UNKNOWN || 'Unknown',
+    },
+    // Status descriptions
+    descriptions: {
+      active:
+        process.env.STATUS_DESC_ACTIVE ||
+        'This resource is currently active and fully maintained.',
+      deprecated:
+        process.env.STATUS_DESC_DEPRECATED ||
+        'This resource is deprecated and may be discontinued soon.',
+      discontinued:
+        process.env.STATUS_DESC_DISCONTINUED ||
+        'This resource has been discontinued and is no longer available.',
+      unstable:
+        process.env.STATUS_DESC_UNSTABLE ||
+        'This resource is currently experiencing issues.',
+      unknown:
+        process.env.STATUS_DESC_UNKNOWN ||
+        'The status of this resource is unknown.',
+    },
   },
 } as const
 

@@ -57,6 +57,13 @@ export const patternsConfig = {
       process.env.SEARCH_OPERATOR_PATTERN || '\\b(?:AND|OR|NOT)\\b',
       'i'
     ),
+    // Regex for splitting by operators
+    operatorSplitPattern: new RegExp(
+      process.env.SEARCH_OPERATOR_SPLIT_PATTERN || '\\b(AND|OR|NOT)\\b',
+      'gi'
+    ),
+    // Regex for removing quotes
+    quotePattern: new RegExp(process.env.SEARCH_QUOTE_PATTERN || '^"|"$', 'g'),
     // Highlight CSS classes
     highlightClasses:
       process.env.SEARCH_HIGHLIGHT_CLASSES ||
@@ -87,6 +94,65 @@ export const patternsConfig = {
   dateSerialization: {
     // Key used to identify serialized dates
     key: process.env.DATE_SERIALIZATION_KEY || '__date__',
+  },
+
+  // Media Query Patterns
+  mediaQueries: {
+    // Dark mode preference
+    prefersDark:
+      process.env.MEDIA_QUERY_PREFERS_DARK || '(prefers-color-scheme: dark)',
+    // Reduced motion preference
+    prefersReducedMotion:
+      process.env.MEDIA_QUERY_REDUCED_MOTION ||
+      '(prefers-reduced-motion: reduce)',
+  },
+
+  // Storage Keys
+  storageKeys: {
+    // Theme preference storage key
+    themePreference: process.env.STORAGE_KEY_THEME || 'theme-preference',
+  },
+
+  // File Export Patterns
+  export: {
+    // Date format for export filenames (ISO date part)
+    dateFormat: process.env.EXPORT_DATE_FORMAT || 'YYYY-MM-DD',
+    // Bookmarks export filename template
+    bookmarksFilenameTemplate:
+      process.env.EXPORT_BOOKMARKS_TEMPLATE || 'bookmarks-{date}.json',
+  },
+
+  // Memoization/Caching
+  memoization: {
+    // Length of random string for object cache keys
+    cacheKeyLength: parseInt(process.env.MEMO_CACHE_KEY_LENGTH || '9'),
+    // Prefix for object cache keys
+    objectKeyPrefix: process.env.MEMO_OBJECT_PREFIX || 'obj:',
+    // Prefix for function cache keys
+    functionKeyPrefix: process.env.MEMO_FUNCTION_PREFIX || 'func',
+    // Key for null values
+    nullKey: process.env.MEMO_NULL_KEY || 'null',
+  },
+
+  // Clipboard Operations
+  clipboard: {
+    // Off-screen positioning for textarea (px)
+    textareaOffset: process.env.CLIPBOARD_TEXTAREA_OFFSET || '-9999px',
+    // Max selection range for execCommand
+    selectionRangeMax: parseInt(
+      process.env.CLIPBOARD_SELECTION_RANGE || '99999'
+    ),
+  },
+
+  // Error Patterns
+  errors: {
+    // Network error code
+    networkErrorCode: process.env.ERROR_NETWORK_CODE || 'NETWORK_ERROR',
+    // Network error category
+    networkErrorCategory: process.env.ERROR_NETWORK_CATEGORY || 'network',
+    // Generic error message
+    genericErrorMessage:
+      process.env.ERROR_GENERIC_MESSAGE || 'An unexpected error occurred',
   },
 } as const
 

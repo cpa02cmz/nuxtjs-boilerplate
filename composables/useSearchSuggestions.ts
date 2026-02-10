@@ -45,7 +45,9 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
     if (!query || !fuse.value) return []
 
     // Perform fuzzy search to find matching resources
-    const searchResults = fuse.value.search(query, { limit: limit * 2 }) // Get more results for better ranking
+    const searchResults = fuse.value.search(query, {
+      limit: limit * searchConfig.suggestions.limitMultiplier,
+    }) // Get more results for better ranking
 
     // Transform search results to suggestion format
     const suggestions: SuggestionResult[] = []
@@ -55,7 +57,9 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
       suggestions.push({
         text: result.item.title,
         type: 'resource',
-        score: result.score ? 1 - result.score : 0.5,
+        score: result.score
+          ? 1 - result.score
+          : searchConfig.suggestions.scores.default,
         resourceId: result.item.id,
         metadata: {
           description:
@@ -93,7 +97,7 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
               suggestions.push({
                 text: tag,
                 type: 'tag',
-                score: 0.7, // Lower priority than exact resource matches
+                score: searchConfig.suggestions.scores.tagMatch,
                 metadata: {
                   tag: tag,
                   count: tagCountsMap.value.get(tag) || 0,
@@ -112,7 +116,7 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
         suggestions.push({
           text: resource.category,
           type: 'category',
-          score: 0.6, // Lower priority than tags
+          score: searchConfig.suggestions.scores.categoryMatch,
           metadata: {
             category: resource.category,
             count: categoryCountsMap.value.get(resource.category) || 0,
@@ -127,7 +131,9 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
         suggestions.push({
           text: popular.query,
           type: 'popular',
-          score: 0.9 - index * 0.1, // Higher priority for more popular searches
+          score:
+            searchConfig.suggestions.scores.popularBase -
+            index * searchConfig.suggestions.scores.popularDecrement,
           metadata: {
             count: popular.count,
             popularity: index + 1,
@@ -144,16 +150,23 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
   }
 
   // Get search suggestions with debouncing consideration
-  const getSearchSuggestions = (query: string, limit: number = 5) => {
+  const getSearchSuggestions = (
+    query: string,
+    limit: number = searchConfig.behavior.maxSuggestions
+  ) => {
     return generateSuggestions(query, limit)
   }
 
   // Get popular suggestions
-  const getPopularSuggestions = (limit: number = 5) => {
+  const getPopularSuggestions = (
+    limit: number = searchConfig.behavior.maxSuggestions
+  ) => {
     return popularSearches.value.slice(0, limit).map((popular, index) => ({
       text: popular.query,
       type: 'popular' as const,
-      score: 0.9 - index * 0.1,
+      score:
+        searchConfig.suggestions.scores.popularBase -
+        index * searchConfig.suggestions.scores.popularDecrement,
       metadata: {
         count: popular.count,
       },
@@ -161,12 +174,16 @@ export const useSearchSuggestions = (resources: readonly Resource[]) => {
   }
 
   // Get recent search history suggestions
-  const getRecentSearches = (limit: number = 5) => {
+  const getRecentSearches = (
+    limit: number = searchConfig.behavior.maxSuggestions
+  ) => {
     const history = getSearchHistory()
     return history.slice(0, limit).map((query, index) => ({
       text: query,
       type: 'popular' as const, // Using 'popular' type for recent searches too
-      score: 0.8 - index * 0.1,
+      score:
+        searchConfig.suggestions.scores.recentBase -
+        index * searchConfig.suggestions.scores.recentDecrement,
       metadata: {},
     }))
   }

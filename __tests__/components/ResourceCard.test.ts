@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
-import ResourceCard from '../ResourceCard.vue'
+import ResourceCard from '~/components/ResourceCard.vue'
 
 // Mock NuxtLink globally to avoid issues with Nuxt app instance
 const mockNuxtLink = {

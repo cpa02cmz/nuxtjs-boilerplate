@@ -74,10 +74,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { uiConfig } from '../configs/ui.config'
+import { themeConfig } from '../configs/theme.config'
 
-// Constants
-const SCROLL_THRESHOLD = 200 // Show button after scrolling 200px
-const CIRCLE_RADIUS = 20
+// Constants - Flexy hates hardcoded values! Using config instead.
+const SCROLL_THRESHOLD = uiConfig.scrollToTop.thresholdPx
+const CIRCLE_RADIUS = uiConfig.scrollToTop.circleRadius
 const CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS
 
 // Reactive state
@@ -129,10 +131,10 @@ const scrollToTop = () => {
   })
 
   // Announce to screen readers
-  announcementText.value = 'Scrolling to top of page'
+  announcementText.value = uiConfig.scrollToTop.announcementText
   setTimeout(() => {
     announcementText.value = ''
-  }, 1000)
+  }, uiConfig.scrollToTop.announcementTimeoutMs)
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {
@@ -197,10 +199,10 @@ onMounted(() => {
 <style scoped>
 .scroll-to-top {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: 48px;
-  height: 48px;
+  bottom: v-bind('uiConfig.scrollToTop.bottomPosition');
+  right: v-bind('uiConfig.scrollToTop.rightPosition');
+  width: v-bind('uiConfig.scrollToTop.buttonWidth');
+  height: v-bind('uiConfig.scrollToTop.buttonHeight');
   border-radius: 50%;
   background: white;
   border: none;
@@ -247,23 +249,23 @@ onMounted(() => {
 }
 
 .scroll-to-top__progress-ring-bg {
-  stroke: #e5e7eb;
+  stroke: v-bind('themeConfig.scrollToTop.progressBg');
 }
 
 .scroll-to-top__progress-ring-fill {
-  stroke: #3b82f6;
+  stroke: v-bind('themeConfig.scrollToTop.progressFill');
   transition: stroke-dashoffset 0.1s ease-out;
 }
 
 .scroll-to-top__icon {
   position: relative;
   z-index: 1;
-  color: #374151;
+  color: v-bind('themeConfig.scrollToTop.iconColor');
   transition: color 0.2s ease-out;
 }
 
 .scroll-to-top:hover .scroll-to-top__icon {
-  color: #1f2937;
+  color: v-bind('themeConfig.scrollToTop.iconBg');
 }
 
 /* Reduced motion support */
@@ -315,15 +317,15 @@ onMounted(() => {
 /* Dark mode support (if needed in future) */
 @media (prefers-color-scheme: dark) {
   .scroll-to-top {
-    background: #1f2937;
+    background: v-bind('themeConfig.scrollToTop.darkIconColor');
   }
 
   .scroll-to-top__icon {
-    color: #f3f4f6;
+    color: v-bind('themeConfig.scrollToTop.darkIconBg');
   }
 
   .scroll-to-top__progress-ring-bg {
-    stroke: #374151;
+    stroke: v-bind('themeConfig.scrollToTop.darkProgressBg');
   }
 }
 </style>
