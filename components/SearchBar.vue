@@ -60,10 +60,7 @@
         :placeholder="contentConfig.search.placeholder"
         aria-label="Search resources (Press / to focus)"
         aria-describedby="search-results-info search-shortcut-hint"
-        :aria-expanded="
-          showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
-        "
+        :aria-expanded="showSuggestions"
         aria-controls="search-suggestions-dropdown"
         aria-autocomplete="list"
         @input="handleInput"
@@ -135,18 +132,17 @@
     <!-- Search Suggestions Dropdown -->
     <ClientOnly>
       <LazySearchSuggestions
-        v-if="
-          showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
-        "
+        v-if="showSuggestions"
         id="search-suggestions-dropdown"
         :suggestions="suggestions"
         :search-history="searchHistory"
         :visible="showSuggestions"
         :focused-index="activeIndex"
+        :has-query="!!props.modelValue"
         @select-suggestion="handleSuggestionSelect"
         @select-history="handleHistorySelect"
         @clear-history="handleClearHistory"
+        @clear-search="clearSearch"
       />
     </ClientOnly>
 
