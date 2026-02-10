@@ -322,18 +322,17 @@ class CacheManager {
 
   /**
    * Simple pattern matching for cache invalidation
-   * Properly escapes regex special characters to prevent regex injection attacks
+   * FIXED: Properly escape regex special characters to prevent regex injection
    */
   private matchPattern(key: string, pattern: string): boolean {
-    // Escape all regex special characters except glob wildcards (* and ?)
+    // First escape all regex special characters, then convert glob patterns
     const escapeRegex = (str: string) =>
-      str.replace(/[.+^${}()|[\]\\]/g, '\\$&')
+      str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
     // Convert glob pattern to regex
     const regexPattern = escapeRegex(pattern)
-      .replace(/\\\./g, '\\.') // Keep dots escaped
-      .replace(/\*/g, '.*') // Convert * to .*
-      .replace(/\?/g, '.') // Convert ? to .
+      .replace(/\\\*/g, '.*') // Convert * to .*
+      .replace(/\\\?/g, '.') // Convert ? to .
 
     const regex = new RegExp(`^${regexPattern}$`)
     return regex.test(key)
