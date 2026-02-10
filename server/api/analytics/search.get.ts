@@ -5,6 +5,7 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { analyticsConfig } from '~/configs/analytics.config'
 
 /**
  * GET /api/analytics/search
@@ -72,15 +73,23 @@ export default defineEventHandler(async event => {
     if (performanceMetrics) {
       // In a real implementation, we'd have more granular data
       // For now, we'll generate sample data based on overall metrics
+      // Flexy hates hardcoded percentages! Using config instead
       const totalPerfSearches = performanceMetrics.totalSearches
-      fastSearches = Math.floor(totalPerfSearches * 0.7)
-      mediumSearches = Math.floor(totalPerfSearches * 0.2)
-      slowSearches = Math.floor(totalPerfSearches * 0.1)
+      fastSearches = Math.floor(
+        totalPerfSearches * analyticsConfig.performance.defaults.fastPercentage
+      )
+      mediumSearches = Math.floor(
+        totalPerfSearches *
+          analyticsConfig.performance.defaults.mediumPercentage
+      )
+      slowSearches = Math.floor(
+        totalPerfSearches * analyticsConfig.performance.defaults.slowPercentage
+      )
     } else {
-      // Default values if no performance data
-      fastSearches = 70
-      mediumSearches = 20
-      slowSearches = 10
+      // Default values if no performance data - Flexy hates hardcoded defaults!
+      fastSearches = analyticsConfig.performance.defaultValues.fastSearches
+      mediumSearches = analyticsConfig.performance.defaultValues.mediumSearches
+      slowSearches = analyticsConfig.performance.defaultValues.slowSearches
     }
 
     // Return standardized success response
