@@ -79,6 +79,22 @@ export const analyticsConfig = {
       slowSearches: parseInt(process.env.ANALYTICS_DEFAULT_SLOW || '10'),
     },
   },
+
+  // Trends Configuration - Flexy hates hardcoded mock data values!
+  trends: {
+    // Default number of days for search trends generation
+    defaultDays: parseInt(process.env.ANALYTICS_TRENDS_DEFAULT_DAYS || '30'),
+    // Minimum random count for mock data generation
+    minRandomCount: parseInt(process.env.ANALYTICS_TRENDS_MIN_RANDOM || '10'),
+    // Maximum random count for mock data generation
+    maxRandomCount: parseInt(process.env.ANALYTICS_TRENDS_MAX_RANDOM || '50'),
+  },
+
+  // Web Vitals Configuration
+  webVitals: {
+    // Maximum number of entries to store
+    maxEntries: parseInt(process.env.ANALYTICS_WEB_VITALS_MAX_ENTRIES || '100'),
+  },
 } as const
 
 // Helper function to parse event types

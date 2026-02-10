@@ -1,5 +1,5 @@
 <template>
-  <div class="moderation-page">
+  <div class="max-w-[1200px] mx-auto p-4">
     <ModerationDashboard />
   </div>
 </template>
@@ -20,11 +20,3 @@ useHead({
   ],
 })
 </script>
-
-<style scoped>
-.moderation-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-</style>

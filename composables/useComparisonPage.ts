@@ -5,6 +5,7 @@ import logger from '~/utils/logger'
 import type { Resource } from '~/types/resource'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import { apiConfig } from '~/configs/api.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface UseComparisonPageOptions {
   autoFetch?: boolean
@@ -79,9 +80,10 @@ export const useComparisonPage = (options?: UseComparisonPageOptions) => {
   // Page metadata
   const title = computed(() => {
     if (resources.value.length > 0) {
-      const titles = resources.value.slice(0, 3).map(r => r.title)
-      if (resources.value.length > 3) {
-        return `Compare ${titles.join(' vs ')} and ${resources.value.length - 3} more`
+      const maxDisplay = uiConfig.displayLimits.comparison.maxTitleDisplay
+      const titles = resources.value.slice(0, maxDisplay).map(r => r.title)
+      if (resources.value.length > maxDisplay) {
+        return `Compare ${titles.join(' vs ')} and ${resources.value.length - maxDisplay} more`
       }
       return `Compare ${titles.join(' vs ')}`
     }

@@ -363,9 +363,11 @@ export function createUserSearchProfile(searchHistory: string[]): {
 
   // Determine skill level based on search patterns
   let skillLevel = 'intermediate'
-  if (beginnerCount > advancedCount * 1.5) {
+  const skillLevelMultiplier =
+    recommendationConfig.thresholds.skillLevelMultiplier
+  if (beginnerCount > advancedCount * skillLevelMultiplier) {
     skillLevel = 'beginner'
-  } else if (advancedCount > beginnerCount * 1.5) {
+  } else if (advancedCount > beginnerCount * skillLevelMultiplier) {
     skillLevel = 'advanced'
   }
 

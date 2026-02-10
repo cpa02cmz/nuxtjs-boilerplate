@@ -1,8 +1,8 @@
 <template>
-  <div class="submission-review-page">
+  <div class="max-w-[1200px] mx-auto p-4">
     <NuxtLink
       to="/moderation/queue"
-      class="back-link"
+      class="inline-block mb-4 text-[var(--color-primary)] no-underline p-2 hover:underline"
     >
       ← Back to Queue
     </NuxtLink>
@@ -26,23 +26,3 @@ useHead({
   ],
 })
 </script>
-
-<style scoped>
-.submission-review-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-
-.back-link {
-  display: inline-block;
-  margin-bottom: 1rem;
-  color: var(--color-primary);
-  text-decoration: none;
-  padding: 0.5rem;
-}
-
-.back-link:hover {
-  text-decoration: underline;
-}
-</style>

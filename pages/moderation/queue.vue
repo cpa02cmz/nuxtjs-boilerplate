@@ -1,5 +1,5 @@
 <template>
-  <div class="moderation-queue-page">
+  <div class="max-w-[1200px] mx-auto p-4">
     <h1>Moderation Queue</h1>
     <ReviewQueue />
   </div>
@@ -18,11 +18,3 @@ useHead({
   ],
 })
 </script>
-
-<style scoped>
-.moderation-queue-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-</style>

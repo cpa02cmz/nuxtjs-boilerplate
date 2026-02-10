@@ -59,7 +59,7 @@
           v-if="hasMoreItems"
           class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
         >
-          +{{ value.length - 3 }} more
+          +{{ value.length - maxListItemsDisplay }} more
         </span>
       </div>
       <span
@@ -72,6 +72,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   value?: string | number | boolean | string[]
@@ -83,12 +84,15 @@ const props = withDefaults(defineProps<Props>(), {
   type: 'text',
 })
 
+const maxListItemsDisplay =
+  uiConfig.displayLimits.comparison.maxListItemsDisplay
+
 const displayItems = computed(() => {
   if (!Array.isArray(props.value)) return []
-  return props.value.slice(0, 3)
+  return props.value.slice(0, maxListItemsDisplay)
 })
 
 const hasMoreItems = computed(() => {
-  return Array.isArray(props.value) && props.value.length > 3
+  return Array.isArray(props.value) && props.value.length > maxListItemsDisplay
 })
 </script>

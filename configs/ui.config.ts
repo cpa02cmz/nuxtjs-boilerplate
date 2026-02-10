@@ -366,6 +366,36 @@ export const uiConfig = {
     // Default textarea rows
     textareaRows: parseInt(process.env.FORM_TEXTAREA_ROWS || '4'),
   },
+
+  // Display Limits - Flexy hates hardcoded magic numbers!
+  displayLimits: {
+    // Comparison page settings
+    comparison: {
+      // Max number of resource titles to display in page title
+      maxTitleDisplay: parseInt(
+        process.env.COMPARISON_MAX_TITLE_DISPLAY || '3'
+      ),
+      // Max number of list items to display in comparison table
+      maxListItemsDisplay: parseInt(
+        process.env.COMPARISON_MAX_LIST_ITEMS_DISPLAY || '3'
+      ),
+    },
+
+    // Recommendations settings
+    recommendations: {
+      // Max number of tags to display on recommendation cards
+      maxTagsDisplay: parseInt(
+        process.env.RECOMMENDATIONS_MAX_TAGS_DISPLAY || '3'
+      ),
+    },
+
+    // Layout settings
+    layout: {
+      // Maximum container width for moderation pages
+      maxContainerWidth:
+        process.env.LAYOUT_MAX_CONTAINER_WIDTH || 'max-w-[1200px]',
+    },
+  },
 } as const
 
 export type UiConfig = typeof uiConfig

@@ -42,6 +42,10 @@ export const recommendationConfig = {
     interactionScoreMultiplier: parseFloat(
       process.env.REC_INTERACTION_MULTIPLIER || '0.5'
     ),
+    // Skill level comparison multiplier - Flexy hates hardcoded multipliers!
+    skillLevelMultiplier: parseFloat(
+      process.env.REC_SKILL_LEVEL_MULTIPLIER || '1.5'
+    ),
   },
 
   // Diversity and Limits

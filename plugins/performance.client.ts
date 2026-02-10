@@ -3,6 +3,7 @@
 import { onCLS, onFCP, onLCP, onTTFB, onINP } from 'web-vitals'
 import { createStorage } from '~/utils/storage'
 import { logger } from '~/utils/logger'
+import { analyticsConfig } from '~/configs/analytics.config'
 
 // Storage key constants
 const STORAGE_KEYS = {
@@ -39,8 +40,10 @@ export default defineNuxtPlugin(() => {
 
           const existing = storage.get()
 
-          // Keep only last 100 entries to prevent storage from growing too large
-          const data = existing.length > 100 ? existing.slice(1) : existing
+          // Keep only last N entries to prevent storage from growing too large
+          const maxEntries = analyticsConfig.webVitals.maxEntries
+          const data =
+            existing.length > maxEntries ? existing.slice(1) : existing
 
           data.push({
             value: metric.value,
