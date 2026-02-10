@@ -150,8 +150,8 @@
           <div class="mt-6">
             <VirtualResourceList
               :items="filteredResources"
-              :item-height="340"
-              :overscan="3"
+              :item-height="uiConfig.virtualList.pageItemHeight"
+              :overscan="uiConfig.virtualList.pageOverscan"
             >
               <template #default="{ item: resource }">
                 <LazyResourceCard

@@ -36,6 +36,7 @@
 import { ref, computed } from 'vue'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import { uiConfig } from '../configs/ui.config'
+import { thresholdsConfig } from '../configs/thresholds.config'
 
 interface Props {
   items: T[]
@@ -48,7 +49,7 @@ interface Props {
 const props = withDefaults(defineProps<Props<T>>(), {
   itemHeight: uiConfig.virtualList.itemHeight,
   overscan: uiConfig.virtualList.overscan,
-  containerHeight: 'calc(100vh - 200px)',
+  containerHeight: thresholdsConfig.virtualList.defaultContainerHeight,
 })
 
 const scrollContainer = ref<HTMLElement | null>(null)

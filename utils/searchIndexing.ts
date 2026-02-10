@@ -2,6 +2,7 @@ import Fuse from 'fuse.js'
 import type { Resource } from '~/types/resource'
 import { searchConfig } from '~/configs/search.config'
 import { limitsConfig } from '~/configs/limits.config'
+import { thresholdsConfig } from '~/configs/thresholds.config'
 
 // Define search index structure
 interface SearchIndex {
@@ -11,10 +12,10 @@ interface SearchIndex {
   popularSearches: Map<string, number>
 }
 
-// Maximum number of popular searches to track (prevents unbounded growth)
-const MAX_POPULAR_SEARCHES = 1000
-// Trim threshold - when map exceeds this, trim down to MAX_POPULAR_SEARCHES
-const POPULAR_SEARCHES_TRIM_THRESHOLD = 1200
+// Flexy hates hardcoded values! Using configurable thresholds.
+const MAX_POPULAR_SEARCHES = thresholdsConfig.searchIndex.maxPopularSearches
+const POPULAR_SEARCHES_TRIM_THRESHOLD =
+  thresholdsConfig.searchIndex.trimThreshold
 
 // Search index manager utility
 class SearchIndexManager {
