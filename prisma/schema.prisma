@@ -161,7 +161,6 @@ model IdempotencyKey {
   updatedAt  DateTime         @updatedAt
   deletedAt  DateTime?
 
-  @@index([key])
   @@index([webhookId])
   @@index([createdAt])
   @@index([expiresAt])
