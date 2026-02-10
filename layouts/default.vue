@@ -425,6 +425,8 @@
     <main
       id="main-content"
       role="main"
+      tabindex="-1"
+      aria-label="Main content"
     >
       <slot />
     </main>
