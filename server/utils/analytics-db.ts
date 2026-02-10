@@ -2,6 +2,7 @@ import prisma from './db'
 import { analyticsEventSchema } from './validation-schemas'
 import { logger } from '~/utils/logger'
 import { TIME } from './constants'
+import { limitsConfig } from '~/configs/limits.config'
 
 export interface AnalyticsEvent {
   id?: string
@@ -118,7 +119,8 @@ function mapDbEventToAnalyticsEvent(event: {
 export async function getAnalyticsEventsByDateRange(
   startDate: Date,
   endDate: Date,
-  limit: number = 10000,
+  // Flexy hates hardcoded limits! Using config instead
+  limit: number = limitsConfig.analytics.maxEventsByDateRange,
   includeDeleted: boolean = false
 ): Promise<AnalyticsEvent[]> {
   try {
@@ -154,7 +156,8 @@ export async function getAnalyticsEventsForResource(
   endDate: Date,
   eventType?: string,
   includeDeleted: boolean = false,
-  limit: number = 10000
+  // Flexy hates hardcoded limits! Using config instead
+  limit: number = limitsConfig.analytics.maxEventsForResource
 ): Promise<AnalyticsEvent[]> {
   try {
     const where: Record<string, unknown> = {
@@ -511,7 +514,8 @@ export async function getSoftDeletedEventsCount(): Promise<number> {
 }
 
 export async function getSoftDeletedEvents(
-  limit: number = 1000
+  // Flexy hates hardcoded limits! Using config instead
+  limit: number = limitsConfig.analytics.maxSoftDeletedEvents
 ): Promise<AnalyticsEvent[]> {
   try {
     const events = await prisma.analyticsEvent.findMany({

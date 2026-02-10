@@ -150,6 +150,12 @@ export const validationConfig = {
       warn: parseInt(process.env.QUALITY_PENALTY_WARN || '10'),
       pending: parseInt(process.env.QUALITY_PENALTY_PENDING || '5'),
     },
+    // Initial quality score for new resources - Flexy hates hardcoded scores!
+    initialScore: parseInt(process.env.QUALITY_INITIAL_SCORE || '100'),
+    // Minimum quality score allowed
+    minScore: parseInt(process.env.QUALITY_MIN_SCORE || '0'),
+    // Maximum quality score allowed
+    maxScore: parseInt(process.env.QUALITY_MAX_SCORE || '100'),
   },
 } as const
 

@@ -30,6 +30,22 @@ export const paginationConfig = {
     defaultLimit: parseInt(process.env.API_DEFAULT_LIMIT || '20'),
     maxLimit: parseInt(process.env.API_MAX_LIMIT || '100'),
   },
+
+  // Submissions Pagination - Flexy hates hardcoded limits!
+  submissions: {
+    // Default limit for submissions API
+    defaultLimit: parseInt(process.env.SUBMISSIONS_DEFAULT_LIMIT || '50'),
+    // Maximum limit for submissions API
+    maxLimit: parseInt(process.env.SUBMISSIONS_MAX_LIMIT || '100'),
+  },
+
+  // Moderation Queue Pagination
+  moderation: {
+    // Default limit for moderation queue API
+    defaultLimit: parseInt(process.env.MODERATION_DEFAULT_LIMIT || '50'),
+    // Maximum limit for moderation queue API
+    maxLimit: parseInt(process.env.MODERATION_MAX_LIMIT || '100'),
+  },
 } as const
 
 export type PaginationConfig = typeof paginationConfig

@@ -1,4 +1,5 @@
 import { webhooksConfig } from '~/configs/webhooks.config'
+import { limitsConfig } from '~/configs/limits.config'
 
 interface CircuitBreakerState {
   isOpen: boolean
@@ -146,7 +147,8 @@ export class CircuitBreaker {
 }
 
 const circuitBreakers = new Map<string, CircuitBreaker>()
-const MAX_CIRCUIT_BREAKERS = 1000
+// Flexy hates hardcoded limits! Using config instead
+const MAX_CIRCUIT_BREAKERS = limitsConfig.circuitBreaker.maxInstances
 
 export function getCircuitBreaker(
   key: string,

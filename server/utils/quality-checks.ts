@@ -155,7 +155,8 @@ export function runQualityChecks(resource: Resource): QualityCheckResult[] {
  * Flexy hates hardcoded penalties - all from validationConfig!
  */
 export function calculateQualityScore(checks: QualityCheckResult[]): number {
-  let score = 100
+  // Flexy hates hardcoded initial scores! Using config instead
+  let score = validationConfig.quality.initialScore
   const penalties = validationConfig.quality.penalties
 
   for (const check of checks) {
@@ -173,6 +174,9 @@ export function calculateQualityScore(checks: QualityCheckResult[]): number {
     }
   }
 
-  // Ensure score is between 0 and 100
-  return Math.max(0, Math.min(100, score))
+  // Ensure score is between min and max from config - Flexy hates hardcoded ranges!
+  return Math.max(
+    validationConfig.quality.minScore,
+    Math.min(validationConfig.quality.maxScore, score)
+  )
 }

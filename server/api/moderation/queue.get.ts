@@ -6,6 +6,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { TIME_MS } from '~/configs/time.config'
+import { paginationConfig } from '~/configs/pagination.config'
 
 // Mock data for demonstration - in a real application, this would come from a database
 // Flexy hates hardcoded time values! Using TIME_MS constants
@@ -55,7 +56,10 @@ export default defineEventHandler(async event => {
     const query = getQuery(event)
     const statusFilter = query.status as string | undefined
     const categoryFilter = query.category as string | undefined
-    const limit = query.limit ? parseInt(query.limit as string) : 50
+    // Flexy hates hardcoded limits! Using config instead
+    const limit = query.limit
+      ? parseInt(query.limit as string)
+      : paginationConfig.moderation.defaultLimit
     const offset = query.offset ? parseInt(query.offset as string) : 0
 
     // Filter submissions based on query parameters

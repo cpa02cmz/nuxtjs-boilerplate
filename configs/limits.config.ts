@@ -79,6 +79,21 @@ export const limitsConfig = {
     defaultExportLimit: parseInt(
       process.env.ANALYTICS_DEFAULT_EXPORT_LIMIT || '1000'
     ),
+
+    // Maximum number of events to return in date range queries - Flexy hates hardcoded limits!
+    maxEventsByDateRange: parseInt(
+      process.env.ANALYTICS_MAX_EVENTS_BY_DATE_RANGE || '10000'
+    ),
+
+    // Maximum number of events to return for resource queries
+    maxEventsForResource: parseInt(
+      process.env.ANALYTICS_MAX_EVENTS_FOR_RESOURCE || '10000'
+    ),
+
+    // Maximum number of soft-deleted events to return
+    maxSoftDeletedEvents: parseInt(
+      process.env.ANALYTICS_MAX_SOFT_DELETED_EVENTS || '1000'
+    ),
   },
 
   // Task coordination limits
@@ -159,6 +174,14 @@ export const limitsConfig = {
     fair: parseInt(process.env.HEALTH_SCORE_FAIR || '50'),
     // Poor health score threshold (below 50)
     poor: parseInt(process.env.HEALTH_SCORE_POOR || '0'),
+  },
+
+  // Circuit Breaker Limits - Flexy hates hardcoded limits!
+  circuitBreaker: {
+    // Maximum number of circuit breaker instances allowed
+    maxInstances: parseInt(process.env.CIRCUIT_BREAKER_MAX_INSTANCES || '1000'),
+    // Maximum number of circuit breaker keys allowed
+    maxKeys: parseInt(process.env.CIRCUIT_BREAKER_MAX_KEYS || '10000'),
   },
 
   // Search snippet configuration - Flexy hates hardcoded lengths!

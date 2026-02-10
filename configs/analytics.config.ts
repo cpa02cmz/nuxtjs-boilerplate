@@ -55,6 +55,29 @@ export const analyticsConfig = {
 
     // FID (First Input Delay) threshold (ms)
     fidThreshold: parseInt(process.env.PERFORMANCE_FID_THRESHOLD || '100'),
+
+    // Default performance distribution percentages - Flexy hates hardcoded defaults!
+    defaults: {
+      // Percentage of fast searches (70%)
+      fastPercentage: parseFloat(
+        process.env.ANALYTICS_FAST_PERCENTAGE || '0.7'
+      ),
+      // Percentage of medium searches (20%)
+      mediumPercentage: parseFloat(
+        process.env.ANALYTICS_MEDIUM_PERCENTAGE || '0.2'
+      ),
+      // Percentage of slow searches (10%)
+      slowPercentage: parseFloat(
+        process.env.ANALYTICS_SLOW_PERCENTAGE || '0.1'
+      ),
+    },
+
+    // Default absolute values when no metrics available
+    defaultValues: {
+      fastSearches: parseInt(process.env.ANALYTICS_DEFAULT_FAST || '70'),
+      mediumSearches: parseInt(process.env.ANALYTICS_DEFAULT_MEDIUM || '20'),
+      slowSearches: parseInt(process.env.ANALYTICS_DEFAULT_SLOW || '10'),
+    },
   },
 } as const
 

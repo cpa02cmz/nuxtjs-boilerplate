@@ -8,6 +8,7 @@ import { webhookQueueManager } from './webhook-queue-manager'
 import { webhookDeliveryService } from './webhook-delivery'
 import { deadLetterManager } from './webhook-dead-letter'
 import { webhooksConfig } from '~/configs/webhooks.config'
+import { limitsConfig } from '~/configs/limits.config'
 
 interface WebhookDeliveryOptions {
   maxRetries?: number
@@ -16,7 +17,8 @@ interface WebhookDeliveryOptions {
   async?: boolean
 }
 
-const MAX_CIRCUIT_BREAKER_KEYS = 10000
+// Flexy hates hardcoded limits! Using config instead
+const MAX_CIRCUIT_BREAKER_KEYS = limitsConfig.circuitBreaker.maxKeys
 
 export class WebhookQueueSystem {
   private circuitBreakerKeys: Map<string, string> = new Map()
