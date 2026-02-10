@@ -144,6 +144,9 @@ export const uiConfig = {
     // Focus and interaction animations
     focusPulseDurationMs: parseInt(process.env.TIMING_FOCUS_PULSE || '600'),
 
+    // Idle pulse animation delay (for keyboard shortcut discoverability)
+    idlePulseDelayMs: parseInt(process.env.TIMING_IDLE_PULSE_DELAY || '3000'),
+
     // Navigation delays
     comparisonNavigationDelayMs: parseInt(
       process.env.TIMING_COMPARISON_NAVIGATION || '400'
