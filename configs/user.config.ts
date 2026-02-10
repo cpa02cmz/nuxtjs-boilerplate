@@ -1,0 +1,55 @@
+// User Configuration - Default User IDs and User-related Constants
+// Flexy hates hardcoded values! All user identifiers are now configurable.
+
+export const userConfig = {
+  // Default user identifiers
+  defaults: {
+    // Default user ID for anonymous/unauthenticated users
+    anonymousId: process.env.USER_DEFAULT_ANONYMOUS_ID || 'default-user',
+
+    // System user ID for automated operations
+    systemId: process.env.USER_DEFAULT_SYSTEM_ID || 'system',
+
+    // Default moderator ID for moderation operations
+    moderatorId: process.env.USER_DEFAULT_MODERATOR_ID || 'moderator_123',
+  },
+
+  // User roles
+  roles: {
+    admin: 'admin',
+    moderator: 'moderator',
+    user: 'user',
+    anonymous: 'anonymous',
+  },
+
+  // User preferences defaults
+  preferences: {
+    // Default skill level for new users
+    defaultSkillLevel: process.env.USER_DEFAULT_SKILL_LEVEL || 'intermediate',
+
+    // Default categories for new users
+    defaultCategories: ['javascript', 'vue', 'nuxt', 'web-development'],
+
+    // Default technologies for new users
+    defaultTechnologies: ['typescript', 'react', 'nodejs'],
+
+    // Default interests for new users
+    defaultInterests: ['frontend', 'backend', 'devops'],
+
+    // Default notification settings
+    defaultNotificationSettings: {
+      resourceUpdates: true,
+      newContent: true,
+      weeklyDigest: true,
+    },
+
+    // Default privacy settings
+    defaultPrivacySettings: {
+      allowPersonalization: true,
+      allowDataCollection: true,
+      allowRecommendationExplanations: true,
+    },
+  },
+} as const
+
+export type UserConfig = typeof userConfig

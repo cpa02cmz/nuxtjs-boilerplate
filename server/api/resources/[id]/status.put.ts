@@ -8,6 +8,7 @@ import {
   sendNotFoundError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { userConfig } from '~/configs/user.config'
 
 // In-memory storage for resource status updates (in production, this would be a database)
 const resourceStatusHistory = new Map<string, unknown[]>()
@@ -42,8 +43,8 @@ export default defineEventHandler(async event => {
       )
     }
 
-    // Get current user or default to 'system'
-    const userId = event.context.auth?.userId ?? 'system'
+    // Get current user or default to system user
+    const userId = event.context.auth?.userId ?? userConfig.defaults.systemId
 
     // Create status change record with cryptographically secure ID
     const statusChange = {

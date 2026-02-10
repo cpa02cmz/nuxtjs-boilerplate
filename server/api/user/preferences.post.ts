@@ -6,6 +6,7 @@ import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { updateUserPreferencesSchema } from '~/server/utils/validation-schemas'
 import { sendBadRequestError } from '~/server/utils/api-response'
 import { logger } from '~/utils/logger'
+import { userConfig } from '~/configs/user.config'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
@@ -13,7 +14,7 @@ export default defineEventHandler(async event => {
   try {
     const body = await readBody(event)
     const query = getQuery(event)
-    const userId = (query.userId as string) || 'default-user'
+    const userId = (query.userId as string) || userConfig.defaults.anonymousId
 
     const validationResult = updateUserPreferencesSchema.safeParse(body)
 
@@ -30,7 +31,8 @@ export default defineEventHandler(async event => {
       id: userId,
       categories: validatedBody.categories || [],
       technologies: validatedBody.technologies || [],
-      skillLevel: validatedBody.skillLevel || 'intermediate',
+      skillLevel:
+        validatedBody.skillLevel || userConfig.preferences.defaultSkillLevel,
       interests: validatedBody.interests || [],
       notificationSettings: {
         resourceUpdates:

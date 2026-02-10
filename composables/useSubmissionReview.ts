@@ -12,6 +12,9 @@ import { useNuxtApp } from '#app'
 import type { ApiClient } from '~/utils/api-client'
 import { logError } from '~/utils/errorLogger'
 import type { Submission } from '~/types/submission'
+import { apiConfig } from '~/configs/api.config'
+import { userConfig } from '~/configs/user.config'
+import { moderationConfig } from '~/configs/moderation.config'
 
 export interface SubmissionReviewOptions {
   submissionId: string
@@ -25,7 +28,7 @@ export interface UseSubmissionReviewOptions extends SubmissionReviewOptions {
 export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
   const {
     submissionId,
-    reviewedBy = 'moderator_123',
+    reviewedBy = userConfig.defaults.moderatorId,
     apiClient: providedClient,
   } = options
 
@@ -49,7 +52,7 @@ export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
 
       const client = getClient()
       const response = await client.get<{ submission?: Submission }>(
-        `/api/submissions/${submissionId}`
+        apiConfig.submissions.byId(submissionId)
       )
 
       if (response.success && response.data) {
@@ -74,10 +77,10 @@ export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
 
     try {
       const client = getClient()
-      const response = await client.post('/api/moderation/approve', {
+      const response = await client.post(apiConfig.moderation.approve, {
         submissionId,
         reviewedBy,
-        notes: 'Approved via moderation interface',
+        notes: moderationConfig.notes.approvedDefault,
       })
 
       if (response.success) {
@@ -110,11 +113,11 @@ export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
 
     try {
       const client = getClient()
-      const response = await client.post('/api/moderation/reject', {
+      const response = await client.post(apiConfig.moderation.reject, {
         submissionId,
         reviewedBy,
         rejectionReason: reason,
-        notes: 'Rejected via moderation interface',
+        notes: moderationConfig.notes.rejectedDefault,
       })
 
       if (response.success) {

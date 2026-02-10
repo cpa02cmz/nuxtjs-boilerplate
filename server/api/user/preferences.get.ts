@@ -4,29 +4,22 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { userConfig } from '~/configs/user.config'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
   try {
     const query = getQuery(event)
-    const userId = (query.userId as string) || 'default-user'
+    const userId = (query.userId as string) || userConfig.defaults.anonymousId
 
     const mockPreferences = {
       id: userId,
-      categories: ['javascript', 'vue', 'nuxt', 'web-development'],
-      technologies: ['typescript', 'react', 'nodejs'],
-      skillLevel: 'intermediate',
-      interests: ['frontend', 'backend', 'devops'],
-      notificationSettings: {
-        resourceUpdates: true,
-        newContent: true,
-        weeklyDigest: true,
-      },
-      privacySettings: {
-        allowPersonalization: true,
-        allowDataCollection: true,
-        allowRecommendationExplanations: true,
-      },
+      categories: userConfig.preferences.defaultCategories,
+      technologies: userConfig.preferences.defaultTechnologies,
+      skillLevel: userConfig.preferences.defaultSkillLevel,
+      interests: userConfig.preferences.defaultInterests,
+      notificationSettings: userConfig.preferences.defaultNotificationSettings,
+      privacySettings: userConfig.preferences.defaultPrivacySettings,
       createdAt: new Date().toISOString(),
       lastUpdated: new Date().toISOString(),
     }
