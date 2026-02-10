@@ -1,10 +1,7 @@
 <template>
   <div class="py-12">
     <!-- Confetti celebration when clearing all bookmarks -->
-    <ConfettiCelebration
-      ref="confettiRef"
-      intensity="light"
-    />
+    <ConfettiCelebration ref="confettiRef" intensity="light" />
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
@@ -13,7 +10,8 @@
         <p class="mt-4 text-xl text-gray-600">
           {{ bookmarkCount }} bookmarked resource<span
             v-if="bookmarkCount !== 1"
-          >s</span>
+            >s</span
+          >
         </p>
       </div>
 
@@ -25,10 +23,7 @@
         aria-live="polite"
       >
         <!-- Animated bookmark illustration -->
-        <div
-          class="relative mx-auto h-32 w-32 mb-4"
-          aria-hidden="true"
-        >
+        <div class="relative mx-auto h-32 w-32 mb-4" aria-hidden="true">
           <!-- Background circle with pulse -->
           <div
             class="absolute inset-0 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-full"
@@ -62,10 +57,7 @@
             v-if="!prefersReducedMotion"
             class="absolute top-2 right-4 w-3 h-3 text-yellow-400 animate-sparkle"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
+            <svg viewBox="0 0 24 24" fill="currentColor">
               <path
                 d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
               />
@@ -75,10 +67,7 @@
             v-if="!prefersReducedMotion"
             class="absolute bottom-4 left-2 w-2 h-2 text-yellow-400 animate-sparkle-delayed"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
+            <svg viewBox="0 0 24 24" fill="currentColor">
               <path
                 d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
               />
@@ -86,9 +75,7 @@
           </div>
         </div>
 
-        <h3 class="mt-4 text-xl font-medium text-gray-900">
-          No bookmarks yet
-        </h3>
+        <h3 class="mt-4 text-xl font-medium text-gray-900">No bookmarks yet</h3>
         <p class="mt-2 text-gray-600 max-w-md mx-auto">
           Save your favorite resources for quick access later. Click the
           <span class="inline-flex items-center mx-1 text-yellow-500">
@@ -186,8 +173,12 @@
                 </div>
                 <div>
                   <p class="text-sm font-medium text-blue-900">
-                    <span v-if="deletedBookmarks.size === 1">Bookmark removed</span>
-                    <span v-else>{{ deletedBookmarks.size }} bookmarks removed</span>
+                    <span v-if="deletedBookmarks.size === 1"
+                      >Bookmark removed</span
+                    >
+                    <span v-else
+                      >{{ deletedBookmarks.size }} bookmarks removed</span
+                    >
                   </p>
                   <p class="text-xs text-blue-700 mt-0.5">
                     You can undo this action
@@ -236,7 +227,8 @@
             <div class="text-sm text-gray-700">
               Showing {{ getAllBookmarks.length }} bookmarked resource<span
                 v-if="getAllBookmarks.length !== 1"
-              >s</span>
+                >s</span
+              >
             </div>
           </div>
           <div class="flex space-x-3">
@@ -267,7 +259,8 @@
                 >
                   Delete {{ bookmarkCount }} bookmark<span
                     v-if="bookmarkCount !== 1"
-                  >s</span>?
+                    >s</span
+                  >?
                 </span>
                 <button
                   class="text-sm text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-colors"
@@ -343,6 +336,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { animationConfig } from '~/configs/animation.config'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import type { Bookmark } from '~/composables/useBookmarks'
+import { bookmarksConfig } from '~/configs/bookmarks.config'
 
 // Respect user's motion preferences for accessibility
 const prefersReducedMotion = computed(() => {
@@ -377,9 +371,9 @@ const {
 // Confirmation state for clearing all bookmarks
 const showClearConfirmation = ref(false)
 
-// Undo configuration - using config instead of hardcoded values
-const UNDO_DURATION = uiConfig.undo.durationMs
-const UNDO_PROGRESS_INTERVAL = uiConfig.undo.progressIntervalMs
+// Undo configuration - Flexy hates hardcoded values!
+const UNDO_DURATION = bookmarksConfig.undo.durationMs
+const UNDO_PROGRESS_INTERVAL = bookmarksConfig.undo.progressIntervalMs
 
 // Track deleted bookmarks for undo functionality
 interface DeletedBookmark {
@@ -428,7 +422,7 @@ const startUndoProgress = () => {
         undoProgressInterval.value = null
       }
     }
-  }, UNDO_PROGRESS_INTERVAL)
+  }, UNDO_PROGRESS_INTERVAL) // Update every 50ms for smooth animation
 }
 
 /**
@@ -469,9 +463,9 @@ const removeBookmark = (resourceId: string) => {
   // Start progress tracking
   startUndoProgress()
 
-  // Show simple toast notification
+  // Show simple toast notification - Flexy uses config!
   $toast.info(`"${bookmark.title}" removed`, {
-    duration: 2000,
+    duration: bookmarksConfig.toast.removeDurationMs,
   })
 }
 
@@ -506,13 +500,13 @@ const undoAllDeletions = () => {
     })
   })
 
-  // Show success toast
+  // Show success toast - Flexy uses config!
   const count = bookmarksToRestore.length
   $toast.success(
     count === 1 ? 'Bookmark restored' : `${count} bookmarks restored`,
     {
       description: 'All items have been added back',
-      duration: 3000,
+      duration: bookmarksConfig.toast.undoSuccessDurationMs,
     }
   )
 }

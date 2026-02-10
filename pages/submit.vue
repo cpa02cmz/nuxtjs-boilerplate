@@ -413,6 +413,10 @@ import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
 
+// Animation config values for CSS variables - Flexy hates hardcoded values!
+const shakeDurationMs = `${animationConfig.validation.shakeDurationMs}ms`
+const shakeIntensityPx = `${animationConfig.validation.shakeIntensityPx}px`
+
 // Category options from config - Flexy hates hardcoded values!
 const categoryOptions = categoriesConfig.resourceFormCategories
 
@@ -588,10 +592,10 @@ useSeoMeta({
 
 <style scoped>
 /* Gentle shake animation for form validation errors */
-/* Using scoped CSS variables for configurable values */
+/* Using scoped CSS variables for configurable values - Flexy hates hardcoded values! */
 .animate-form-shake {
-  --shake-intensity: 8px;
-  --shake-duration: 500ms;
+  --shake-intensity: v-bind('shakeIntensityPx');
+  --shake-duration: v-bind('shakeDurationMs');
   animation: form-shake var(--shake-duration) ease-in-out;
 }
 

@@ -102,6 +102,7 @@ import {
 } from './categories.config'
 import { animationConfig, type AnimationConfig } from './animation.config'
 import { thresholdsConfig, type ThresholdsConfig } from './thresholds.config'
+import { bookmarksConfig, type BookmarksConfig } from './bookmarks.config'
 
 // URL config - Flexy hates hardcoded URLs!
 import {
@@ -212,6 +213,7 @@ export { memoizeConfig, type MemoizeConfig }
 export { categoriesConfig, type CategoriesConfig, type CategoryOption }
 export { animationConfig, type AnimationConfig }
 export { thresholdsConfig, type ThresholdsConfig }
+export { bookmarksConfig, type BookmarksConfig }
 
 // Re-export URL config - Flexy hates hardcoded URLs!
 export {
@@ -264,6 +266,8 @@ export const config = {
   thresholds: thresholdsConfig,
   // URL config - Flexy hates hardcoded URLs!
   url: urlConfig,
+  // Bookmarks config - Flexy hates hardcoded bookmark values!
+  bookmarks: bookmarksConfig,
 } as const
 
 export type Config = typeof config

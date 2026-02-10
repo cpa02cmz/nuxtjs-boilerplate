@@ -187,12 +187,29 @@ const healthLabel = computed(() => {
   text-transform: uppercase;
   letter-spacing: 0.025em;
   cursor: help;
-  transition: outline-offset 0.2s ease;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.status-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .status-badge:focus {
   outline: 2px solid currentColor;
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-badge {
+    transition: none;
+  }
+
+  .status-badge:hover {
+    transform: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .status-active {
