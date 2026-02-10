@@ -16,6 +16,8 @@ interface WebhookDeliveryOptions {
   async?: boolean
 }
 
+const MAX_CIRCUIT_BREAKER_KEYS = 10000
+
 export class WebhookQueueSystem {
   private circuitBreakerKeys: Map<string, string> = new Map()
 
@@ -225,6 +227,12 @@ export class WebhookQueueSystem {
 
   private getCircuitBreakerKey(webhook: Webhook): string {
     if (!this.circuitBreakerKeys.has(webhook.id)) {
+      if (this.circuitBreakerKeys.size >= MAX_CIRCUIT_BREAKER_KEYS) {
+        const oldestKey = this.circuitBreakerKeys.keys().next().value
+        if (oldestKey) {
+          this.circuitBreakerKeys.delete(oldestKey)
+        }
+      }
       const key = `webhook:${webhook.url}`
       this.circuitBreakerKeys.set(webhook.id, key)
     }

@@ -168,7 +168,7 @@ class RateLimiter {
       }
 
       // Check if we have tokens available
-      if (bucket.tokens > 0) {
+      if (bucket.tokens >= 1) {
         bucket.tokens-- // Consume a token
         return {
           allowed: true,

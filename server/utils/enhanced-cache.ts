@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3'
 import Redis from 'ioredis'
 import logger from '~/utils/logger'
+import { cacheConfig } from '~/configs/cache.config'
 
 interface CacheEntry<T = unknown> {
   data: T
@@ -8,7 +9,7 @@ interface CacheEntry<T = unknown> {
   ttl: number // Time to live in seconds
 }
 
-interface CacheConfig {
+interface CacheManagerConfig {
   maxMemorySize?: number
   cleanupInterval?: number
   enableRedis?: boolean
@@ -28,10 +29,10 @@ class CacheManager {
   private redisConnected: boolean = false
   private cleanupIntervalId: NodeJS.Timeout | null = null
 
-  constructor(config: CacheConfig = {}) {
+  constructor(config: CacheManagerConfig = {}) {
     const {
-      maxMemorySize = 1000,
-      cleanupInterval = 300000, // 5 minutes default
+      maxMemorySize = cacheConfig.server.maxMemorySize,
+      cleanupInterval = cacheConfig.server.cleanupIntervalMs,
       enableRedis = false,
       redisUrl = process.env.REDIS_URL,
       enableAnalytics = true,
@@ -148,7 +149,11 @@ class CacheManager {
         const redisValue = await this.redisClient.get(key)
         if (redisValue) {
           const parsedValue = JSON.parse(redisValue)
-          await this.set(key, parsedValue, memoryEntry?.ttl || 3600)
+          await this.set(
+            key,
+            parsedValue,
+            memoryEntry?.ttl || cacheConfig.server.defaultTtlSeconds
+          )
           if (this.enableAnalytics) this.hitCount++
           return parsedValue as T
         }
@@ -167,7 +172,7 @@ class CacheManager {
   async set<T = unknown>(
     key: string,
     value: T,
-    ttl: number = 3600
+    ttl: number = cacheConfig.server.defaultTtlSeconds
   ): Promise<boolean> {
     // Clean up expired entries if cache is full
     if (this.memoryCache.size >= this.maxMemorySize) {
@@ -180,7 +185,13 @@ class CacheManager {
       // Remove a portion of the oldest entries
       for (
         let i = 0;
-        i < Math.min(Math.floor(this.maxMemorySize * 0.1), keys.length);
+        i <
+        Math.min(
+          Math.floor(
+            this.maxMemorySize * cacheConfig.server.lruCleanupPercentage
+          ),
+          keys.length
+        );
         i++
       ) {
         this.memoryCache.delete(keys[i])
@@ -283,7 +294,11 @@ class CacheManager {
     keys: Array<{ key: string; value: T; ttl?: number }>
   ): Promise<void> {
     for (const item of keys) {
-      await this.set(item.key, item.value, item.ttl || 3600)
+      await this.set(
+        item.key,
+        item.value,
+        item.ttl || cacheConfig.server.defaultTtlSeconds
+      )
     }
   }
 
@@ -359,7 +374,7 @@ class CacheManager {
 
 // Initialize cache manager with default configuration
 const cacheManager = new CacheManager({
-  maxMemorySize: 2000, // Increased default size
+  maxMemorySize: cacheConfig.server.maxMemorySize * 2, // Increased default size (2x the base config)
   enableRedis: !!process.env.REDIS_URL,
   enableAnalytics: true,
 })
@@ -371,7 +386,7 @@ export { cacheManager }
  * Cache decorator function for API endpoints
  */
 export function cached<T = unknown>(
-  ttl: number = 3600,
+  ttl: number = cacheConfig.server.defaultTtlSeconds,
   keyGenerator?: (event: H3Event) => string
 ) {
   return function (
@@ -424,7 +439,7 @@ export function cached<T = unknown>(
 export async function cacheSetWithTags<T = unknown>(
   key: string,
   value: T,
-  ttl: number = 3600,
+  ttl: number = cacheConfig.server.defaultTtlSeconds,
   tags: string[] = []
 ): Promise<boolean> {
   // Store the value with metadata for tag tracking
@@ -476,7 +491,11 @@ export async function invalidateCacheByTag(tag: string): Promise<number> {
   // Clean up the tag mapping
   if (remainingMembers.length > 0) {
     // Update tag mapping with only valid keys
-    await cacheManager.set(tagKey, remainingMembers, 3600)
+    await cacheManager.set(
+      tagKey,
+      remainingMembers,
+      cacheConfig.server.defaultTtlSeconds
+    )
   } else {
     // No valid keys left, delete the tag mapping entirely
     await cacheManager.delete(tagKey)

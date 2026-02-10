@@ -5,6 +5,10 @@ import type {
   TagFilterOptions,
 } from '~/types/tag'
 import type { Resource } from '~/types/resource'
+import { dateConfig } from '~/configs/date.config'
+
+// Flexy hates hardcoded dates! Use configurable default date
+const DEFAULT_DATE = dateConfig.defaultDate
 
 // Default hierarchical tags structure for the application
 const DEFAULT_HIERARCHICAL_TAGS: readonly HierarchicalTag[] = [
@@ -17,8 +21,8 @@ const DEFAULT_HIERARCHICAL_TAGS: readonly HierarchicalTag[] = [
     children: [],
     synonyms: [],
     aliases: ['AI', 'ML'],
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01',
+    createdAt: DEFAULT_DATE,
+    updatedAt: DEFAULT_DATE,
     parent: null,
     level: 0,
     path: ['ai-ml'],
@@ -33,8 +37,8 @@ const DEFAULT_HIERARCHICAL_TAGS: readonly HierarchicalTag[] = [
     children: [],
     synonyms: [],
     aliases: ['Web Dev'],
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01',
+    createdAt: DEFAULT_DATE,
+    updatedAt: DEFAULT_DATE,
     parent: null,
     level: 0,
     path: ['web-dev'],
@@ -49,8 +53,8 @@ const DEFAULT_HIERARCHICAL_TAGS: readonly HierarchicalTag[] = [
     children: [],
     synonyms: [],
     aliases: ['Cloud'],
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01',
+    createdAt: DEFAULT_DATE,
+    updatedAt: DEFAULT_DATE,
     parent: null,
     level: 0,
     path: ['cloud'],
@@ -65,8 +69,8 @@ const DEFAULT_HIERARCHICAL_TAGS: readonly HierarchicalTag[] = [
     children: [],
     synonyms: [],
     aliases: ['AI Tools'],
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01',
+    createdAt: DEFAULT_DATE,
+    updatedAt: DEFAULT_DATE,
     parent: null, // Will be populated when building the tree
     level: 1,
     path: ['ai-ml', 'ai-tools'],
@@ -81,8 +85,8 @@ const DEFAULT_HIERARCHICAL_TAGS: readonly HierarchicalTag[] = [
     children: [],
     synonyms: [],
     aliases: ['APIs'],
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01',
+    createdAt: DEFAULT_DATE,
+    updatedAt: DEFAULT_DATE,
     parent: null, // Will be populated when building the tree
     level: 1,
     path: ['ai-ml', 'api'],
@@ -97,8 +101,8 @@ const DEFAULT_HIERARCHICAL_TAGS: readonly HierarchicalTag[] = [
     children: [],
     synonyms: [],
     aliases: ['GPT Models'],
-    createdAt: '2025-01-01',
-    updatedAt: '2025-01-01',
+    createdAt: DEFAULT_DATE,
+    updatedAt: DEFAULT_DATE,
     parent: null, // Will be populated when building the tree
     level: 2,
     path: ['ai-ml', 'ai-tools', 'gpt'],

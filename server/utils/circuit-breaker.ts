@@ -78,14 +78,7 @@ export class CircuitBreaker {
     this.state.successCount++
     this.lastSuccessTime = Date.now()
 
-    if (this.state.isOpen) {
-      if (this.state.successCount >= this.config.successThreshold) {
-        this.state.isOpen = false
-        this.state.isHalfOpen = false
-        this.state.failureCount = 0
-        this.state.successCount = 0
-      }
-    } else if (this.state.isHalfOpen) {
+    if (this.state.isHalfOpen) {
       if (this.state.successCount >= this.config.successThreshold) {
         this.state.isHalfOpen = false
         this.state.failureCount = 0
@@ -153,12 +146,20 @@ export class CircuitBreaker {
 }
 
 const circuitBreakers = new Map<string, CircuitBreaker>()
+const MAX_CIRCUIT_BREAKERS = 1000
 
 export function getCircuitBreaker(
   key: string,
   config?: Partial<CircuitBreakerConfig>
 ): CircuitBreaker {
   if (!circuitBreakers.has(key)) {
+    if (circuitBreakers.size >= MAX_CIRCUIT_BREAKERS) {
+      const oldestKey = circuitBreakers.keys().next().value
+      if (oldestKey) {
+        circuitBreakers.delete(oldestKey)
+      }
+    }
+
     const defaultConfig: CircuitBreakerConfig = {
       failureThreshold: webhooksConfig.circuitBreaker.failureThreshold,
       successThreshold: webhooksConfig.circuitBreaker.successThreshold,

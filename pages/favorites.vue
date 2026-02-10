@@ -152,6 +152,84 @@
 
       <!-- Bookmarks content -->
       <div v-else>
+        <!-- Undo notification banner -->
+        <Transition
+          enter-active-class="transition-all duration-300 ease-out"
+          enter-from-class="opacity-0 -translate-y-4"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition-all duration-200 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 -translate-y-4"
+        >
+          <div
+            v-if="deletedBookmarks.size > 0"
+            class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4 shadow-sm"
+            role="status"
+            aria-live="polite"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="flex-shrink-0">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-blue-500"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-blue-900">
+                    <span v-if="deletedBookmarks.size === 1">Bookmark removed</span>
+                    <span v-else>{{ deletedBookmarks.size }} bookmarks removed</span>
+                  </p>
+                  <p class="text-xs text-blue-700 mt-0.5">
+                    You can undo this action
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center space-x-3">
+                <!-- Progress bar showing time remaining -->
+                <div
+                  v-if="!prefersReducedMotion"
+                  class="w-24 h-1 bg-blue-200 rounded-full overflow-hidden"
+                  aria-hidden="true"
+                >
+                  <div
+                    class="h-full bg-blue-500 rounded-full transition-all duration-100 ease-linear"
+                    :style="{ width: `${undoProgress}%` }"
+                  />
+                </div>
+                <button
+                  class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                  @click="undoAllDeletions"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1.5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  Undo
+                </button>
+              </div>
+            </div>
+          </div>
+        </Transition>
+
         <!-- Controls -->
         <div class="flex flex-wrap justify-between items-center mb-8 gap-4">
           <div class="flex items-center space-x-4">
@@ -231,7 +309,7 @@
           >
             <template #actions>
               <button
-                class="text-red-500 hover:text-red-700"
+                class="text-red-500 hover:text-red-700 transition-all duration-200 hover:scale-110 active:scale-95"
                 :aria-label="`Remove ${bookmark.title} from bookmarks`"
                 title="Remove bookmark"
                 @click="removeBookmark(bookmark.id)"
@@ -258,9 +336,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
+import { useNuxtApp } from '#app'
 import { useBookmarks } from '~/composables/useBookmarks'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
+import type { Bookmark } from '~/composables/useBookmarks'
 
 // Respect user's motion preferences for accessibility
 const prefersReducedMotion = computed(() => {
@@ -281,17 +361,158 @@ definePageMeta({
 })
 
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
+const { $toast } = useNuxtApp()
 
 const {
   getAllBookmarks,
   bookmarkCount,
-  removeBookmark,
+  removeBookmark: originalRemoveBookmark,
+  addBookmark,
   exportBookmarks,
   clearBookmarks,
 } = useBookmarks()
 
 // Confirmation state for clearing all bookmarks
 const showClearConfirmation = ref(false)
+
+// Undo configuration
+const UNDO_DURATION = 5000 // 5 seconds to undo
+
+// Track deleted bookmarks for undo functionality
+interface DeletedBookmark {
+  bookmark: Bookmark
+  timeoutId: ReturnType<typeof setTimeout>
+  deletedAt: number
+}
+
+const deletedBookmarks = ref<Map<string, DeletedBookmark>>(new Map())
+const undoProgress = ref(100)
+const undoProgressInterval = ref<ReturnType<typeof setInterval> | null>(null)
+
+// Cleanup on unmount
+onUnmounted(() => {
+  // Clear all pending deletion timeouts
+  deletedBookmarks.value.forEach(deleted => {
+    clearTimeout(deleted.timeoutId)
+  })
+  deletedBookmarks.value.clear()
+
+  // Clear progress interval
+  if (undoProgressInterval.value) {
+    clearInterval(undoProgressInterval.value)
+  }
+})
+
+/**
+ * Start tracking undo progress
+ */
+const startUndoProgress = () => {
+  // Clear existing interval
+  if (undoProgressInterval.value) {
+    clearInterval(undoProgressInterval.value)
+  }
+
+  undoProgress.value = 100
+  const startTime = Date.now()
+
+  undoProgressInterval.value = setInterval(() => {
+    const elapsed = Date.now() - startTime
+    undoProgress.value = Math.max(0, 100 - (elapsed / UNDO_DURATION) * 100)
+
+    if (undoProgress.value <= 0) {
+      if (undoProgressInterval.value) {
+        clearInterval(undoProgressInterval.value)
+        undoProgressInterval.value = null
+      }
+    }
+  }, 50) // Update every 50ms for smooth animation
+}
+
+/**
+ * Remove bookmark with undo functionality
+ * Shows a notification banner with an undo button
+ * The bookmark is only permanently deleted after the timeout expires
+ */
+const removeBookmark = (resourceId: string) => {
+  const bookmark = getAllBookmarks.value.find(b => b.id === resourceId)
+  if (!bookmark) return
+
+  // If there's already a pending deletion for this bookmark, clear it
+  const existingDeletion = deletedBookmarks.value.get(resourceId)
+  if (existingDeletion) {
+    clearTimeout(existingDeletion.timeoutId)
+    deletedBookmarks.value.delete(resourceId)
+  }
+
+  // Immediately remove from UI for instant feedback
+  originalRemoveBookmark(resourceId)
+
+  // Set up timeout to permanently finalize deletion
+  const timeoutId = setTimeout(() => {
+    deletedBookmarks.value.delete(resourceId)
+    if (deletedBookmarks.value.size === 0 && undoProgressInterval.value) {
+      clearInterval(undoProgressInterval.value)
+      undoProgressInterval.value = null
+    }
+  }, UNDO_DURATION)
+
+  // Store deletion info for potential undo
+  deletedBookmarks.value.set(resourceId, {
+    bookmark,
+    timeoutId,
+    deletedAt: Date.now(),
+  })
+
+  // Start progress tracking
+  startUndoProgress()
+
+  // Show simple toast notification
+  $toast.info(`"${bookmark.title}" removed`, {
+    duration: 2000,
+  })
+}
+
+/**
+ * Undo all pending deletions
+ * Restores all recently deleted bookmarks
+ */
+const undoAllDeletions = () => {
+  const bookmarksToRestore = Array.from(deletedBookmarks.value.values())
+
+  // Clear all timeouts
+  bookmarksToRestore.forEach(deleted => {
+    clearTimeout(deleted.timeoutId)
+  })
+
+  // Clear the map
+  deletedBookmarks.value.clear()
+
+  // Clear progress interval
+  if (undoProgressInterval.value) {
+    clearInterval(undoProgressInterval.value)
+    undoProgressInterval.value = null
+  }
+
+  // Restore all bookmarks
+  bookmarksToRestore.forEach(deleted => {
+    addBookmark({
+      id: deleted.bookmark.id,
+      title: deleted.bookmark.title,
+      description: deleted.bookmark.description,
+      url: deleted.bookmark.url,
+    })
+  })
+
+  // Show success toast
+  const count = bookmarksToRestore.length
+  $toast.success(
+    count === 1 ? 'Bookmark restored' : `${count} bookmarks restored`,
+    {
+      description: 'All items have been added back',
+      duration: 3000,
+    }
+  )
+}
 
 const handleClearClick = () => {
   showClearConfirmation.value = true

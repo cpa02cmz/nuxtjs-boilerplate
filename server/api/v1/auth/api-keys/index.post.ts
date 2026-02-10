@@ -64,7 +64,7 @@ export default defineEventHandler(async event => {
       active: true,
     }
 
-    webhookStorage.createApiKey(newKey)
+    await webhookStorage.createApiKey(newKey)
 
     // Return key with actual API key value and security warning
     // This is the ONLY time the full key is shown - never logged or stored in plaintext
