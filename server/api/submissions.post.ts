@@ -36,7 +36,7 @@ export default defineEventHandler(async event => {
     // Create a submission object with metadata
     // Use cryptographically secure UUID for ID generation (fixes CVE)
     const submission: Submission = {
-      id: `sub_${Date.now()}_${randomUUID()}`,
+      id: `sub_${randomUUID()}`,
       resourceData: {
         title: validatedData.title.trim(),
         description: validatedData.description.trim(),
