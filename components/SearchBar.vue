@@ -71,14 +71,19 @@
         @focus="handleFocus"
         @blur="handleBlur"
       >
-      <!-- Keyboard shortcut hint -->
+      <!-- Keyboard shortcut hint with idle pulse animation -->
       <div
         v-if="!modelValue && !isFocused"
         class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
       >
         <kbd
-          class="hidden sm:inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded-md shadow-sm transition-all duration-200 ease-out hover:bg-gray-100 hover:border-gray-300 hover:shadow-md hover:scale-105"
+          :class="[
+            'hidden sm:inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded-md shadow-sm transition-all duration-200 ease-out',
+            'hover:bg-gray-100 hover:border-gray-300 hover:shadow-md hover:scale-105',
+            showIdlePulse && !prefersReducedMotion ? 'animate-idle-pulse' : '',
+          ]"
           aria-hidden="true"
+          title="Press / to focus search"
         >
           /
         </kbd>
@@ -200,6 +205,9 @@ const isFocused = ref(false)
 const activeIndex = ref(-1)
 const isSearching = ref(false)
 const showFocusPulse = ref(false)
+const showIdlePulse = ref(false)
+const prefersReducedMotion = ref(false)
+let idlePulseTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Use the resources composable
 const { resources } = useResourceData()
@@ -409,19 +417,49 @@ if (typeof window !== 'undefined') {
       searchInputRef.value?.focus()
 
       // Check for reduced motion preference
-      const prefersReducedMotion = window.matchMedia(
+      const userPrefersReducedMotion = window.matchMedia(
         '(prefers-reduced-motion: reduce)'
       ).matches
 
       // Trigger focus pulse animation for visual feedback (skip if reduced motion)
-      if (!prefersReducedMotion) {
+      if (!userPrefersReducedMotion) {
         showFocusPulse.value = true
         setTimeout(() => {
           showFocusPulse.value = false
         }, uiConfig.timing.focusPulseDurationMs)
       }
+
+      // Stop idle pulse animation when user knows the shortcut
+      showIdlePulse.value = false
+      if (idlePulseTimeout) {
+        clearTimeout(idlePulseTimeout)
+      }
     }
   }
+
+  // Check for reduced motion preference on mount (safely for test environments)
+  let mediaQuery: MediaQueryList | null = null
+  let handleReducedMotionChange: ((e: MediaQueryListEvent) => void) | null =
+    null
+
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.value = mediaQuery.matches
+
+    // Listen for changes in reduced motion preference
+    handleReducedMotionChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.value = e.matches
+    }
+    mediaQuery.addEventListener('change', handleReducedMotionChange)
+  }
+
+  // Start idle pulse timer after 3 seconds if user hasn't interacted
+  // This helps discoverability of the "/" shortcut
+  idlePulseTimeout = setTimeout(() => {
+    if (!isFocused.value && !props.modelValue && !prefersReducedMotion.value) {
+      showIdlePulse.value = true
+    }
+  }, uiConfig.timing.idlePulseDelayMs || 3000)
 
   // Add event listeners
   window.addEventListener('saved-search-added', savedSearchAddedHandler)
@@ -441,6 +479,12 @@ if (typeof window !== 'undefined') {
       savedSearchRemovedHandler
     )
     window.removeEventListener('keydown', handleSlashKey)
+    if (mediaQuery && handleReducedMotionChange) {
+      mediaQuery.removeEventListener('change', handleReducedMotionChange)
+    }
+    if (idlePulseTimeout) {
+      clearTimeout(idlePulseTimeout)
+    }
   })
 }
 </script>
@@ -465,6 +509,23 @@ if (typeof window !== 'undefined') {
   animation: focus-pulse 600ms ease-out;
 }
 
+/* Idle pulse animation for keyboard shortcut discoverability */
+@keyframes idle-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+    transform: scale(1.1);
+  }
+}
+
+.animate-idle-pulse {
+  animation: idle-pulse 2s ease-in-out 3;
+}
+
 /* Respect reduced motion preferences for accessibility */
 @media (prefers-reduced-motion: reduce) {
   input {
@@ -482,7 +543,8 @@ if (typeof window !== 'undefined') {
     transform: none !important;
   }
 
-  .animate-focus-pulse {
+  .animate-focus-pulse,
+  .animate-idle-pulse {
     animation: none !important;
   }
 }
