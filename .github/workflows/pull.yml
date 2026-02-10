@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         continue-on-error: true
         with:
           fetch-depth: 0
@@ -32,7 +32,7 @@ jobs:
 
       - name: Setup Node
         continue-on-error: true
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'

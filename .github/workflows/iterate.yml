@@ -30,12 +30,12 @@ jobs:
       IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}    
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
           path: |
             ~/.opencode
@@ -50,7 +50,7 @@ jobs:
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
       - name: Install Node.js
         continue-on-error: true
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
       - name: Install Dependencies
@@ -95,12 +95,12 @@ jobs:
       IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}    
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
           path: |
             ~/.opencode
@@ -115,7 +115,7 @@ jobs:
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
       - name: Install Node.js
         continue-on-error: true
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
       - name: Install Dependencies
@@ -160,12 +160,12 @@ jobs:
       IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}    
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
           path: |
             ~/.opencode
@@ -180,7 +180,7 @@ jobs:
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
       - name: Install Node.js
         continue-on-error: true
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
       - name: Install Dependencies
@@ -225,12 +225,12 @@ jobs:
       IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}    
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
           path: |
             ~/.opencode
@@ -245,7 +245,7 @@ jobs:
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
       - name: Install Node.js
         continue-on-error: true
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
       - name: Install Dependencies
@@ -290,12 +290,12 @@ jobs:
       IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}    
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v4
         with:
           path: |
             ~/.opencode
@@ -310,7 +310,7 @@ jobs:
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
       - name: Install Node.js
         continue-on-error: true
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: "20"
       - name: Install Dependencies

@@ -16,7 +16,7 @@ jobs:
   gather_pr_data:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -42,7 +42,7 @@ jobs:
 
       - name: Upload PR intel
         if: env.skip_jobs == 'false'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: pr-intel-data-${{ github.run_id }}
           path: pr_intel/
@@ -53,12 +53,12 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Download PR intel
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v4
         with:
           name: pr-intel-data-${{ github.run_id }}
           path: ./pr_intel
