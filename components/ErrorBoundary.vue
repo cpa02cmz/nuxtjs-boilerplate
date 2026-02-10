@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="hasError"
-    class="error-boundary"
-  >
+  <div v-if="hasError" class="error-boundary">
     <div class="error-content">
       <div class="error-icon">
         <svg
@@ -21,30 +18,36 @@
           />
         </svg>
       </div>
-      <h2 class="error-title">
-        Something went wrong
-      </h2>
+      <h2 class="error-title">Something went wrong</h2>
       <p class="error-message">
         {{ errorMessage }}
       </p>
-      <div
-        v-if="showDetails"
-        class="error-details"
-      >
+      <div v-if="showDetails" class="error-details">
         <details class="error-details-container">
-          <summary class="error-details-summary">
-            Error Details
-          </summary>
+          <summary class="error-details-summary">Error Details</summary>
           <pre class="error-stack">{{ errorStack }}</pre>
         </details>
       </div>
       <div class="error-actions">
         <button
           class="retry-button"
-          :aria-label="`Retry ${fallbackComponentName || 'component'}`"
+          :class="{ 'retry-button--loading': isRetrying }"
+          :aria-label="
+            isRetrying
+              ? `Retrying ${fallbackComponentName || 'component'}...`
+              : `Retry ${fallbackComponentName || 'component'}`
+          "
+          :aria-busy="isRetrying"
+          :disabled="isRetrying"
           @click="resetError"
         >
-          Try Again
+          <LoadingSpinner
+            v-if="isRetrying"
+            size="small"
+            class="retry-spinner"
+            aria-hidden="true"
+          />
+          <span>{{ isRetrying ? 'Retrying...' : 'Try Again' }}</span>
         </button>
         <button
           class="home-button"
@@ -79,6 +82,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const error = ref<Error | null>(null)
 const errorInfo = ref<ErrorInfo | null>(null)
+const isRetrying = ref(false)
 
 const emit = defineEmits<{
   error: [error: Error, info: ErrorInfo]
@@ -100,9 +104,18 @@ const throwError = (err: Error, info: ErrorInfo) => {
   emit('error', err, info)
 }
 
-const resetError = () => {
+const resetError = async () => {
+  if (isRetrying.value) return
+
+  isRetrying.value = true
+
+  // Small delay to ensure loading state is visible
+  // This improves UX even when retry is fast
+  await new Promise(resolve => setTimeout(resolve, 400))
+
   error.value = null
   errorInfo.value = null
+  isRetrying.value = false
 }
 
 const goHome = () => {
@@ -163,13 +176,31 @@ onErrorCaptured((err, instance, info) => {
 }
 
 .retry-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   background-color: #3b82f6;
   color: white;
   border: 1px solid #3b82f6;
+  min-width: 110px;
 }
 
-.retry-button:hover {
+.retry-button:hover:not(:disabled) {
   background-color: #2563eb;
+}
+
+.retry-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.retry-button--loading {
+  background-color: #60a5fa;
+}
+
+.retry-spinner {
+  color: white;
 }
 
 .home-button {
