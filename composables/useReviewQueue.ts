@@ -1,6 +1,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
+import { debounce } from '~/utils/debounce'
 import type { Submission } from '~/types/submission'
 
 export function useReviewQueue(initialSubmissions: Submission[] = []) {
@@ -68,8 +69,11 @@ export function useReviewQueue(initialSubmissions: Submission[] = []) {
     return new Date(dateString).toLocaleDateString()
   }
 
+  // Debounced fetch to prevent excessive API calls when filters change rapidly
+  const debouncedFetchSubmissions = debounce(fetchSubmissions, 300)
+
   watch([statusFilter, categoryFilter], () => {
-    fetchSubmissions()
+    debouncedFetchSubmissions()
   })
 
   onMounted(() => {
