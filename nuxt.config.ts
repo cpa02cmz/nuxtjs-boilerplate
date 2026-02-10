@@ -173,8 +173,11 @@ export default defineNuxtConfig({
   nitro: {
     // Optimize server-side rendering
     minify: true,
-    // Enable compression
-    compressPublicAssets: true,
+    // Enable compression (gzip + brotli)
+    compressPublicAssets: {
+      brotli: true,
+      gzip: true,
+    },
     // Improve build performance
     ignore: ['**/.git/**', '**/node_modules/**', '**/dist/**'],
     // Security headers are handled via the security plugins
@@ -184,6 +187,24 @@ export default defineNuxtConfig({
       '~/server/plugins/html-security.ts',
       '~/server/plugins/resource-validation.ts',
     ],
+    // Route rules for caching and performance
+    routeRules: {
+      '/': {
+        prerender: true,
+        headers: { 'Cache-Control': 'public, max-age=60, s-maxage=300' },
+      },
+      '/search': {
+        prerender: true,
+        headers: { 'Cache-Control': 'public, max-age=60, s-maxage=300' },
+      },
+      '/about': {
+        prerender: true,
+        headers: { 'Cache-Control': 'public, max-age=300, s-maxage=3600' },
+      },
+      '/_nuxt/**': {
+        headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+      },
+    },
   },
 
   // Image optimization configuration
@@ -329,6 +350,21 @@ export default defineNuxtConfig({
       minify: 'terser',
       target: 'esnext',
       sourcemap: false, // Disable sourcemaps for faster builds in CI
+      terserOptions: {
+        compress: {
+          drop_console: true, // Remove console.* calls in production
+          drop_debugger: true, // Remove debugger statements
+          pure_funcs: [
+            'console.log',
+            'console.info',
+            'console.debug',
+            'console.trace',
+          ],
+        },
+        format: {
+          comments: false, // Remove comments
+        },
+      },
       rollupOptions: {
         output: {
           manualChunks: {
@@ -341,12 +377,15 @@ export default defineNuxtConfig({
           // Optimize chunk naming for better caching
           chunkFileNames: '_nuxt/[name].[hash].js',
           entryFileNames: '_nuxt/[name].[hash].js',
+          // Inline small chunks to reduce HTTP requests
+          inlineDynamicImports: false,
         },
       },
     },
     // Optimize build speed
     esbuild: {
       logLevel: 'silent', // Reduce build noise
+      drop: ['console', 'debugger'], // Remove console and debugger in production
     },
     // Optimize module resolution
     resolve: {
@@ -354,7 +393,7 @@ export default defineNuxtConfig({
     },
     // Additional build performance optimizations
     optimizeDeps: {
-      include: ['vue', 'vue-router'],
+      include: ['vue', 'vue-router', 'fuse.js', 'dompurify'],
       exclude: [],
     },
   },

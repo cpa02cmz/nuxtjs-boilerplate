@@ -32,7 +32,9 @@ export const securityConfig = {
       process.env.CSP_CONNECT_SRC ||
         "'self', https://fonts.googleapis.com, https://fonts.gstatic.com, https://unpkg.com, https://twitter.com, https://www.facebook.com, https://www.linkedin.com, https://www.reddit.com"
     ),
-    frameSrc: parseCspDirective(process.env.CSP_FRAME_SRC || "'self'"),
+    frameSrc: parseCspDirective(
+      process.env.CSP_FRAME_SRC || "'self' blob: data:"
+    ),
     frameAncestors: parseCspDirective(
       process.env.CSP_FRAME_ANCESTORS || "'none'"
     ),
