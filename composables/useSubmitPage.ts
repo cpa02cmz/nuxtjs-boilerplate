@@ -53,11 +53,12 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
   const submitSuccess = ref(false)
   const submitError = ref('')
 
-  const validateForm = (): boolean => {
-    errors.value = {}
+  const validateTitle = (): boolean => {
+    delete errors.value.title
 
     if (!formData.value.title.trim()) {
       errors.value.title = validationConfig.messages.required.title
+      return false
     } else if (
       formData.value.title.length > validationConfig.resource.name.maxLength
     ) {
@@ -65,10 +66,18 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
         '{{max}}',
         validationConfig.resource.name.maxLength.toString()
       )
+      return false
     }
+
+    return true
+  }
+
+  const validateDescription = (): boolean => {
+    delete errors.value.description
 
     if (!formData.value.description.trim()) {
       errors.value.description = validationConfig.messages.required.description
+      return false
     } else if (
       formData.value.description.length <
       validationConfig.resource.description.minLength
@@ -78,6 +87,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
           '{{min}}',
           validationConfig.resource.description.minLength.toString()
         )
+      return false
     } else if (
       formData.value.description.length >
       validationConfig.resource.description.maxLength
@@ -87,27 +97,57 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
           '{{max}}',
           validationConfig.resource.description.maxLength.toString()
         )
+      return false
     }
+
+    return true
+  }
+
+  const validateUrl = (): boolean => {
+    delete errors.value.url
 
     if (!formData.value.url.trim()) {
       errors.value.url = validationConfig.messages.required.url
+      return false
     } else {
       try {
         new URL(formData.value.url)
       } catch {
         errors.value.url = validationConfig.messages.invalid.url
+        return false
       }
     }
 
+    return true
+  }
+
+  const validateCategory = (): boolean => {
+    delete errors.value.category
+
     if (!formData.value.category) {
       errors.value.category = validationConfig.messages.required.category
+      return false
     }
 
-    if (Object.keys(errors.value).length > 0) {
+    return true
+  }
+
+  const validateForm = (): boolean => {
+    errors.value = {}
+
+    const isTitleValid = validateTitle()
+    const isDescriptionValid = validateDescription()
+    const isUrlValid = validateUrl()
+    const isCategoryValid = validateCategory()
+
+    const isValid =
+      isTitleValid && isDescriptionValid && isUrlValid && isCategoryValid
+
+    if (!isValid) {
       announceErrors()
     }
 
-    return Object.keys(errors.value).length === 0
+    return isValid
   }
 
   const announceErrors = () => {
@@ -229,6 +269,10 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
     submitSuccess: readonly(submitSuccess),
     submitError: readonly(submitError),
     validateForm,
+    validateTitle,
+    validateDescription,
+    validateUrl,
+    validateCategory,
     submitResource,
     resetForm,
   }
