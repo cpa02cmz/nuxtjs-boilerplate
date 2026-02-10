@@ -94,6 +94,14 @@ export const cacheConfig = {
     maxItems: parseInt(process.env.RSS_MAX_ITEMS || '50'),
     defaultLimit: parseInt(process.env.RSS_DEFAULT_LIMIT || '20'),
   },
+
+  // Search Suggestions Cache
+  searchSuggestions: {
+    // TTL for search suggestions cache (seconds)
+    ttlSeconds: parseInt(
+      process.env.SEARCH_SUGGESTIONS_CACHE_TTL_SECONDS || '60'
+    ),
+  },
 } as const
 
 // Helper function to parse glob patterns
