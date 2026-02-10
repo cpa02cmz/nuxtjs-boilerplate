@@ -26,6 +26,7 @@ class CacheManager {
   private hitCount: number = 0
   private missCount: number = 0
   private redisConnected: boolean = false
+  private cleanupIntervalId: NodeJS.Timeout | null = null
 
   constructor(config: CacheConfig = {}) {
     const {
@@ -96,11 +97,22 @@ class CacheManager {
 
   /**
    * Start periodic cleanup of expired cache entries
+   * FIXED: Store interval reference to prevent memory leaks
    */
   private startCleanup() {
-    setInterval(() => {
+    this.cleanupIntervalId = setInterval(() => {
       this.cleanupExpired()
     }, this.cleanupInterval)
+  }
+
+  /**
+   * Stop the cleanup interval to prevent memory leaks
+   */
+  private stopCleanup(): void {
+    if (this.cleanupIntervalId) {
+      clearInterval(this.cleanupIntervalId)
+      this.cleanupIntervalId = null
+    }
   }
 
   /**
@@ -329,8 +341,12 @@ class CacheManager {
 
   /**
    * Close Redis connection properly
+   * FIXED: Also stop cleanup interval to prevent memory leaks
    */
   async disconnect(): Promise<void> {
+    // Stop cleanup interval to prevent memory leaks
+    this.stopCleanup()
+
     if (this.redisClient) {
       try {
         await this.redisClient.quit()
