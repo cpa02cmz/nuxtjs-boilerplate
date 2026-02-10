@@ -207,6 +207,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 import logger from '~/utils/logger'
 import { animationConfig } from '~/configs/animation.config'
+import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
 interface Props {
   title?: string
@@ -376,6 +377,10 @@ const copyToClipboard = async () => {
     } catch (fallbackErr) {
       logger.error('Failed to copy to clipboard:', fallbackErr)
       showToast('Failed to copy link', 'error')
+
+      // Haptic feedback for failed copy
+      hapticError()
+
       showShareMenu.value = false
       await nextTick()
       shareButtonRef.value?.focus()
@@ -387,6 +392,9 @@ const copyToClipboard = async () => {
 const showCopySuccess = async () => {
   copySuccess.value = true
   showToast('Link copied to clipboard!', 'success')
+
+  // Haptic feedback for successful copy
+  hapticSuccess()
 
   // Close the menu immediately to show button feedback
   showShareMenu.value = false
