@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+import { PrismaBetterSQLite3 } from '@prisma/adapter-better-sqlite3'
 import { databaseConfig } from '~/configs/database.config'
 
 declare global {
@@ -44,7 +44,7 @@ function createPrismaClient(): PrismaClient {
   const attemptConnection = (): PrismaClient => {
     try {
       const client = new PrismaClient({
-        adapter: new PrismaBetterSqlite3({
+        adapter: new PrismaBetterSQLite3({
           url: process.env.DATABASE_URL || 'file:./data/dev.db',
           timeout: dbConfig.timeout,
         }),
