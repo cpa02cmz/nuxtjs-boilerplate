@@ -201,5 +201,6 @@ export const useBookmarks = () => {
     exportBookmarks,
     importBookmarks,
     clearBookmarks,
+    initBookmarks,
   }
 }
