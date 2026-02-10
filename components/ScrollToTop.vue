@@ -132,6 +132,19 @@ const scrollToTop = () => {
 
   // Announce to screen readers
   announcementText.value = uiConfig.scrollToTop.announcementText
+
+  // Restore focus to main content for keyboard users
+  // This prevents focus loss when the scroll button hides after scrolling to top
+  const mainContent = document.getElementById('main-content')
+  if (mainContent) {
+    mainContent.setAttribute('tabindex', '-1')
+    mainContent.focus({ preventScroll: true })
+    // Remove tabindex after focus to keep it out of normal tab order
+    setTimeout(() => {
+      mainContent.removeAttribute('tabindex')
+    }, 100)
+  }
+
   setTimeout(() => {
     announcementText.value = ''
   }, uiConfig.scrollToTop.announcementTimeoutMs)
