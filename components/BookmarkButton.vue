@@ -59,6 +59,7 @@
 import { useBookmarks } from '~/composables/useBookmarks'
 import { computed, ref } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
   resourceId?: string
@@ -96,6 +97,11 @@ const handleBookmarkToggle = () => {
     setTimeout(() => {
       isAnimating.value = false
     }, heartPopDurationMs)
+    // Haptic feedback for adding bookmark
+    hapticSuccess()
+  } else {
+    // Light haptic for removing bookmark
+    hapticLight()
   }
 
   toggleBookmark({

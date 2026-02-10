@@ -339,6 +339,11 @@ import { sanitizeAndHighlight } from '~/utils/sanitize'
 import { memoizeHighlight } from '~/utils/memoize'
 import { logError } from '~/utils/errorLogger'
 import { copyToClipboard } from '~/utils/clipboard'
+import {
+  hapticSuccess,
+  hapticError,
+  hapticWarning,
+} from '~/utils/hapticFeedback'
 import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { limitsConfig } from '~/configs/limits.config'
@@ -488,6 +493,9 @@ const addResourceToComparison = () => {
     isAddingToComparison.value = true
     isCompareAnimating.value = true
 
+    // Haptic feedback for successful addition
+    hapticSuccess()
+
     // Check for reduced motion preference
     const prefersReducedMotion = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
@@ -508,10 +516,14 @@ const addResourceToComparison = () => {
     $toast.warning(
       `Comparison limit reached (${limitsConfig.comparison.maxResources} resources max). Remove a resource to add another.`
     )
+    // Haptic feedback for warning
+    hapticWarning()
   } else if (result.reason === 'already_added') {
     // Show toast notification when resource is already in comparison
     const { $toast } = useNuxtApp()
     $toast.info(`"${props.title}" is already in your comparison`)
+    // Light haptic for already added
+    hapticWarning()
   }
 }
 
@@ -527,6 +539,9 @@ const copyResourceUrl = async () => {
     isCopied.value = true
     isCopyAnimating.value = true
 
+    // Haptic feedback for successful copy
+    hapticSuccess()
+
     // Show toast notification
     const { $toast } = useNuxtApp()
     $toast.success(`Link to "${props.title}" copied to clipboard!`)
@@ -540,6 +555,8 @@ const copyResourceUrl = async () => {
     // Show error toast
     const { $toast } = useNuxtApp()
     $toast.error('Failed to copy link. Please try again.')
+    // Haptic feedback for error
+    hapticError()
     logError(
       'Failed to copy resource URL to clipboard',
       new Error(result.error),
