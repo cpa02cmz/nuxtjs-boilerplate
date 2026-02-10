@@ -185,6 +185,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { uiConfig } from '~/configs/ui.config'
 import { useSocialSharing } from '~/composables/useSocialSharing'
 
 interface Props {
@@ -293,7 +294,7 @@ const copyLink = async () => {
     copySuccess.value = true
     setTimeout(() => {
       copySuccess.value = false
-    }, 2000)
+    }, uiConfig.timing.copySuccessTimeoutMs)
   }
 
   isOpen.value = false

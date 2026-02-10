@@ -46,7 +46,10 @@
           aria-hidden="true"
         >
           <svg
-            class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
+            :class="[
+              CHIP_ICON_SIZE,
+              'transition-transform duration-150 group-hover:rotate-90',
+            ]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -81,7 +84,10 @@
           aria-hidden="true"
         >
           <svg
-            class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
+            :class="[
+              CHIP_ICON_SIZE,
+              'transition-transform duration-150 group-hover:rotate-90',
+            ]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -115,7 +121,10 @@
           aria-hidden="true"
         >
           <svg
-            class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
+            :class="[
+              CHIP_ICON_SIZE,
+              'transition-transform duration-150 group-hover:rotate-90',
+            ]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -149,7 +158,10 @@
           aria-hidden="true"
         >
           <svg
-            class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
+            :class="[
+              CHIP_ICON_SIZE,
+              'transition-transform duration-150 group-hover:rotate-90',
+            ]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -183,7 +195,10 @@
           aria-hidden="true"
         >
           <svg
-            class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
+            :class="[
+              CHIP_ICON_SIZE,
+              'transition-transform duration-150 group-hover:rotate-90',
+            ]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -217,7 +232,10 @@
           aria-hidden="true"
         >
           <svg
-            class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
+            :class="[
+              CHIP_ICON_SIZE,
+              'transition-transform duration-150 group-hover:rotate-90',
+            ]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -251,7 +269,10 @@
           aria-hidden="true"
         >
           <svg
-            class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
+            :class="[
+              CHIP_ICON_SIZE,
+              'transition-transform duration-150 group-hover:rotate-90',
+            ]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -285,7 +306,10 @@
           aria-hidden="true"
         >
           <svg
-            class="w-3.5 h-3.5 transition-transform duration-150 group-hover:rotate-90"
+            :class="[
+              CHIP_ICON_SIZE,
+              'transition-transform duration-150 group-hover:rotate-90',
+            ]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -313,7 +337,7 @@
         @click="undoRemove"
       >
         <svg
-          class="w-3.5 h-3.5 mr-1.5"
+          :class="[CHIP_ICON_SIZE, 'mr-1.5']"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -357,6 +381,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { uiConfig } from '../configs/ui.config'
 
 interface Props {
   searchQuery?: string
@@ -402,7 +427,12 @@ const lastRemovedFilter = ref<RemovedFilter | null>(null)
 const undoTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null)
 const undoProgress = ref(100)
 const progressIntervalId = ref<ReturnType<typeof setInterval> | null>(null)
-const UNDO_WINDOW_MS = 5000 // 5 seconds to undo
+// Flexy says: No more hardcoded values! Using config values instead.
+const UNDO_WINDOW_MS = uiConfig.filterChip.undoWindowMs
+const UNDO_PROGRESS_INTERVAL_MS = uiConfig.filterChip.undoProgressIntervalMs
+const UNDO_PROGRESS_DECREMENT = uiConfig.filterChip.undoProgressDecrement
+const ANNOUNCEMENT_CLEAR_MS = uiConfig.filterChip.announcementClearMs
+const CHIP_ICON_SIZE = uiConfig.filterChip.iconSize
 
 // Track removing chips for animation (used in future undo feature)
 const _removingChips = ref<Set<string>>(new Set())
@@ -463,7 +493,7 @@ const handleRemove = (type: string, value: string, _event: Event) => {
     clearInterval(progressIntervalId.value)
   }
   progressIntervalId.value = setInterval(() => {
-    undoProgress.value -= 2 // Decrease by 2% every 100ms = 5 seconds total
+    undoProgress.value -= UNDO_PROGRESS_DECREMENT // Configurable decrement
     if (undoProgress.value <= 0) {
       undoProgress.value = 0
       if (progressIntervalId.value) {
@@ -471,7 +501,7 @@ const handleRemove = (type: string, value: string, _event: Event) => {
         progressIntervalId.value = null
       }
     }
-  }, 100)
+  }, UNDO_PROGRESS_INTERVAL_MS)
 
   // Set timeout to clear undo state after window expires
   if (undoTimeoutId.value) {
@@ -488,7 +518,7 @@ const handleRemove = (type: string, value: string, _event: Event) => {
   // Clear announcement after screen reader has time to read it
   setTimeout(() => {
     announcement.value = ''
-  }, 1000)
+  }, ANNOUNCEMENT_CLEAR_MS)
 
   // Emit the appropriate event
   switch (type) {
@@ -529,7 +559,7 @@ const handleClearAll = () => {
   // Clear announcement after screen reader has time to read it
   setTimeout(() => {
     announcement.value = ''
-  }, 1000)
+  }, ANNOUNCEMENT_CLEAR_MS)
 
   emit('reset-filters')
 }
@@ -561,7 +591,7 @@ const undoRemove = () => {
   announcement.value = `${filter.displayLabel} filter restored.`
   setTimeout(() => {
     announcement.value = ''
-  }, 1000)
+  }, ANNOUNCEMENT_CLEAR_MS)
 
   // Re-add the filter by emitting the appropriate event
   switch (filter.type) {

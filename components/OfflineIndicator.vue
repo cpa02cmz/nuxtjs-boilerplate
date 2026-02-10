@@ -138,6 +138,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { uiConfig } from '~/configs/ui.config'
 
 // Reactive state
 const isOffline = ref(false)
@@ -189,7 +190,7 @@ const handleOnline = () => {
   backOnlineTimeout = setTimeout(() => {
     showBackOnline.value = false
     wasOffline.value = false
-  }, 3000)
+  }, uiConfig.offlineIndicator.backOnlineTimeoutMs)
 }
 
 // Handle connection status check (for detecting reconnection attempts)
@@ -212,7 +213,7 @@ const handleConnectionChange = () => {
         if (isOffline.value) {
           isReconnecting.value = false
         }
-      }, 5000)
+      }, uiConfig.offlineIndicator.reconnectingTimeoutMs)
     }
   }
 }
