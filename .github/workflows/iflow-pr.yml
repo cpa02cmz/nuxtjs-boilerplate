@@ -1,8 +1,8 @@
-name: "iFlow - PR Intelligence"
+name: 'iFlow - PR Intelligence'
 
 on:
   schedule:
-    - cron: "0 */6 * * *" # setiap 6 jam
+    - cron: '0 */6 * * *' # setiap 6 jam
   workflow_dispatch:
 
 permissions:
@@ -15,6 +15,7 @@ permissions:
 jobs:
   gather_pr_data:
     runs-on: ubuntu-22.04
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -51,6 +52,7 @@ jobs:
     needs: gather_pr_data
     if: needs.gather_pr_data.outputs.skip_jobs != 'true'
     runs-on: ubuntu-22.04
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v4
@@ -67,7 +69,7 @@ jobs:
         uses: iflow-ai/iflow-cli-action@v2.2.1
         with:
           api_key: ${{ secrets.IFLOW_API_KEY }}
-          timeout: "5400"
+          timeout: '5400'
           settings_json: |
             {
               "theme": "Dark",
