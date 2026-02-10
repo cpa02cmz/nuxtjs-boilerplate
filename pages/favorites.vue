@@ -339,6 +339,8 @@
 import { ref, computed, onUnmounted } from 'vue'
 import { useNuxtApp } from '#app'
 import { useBookmarks } from '~/composables/useBookmarks'
+import { uiConfig } from '~/configs/ui.config'
+import { animationConfig } from '~/configs/animation.config'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import type { Bookmark } from '~/composables/useBookmarks'
 
@@ -375,8 +377,9 @@ const {
 // Confirmation state for clearing all bookmarks
 const showClearConfirmation = ref(false)
 
-// Undo configuration
-const UNDO_DURATION = 5000 // 5 seconds to undo
+// Undo configuration - using config instead of hardcoded values
+const UNDO_DURATION = uiConfig.undo.durationMs
+const UNDO_PROGRESS_INTERVAL = uiConfig.undo.progressIntervalMs
 
 // Track deleted bookmarks for undo functionality
 interface DeletedBookmark {
@@ -425,7 +428,7 @@ const startUndoProgress = () => {
         undoProgressInterval.value = null
       }
     }
-  }, 50) // Update every 50ms for smooth animation
+  }, UNDO_PROGRESS_INTERVAL)
 }
 
 /**
@@ -528,7 +531,7 @@ const handleConfirmClear = () => {
   // Trigger confetti celebration - Palette's delightful micro-UX touch!
   setTimeout(() => {
     confettiRef.value?.celebrate()
-  }, 100)
+  }, animationConfig.confetti.clearBookmarksDelayMs)
 }
 </script>
 

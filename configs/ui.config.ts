@@ -342,6 +342,20 @@ export const uiConfig = {
       process.env.USER_PREF_SAVE_TIMEOUT || '3000'
     ),
   },
+
+  // Undo/Deletion Settings - Flexy hates hardcoded undo durations!
+  undo: {
+    // Duration for undo action window (ms)
+    durationMs: parseInt(process.env.UNDO_DURATION_MS || '5000'),
+    // Progress update interval for undo timer (ms)
+    progressIntervalMs: parseInt(process.env.UNDO_PROGRESS_INTERVAL_MS || '50'),
+  },
+
+  // Form Settings
+  form: {
+    // Default textarea rows
+    textareaRows: parseInt(process.env.FORM_TEXTAREA_ROWS || '4'),
+  },
 } as const
 
 export type UiConfig = typeof uiConfig

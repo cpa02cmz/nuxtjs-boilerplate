@@ -143,6 +143,18 @@ export const animationConfig = {
 
   // Confetti Celebration Animations - Palette's delightful micro-UX touch!
   confetti: {
+    // Delay before triggering confetti after success (ms) - allows UI to update first
+    submissionDelayMs: parseInt(
+      process.env.CONFETTI_SUBMISSION_DELAY_MS || '100'
+    ),
+    // Delay before triggering confetti in comparison page (ms)
+    comparisonDelayMs: parseInt(
+      process.env.CONFETTI_COMPARISON_DELAY_MS || '200'
+    ),
+    // Delay before triggering confetti when clearing bookmarks (ms)
+    clearBookmarksDelayMs: parseInt(
+      process.env.CONFETTI_CLEAR_BOOKMARKS_DELAY_MS || '100'
+    ),
     // Duration of confetti animation in milliseconds
     durationMs: parseInt(process.env.CONFETTI_DURATION_MS || '3000'),
     // Number of particles for light celebration
