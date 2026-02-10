@@ -174,12 +174,13 @@
             :delay="animationConfig.tooltip.showDelayMs"
           >
             <a
+              ref="visitButtonRef"
               :href="url"
               :target="newTab ? '_blank' : '_self'"
               rel="noopener noreferrer"
-              class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 hover:scale-105 active:bg-gray-950 active:scale-95 transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+              class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 hover:scale-105 active:bg-gray-950 active:scale-95 transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 relative overflow-hidden"
               :aria-label="`Visit ${title} - opens in ${newTab ? 'new tab' : 'same window'}`"
-              @click="handleLinkClick"
+              @click="handleLinkClickWithRipple"
             >
               {{ buttonLabel }}
               <span
@@ -386,10 +387,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, type Ref } from 'vue'
 import { useHead, useRuntimeConfig, useNuxtApp } from '#imports'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import { useVisitedResources } from '~/composables/useVisitedResources'
+import { useRipple } from '~/composables/useRipple'
 import OptimizedImage from '~/components/OptimizedImage.vue'
 import ResourceStatus from '~/components/ResourceStatus.vue'
 import Tooltip from '~/components/Tooltip.vue'
@@ -460,6 +462,16 @@ const compareButtonRef = ref<HTMLButtonElement | null>(null)
 const isCopied = ref(false)
 const isCopyAnimating = ref(false)
 const copyStatus = ref('')
+const visitButtonRef = ref<HTMLAnchorElement | null>(null)
+
+// Initialize ripple effect for the visit button - Palette's micro-UX touch!
+const { createRipple } = useRipple(
+  visitButtonRef as Ref<HTMLButtonElement | null>,
+  {
+    color: 'rgba(255, 255, 255, 0.25)',
+    duration: 600,
+  }
+)
 
 // Check if resource is new (added within the configured threshold days)
 // Flexy hates hardcoded values! Using config instead of magic numbers
@@ -549,6 +561,15 @@ const handleLinkClick = (event: Event) => {
       { resourceTitle: props.title, resourceUrl: props.url, error: err }
     )
   }
+}
+
+// Handle link click with ripple effect - Palette's micro-UX delight!
+const handleLinkClickWithRipple = (event: MouseEvent) => {
+  // Trigger ripple animation first
+  createRipple(event)
+
+  // Then handle the actual link click logic
+  handleLinkClick(event)
 }
 
 // Get runtime config for canonical URL
