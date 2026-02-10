@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+import { PrismaBetterSQLite3 as PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 import { databaseConfig } from '~/configs/database.config'
 
 declare global {
