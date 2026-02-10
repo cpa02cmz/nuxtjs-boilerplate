@@ -56,7 +56,7 @@
             v-if="isNew"
             class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-sm animate-new-pulse mr-2"
             role="status"
-            aria-label="New resource added within the last 7 days"
+            :aria-label="`New resource added within the last ${limitsConfig.newResourceBadge.thresholdDays} days`"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -435,8 +435,8 @@ const isCopied = ref(false)
 const isCopyAnimating = ref(false)
 const copyStatus = ref('')
 
-// Check if resource is new (added within the last 7 days)
-// Flexy hates hardcoded values! Using TIME_MS constants from config
+// Check if resource is new (added within the configured threshold days)
+// Flexy hates hardcoded values! Using config instead of magic numbers
 const isNew = computed(() => {
   if (!props.dateAdded) return false
 
@@ -445,7 +445,7 @@ const isNew = computed(() => {
   const diffTime = Math.abs(now.getTime() - addedDate.getTime())
   const diffDays = Math.ceil(diffTime / TIME_MS.DAY)
 
-  return diffDays <= 7
+  return diffDays <= limitsConfig.newResourceBadge.thresholdDays
 })
 
 // Compute domain tooltip for external link preview
