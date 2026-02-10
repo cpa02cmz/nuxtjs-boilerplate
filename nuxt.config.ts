@@ -386,14 +386,48 @@ export default defineNuxtConfig({
     },
     // Additional build performance optimizations
     optimizeDeps: {
-      include: ['vue', 'vue-router', 'fuse.js', 'dompurify'],
+      include: [
+        'vue',
+        'vue-router',
+        'fuse.js',
+        'dompurify',
+        '@tanstack/vue-virtual',
+        'zod',
+      ],
       exclude: [],
+      // Enable dependency pre-bundling cache
+      force: false,
     },
+    // Enable persistent caching
+    cacheDir: '.vite-cache',
   },
 
   // Additional build optimization settings
   build: {
     transpile: ['vue', 'entities', 'estree-walker'],
     analyze: false, // Enable only when needed for analysis
+  },
+
+  // Optimize nitro build performance
+  nitro: {
+    minify: true,
+    compressPublicAssets: {
+      brotli: true,
+      gzip: true,
+    },
+    // Enable build caching
+    experimental: {
+      wasm: false, // Disable WASM if not needed
+    },
+    // Optimize build output
+    output: {
+      dir: '.output',
+      serverDir: '.output/server',
+      publicDir: '.output/public',
+    },
+    // Faster builds with reduced logging
+    logging: {
+      level: 1, // Reduced logging for faster builds
+    },
   },
 })
