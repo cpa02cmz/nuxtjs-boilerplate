@@ -224,6 +224,15 @@ export const contentConfig = {
     },
   },
 
+  // RSS Feed Configuration - Flexy hates hardcoded RSS values!
+  rss: {
+    title: process.env.CONTENT_RSS_TITLE || 'Free Developer Resources',
+    description:
+      process.env.CONTENT_RSS_DESCRIPTION ||
+      'A collection of free resources for developers',
+    language: process.env.CONTENT_RSS_LANGUAGE || 'en',
+  },
+
   // Error Messages - Flexy hates hardcoded error messages!
   errors: {
     authentication: {

@@ -3,6 +3,7 @@ import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import type { ApiKey } from '~/types/webhook'
 import { dateConfig } from '~/configs/date.config'
+import { permissionsConfig } from '~/configs/permissions.config'
 
 interface ApiKeyDisplay extends ApiKey {
   showFullKey?: boolean
@@ -58,7 +59,7 @@ export const useApiKeysPage = () => {
         { data: ApiKey } & { key?: string }
       >('/api/v1/auth/api-keys', {
         name: newKeyName.value.trim(),
-        permissions: ['read'],
+        permissions: permissionsConfig.apiKey.defaultPermissions,
       })
 
       if (response.success) {

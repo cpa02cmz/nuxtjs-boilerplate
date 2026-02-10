@@ -171,7 +171,7 @@
           <Tooltip
             :content="domainTooltip"
             position="bottom"
-            :delay="300"
+            :delay="animationConfig.tooltip.showDelayMs"
           >
             <a
               :href="url"

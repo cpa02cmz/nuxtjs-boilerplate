@@ -29,13 +29,14 @@
 import { computed } from 'vue'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
+import { limitsConfig } from '~/configs/limits.config'
 
 interface Props {
   limit?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  limit: 10,
+  limit: limitsConfig.search.defaultPopularSearchesLimit,
 })
 
 const emit = defineEmits<{

@@ -23,35 +23,9 @@
         <input
           v-model="categoryFilter"
           type="text"
-          placeholder="Filter by category..."
+          :placeholder="moderationConfig.ui.categoryFilterPlaceholder"
           class="filter-input"
         >
-      </div>
-    </div>
-
-    <div
-      v-if="loading"
-      class="loading"
-    >
-      Loading submissions...
-    </div>
-
-    <div
-      v-else-if="error"
-      class="error"
-    >
-      {{ error }}
-    </div>
-
-    <div
-      v-else
-      class="queue-list"
-    >
-      <div
-        v-for="submission in filteredSubmissions"
-        :key="submission.id"
-        class="submission-card"
-      >
         <div class="submission-header">
           <h3>{{ submission.resourceData?.title }}</h3>
           <span :class="['status-badge', `status-${submission.status}`]">
@@ -103,6 +77,7 @@
 <script setup lang="ts">
 import { useReviewQueue } from '~/composables/useReviewQueue'
 import type { Submission } from '~/types/submission'
+import { moderationConfig } from '~/configs/moderation.config'
 
 interface Props {
   initialSubmissions?: Submission[]
@@ -114,7 +89,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const {
   loading,
-  error,
+  error: _error,
   statusFilter,
   categoryFilter,
   filteredSubmissions,
@@ -186,18 +161,18 @@ const {
 }
 
 .status-pending {
-  background: #fff3cd;
-  color: #856404;
+  background: v-bind('moderationConfig.statusColors.pending.bg');
+  color: v-bind('moderationConfig.statusColors.pending.text');
 }
 
 .status-approved {
-  background: #d4edda;
-  color: #155724;
+  background: v-bind('moderationConfig.statusColors.approved.bg');
+  color: v-bind('moderationConfig.statusColors.approved.text');
 }
 
 .status-rejected {
-  background: #f8d7da;
-  color: #721c24;
+  background: v-bind('moderationConfig.statusColors.rejected.bg');
+  color: v-bind('moderationConfig.statusColors.rejected.text');
 }
 
 .submission-details {

@@ -104,6 +104,11 @@ import { animationConfig, type AnimationConfig } from './animation.config'
 import { thresholdsConfig, type ThresholdsConfig } from './thresholds.config'
 import { bookmarksConfig, type BookmarksConfig } from './bookmarks.config'
 
+// New configs - Flexy hates hardcoded values!
+import { userConfig, type UserConfig } from './user.config'
+import { moderationConfig, type ModerationConfig } from './moderation.config'
+import { permissionsConfig, type PermissionsConfig } from './permissions.config'
+
 // URL config - Flexy hates hardcoded URLs!
 import {
   urlConfig,
@@ -215,6 +220,11 @@ export { animationConfig, type AnimationConfig }
 export { thresholdsConfig, type ThresholdsConfig }
 export { bookmarksConfig, type BookmarksConfig }
 
+// Re-export new configs - Flexy hates hardcoded values!
+export { userConfig, type UserConfig }
+export { moderationConfig, type ModerationConfig }
+export { permissionsConfig, type PermissionsConfig }
+
 // Re-export URL config - Flexy hates hardcoded URLs!
 export {
   urlConfig,
@@ -268,6 +278,10 @@ export const config = {
   url: urlConfig,
   // Bookmarks config - Flexy hates hardcoded bookmark values!
   bookmarks: bookmarksConfig,
+  // New configs - Flexy hates hardcoded values!
+  user: userConfig,
+  moderation: moderationConfig,
+  permissions: permissionsConfig,
 } as const
 
 export type Config = typeof config

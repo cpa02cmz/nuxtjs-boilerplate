@@ -84,6 +84,11 @@ const handleLoad = () => {
   animation: shimmer 1.5s infinite;
 }
 
+/* Dark mode support for skeleton placeholder */
+:global(.dark) .skeleton-placeholder {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+}
+
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
@@ -106,6 +111,10 @@ const handleLoad = () => {
   .skeleton-placeholder {
     animation: none;
     background: #f0f0f0;
+  }
+
+  :global(.dark) .skeleton-placeholder {
+    background: #374151;
   }
 
   .optimized-image {
