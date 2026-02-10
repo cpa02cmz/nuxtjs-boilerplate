@@ -2,6 +2,7 @@ import { defineEventHandler, getQuery, setResponseHeader } from 'h3'
 import { exportAnalyticsToCsv } from '~/server/utils/analytics-db'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { handleApiRouteError } from '~/server/utils/api-response'
+import { TIME_MS } from '~/configs/time.config'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
@@ -11,7 +12,7 @@ export default defineEventHandler(async event => {
 
     const startDate = query.startDate
       ? new Date(query.startDate as string)
-      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      : new Date(Date.now() - TIME_MS.THIRTY_DAYS)
     const endDate = query.endDate
       ? new Date(query.endDate as string)
       : new Date()

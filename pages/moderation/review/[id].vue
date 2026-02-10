@@ -11,8 +11,14 @@
 </template>
 
 <script setup lang="ts">
+import { uiConfig } from '~/configs/ui.config'
+
 const route = useRoute()
 const submissionId = computed(() => route.params.id as string)
+
+// Flexy hates hardcoded values! Using config
+const containerMaxWidth = uiConfig.layout.container.maxWidth
+const containerPadding = uiConfig.layout.container.padding
 
 definePageMeta({
   layout: 'default',
@@ -29,9 +35,9 @@ useHead({
 
 <style scoped>
 .submission-review-page {
-  max-width: 1200px;
+  max-width: v-bind(containerMaxWidth);
   margin: 0 auto;
-  padding: 1rem;
+  padding: v-bind(containerPadding);
 }
 
 .back-link {

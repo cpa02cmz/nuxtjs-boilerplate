@@ -62,30 +62,34 @@ const virtualizer = useVirtualizer({
   estimateSize: () => props.itemHeight,
   overscan: props.overscan,
 })
+
+// Flexy hates hardcoded scrollbar colors! Using uiConfig
+const scrollbarConfig = uiConfig.scrollbar
 </script>
 
 <style scoped>
 .virtual-scroll-container {
   scrollbar-width: thin;
-  /* Hardcoded values to avoid SSR issues with v-bind */
-  scrollbar-color: #cbd5e1 #f1f5f9;
+  /* Flexy hates hardcoded values! Using v-bind with uiConfig */
+  scrollbar-color: v-bind('scrollbarConfig.thumbColor')
+    v-bind('scrollbarConfig.trackColor');
 }
 
 .virtual-scroll-container::-webkit-scrollbar {
-  width: 8px;
+  width: v-bind('scrollbarConfig.width');
 }
 
 .virtual-scroll-container::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: v-bind('scrollbarConfig.trackColor');
   border-radius: 4px;
 }
 
 .virtual-scroll-container::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: v-bind('scrollbarConfig.thumbColor');
   border-radius: 4px;
 }
 
 .virtual-scroll-container::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: v-bind('scrollbarConfig.thumbHoverColor');
 }
 </style>

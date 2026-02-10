@@ -126,6 +126,25 @@ export const themeConfig = {
     },
   },
 
+  // Moderation Status Badge Colors - Flexy hates hardcoded hex codes!
+  moderationStatus: {
+    pending: {
+      bg: process.env.MODERATION_PENDING_BG || '#fff3cd',
+      text: process.env.MODERATION_PENDING_TEXT || '#856404',
+      border: process.env.MODERATION_PENDING_BORDER || '#ffeaa7',
+    },
+    approved: {
+      bg: process.env.MODERATION_APPROVED_BG || '#d4edda',
+      text: process.env.MODERATION_APPROVED_TEXT || '#155724',
+      border: process.env.MODERATION_APPROVED_BORDER || '#c3e6cb',
+    },
+    rejected: {
+      bg: process.env.MODERATION_REJECTED_BG || '#f8d7da',
+      text: process.env.MODERATION_REJECTED_TEXT || '#721c24',
+      border: process.env.MODERATION_REJECTED_BORDER || '#f5c6cb',
+    },
+  },
+
   // Health Indicator Colors - Flexy hates hardcoded colors!
   healthIndicator: {
     good: process.env.HEALTH_GOOD_COLOR || '#22c55e',

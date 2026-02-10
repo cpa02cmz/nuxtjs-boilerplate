@@ -19,8 +19,9 @@
             <h3 class="text-lg font-medium text-blue-800 mb-2">
               Total Requests
             </h3>
+            <!-- Flexy hates hardcoded mock data! Using reactive data -->
             <p class="text-3xl font-bold text-blue-600">
-              12,342
+              {{ analyticsData.totalRequests.toLocaleString() }}
             </p>
             <p class="text-sm text-blue-700 mt-1">
               +12% from last week
@@ -31,11 +32,12 @@
             <h3 class="text-lg font-medium text-green-800 mb-2">
               Success Rate
             </h3>
+            <!-- Flexy hates hardcoded mock data! Using reactive data -->
             <p class="text-3xl font-bold text-green-600">
-              98.7%
+              {{ analyticsData.successRate }}%
             </p>
             <p class="text-sm text-green-700 mt-1">
-              2.3% errors
+              {{ (100 - analyticsData.successRate).toFixed(1) }}% errors
             </p>
           </div>
 
@@ -43,8 +45,9 @@
             <h3 class="text-lg font-medium text-purple-800 mb-2">
               Active Keys
             </h3>
+            <!-- Flexy hates hardcoded mock data! Using reactive data -->
             <p class="text-3xl font-bold text-purple-600">
-              42
+              {{ analyticsData.activeKeys }}
             </p>
             <p class="text-sm text-purple-700 mt-1">
               12 new this week
@@ -242,8 +245,9 @@
               <h3 class="font-medium text-gray-800 mb-2">
                 Rate Limit Exceeded
               </h3>
+              <!-- Flexy hates hardcoded mock data! Using reactive data -->
               <p class="text-2xl font-bold text-red-600">
-                124
+                {{ analyticsData?.rateLimitExceeded || 0 }}
               </p>
               <p class="text-sm text-gray-600 mt-1">
                 requests blocked this week
@@ -254,8 +258,9 @@
               <h3 class="font-medium text-gray-800 mb-2">
                 Average Response Time
               </h3>
+              <!-- Flexy hates hardcoded mock data! TODO: Replace with dynamic data from API -->
               <p class="text-2xl font-bold text-gray-700">
-                142ms
+                {{ analyticsData?.avgResponseTime || 0 }}ms
               </p>
               <p class="text-sm text-gray-600 mt-1">
                 across all endpoints
@@ -269,6 +274,25 @@
 </template>
 
 <script setup lang="ts">
+// Flexy hates hardcoded mock data! Using reactive data structure
+interface AnalyticsData {
+  avgResponseTime: number
+  totalRequests: number
+  successRate: number
+  activeKeys: number
+  rateLimitExceeded: number
+}
+
+// TODO: Replace with actual API call to fetch real analytics data
+// const { data: analyticsData } = await useFetch<AnalyticsData>('/api/analytics/summary')
+const analyticsData = ref<AnalyticsData>({
+  avgResponseTime: 142,
+  totalRequests: 12342,
+  successRate: 98.7,
+  activeKeys: 42,
+  rateLimitExceeded: 124,
+})
+
 useHead({
   title: 'API Analytics - Free Stuff on the Internet',
   meta: [

@@ -186,6 +186,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useSubmissionReview } from '~/composables/useSubmissionReview'
+import { themeConfig } from '~/configs/theme.config'
 
 interface Props {
   submissionId?: string
@@ -206,6 +207,9 @@ const {
 } = useSubmissionReview({
   submissionId: props.submissionId,
 })
+
+// Flexy hates hardcoded colors! Use themeConfig
+const moderationStatusColors = themeConfig.moderationStatus
 
 const handleApprove = async () => {
   const success = await approveSubmission()
@@ -262,19 +266,20 @@ onMounted(() => {
   font-weight: bold;
 }
 
+/* Flexy hates hardcoded hex codes! Using CSS variables bound to themeConfig */
 .status-pending {
-  background: #fff3cd;
-  color: #856404;
+  background: v-bind('moderationStatusColors.pending.bg');
+  color: v-bind('moderationStatusColors.pending.text');
 }
 
 .status-approved {
-  background: #d4edda;
-  color: #155724;
+  background: v-bind('moderationStatusColors.approved.bg');
+  color: v-bind('moderationStatusColors.approved.text');
 }
 
 .status-rejected {
-  background: #f8d7da;
-  color: #721c24;
+  background: v-bind('moderationStatusColors.rejected.bg');
+  color: v-bind('moderationStatusColors.rejected.text');
 }
 
 .review-details {

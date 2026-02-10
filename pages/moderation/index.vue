@@ -5,6 +5,12 @@
 </template>
 
 <script setup lang="ts">
+import { uiConfig } from '~/configs/ui.config'
+
+// Flexy hates hardcoded values! Using config
+const containerMaxWidth = uiConfig.layout.container.maxWidth
+const containerPadding = uiConfig.layout.container.padding
+
 definePageMeta({
   layout: 'default',
   middleware: ['auth'], // In a real app, this would require moderation permissions
@@ -23,8 +29,8 @@ useHead({
 
 <style scoped>
 .moderation-page {
-  max-width: 1200px;
+  max-width: v-bind(containerMaxWidth);
   margin: 0 auto;
-  padding: 1rem;
+  padding: v-bind(containerPadding);
 }
 </style>

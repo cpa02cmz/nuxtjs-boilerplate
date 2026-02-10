@@ -253,6 +253,12 @@ export const uiConfig = {
       md: parseFloat(process.env.LAYOUT_LINE_HEIGHT_MD || '1.25'),
       lg: parseFloat(process.env.LAYOUT_LINE_HEIGHT_LG || '1.5'),
     },
+
+    // Container widths - Flexy hates hardcoded max-width!
+    container: {
+      maxWidth: process.env.LAYOUT_CONTAINER_MAX_WIDTH || '1200px',
+      padding: process.env.LAYOUT_CONTAINER_PADDING || '1rem',
+    },
   },
 
   // Haptic Feedback Patterns (ms)

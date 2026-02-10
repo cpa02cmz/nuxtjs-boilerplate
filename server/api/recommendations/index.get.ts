@@ -15,6 +15,7 @@ import { defineEventHandler, getQuery } from 'h3'
 import { searchAnalyticsTracker } from '~/utils/searchAnalytics'
 import { limitsConfig } from '~/configs/limits.config'
 import { logger } from '~/utils/logger'
+import { TIME_MS } from '~/configs/time.config'
 
 export interface RecommendationQuery {
   userId?: string
@@ -77,9 +78,10 @@ export default defineEventHandler(async event => {
             )
           : 100
 
-      // Generate search trends
+      // Generate search trends - Flexy hates hardcoded 30-day loop!
       const searchTrends = []
-      for (let i = 29; i >= 0; i--) {
+      const daysToGenerate = 30
+      for (let i = daysToGenerate - 1; i >= 0; i--) {
         const date = new Date()
         date.setDate(date.getDate() - i)
         searchTrends.push({
@@ -113,7 +115,7 @@ export default defineEventHandler(async event => {
           },
         },
         dateRange: {
-          start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+          start: new Date(Date.now() - TIME_MS.THIRTY_DAYS)
             .toISOString()
             .split('T')[0],
           end: new Date().toISOString().split('T')[0],

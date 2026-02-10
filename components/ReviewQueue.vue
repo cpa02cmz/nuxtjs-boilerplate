@@ -103,6 +103,7 @@
 <script setup lang="ts">
 import { useReviewQueue } from '~/composables/useReviewQueue'
 import type { Submission } from '~/types/submission'
+import { themeConfig } from '~/configs/theme.config'
 
 interface Props {
   initialSubmissions?: Submission[]
@@ -120,6 +121,9 @@ const {
   filteredSubmissions,
   formatDate,
 } = useReviewQueue(props.initialSubmissions)
+
+// Flexy hates hardcoded colors! Use themeConfig
+const moderationStatusColors = themeConfig.moderationStatus
 </script>
 
 <style scoped>
@@ -185,19 +189,20 @@ const {
   font-weight: bold;
 }
 
+/* Flexy hates hardcoded hex codes! Using CSS variables bound to themeConfig */
 .status-pending {
-  background: #fff3cd;
-  color: #856404;
+  background: v-bind('moderationStatusColors.pending.bg');
+  color: v-bind('moderationStatusColors.pending.text');
 }
 
 .status-approved {
-  background: #d4edda;
-  color: #155724;
+  background: v-bind('moderationStatusColors.approved.bg');
+  color: v-bind('moderationStatusColors.approved.text');
 }
 
 .status-rejected {
-  background: #f8d7da;
-  color: #721c24;
+  background: v-bind('moderationStatusColors.rejected.bg');
+  color: v-bind('moderationStatusColors.rejected.text');
 }
 
 .submission-details {
