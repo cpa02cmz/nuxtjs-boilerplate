@@ -26,6 +26,25 @@
           :placeholder="moderationConfig.ui.categoryFilterPlaceholder"
           class="filter-input"
         >
+      </div>
+    </div>
+
+    <div
+      v-if="loading"
+      class="loading"
+    >
+      Loading submissions...
+    </div>
+
+    <div
+      v-else-if="filteredSubmissions.length > 0"
+      class="submissions-list"
+    >
+      <div
+        v-for="submission in filteredSubmissions"
+        :key="submission.id"
+        class="submission-card"
+      >
         <div class="submission-header">
           <h3>{{ submission.resourceData?.title }}</h3>
           <span :class="['status-badge', `status-${submission.status}`]">
@@ -66,7 +85,7 @@
     </div>
 
     <div
-      v-if="!loading && filteredSubmissions.length === 0"
+      v-else
       class="empty-state"
     >
       No submissions found matching your criteria.
@@ -231,6 +250,12 @@ const {
 .btn-primary {
   background: var(--color-primary);
   color: white;
+}
+
+.submissions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .loading,
