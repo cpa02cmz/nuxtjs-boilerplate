@@ -1,5 +1,5 @@
 import type { CreateWebhookRequest, Webhook } from '~/types/webhook'
-import { randomUUID } from 'node:crypto'
+import { randomUUID, randomBytes } from 'node:crypto'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import { createWebhookSchema } from '~/server/utils/validation-schemas'
 import {
@@ -23,8 +23,8 @@ export default defineEventHandler(async event => {
 
     const validatedBody = validationResult.data
 
-    // Generate secret for webhook
-    const secret = `whsec_${randomUUID()}`
+    // Generate secret for webhook using cryptographically secure random bytes
+    const secret = `whsec_${randomBytes(32).toString('hex')}`
 
     const newWebhook: Webhook = {
       id: `wh_${randomUUID()}`,
