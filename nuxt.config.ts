@@ -407,27 +407,4 @@ export default defineNuxtConfig({
     transpile: ['vue', 'entities', 'estree-walker'],
     analyze: false, // Enable only when needed for analysis
   },
-
-  // Optimize nitro build performance
-  nitro: {
-    minify: true,
-    compressPublicAssets: {
-      brotli: true,
-      gzip: true,
-    },
-    // Enable build caching
-    experimental: {
-      wasm: false, // Disable WASM if not needed
-    },
-    // Optimize build output
-    output: {
-      dir: '.output',
-      serverDir: '.output/server',
-      publicDir: '.output/public',
-    },
-    // Faster builds with reduced logging
-    logging: {
-      level: 1, // Reduced logging for faster builds
-    },
-  },
 })
