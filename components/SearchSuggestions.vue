@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="suggestions.length > 0 || searchHistory.length > 0"
+    v-if="visible"
     :id="id"
     :class="[
       'absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 overflow-auto border border-gray-200',
@@ -10,30 +10,118 @@
     :aria-label="contentConfig.search.suggestions.title"
     @keydown="handleKeyDown"
   >
-    <!-- Search History Section -->
-    <div v-if="searchHistory.length > 0">
+    <!-- No Results State -->
+    <div
+      v-if="
+        suggestions.length === 0 &&
+          searchHistory.length === 0 &&
+          query.length > 0
+      "
+      class="px-4 py-6 text-center"
+      role="status"
+      aria-live="polite"
+    >
       <div
-        class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+        class="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 flex items-center justify-center"
+        aria-hidden="true"
       >
-        {{ contentConfig.search.suggestions.recentTitle }}
-      </div>
-      <ul>
-        <li
-          v-for="(history, index) in searchHistory"
-          :key="'history-' + index"
-          :data-suggestion-index="index"
-          role="option"
-          :aria-selected="focusedIndex === index"
-          :class="[
-            'px-4 py-2 cursor-pointer hover:bg-gray-100',
-            focusedIndex === index ? 'bg-gray-100' : '',
-          ]"
-          @click="selectHistory(history)"
-          @mouseenter="focusedIndex = index"
+        <svg
+          class="w-6 h-6 text-gray-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <div class="flex items-center">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      </div>
+      <p class="text-sm font-medium text-gray-900 mb-1">
+        No suggestions found
+      </p>
+      <p class="text-xs text-gray-500">
+        Press Enter to search for "{{ query }}"
+      </p>
+    </div>
+    <!-- Search Results -->
+    <div v-else>
+      <!-- Search History Section -->
+      <div v-if="searchHistory.length > 0">
+        <div
+          class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+        >
+          {{ contentConfig.search.suggestions.recentTitle }}
+        </div>
+        <ul>
+          <li
+            v-for="(history, index) in searchHistory"
+            :key="'history-' + index"
+            :data-suggestion-index="index"
+            role="option"
+            :aria-selected="focusedIndex === index"
+            :class="[
+              'px-4 py-2 cursor-pointer hover:bg-gray-100',
+              focusedIndex === index ? 'bg-gray-100' : '',
+            ]"
+            @click="selectHistory(history)"
+            @mouseenter="focusedIndex = index"
+          >
+            <div class="flex items-center">
+              <svg
+                :class="[uiConfig.iconSizes.suggestion, 'mr-2 text-gray-400']"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>{{ history }}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Search Suggestions Section -->
+      <div v-if="suggestions.length > 0">
+        <div
+          v-if="searchHistory.length > 0"
+          class="border-t border-gray-200 my-1"
+        />
+        <div
+          class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+        >
+          {{ contentConfig.search.suggestions.title }}
+        </div>
+        <ul>
+          <li
+            v-for="(suggestion, index) in suggestions"
+            :key="suggestion.id"
+            :data-suggestion-index="searchHistory.length + index"
+            role="option"
+            :aria-selected="focusedIndex === searchHistory.length + index"
+            :class="[
+              'px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-start',
+              focusedIndex === searchHistory.length + index
+                ? 'bg-gray-100'
+                : '',
+            ]"
+            @click="selectSuggestion(suggestion)"
+            @mouseenter="focusedIndex = searchHistory.length + index"
+          >
             <svg
-              :class="[uiConfig.iconSizes.suggestion, 'mr-2 text-gray-400']"
+              :class="[
+                uiConfig.iconSizes.suggestion,
+                'mr-2 mt-0.5 text-gray-400 flex-shrink-0',
+              ]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -43,67 +131,20 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
-            <span>{{ history }}</span>
-          </div>
-        </li>
-      </ul>
-    </div>
-
-    <!-- Search Suggestions Section -->
-    <div v-if="suggestions.length > 0">
-      <div
-        v-if="searchHistory.length > 0"
-        class="border-t border-gray-200 my-1"
-      />
-      <div
-        class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider"
-      >
-        {{ contentConfig.search.suggestions.title }}
+            <div class="flex flex-col">
+              <span class="font-medium text-gray-900 truncate">{{
+                suggestion.title
+              }}</span>
+              <span class="text-xs text-gray-500 truncate">{{
+                suggestion.description
+              }}</span>
+            </div>
+          </li>
+        </ul>
       </div>
-      <ul>
-        <li
-          v-for="(suggestion, index) in suggestions"
-          :key="suggestion.id"
-          :data-suggestion-index="searchHistory.length + index"
-          role="option"
-          :aria-selected="focusedIndex === searchHistory.length + index"
-          :class="[
-            'px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-start',
-            focusedIndex === searchHistory.length + index ? 'bg-gray-100' : '',
-          ]"
-          @click="selectSuggestion(suggestion)"
-          @mouseenter="focusedIndex = searchHistory.length + index"
-        >
-          <svg
-            :class="[
-              uiConfig.iconSizes.suggestion,
-              'mr-2 mt-0.5 text-gray-400 flex-shrink-0',
-            ]"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-          <div class="flex flex-col">
-            <span class="font-medium text-gray-900 truncate">{{
-              suggestion.title
-            }}</span>
-            <span class="text-xs text-gray-500 truncate">{{
-              suggestion.description
-            }}</span>
-          </div>
-        </li>
-      </ul>
 
       <!-- Clear History Button -->
       <div
@@ -155,6 +196,7 @@ interface Props {
   visible: boolean
   id?: string
   focusedIndex?: number
+  query?: string
 }
 
 interface Emits {
@@ -168,6 +210,7 @@ const props = withDefaults(defineProps<Props>(), {
   searchHistory: () => [],
   id: undefined,
   focusedIndex: -1,
+  query: '',
 })
 const emit = defineEmits<Emits>()
 

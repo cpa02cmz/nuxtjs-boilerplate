@@ -114,15 +114,13 @@
     <!-- Search Suggestions Dropdown -->
     <ClientOnly>
       <LazySearchSuggestions
-        v-if="
-          showSuggestions &&
-            (suggestions.length > 0 || searchHistory.length > 0)
-        "
+        v-if="showSuggestions"
         id="search-suggestions-dropdown"
         :suggestions="suggestions"
         :search-history="searchHistory"
         :visible="showSuggestions"
         :focused-index="activeIndex"
+        :query="modelValue"
         @select-suggestion="handleSuggestionSelect"
         @select-history="handleHistorySelect"
         @clear-history="handleClearHistory"
