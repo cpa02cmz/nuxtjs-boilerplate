@@ -266,13 +266,20 @@ export function filterResourcesByHierarchicalTags(
   const { includeChildren = true, includeParents = false } = options
 
   return resources.filter(resource => {
+    if (!resource) {
+      return false
+    }
+
     if (!resource.hierarchicalTags || resource.hierarchicalTags.length === 0) {
       // Fallback to flat tags if hierarchical tags are not available
+      if (!resource.tags || !Array.isArray(resource.tags)) {
+        return false
+      }
       return resource.tags.some(tag =>
         selectedTagIds.some(
           selectedTagId =>
-            tag.toLowerCase().replace(/\s+/g, '-') ===
-            selectedTagId.toLowerCase()
+            tag?.toLowerCase().replace(/\s+/g, '-') ===
+            selectedTagId?.toLowerCase()
         )
       )
     }
@@ -309,10 +316,19 @@ export function getAllHierarchicalTags(
 ): HierarchicalTag[] {
   const allTags = new Set<string>()
 
+  if (!resources || !Array.isArray(resources)) {
+    return DEFAULT_HIERARCHICAL_TAGS as HierarchicalTag[]
+  }
+
   resources.forEach(resource => {
-    if (resource.hierarchicalTags) {
-      resource.hierarchicalTags.forEach(tag => {
-        allTags.add(tag.id)
+    if (
+      resource?.hierarchicalTags &&
+      Array.isArray(resource.hierarchicalTags)
+    ) {
+      resource.hierarchicalTags.forEach((tag: HierarchicalTag) => {
+        if (tag?.id) {
+          allTags.add(tag.id)
+        }
       })
     }
   })

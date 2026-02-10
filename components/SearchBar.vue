@@ -83,14 +83,24 @@
           /
         </kbd>
       </div>
-      <div
-        v-if="modelValue"
-        class="absolute inset-y-0 right-0 flex items-center pr-3"
+      <transition
+        enter-active-class="transition-all duration-200 ease-out"
+        enter-from-class="opacity-0 scale-75"
+        enter-to-class="opacity-100 scale-100"
+        leave-active-class="transition-all duration-150 ease-in"
+        leave-from-class="opacity-100 scale-100"
+        leave-to-class="opacity-0 scale-75"
       >
         <button
-          class="text-gray-400 hover:text-gray-600 focus:outline-none transition-all duration-200 ease-out rounded-full p-0.5 hover:bg-gray-100 hover:rotate-90 focus:ring-2 focus:ring-blue-500 active:scale-90"
+          v-if="modelValue"
+          ref="clearButtonRef"
+          type="button"
+          class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none transition-all duration-200 ease-out rounded-full p-0.5 hover:bg-gray-100 hover:rotate-90 focus:ring-2 focus:ring-blue-500 active:scale-90"
           aria-label="Clear search"
+          :aria-keyshortcuts="'Escape'"
           @click="clearSearch"
+          @keydown.enter.prevent="clearSearch"
+          @keydown.space.prevent="clearSearch"
         >
           <svg
             class="w-5 h-5"
@@ -108,7 +118,7 @@
             />
           </svg>
         </button>
-      </div>
+      </transition>
     </div>
 
     <!-- Search Suggestions Dropdown -->
@@ -143,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted, nextTick } from 'vue'
 import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
@@ -171,6 +181,7 @@ const emit = defineEmits<Emits>()
 
 // Reactive variables
 const searchInputRef = ref<HTMLInputElement>()
+const clearButtonRef = ref<HTMLButtonElement>()
 const inputTimeout = ref<ReturnType<typeof setTimeout> | number>()
 const debouncedQuery = ref('')
 const suggestions = ref<
@@ -249,6 +260,11 @@ const clearSearch = () => {
   showSuggestions.value = false
   activeIndex.value = -1
   isSearching.value = false
+
+  // Return focus to search input for seamless keyboard navigation
+  nextTick(() => {
+    searchInputRef.value?.focus()
+  })
 }
 
 const handleFocus = () => {
@@ -272,8 +288,14 @@ const totalItems = computed(() => {
 
 const handleKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
-    showSuggestions.value = false
-    activeIndex.value = -1
+    if (showSuggestions.value) {
+      // First Escape press closes suggestions
+      showSuggestions.value = false
+      activeIndex.value = -1
+    } else if (props.modelValue) {
+      // Second Escape press (or when no suggestions) clears the search
+      clearSearch()
+    }
   } else if (event.key === 'ArrowDown') {
     event.preventDefault()
     if (showSuggestions.value && totalItems.value > 0) {

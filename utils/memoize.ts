@@ -68,6 +68,8 @@ const generateArgsKey = (args: unknown[]): string => {
     .join('|')
 }
 
+const MAX_MEMOIZE_CACHE_SIZE = 1000
+
 export const memoize = <T extends (...args: unknown[]) => ReturnType<T>>(
   fn: T,
   keyGenerator?: (...args: Parameters<T>) => string
@@ -87,6 +89,17 @@ export const memoize = <T extends (...args: unknown[]) => ReturnType<T>>(
       return cache.get(key)!
     }
 
+    // Prevent unbounded cache growth - remove oldest entries if cache is full
+    if (cache.size >= MAX_MEMOIZE_CACHE_SIZE) {
+      const keysToRemove = Math.floor(MAX_MEMOIZE_CACHE_SIZE * 0.2)
+      let removed = 0
+      for (const k of cache.keys()) {
+        if (removed >= keysToRemove) break
+        cache.delete(k)
+        removed++
+      }
+    }
+
     const result = fn(...args)
     cache.set(key, result)
     return result
@@ -104,6 +117,17 @@ export const memoizeHighlight = (
 
     if (cache.has(key)) {
       return cache.get(key)!
+    }
+
+    // Prevent unbounded cache growth - remove oldest entries if cache is full
+    if (cache.size >= MAX_MEMOIZE_CACHE_SIZE) {
+      const keysToRemove = Math.floor(MAX_MEMOIZE_CACHE_SIZE * 0.2)
+      let removed = 0
+      for (const k of cache.keys()) {
+        if (removed >= keysToRemove) break
+        cache.delete(k)
+        removed++
+      }
     }
 
     const result = highlightFn(_text, _searchQuery)
