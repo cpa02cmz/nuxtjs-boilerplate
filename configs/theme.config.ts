@@ -91,6 +91,60 @@ export const themeConfig = {
       text: process.env.ERROR_MSG_SUCCESS_TEXT || '#166534',
     },
   },
+
+  // Resource Status Badge Colors - Flexy hates hardcoded hex codes!
+  resourceStatus: {
+    active: {
+      bg: process.env.STATUS_ACTIVE_BG || '#dcfce7',
+      text: process.env.STATUS_ACTIVE_TEXT || '#166534',
+      border: process.env.STATUS_ACTIVE_BORDER || '#bbf7d0',
+    },
+    deprecated: {
+      bg: process.env.STATUS_DEPRECATED_BG || '#fef3c7',
+      text: process.env.STATUS_DEPRECATED_TEXT || '#92400e',
+      border: process.env.STATUS_DEPRECATED_BORDER || '#fde68a',
+    },
+    discontinued: {
+      bg: process.env.STATUS_DISCONTINUED_BG || '#fee2e2',
+      text: process.env.STATUS_DISCONTINUED_TEXT || '#b91c1c',
+      border: process.env.STATUS_DISCONTINUED_BORDER || '#fca5a5',
+    },
+    updated: {
+      bg: process.env.STATUS_UPDATED_BG || '#dbeafe',
+      text: process.env.STATUS_UPDATED_TEXT || '#1e40af',
+      border: process.env.STATUS_UPDATED_BORDER || '#bfdbfe',
+    },
+    pending: {
+      bg: process.env.STATUS_PENDING_BG || '#e5e7eb',
+      text: process.env.STATUS_PENDING_TEXT || '#374151',
+      border: process.env.STATUS_PENDING_BORDER || '#d1d5db',
+    },
+    unknown: {
+      bg: process.env.STATUS_UNKNOWN_BG || '#e5e7eb',
+      text: process.env.STATUS_UNKNOWN_TEXT || '#374151',
+      border: process.env.STATUS_UNKNOWN_BORDER || '#d1d5db',
+    },
+  },
+
+  // Health Indicator Colors - Flexy hates hardcoded colors!
+  healthIndicator: {
+    good: process.env.HEALTH_GOOD_COLOR || '#22c55e',
+    warning: process.env.HEALTH_WARNING_COLOR || '#f59e0b',
+    bad: process.env.HEALTH_BAD_COLOR || '#ef4444',
+    unknown: process.env.HEALTH_UNKNOWN_COLOR || '#9ca3af',
+  },
+
+  // Scroll To Top Focus Colors
+  scrollToTopFocus: {
+    boxShadow: process.env.SCROLL_FOCUS_SHADOW || 'rgba(59, 130, 246, 0.5)',
+    outline: process.env.SCROLL_FOCUS_OUTLINE || '#3b82f6',
+  },
+
+  // Z-Index Scale - Flexy hates hardcoded z-index values!
+  zIndex: {
+    confetti: parseInt(process.env.Z_INDEX_CONFETTI || '9998'),
+    toast: parseInt(process.env.Z_INDEX_TOAST || '9999'),
+  },
 } as const
 
 export type ThemeConfig = typeof themeConfig

@@ -205,6 +205,74 @@ export const limitsConfig = {
     // Days in a year
     yearDays: 365,
   },
+
+  // Resource "New" Badge Threshold - Flexy hates hardcoded thresholds!
+  newResourceBadge: {
+    // Number of days to consider a resource as "new" (default: 7 days)
+    thresholdDays: parseInt(process.env.NEW_RESOURCE_THRESHOLD_DAYS || '7'),
+  },
+
+  // Validation Limits - Flexy hates hardcoded validation limits!
+  validation: {
+    // Resource title
+    resourceTitleMaxLength: parseInt(
+      process.env.VALIDATION_RESOURCE_TITLE_MAX || '200'
+    ),
+    // Resource description
+    resourceDescriptionMaxLength: parseInt(
+      process.env.VALIDATION_RESOURCE_DESC_MAX || '2000'
+    ),
+    resourceDescriptionMinLength: parseInt(
+      process.env.VALIDATION_RESOURCE_DESC_MIN || '10'
+    ),
+    // Tags
+    tagsMaxCount: parseInt(process.env.VALIDATION_TAGS_MAX || '20'),
+    // Technologies
+    technologiesMaxCount: parseInt(process.env.VALIDATION_TECH_MAX || '20'),
+    // Benefits
+    benefitsMaxCount: parseInt(process.env.VALIDATION_BENEFITS_MAX || '10'),
+    // Search query
+    searchQueryMaxLength: parseInt(process.env.VALIDATION_SEARCH_MAX || '500'),
+    // API Key name
+    apiKeyNameMaxLength: parseInt(
+      process.env.VALIDATION_API_KEY_NAME_MAX || '100'
+    ),
+    // Bulk operations
+    bulkMaxResources: parseInt(process.env.VALIDATION_BULK_MAX || '100'),
+    // Moderation
+    moderationReasonMinLength: parseInt(
+      process.env.VALIDATION_MOD_REASON_MIN || '10'
+    ),
+    moderationReasonMaxLength: parseInt(
+      process.env.VALIDATION_MOD_REASON_MAX || '500'
+    ),
+    moderationNotesMaxLength: parseInt(
+      process.env.VALIDATION_MOD_NOTES_MAX || '1000'
+    ),
+    // Analytics
+    eventTypeMaxLength: parseInt(process.env.VALIDATION_EVENT_TYPE_MAX || '50'),
+    resourceIdMaxLength: parseInt(
+      process.env.VALIDATION_RESOURCE_ID_MAX || '25'
+    ),
+    categoryMaxLength: parseInt(process.env.VALIDATION_CATEGORY_MAX || '100'),
+    userAgentMaxLength: parseInt(
+      process.env.VALIDATION_USER_AGENT_MAX || '500'
+    ),
+    ipAddressMaxLength: parseInt(process.env.VALIDATION_IP_MAX || '45'),
+    // Search pagination
+    searchMaxLimit: parseInt(process.env.VALIDATION_SEARCH_MAX_LIMIT || '100'),
+    searchDefaultLimit: parseInt(
+      process.env.VALIDATION_SEARCH_DEFAULT_LIMIT || '20'
+    ),
+    // URL validation
+    urlValidationTimeout: parseInt(
+      process.env.URL_VALIDATION_TIMEOUT || '10000'
+    ),
+    urlValidationRetries: parseInt(process.env.URL_VALIDATION_RETRIES || '3'),
+    urlValidationRetryDelay: parseInt(
+      process.env.URL_VALIDATION_RETRY_DELAY || '1000'
+    ),
+  },
 } as const
 
 export type LimitsConfig = typeof limitsConfig

@@ -80,6 +80,7 @@
 import { computed } from 'vue'
 import { uiConfig } from '../configs/ui.config'
 import { limitsConfig } from '../configs/limits.config'
+import { themeConfig } from '../configs/theme.config'
 
 interface Props {
   status?:
@@ -123,9 +124,9 @@ const statusText = computed(() => {
     case 'discontinued':
       return uiConfig.resourceStatus.labels.discontinued
     case 'updated':
-      return 'Updated'
+      return uiConfig.resourceStatus.labels.updated
     case 'pending':
-      return 'Pending'
+      return uiConfig.resourceStatus.labels.pending
     default:
       return uiConfig.resourceStatus.labels.unknown
   }
@@ -140,9 +141,9 @@ const statusTitle = computed(() => {
     case 'discontinued':
       return uiConfig.resourceStatus.descriptions.discontinued
     case 'updated':
-      return 'This resource has been recently updated'
+      return uiConfig.resourceStatus.descriptions.updated
     case 'pending':
-      return 'This resource is pending review'
+      return uiConfig.resourceStatus.descriptions.pending
     default:
       return uiConfig.resourceStatus.descriptions.unknown
   }
@@ -176,13 +177,14 @@ const healthLabel = computed(() => {
 .resource-status {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: v-bind('`${uiConfig.layout.spacing.md}rem`');
 }
 
 .status-badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
+  padding: v-bind('`${uiConfig.layout.spacing.sm}rem`')
+    v-bind('`${uiConfig.layout.spacing.lg}rem`');
+  border-radius: v-bind('`${uiConfig.layout.borderRadius.sm}rem`');
+  font-size: v-bind('`${uiConfig.layout.fontSize.sm}rem`');
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.025em;
@@ -196,45 +198,45 @@ const healthLabel = computed(() => {
 }
 
 .status-active {
-  background-color: #dcfce7;
-  color: #166534;
-  border: 1px solid #bbf7d0;
+  background-color: v-bind('themeConfig.resourceStatus.active.bg');
+  color: v-bind('themeConfig.resourceStatus.active.text');
+  border: 1px solid v-bind('themeConfig.resourceStatus.active.border');
 }
 
 .status-deprecated {
-  background-color: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fde68a;
+  background-color: v-bind('themeConfig.resourceStatus.deprecated.bg');
+  color: v-bind('themeConfig.resourceStatus.deprecated.text');
+  border: 1px solid v-bind('themeConfig.resourceStatus.deprecated.border');
 }
 
 .status-discontinued {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border: 1px solid #fca5a5;
+  background-color: v-bind('themeConfig.resourceStatus.discontinued.bg');
+  color: v-bind('themeConfig.resourceStatus.discontinued.text');
+  border: 1px solid v-bind('themeConfig.resourceStatus.discontinued.border');
 }
 
 .status-updated {
-  background-color: #dbeafe;
-  color: #1e40af;
-  border: 1px solid #bfdbfe;
+  background-color: v-bind('themeConfig.resourceStatus.updated.bg');
+  color: v-bind('themeConfig.resourceStatus.updated.text');
+  border: 1px solid v-bind('themeConfig.resourceStatus.updated.border');
 }
 
 .status-pending {
-  background-color: #e5e7eb;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background-color: v-bind('themeConfig.resourceStatus.pending.bg');
+  color: v-bind('themeConfig.resourceStatus.pending.text');
+  border: 1px solid v-bind('themeConfig.resourceStatus.pending.border');
 }
 
 .status-unknown {
-  background-color: #e5e7eb;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background-color: v-bind('themeConfig.resourceStatus.unknown.bg');
+  color: v-bind('themeConfig.resourceStatus.unknown.text');
+  border: 1px solid v-bind('themeConfig.resourceStatus.unknown.border');
 }
 
 .health-indicator {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: v-bind('`${uiConfig.layout.spacing.sm}rem`');
 }
 
 .health-indicator svg {
@@ -243,18 +245,18 @@ const healthLabel = computed(() => {
 }
 
 .health-good {
-  color: #22c55e;
+  color: v-bind('themeConfig.healthIndicator.good');
 }
 
 .health-warning {
-  color: #f59e0b;
+  color: v-bind('themeConfig.healthIndicator.warning');
 }
 
 .health-bad {
-  color: #ef4444;
+  color: v-bind('themeConfig.healthIndicator.bad');
 }
 
 .health-unknown {
-  color: #9ca3af;
+  color: v-bind('themeConfig.healthIndicator.unknown');
 }
 </style>

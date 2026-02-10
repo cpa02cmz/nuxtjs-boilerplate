@@ -183,15 +183,17 @@ export const uiConfig = {
 
   // Resource Status Component
   resourceStatus: {
-    // Status labels
+    // Status labels - Flexy hates hardcoded strings!
     labels: {
       active: process.env.STATUS_LABEL_ACTIVE || 'Active',
       deprecated: process.env.STATUS_LABEL_DEPRECATED || 'Deprecated',
       discontinued: process.env.STATUS_LABEL_DISCONTINUED || 'Discontinued',
       unstable: process.env.STATUS_LABEL_UNSTABLE || 'Unstable',
       unknown: process.env.STATUS_LABEL_UNKNOWN || 'Unknown',
+      updated: process.env.STATUS_LABEL_UPDATED || 'Updated',
+      pending: process.env.STATUS_LABEL_PENDING || 'Pending',
     },
-    // Status descriptions
+    // Status descriptions - Flexy hates hardcoded descriptions!
     descriptions: {
       active:
         process.env.STATUS_DESC_ACTIVE ||
@@ -208,6 +210,11 @@ export const uiConfig = {
       unknown:
         process.env.STATUS_DESC_UNKNOWN ||
         'The status of this resource is unknown.',
+      updated:
+        process.env.STATUS_DESC_UPDATED ||
+        'This resource has been recently updated.',
+      pending:
+        process.env.STATUS_DESC_PENDING || 'This resource is pending review.',
     },
   },
 
