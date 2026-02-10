@@ -146,22 +146,28 @@
         </div>
 
         <div class="mt-4 flex items-center justify-between">
-          <a
-            :href="url"
-            :target="newTab ? '_blank' : '_self'"
-            rel="noopener noreferrer"
-            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 hover:scale-105 active:bg-gray-950 active:scale-95 transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
-            :aria-label="`Visit ${title} - opens in ${newTab ? 'new tab' : 'same window'}`"
-            @click="handleLinkClick"
+          <Tooltip
+            :content="domainTooltip"
+            position="bottom"
+            :delay="300"
           >
-            {{ buttonLabel }}
-            <span
-              v-if="newTab"
-              class="ml-1 text-xs"
-            >{{
-              contentConfig.resourceCard.newTab
-            }}</span>
-          </a>
+            <a
+              :href="url"
+              :target="newTab ? '_blank' : '_self'"
+              rel="noopener noreferrer"
+              class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 hover:scale-105 active:bg-gray-950 active:scale-95 transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+              :aria-label="`Visit ${title} - opens in ${newTab ? 'new tab' : 'same window'}`"
+              @click="handleLinkClick"
+            >
+              {{ buttonLabel }}
+              <span
+                v-if="newTab"
+                class="ml-1 text-xs"
+              >{{
+                contentConfig.resourceCard.newTab
+              }}</span>
+            </a>
+          </Tooltip>
           <div
             class="flex items-center space-x-2"
             role="group"
@@ -334,11 +340,13 @@ import { useHead, useRuntimeConfig, useNuxtApp } from '#imports'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import OptimizedImage from '~/components/OptimizedImage.vue'
 import ResourceStatus from '~/components/ResourceStatus.vue'
+import Tooltip from '~/components/Tooltip.vue'
 import { trackResourceView, trackResourceClick } from '~/utils/analytics'
 import { sanitizeAndHighlight } from '~/utils/sanitize'
 import { memoizeHighlight } from '~/utils/memoize'
 import { logError } from '~/utils/errorLogger'
 import { copyToClipboard } from '~/utils/clipboard'
+import { formatDomainTooltip } from '~/utils/resourceHelper'
 import {
   hapticSuccess,
   hapticError,
@@ -409,6 +417,9 @@ const isNew = computed(() => {
 
   return diffDays <= 7
 })
+
+// Compute domain tooltip for external link preview
+const domainTooltip = computed(() => formatDomainTooltip(props.url))
 
 // Memoized highlight function to prevent recomputation
 const memoizedHighlight = memoizeHighlight(sanitizeAndHighlight)
