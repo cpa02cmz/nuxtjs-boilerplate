@@ -95,6 +95,11 @@ import {
   type RoutesConfig,
 } from './routes.config'
 import { memoizeConfig, type MemoizeConfig } from './memoize.config'
+import {
+  categoriesConfig,
+  type CategoriesConfig,
+  type CategoryOption,
+} from './categories.config'
 
 // Re-export individual configs
 export { appConfig, type AppConfig }
@@ -186,6 +191,7 @@ export {
   type RoutesConfig,
 }
 export { memoizeConfig, type MemoizeConfig }
+export { categoriesConfig, type CategoriesConfig, type CategoryOption }
 
 // Default export with all configs
 export const config = {
@@ -217,6 +223,7 @@ export const config = {
   icons: iconsConfig,
   routes: routesConfig,
   memoize: memoizeConfig,
+  categories: categoriesConfig,
 } as const
 
 export type Config = typeof config

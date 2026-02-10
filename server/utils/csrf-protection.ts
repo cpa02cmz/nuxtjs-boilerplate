@@ -2,7 +2,7 @@
 // Implements Double Submit Cookie pattern for CSRF protection
 // Flexy loves modularity! Using centralized CSRF config.
 
-import { randomBytes } from 'node:crypto'
+import { randomBytes, timingSafeEqual } from 'node:crypto'
 import type { H3Event } from 'h3'
 import { getCookie, setCookie, readBody } from 'h3'
 import {
@@ -12,6 +12,18 @@ import {
   requiresCsrfProtection,
 } from '~/configs/csrf.config'
 import { httpConfig } from '~/configs/http.config'
+
+/**
+ * Timing-safe string comparison to prevent timing attacks
+ */
+function safeCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    return false
+  }
+  const bufA = Buffer.from(a)
+  const bufB = Buffer.from(b)
+  return timingSafeEqual(bufA, bufB)
+}
 
 /**
  * Generate a cryptographically secure CSRF token
@@ -71,7 +83,7 @@ export function validateCsrfToken(event: H3Event): boolean {
     event.node.req.headers[csrfConfig.header.name.toLowerCase()]
 
   if (headerToken && typeof headerToken === 'string') {
-    return headerToken === cookieToken
+    return safeCompare(headerToken, cookieToken)
   }
 
   // Fallback: Check request body for CSRF token (for form submissions)
@@ -118,7 +130,7 @@ export async function requireCsrfToken(event: H3Event): Promise<boolean> {
   const headerToken =
     event.node.req.headers[csrfConfig.header.name.toLowerCase()]
   if (headerToken && typeof headerToken === 'string') {
-    return headerToken === cookieToken
+    return safeCompare(headerToken, cookieToken)
   }
 
   // For state-changing methods, check body token
@@ -126,7 +138,7 @@ export async function requireCsrfToken(event: H3Event): Promise<boolean> {
     try {
       const body = await readBody(event).catch(() => null)
       if (body && typeof body === 'object' && 'csrf_token' in body) {
-        return body.csrf_token === cookieToken
+        return safeCompare(body.csrf_token, cookieToken)
       }
     } catch {
       // Ignore body parsing errors

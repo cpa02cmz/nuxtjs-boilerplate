@@ -14,7 +14,7 @@ export default defineEventHandler(async event => {
       return
     }
 
-    const success = webhookQueueSystem.retryDeadLetterWebhook(id)
+    const success = await webhookQueueSystem.retryDeadLetterWebhook(id)
 
     if (!success) {
       sendNotFoundError(event, 'Dead Letter Webhook', id)

@@ -132,16 +132,16 @@ export class WebhookDeliveryService {
       updatedAt: new Date().toISOString(),
     }
 
-    webhookStorage.createDelivery(delivery)
+    await webhookStorage.createDelivery(delivery)
 
     if (payload.idempotencyKey) {
-      webhookStorage.setDeliveryByIdempotencyKey(
+      await webhookStorage.setDeliveryByIdempotencyKey(
         payload.idempotencyKey,
         delivery
       )
     }
 
-    webhookStorage.updateWebhook(webhook.id, {
+    await webhookStorage.updateWebhook(webhook.id, {
       updatedAt: new Date().toISOString(),
     })
 

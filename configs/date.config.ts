@@ -59,6 +59,13 @@ export const dateConfig = {
     older: parseInt(process.env.ACTIVITY_TIMING_OLDER || '3'),
     oldest: parseInt(process.env.ACTIVITY_TIMING_OLDEST || '4'),
   },
+
+  // Default date for mock data and initialization
+  // Flexy hates hardcoded dates scattered throughout the codebase!
+  defaultDate: process.env.DEFAULT_DATE || '2025-01-01',
+
+  // Default date/time for createdAt and updatedAt fields
+  defaultTimestamp: process.env.DEFAULT_TIMESTAMP || '2025-01-01T00:00:00.000Z',
 } as const
 
 export type DateConfig = typeof dateConfig

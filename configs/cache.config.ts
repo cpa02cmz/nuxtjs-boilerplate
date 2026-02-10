@@ -66,6 +66,7 @@ export const cacheConfig = {
 
     // Cache size limits
     maxCacheSize: parseInt(process.env.CACHE_MAX_SIZE || '100'),
+    maxMemorySize: parseInt(process.env.CACHE_MAX_MEMORY_SIZE || '1000'),
     maxPopularSearches: parseInt(
       process.env.CACHE_MAX_POPULAR_SEARCHES || '50'
     ),
@@ -78,6 +79,21 @@ export const cacheConfig = {
     maxAnalyticsEntries: parseInt(
       process.env.CACHE_MAX_ANALYTICS_ENTRIES || '100'
     ),
+
+    // Cleanup settings
+    cleanupIntervalMs: parseInt(
+      process.env.CACHE_CLEANUP_INTERVAL_MS || '300000'
+    ), // 5 minutes
+
+    // Default TTL in seconds for cache operations
+    defaultTtlSeconds: parseInt(
+      process.env.CACHE_DEFAULT_TTL_SECONDS || '3600'
+    ), // 1 hour
+
+    // LRU cleanup percentage - what percentage of entries to remove when full
+    lruCleanupPercentage: parseFloat(
+      process.env.CACHE_LRU_CLEANUP_PERCENTAGE || '0.1'
+    ), // 10%
   },
 
   // Rate Limiting Cache
