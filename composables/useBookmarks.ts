@@ -1,4 +1,4 @@
-import { ref, computed, readonly, onMounted } from 'vue'
+import { ref, computed, readonly, onMounted, getCurrentInstance } from 'vue'
 import { createStorageWithDateSerialization } from '~/utils/storage'
 import { emitEvent } from '~/utils/event-emitter'
 import { STORAGE_KEYS } from '~/server/utils/constants'
@@ -57,9 +57,12 @@ export const useBookmarks = () => {
   }
 
   // Also initialize on mount for SSR hydration safety
-  onMounted(() => {
-    initBookmarks()
-  })
+  // Only call onMounted if there's an active Vue instance (not in test environment)
+  if (getCurrentInstance()) {
+    onMounted(() => {
+      initBookmarks()
+    })
+  }
 
   const saveBookmarks = () => {
     storage.set(bookmarks.value)

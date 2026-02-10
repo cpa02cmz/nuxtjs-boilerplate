@@ -23,6 +23,22 @@ describe('ShareButton', () => {
   beforeEach(() => {
     // Clear all mocks before each test
     vi.clearAllMocks()
+
+    // Mock window.matchMedia for haptic feedback
+    Object.defineProperty(global.window, 'matchMedia', {
+      value: vi.fn().mockReturnValue({
+        matches: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
+      writable: true,
+    })
+
+    // Mock navigator.vibrate for haptic feedback
+    Object.defineProperty(navigator, 'vibrate', {
+      value: vi.fn(),
+      writable: true,
+    })
   })
 
   it('renders correctly with props', () => {
