@@ -26,6 +26,7 @@ class CacheManager {
   private hitCount: number = 0
   private missCount: number = 0
   private redisConnected: boolean = false
+  private cleanupIntervalId: NodeJS.Timeout | null = null
 
   constructor(config: CacheConfig = {}) {
     const {
@@ -96,11 +97,22 @@ class CacheManager {
 
   /**
    * Start periodic cleanup of expired cache entries
+   * FIXED: Store interval reference to prevent memory leaks
    */
   private startCleanup() {
-    setInterval(() => {
+    this.cleanupIntervalId = setInterval(() => {
       this.cleanupExpired()
     }, this.cleanupInterval)
+  }
+
+  /**
+   * Stop the cleanup interval to prevent memory leaks
+   */
+  private stopCleanup(): void {
+    if (this.cleanupIntervalId) {
+      clearInterval(this.cleanupIntervalId)
+      this.cleanupIntervalId = null
+    }
   }
 
   /**
@@ -310,13 +322,17 @@ class CacheManager {
 
   /**
    * Simple pattern matching for cache invalidation
+   * FIXED: Properly escape regex special characters to prevent regex injection
    */
   private matchPattern(key: string, pattern: string): boolean {
+    // First escape all regex special characters, then convert glob patterns
+    const escapeRegex = (str: string) =>
+      str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
     // Convert glob pattern to regex
-    const regexPattern = pattern
-      .replace(/\./g, '\\.') // Escape dots
-      .replace(/\*/g, '.*') // Convert * to .*
-      .replace(/\?/g, '.') // Convert ? to .
+    const regexPattern = escapeRegex(pattern)
+      .replace(/\\\*/g, '.*') // Convert * to .*
+      .replace(/\\\?/g, '.') // Convert ? to .
 
     const regex = new RegExp(`^${regexPattern}$`)
     return regex.test(key)
@@ -324,8 +340,12 @@ class CacheManager {
 
   /**
    * Close Redis connection properly
+   * FIXED: Also stop cleanup interval to prevent memory leaks
    */
   async disconnect(): Promise<void> {
+    // Stop cleanup interval to prevent memory leaks
+    this.stopCleanup()
+
     if (this.redisClient) {
       try {
         await this.redisClient.quit()
