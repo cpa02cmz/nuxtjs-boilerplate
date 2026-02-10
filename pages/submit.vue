@@ -41,7 +41,7 @@
                 aria-describedby="title-description title-counter title-error"
                 :aria-invalid="errors.title ? 'true' : 'false'"
                 :class="[
-                  'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200',
+                  'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200',
                   errors.title
                     ? 'border-red-500 animate-form-shake'
                     : formData.title && !errors.title
@@ -111,7 +111,7 @@
                 aria-describedby="description-description description-counter description-error"
                 :aria-invalid="errors.description ? 'true' : 'false'"
                 :class="[
-                  'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200 resize-none',
+                  'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 resize-none',
                   errors.description
                     ? 'border-red-500 animate-form-shake'
                     : formData.description && !errors.description
@@ -180,7 +180,7 @@
               aria-describedby="url-description url-error"
               :aria-invalid="errors.url ? 'true' : 'false'"
               :class="[
-                'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200',
+                'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200',
                 errors.url
                   ? 'border-red-500 animate-form-shake'
                   : formData.url && !errors.url
@@ -222,7 +222,7 @@
               aria-describedby="category-description category-error"
               :aria-invalid="errors.category ? 'true' : 'false'"
               :class="[
-                'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200',
+                'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200',
                 errors.category
                   ? 'border-red-500 animate-form-shake'
                   : formData.category && !errors.category
@@ -273,7 +273,7 @@
               v-model="tagsInput"
               type="text"
               aria-describedby="tags-description"
-              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200"
               placeholder="Enter tags separated by commas"
             >
             <p
@@ -291,7 +291,7 @@
               :disabled="isSubmitting"
               :aria-busy="isSubmitting"
               aria-live="polite"
-              class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
               <span v-if="!isSubmitting">Submit Resource</span>
               <span
