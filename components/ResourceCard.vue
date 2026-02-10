@@ -34,6 +34,7 @@
               :to="`/resources/${id}`"
               class="resource-link hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:rounded-sm transition-colors duration-200"
               :aria-label="`View details for ${title}`"
+              @click="markResourceVisited"
             >
               <span
                 v-if="highlightedTitle"
@@ -71,6 +72,27 @@
               />
             </svg>
             New
+          </span>
+          <!-- Visited badge -->
+          <span
+            v-if="isResourceVisited && id"
+            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 mr-2"
+            role="status"
+            aria-label="You have viewed this resource"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-3 w-3 mr-1"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Viewed
           </span>
           <!-- Resource status badge -->
           <ResourceStatus
@@ -367,6 +389,7 @@
 import { computed, ref, onMounted } from 'vue'
 import { useHead, useRuntimeConfig, useNuxtApp } from '#imports'
 import { useResourceComparison } from '~/composables/useResourceComparison'
+import { useVisitedResources } from '~/composables/useVisitedResources'
 import OptimizedImage from '~/components/OptimizedImage.vue'
 import ResourceStatus from '~/components/ResourceStatus.vue'
 import Tooltip from '~/components/Tooltip.vue'
@@ -411,6 +434,9 @@ interface Props {
 // Get the comparison composable
 const { addResource } = useResourceComparison()
 
+// Get visited resources tracking
+const { isVisited, markVisited } = useVisitedResources()
+
 const props = withDefaults(defineProps<Props>(), {
   id: undefined,
   category: 'unknown',
@@ -450,6 +476,18 @@ const isNew = computed(() => {
 
 // Compute domain tooltip for external link preview
 const domainTooltip = computed(() => formatDomainTooltip(props.url))
+
+// Check if resource has been visited (complements CSS :visited for SPA navigation)
+const isResourceVisited = computed(() => {
+  return props.id ? isVisited(props.id) : false
+})
+
+// Mark resource as visited when user clicks to view details
+const markResourceVisited = () => {
+  if (props.id) {
+    markVisited(props.id)
+  }
+}
 
 // Memoized highlight function to prevent recomputation
 const memoizedHighlight = memoizeHighlight(sanitizeAndHighlight)
@@ -494,6 +532,8 @@ const handleLinkClick = (event: Event) => {
   // Track the resource click
   if (props.id) {
     trackResourceClick(props.id, props.title, props.category)
+    // Mark as visited for SPA tracking (complements browser :visited)
+    markVisited(props.id)
   }
 
   try {
