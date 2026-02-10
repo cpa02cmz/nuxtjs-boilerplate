@@ -201,6 +201,7 @@ model Resource {
   submission      Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
   submissionId    String?   @unique
 
+  @@index([url])
   @@index([category])
   @@index([status])
   @@index([dateAdded])
