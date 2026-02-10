@@ -91,33 +91,39 @@
         leave-from-class="opacity-100 scale-100"
         leave-to-class="opacity-0 scale-75"
       >
-        <button
+        <Tooltip
           v-if="modelValue"
-          ref="clearButtonRef"
-          type="button"
-          class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none transition-all duration-200 ease-out rounded-full p-0.5 hover:bg-gray-100 hover:rotate-90 focus:ring-2 focus:ring-blue-500 active:scale-90"
-          aria-label="Clear search"
-          :aria-keyshortcuts="'Escape'"
-          @click="clearSearch"
-          @keydown.enter.prevent="clearSearch"
-          @keydown.space.prevent="clearSearch"
+          content="Clear search (Esc)"
+          position="bottom"
+          :delay="300"
         >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
+          <button
+            ref="clearButtonRef"
+            type="button"
+            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none transition-all duration-200 ease-out rounded-full p-0.5 hover:bg-gray-100 hover:rotate-90 focus:ring-2 focus:ring-blue-500 active:scale-90"
+            aria-label="Clear search"
+            :aria-keyshortcuts="'Escape'"
+            @click="clearSearch"
+            @keydown.enter.prevent="clearSearch"
+            @keydown.space.prevent="clearSearch"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </Tooltip>
       </transition>
     </div>
 
@@ -161,6 +167,7 @@ import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { searchConfig } from '~/configs/search.config'
 import { uiConfig } from '~/configs/ui.config'
+import Tooltip from '~/components/Tooltip.vue'
 
 interface Props {
   modelValue: string
