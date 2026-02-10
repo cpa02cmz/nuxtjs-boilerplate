@@ -156,6 +156,7 @@ import { useNuxtApp } from '#app'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { contentConfig } from '../configs/content.config'
 import { animationConfig } from '../configs/animation.config'
+import { uiConfig } from '~/configs/ui.config'
 
 // Storage key constants
 const STORAGE_KEYS = {
@@ -207,7 +208,7 @@ const announce = (message: string): void => {
   announcement.value = message
   setTimeout(() => {
     announcement.value = ''
-  }, 1000)
+  }, uiConfig.feedback.announcementClearMs)
 }
 
 // Handle escape key

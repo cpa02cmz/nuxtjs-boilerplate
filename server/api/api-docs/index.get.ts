@@ -1,8 +1,10 @@
 import { defineEventHandler } from 'h3'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+import { cdnConfig } from '~/configs/cdn.config'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
+  // Flexy hates hardcoded values! Using CDN config
   const swaggerHtml = `
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +13,7 @@ export default defineEventHandler(async event => {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Free Stuff on the Internet API Documentation" />
   <title>Free Stuff on the Internet - API Documentation</title>
-  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+  <link rel="stylesheet" type="text/css" href="${cdnConfig.swagger.cssUrl}" />
   <style>
     body {
       margin: 0;
@@ -34,7 +36,7 @@ export default defineEventHandler(async event => {
 </head>
 <body>
   <div id="swagger-ui"></div>
-  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js" crossorigin></script>
+  <script src="${cdnConfig.swagger.jsUrl}" crossorigin></script>
   <script>
     window.onload = () => {
       window.ui = SwaggerUIBundle({

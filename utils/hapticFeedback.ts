@@ -2,7 +2,10 @@
  * Haptic feedback utility for mobile/touch devices
  * Provides tactile feedback for important user actions
  * Gracefully degrades on unsupported browsers
+ * Flexy says: No more hardcoded values! All patterns are now configurable.
  */
+
+import { uiConfig } from '../configs/ui.config'
 
 export type HapticType =
   | 'light'
@@ -11,6 +14,40 @@ export type HapticType =
   | 'success'
   | 'warning'
   | 'error'
+
+/**
+ * Parse pattern string (e.g., "50,100,50") into number array
+ */
+const parsePattern = (pattern: string): number | number[] => {
+  if (pattern.includes(',')) {
+    return pattern.split(',').map(n => parseInt(n.trim(), 10))
+  }
+  return parseInt(pattern, 10)
+}
+
+/**
+ * Get haptic pattern from config
+ */
+const getHapticPattern = (type: HapticType): number | number[] => {
+  const patterns = uiConfig.haptics.patterns
+
+  switch (type) {
+    case 'light':
+      return patterns.light
+    case 'medium':
+      return patterns.medium
+    case 'heavy':
+      return patterns.heavy
+    case 'success':
+      return parsePattern(patterns.success)
+    case 'warning':
+      return parsePattern(patterns.warning)
+    case 'error':
+      return parsePattern(patterns.error)
+    default:
+      return patterns.light
+  }
+}
 
 /**
  * Check if the device supports vibration API
@@ -39,16 +76,7 @@ export const triggerHaptic = (type: HapticType): boolean => {
   }
 
   try {
-    const patterns: Record<HapticType, number | number[]> = {
-      light: 10,
-      medium: 25,
-      heavy: 50,
-      success: [50, 100, 50],
-      warning: [30, 50, 30],
-      error: [100, 50, 100],
-    }
-
-    const pattern = patterns[type]
+    const pattern = getHapticPattern(type)
     return navigator.vibrate(pattern)
   } catch {
     // Gracefully fail if vibration API throws

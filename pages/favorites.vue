@@ -1,5 +1,7 @@
 <template>
   <div class="py-12">
+    <!-- Confetti celebration when clearing all bookmarks -->
+    <ConfettiCelebration ref="confettiRef" intensity="light" />
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
@@ -8,15 +10,13 @@
         <p class="mt-4 text-xl text-gray-600">
           {{ bookmarkCount }} bookmarked resource<span
             v-if="bookmarkCount !== 1"
-          >s</span>
+            >s</span
+          >
         </p>
       </div>
 
       <!-- Empty state -->
-      <div
-        v-if="bookmarkCount === 0"
-        class="text-center py-16"
-      >
+      <div v-if="bookmarkCount === 0" class="text-center py-16">
         <div class="mx-auto h-24 w-24 text-gray-400">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -33,9 +33,7 @@
             />
           </svg>
         </div>
-        <h3 class="mt-4 text-xl font-medium text-gray-900">
-          No bookmarks yet
-        </h3>
+        <h3 class="mt-4 text-xl font-medium text-gray-900">No bookmarks yet</h3>
         <p class="mt-2 text-gray-600">
           Start bookmarking resources by clicking the star icon on any resource
           card.
@@ -58,7 +56,8 @@
             <div class="text-sm text-gray-700">
               Showing {{ getAllBookmarks.length }} bookmarked resource<span
                 v-if="getAllBookmarks.length !== 1"
-              >s</span>
+                >s</span
+              >
             </div>
           </div>
           <div class="flex space-x-3">
@@ -89,7 +88,8 @@
                 >
                   Delete {{ bookmarkCount }} bookmark<span
                     v-if="bookmarkCount !== 1"
-                  >s</span>?
+                    >s</span
+                  >?
                 </span>
                 <button
                   class="text-sm text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-colors"
@@ -160,6 +160,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useBookmarks } from '~/composables/useBookmarks'
+import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
 // Set page-specific meta tags
 useSeoMeta({
@@ -172,6 +173,8 @@ useSeoMeta({
 definePageMeta({
   layout: 'default',
 })
+
+const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
 
 const {
   getAllBookmarks,
@@ -195,5 +198,9 @@ const handleCancelClear = () => {
 const handleConfirmClear = () => {
   clearBookmarks()
   showClearConfirmation.value = false
+  // Trigger confetti celebration - Palette's delightful micro-UX touch!
+  setTimeout(() => {
+    confettiRef.value?.celebrate()
+  }, 100)
 }
 </script>

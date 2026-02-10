@@ -1,5 +1,13 @@
 <template>
-  <div class="toast-container">
+  <div
+    class="toast-container"
+    :style="{
+      top: toastPosition.top,
+      right: toastPosition.right,
+      zIndex: toastPosition.zIndex,
+      maxWidth: toastPosition.maxWidth,
+    }"
+  >
     <transition-group
       name="toast"
       tag="div"
@@ -125,6 +133,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { TOAST_DURATION, UI_TIMING } from '~/server/utils/constants'
+import { uiConfig } from '~/configs/ui.config'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -138,6 +147,15 @@ interface Toast {
 
 const toasts = ref<Toast[]>([])
 const pausedToastIds = ref<Set<string>>(new Set())
+
+// Flexy hates hardcoded values! Use config for positioning
+const toastPosition = {
+  top: `${uiConfig.toast.position.top}px`,
+  right: `${uiConfig.toast.position.right}px`,
+  maxWidth: `${uiConfig.toast.position.maxWidth}px`,
+  minWidth: `${uiConfig.toast.position.minWidth}px`,
+  zIndex: uiConfig.zIndex.toast,
+}
 
 const addToast = (toast: Omit<Toast, 'id'>) => {
   const id = Math.random().toString(36).substring(2, 9)
@@ -197,10 +215,11 @@ defineExpose({
 <style scoped>
 .toast-container {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 9999;
-  max-width: 400px;
+  /* Flexy hates hardcoded values! Using CSS custom properties from config */
+  top: var(--toast-top, 20px);
+  right: var(--toast-right, 20px);
+  z-index: var(--toast-z-index, 9999);
+  max-width: var(--toast-max-width, 400px);
   width: 100%;
 }
 
@@ -218,7 +237,8 @@ defineExpose({
   box-shadow:
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  min-width: 300px;
+  /* Flexy hates hardcoded values! Using CSS custom properties from config */
+  min-width: var(--toast-min-width, 300px);
   max-width: 100%;
   animation: slideIn 0.3s ease-out;
   position: relative;

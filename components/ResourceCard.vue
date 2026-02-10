@@ -348,6 +348,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
+import { TIME_MS } from '~/configs/time.config'
 import type { Resource } from '~/types/resource'
 
 interface Props {
@@ -397,13 +398,14 @@ const isCopied = ref(false)
 const isCopyAnimating = ref(false)
 
 // Check if resource is new (added within the last 7 days)
+// Flexy hates hardcoded values! Using TIME_MS constants from config
 const isNew = computed(() => {
   if (!props.dateAdded) return false
 
   const addedDate = new Date(props.dateAdded)
   const now = new Date()
   const diffTime = Math.abs(now.getTime() - addedDate.getTime())
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  const diffDays = Math.ceil(diffTime / TIME_MS.DAY)
 
   return diffDays <= 7
 })
