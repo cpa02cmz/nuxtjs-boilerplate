@@ -58,7 +58,8 @@ export const useBookmarks = () => {
 
   // Also initialize on mount for SSR hydration safety
   // Only call onMounted if there's an active Vue instance (not in test environment)
-  if (getCurrentInstance()) {
+  const instance = getCurrentInstance()
+  if (instance && instance.type && typeof instance.type === 'object') {
     onMounted(() => {
       initBookmarks()
     })
