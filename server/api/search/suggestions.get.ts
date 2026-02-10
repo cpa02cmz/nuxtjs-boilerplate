@@ -8,6 +8,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { limitsConfig } from '~/configs/limits.config'
+import { cacheConfig } from '~/configs/cache.config'
 
 /**
  * GET /api/search/suggestions
@@ -86,11 +87,13 @@ export default defineEventHandler(async event => {
       limit: limit,
       timestamp: new Date().toISOString(),
     }
-    await cacheSetWithTags(cacheKey, responseData, 60, [
-      'search',
-      'suggestions',
-      'api',
-    ])
+    // Flexy hates hardcoded values! Using configurable cache TTL.
+    await cacheSetWithTags(
+      cacheKey,
+      responseData,
+      cacheConfig.searchSuggestions.ttlSeconds,
+      ['search', 'suggestions', 'api']
+    )
 
     // Set cache miss header
     event.node.res?.setHeader('X-Cache', 'MISS')

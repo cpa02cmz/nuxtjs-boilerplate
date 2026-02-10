@@ -157,6 +157,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { contentConfig } from '../configs/content.config'
 import { animationConfig } from '../configs/animation.config'
 import { uiConfig } from '~/configs/ui.config'
+import { thresholdsConfig } from '~/configs/thresholds.config'
 
 // Storage key constants
 const STORAGE_KEYS = {
@@ -316,7 +317,7 @@ onMounted(async () => {
     // Small delay to allow transition to start
     setTimeout(() => {
       dismissButtonRef.value?.focus()
-    }, 100)
+    }, thresholdsConfig.focus.transitionFocusDelayMs)
 
     // Setup auto-dismiss if enabled
     setupAutoDismiss()

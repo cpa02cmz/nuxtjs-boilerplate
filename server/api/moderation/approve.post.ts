@@ -62,40 +62,40 @@ export default defineEventHandler(async event => {
     const qualityChecks = runQualityChecks(resourceData as Resource)
     const qualityScore = calculateQualityScore(qualityChecks)
 
-    // Create the resource in database
+    // Create the resource and update submission in a transaction
     const reviewedAt = new Date()
-    const resource = await prisma.resource.create({
-      data: {
-        title: resourceData.title || '',
-        description: resourceData.description || '',
-        benefits: JSON.stringify(resourceData.benefits || []),
-        url: resourceData.url || '',
-        category: resourceData.category || '',
-        pricingModel: resourceData.pricingModel || '',
-        difficulty: resourceData.difficulty || '',
-        tags: JSON.stringify(resourceData.tags || []),
-        technology: JSON.stringify(resourceData.technology || []),
-        status: 'approved',
-        submittedBy: submission.submittedBy,
-        reviewedBy,
-        reviewedAt,
-        qualityScore,
-        submission: {
-          connect: { id: submissionId },
+    const [resource] = await prisma.$transaction([
+      prisma.resource.create({
+        data: {
+          title: resourceData.title || '',
+          description: resourceData.description || '',
+          benefits: JSON.stringify(resourceData.benefits || []),
+          url: resourceData.url || '',
+          category: resourceData.category || '',
+          pricingModel: resourceData.pricingModel || '',
+          difficulty: resourceData.difficulty || '',
+          tags: JSON.stringify(resourceData.tags || []),
+          technology: JSON.stringify(resourceData.technology || []),
+          status: 'approved',
+          submittedBy: submission.submittedBy,
+          reviewedBy,
+          reviewedAt,
+          qualityScore,
+          submission: {
+            connect: { id: submissionId },
+          },
         },
-      },
-    })
-
-    // Update submission status
-    await prisma.submission.update({
-      where: { id: submissionId },
-      data: {
-        status: 'approved',
-        reviewedBy,
-        reviewedAt,
-        notes: notes || '',
-      },
-    })
+      }),
+      prisma.submission.update({
+        where: { id: submissionId },
+        data: {
+          status: 'approved',
+          reviewedBy,
+          reviewedAt,
+          notes: notes || '',
+        },
+      }),
+    ])
 
     logInfo(
       `Submission ${submission.id} approved for user ${submission.submittedBy}`,

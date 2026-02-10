@@ -59,6 +59,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted } from 'vue'
+import { thresholdsConfig } from '~/configs/thresholds.config'
 
 interface Props {
   selectedSortOption?: string
@@ -96,20 +97,21 @@ const changeIndicatorText = computed(() => {
 const changeIndicatorClass = computed(() => {
   const change = countChange.value
   const absChange = Math.abs(change)
+  const { highThreshold, mediumThreshold } = thresholdsConfig.changeIndicator
 
   if (change > 0) {
     // Positive change - green shades based on magnitude
-    if (absChange >= 20)
+    if (absChange >= highThreshold)
       return 'bg-green-100 text-green-700 ring-1 ring-green-200'
-    if (absChange >= 10) return 'bg-green-50 text-green-600'
+    if (absChange >= mediumThreshold) return 'bg-green-50 text-green-600'
     return 'text-green-600'
   }
 
   if (change < 0) {
     // Negative change - orange/amber shades based on magnitude
-    if (absChange >= 20)
+    if (absChange >= highThreshold)
       return 'bg-orange-100 text-orange-700 ring-1 ring-orange-200'
-    if (absChange >= 10) return 'bg-orange-50 text-orange-600'
+    if (absChange >= mediumThreshold) return 'bg-orange-50 text-orange-600'
     return 'text-orange-600'
   }
 
@@ -120,7 +122,11 @@ const changeIndicatorClass = computed(() => {
 const animationFrame = ref<number | null>(null)
 
 // Smooth count animation function
-const animateCount = (from: number, to: number, duration: number = 400) => {
+const animateCount = (
+  from: number,
+  to: number,
+  duration: number = thresholdsConfig.countAnimation.defaultDurationMs
+) => {
   const startTime = performance.now()
   const diff = to - from
 
@@ -170,10 +176,10 @@ watch(
     // Reset color after animation
     setTimeout(() => {
       countChangeClass.value = 'text-gray-800'
-    }, 600)
+    }, thresholdsConfig.countAnimation.colorResetDelayMs)
 
     // Show change indicator for significant changes
-    if (Math.abs(change) >= 3) {
+    if (Math.abs(change) >= thresholdsConfig.changeIndicator.minChange) {
       showChangeIndicator.value = true
 
       // Clear existing timeout
@@ -184,7 +190,7 @@ watch(
       // Hide after delay
       changeIndicatorTimeout.value = setTimeout(() => {
         showChangeIndicator.value = false
-      }, 2000)
+      }, thresholdsConfig.changeIndicator.displayDurationMs)
     }
   },
   { immediate: false }

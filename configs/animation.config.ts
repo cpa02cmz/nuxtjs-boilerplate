@@ -127,6 +127,20 @@ export const animationConfig = {
     ),
   },
 
+  // Form Validation Animations - Gentle feedback for validation errors
+  validation: {
+    // Duration of shake animation when validation fails (ms)
+    shakeDurationMs: parseInt(
+      process.env.VALIDATION_SHAKE_DURATION_MS || '500'
+    ),
+    // Shake intensity in pixels (how far the element moves)
+    shakeIntensityPx: parseInt(
+      process.env.VALIDATION_SHAKE_INTENSITY_PX || '8'
+    ),
+    // Number of shake cycles
+    shakeCycles: parseInt(process.env.VALIDATION_SHAKE_CYCLES || '3'),
+  },
+
   // Confetti Celebration Animations - Palette's delightful micro-UX touch!
   confetti: {
     // Duration of confetti animation in milliseconds

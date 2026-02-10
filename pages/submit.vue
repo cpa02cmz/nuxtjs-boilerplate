@@ -19,7 +19,7 @@
         <form
           class="space-y-6"
           novalidate
-          @submit.prevent="submitResource"
+          @submit.prevent="handleSubmitWithShake"
         >
           <div>
             <label
@@ -40,7 +40,12 @@
                 aria-required="true"
                 aria-describedby="title-description title-counter title-error"
                 :aria-invalid="errors.title ? 'true' : 'false'"
-                class="w-full px-4 py-2 pr-16 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200"
+                :class="[
+                  'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200',
+                  errors.title
+                    ? 'border-red-500 animate-form-shake'
+                    : 'border-gray-300',
+                ]"
                 placeholder="e.g., OpenAI API"
                 @focus="isTitleFocused = true"
                 @blur="isTitleFocused = false"
@@ -103,7 +108,12 @@
                 aria-required="true"
                 aria-describedby="description-description description-counter description-error"
                 :aria-invalid="errors.description ? 'true' : 'false'"
-                class="w-full px-4 py-2 pr-16 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200 resize-none"
+                :class="[
+                  'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200 resize-none',
+                  errors.description
+                    ? 'border-red-500 animate-form-shake'
+                    : 'border-gray-300',
+                ]"
                 placeholder="Describe the resource and its benefits..."
                 @focus="isDescriptionFocused = true"
                 @blur="isDescriptionFocused = false"
@@ -165,7 +175,12 @@
               aria-required="true"
               aria-describedby="url-description url-error"
               :aria-invalid="errors.url ? 'true' : 'false'"
-              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
+              :class="[
+                'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500',
+                errors.url
+                  ? 'border-red-500 animate-form-shake'
+                  : 'border-gray-300',
+              ]"
               placeholder="https://example.com"
             >
             <p
@@ -199,7 +214,12 @@
               aria-required="true"
               aria-describedby="category-description category-error"
               :aria-invalid="errors.category ? 'true' : 'false'"
-              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500"
+              :class="[
+                'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500',
+                errors.category
+                  ? 'border-red-500 animate-form-shake'
+                  : 'border-gray-300',
+              ]"
             >
               <option
                 value=""
@@ -388,8 +408,10 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch, computed } from 'vue'
 import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
+import { animationConfig } from '~/configs/animation.config'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
@@ -402,7 +424,38 @@ const {
   submitSuccess,
   submitError,
   submitResource,
+  validateForm,
 } = useSubmitPage()
+
+// Track which fields should shake when validation fails
+const shakeFields = ref<Record<string, boolean>>({})
+
+// Watch for validation errors and trigger shake animation
+const handleSubmitWithShake = async () => {
+  // Reset shake state
+  shakeFields.value = {}
+
+  // Validate form first
+  const isValid = validateForm()
+
+  if (!isValid) {
+    // Trigger shake on fields with errors
+    const errorFields = Object.keys(errors.value)
+    errorFields.forEach(field => {
+      shakeFields.value[field] = true
+    })
+
+    // Clear shake after animation completes
+    setTimeout(() => {
+      shakeFields.value = {}
+    }, animationConfig.validation.shakeDurationMs)
+  }
+
+  // Proceed with submission if valid
+  if (isValid) {
+    await submitResource()
+  }
+}
 
 // Watch for successful submission to trigger confetti
 watch(submitSuccess, success => {
@@ -501,3 +554,40 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 </script>
+
+<style scoped>
+/* Gentle shake animation for form validation errors */
+/* Using scoped CSS variables for configurable values */
+.animate-form-shake {
+  --shake-intensity: 8px;
+  --shake-duration: 500ms;
+  animation: form-shake var(--shake-duration) ease-in-out;
+}
+
+@keyframes form-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(calc(var(--shake-intensity) * -1));
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(var(--shake-intensity));
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-form-shake {
+    animation: none;
+  }
+}
+</style>

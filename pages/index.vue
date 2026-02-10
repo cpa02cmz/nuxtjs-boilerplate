@@ -30,7 +30,10 @@
             v-for="i in 5"
             :key="i"
             class="px-3 py-1 text-sm rounded-full border bg-gray-200 animate-pulse"
-            style="width: 80px; height: 28px"
+            :style="{
+              width: `${thresholdsConfig.skeleton.chipWidthPx}px`,
+              height: `${thresholdsConfig.skeleton.chipHeightPx}px`,
+            }"
           />
         </div>
 
@@ -136,7 +139,10 @@
           </div>
 
           <!-- Resources Grid -->
-          <div class="lg:w-3/4 min-h-[400px]">
+          <div
+            class="lg:w-3/4"
+            :class="thresholdsConfig.skeleton.gridMinHeight"
+          >
             <!-- Results Info -->
             <div class="flex justify-between items-center mb-6">
               <ResourceSort
@@ -257,6 +263,7 @@ import { appConfig } from '~/configs/app.config'
 import { seoConfig } from '~/configs/seo.config'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
+import { thresholdsConfig } from '~/configs/thresholds.config'
 
 definePageMeta({
   layout: 'default',
