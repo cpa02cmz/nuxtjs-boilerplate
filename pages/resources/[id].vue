@@ -53,142 +53,152 @@
         </NuxtLink>
       </div>
 
-      <!-- Resource Detail Content -->
-      <div
-        v-else
-        class="bg-white shadow rounded-lg overflow-hidden"
-      >
-        <ResourceHeader
-          :title="resource.title"
-          :category="resource.category"
-          :status="resource.status"
-          :health-score="resource.healthScore"
-          :url="resource.url"
-        />
+      <!-- Resource Content with Reading Progress -->
+      <template v-else>
+        <!-- Reading Progress Indicator -->
+        <ClientOnly>
+          <ReadingProgress
+            target-selector=".resource-content"
+            aria-label="Resource reading progress"
+          />
+        </ClientOnly>
 
-        <div class="p-6">
-          <ResourceDetails
+        <!-- Resource Detail Content -->
+        <main
+          class="resource-content bg-white shadow rounded-lg overflow-hidden"
+        >
+          <ResourceHeader
             :title="resource.title"
-            :description="resource.description"
-            :benefits="resource.benefits"
-            :screenshots="resource.screenshots"
-            :specifications="resource.specifications"
-            :features="resource.features"
-            :limitations="resource.limitations"
+            :category="resource.category"
             :status="resource.status"
-            :migration-path="resource.migrationPath"
-            :deprecation-date="resource.deprecationDate"
-            @image-error="handleImageError"
+            :health-score="resource.healthScore"
+            :url="resource.url"
           />
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="md:col-span-2">
-              <ClientOnly>
-                <LazyResourceAnalytics :analytics-data="analyticsData" />
-              </ClientOnly>
-            </div>
+          <div class="p-6">
+            <ResourceDetails
+              :title="resource.title"
+              :description="resource.description"
+              :benefits="resource.benefits"
+              :screenshots="resource.screenshots"
+              :specifications="resource.specifications"
+              :features="resource.features"
+              :limitations="resource.limitations"
+              :status="resource.status"
+              :migration-path="resource.migrationPath"
+              :deprecation-date="resource.deprecationDate"
+              @image-error="handleImageError"
+            />
 
-            <!-- Sidebar -->
-            <div class="md:col-span-1">
-              <!-- Resource Status and Lifecycle -->
-              <div
-                v-if="resource.statusHistory || resource.updateHistory"
-                class="mb-8"
-              >
-                <h3 class="text-lg font-medium text-gray-900 mb-3">
-                  Lifecycle
-                </h3>
-                <LifecycleTimeline
-                  :status-history="resource.statusHistory"
-                  :update-history="resource.updateHistory"
-                />
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div class="md:col-span-2">
+                <ClientOnly>
+                  <LazyResourceAnalytics :analytics-data="analyticsData" />
+                </ClientOnly>
               </div>
 
-              <!-- Health Monitor -->
-              <div class="mb-8">
-                <h3 class="text-lg font-medium text-gray-900 mb-3">
-                  Health
-                </h3>
-                <HealthMonitor
-                  :resource-id="resource.id"
-                  :url="resource.url"
-                />
-              </div>
-
-              <!-- Tags -->
-              <div class="mb-8">
-                <h3 class="text-lg font-medium text-gray-900 mb-3">
-                  Tags
-                </h3>
-                <div class="flex flex-wrap gap-2">
-                  <span
-                    v-for="tag in resource.tags"
-                    :key="tag"
-                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                  >
-                    {{ tag }}
-                  </span>
+              <!-- Sidebar -->
+              <div class="md:col-span-1">
+                <!-- Resource Status and Lifecycle -->
+                <div
+                  v-if="resource.statusHistory || resource.updateHistory"
+                  class="mb-8"
+                >
+                  <h3 class="text-lg font-medium text-gray-900 mb-3">
+                    Lifecycle
+                  </h3>
+                  <LifecycleTimeline
+                    :status-history="resource.statusHistory"
+                    :update-history="resource.updateHistory"
+                  />
                 </div>
-              </div>
 
-              <!-- Technologies -->
-              <div class="mb-8">
-                <h3 class="text-lg font-medium text-gray-900 mb-3">
-                  Technologies
-                </h3>
-                <div class="flex flex-wrap gap-2">
-                  <span
-                    v-for="tech in resource.technology"
-                    :key="tech"
-                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
-                  >
-                    {{ tech }}
-                  </span>
+                <!-- Health Monitor -->
+                <div class="mb-8">
+                  <h3 class="text-lg font-medium text-gray-900 mb-3">
+                    Health
+                  </h3>
+                  <HealthMonitor
+                    :resource-id="resource.id"
+                    :url="resource.url"
+                  />
                 </div>
-              </div>
 
-              <ClientOnly>
-                <LazyResourceShare
-                  :share-urls="shareUrls"
-                  @copy="copyToClipboard"
-                />
-              </ClientOnly>
+                <!-- Tags -->
+                <div class="mb-8">
+                  <h3 class="text-lg font-medium text-gray-900 mb-3">
+                    Tags
+                  </h3>
+                  <div class="flex flex-wrap gap-2">
+                    <span
+                      v-for="tag in resource.tags"
+                      :key="tag"
+                      class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                    >
+                      {{ tag }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Technologies -->
+                <div class="mb-8">
+                  <h3 class="text-lg font-medium text-gray-900 mb-3">
+                    Technologies
+                  </h3>
+                  <div class="flex flex-wrap gap-2">
+                    <span
+                      v-for="tech in resource.technology"
+                      :key="tech"
+                      class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800"
+                    >
+                      {{ tech }}
+                    </span>
+                  </div>
+                </div>
+
+                <ClientOnly>
+                  <LazyResourceShare
+                    :share-urls="shareUrls"
+                    @copy="copyToClipboard"
+                  />
+                </ClientOnly>
+              </div>
             </div>
           </div>
+        </main>
+
+        <ClientOnly>
+          <LazyResourceSimilar :resources="relatedResources" />
+        </ClientOnly>
+
+        <!-- Alternative Suggestions Section -->
+        <div class="mt-12">
+          <ClientOnly>
+            <LazyAlternativeSuggestions
+              v-if="resource"
+              :resource="resource"
+            />
+          </ClientOnly>
         </div>
-      </div>
 
-      <ClientOnly>
-        <LazyResourceSimilar :resources="relatedResources" />
-      </ClientOnly>
-
-      <!-- Alternative Suggestions Section -->
-      <div class="mt-12">
         <ClientOnly>
-          <LazyAlternativeSuggestions
-            v-if="resource"
-            :resource="resource"
+          <LazyResourceComments
+            :comments="[]"
+            :comment-count="0"
+            @submit="handleCommentSubmit"
           />
         </ClientOnly>
-      </div>
 
-      <ClientOnly>
-        <LazyResourceComments
-          :comments="[]"
-          :comment-count="0"
-          @submit="handleCommentSubmit"
-        />
-      </ClientOnly>
-
-      <!-- Recommendations Section -->
-      <div class="mt-12">
-        <ClientOnly>
-          <LazyRecommendationsSection
-            :current-resource="resource"
-            :current-category="resource?.category"
-          />
-        </ClientOnly>
-      </div>
+        <!-- Recommendations Section -->
+        <div class="mt-12">
+          <ClientOnly>
+            <LazyRecommendationsSection
+              :current-resource="resource"
+              :current-category="resource?.category"
+            />
+          </ClientOnly>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -199,6 +209,7 @@ import ResourceHeader from '~/components/ResourceHeader.vue'
 import ResourceDetails from '~/components/ResourceDetails.vue'
 import LifecycleTimeline from '~/components/LifecycleTimeline.vue'
 import HealthMonitor from '~/components/HealthMonitor.vue'
+import ReadingProgress from '~/components/ReadingProgress.vue'
 import { useResourceDetailPage } from '~/composables/useResourceDetailPage'
 
 const {
