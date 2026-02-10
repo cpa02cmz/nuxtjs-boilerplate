@@ -14,6 +14,9 @@ export const webhooksConfig = {
 
     // Maximum queue size
     maxQueueSize: parseInt(process.env.WEBHOOK_MAX_QUEUE_SIZE || '1000'),
+
+    // Default priority for queue items
+    defaultPriority: parseInt(process.env.WEBHOOK_DEFAULT_PRIORITY || '0'),
   },
 
   // Retry Settings

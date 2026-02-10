@@ -94,6 +94,7 @@ import {
   type RoutePatterns,
   type RoutesConfig,
 } from './routes.config'
+import { memoizeConfig, type MemoizeConfig } from './memoize.config'
 
 // Re-export individual configs
 export { appConfig, type AppConfig }
@@ -184,6 +185,7 @@ export {
   type RoutePatterns,
   type RoutesConfig,
 }
+export { memoizeConfig, type MemoizeConfig }
 
 // Default export with all configs
 export const config = {
@@ -214,6 +216,7 @@ export const config = {
   sitemap: sitemapConfig,
   icons: iconsConfig,
   routes: routesConfig,
+  memoize: memoizeConfig,
 } as const
 
 export type Config = typeof config
