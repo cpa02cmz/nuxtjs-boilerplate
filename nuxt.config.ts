@@ -7,6 +7,7 @@ import {
   themeConfig,
   cacheConfig,
   securityConfig,
+  DEFAULT_DEV_URL,
 } from './configs'
 
 export default defineNuxtConfig({
@@ -30,11 +31,11 @@ export default defineNuxtConfig({
         process.env.CANONICAL_URL ||
         process.env.HOST ||
         process.env.VERCEL_URL ||
-        'http://localhost:3000',
+        DEFAULT_DEV_URL,
       canonicalUrl:
         process.env.NUXT_PUBLIC_CANONICAL_URL ||
         process.env.CANONICAL_URL ||
-        'http://localhost:3000',
+        DEFAULT_DEV_URL,
     },
   },
 
@@ -405,28 +406,5 @@ export default defineNuxtConfig({
   build: {
     transpile: ['vue', 'entities', 'estree-walker'],
     analyze: false, // Enable only when needed for analysis
-  },
-
-  // Optimize nitro build performance
-  nitro: {
-    minify: true,
-    compressPublicAssets: {
-      brotli: true,
-      gzip: true,
-    },
-    // Enable build caching
-    experimental: {
-      wasm: false, // Disable WASM if not needed
-    },
-    // Optimize build output
-    output: {
-      dir: '.output',
-      serverDir: '.output/server',
-      publicDir: '.output/public',
-    },
-    // Faster builds with reduced logging
-    logging: {
-      level: 1, // Reduced logging for faster builds
-    },
   },
 })

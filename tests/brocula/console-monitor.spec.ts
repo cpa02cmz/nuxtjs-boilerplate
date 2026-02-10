@@ -1,6 +1,7 @@
 import { test, expect, type ConsoleMessage } from '@playwright/test'
 import * as fs from 'fs'
 import * as path from 'path'
+import { DEFAULT_DEV_URL } from '../../configs/url.config'
 
 // Types for console monitoring
 interface ConsoleError {
@@ -126,7 +127,7 @@ test.describe('BroCula Console Monitor', () => {
     // Generate BroCula report
     const report: BroCulaReport = {
       timestamp: new Date().toISOString(),
-      url: process.env.BASE_URL || 'http://localhost:3000',
+      url: process.env.BASE_URL || DEFAULT_DEV_URL,
       errors: allErrors,
       warnings: allWarnings,
       hasFatalErrors: allErrors.length > 0,

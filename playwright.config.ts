@@ -1,8 +1,10 @@
 import { defineConfig, devices } from '@playwright/test'
+import { DEFAULT_DEV_URL } from './configs/url.config'
 
 /**
  * BroCula Playwright Configuration
  * Strict workflow for console error monitoring and Lighthouse optimization
+ * Flexy says: No more hardcoded URLs!
  */
 export default defineConfig({
   testDir: './tests/brocula',
@@ -16,7 +18,7 @@ export default defineConfig({
     ['list'],
   ],
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.BASE_URL || DEFAULT_DEV_URL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -51,7 +53,7 @@ export default defineConfig({
     ? undefined
     : {
         command: 'npm run build && npm run preview',
-        url: 'http://localhost:3000',
+        url: DEFAULT_DEV_URL,
         reuseExistingServer: true,
         timeout: 300000,
       },

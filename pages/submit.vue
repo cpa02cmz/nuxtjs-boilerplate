@@ -44,11 +44,13 @@
                   'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200',
                   errors.title
                     ? 'border-red-500 animate-form-shake'
-                    : 'border-gray-300',
+                    : formData.title && !errors.title
+                      ? 'border-green-500'
+                      : 'border-gray-300',
                 ]"
                 placeholder="e.g., OpenAI API"
                 @focus="isTitleFocused = true"
-                @blur="isTitleFocused = false"
+                @blur="handleTitleBlur"
               >
               <div
                 id="title-counter"
@@ -112,11 +114,13 @@
                   'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200 resize-none',
                   errors.description
                     ? 'border-red-500 animate-form-shake'
-                    : 'border-gray-300',
+                    : formData.description && !errors.description
+                      ? 'border-green-500'
+                      : 'border-gray-300',
                 ]"
                 placeholder="Describe the resource and its benefits..."
                 @focus="isDescriptionFocused = true"
-                @blur="isDescriptionFocused = false"
+                @blur="handleDescriptionBlur"
               />
               <div
                 id="description-counter"
@@ -176,12 +180,15 @@
               aria-describedby="url-description url-error"
               :aria-invalid="errors.url ? 'true' : 'false'"
               :class="[
-                'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500',
+                'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200',
                 errors.url
                   ? 'border-red-500 animate-form-shake'
-                  : 'border-gray-300',
+                  : formData.url && !errors.url
+                    ? 'border-green-500'
+                    : 'border-gray-300',
               ]"
               placeholder="https://example.com"
+              @blur="handleUrlBlur"
             >
             <p
               id="url-description"
@@ -215,11 +222,14 @@
               aria-describedby="category-description category-error"
               :aria-invalid="errors.category ? 'true' : 'false'"
               :class="[
-                'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500',
+                'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-gray-500 focus:border-gray-500 transition-colors duration-200',
                 errors.category
                   ? 'border-red-500 animate-form-shake'
-                  : 'border-gray-300',
+                  : formData.category && !errors.category
+                    ? 'border-green-500'
+                    : 'border-gray-300',
               ]"
+              @blur="handleCategoryBlur"
             >
               <option
                 value=""
@@ -396,6 +406,7 @@ import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
 import { animationConfig } from '~/configs/animation.config'
 import { categoriesConfig } from '~/configs/categories.config'
+import { DEFAULT_DEV_URL } from '~/configs/url.config'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
@@ -412,10 +423,33 @@ const {
   submitError,
   submitResource,
   validateForm,
+  validateTitle,
+  validateDescription,
+  validateUrl,
+  validateCategory,
 } = useSubmitPage()
 
 // Track which fields should shake when validation fails
 const shakeFields = ref<Record<string, boolean>>({})
+
+// Field blur handlers for inline validation
+const handleTitleBlur = () => {
+  isTitleFocused.value = false
+  validateTitle()
+}
+
+const handleDescriptionBlur = () => {
+  isDescriptionFocused.value = false
+  validateDescription()
+}
+
+const handleUrlBlur = () => {
+  validateUrl()
+}
+
+const handleCategoryBlur = () => {
+  validateCategory()
+}
 
 // Watch for validation errors and trigger shake animation
 const handleSubmitWithShake = async () => {
@@ -537,7 +571,7 @@ useSeoMeta({
   ogDescription:
     'Share valuable free resources with the community. Submit free AI tools, hosting services, databases, and other developer resources.',
   ogImage: '/og-image.jpg',
-  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000'}/submit`,
+  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || DEFAULT_DEV_URL}/submit`,
   twitterCard: 'summary_large_image',
 })
 </script>

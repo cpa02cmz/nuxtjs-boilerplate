@@ -6,9 +6,11 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { paginationConfig } from '~/configs/pagination.config'
 
 // Maximum number of resources that can be updated in a single bulk request
-const MAX_BULK_UPDATE_COUNT = 100
+// Flexy hates hardcoded limits! Using config instead
+const MAX_BULK_UPDATE_COUNT = paginationConfig.limits.maxBulkUpdateItems
 
 export default defineEventHandler(async event => {
   try {

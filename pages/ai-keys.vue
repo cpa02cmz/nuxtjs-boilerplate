@@ -108,6 +108,7 @@
 import { useAIResources } from '~/composables/useAIResources'
 import { useUrlSync } from '~/composables/useUrlSync'
 import ResourceSort from '~/components/ResourceSort.vue'
+import { DEFAULT_DEV_URL } from '~/configs/url.config'
 
 definePageMeta({
   layout: 'default',
@@ -122,7 +123,7 @@ useSeoMeta({
   ogDescription:
     'Access powerful AI models with these free API keys and tools. Discover OpenAI, Hugging Face, Google AI Studio, and more free AI resources.',
   ogImage: '/og-image.jpg',
-  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000'}/ai-keys`,
+  ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || DEFAULT_DEV_URL}/ai-keys`,
   twitterCard: 'summary_large_image',
 })
 

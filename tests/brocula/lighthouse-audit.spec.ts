@@ -3,6 +3,7 @@ import lighthouse from 'lighthouse'
 import * as chromeLauncher from 'chrome-launcher'
 import * as fs from 'fs'
 import * as path from 'path'
+import { DEFAULT_DEV_URL } from '../../configs/url.config'
 
 // Lighthouse configuration
 const LIGHTHOUSE_CONFIG = {
@@ -62,7 +63,7 @@ interface LighthouseReport {
  */
 test.describe('BroCula Lighthouse Auditor', () => {
   test('audit homepage for performance optimizations', async () => {
-    const url = process.env.BASE_URL || 'http://localhost:3000'
+    const url = process.env.BASE_URL || DEFAULT_DEV_URL
 
     // Launch Chrome
     const chrome = await chromeLauncher.launch({
