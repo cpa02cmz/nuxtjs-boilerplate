@@ -6,10 +6,7 @@
     role="article"
   >
     <div class="flex items-start">
-      <div
-        v-if="icon"
-        class="flex-shrink-0 mr-4"
-      >
+      <div v-if="icon" class="flex-shrink-0 mr-4">
         <OptimizedImage
           :src="icon"
           :alt="title"
@@ -51,10 +48,13 @@
               <span v-else>{{ title }}</span>
             </span>
           </h3>
-          <!-- New badge -->
+          <!-- New badge with entrance shimmer animation -->
           <span
             v-if="isNew"
-            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-sm animate-new-pulse mr-2"
+            class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-sm animate-new-pulse mr-2 relative overflow-hidden"
+            :class="{
+              'animate-new-shimmer': !prefersReducedMotion && showNewShimmer,
+            }"
             role="status"
             aria-label="New resource added within the last 7 days"
           >
@@ -79,10 +79,7 @@
             :health-score="healthScore"
           />
         </div>
-        <p
-          id="resource-description"
-          class="mt-1 text-gray-800 text-sm"
-        >
+        <p id="resource-description" class="mt-1 text-gray-800 text-sm">
           <span
             v-if="highlightedDescription"
             v-html="sanitizedHighlightedDescription"
@@ -95,30 +92,18 @@
           role="region"
           aria-label="Free tier information"
         >
-          <p
-            id="free-tier-label"
-            class="font-medium text-gray-900 text-sm"
-          >
+          <p id="free-tier-label" class="font-medium text-gray-900 text-sm">
             {{ contentConfig.resourceCard.freeTier }}
           </p>
-          <ul
-            class="mt-1 space-y-1 text-xs text-gray-800"
-            role="list"
-          >
-            <li
-              v-for="(benefit, index) in benefits"
-              :key="index"
-            >
+          <ul class="mt-1 space-y-1 text-xs text-gray-800" role="list">
+            <li v-for="(benefit, index) in benefits" :key="index">
               {{ benefit }}
             </li>
           </ul>
         </div>
 
         <!-- Similarity information (for alternative suggestions) -->
-        <div
-          v-if="similarityScore && similarityScore > 0"
-          class="mt-3"
-        >
+        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
           <div class="flex items-center">
             <div
               class="w-full bg-gray-200 rounded-full h-2"
@@ -137,20 +122,13 @@
               {{ Math.round(similarityScore * 100) }}% match
             </span>
           </div>
-          <p
-            v-if="similarityReason"
-            class="mt-1 text-xs text-gray-600"
-          >
+          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
             {{ similarityReason }}
           </p>
         </div>
 
         <div class="mt-4 flex items-center justify-between">
-          <Tooltip
-            :content="domainTooltip"
-            position="bottom"
-            :delay="300"
-          >
+          <Tooltip :content="domainTooltip" position="bottom" :delay="300">
             <a
               :href="url"
               :target="newTab ? '_blank' : '_self'"
@@ -160,10 +138,7 @@
               @click="handleLinkClick"
             >
               {{ buttonLabel }}
-              <span
-                v-if="newTab"
-                class="ml-1 text-xs"
-              >{{
+              <span v-if="newTab" class="ml-1 text-xs">{{
                 contentConfig.resourceCard.newTab
               }}</span>
             </a>
@@ -330,10 +305,7 @@
   </article>
 
   <!-- Error state -->
-  <div
-    v-else
-    class="bg-white p-6 rounded-lg shadow border border-red-200"
-  >
+  <div v-else class="bg-white p-6 rounded-lg shadow border border-red-200">
     <div class="flex items-start">
       <div class="flex-shrink-0 mr-4">
         <svg
@@ -352,9 +324,7 @@
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-red-900">
-          Resource Unavailable
-        </h3>
+        <h3 class="text-lg font-medium text-red-900">Resource Unavailable</h3>
         <p class="mt-1 text-red-700 text-sm">
           This resource could not be displayed due to an error.
         </p>
@@ -435,6 +405,16 @@ const isCopied = ref(false)
 const isCopyAnimating = ref(false)
 const copyStatus = ref('')
 
+// Micro-UX: New badge shimmer animation state
+const showNewShimmer = ref(false)
+const prefersReducedMotion = ref(false)
+
+// Check for reduced motion preference on mount (safely for test environments)
+if (typeof window !== 'undefined' && window.matchMedia) {
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  prefersReducedMotion.value = mediaQuery.matches
+}
+
 // Check if resource is new (added within the last 7 days)
 // Flexy hates hardcoded values! Using TIME_MS constants from config
 const isNew = computed(() => {
@@ -458,6 +438,18 @@ const memoizedHighlight = memoizeHighlight(sanitizeAndHighlight)
 onMounted(() => {
   if (props.id) {
     trackResourceView(props.id, props.title, props.category)
+  }
+
+  // Micro-UX: Trigger shimmer animation for new resources
+  if (isNew.value && !prefersReducedMotion.value) {
+    // Small delay to ensure the card has rendered
+    setTimeout(() => {
+      showNewShimmer.value = true
+      // Reset after animation completes
+      setTimeout(() => {
+        showNewShimmer.value = false
+      }, animationConfig.newBadge.shimmerDurationMs)
+    }, animationConfig.newBadge.shimmerDelayMs)
   }
 })
 
@@ -753,12 +745,45 @@ if (typeof useHead === 'function') {
   color: #4b5563; /* gray-600 */
 }
 
+/* New badge shimmer entrance animation - Palette's micro-UX delight! */
+.animate-new-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  animation: shimmer-sweep
+    v-bind('`${animationConfig.newBadge.shimmerDurationMs}ms`') ease-out;
+  pointer-events: none;
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 200%;
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .animate-icon-pop,
   .animate-check-pop,
   .animate-new-pulse {
     animation: none;
+  }
+
+  .animate-new-shimmer::before {
+    animation: none;
+    display: none;
   }
 }
 </style>

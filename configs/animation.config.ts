@@ -141,6 +141,18 @@ export const animationConfig = {
     shakeCycles: parseInt(process.env.VALIDATION_SHAKE_CYCLES || '3'),
   },
 
+  // New Badge Animations - Palette's shimmer entrance micro-UX
+  newBadge: {
+    // Duration of shimmer entrance animation (ms)
+    shimmerDurationMs: parseInt(
+      process.env.NEW_BADGE_SHIMMER_DURATION_MS || '1500'
+    ),
+    // Delay before shimmer starts (ms)
+    shimmerDelayMs: parseInt(process.env.NEW_BADGE_SHIMMER_DELAY_MS || '300'),
+    // Pulse animation duration for continuous effect (seconds)
+    pulseDurationSec: parseInt(process.env.NEW_BADGE_PULSE_DURATION_SEC || '2'),
+  },
+
   // Confetti Celebration Animations - Palette's delightful micro-UX touch!
   confetti: {
     // Duration of confetti animation in milliseconds
