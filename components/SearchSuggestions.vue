@@ -25,7 +25,7 @@
           role="option"
           :aria-selected="focusedIndex === index"
           :class="[
-            'px-4 py-2 cursor-pointer hover:bg-gray-100',
+            'px-4 py-2 cursor-pointer hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset',
             focusedIndex === index ? 'bg-gray-100' : '',
           ]"
           @click="selectHistory(history)"
@@ -71,7 +71,7 @@
           role="option"
           :aria-selected="focusedIndex === searchHistory.length + index"
           :class="[
-            'px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-start',
+            'px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset',
             focusedIndex === searchHistory.length + index ? 'bg-gray-100' : '',
           ]"
           @click="selectSuggestion(suggestion)"
