@@ -7,6 +7,9 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 
+// Maximum number of resources that can be updated in a single bulk request
+const MAX_BULK_UPDATE_COUNT = 100
+
 export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
@@ -15,6 +18,15 @@ export default defineEventHandler(async event => {
     // Validate required fields
     if (!Array.isArray(resourceIds) || !status) {
       sendBadRequestError(event, 'resourceIds array and status are required')
+      return
+    }
+
+    // Validate array length to prevent DoS via memory exhaustion
+    if (resourceIds.length > MAX_BULK_UPDATE_COUNT) {
+      sendBadRequestError(
+        event,
+        `Cannot update more than ${MAX_BULK_UPDATE_COUNT} resources at once`
+      )
       return
     }
 

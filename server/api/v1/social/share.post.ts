@@ -36,11 +36,13 @@ export default defineEventHandler(async event => {
     const validation = shareEventSchema.safeParse(body)
 
     if (!validation.success) {
+      // Log detailed errors server-side only for debugging
+      console.warn('Share event validation failed:', validation.error.issues)
+      // Return generic error message to client (security: don't expose validation details)
       return {
         statusCode: 400,
         statusMessage: 'Bad Request',
         message: 'Invalid share event data',
-        errors: validation.error.issues,
       }
     }
 
