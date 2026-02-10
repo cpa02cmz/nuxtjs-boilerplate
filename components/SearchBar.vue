@@ -97,7 +97,7 @@
           v-if="modelValue"
           content="Clear search (Esc)"
           position="bottom"
-          :delay="300"
+          :delay="animationConfig.tooltip.showDelayMs"
         >
           <button
             ref="clearButtonRef"
@@ -168,6 +168,7 @@ import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { searchConfig } from '~/configs/search.config'
 import { uiConfig } from '~/configs/ui.config'
+import { animationConfig } from '~/configs/animation.config'
 import Tooltip from '~/components/Tooltip.vue'
 
 interface Props {
