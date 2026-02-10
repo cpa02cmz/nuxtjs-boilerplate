@@ -8,6 +8,7 @@ export const STORAGE_KEYS = {
   USER_PROFILE: 'userProfile',
   PWA_INSTALL_DISMISSED: 'pwa-install-dismissed',
   WEB_VITALS_PREFIX: 'web-vitals-',
+  VISITED_RESOURCES: 'visited-resources',
 } as const
 
 export const VALID_CATEGORIES = [

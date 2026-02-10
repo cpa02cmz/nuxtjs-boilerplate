@@ -14,6 +14,7 @@ import {
   type UserPreferences,
 } from '~/utils/recommendation-algorithms'
 import { memoize } from '~/utils/memoize'
+import { recommendationConfig } from '~/configs/recommendation.config'
 
 export function usePersonalizedRecommendations(
   allResources: readonly Resource[],
@@ -82,31 +83,38 @@ export function usePersonalizedRecommendations(
           | 'popular'
           | 'personalized'
           | 'serendipity' = 'personalized'
-        let explanation = 'Recommended based on your interests and preferences'
+        // Flexy hates hardcoded values! Using config strings
+        let explanation: string =
+          recommendationConfig.explanations.personalized.default
 
         if (
           interestScore > contentScore &&
           interestScore > collaborativeScore
         ) {
           reason = 'personalized'
-          explanation = `This resource matches your interests in ${resource.category} and related technologies`
+          explanation =
+            recommendationConfig.explanations.personalized.interestMatch(
+              resource.category
+            )
         } else if (
           contentScore > interestScore &&
           contentScore > collaborativeScore
         ) {
           reason = 'content-based'
           explanation = currentResource
-            ? `Similar to ${currentResource.title} based on category, tags, and technology`
-            : 'Based on similarity to resources you might like'
+            ? recommendationConfig.explanations.contentBased.similarTo(
+                currentResource.title
+              )
+            : recommendationConfig.explanations.contentBased.default
         } else if (
           collaborativeScore > interestScore &&
           collaborativeScore > contentScore
         ) {
           reason = 'collaborative'
-          explanation = 'Users with similar interests also liked this'
+          explanation = recommendationConfig.explanations.collaborative
         } else if (popularityScore > 0.5) {
           reason = 'popular'
-          explanation = 'Popular among all users'
+          explanation = recommendationConfig.explanations.popular
         }
 
         personalizedRecs.push({
