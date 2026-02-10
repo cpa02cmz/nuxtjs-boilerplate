@@ -175,3 +175,45 @@ body.mouse-nav :focus {
     outline-offset: 2px;
   }
 }
+
+/* ============================================
+   Ripple Effect Animation - Palette's UX Touch
+   Material Design style ripple for button feedback
+   ============================================ */
+
+@keyframes ripple-animation {
+  0% {
+    transform: scale(0);
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Ripple effect base styles */
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: scale(0);
+  animation: ripple-animation 600ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Ensure buttons with ripples have proper positioning */
+button:has(.ripple-effect) {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Reduced motion support for ripple effect */
+@media (prefers-reduced-motion: reduce) {
+  .ripple-effect {
+    animation: none !important;
+    display: none !important;
+  }
+}
