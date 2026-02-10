@@ -37,14 +37,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         continue-on-error: true
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         continue-on-error: true
         with:
           node-version: 20
@@ -211,7 +211,32 @@ jobs:
             - Close duplicates with reference
             - Group similiar small issues into 1 meaningfull issues
             - Do NOT lose information        
-                    
+ 
+          STEP 4 — REPAIR MODE
+          **Objective:** Solve ONE github issue with highest-priority.
+            1. SELECTION
+            - If: there is P0/P1 issue 
+              → Select highest-priority issue.
+            - Else:
+              → Select lowest-scoring DOMAIN
+              → Then lowest-scoring CRITERION
+
+            2. IMPLEMENTATION RULES
+            - Must up to date with default branch before and after fix, to minimaze conflicts
+            - Minimal, atomic changes only.
+            - No speculative refactors.
+            - No unrelated improvements.
+
+            3. VERIFICATION
+            - Re-run Build, Lint, Test.
+            - On failure:
+              - Revert
+              - Comment on issue body with detailed progress, and solve suggestion.
+            - On Success:
+              - Commit changes
+              - Pull from DEFAULT BRANCH, solve any conflict
+              - Push and create pr linked to issue.
+              
           ========================
           PHASE 1: DIAGNOSTIC & COMPREHENSIVE SCORING (AUDIT MODE)
           ========================
@@ -319,31 +344,7 @@ jobs:
               - Issue label: Category and priority
                    
           ========================
-          PHASE 2 — TARGETED EXECUTION (REPAIR MODE)
-          ========================
-             
-            **Objective:** Solve ONE github issue with highest-priority.
-
-            ### 1. SELECTION
-            - If: there is P0/P1 issue 
-              → Select highest-priority issue.
-            - Else:
-              → Select lowest-scoring DOMAIN
-              → Then lowest-scoring CRITERION
-
-            ### 2. IMPLEMENTATION RULES
-            - Minimal, atomic changes only.
-            - No speculative refactors.
-            - No unrelated improvements.
-
-            ### 3. VERIFICATION
-            - Re-run Build, Lint, Test.
-            - On failure:
-              - Revert
-              - Comment on issue body with detailed progress, and solve suggestion.
-
-          ========================
-          PHASE 3: FEATURE HARDENING & INTEGRATION (NON-COSMETIC)
+          PHASE 2: FEATURE HARDENING & INTEGRATION (NON-COSMETIC)
           ========================
 
             **Objective:** Strengthen and connect EXISTING features.
@@ -370,7 +371,7 @@ jobs:
               - Issue label: Category and priority
 
           ========================
-          PHASE 4: STRATEGIC EXPANSION (PRODUCT MODE - NON COSMETIC)
+          PHASE 3: STRATEGIC EXPANSION (PRODUCT MODE - NON COSMETIC)
           ========================
 
             **Objective:** Add ONE high-leverage functional capability.
