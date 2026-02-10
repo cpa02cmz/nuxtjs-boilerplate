@@ -11,6 +11,11 @@ interface SearchIndex {
   popularSearches: Map<string, number>
 }
 
+// Maximum number of popular searches to track (prevents unbounded growth)
+const MAX_POPULAR_SEARCHES = 1000
+// Trim threshold - when map exceeds this, trim down to MAX_POPULAR_SEARCHES
+const POPULAR_SEARCHES_TRIM_THRESHOLD = 1200
+
 // Search index manager utility
 class SearchIndexManager {
   private index: SearchIndex | null = null
@@ -177,13 +182,49 @@ class SearchIndexManager {
   }
 
   // Track a search query for popularity
+  // FIXED: Added size limits and query normalization to prevent unbounded growth
   trackSearchQuery(query: string) {
     if (!this.index) {
       throw new Error('Search index not initialized')
     }
 
-    const currentCount = this.index.popularSearches.get(query) || 0
-    this.index.popularSearches.set(query, currentCount + 1)
+    // Normalize query: trim whitespace and convert to lowercase
+    // This prevents storing duplicates like "API", "api", " api "
+    const normalizedQuery = query.trim().toLowerCase()
+
+    // Skip empty queries
+    if (!normalizedQuery) {
+      return
+    }
+
+    const currentCount = this.index.popularSearches.get(normalizedQuery) || 0
+    this.index.popularSearches.set(normalizedQuery, currentCount + 1)
+
+    // FIXED: Trim the map if it exceeds the threshold to prevent memory leaks
+    if (this.index.popularSearches.size > POPULAR_SEARCHES_TRIM_THRESHOLD) {
+      this.trimPopularSearches()
+    }
+  }
+
+  /**
+   * Trim popular searches to MAX_POPULAR_SEARCHES by removing least popular entries
+   * This prevents unbounded memory growth
+   */
+  private trimPopularSearches(): void {
+    if (!this.index) return
+
+    const entries = Array.from(this.index.popularSearches.entries())
+
+    // Sort by count (ascending) to find least popular
+    entries.sort((a, b) => a[1] - b[1])
+
+    // Calculate how many to remove
+    const removeCount = entries.length - MAX_POPULAR_SEARCHES
+
+    // Remove least popular entries
+    for (let i = 0; i < removeCount; i++) {
+      this.index.popularSearches.delete(entries[i][0])
+    }
   }
 
   // Get popular searches
