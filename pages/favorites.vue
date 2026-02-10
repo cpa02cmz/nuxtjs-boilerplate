@@ -17,41 +17,136 @@
         </p>
       </div>
 
-      <!-- Empty state -->
+      <!-- Empty state with animated illustration -->
       <div
         v-if="bookmarkCount === 0"
         class="text-center py-16"
+        role="status"
+        aria-live="polite"
       >
-        <div class="mx-auto h-24 w-24 text-gray-400">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-full w-full"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+        <!-- Animated bookmark illustration -->
+        <div
+          class="relative mx-auto h-32 w-32 mb-4"
+          aria-hidden="true"
+        >
+          <!-- Background circle with pulse -->
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-full"
+            :class="{ 'animate-pulse-slow': !prefersReducedMotion }"
+          />
+
+          <!-- Floating bookmark icon -->
+          <div
+            class="absolute inset-0 flex items-center justify-center"
+            :class="{ 'animate-float-gentle': !prefersReducedMotion }"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-20 w-20 text-gray-300"
+              :class="{ 'animate-heartbeat': !prefersReducedMotion }"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
               stroke-width="1.5"
-              d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-            />
-          </svg>
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+              />
+            </svg>
+          </div>
+
+          <!-- Decorative sparkles -->
+          <div
+            v-if="!prefersReducedMotion"
+            class="absolute top-2 right-4 w-3 h-3 text-yellow-400 animate-sparkle"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
+              />
+            </svg>
+          </div>
+          <div
+            v-if="!prefersReducedMotion"
+            class="absolute bottom-4 left-2 w-2 h-2 text-yellow-400 animate-sparkle-delayed"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
+              />
+            </svg>
+          </div>
         </div>
+
         <h3 class="mt-4 text-xl font-medium text-gray-900">
           No bookmarks yet
         </h3>
-        <p class="mt-2 text-gray-600">
-          Start bookmarking resources by clicking the star icon on any resource
-          card.
+        <p class="mt-2 text-gray-600 max-w-md mx-auto">
+          Save your favorite resources for quick access later. Click the
+          <span class="inline-flex items-center mx-1 text-yellow-500">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+            </svg>
+          </span>
+          icon on any resource card to bookmark it.
         </p>
-        <div class="mt-6">
+
+        <!-- CTA with animated arrow -->
+        <div class="mt-8">
           <NuxtLink
             to="/"
-            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900"
+            class="group inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
           >
             Browse Resources
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
           </NuxtLink>
+        </div>
+
+        <!-- Pro tip -->
+        <div
+          v-if="!prefersReducedMotion"
+          class="mt-8 inline-flex items-center px-4 py-2 bg-blue-50 rounded-full text-sm text-blue-700"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 mr-2 flex-shrink-0"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Pro tip: Use the bookmark button on resource cards to save favorites
         </div>
       </div>
 
@@ -163,9 +258,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useBookmarks } from '~/composables/useBookmarks'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
+
+// Respect user's motion preferences for accessibility
+const prefersReducedMotion = computed(() => {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+})
 
 // Set page-specific meta tags
 useSeoMeta({
@@ -209,3 +310,94 @@ const handleConfirmClear = () => {
   }, 100)
 }
 </script>
+
+<style scoped>
+/* Gentle floating animation for bookmark icon */
+@keyframes float-gentle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float-gentle {
+  animation: float-gentle 3s ease-in-out infinite;
+}
+
+/* Heartbeat animation for the bookmark icon */
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.05);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+/* Slow pulse for background circle */
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+/* Sparkle animation for decorative elements */
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(0.8) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(180deg);
+  }
+}
+
+.animate-sparkle {
+  animation: sparkle 3s ease-in-out infinite;
+}
+
+.animate-sparkle-delayed {
+  animation: sparkle 3s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-gentle,
+  .animate-heartbeat,
+  .animate-pulse-slow,
+  .animate-sparkle,
+  .animate-sparkle-delayed {
+    animation: none;
+  }
+}
+</style>

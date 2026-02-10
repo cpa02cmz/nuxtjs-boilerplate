@@ -1,6 +1,7 @@
 import prisma from './db'
 import { analyticsEventSchema } from './validation-schemas'
 import { logger } from '~/utils/logger'
+import { TIME } from './constants'
 
 export interface AnalyticsEvent {
   id?: string
@@ -471,9 +472,8 @@ export async function cleanupOldEvents(
   retentionDays: number = 30
 ): Promise<number> {
   try {
-    const cutoffDate = new Date(
-      Date.now() - retentionDays * 24 * 60 * 60 * 1000
-    )
+    // Flexy hates hardcoded time calculations! Using TIME constants
+    const cutoffDate = new Date(Date.now() - retentionDays * TIME.MS_PER_DAY)
     const deletedAt = new Date()
 
     const result = await prisma.analyticsEvent.updateMany({

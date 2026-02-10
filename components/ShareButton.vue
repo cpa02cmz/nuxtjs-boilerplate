@@ -206,6 +206,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 import logger from '~/utils/logger'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   title?: string
@@ -395,10 +396,10 @@ const showCopySuccess = async () => {
     clearTimeout(copySuccessTimeout)
   }
 
-  // Reset after 2 seconds to clear the button success state
+  // Reset after configured delay to clear the button success state - Flexy uses config!
   copySuccessTimeout = setTimeout(async () => {
     copySuccess.value = false
-  }, 2000)
+  }, animationConfig.copySuccess.resetDelayMs)
 }
 
 onMounted(() => {

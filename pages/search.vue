@@ -71,22 +71,22 @@
         <!-- Filters Sidebar -->
         <div class="lg:w-1/4">
           <LazyResourceFilters
-            :categories="categories"
-            :pricing-models="pricingModels"
-            :difficulty-levels="difficultyLevels"
-            :technologies="technologies"
-            :tags="tags"
-            :benefits="benefits"
-            :selected-categories="selectedCategories"
-            :selected-pricing-models="selectedPricingModels"
-            :selected-difficulty-levels="selectedDifficultyLevels"
-            :selected-technologies="selectedTechnologies"
-            :selected-tags="selectedTags"
-            :selected-benefits="selectedBenefits"
+            :categories="[...categories]"
+            :pricing-models="[...pricingModels]"
+            :difficulty-levels="[...difficultyLevels]"
+            :technologies="[...technologies]"
+            :tags="[...tags]"
+            :benefits="[...benefits]"
+            :selected-categories="[...selectedCategories]"
+            :selected-pricing-models="[...selectedPricingModels]"
+            :selected-difficulty-levels="[...selectedDifficultyLevels]"
+            :selected-technologies="[...selectedTechnologies]"
+            :selected-tags="[...selectedTags]"
+            :selected-benefits="[...selectedBenefits]"
             :selected-date-range="selectedDateRange"
             :search-query="searchQuery"
             :facet-counts="facetCounts"
-            :saved-searches="savedSearches"
+            :saved-searches="[...savedSearches]"
             role="region"
             aria-label="Resource filters"
             @toggle-category="enhancedToggleCategory"
@@ -95,7 +95,7 @@
             @toggle-technology="enhancedToggleTechnology"
             @toggle-tag="enhancedToggleTag"
             @toggle-benefit="enhancedToggleBenefit"
-            @date-range-change="onDateRangeChange"
+            @date-range-change="(value: string) => setDateRange(value)"
             @reset-filters="resetAllFilters"
             @use-saved-search="onUseSavedSearch"
             @remove-saved-search="onRemoveSavedSearch"
@@ -122,17 +122,19 @@
           <ResourceSort
             :selected-sort-option="sortOption"
             :total-resources="filteredResources.length"
-            @update-sort-option="setSortOption"
+            @update-sort-option="
+              (option: string) => setSortOption(option as SortOption)
+            "
           />
 
           <ActiveFilters
             :search-query="searchQuery"
-            :selected-categories="selectedCategories"
-            :selected-pricing-models="selectedPricingModels"
-            :selected-difficulty-levels="selectedDifficultyLevels"
-            :selected-technologies="selectedTechnologies"
-            :selected-tags="selectedTags"
-            :selected-benefits="selectedBenefits"
+            :selected-categories="[...selectedCategories]"
+            :selected-pricing-models="[...selectedPricingModels]"
+            :selected-difficulty-levels="[...selectedDifficultyLevels]"
+            :selected-technologies="[...selectedTechnologies]"
+            :selected-tags="[...selectedTags]"
+            :selected-benefits="[...selectedBenefits]"
             :selected-date-range="selectedDateRange"
             @clear-search="searchQuery = ''"
             @toggle-category="enhancedToggleCategory"
@@ -179,6 +181,7 @@
 </template>
 
 <script setup lang="ts">
+import type { SortOption } from '~/types/resource'
 import { useUrlSync } from '~/composables/useUrlSync'
 import { useSearchPage } from '~/composables/useSearchPage'
 import ResourceSort from '~/components/ResourceSort.vue'
@@ -203,7 +206,11 @@ useSeoMeta({
   ogDescription: seoConfig.meta.description,
   ogImage: seoConfig.og.image,
   ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000'}/search`,
-  twitterCard: seoConfig.twitter.card,
+  twitterCard: seoConfig.twitter.card as
+    | 'summary'
+    | 'summary_large_image'
+    | 'app'
+    | 'player',
 })
 
 const {

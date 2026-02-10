@@ -18,6 +18,11 @@ export const limitsConfig = {
       process.env.SEARCH_DEFAULT_SUGGESTIONS_LIMIT || '5'
     ),
 
+    // Maximum limit for suggestions
+    maxSuggestionsLimit: parseInt(
+      process.env.SEARCH_MAX_SUGGESTIONS_LIMIT || '10'
+    ),
+
     // Default limit for popular searches
     defaultPopularSearchesLimit: parseInt(
       process.env.SEARCH_DEFAULT_POPULAR_LIMIT || '10'

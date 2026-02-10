@@ -2,6 +2,7 @@ import { getRequestIP, setResponseHeader } from 'h3'
 import { getRateLimitTier } from '~/configs/rate-limit.config'
 import { sendRateLimitError } from '~/server/utils/api-response'
 import { timeConfig } from '~/configs/time.config'
+import { TIME } from '../utils/constants'
 
 // Advanced in-memory rate limiter with different limits for different endpoints
 // In production, you'd want to use a more robust solution like Redis
@@ -95,21 +96,22 @@ export default defineEventHandler(event => {
     'X-RateLimit-Remaining',
     Math.max(0, remaining).toString()
   )
+  // Flexy hates hardcoded 1000! Using TIME.MS_PER_SECOND
   setResponseHeader(
     event,
     'X-RateLimit-Reset',
-    Math.floor(resetTime / 1000).toString()
+    Math.floor(resetTime / TIME.MS_PER_SECOND).toString()
   )
   setResponseHeader(
     event,
     'X-RateLimit-Window',
-    Math.floor(rateLimitConfig.windowMs / 1000).toString()
+    Math.floor(rateLimitConfig.windowMs / TIME.MS_PER_SECOND).toString()
   )
 
   // Check if rate limit exceeded
   if (rateLimitStore[key].count > rateLimitConfig.maxRequests) {
     // Use standardized rate limit error response
-    const retryAfter = Math.ceil((resetTime - now) / 1000)
+    const retryAfter = Math.ceil((resetTime - now) / TIME.MS_PER_SECOND)
     sendRateLimitError(event, retryAfter)
     return
   }

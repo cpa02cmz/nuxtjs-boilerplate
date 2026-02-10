@@ -19,7 +19,11 @@ const countProperty = (
     if (!value) return
 
     if (isArray && Array.isArray(value)) {
-      value.forEach((item: string) => incrementCount(counts, item))
+      value.forEach((item: unknown) => {
+        if (typeof item === 'string') {
+          incrementCount(counts, item)
+        }
+      })
     } else if (!isArray && typeof value === 'string') {
       incrementCount(counts, value)
     }
