@@ -2,6 +2,7 @@ import { getHeader, getQuery } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import { sendUnauthorizedError } from '~/server/utils/api-response'
 import { isProtectedApiRoute } from '~/configs/routes.config'
+import { logger } from '~/utils/logger'
 
 export default defineEventHandler(async event => {
   // Only apply to API routes that require authentication
@@ -35,7 +36,7 @@ export default defineEventHandler(async event => {
     })
   } catch (error) {
     // Log error but don't fail the request - the API key is still valid
-    console.warn('Failed to update API key lastUsedAt:', error)
+    logger.warn('Failed to update API key lastUsedAt:', error)
   }
 
   // Add key info to event context for use in handlers
