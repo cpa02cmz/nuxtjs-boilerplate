@@ -237,6 +237,16 @@
                 />
               </svg>
             </button>
+            <!-- Copy announcement for screen readers -->
+            <div
+              :id="`copy-announcement-${id}`"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              class="sr-only"
+            >
+              {{ copyStatus }}
+            </div>
             <!-- Compare button -->
             <button
               v-if="id"
@@ -404,6 +414,7 @@ const isCompareAnimating = ref(false)
 const compareButtonRef = ref<HTMLButtonElement | null>(null)
 const isCopied = ref(false)
 const isCopyAnimating = ref(false)
+const copyStatus = ref('')
 
 // Check if resource is new (added within the last 7 days)
 // Flexy hates hardcoded values! Using TIME_MS constants from config
@@ -552,6 +563,9 @@ const copyResourceUrl = async () => {
     isCopied.value = true
     isCopyAnimating.value = true
 
+    // Announce to screen readers
+    copyStatus.value = `Link to "${props.title}" copied to clipboard`
+
     // Haptic feedback for successful copy
     hapticSuccess()
 
@@ -563,6 +577,7 @@ const copyResourceUrl = async () => {
     setTimeout(() => {
       isCopied.value = false
       isCopyAnimating.value = false
+      copyStatus.value = ''
     }, animationConfig.copySuccess.resetDelayMs)
   } else {
     // Show error toast
