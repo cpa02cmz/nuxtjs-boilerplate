@@ -337,18 +337,28 @@ const resetAllFilters = () => {
 </script>
 
 <style>
-/* Staggered entrance animation for resource cards */
+/* Staggered entrance animation for resource cards - Spring physics for delightful UX */
 .resource-card-wrapper {
   opacity: 0;
-  animation: card-enter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  /* Spring cubic-bezier: overshoots slightly for organic, playful feel */
+  animation: card-enter 600ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  will-change: transform, opacity;
 }
 
 @keyframes card-enter {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(20px) scale(0.95);
+    transform: translateY(30px) scale(0.92);
   }
-  to {
+  40% {
+    opacity: 0.7;
+    transform: translateY(-4px) scale(1.02);
+  }
+  70% {
+    opacity: 0.95;
+    transform: translateY(2px) scale(0.99);
+  }
+  100% {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
