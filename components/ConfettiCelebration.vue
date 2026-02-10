@@ -39,7 +39,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   trigger: false,
   intensity: 'medium',
-  duration: animationConfig.confetti?.durationMs || 3000,
+  duration: animationConfig.confetti!.durationMs,
 })
 
 const isActive = ref(false)
