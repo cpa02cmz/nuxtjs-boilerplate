@@ -10,7 +10,7 @@ export default defineEventHandler(async event => {
     const id = event.context.params?.id
 
     // Find webhook by ID
-    const webhook = webhookStorage.getWebhookById(id as string)
+    const webhook = await webhookStorage.getWebhookById(id as string)
     if (!webhook) {
       return sendNotFoundError(event, 'Webhook', id)
     }
