@@ -4,10 +4,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-          Search Resources
+          {{ contentConfig.navigation.items.search }}
         </h1>
         <p class="mt-4 text-xl text-gray-500">
-          Find the perfect free resources for your projects
+          {{ seoConfig.meta.description }}
         </p>
       </div>
 
@@ -40,31 +40,18 @@
       </div>
 
       <!-- No Results State -->
-      <div
+      <LazyEmptyState
         v-else-if="!filteredResources.length && !loading"
-        class="text-center py-12"
-      >
-        <h3 class="text-xl font-medium text-gray-900 mb-2">
-          No resources found
-        </h3>
-        <p class="text-gray-500 mb-6">
-          Try adjusting your search or filter criteria
-        </p>
-        <ClientOnly>
-          <LazyRelatedSearches
-            :query="searchQuery"
-            class="mb-6"
-            @search-select="handleRelatedSearch"
-          />
-        </ClientOnly>
-        <button
-          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
-          aria-label="Reset all filters to default"
-          @click="resetAllFilters"
-        >
-          Reset Filters
-        </button>
-      </div>
+        :title="contentConfig.searchResults.noResults.title"
+        :description="contentConfig.searchResults.noResults.message"
+        :suggestions="['AI Tools', 'Web Hosting', 'Databases', 'APIs', 'VPS']"
+        show-reset
+        show-browse-all
+        show-tips
+        @reset="resetAllFilters"
+        @browse-all="handleBrowseAll"
+        @suggestion-click="handleSuggestionClick"
+      />
 
       <!-- Results with Filters -->
       <div
@@ -180,6 +167,7 @@
                     createSearchSnippet(resource.description, searchQuery)
                   "
                   :search-query="searchQuery"
+                  :date-added="resource.dateAdded"
                 />
               </template>
             </VirtualResourceList>
@@ -198,6 +186,10 @@ import VirtualResourceList from '~/components/VirtualResourceList.vue'
 import PopularSearches from '~/components/PopularSearches.vue'
 import ZeroResultSearches from '~/components/ZeroResultSearches.vue'
 import ActiveFilters from '~/components/ActiveFilters.vue'
+import { seoConfig } from '~/configs/seo.config'
+import { contentConfig } from '~/configs/content.config'
+import { appConfig } from '~/configs/app.config'
+import { uiConfig } from '~/configs/ui.config'
 
 definePageMeta({
   layout: 'default',
@@ -205,15 +197,13 @@ definePageMeta({
 
 const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
-  title: 'Search Resources - Free Stuff on the Internet',
-  ogTitle: 'Search Resources - Free Stuff on the Internet',
-  description:
-    'Search and filter through our collection of free resources including AI tools, hosting services, databases, and more for developers.',
-  ogDescription:
-    'Search and filter through our collection of free resources including AI tools, hosting services, databases, and more for developers.',
-  ogImage: '/og-image.jpg',
+  title: `${contentConfig.navigation.items.search} - ${appConfig.name}`,
+  ogTitle: `${contentConfig.navigation.items.search} - ${appConfig.name}`,
+  description: seoConfig.meta.description,
+  ogDescription: seoConfig.meta.description,
+  ogImage: seoConfig.og.image,
   ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || 'http://localhost:3000'}/search`,
-  twitterCard: 'summary_large_image',
+  twitterCard: seoConfig.twitter.card,
 })
 
 const {
@@ -300,7 +290,8 @@ const resetAllFilters = () => {
   searchQuery.value = ''
 }
 
-const handleRelatedSearch = (query: string) => {
+// Kept for RelatedSearches compatibility if used elsewhere
+const _handleRelatedSearch = (query: string) => {
   searchQuery.value = query
   updateSearchQuery(query)
 }
@@ -331,20 +322,21 @@ const onUndoDelete = (search: {
   saveSearch(search.name, search.query)
 }
 
+const handleBrowseAll = () => {
+  resetAllFilters()
+}
+
+const handleSuggestionClick = (suggestion: string) => {
+  searchQuery.value = suggestion
+  updateSearchQuery(suggestion)
+}
+
 const getButtonLabel = (category: string) => {
-  switch (category.toLowerCase()) {
-    case 'ai tools':
-      return 'Explore AI Tools'
-    case 'vps':
-      return 'Get VPS'
-    case 'web hosting':
-      return 'Find Hosting'
-    case 'databases':
-      return 'Explore Databases'
-    case 'cdn':
-      return 'Get CDN'
-    default:
-      return 'Get Free Access'
-  }
+  const labels = uiConfig.resourceCard.categoryButtonLabels
+  const normalizedCategory = category.toLowerCase()
+  return (
+    labels[normalizedCategory as keyof typeof labels] ||
+    uiConfig.resourceCard.defaultButtonLabel
+  )
 }
 </script>

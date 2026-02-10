@@ -17,12 +17,18 @@ import { prisma } from './db'
 import { PAGINATION } from './constants'
 import { safeJsonParse } from './safeJsonParse'
 import { logger } from '~/utils/logger'
+import { encryptSecret, decryptSecret } from './encryption'
 
 function mapPrismaToWebhook(webhook: PrismaWebhook): Webhook {
+  // Decrypt secret when mapping from database
+  const decryptedSecret = webhook.secret
+    ? decryptSecret(webhook.secret)
+    : undefined
+
   return {
     id: webhook.id,
     url: webhook.url,
-    secret: webhook.secret ?? undefined,
+    secret: decryptedSecret ?? undefined,
     active: webhook.active,
     events: safeJsonParse<WebhookEvent[]>(webhook.events, []),
     createdAt: webhook.createdAt.toISOString(),
@@ -156,11 +162,16 @@ export const webhookStorage = {
 
   async createWebhook(webhook: Webhook) {
     try {
+      // Encrypt secret before storing
+      const encryptedSecret = webhook.secret
+        ? encryptSecret(webhook.secret)
+        : null
+
       const created = await prisma.webhook.create({
         data: {
           id: webhook.id,
           url: webhook.url,
-          secret: webhook.secret,
+          secret: encryptedSecret,
           active: webhook.active,
           events: JSON.stringify(webhook.events),
         },
@@ -174,11 +185,19 @@ export const webhookStorage = {
 
   async updateWebhook(id: string, data: Partial<Webhook>) {
     try {
+      // Encrypt secret before updating if provided
+      const encryptedSecret =
+        data.secret !== undefined
+          ? data.secret
+            ? encryptSecret(data.secret)
+            : null
+          : undefined
+
       const updated = await prisma.webhook.updateMany({
         where: { id, deletedAt: null },
         data: {
           ...(data.url && { url: data.url }),
-          ...(data.secret !== undefined && { secret: data.secret }),
+          ...(encryptedSecret !== undefined && { secret: encryptedSecret }),
           ...(data.active !== undefined && { active: data.active }),
           ...(data.events && { events: JSON.stringify(data.events) }),
         },
@@ -404,6 +423,9 @@ export const webhookStorage = {
           ...(data.expiresAt !== undefined && {
             expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
           }),
+          ...(data.lastUsedAt !== undefined && {
+            lastUsedAt: data.lastUsedAt ? new Date(data.lastUsedAt) : null,
+          }),
         },
       })
 
@@ -492,6 +514,40 @@ export const webhookStorage = {
       return deleted.count > 0
     } catch (error) {
       handleStorageError(`remove from queue ${id}`, error)
+    }
+  },
+
+  /**
+   * Atomically dequeue the next available webhook item
+   * Uses a processing status flag to prevent duplicate processing
+   * Returns null if no items available or if item is already being processed
+   */
+  async dequeueAtomic(): Promise<WebhookQueueItem | null> {
+    try {
+      return await prisma.$transaction(async tx => {
+        // Find the oldest pending item that's not currently being processed
+        const item = await tx.webhookQueue.findFirst({
+          where: {
+            deletedAt: null,
+            scheduledFor: { lte: new Date() },
+          },
+          orderBy: [{ priority: 'asc' }, { scheduledFor: 'asc' }],
+        })
+
+        if (!item) {
+          return null
+        }
+
+        // Soft delete the item atomically within the transaction
+        await tx.webhookQueue.update({
+          where: { id: item.id },
+          data: { deletedAt: new Date() },
+        })
+
+        return mapPrismaToWebhookQueueItem(item)
+      })
+    } catch (error) {
+      handleStorageError('atomic dequeue', error)
     }
   },
 

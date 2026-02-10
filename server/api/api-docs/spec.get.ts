@@ -3,6 +3,14 @@ import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
+
+  // Flexy hates hardcoded URLs! Using runtime config for dynamic server URLs
+  const config = useRuntimeConfig()
+  const siteUrl =
+    config.public.siteUrl ||
+    config.public.canonicalUrl ||
+    'http://localhost:3000'
+
   const openApiSpec = {
     openapi: '3.0.3',
     info: {
@@ -25,12 +33,8 @@ export default defineEventHandler(async event => {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
-        description: 'Development server',
-      },
-      {
-        url: 'https://yourdomain.com',
-        description: 'Production server',
+        url: siteUrl,
+        description: 'Current server',
       },
     ],
     tags: [

@@ -23,6 +23,7 @@
         :benefits="[...resource.benefits]"
         :url="resource.url"
         :button-label="getButtonLabel(resource.category)"
+        :date-added="resource.dateAdded"
       />
     </div>
   </div>

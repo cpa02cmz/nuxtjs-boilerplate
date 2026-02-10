@@ -1,6 +1,9 @@
 // utils/analytics.ts
 // Client-side analytics tracking utilities
 import logger from '~/utils/logger'
+import { apiConfig } from '~/configs/api.config'
+import { patternsConfig } from '~/configs/patterns.config'
+import { appConfig } from '~/configs/app.config'
 
 export interface AnalyticsEvent {
   type: string
@@ -13,7 +16,7 @@ export interface AnalyticsEvent {
 // Get CSRF token from cookie
 function getCsrfToken(): string | null {
   if (typeof document === 'undefined') return null
-  const match = document.cookie.match(new RegExp('(^| )csrf_token=([^;]+)'))
+  const match = document.cookie.match(patternsConfig.csrf.cookiePattern)
   return match ? match[2] : null
 }
 
@@ -36,16 +39,26 @@ export async function trackEvent(event: AnalyticsEvent): Promise<boolean> {
     }
 
     // Send the event to the analytics API
-    const response = await fetch('/api/analytics/events', {
+    const response = await fetch(apiConfig.analytics.events, {
       method: 'POST',
       headers,
       body: JSON.stringify(event),
     })
 
+    // Check if response is OK before parsing JSON
+    if (!response.ok) {
+      const errorText = await response.text()
+      logger.error(`Analytics API error (${response.status}):`, errorText)
+      return false
+    }
+
     const result = await response.json()
 
     if (!result.success) {
-      logger.error('Failed to track analytics event:', result.message)
+      logger.error(
+        'Failed to track analytics event:',
+        result.message || 'Unknown error'
+      )
       return false
     }
 
@@ -66,11 +79,14 @@ export async function trackPageView(
     url,
     properties: {
       title,
-      referrer: typeof document !== 'undefined' ? document.referrer : '',
+      referrer:
+        typeof document !== 'undefined'
+          ? document.referrer
+          : appConfig.analytics.defaultReferrer,
       userAgent:
         typeof navigator !== 'undefined'
           ? navigator.userAgent
-          : 'test-environment',
+          : appConfig.analytics.defaultUserAgent,
     },
   })
 }

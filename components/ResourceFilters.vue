@@ -1,9 +1,9 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
     <div class="flex justify-between items-center mb-4">
-      <h3 class="text-lg font-medium text-gray-900">
+      <h2 class="text-lg font-medium text-gray-900">
         Filters
-      </h3>
+      </h2>
       <button
         class="text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded"
         aria-label="Reset all filters"
@@ -177,7 +177,7 @@ interface Props {
   difficultyLevels: string[]
   technologies: string[]
   tags: string[]
-  benefits: string[]
+  benefits?: string[]
   selectedCategories: string[]
   selectedPricingModels: string[]
   selectedDifficultyLevels: string[]
@@ -211,6 +211,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  benefits: () => [],
   searchQuery: '',
   facetCounts: () => ({}),
   selectedBenefits: () => [],

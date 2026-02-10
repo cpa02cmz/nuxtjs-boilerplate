@@ -1,5 +1,7 @@
 import Fuse from 'fuse.js'
 import type { Resource } from '~/types/resource'
+import { searchConfig } from '~/configs/search.config'
+import { limitsConfig } from '~/configs/limits.config'
 
 // Define search index structure
 interface SearchIndex {
@@ -8,6 +10,11 @@ interface SearchIndex {
   categories: Set<string>
   popularSearches: Map<string, number>
 }
+
+// Maximum number of popular searches to track (prevents unbounded growth)
+const MAX_POPULAR_SEARCHES = 1000
+// Trim threshold - when map exceeds this, trim down to MAX_POPULAR_SEARCHES
+const POPULAR_SEARCHES_TRIM_THRESHOLD = 1200
 
 // Search index manager utility
 class SearchIndexManager {
@@ -21,15 +28,18 @@ class SearchIndexManager {
     // Create Fuse.js index for resources
     const fuseIndex = new Fuse(resources, {
       keys: [
-        { name: 'title', weight: 0.4 },
-        { name: 'description', weight: 0.3 },
-        { name: 'benefits', weight: 0.2 },
-        { name: 'tags', weight: 0.1 },
+        { name: 'title', weight: searchConfig.suggestionWeights.name },
+        {
+          name: 'description',
+          weight: searchConfig.suggestionWeights.description,
+        },
+        { name: 'benefits', weight: searchConfig.keys.tags.weight },
+        { name: 'tags', weight: searchConfig.keys.category.weight },
       ],
-      threshold: 0.3,
-      includeScore: true,
-      useExtendedSearch: true,
-      minMatchCharLength: 1,
+      threshold: searchConfig.suggestions.threshold,
+      includeScore: searchConfig.fuse.includeScore,
+      useExtendedSearch: searchConfig.fuse.useExtendedSearch,
+      minMatchCharLength: searchConfig.suggestions.minMatchCharLength,
     })
 
     // Extract unique tags and categories
@@ -95,15 +105,18 @@ class SearchIndexManager {
     // Rebuild the fuse index
     this.index.resources = new Fuse(this.resources, {
       keys: [
-        { name: 'title', weight: 0.4 },
-        { name: 'description', weight: 0.3 },
-        { name: 'benefits', weight: 0.2 },
-        { name: 'tags', weight: 0.1 },
+        { name: 'title', weight: searchConfig.suggestionWeights.name },
+        {
+          name: 'description',
+          weight: searchConfig.suggestionWeights.description,
+        },
+        { name: 'benefits', weight: searchConfig.keys.tags.weight },
+        { name: 'tags', weight: searchConfig.keys.category.weight },
       ],
-      threshold: 0.3,
-      includeScore: true,
-      useExtendedSearch: true,
-      minMatchCharLength: 1,
+      threshold: searchConfig.suggestions.threshold,
+      includeScore: searchConfig.fuse.includeScore,
+      useExtendedSearch: searchConfig.fuse.useExtendedSearch,
+      minMatchCharLength: searchConfig.suggestions.minMatchCharLength,
     })
   }
 
@@ -121,15 +134,18 @@ class SearchIndexManager {
     // Rebuild the fuse index
     this.index.resources = new Fuse(this.resources, {
       keys: [
-        { name: 'title', weight: 0.4 },
-        { name: 'description', weight: 0.3 },
-        { name: 'benefits', weight: 0.2 },
-        { name: 'tags', weight: 0.1 },
+        { name: 'title', weight: searchConfig.suggestionWeights.name },
+        {
+          name: 'description',
+          weight: searchConfig.suggestionWeights.description,
+        },
+        { name: 'benefits', weight: searchConfig.keys.tags.weight },
+        { name: 'tags', weight: searchConfig.keys.category.weight },
       ],
-      threshold: 0.3,
-      includeScore: true,
-      useExtendedSearch: true,
-      minMatchCharLength: 1,
+      threshold: searchConfig.suggestions.threshold,
+      includeScore: searchConfig.fuse.includeScore,
+      useExtendedSearch: searchConfig.fuse.useExtendedSearch,
+      minMatchCharLength: searchConfig.suggestions.minMatchCharLength,
     })
 
     // Rebuild tags and categories
@@ -166,17 +182,55 @@ class SearchIndexManager {
   }
 
   // Track a search query for popularity
+  // FIXED: Added size limits and query normalization to prevent unbounded growth
   trackSearchQuery(query: string) {
     if (!this.index) {
       throw new Error('Search index not initialized')
     }
 
-    const currentCount = this.index.popularSearches.get(query) || 0
-    this.index.popularSearches.set(query, currentCount + 1)
+    // Normalize query: trim whitespace and convert to lowercase
+    // This prevents storing duplicates like "API", "api", " api "
+    const normalizedQuery = query.trim().toLowerCase()
+
+    // Skip empty queries
+    if (!normalizedQuery) {
+      return
+    }
+
+    const currentCount = this.index.popularSearches.get(normalizedQuery) || 0
+    this.index.popularSearches.set(normalizedQuery, currentCount + 1)
+
+    // FIXED: Trim the map if it exceeds the threshold to prevent memory leaks
+    if (this.index.popularSearches.size > POPULAR_SEARCHES_TRIM_THRESHOLD) {
+      this.trimPopularSearches()
+    }
+  }
+
+  /**
+   * Trim popular searches to MAX_POPULAR_SEARCHES by removing least popular entries
+   * This prevents unbounded memory growth
+   */
+  private trimPopularSearches(): void {
+    if (!this.index) return
+
+    const entries = Array.from(this.index.popularSearches.entries())
+
+    // Sort by count (ascending) to find least popular
+    entries.sort((a, b) => a[1] - b[1])
+
+    // Calculate how many to remove
+    const removeCount = entries.length - MAX_POPULAR_SEARCHES
+
+    // Remove least popular entries
+    for (let i = 0; i < removeCount; i++) {
+      this.index.popularSearches.delete(entries[i][0])
+    }
   }
 
   // Get popular searches
-  getPopularSearches(limit: number = 10): { query: string; count: number }[] {
+  getPopularSearches(
+    limit: number = limitsConfig.analytics.defaultPopularLimit
+  ): { query: string; count: number }[] {
     if (!this.index) {
       throw new Error('Search index not initialized')
     }

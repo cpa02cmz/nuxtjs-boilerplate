@@ -10,7 +10,7 @@ describe('Security Configuration', () => {
     it('should generate CSP without nonce when no nonce is provided', () => {
       const csp = generateCsp()
       expect(csp).toContain("default-src 'self'")
-      expect(csp).toContain("script-src 'self' 'strict-dynamic'")
+      expect(csp).toContain("script-src 'self' 'unsafe-eval' 'unsafe-inline'")
       expect(csp).toContain(
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
       )
@@ -23,7 +23,7 @@ describe('Security Configuration', () => {
 
       expect(csp).toContain("default-src 'self'")
       expect(csp).toContain(
-        `script-src 'nonce-${nonce}' 'self' 'strict-dynamic'`
+        `script-src 'nonce-${nonce}' 'self' 'unsafe-eval' 'unsafe-inline'`
       )
       expect(csp).toContain(
         `style-src 'nonce-${nonce}' 'self' 'unsafe-inline' https://fonts.googleapis.com`

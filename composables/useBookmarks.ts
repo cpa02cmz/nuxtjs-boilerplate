@@ -2,6 +2,7 @@ import { ref, computed, readonly } from 'vue'
 import { createStorageWithDateSerialization } from '~/utils/storage'
 import { emitEvent } from '~/utils/event-emitter'
 import { STORAGE_KEYS } from '~/server/utils/constants'
+import { patternsConfig } from '~/configs/patterns.config'
 
 export interface Bookmark {
   id: string
@@ -137,7 +138,10 @@ export const useBookmarks = () => {
     const dataStr = JSON.stringify(bookmarksToExport, null, 2)
     const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`
 
-    const exportFileDefaultName = `bookmarks-${new Date().toISOString().split('T')[0]}.json`
+    // Format date as YYYY-MM-DD for filename
+    const dateStr = new Date().toISOString().split('T')[0]
+    const exportFileDefaultName =
+      patternsConfig.export.bookmarksFilenameTemplate.replace('{date}', dateStr)
 
     const linkElement = document.createElement('a')
     linkElement.setAttribute('href', dataUri)

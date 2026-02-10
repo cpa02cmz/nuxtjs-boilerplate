@@ -10,16 +10,12 @@ const parseAllowedOrigins = (): string[] => {
   return origins.split(',').map(origin => origin.trim())
 }
 
-// CSP Directives Configuration
 export const securityConfig = {
-  // Content Security Policy
+  // CSP Directives Configuration
   csp: {
     defaultSrc: parseCspDirective(process.env.CSP_DEFAULT_SRC || "'self'"),
     scriptSrc: parseCspDirective(
-      process.env.CSP_SCRIPT_SRC ||
-        (process.env.NODE_ENV === 'development'
-          ? "'self', 'unsafe-eval', 'unsafe-inline'"
-          : "'self', 'strict-dynamic'")
+      process.env.CSP_SCRIPT_SRC || "'self', 'unsafe-eval', 'unsafe-inline'"
     ),
     styleSrc: parseCspDirective(
       process.env.CSP_STYLE_SRC ||
@@ -36,6 +32,7 @@ export const securityConfig = {
       process.env.CSP_CONNECT_SRC ||
         "'self', https://fonts.googleapis.com, https://fonts.gstatic.com, https://unpkg.com, https://twitter.com, https://www.facebook.com, https://www.linkedin.com, https://www.reddit.com"
     ),
+    frameSrc: parseCspDirective(process.env.CSP_FRAME_SRC || "'self'"),
     frameAncestors: parseCspDirective(
       process.env.CSP_FRAME_ANCESTORS || "'none'"
     ),
@@ -94,7 +91,7 @@ export const securityConfig = {
   // Image Optimization
   image: {
     quality: parseInt(process.env.IMAGE_QUALITY || '80'),
-    formats: parseImageFormats(process.env.IMAGE_FORMATS || 'webp, avif, jpeg'),
+    formats: parseImageFormats(process.env.IMAGE_FORMATS || 'avif, jpeg, png'),
     densities: parseDensities(process.env.IMAGE_DENSITIES || '1, 2'),
   },
 } as const

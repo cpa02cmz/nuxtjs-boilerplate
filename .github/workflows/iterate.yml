@@ -12,7 +12,7 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
-  actions: write
+  actions: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -30,7 +30,7 @@ jobs:
       IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}    
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -50,7 +50,7 @@ jobs:
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
       - name: Install Node.js
         continue-on-error: true
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20"
       - name: Install Dependencies
@@ -71,7 +71,7 @@ jobs:
           echo "🏗️ Starting Architect Intelligence Cycle"
           while [ $retry_count -lt $max_retries ]; do
             echo "Attempt $((retry_count + 1)) of $max_retries"
-            if opencode run /ulw-loop "Anda adalah RepoKeeper. Tugas anda adalah menjaga repositori tetap efisien, teratur dan terorganisir, bersih dari file/folder redundant, file/folder sementara dan file/folder yang tidak digunakan lagi. Jaga dokumentasi tetap up to date dan sesuai dengan code. buat/update pr setelah selesai, pastikan branch up to date dengan main sebelum membuat pr. error/warning ketika build/lint adalah kegagalan fatal." \
+            if opencode run /ulw-loop "Anda adalah RepoKeeper. Tugas anda adalah menjaga repositori tetap efisien, teratur dan terorganisir, bersih dari file/folder redundant dan duplikat, file/folder sementara dan file/folder yang tidak digunakan lagi atau stale branch lebih dari 7 hari. Jaga dokumentasi tetap up to date dan sesuai dengan code. buat/update pr setelah selesai, pastikan branch up to date dengan main sebelum membuat pr. error/warning ketika build/lint adalah kegagalan fatal." \
               --agent RepoKeeper \
               --model opencode/kimi-k2.5-free \
               --share false; then
@@ -95,7 +95,7 @@ jobs:
       IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}    
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -115,7 +115,7 @@ jobs:
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
       - name: Install Node.js
         continue-on-error: true
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20"
       - name: Install Dependencies
@@ -133,18 +133,18 @@ jobs:
         run: |
           max_retries=2
           retry_count=0
-          echo "🏗️ Starting Architect Intelligence Cycle"
+          echo "🏗️ Starting BugFixer Intelligence Cycle"
           while [ $retry_count -lt $max_retries ]; do
             echo "Attempt $((retry_count + 1)) of $max_retries"
             if opencode run /ulw-loop "Anda adalah BugFixer. Tugas anda adalah menjaga repositori bebas bug atau error. buat/update pr setelah selesai, pastikan branch up to date dengan main sebelum membuat pr. error/warning ketika build/lint adalah kegagalan fatal." \
               --agent RepoKeeper \
               --model opencode/kimi-k2.5-free \
               --share false; then
-              echo "✅ Architect work completed successfully"
+              echo "✅ BugFixer work completed successfully"
               break
             else
               retry_count=$((retry_count + 1))
-              echo "❌ Architect execution failed, retrying in 30 seconds..."
+              echo "❌ BugFixer execution failed, retrying in 30 seconds..."
               sleep 30
               if [ $retry_count -eq $max_retries ]; then
                 echo "❌ All retry attempts failed"
@@ -160,7 +160,7 @@ jobs:
       IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}    
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -180,7 +180,7 @@ jobs:
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
       - name: Install Node.js
         continue-on-error: true
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20"
       - name: Install Dependencies
@@ -205,11 +205,11 @@ jobs:
               --agent RepoKeeper \
               --model opencode/kimi-k2.5-free \
               --share false; then
-              echo "✅ Architect work completed successfully"
+              echo "✅ Palette work completed successfully"
               break
             else
               retry_count=$((retry_count + 1))
-              echo "❌ Architect execution failed, retrying in 30 seconds..."
+              echo "❌ Palette execution failed, retrying in 30 seconds..."
               sleep 30
               if [ $retry_count -eq $max_retries ]; then
                 echo "❌ All retry attempts failed"
@@ -225,7 +225,7 @@ jobs:
       IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}    
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -245,7 +245,7 @@ jobs:
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
       - name: Install Node.js
         continue-on-error: true
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20"
       - name: Install Dependencies
@@ -266,15 +266,15 @@ jobs:
           echo "🏗️ Starting Architect Intelligence Cycle"
           while [ $retry_count -lt $max_retries ]; do
             echo "Attempt $((retry_count + 1)) of $max_retries"
-            if opencode run /ulw-loop "Act as **Flexy**. **Flexy** love modularity and hate hardcoded. **Flexy** mission is to eliminate hardcoded and make modular system. buat/update pr setelah selesai, pastikan branch up to date dengan main sebelum membuat pr. error/warning ketika build/lint adalah kegagalan fatal." \
+            if opencode run /ulw-loop "Act as **Flexy**. **Flexy** love modularity and hate hardcoded. **Flexy** mission is to eliminate hardcoded and make modular system without over engineering. buat/update pr setelah selesai, pastikan branch up to date dengan main sebelum membuat pr. error/warning ketika build/lint adalah kegagalan fatal." \
               --agent RepoKeeper \
               --model opencode/kimi-k2.5-free \
               --share false; then
-              echo "✅ Architect work completed successfully"
+              echo "✅ Flexy work completed successfully"
               break
             else
               retry_count=$((retry_count + 1))
-              echo "❌ Architect execution failed, retrying in 30 seconds..."
+              echo "❌ Flexy execution failed, retrying in 30 seconds..."
               sleep 30
               if [ $retry_count -eq $max_retries ]; then
                 echo "❌ All retry attempts failed"
@@ -290,7 +290,7 @@ jobs:
       IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}    
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -310,7 +310,7 @@ jobs:
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
       - name: Install Node.js
         continue-on-error: true
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20"
       - name: Install Dependencies

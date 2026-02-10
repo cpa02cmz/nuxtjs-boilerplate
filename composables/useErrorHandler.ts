@@ -1,5 +1,6 @@
 import { ref, computed, type Ref } from 'vue'
 import { logError, logWarning, logCritical } from '~/utils/errorLogger'
+import { limitsConfig } from '~/configs/limits.config'
 
 export interface ErrorState {
   hasError: boolean
@@ -57,8 +58,11 @@ export const useErrorHandler = () => {
 
     globalErrors.value.push(errorEntry)
 
-    if (globalErrors.value.length > 50) {
-      globalErrors.value = globalErrors.value.slice(-50)
+    // Use config for max logs - Flexy hates hardcoded values!
+    if (globalErrors.value.length > limitsConfig.errorLog.maxLogs) {
+      globalErrors.value = globalErrors.value.slice(
+        -limitsConfig.errorLog.maxLogs
+      )
     }
 
     const errorObj = error instanceof Error ? error : new Error(errorMessage)

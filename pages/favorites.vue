@@ -1,5 +1,7 @@
 <template>
   <div class="py-12">
+    <!-- Confetti celebration when clearing all bookmarks -->
+    <ConfettiCelebration ref="confettiRef" intensity="light" />
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
@@ -8,15 +10,13 @@
         <p class="mt-4 text-xl text-gray-600">
           {{ bookmarkCount }} bookmarked resource<span
             v-if="bookmarkCount !== 1"
-          >s</span>
+            >s</span
+          >
         </p>
       </div>
 
       <!-- Empty state -->
-      <div
-        v-if="bookmarkCount === 0"
-        class="text-center py-16"
-      >
+      <div v-if="bookmarkCount === 0" class="text-center py-16">
         <div class="mx-auto h-24 w-24 text-gray-400">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -33,9 +33,7 @@
             />
           </svg>
         </div>
-        <h3 class="mt-4 text-xl font-medium text-gray-900">
-          No bookmarks yet
-        </h3>
+        <h3 class="mt-4 text-xl font-medium text-gray-900">No bookmarks yet</h3>
         <p class="mt-2 text-gray-600">
           Start bookmarking resources by clicking the star icon on any resource
           card.
@@ -58,7 +56,8 @@
             <div class="text-sm text-gray-700">
               Showing {{ getAllBookmarks.length }} bookmarked resource<span
                 v-if="getAllBookmarks.length !== 1"
-              >s</span>
+                >s</span
+              >
             </div>
           </div>
           <div class="flex space-x-3">
@@ -68,12 +67,52 @@
             >
               Export
             </button>
-            <button
-              class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              @click="clearBookmarks"
+            <Transition
+              enter-active-class="transition-all duration-200 ease-out"
+              enter-from-class="opacity-0 scale-95"
+              enter-to-class="opacity-100 scale-100"
+              leave-active-class="transition-all duration-150 ease-in"
+              leave-from-class="opacity-100 scale-100"
+              leave-to-class="opacity-0 scale-95"
+              mode="out-in"
             >
-              Clear All
-            </button>
+              <div
+                v-if="showClearConfirmation"
+                key="confirmation"
+                class="flex items-center space-x-2 bg-red-50 border border-red-200 rounded-md px-3 py-2"
+                role="alert"
+                aria-live="polite"
+              >
+                <span
+                  class="text-sm text-red-700 font-medium whitespace-nowrap"
+                >
+                  Delete {{ bookmarkCount }} bookmark<span
+                    v-if="bookmarkCount !== 1"
+                    >s</span
+                  >?
+                </span>
+                <button
+                  class="text-sm text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-colors"
+                  @click="handleCancelClear"
+                >
+                  Cancel
+                </button>
+                <button
+                  class="text-sm text-red-700 font-medium px-2 py-1 rounded bg-red-100 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-colors"
+                  @click="handleConfirmClear"
+                >
+                  Delete
+                </button>
+              </div>
+              <button
+                v-else
+                key="clear-button"
+                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                @click="handleClearClick"
+              >
+                Clear All
+              </button>
+            </Transition>
           </div>
         </div>
 
@@ -88,6 +127,7 @@
             :benefits="['Bookmarked resource']"
             :url="bookmark.url"
             :button-label="'Visit Resource'"
+            :date-added="bookmark.dateAdded"
           >
             <template #actions>
               <button
@@ -118,7 +158,9 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useBookmarks } from '~/composables/useBookmarks'
+import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
 // Set page-specific meta tags
 useSeoMeta({
@@ -132,6 +174,8 @@ definePageMeta({
   layout: 'default',
 })
 
+const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
+
 const {
   getAllBookmarks,
   bookmarkCount,
@@ -139,4 +183,24 @@ const {
   exportBookmarks,
   clearBookmarks,
 } = useBookmarks()
+
+// Confirmation state for clearing all bookmarks
+const showClearConfirmation = ref(false)
+
+const handleClearClick = () => {
+  showClearConfirmation.value = true
+}
+
+const handleCancelClear = () => {
+  showClearConfirmation.value = false
+}
+
+const handleConfirmClear = () => {
+  clearBookmarks()
+  showClearConfirmation.value = false
+  // Trigger confetti celebration - Palette's delightful micro-UX touch!
+  setTimeout(() => {
+    confettiRef.value?.celebrate()
+  }, 100)
+}
 </script>

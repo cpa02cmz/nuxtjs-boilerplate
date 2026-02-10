@@ -1,14 +1,18 @@
 import type { WebhookPayload } from '~/types/webhook'
 import { createHmac } from 'node:crypto'
+import { patternsConfig } from '~/configs/patterns.config'
 
 export class WebhookSigner {
   generateSignature(payload: WebhookPayload, secret: string): string {
     const payloadString = JSON.stringify(payload)
-    const signature = createHmac('sha256', secret)
+    const signature = createHmac(
+      patternsConfig.webhook.signatureAlgorithm,
+      secret
+    )
       .update(payloadString)
       .digest('hex')
 
-    return `v1=${signature}`
+    return `${patternsConfig.webhook.signaturePrefix}${signature}`
   }
 
   verifySignature(

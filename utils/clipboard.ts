@@ -10,6 +10,8 @@
  * - Error Handling: Robust error handling with user feedback
  */
 
+import { patternsConfig } from '~/configs/patterns.config'
+
 /**
  * Result of clipboard operation
  */
@@ -48,16 +50,17 @@ function copyWithExecCommand(text: string): ClipboardResult {
     const textArea = document.createElement('textarea')
     textArea.value = text
     textArea.setAttribute('readonly', '')
+    const offset = patternsConfig.clipboard.textareaOffset
     textArea.style.cssText = `
       position: absolute;
-      left: -9999px;
-      top: -9999px;
+      left: ${offset};
+      top: ${offset};
       opacity: 0;
       pointer-events: none;
     `
     document.body.appendChild(textArea)
     textArea.select()
-    textArea.setSelectionRange(0, 99999)
+    textArea.setSelectionRange(0, patternsConfig.clipboard.selectionRangeMax)
     const successful = document.execCommand('copy')
     document.body.removeChild(textArea)
 

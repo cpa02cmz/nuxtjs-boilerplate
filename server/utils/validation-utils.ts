@@ -2,6 +2,7 @@ import type { ZodError, ZodType } from 'zod'
 import type { H3Event } from 'h3'
 import { readBody, getQuery } from 'h3'
 import { sendBadRequestError } from './api-response'
+import { contentConfig } from '../../configs/content.config'
 
 export function validateRequest<T>(
   schema: ZodType<T>,
@@ -17,10 +18,12 @@ export function validateRequest<T>(
         message: err.message,
       }))
 
-      sendBadRequestError(event, 'Validation failed', { errors })
+      sendBadRequestError(event, contentConfig.errors.validation.failed, {
+        errors,
+      })
     }
 
-    throw new Error('Validation failed')
+    throw new Error(contentConfig.errors.validation.failed)
   }
 
   return result.data
@@ -34,10 +37,13 @@ export async function validateRequestBody<T>(
     const body = await readBody(event)
     return validateRequest(schema, body, event)
   } catch (error) {
-    if (error instanceof Error && error.message === 'Validation failed') {
+    if (
+      error instanceof Error &&
+      error.message === contentConfig.errors.validation.failed
+    ) {
       throw error
     }
-    throw new Error('Failed to read request body')
+    throw new Error(contentConfig.errors.validation.readBody)
   }
 }
 

@@ -49,10 +49,15 @@
         id="search-input"
         ref="searchInputRef"
         type="search"
+        role="combobox"
+        aria-haspopup="listbox"
         :value="modelValue"
         class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400 focus:shadow-lg focus:-translate-y-0.5"
-        :class="{ 'placeholder:text-gray-300': isSearching }"
-        placeholder="Search resources by name, description, tags..."
+        :class="{
+          'placeholder:text-gray-300': isSearching,
+          'animate-focus-pulse': showFocusPulse,
+        }"
+        :placeholder="contentConfig.search.placeholder"
         aria-label="Search resources (Press / to focus)"
         aria-describedby="search-results-info search-shortcut-hint"
         :aria-expanded="
@@ -143,6 +148,9 @@ import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
 import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
+import { contentConfig } from '~/configs/content.config'
+import { searchConfig } from '~/configs/search.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   modelValue: string
@@ -173,6 +181,7 @@ const searchHistory = ref<string[]>([])
 const isFocused = ref(false)
 const activeIndex = ref(-1)
 const isSearching = ref(false)
+const showFocusPulse = ref(false)
 
 // Use the resources composable
 const { resources } = useResourceData()
@@ -218,8 +227,14 @@ const updateSuggestions = (query: string) => {
       id: resource.id,
       title: resource.title,
       description:
-        resource.description.substring(0, 100) +
-        (resource.description.length > 100 ? '...' : ''),
+        resource.description.substring(
+          0,
+          searchConfig.behavior.descriptionTruncateLength
+        ) +
+        (resource.description.length >
+        searchConfig.behavior.descriptionTruncateLength
+          ? '...'
+          : ''),
       url: resource.url,
     }))
   } else {
@@ -363,6 +378,19 @@ if (typeof window !== 'undefined') {
     ) {
       event.preventDefault()
       searchInputRef.value?.focus()
+
+      // Check for reduced motion preference
+      const prefersReducedMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches
+
+      // Trigger focus pulse animation for visual feedback (skip if reduced motion)
+      if (!prefersReducedMotion) {
+        showFocusPulse.value = true
+        setTimeout(() => {
+          showFocusPulse.value = false
+        }, uiConfig.timing.focusPulseDurationMs)
+      }
     }
   }
 
@@ -389,6 +417,24 @@ if (typeof window !== 'undefined') {
 </script>
 
 <style scoped>
+/* Focus pulse animation for keyboard shortcut feedback */
+@keyframes focus-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.animate-focus-pulse {
+  animation: focus-pulse v-bind('`${uiConfig.timing.focusPulseDurationMs}ms`')
+    ease-out;
+}
+
 /* Respect reduced motion preferences for accessibility */
 @media (prefers-reduced-motion: reduce) {
   input {
@@ -404,6 +450,10 @@ if (typeof window !== 'undefined') {
   button {
     transition: none !important;
     transform: none !important;
+  }
+
+  .animate-focus-pulse {
+    animation: none !important;
   }
 }
 </style>

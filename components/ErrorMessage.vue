@@ -72,6 +72,8 @@
 </template>
 
 <script setup lang="ts">
+import { themeConfig } from '../configs/theme.config'
+
 interface Action {
   label: string
   handler: () => void
@@ -99,21 +101,21 @@ withDefaults(defineProps<Props>(), {
 }
 
 .error-message--error {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #b91c1c;
+  background-color: v-bind('themeConfig.errorMessage.error.bg');
+  border: 1px solid v-bind('themeConfig.errorMessage.error.border');
+  color: v-bind('themeConfig.errorMessage.error.text');
 }
 
 .error-message--warning {
-  background-color: #fffbeb;
-  border: 1px solid #fde68a;
-  color: #92400e;
+  background-color: v-bind('themeConfig.errorMessage.warning.bg');
+  border: 1px solid v-bind('themeConfig.errorMessage.warning.border');
+  color: v-bind('themeConfig.errorMessage.warning.text');
 }
 
 .error-message--success {
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: #166534;
+  background-color: v-bind('themeConfig.errorMessage.success.bg');
+  border: 1px solid v-bind('themeConfig.errorMessage.success.border');
+  color: v-bind('themeConfig.errorMessage.success.text');
 }
 
 .error-message__icon {
@@ -143,6 +145,27 @@ withDefaults(defineProps<Props>(), {
   color: inherit;
   text-decoration: underline;
   cursor: pointer;
-  padding: 0;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  margin: -0.25rem -0.5rem;
+}
+
+.error-message__action-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  text-decoration: none;
+}
+
+.error-message__action-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  text-decoration: none;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error-message__action-button {
+    transition: none;
+  }
 }
 </style>

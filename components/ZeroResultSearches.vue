@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
     <h3 class="text-lg font-medium text-gray-900 mb-4">
-      Common Searches
+      {{ contentConfig.search.popular.title }}
     </h3>
     <div class="space-y-3">
       <button
@@ -19,7 +19,7 @@
         v-if="zeroResultSearches.length === 0"
         class="text-center text-gray-500 text-sm py-4"
       >
-        No common searches yet
+        {{ contentConfig.search.popular.empty }}
       </div>
     </div>
   </div>
@@ -28,6 +28,8 @@
 <script setup lang="ts">
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
+import { contentConfig } from '~/configs/content.config'
+import { limitsConfig } from '~/configs/limits.config'
 
 interface Props {
   limit?: number
@@ -38,7 +40,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  limit: 10,
+  limit: limitsConfig.search.defaultZeroResultLimit,
 })
 
 const emit = defineEmits<Emits>()

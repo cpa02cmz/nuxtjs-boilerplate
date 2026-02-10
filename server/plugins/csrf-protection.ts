@@ -1,7 +1,34 @@
 import { defineNitroPlugin } from 'nitropack/runtime'
 import type { H3Event } from 'h3'
 import { setCookie, getCookie } from 'h3'
-import { randomBytes } from 'node:crypto'
+import { randomBytes, timingSafeEqual } from 'node:crypto'
+import { logger } from '~/utils/logger'
+import { csrfConfig, isSafeMethod } from '~/configs/csrf.config'
+import { httpConfig } from '~/configs/http.config'
+
+/**
+ * Timing-safe string comparison to prevent timing attacks
+ * Compares two strings in constant time regardless of content
+ */
+function safeCompare(a: string, b: string): boolean {
+  // Use timingSafeEqual with buffers of equal length to prevent timing attacks
+  // If lengths differ, we still compare to avoid leaking length info
+  const bufA = Buffer.from(a)
+  const bufB = Buffer.from(b)
+  const maxLen = Math.max(bufA.length, bufB.length)
+
+  // Create padded buffers of equal length
+  const paddedA = Buffer.alloc(maxLen)
+  const paddedB = Buffer.alloc(maxLen)
+
+  bufA.copy(paddedA)
+  bufB.copy(paddedB)
+
+  // Compare with timingSafeEqual and also verify actual lengths match
+  // The length check is done AFTER the timing-safe comparison
+  const equal = timingSafeEqual(paddedA, paddedB) && a.length === b.length
+  return equal
+}
 
 /**
  * CSRF Protection Plugin
@@ -11,15 +38,13 @@ import { randomBytes } from 'node:crypto'
  * 1. Generates/retrieves CSRF tokens for all requests
  * 2. Validates CSRF tokens for state-changing operations (POST, PUT, DELETE, PATCH)
  * 3. Sets appropriate CSRF token cookies
+ *
+ * Flexy loves modularity! Using centralized CSRF config.
  */
-
-const CSRF_COOKIE_NAME = 'csrf_token'
-const CSRF_HEADER_NAME = 'x-csrf-token'
-const CSRF_COOKIE_MAX_AGE = 60 * 60 * 24 // 24 hours
 
 // Generate a cryptographically secure CSRF token
 function generateCsrfToken(): string {
-  return randomBytes(32).toString('hex')
+  return randomBytes(csrfConfig.token.bytes).toString(csrfConfig.token.encoding)
 }
 
 export default defineNitroPlugin(nitroApp => {
@@ -27,44 +52,56 @@ export default defineNitroPlugin(nitroApp => {
   nitroApp.hooks.hook('request', async (event: H3Event) => {
     try {
       const path = event.path || ''
-      const method = event.node.req.method || 'GET'
+      const method = event.node.req.method || httpConfig.methods.GET
 
       // Only process API routes
       if (!path.startsWith('/api/')) {
         return
       }
 
+      // Check if this path requires CSRF protection
+      const requiresProtection = csrfConfig.protectedPaths.prefixes.some(
+        prefix => path.startsWith(prefix)
+      )
+
+      // Skip CSRF processing for non-protected paths
+      if (!requiresProtection) {
+        return
+      }
+
       // Get or create CSRF token
-      let csrfToken = getCookie(event, CSRF_COOKIE_NAME)
+      let csrfToken = getCookie(event, csrfConfig.cookie.name)
 
       if (!csrfToken) {
         csrfToken = generateCsrfToken()
         // Set CSRF token cookie with secure attributes
-        setCookie(event, CSRF_COOKIE_NAME, csrfToken, {
-          httpOnly: false, // Must be accessible by JavaScript for Double Submit pattern
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
-          maxAge: CSRF_COOKIE_MAX_AGE,
-          path: '/',
+        setCookie(event, csrfConfig.cookie.name, csrfToken, {
+          httpOnly: csrfConfig.cookie.httpOnly,
+          secure: csrfConfig.cookie.secure,
+          sameSite: csrfConfig.cookie.sameSite,
+          maxAge: csrfConfig.cookie.maxAge,
+          path: csrfConfig.cookie.path,
         })
       }
 
       // For state-changing methods, validate CSRF token
-      if (method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS') {
+      if (!isSafeMethod(method)) {
         const headerToken =
-          event.node.req.headers[CSRF_HEADER_NAME.toLowerCase()]
+          event.node.req.headers[csrfConfig.header.name.toLowerCase()]
 
-        // Check if token matches
-        if (!headerToken || headerToken !== csrfToken) {
+        // Check if token matches using timing-safe comparison
+        if (!headerToken || !safeCompare(String(headerToken), csrfToken)) {
           // Token mismatch - reject the request
-          event.node.res.statusCode = 403
-          event.node.res.setHeader('Content-Type', 'application/json')
+          event.node.res.statusCode = httpConfig.status.FORBIDDEN
+          event.node.res.setHeader(
+            httpConfig.headers.CONTENT_TYPE,
+            httpConfig.contentTypes.JSON
+          )
           event.node.res.end(
             JSON.stringify({
-              statusCode: 403,
+              statusCode: httpConfig.status.FORBIDDEN,
               statusMessage: 'Forbidden',
-              message:
-                'CSRF token validation failed. Please include the CSRF token in the X-CSRF-Token header.',
+              message: csrfConfig.errors.validationFailed,
             })
           )
           return
@@ -72,10 +109,10 @@ export default defineNitroPlugin(nitroApp => {
       }
 
       // Expose CSRF token header for client-side use
-      event.node.res.setHeader('X-CSRF-Token', csrfToken)
+      event.node.res.setHeader(csrfConfig.header.responseHeader, csrfToken)
     } catch (error) {
       // Log error but don't break the request
-      console.error('CSRF protection error:', error)
+      logger.error('CSRF protection error:', error)
     }
   })
 })

@@ -1,6 +1,7 @@
 /**
  * Utility functions for social sharing
  */
+import { contentConfig } from '~/configs/content.config'
 
 /**
  * Add UTM parameters to a URL
@@ -42,11 +43,13 @@ export const generateShareUrls = (
     `${title} - ${description || ''}`
   )
 
+  const { platforms, hashtags } = contentConfig.socialShare
+
   return {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodedBaseUrl}&hashtags=FreeResources,WebDevelopment`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedBaseUrl}&quote=${encodedTitleAndDescription}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description || '')}`,
-    reddit: `https://www.reddit.com/submit?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}`,
+    twitter: `${platforms.twitter}?text=${encodeURIComponent(title)}&url=${encodedBaseUrl}&hashtags=${hashtags}`,
+    facebook: `${platforms.facebook}?u=${encodedBaseUrl}&quote=${encodedTitleAndDescription}`,
+    linkedin: `${platforms.linkedin}?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description || '')}`,
+    reddit: `${platforms.reddit}?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}`,
     email: `mailto:?subject=${encodeURIComponent(title)}&body=Check out this resource: ${baseUrl}%0D%0A%0D%0A${encodeURIComponent(description || '')}`,
   }
 }
@@ -59,18 +62,20 @@ export const generateResourceShareUrls = (
   title: string,
   description?: string
 ) => {
+  const { utm, platforms, hashtags } = contentConfig.socialShare
+
   const encodedBaseUrl = encodeURIComponent(
-    addUTMParams(baseUrl, 'social', 'share', 'resource-sharing')
+    addUTMParams(baseUrl, utm.source, utm.medium, utm.campaign)
   )
   const encodedTitleAndDescription = encodeURIComponent(
     `${title} - ${description || ''}`
   )
 
   return {
-    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodedBaseUrl}&hashtags=FreeResources,WebDevelopment`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedBaseUrl}&quote=${encodedTitleAndDescription}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description || '')}`,
-    reddit: `https://www.reddit.com/submit?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}`,
+    twitter: `${platforms.twitter}?text=${encodeURIComponent(title)}&url=${encodedBaseUrl}&hashtags=${hashtags}`,
+    facebook: `${platforms.facebook}?u=${encodedBaseUrl}&quote=${encodedTitleAndDescription}`,
+    linkedin: `${platforms.linkedin}?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}&summary=${encodeURIComponent(description || '')}`,
+    reddit: `${platforms.reddit}?url=${encodedBaseUrl}&title=${encodeURIComponent(title)}`,
     email: `mailto:?subject=${encodeURIComponent(title)}&body=Check out this resource: ${baseUrl}%0D%0A%0D%0A${encodeURIComponent(description || '')}`,
   }
 }

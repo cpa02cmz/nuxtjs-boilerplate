@@ -97,7 +97,9 @@
             {{ resource.title }}
           </span>
           <button
-            class="ml-2 text-red-500 hover:text-red-700"
+            class="ml-2 text-red-500 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 rounded-sm transition-colors duration-200"
+            :aria-label="`Remove ${resource.title} from comparison`"
+            type="button"
             @click="removeResource(resource.id)"
           >
             <svg
@@ -166,6 +168,8 @@
 import { computed } from 'vue'
 import type { Resource } from '~/types/resource'
 import type { ComparisonCriteria } from '~/types/comparison'
+import { limitsConfig } from '~/configs/limits.config'
+import { comparisonConfig } from '~/configs/comparison.config'
 
 interface Props {
   selectedResources: Resource[]
@@ -173,7 +177,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  maxResources: 4,
+  maxResources: limitsConfig.comparison.maxResources, // Flexy hates hardcoded 4! Using config now
 })
 
 const emit = defineEmits([
@@ -183,71 +187,77 @@ const emit = defineEmits([
   'browse-resources',
 ])
 
-// Default comparison criteria
+// Default comparison criteria - Flexy hates hardcoded weights! Using config now
 const defaultCriteria: ComparisonCriteria[] = [
-  { id: 'title', name: 'Name', type: 'text', category: 'basic', weight: 1 },
+  {
+    id: 'title',
+    name: 'Name',
+    type: 'text',
+    category: 'basic',
+    weight: comparisonConfig.weights.title,
+  },
   {
     id: 'description',
     name: 'Description',
     type: 'text',
     category: 'basic',
-    weight: 1,
+    weight: comparisonConfig.weights.description,
   },
   {
     id: 'pricingModel',
     name: 'Pricing',
     type: 'text',
     category: 'business',
-    weight: 1,
+    weight: comparisonConfig.weights.pricingModel,
   },
   {
     id: 'category',
     name: 'Category',
     type: 'text',
     category: 'basic',
-    weight: 0.8,
+    weight: comparisonConfig.weights.category,
   },
   {
     id: 'technology',
     name: 'Technology',
     type: 'list',
     category: 'technical',
-    weight: 1,
+    weight: comparisonConfig.weights.technology,
   },
   {
     id: 'popularity',
     name: 'Popularity',
     type: 'number',
     category: 'metrics',
-    weight: 0.7,
+    weight: comparisonConfig.weights.popularity,
   },
   {
     id: 'benefits',
     name: 'Benefits',
     type: 'list',
     category: 'features',
-    weight: 1,
+    weight: comparisonConfig.weights.benefits,
   },
   {
     id: 'limitations',
     name: 'Limitations',
     type: 'list',
     category: 'features',
-    weight: 0.8,
+    weight: comparisonConfig.weights.limitations,
   },
   {
     id: 'platforms',
     name: 'Platforms',
     type: 'list',
     category: 'technical',
-    weight: 0.7,
+    weight: comparisonConfig.weights.platforms,
   },
   {
     id: 'features',
     name: 'Features',
     type: 'list',
     category: 'features',
-    weight: 1,
+    weight: comparisonConfig.weights.features,
   },
 ]
 

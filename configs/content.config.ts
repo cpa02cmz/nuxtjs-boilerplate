@@ -114,6 +114,18 @@ export const contentConfig = {
       process.env.CONTENT_PWA_INSTALL_DESC || 'Add to your home screen',
     notNow: process.env.CONTENT_PWA_NOT_NOW || 'Not now',
     install: process.env.CONTENT_PWA_INSTALL || 'Install',
+    installing: process.env.CONTENT_PWA_INSTALLING || 'Installing...',
+    // ARIA labels
+    aria: {
+      installPrompt:
+        process.env.CONTENT_PWA_ARIA_PROMPT || 'Install app prompt',
+      dismissButton:
+        process.env.CONTENT_PWA_ARIA_DISMISS || 'Dismiss install prompt',
+      installButton:
+        process.env.CONTENT_PWA_ARIA_INSTALL || 'Install application',
+      closeButton: process.env.CONTENT_PWA_ARIA_CLOSE || 'Close install prompt',
+      appIcon: process.env.CONTENT_PWA_ARIA_ICON || 'App icon',
+    },
   },
 
   // Submit Page
@@ -207,6 +219,69 @@ export const contentConfig = {
       tryAgain:
         process.env.CONTENT_RESOURCE_TRY_AGAIN ||
         'Try searching for another resource',
+      invalidId:
+        process.env.CONTENT_RESOURCE_INVALID_ID || 'Invalid resource ID',
+    },
+  },
+
+  // Error Messages - Flexy hates hardcoded error messages!
+  errors: {
+    authentication: {
+      required:
+        process.env.CONTENT_ERROR_AUTH_REQUIRED || 'Authentication required',
+      forbidden: process.env.CONTENT_ERROR_AUTH_FORBIDDEN || 'Access forbidden',
+      rateLimit:
+        process.env.CONTENT_ERROR_RATE_LIMIT ||
+        'Rate limit exceeded. Please try again later.',
+    },
+    validation: {
+      failed:
+        process.env.CONTENT_ERROR_VALIDATION_FAILED || 'Validation failed',
+      readBody:
+        process.env.CONTENT_ERROR_READ_BODY || 'Failed to read request body',
+    },
+    clipboard: {
+      copyFailed:
+        process.env.CONTENT_ERROR_CLIPBOARD_COPY || 'execCommand copy failed',
+    },
+    community: {
+      commentLogin:
+        process.env.CONTENT_ERROR_COMMENT_LOGIN ||
+        'User must be logged in to comment',
+      replyLogin:
+        process.env.CONTENT_ERROR_REPLY_LOGIN ||
+        'User must be logged in to reply',
+      flagLogin:
+        process.env.CONTENT_ERROR_FLAG_LOGIN ||
+        'User must be logged in to flag content',
+      moderatePermission:
+        process.env.CONTENT_ERROR_MODERATE_PERMISSION ||
+        'User must be a moderator to moderate content',
+      resolvePermission:
+        process.env.CONTENT_ERROR_RESOLVE_PERMISSION ||
+        'User must be a moderator to resolve flags',
+      voteLogin:
+        process.env.CONTENT_ERROR_VOTE_LOGIN ||
+        'User must be logged in to vote',
+    },
+  },
+
+  // Social Sharing - Flexy hates hardcoded sharing params!
+  socialShare: {
+    // UTM Parameters
+    utm: {
+      source: process.env.SHARE_UTM_SOURCE || 'social',
+      medium: process.env.SHARE_UTM_MEDIUM || 'share',
+      campaign: process.env.SHARE_UTM_CAMPAIGN || 'resource-sharing',
+    },
+    // Hashtags for Twitter
+    hashtags: process.env.SHARE_HASHTAGS || 'FreeResources,WebDevelopment',
+    // Platform URLs
+    platforms: {
+      twitter: 'https://twitter.com/intent/tweet',
+      facebook: 'https://www.facebook.com/sharer/sharer.php',
+      linkedin: 'https://www.linkedin.com/sharing/share-offsite/',
+      reddit: 'https://www.reddit.com/submit',
     },
   },
 } as const

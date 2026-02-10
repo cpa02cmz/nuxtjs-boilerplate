@@ -49,6 +49,7 @@ export const apiConfig = {
   // Analytics endpoints
   analytics: {
     resource: (id: string) => `/api/analytics/resource/${id}`,
+    events: '/api/analytics/events',
   },
 } as const
 

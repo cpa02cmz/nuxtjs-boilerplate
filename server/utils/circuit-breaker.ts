@@ -81,6 +81,7 @@ export class CircuitBreaker {
     if (this.state.isOpen) {
       if (this.state.successCount >= this.config.successThreshold) {
         this.state.isOpen = false
+        this.state.isHalfOpen = false
         this.state.failureCount = 0
         this.state.successCount = 0
       }
@@ -111,7 +112,9 @@ export class CircuitBreaker {
 
   private shouldAttemptReset(): boolean {
     if (!this.state.lastFailureTime) return false
-    return Date.now() - this.state.lastFailureTime >= this.config.timeoutMs
+    return (
+      Date.now() - this.state.lastFailureTime >= this.config.monitoringWindowMs
+    )
   }
 
   getStats(): CircuitBreakerStats {

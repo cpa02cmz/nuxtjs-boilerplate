@@ -21,10 +21,11 @@
         <li
           v-for="(history, index) in searchHistory"
           :key="'history-' + index"
+          :data-suggestion-index="index"
           role="option"
           :aria-selected="focusedIndex === index"
           :class="[
-            'px-4 py-2 cursor-pointer hover:bg-gray-100',
+            'px-4 py-2 cursor-pointer hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset',
             focusedIndex === index ? 'bg-gray-100' : '',
           ]"
           @click="selectHistory(history)"
@@ -66,10 +67,11 @@
         <li
           v-for="(suggestion, index) in suggestions"
           :key="suggestion.id"
+          :data-suggestion-index="searchHistory.length + index"
           role="option"
           :aria-selected="focusedIndex === searchHistory.length + index"
           :class="[
-            'px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-start',
+            'px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset',
             focusedIndex === searchHistory.length + index ? 'bg-gray-100' : '',
           ]"
           @click="selectSuggestion(suggestion)"
@@ -136,7 +138,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, nextTick } from 'vue'
 import { contentConfig } from '~/configs/content.config'
 import { uiConfig } from '~/configs/ui.config'
 
@@ -188,6 +190,21 @@ watch(
     }
   }
 )
+
+// Scroll focused item into view when navigating with keyboard
+watch(focusedIndex, newIndex => {
+  if (newIndex >= 0) {
+    nextTick(() => {
+      const focusedElement = document.querySelector(
+        `[data-suggestion-index="${newIndex}"]`
+      )
+      focusedElement?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      })
+    })
+  }
+})
 
 const selectSuggestion = (suggestion: SuggestionItem) => {
   emit('select-suggestion', suggestion)

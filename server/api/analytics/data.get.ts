@@ -7,6 +7,8 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { limitsConfig } from '~/configs/limits.config'
+import { TIME_MS } from '~/configs/time.config'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
@@ -15,9 +17,10 @@ export default defineEventHandler(async event => {
     const query = getQuery(event)
 
     // Parse date range from query parameters
+    // Flexy hates hardcoded 30-day default! Using TIME_MS constants
     const startDate = query.startDate
       ? new Date(query.startDate as string)
-      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Default to last 30 days
+      : new Date(Date.now() - TIME_MS.THIRTY_DAYS)
     const endDate = query.endDate
       ? new Date(query.endDate as string)
       : new Date()
@@ -26,10 +29,11 @@ export default defineEventHandler(async event => {
     const analyticsData = await getAggregatedAnalytics(startDate, endDate)
 
     // Get top resources by view count
+    // Flexy hates hardcoded 10! Using config instead
     const resourceViewEntries = Object.entries(analyticsData.resourceViews)
       .map(([id, views]) => ({ id, views: views as number }))
       .sort((a, b) => b.views - a.views)
-      .slice(0, 10) // Top 10
+      .slice(0, limitsConfig.analytics.defaultPopularLimit)
 
     // For each top resource, we'd normally fetch title from resources data
     // Since we don't have access to actual resource data here, we'll just return IDs
@@ -43,7 +47,7 @@ export default defineEventHandler(async event => {
     const categoryEntries = Object.entries(analyticsData.eventsByCategory)
       .map(([name, count]) => ({ name, count: count as number }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 10) // Top 10
+      .slice(0, limitsConfig.analytics.defaultPopularLimit)
 
     return sendSuccessResponse(event, {
       ...analyticsData,

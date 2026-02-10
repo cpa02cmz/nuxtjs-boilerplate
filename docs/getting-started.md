@@ -9,6 +9,7 @@ Before you begin, ensure you have the following installed:
 - **Node.js**: Version 18.0 or higher
 - **Package Manager**: npm (recommended) or pnpm
 - **Git**: For version control
+- **SQLite3**: Database for local development (usually pre-installed on most systems)
 - **Code Editor**: VS Code (recommended) with Vue extensions
 
 ### Optional Tools
@@ -104,7 +105,6 @@ nuxtjs-boilerplate/
 ├── public/            # Public static files
 ├── server/            # Server-side API routes and middleware
 │   ├── api/          # API endpoints
-│   ├── middleware/   # Server middleware
 │   └── utils/        # Server utilities
 ├── types/             # TypeScript type definitions
 ├── utils/             # Client-side utilities

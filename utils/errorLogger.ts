@@ -1,5 +1,7 @@
 // Error logging service for consistent error tracking
+import { generateUniqueId } from './id'
 import { logger } from './logger'
+import { limitsConfig } from '~/configs/limits.config'
 
 export interface ErrorLog {
   id: string
@@ -15,7 +17,7 @@ export interface ErrorLog {
 
 class ErrorLogger {
   private logs: ErrorLog[] = []
-  private maxLogs = 100 // Keep only the last 100 logs
+  private maxLogs = limitsConfig.errorLog.maxLogs
 
   // Log an error with different severity levels
   log(
@@ -26,7 +28,7 @@ class ErrorLogger {
     additionalInfo?: Record<string, unknown>
   ): void {
     const log: ErrorLog = {
-      id: Math.random().toString(36).substring(2, 15),
+      id: generateUniqueId(),
       timestamp: new Date(),
       message,
       stack: error?.stack,

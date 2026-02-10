@@ -44,7 +44,6 @@ server/
 │       ├── export/     # Data export endpoints
 │       ├── webhooks/   # Webhook management
 │       └── ...         # Other API categories
-├── middleware/         # Server-side request middleware
 ├── plugins/            # Server-side plugins
 ├── routes/             # Custom route handlers
 └── utils/              # Server-side utility functions

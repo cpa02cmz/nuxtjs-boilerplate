@@ -207,6 +207,15 @@ export default defineNuxtConfig({
 
   // SEO and Security Configuration - using modular config
   app: {
+    // Smooth page transitions for better UX
+    pageTransition: {
+      name: 'page',
+      mode: 'out-in',
+    },
+    layoutTransition: {
+      name: 'layout',
+      mode: 'out-in',
+    },
     head: {
       link: [
         // Preconnect to external domains
@@ -216,11 +225,13 @@ export default defineNuxtConfig({
           href: 'https://fonts.gstatic.com',
           crossorigin: 'anonymous',
         },
-        // Prefetch resources that might be needed later
-        { rel: 'prefetch', href: '/api/resources.json' },
-        { rel: 'prefetch', href: '/api/submissions' },
-        // Add preloading for critical resources
-        { rel: 'preload', href: '/favicon.ico', as: 'image' },
+        // Prefetch static resources only - API endpoints should not be prefetched
+        // { rel: 'prefetch', href: '/api/resources.json' }, // DISABLED: Causes rate limiting issues
+        // Note: Critical CSS is automatically injected by Nuxt
+        // Do not preload /_nuxt/ directory as it causes 404 errors
+        // DNS prefetch for external resources
+        { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
+        { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
       ],
       script: [],
       // Add performance-related and security meta tags

@@ -26,6 +26,74 @@ import { uiConfig, type UiConfig } from './ui.config'
 import { pwaConfig, type PwaConfig } from './pwa.config'
 import { apiConfig, type ApiConfig } from './api.config'
 import { contentConfig, type ContentConfig } from './content.config'
+import { limitsConfig, type LimitsConfig } from './limits.config'
+import { comparisonConfig, type ComparisonConfig } from './comparison.config'
+
+// New modular configs - Flexy loves modularity!
+import { socialConfig, type SocialConfig } from './social.config'
+import { dateConfig, type DateConfig } from './date.config'
+import {
+  csrfConfig,
+  isSafeMethod,
+  isStateChangingMethod,
+  requiresCsrfProtection,
+  type CsrfConfig,
+  type SafeMethod,
+  type StateChangingMethod,
+} from './csrf.config'
+import {
+  httpConfig,
+  isSuccessStatus,
+  isRedirectStatus,
+  isClientErrorStatus,
+  isServerErrorStatus,
+  isErrorStatus,
+  type HttpConfig,
+  type HttpMethod,
+  type HttpStatus,
+  type HttpHeader,
+  type ContentType,
+} from './http.config'
+import {
+  TIME_MS,
+  TIME_SECONDS,
+  timeConfig,
+  toMilliseconds,
+  toSeconds,
+  toMinutes,
+  toHours,
+  toDays,
+  formatDuration,
+  type TimeMs,
+  type TimeSeconds,
+  type TimeConfig,
+} from './time.config'
+import {
+  cacheTagsConfig,
+  generateCacheTags,
+  getResourceCacheTags,
+  getSearchCacheTags,
+  type CacheTagsConfig,
+} from './cache-tags.config'
+import {
+  sitemapConfig,
+  getStaticPages,
+  getResourceSitemapDefaults,
+  type SitemapConfig,
+  type SitemapPageEntry,
+} from './sitemap.config'
+import { iconsConfig, type IconsConfig } from './icons.config'
+import {
+  ROUTE_PATTERNS,
+  routesConfig,
+  isApiRoute,
+  isProtectedApiRoute,
+  isPublicApiRoute,
+  isStaticBuildPath,
+  isCacheablePage,
+  type RoutePatterns,
+  type RoutesConfig,
+} from './routes.config'
 
 // Re-export individual configs
 export { appConfig, type AppConfig }
@@ -48,6 +116,74 @@ export { uiConfig, type UiConfig }
 export { pwaConfig, type PwaConfig }
 export { apiConfig, type ApiConfig }
 export { contentConfig, type ContentConfig }
+export { limitsConfig, type LimitsConfig }
+export { comparisonConfig, type ComparisonConfig }
+
+// Re-export new modular configs
+export { socialConfig, type SocialConfig }
+export { dateConfig, type DateConfig }
+export {
+  csrfConfig,
+  isSafeMethod,
+  isStateChangingMethod,
+  requiresCsrfProtection,
+  type CsrfConfig,
+  type SafeMethod,
+  type StateChangingMethod,
+}
+export {
+  httpConfig,
+  isSuccessStatus,
+  isRedirectStatus,
+  isClientErrorStatus,
+  isServerErrorStatus,
+  isErrorStatus,
+  type HttpConfig,
+  type HttpMethod,
+  type HttpStatus,
+  type HttpHeader,
+  type ContentType,
+}
+export {
+  TIME_MS,
+  TIME_SECONDS,
+  timeConfig,
+  toMilliseconds,
+  toSeconds,
+  toMinutes,
+  toHours,
+  toDays,
+  formatDuration,
+  type TimeMs,
+  type TimeSeconds,
+  type TimeConfig,
+}
+export {
+  cacheTagsConfig,
+  generateCacheTags,
+  getResourceCacheTags,
+  getSearchCacheTags,
+  type CacheTagsConfig,
+}
+export {
+  sitemapConfig,
+  getStaticPages,
+  getResourceSitemapDefaults,
+  type SitemapConfig,
+  type SitemapPageEntry,
+}
+export { iconsConfig, type IconsConfig }
+export {
+  ROUTE_PATTERNS,
+  routesConfig,
+  isApiRoute,
+  isProtectedApiRoute,
+  isPublicApiRoute,
+  isStaticBuildPath,
+  isCacheablePage,
+  type RoutePatterns,
+  type RoutesConfig,
+}
 
 // Default export with all configs
 export const config = {
@@ -66,6 +202,18 @@ export const config = {
   pwa: pwaConfig,
   api: apiConfig,
   content: contentConfig,
+  limits: limitsConfig,
+  comparison: comparisonConfig,
+  // New modular configs
+  social: socialConfig,
+  date: dateConfig,
+  csrf: csrfConfig,
+  http: httpConfig,
+  time: timeConfig,
+  cacheTags: cacheTagsConfig,
+  sitemap: sitemapConfig,
+  icons: iconsConfig,
+  routes: routesConfig,
 } as const
 
 export type Config = typeof config

@@ -2,6 +2,9 @@ import { readonly, ref, onMounted } from 'vue'
 import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import type { ApiClient } from '~/utils/api-client'
+import { limitsConfig } from '~/configs/limits.config'
+import { iconsConfig } from '~/configs/icons.config'
+import { dateConfig } from '~/configs/date.config'
 
 export interface ActivityItem {
   id: string
@@ -47,34 +50,39 @@ export const useModerationDashboard = (
         pendingCount.value = queueResponse.data?.total || 0
       }
 
-      approvedCount.value = 24
-      rejectedCount.value = 8
-      flaggedCount.value = 5
+      // Mock data - will be replaced with real data from API
+      approvedCount.value = limitsConfig.moderation.mockApprovedCount
+      rejectedCount.value = limitsConfig.moderation.mockRejectedCount
+      flaggedCount.value = limitsConfig.moderation.mockFlaggedCount
+
+      // Flexy hates hardcoded timestamps! Using configurable values.
+      const { msPerHour } = dateConfig.intervals
+      const { recent, moderate, older, oldest } = dateConfig.activityTiming
 
       recentActivity.value = [
         {
           id: '1',
           type: 'approve',
           message: 'Approved "React Best Practices Guide" submission',
-          timestamp: new Date(Date.now() - 3600000).toISOString(),
+          timestamp: new Date(Date.now() - recent * msPerHour).toISOString(),
         },
         {
           id: '2',
           type: 'reject',
           message: 'Rejected "Fake Resource" submission - spam',
-          timestamp: new Date(Date.now() - 7200000).toISOString(),
+          timestamp: new Date(Date.now() - moderate * msPerHour).toISOString(),
         },
         {
           id: '3',
           type: 'flag',
           message: 'Resource "Old Tool" flagged for being deprecated',
-          timestamp: new Date(Date.now() - 10800000).toISOString(),
+          timestamp: new Date(Date.now() - older * msPerHour).toISOString(),
         },
         {
           id: '4',
           type: 'submit',
           message: 'New submission "Vue 3 Components Library" received',
-          timestamp: new Date(Date.now() - 14400000).toISOString(),
+          timestamp: new Date(Date.now() - oldest * msPerHour).toISOString(),
         },
       ]
     } catch (err) {
@@ -84,25 +92,26 @@ export const useModerationDashboard = (
         'useModerationDashboard'
       )
 
-      pendingCount.value = 0
-      approvedCount.value = 0
-      rejectedCount.value = 0
-      flaggedCount.value = 0
+      pendingCount.value = limitsConfig.community.initialContributions
+      approvedCount.value = limitsConfig.community.initialContributions
+      rejectedCount.value = limitsConfig.community.initialContributions
+      flaggedCount.value = limitsConfig.community.initialContributions
     }
   }
 
   const getActivityIcon = (type: string) => {
+    // Use iconsConfig - Flexy hates hardcoded values!
     switch (type) {
       case 'approve':
-        return '✅'
+        return iconsConfig.activity.approve
       case 'reject':
-        return '❌'
+        return iconsConfig.activity.reject
       case 'flag':
-        return '🚩'
+        return iconsConfig.activity.flag
       case 'submit':
-        return '📝'
+        return iconsConfig.activity.submit
       default:
-        return 'ℹ️'
+        return iconsConfig.activity.default
     }
   }
 
