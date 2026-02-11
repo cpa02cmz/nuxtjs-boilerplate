@@ -141,6 +141,14 @@
           /
         </kbd>
       </div>
+
+      <!-- Enhanced focus glow effect - Palette's micro-UX enhancement! -->
+      <div
+        v-if="showFocusGlow && !prefersReducedMotion"
+        class="absolute inset-0 rounded-lg pointer-events-none animate-focus-glow"
+        aria-hidden="true"
+      />
+
       <transition
         enter-active-class="transition-all duration-200 ease-out"
         enter-from-class="opacity-0 scale-75"
@@ -265,7 +273,9 @@ const contentConfig = {
     ],
   },
   search: {
-    placeholder: 'Search free resources...',
+    placeholder: 'Search resources by name, description, tags...',
+    ariaLabel: 'Search resources',
+    clearAriaLabel: 'Clear search',
   },
 }
 
@@ -344,6 +354,7 @@ const showFocusPulse = ref(false)
 const showIdlePulse = ref(false)
 const showShortcutSuccess = ref(false)
 const showSearchComplete = ref(false)
+const showFocusGlow = ref(false)
 const prefersReducedMotion = ref(false)
 let idlePulseTimeout: ReturnType<typeof setTimeout> | null = null
 let shortcutSuccessTimeout: ReturnType<typeof setTimeout> | null = null
@@ -625,6 +636,12 @@ if (typeof window !== 'undefined') {
         shortcutSuccessTimeout = setTimeout(() => {
           showShortcutSuccess.value = false
         }, uiConfig.timing.shortcutSuccessDurationMs)
+
+        // Trigger enhanced focus glow effect - Palette's micro-UX enhancement!
+        showFocusGlow.value = true
+        setTimeout(() => {
+          showFocusGlow.value = false
+        }, animationConfig.focusGlow.durationMs)
       }
 
       // Stop idle pulse animation when user knows the shortcut
@@ -812,6 +829,44 @@ if (typeof window !== 'undefined') {
   .animate-focus-pulse,
   .animate-idle-pulse {
     animation: none !important;
+  }
+}
+
+/* Enhanced focus glow animation - Palette's micro-UX enhancement!
+   Provides a subtle pulsing glow effect around the search input
+   when triggered via keyboard shortcut for better visibility */
+.animate-focus-glow {
+  animation: focus-glow-pulse v-bind('animationConfig.focusGlow.durationSec')
+    ease-in-out;
+  box-shadow:
+    0 0 v-bind('animationConfig.focusGlow.spreadMin + "px"')
+      v-bind('animationConfig.focusGlow.color'),
+    0 0 v-bind('animationConfig.focusGlow.spreadMax + "px"')
+      v-bind('animationConfig.focusGlow.secondaryColor');
+}
+
+@keyframes focus-glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 v-bind('animationConfig.focusGlow.spreadMin + "px"')
+      v-bind('animationConfig.focusGlow.color');
+    opacity: 0.6;
+  }
+  50% {
+    box-shadow:
+      0 0 v-bind('animationConfig.focusGlow.spreadMax + "px"')
+        v-bind('animationConfig.focusGlow.color'),
+      0 0 calc(v-bind('animationConfig.focusGlow.spreadMax + "px"') * 1.5)
+        v-bind('animationConfig.focusGlow.secondaryColor');
+    opacity: 1;
+  }
+}
+
+/* Reduced motion support for focus glow */
+@media (prefers-reduced-motion: reduce) {
+  .animate-focus-glow {
+    animation: none !important;
+    display: none !important;
   }
 }
 </style>

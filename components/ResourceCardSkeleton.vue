@@ -106,9 +106,17 @@ const staggerBaseDelay = 0
 const staggerIncrement = 75
 
 // Wave animation configuration - creates a flowing wave effect across all items
-// BroCula fix: Using hardcoded fallback values to prevent SSR import failures
-const waveDuration = '2s'
-const waveStagger = '0.15s'
+// Flexy hates hardcoded values! Using inline defaults for SSR compatibility
+const animationConfig = {
+  skeleton: {
+    waveDurationSec: 2,
+    waveStaggerSec: 0.1,
+    shimmerDurationSec: '1.5s',
+  },
+}
+
+const waveDuration = `${animationConfig.skeleton.waveDurationSec}s`
+const waveStagger = `${animationConfig.skeleton.waveStaggerSec}s`
 
 // Calculate stagger delays for each item
 const getStaggerDelay = (index: number): string => {

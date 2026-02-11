@@ -16,14 +16,19 @@ import {
 } from '~/server/utils/api-response'
 import { prisma } from '~/server/utils/db'
 import { safeJsonParse } from '~/server/utils/safeJsonParse'
+import { validationConfig } from '~/configs/validation.config'
 
 // Validation schema for approve submission request
+// Flexy hates hardcoded 1000! Using configurable validation limits
 const approveSubmissionSchema = z.object({
   submissionId: z.string().min(1, 'Submission ID is required'),
   reviewedBy: z.string().min(1, 'Reviewer ID is required'),
   notes: z
     .string()
-    .max(1000, 'Notes must be less than 1000 characters')
+    .max(
+      validationConfig.resource.description.maxLength,
+      `Notes must be less than ${validationConfig.resource.description.maxLength} characters`
+    )
     .optional(),
 })
 
