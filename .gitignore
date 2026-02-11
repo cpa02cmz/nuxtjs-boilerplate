@@ -142,3 +142,4 @@ data/*.db
 *.db-journal
 # Keep directory structure
 !data/.gitkeep
+reports/

@@ -37,10 +37,12 @@ export default defineNitroPlugin(nitroApp => {
         return
       }
 
-      // Generate a unique nonce for each request
-      const nonce = randomBytes(16).toString('base64')
+      // Only use nonces in production to avoid CSP blocking inline scripts in dev
+      // In development, we rely on 'unsafe-inline' instead
+      const isDev = process.env.NODE_ENV === 'development'
+      const nonce = isDev ? undefined : randomBytes(16).toString('base64')
 
-      // Get security headers with nonce
+      // Get security headers with nonce (nonce only in production)
       const securityHeaders = getSecurityHeaders(nonce)
 
       // Set all security headers
