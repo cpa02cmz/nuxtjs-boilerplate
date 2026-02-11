@@ -355,9 +355,10 @@
           class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
           aria-hidden="true"
         >Ctrl+Z</kbd>
-        <!-- Progress bar for undo window -->
+        <!-- Progress bar for undo window with color transition -->
         <span
           class="undo-progress-bar"
+          :class="undoProgressColorClass"
           :style="{ width: `${undoProgress}%` }"
           aria-hidden="true"
         />
@@ -436,6 +437,19 @@ const CHIP_ICON_SIZE = uiConfig.filterChip.iconSize
 
 // Track removing chips for animation (used in future undo feature)
 const _removingChips = ref<Set<string>>(new Set())
+
+// Computed property for progress bar color - transitions from amber to red as time runs out
+const undoProgressColorClass = computed(() => {
+  if (undoProgress.value > 60) {
+    return 'bg-amber-400'
+  } else if (undoProgress.value > 30) {
+    return 'bg-amber-500'
+  } else if (undoProgress.value > 10) {
+    return 'bg-orange-500'
+  } else {
+    return 'bg-red-500'
+  }
+})
 
 const hasActiveFilters = computed(() => {
   return (
@@ -760,7 +774,7 @@ onUnmounted(() => {
 
 /* Progress bar for undo countdown */
 .undo-progress-bar {
-  @apply absolute bottom-0 left-0 h-0.5 bg-amber-400/60 transition-all duration-100 ease-linear;
+  @apply absolute bottom-0 left-0 h-0.5 transition-all duration-300 ease-out;
 }
 
 @keyframes undo-chip-in {
