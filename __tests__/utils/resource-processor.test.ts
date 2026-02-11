@@ -2,11 +2,13 @@ import { describe, it, expect } from 'vitest'
 import {
   processResources,
   processResourcesWithSearch,
+} from '~/utils/resource-processor'
+import {
   hasActiveFilter,
   matchesCategory,
   matchesTechnology,
   matchesTag,
-} from '~/utils/resource-processor'
+} from '~/utils/filter-utils'
 import type { Resource } from '~/types/resource'
 
 describe('resource-processor', () => {

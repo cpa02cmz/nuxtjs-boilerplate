@@ -288,16 +288,4 @@ export const processResourcesWithSearch = (
   }
 }
 
-/**
- * Re-export filter utility functions for backward compatibility
- */
-export {
-  hasActiveFilter,
-  matchesCategory,
-  matchesPricingModel,
-  matchesDifficultyLevel,
-  matchesTechnology,
-  matchesTag,
-  matchesBenefit,
-  matchesAllCriteria as filterByAllCriteria,
-}
+// Filter utility functions are available from '~/utils/filter-utils'
