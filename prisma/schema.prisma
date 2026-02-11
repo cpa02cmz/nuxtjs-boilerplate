@@ -19,19 +19,14 @@ model AnalyticsEvent {
   properties String?
   deletedAt  DateTime?
 
-  @@index([timestamp])
-  @@index([resourceId])
-  @@index([type])
-  @@index([ip])
-  @@index([timestamp, type])
-  @@index([timestamp, resourceId])
-  @@index([resourceId, type])
-  @@index([ip, timestamp])
-  @@index([category, timestamp])
-  @@index([deletedAt])
-  @@index([resourceId, type, timestamp, deletedAt])
-  @@index([timestamp, deletedAt])
-  @@index([ip, timestamp, deletedAt])
+  // Core indexes (7 total, reduced from 13)
+  @@index([timestamp]) // Time-based queries
+  @@index([timestamp, type]) // Time + event type
+  @@index([timestamp, resourceId]) // Time + resource lookups
+  @@index([resourceId, type]) // Resource + event type
+  @@index([ip, timestamp]) // IP time-series analysis
+  @@index([category, timestamp]) // Category analytics
+  @@index([resourceId, type, timestamp, deletedAt]) // Complex analytics with soft delete
 }
 
 model RateLimit {
@@ -43,7 +38,6 @@ model RateLimit {
   updatedAt DateTime @updatedAt
 
   @@unique([key, window])
-  @@index([key, window])
   @@index([window]) // For cleanup queries
 }
 
