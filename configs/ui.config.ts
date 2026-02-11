@@ -440,6 +440,14 @@ export const uiConfig = {
   loadMore: {
     // Button text for pagination
     buttonText: process.env.LOAD_MORE_BUTTON_TEXT || 'Load More',
+    // Button text when loading
+    loadingText: process.env.LOAD_MORE_LOADING_TEXT || 'Loading...',
+    // Minimum loading duration for perceived performance (ms)
+    minLoadingDurationMs: parseInt(process.env.LOAD_MORE_MIN_DURATION || '400'),
+    // Spinner animation duration (seconds)
+    spinnerDuration: parseFloat(
+      process.env.LOAD_MORE_SPINNER_DURATION || '0.8'
+    ),
   },
 } as const
 
