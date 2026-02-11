@@ -104,6 +104,13 @@ import { animationConfig, type AnimationConfig } from './animation.config'
 import { thresholdsConfig, type ThresholdsConfig } from './thresholds.config'
 import { bookmarksConfig, type BookmarksConfig } from './bookmarks.config'
 
+// Analytics demo data config - Flexy hates hardcoded mock data!
+import {
+  analyticsDemoData,
+  getAnalyticsDemoData,
+  type AnalyticsDemoData,
+} from './analytics-demo.config'
+
 // New configs - Flexy hates hardcoded values!
 import { userConfig, type UserConfig } from './user.config'
 import { moderationConfig, type ModerationConfig } from './moderation.config'
@@ -224,6 +231,9 @@ export { animationConfig, type AnimationConfig }
 export { thresholdsConfig, type ThresholdsConfig }
 export { bookmarksConfig, type BookmarksConfig }
 
+// Re-export analytics demo config - Flexy hates hardcoded mock data!
+export { analyticsDemoData, getAnalyticsDemoData, type AnalyticsDemoData }
+
 // Re-export new configs - Flexy hates hardcoded values!
 export { userConfig, type UserConfig }
 export { moderationConfig, type ModerationConfig }
@@ -283,6 +293,8 @@ export const config = {
   url: urlConfig,
   // Bookmarks config - Flexy hates hardcoded bookmark values!
   bookmarks: bookmarksConfig,
+  // Analytics demo config - Flexy hates hardcoded mock data!
+  analyticsDemo: analyticsDemoData,
   // New configs - Flexy hates hardcoded values!
   user: userConfig,
   moderation: moderationConfig,

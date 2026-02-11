@@ -14,103 +14,50 @@
           </a>
         </div>
 
+        <!-- Metrics Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
-            <h3 class="text-lg font-medium text-blue-800 mb-2">
-              Total Requests
+          <div
+            v-for="metric in metrics"
+            :key="metric.title"
+            :class="`bg-${metric.color}-50 border border-${metric.color}-200 rounded-md p-4`"
+          >
+            <h3 :class="`text-lg font-medium text-${metric.color}-800 mb-2`">
+              {{ metric.title }}
             </h3>
-            <p class="text-3xl font-bold text-blue-600">
-              12,342
+            <p :class="`text-3xl font-bold text-${metric.color}-600`">
+              {{ metric.value }}
             </p>
-            <p class="text-sm text-blue-700 mt-1">
-              +12% from last week
-            </p>
-          </div>
-
-          <div class="bg-green-50 border border-green-200 rounded-md p-4">
-            <h3 class="text-lg font-medium text-green-800 mb-2">
-              Success Rate
-            </h3>
-            <p class="text-3xl font-bold text-green-600">
-              98.7%
-            </p>
-            <p class="text-sm text-green-700 mt-1">
-              2.3% errors
-            </p>
-          </div>
-
-          <div class="bg-purple-50 border border-purple-200 rounded-md p-4">
-            <h3 class="text-lg font-medium text-purple-800 mb-2">
-              Active Keys
-            </h3>
-            <p class="text-3xl font-bold text-purple-600">
-              42
-            </p>
-            <p class="text-sm text-purple-700 mt-1">
-              12 new this week
+            <p :class="`text-sm text-${metric.color}-700 mt-1`">
+              {{ metric.subtext }}
             </p>
           </div>
         </div>
 
+        <!-- Endpoint Usage -->
         <div class="mb-8">
           <h2 class="text-lg font-semibold text-gray-700 mb-4">
             Endpoint Usage
           </h2>
           <div class="space-y-4">
-            <div>
+            <div
+              v-for="endpoint in endpointUsage"
+              :key="endpoint.name"
+            >
               <div class="flex justify-between mb-1">
-                <span class="text-gray-700">GET /api/v1/resources</span>
-                <span class="text-gray-600">4,231 requests</span>
+                <span class="text-gray-700">{{ endpoint.name }}</span>
+                <span class="text-gray-600">{{ endpoint.requests }}</span>
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2.5">
                 <div
-                  class="bg-blue-600 h-2.5 rounded-full"
-                  style="width: 75%"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between mb-1">
-                <span class="text-gray-700">GET /api/v1/search</span>
-                <span class="text-gray-600">3,892 requests</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2.5">
-                <div
-                  class="bg-green-600 h-2.5 rounded-full"
-                  style="width: 65%"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between mb-1">
-                <span class="text-gray-700">POST /api/submissions</span>
-                <span class="text-gray-600">1,245 requests</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2.5">
-                <div
-                  class="bg-yellow-600 h-2.5 rounded-full"
-                  style="width: 35%"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between mb-1">
-                <span class="text-gray-700">GET /api/v1/auth/api-keys</span>
-                <span class="text-gray-600">892 requests</span>
-              </div>
-              <div class="w-full bg-gray-200 rounded-full h-2.5">
-                <div
-                  class="bg-purple-600 h-2.5 rounded-full"
-                  style="width: 15%"
+                  :class="`${endpoint.color} h-2.5 rounded-full`"
+                  :style="{ width: `${endpoint.percentage}%` }"
                 />
               </div>
             </div>
           </div>
         </div>
 
+        <!-- Recent API Activity -->
         <div class="mb-8">
           <h2 class="text-lg font-semibold text-gray-700 mb-4">
             Recent API Activity
@@ -147,80 +94,26 @@
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <tr>
+                <tr
+                  v-for="activity in recentActivity"
+                  :key="`${activity.endpoint}-${activity.time}`"
+                >
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    /api/v1/resources
+                    {{ activity.endpoint }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    GET
+                    {{ activity.method }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
-                    >200</span>
+                      :class="`px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-${activity.statusColor}-100 text-${activity.statusColor}-800`"
+                    >{{ activity.status }}</span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    2 min ago
+                    {{ activity.time }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    key_abc123
-                  </td>
-                </tr>
-                <tr>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    /api/v1/search
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    GET
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
-                    >200</span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    5 min ago
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    key_def456
-                  </td>
-                </tr>
-                <tr>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    /api/submissions
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    POST
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
-                    >200</span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    8 min ago
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    key_ghi789
-                  </td>
-                </tr>
-                <tr>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    /api/v1/resources
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    GET
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
-                    >429</span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    12 min ago
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    key_jkl012
+                    {{ activity.apiKey }}
                   </td>
                 </tr>
               </tbody>
@@ -228,6 +121,7 @@
           </div>
         </div>
 
+        <!-- Rate Limiting -->
         <div>
           <h2 class="text-lg font-semibold text-gray-700 mb-4">
             Rate Limiting
@@ -238,27 +132,26 @@
           </p>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="border border-gray-200 rounded-md p-4">
+            <div
+              v-for="stat in rateLimitStats"
+              :key="stat.title"
+              class="border border-gray-200 rounded-md p-4"
+            >
               <h3 class="font-medium text-gray-800 mb-2">
-                Rate Limit Exceeded
+                {{ stat.title }}
               </h3>
-              <p class="text-2xl font-bold text-red-600">
-                124
+              <p
+                class="text-2xl font-bold"
+                :class="
+                  stat.title.includes('Exceeded')
+                    ? 'text-red-600'
+                    : 'text-gray-700'
+                "
+              >
+                {{ stat.value }}
               </p>
               <p class="text-sm text-gray-600 mt-1">
-                requests blocked this week
-              </p>
-            </div>
-
-            <div class="border border-gray-200 rounded-md p-4">
-              <h3 class="font-medium text-gray-800 mb-2">
-                Average Response Time
-              </h3>
-              <p class="text-2xl font-bold text-gray-700">
-                142ms
-              </p>
-              <p class="text-sm text-gray-600 mt-1">
-                across all endpoints
+                {{ stat.subtext }}
               </p>
             </div>
           </div>
@@ -269,6 +162,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { analyticsDemoData } from '~/configs/analytics-demo.config'
+
 useHead({
   title: 'API Analytics - Free Stuff on the Internet',
   meta: [
@@ -279,4 +175,12 @@ useHead({
     },
   ],
 })
+
+// Use computed to make it reactive if needed in the future
+const metrics = computed(() => Object.values(analyticsDemoData.metrics))
+const endpointUsage = computed(() => analyticsDemoData.endpointUsage)
+const recentActivity = computed(() => analyticsDemoData.recentActivity)
+const rateLimitStats = computed(() =>
+  Object.values(analyticsDemoData.rateLimiting)
+)
 </script>
