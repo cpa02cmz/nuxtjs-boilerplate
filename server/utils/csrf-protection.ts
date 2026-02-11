@@ -11,7 +11,6 @@ import {
   isStateChangingMethod,
   requiresCsrfProtection,
 } from '~/configs/csrf.config'
-import { httpConfig } from '~/configs/http.config'
 
 /**
  * Timing-safe string comparison to prevent timing attacks
@@ -86,26 +85,10 @@ export function validateCsrfToken(event: H3Event): boolean {
     return safeCompare(headerToken, cookieToken)
   }
 
-  // Fallback: Check request body for CSRF token (for form submissions)
-  try {
-    const contentType =
-      event.node.req.headers[httpConfig.headers.CONTENT_TYPE.toLowerCase()] ||
-      ''
-    if (
-      contentType.includes(csrfConfig.contentTypes.json) ||
-      contentType.includes(csrfConfig.contentTypes.formUrlEncoded) ||
-      contentType.includes(csrfConfig.contentTypes.multipart)
-    ) {
-      // For JSON/form submissions, we need to check the body
-      // This is a simplified check - in practice, we'd parse the body
-      // But since we don't have access to the body here without parsing it,
-      // we'll return true and let the route handler do the validation
-      return true
-    }
-  } catch {
-    // Ignore parsing errors
-  }
-
+  // For form submissions (JSON, form-urlencoded, multipart), the CSRF token
+  // must be validated by the route handler using requireCsrfToken() which
+  // has access to the parsed body. Returning false here ensures middleware
+  // doesn't bypass CSRF protection for these content types.
   return false
 }
 
