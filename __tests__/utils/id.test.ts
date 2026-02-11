@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { generateUniqueId } from '~/utils/id'
+import { generateUniqueId } from '~/utils/generateId'
 
 describe('generateUniqueId', () => {
   describe('Basic Functionality', () => {

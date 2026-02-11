@@ -1,5 +1,5 @@
 // Error logging service for consistent error tracking
-import { generateUniqueId } from './id'
+import { generateUniqueId } from './generateId'
 import { logger } from './logger'
 import { limitsConfig } from '~/configs/limits.config'
 
