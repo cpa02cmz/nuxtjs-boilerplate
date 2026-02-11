@@ -13,9 +13,9 @@ const baseConfig: UserConfig = {
     alias: {
       '~': path.resolve(__dirname, '.'),
       '@': path.resolve(__dirname, '.'),
-      '#app': path.resolve(__dirname, 'test-mocks/nuxt-app.ts'),
+      '#app': path.resolve(__dirname, 'test-mocks/nuxt-imports.ts'),
       '#imports': path.resolve(__dirname, 'test-mocks/nuxt-imports.ts'),
-      '#build': path.resolve(__dirname, 'test-mocks/nuxt-app.ts'),
+      '#build': path.resolve(__dirname, 'test-mocks/nuxt-imports.ts'),
     },
   },
 }

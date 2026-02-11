@@ -9,7 +9,7 @@ import type {
   ReplyData,
   UserProfile,
 } from '~/types/community'
-import { generateUniqueId } from '~/utils/id'
+import { generateUniqueId } from '~/utils/generateId'
 import { updateInArray } from '~/utils/comment-utils'
 
 export const useComments = (initialComments: Comment[] = []) => {
