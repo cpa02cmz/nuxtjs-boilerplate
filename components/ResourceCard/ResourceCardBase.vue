@@ -2,7 +2,7 @@
 <template>
   <article
     v-if="!hasError"
-    class="bg-white p-6 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 border border-gray-200 hover:border-blue-300 focus-within:border-blue-300 transition-all duration-200 ease-out group"
+    class="bg-white p-6 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 border border-gray-200 hover:border-blue-300 focus-within:border-blue-300 transition-all duration-200 ease-out group card-shine-container"
     role="article"
   >
     <div class="flex items-start">
@@ -601,6 +601,56 @@ if (typeof useHead === 'function') {
 @media (prefers-reduced-motion: reduce) {
   .animate-new-pulse {
     animation: none;
+  }
+}
+
+/* Card Shine Effect - Palette's premium micro-UX touch! */
+/* Adds a subtle moving gradient on hover for a polished, premium feel */
+.card-shine-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    v-bind('`${animationConfig.cardShine.angleDegrees}deg`'),
+    v-bind('animationConfig.cardShine.gradientStart'),
+    v-bind('animationConfig.cardShine.gradientMiddle'),
+    v-bind('animationConfig.cardShine.gradientEnd'),
+    v-bind('animationConfig.cardShine.gradientStart')
+  );
+  transform: scaleX(v-bind('animationConfig.cardShine.scaleFactor'));
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.3s ease;
+}
+
+.card-shine-container:hover::before {
+  opacity: 1;
+  animation: card-shine v-bind('`${animationConfig.cardShine.durationSec}s`')
+    ease-out;
+}
+
+@keyframes card-shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 200%;
+  }
+}
+
+/* Reduced motion support for card shine */
+@media (prefers-reduced-motion: reduce) {
+  .card-shine-container::before {
+    display: none;
   }
 }
 </style>
