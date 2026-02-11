@@ -8,15 +8,11 @@
         :href="shareUrls.twitter"
         target="_blank"
         rel="noopener noreferrer"
-<<<<<<< HEAD
-        :class="getButtonClasses('twitter')"
-=======
         :class="[
           'p-2 rounded-full text-white transition-colors',
           componentColorsConfig.resourceShare.twitter.bg,
           componentColorsConfig.resourceShare.twitter.hoverBg,
         ]"
->>>>>>> origin/main
         aria-label="Share on Twitter"
       >
         <svg
@@ -34,15 +30,11 @@
         :href="shareUrls.facebook"
         target="_blank"
         rel="noopener noreferrer"
-<<<<<<< HEAD
-        :class="getButtonClasses('facebook')"
-=======
         :class="[
           'p-2 rounded-full text-white transition-colors',
           componentColorsConfig.resourceShare.facebook.bg,
           componentColorsConfig.resourceShare.facebook.hoverBg,
         ]"
->>>>>>> origin/main
         aria-label="Share on Facebook"
       >
         <svg
@@ -60,15 +52,11 @@
         :href="shareUrls.linkedin"
         target="_blank"
         rel="noopener noreferrer"
-<<<<<<< HEAD
-        :class="getButtonClasses('linkedin')"
-=======
         :class="[
           'p-2 rounded-full text-white transition-colors',
           componentColorsConfig.resourceShare.linkedin.bg,
           componentColorsConfig.resourceShare.linkedin.hoverBg,
         ]"
->>>>>>> origin/main
         aria-label="Share on LinkedIn"
       >
         <svg
@@ -86,15 +74,11 @@
         :href="shareUrls.reddit"
         target="_blank"
         rel="noopener noreferrer"
-<<<<<<< HEAD
-        :class="getButtonClasses('reddit')"
-=======
         :class="[
           'p-2 rounded-full text-white transition-colors',
           componentColorsConfig.resourceShare.reddit.bg,
           componentColorsConfig.resourceShare.reddit.hoverBg,
         ]"
->>>>>>> origin/main
         aria-label="Share on Reddit"
       >
         <svg
@@ -109,15 +93,11 @@
         </svg>
       </a>
       <button
-<<<<<<< HEAD
-        :class="getButtonClasses('copy')"
-=======
         :class="[
           'p-2 rounded-full text-white transition-colors',
           componentColorsConfig.resourceShare.copyButton.bg,
           componentColorsConfig.resourceShare.copyButton.hoverBg,
         ]"
->>>>>>> origin/main
         aria-label="Copy link to clipboard"
         @click="$emit('copy')"
       >
@@ -138,11 +118,7 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD
-import { socialConfig } from '~/configs/social.config'
-=======
 import { componentColorsConfig } from '~/configs/component-colors.config'
->>>>>>> origin/main
 
 interface ShareUrls {
   twitter: string
@@ -160,13 +136,4 @@ defineProps<Props>()
 defineEmits<{
   copy: []
 }>()
-
-// Flexy hates hardcoded Tailwind classes!
-// Use configurable platform styles instead
-const getButtonClasses = (
-  platform: 'twitter' | 'facebook' | 'linkedin' | 'reddit' | 'copy'
-): string => {
-  const styles = socialConfig.platformStyles[platform].button
-  return `p-2 rounded-full ${styles.bg} ${styles.text} ${styles.hover} transition-colors`
-}
 </script>
