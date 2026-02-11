@@ -21,22 +21,22 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                :d="icons.error"
               />
             </svg>
           </div>
           <h1 class="mt-6 text-3xl font-extrabold text-gray-900">
             {{
               error.statusCode === 404
-                ? 'Page Not Found'
-                : 'Something Went Wrong'
+                ? content.error.notFound.title
+                : content.error.generic.title
             }}
           </h1>
           <p class="mt-2 text-gray-600">
             {{
               error.statusCode === 404
-                ? 'The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.'
-                : 'An unexpected error occurred. Please try again later.'
+                ? content.error.notFound.message
+                : content.error.generic.message
             }}
           </p>
         </div>
@@ -47,7 +47,7 @@
             class="text-left inline-block"
           >
             <summary class="text-sm text-gray-500 cursor-pointer">
-              Error Details
+              {{ content.error.details }}
             </summary>
             <p class="text-sm text-gray-500 mt-2 bg-gray-100 p-2 rounded">
               {{ error.message }}
@@ -60,14 +60,14 @@
               :aria-label="`Go back to previous page, error code ${error.statusCode}`"
               @click="handleRetry"
             >
-              Go Back
+              {{ content.error.goBack }}
             </button>
             <NuxtLink
               to="/"
               class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800"
               aria-label="Go to home page"
             >
-              Go Home
+              {{ content.error.goHome }}
             </NuxtLink>
           </div>
         </div>
@@ -77,6 +77,13 @@
 </template>
 
 <script setup lang="ts">
+// Flexy hates hardcoded values! Using config imports instead.
+import { contentConfig } from '~/configs/content.config'
+import { iconsConfig } from '~/configs/icons.config'
+
+const content = contentConfig
+const icons = iconsConfig.svg
+
 const props = defineProps<{ statusCode?: number; message?: string }>()
 
 const error = computed(() => ({

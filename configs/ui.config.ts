@@ -296,6 +296,16 @@ export const uiConfig = {
     },
   },
 
+  // Layout Containers - Flexy hates hardcoded max-width classes!
+  containers: {
+    // Page container widths using Tailwind classes
+    narrow: process.env.CONTAINER_NARROW || 'max-w-3xl',
+    medium: process.env.CONTAINER_MEDIUM || 'max-w-4xl',
+    wide: process.env.CONTAINER_WIDE || 'max-w-6xl',
+    full: process.env.CONTAINER_FULL || 'max-w-7xl',
+    small: process.env.CONTAINER_SMALL || 'max-w-md',
+  },
+
   // Layout Spacing - Flexy hates hardcoded spacing values!
   layout: {
     // Spacing scale (in rem units, base 0.25)
@@ -454,6 +464,47 @@ export const uiConfig = {
     spinnerDuration: parseFloat(
       process.env.LOAD_MORE_SPINNER_DURATION || '0.8'
     ),
+  },
+
+  // Skeleton Loader Dimensions - Flexy hates hardcoded skeleton sizes!
+  skeleton: {
+    // Title dimensions
+    title: {
+      height: process.env.SKELETON_TITLE_HEIGHT || 'h-8',
+      width: process.env.SKELETON_TITLE_WIDTH || 'w-3/4',
+    },
+    // Subtitle/description dimensions
+    subtitle: {
+      height: process.env.SKELETON_SUBTITLE_HEIGHT || 'h-4',
+      width: process.env.SKELETON_SUBTITLE_WIDTH || 'w-1/2',
+    },
+    // Image/hero section dimensions
+    image: {
+      height: process.env.SKELETON_IMAGE_HEIGHT || 'h-32',
+      width: process.env.SKELETON_IMAGE_WIDTH || 'w-full',
+    },
+    // Content block dimensions
+    content: {
+      height: process.env.SKELETON_CONTENT_HEIGHT || 'h-4',
+      width: process.env.SKELETON_CONTENT_WIDTH || 'w-2/3',
+    },
+    // Small element dimensions (badges, tags)
+    small: {
+      height: process.env.SKELETON_SMALL_HEIGHT || 'h-4',
+      width: process.env.SKELETON_SMALL_WIDTH || 'w-1/4',
+    },
+    // Animation duration
+    animationDuration: process.env.SKELETON_ANIMATION_DURATION || '1.5s',
+  },
+
+  // Ripple Effect Configuration - Flexy hates hardcoded animation values!
+  ripple: {
+    // Default ripple color
+    color: process.env.RIPPLE_COLOR || 'rgba(255, 255, 255, 0.25)',
+    // Animation duration in ms
+    durationMs: parseInt(process.env.RIPPLE_DURATION_MS || '600'),
+    // Easing function
+    easing: process.env.RIPPLE_EASING || 'ease-out',
   },
 } as const
 
