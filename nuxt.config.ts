@@ -188,6 +188,15 @@ export default defineNuxtConfig({
       '~/server/plugins/html-security.ts',
       '~/server/plugins/resource-validation.ts',
     ],
+    // Suppress duplicate key warnings from @nuxt/image v2.0.0
+    // This is a known upstream issue that doesn't affect functionality
+    esbuild: {
+      options: {
+        logOverride: {
+          'duplicate-object-key': 'silent',
+        },
+      },
+    },
     // Route rules for caching and performance
     // Flexy says: No more hardcoded cache headers! Using cacheConfig.routes
     routeRules: {
