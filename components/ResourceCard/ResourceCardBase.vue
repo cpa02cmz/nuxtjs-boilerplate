@@ -2,7 +2,7 @@
 <template>
   <article
     v-if="!hasError"
-    class="bg-white p-6 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 transition-all duration-200 ease-out group"
+    class="bg-white p-6 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 border border-gray-200 hover:border-blue-300 focus-within:border-blue-300 transition-all duration-200 ease-out group"
     role="article"
   >
     <div class="flex items-start">
