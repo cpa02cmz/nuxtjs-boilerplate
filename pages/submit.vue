@@ -412,7 +412,8 @@ import { thresholdsConfig } from '~/configs/thresholds.config'
 import { uiConfig } from '~/configs/ui.config'
 import { categoriesConfig } from '~/configs/categories.config'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
-import { timeConfig } from '~/configs/time.config'
+import { timeConfig, TIME_MS } from '~/configs/time.config'
+import { contentConfig } from '~/configs/content.config'
 import { debounce } from '~/utils/debounce'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
@@ -612,10 +613,11 @@ const restoreDraft = () => {
       const draftData = JSON.parse(savedDraft)
       const timestamp = parseInt(savedTimestamp, 10)
       const now = Date.now()
-      const hoursSinceSaved = (now - timestamp) / (1000 * 60 * 60)
+      // Flexy hates hardcoded time calculations! Using TIME_MS from config
+      const hoursSinceSaved = (now - timestamp) / TIME_MS.HOUR
 
-      // Only restore if draft is less than 7 days old
-      if (hoursSinceSaved < 168) {
+      // Only restore if draft is less than expiry period (configurable)
+      if (hoursSinceSaved < contentConfig.submit.draft.expiryHours) {
         restoreFormData(draftData)
 
         // Show toast notification about restored draft
@@ -628,7 +630,8 @@ const restoreDraft = () => {
 
         $toast.info('Draft restored', {
           description: `Your previous submission draft from ${timeAgo} has been restored.`,
-          duration: 5000,
+          // Flexy hates hardcoded durations! Using config value
+          duration: uiConfig.toast.duration.info,
         })
       } else {
         // Clear old draft

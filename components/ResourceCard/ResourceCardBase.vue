@@ -315,6 +315,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   title: string
@@ -557,7 +558,8 @@ if (typeof useHead === 'function') {
   }
 }
 
-/* Visited resource link state */
+/* Visited resource link state - Flexy hates hardcoded values! */
+/* Using CSS custom properties bound to config values */
 .resource-link {
   position: relative;
   display: inline-flex;
@@ -565,23 +567,33 @@ if (typeof useHead === 'function') {
 }
 
 .resource-link:visited {
-  color: #6b7280;
+  color: v-bind('componentColorsConfig.resourceCard.visited.linkColor');
 }
 
 .resource-link:visited::after {
   content: '';
   display: inline-block;
-  width: 6px;
-  height: 6px;
-  margin-left: 6px;
-  background-color: #9ca3af;
+  width: v-bind(
+    '`${componentColorsConfig.resourceCard.visited.indicatorSize}px`'
+  );
+  height: v-bind(
+    '`${componentColorsConfig.resourceCard.visited.indicatorSize}px`'
+  );
+  margin-left: v-bind(
+    '`${componentColorsConfig.resourceCard.visited.indicatorMargin}px`'
+  );
+  background-color: v-bind(
+    'componentColorsConfig.resourceCard.visited.indicatorColor'
+  );
   border-radius: 50%;
-  opacity: 0.6;
+  opacity: v-bind(
+    'componentColorsConfig.resourceCard.visited.indicatorOpacity'
+  );
   flex-shrink: 0;
 }
 
 .resource-link:hover:visited {
-  color: #4b5563;
+  color: v-bind('componentColorsConfig.resourceCard.visited.linkHoverColor');
 }
 
 /* Reduced motion support */
