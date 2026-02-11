@@ -118,6 +118,26 @@ export const cacheConfig = {
       process.env.SEARCH_SUGGESTIONS_CACHE_TTL_SECONDS || '60'
     ),
   },
+
+  // Route Cache Settings - HTTP Cache-Control headers for different routes
+  routes: {
+    home: {
+      maxAge: parseInt(process.env.ROUTE_HOME_MAX_AGE || '60'), // 1 minute
+      sMaxAge: parseInt(process.env.ROUTE_HOME_S_MAX_AGE || '300'), // 5 minutes
+    },
+    search: {
+      maxAge: parseInt(process.env.ROUTE_SEARCH_MAX_AGE || '60'), // 1 minute
+      sMaxAge: parseInt(process.env.ROUTE_SEARCH_S_MAX_AGE || '300'), // 5 minutes
+    },
+    about: {
+      maxAge: parseInt(process.env.ROUTE_ABOUT_MAX_AGE || '300'), // 5 minutes
+      sMaxAge: parseInt(process.env.ROUTE_ABOUT_S_MAX_AGE || '3600'), // 1 hour
+    },
+    assets: {
+      maxAge: parseInt(process.env.ROUTE_ASSETS_MAX_AGE || '31536000'), // 1 year
+      immutable: true,
+    },
+  },
 } as const
 
 // Helper function to parse glob patterns

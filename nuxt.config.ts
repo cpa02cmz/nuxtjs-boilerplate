@@ -189,21 +189,30 @@ export default defineNuxtConfig({
       '~/server/plugins/resource-validation.ts',
     ],
     // Route rules for caching and performance
+    // Flexy says: No more hardcoded cache headers! Using cacheConfig.routes
     routeRules: {
       '/': {
         prerender: true,
-        headers: { 'Cache-Control': 'public, max-age=60, s-maxage=300' },
+        headers: {
+          'Cache-Control': `public, max-age=${cacheConfig.routes.home.maxAge}, s-maxage=${cacheConfig.routes.home.sMaxAge}`,
+        },
       },
       '/search': {
         prerender: true,
-        headers: { 'Cache-Control': 'public, max-age=60, s-maxage=300' },
+        headers: {
+          'Cache-Control': `public, max-age=${cacheConfig.routes.search.maxAge}, s-maxage=${cacheConfig.routes.search.sMaxAge}`,
+        },
       },
       '/about': {
         prerender: true,
-        headers: { 'Cache-Control': 'public, max-age=300, s-maxage=3600' },
+        headers: {
+          'Cache-Control': `public, max-age=${cacheConfig.routes.about.maxAge}, s-maxage=${cacheConfig.routes.about.sMaxAge}`,
+        },
       },
       '/_nuxt/**': {
-        headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+        headers: {
+          'Cache-Control': `public, max-age=${cacheConfig.routes.assets.maxAge}, immutable`,
+        },
       },
     },
   },

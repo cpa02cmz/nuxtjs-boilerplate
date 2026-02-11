@@ -1,6 +1,7 @@
 import { defineConfig, type UserConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
+import { thresholdsConfig } from './configs/thresholds.config'
 
 // Determine test profile from environment variable
 const testProfile = process.env.VITEST_PROFILE || 'default'
@@ -76,12 +77,13 @@ const defaultConfig: UserConfig = {
         'configs/**',
         '**/factories/**',
       ],
+      // Flexy says: No more hardcoded coverage thresholds! Using thresholdsConfig
       thresholds: {
         global: {
-          branches: 70,
-          functions: 70,
-          lines: 70,
-          statements: 70,
+          branches: thresholdsConfig.coverage.branches,
+          functions: thresholdsConfig.coverage.functions,
+          lines: thresholdsConfig.coverage.lines,
+          statements: thresholdsConfig.coverage.statements,
         },
       },
       all: true,

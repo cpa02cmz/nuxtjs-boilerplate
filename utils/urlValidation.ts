@@ -6,6 +6,7 @@ import {
   isSuccessStatus,
   isRedirectStatus,
 } from '~/configs/http.config'
+import { networkConfig } from '~/configs/network.config'
 
 export interface UrlValidationResult {
   url: string
@@ -79,12 +80,7 @@ export async function validateUrl(
         ...retryPresets.standard,
         maxRetries: retries,
         baseDelayMs: retryDelay,
-        retryableErrors: [
-          'ECONNRESET',
-          'ETIMEDOUT',
-          'ENOTFOUND',
-          'ECONNREFUSED',
-        ],
+        retryableErrors: networkConfig.retryableErrors,
       }
     )
 
@@ -112,12 +108,7 @@ export async function validateUrl(
         ...retryPresets.standard,
         maxRetries: retries,
         baseDelayMs: retryDelay,
-        retryableErrors: [
-          'ECONNRESET',
-          'ETIMEDOUT',
-          'ENOTFOUND',
-          'ECONNREFUSED',
-        ],
+        retryableErrors: networkConfig.retryableErrors,
       }
     )
 

@@ -115,6 +115,15 @@ export const thresholdsConfig = {
       descriptionError: parseInt(process.env.CHAR_COUNTER_DESC_ERROR || '50'),
     },
   },
+
+  // Test Coverage Thresholds - Flexy hates hardcoded coverage values!
+  coverage: {
+    // Minimum percentage thresholds for different metrics
+    branches: parseInt(process.env.COVERAGE_BRANCHES_THRESHOLD || '70'),
+    functions: parseInt(process.env.COVERAGE_FUNCTIONS_THRESHOLD || '70'),
+    lines: parseInt(process.env.COVERAGE_LINES_THRESHOLD || '70'),
+    statements: parseInt(process.env.COVERAGE_STATEMENTS_THRESHOLD || '70'),
+  },
 } as const
 
 export type ThresholdsConfig = typeof thresholdsConfig
