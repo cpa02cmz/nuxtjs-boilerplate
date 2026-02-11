@@ -34,6 +34,11 @@ export const contentConfig = {
       recentTitle: process.env.CONTENT_SEARCH_RECENT_TITLE || 'Recent Searches',
       clearHistory:
         process.env.CONTENT_SEARCH_CLEAR_HISTORY || 'Clear search history',
+      // Default search suggestions - Flexy hates hardcoded arrays!
+      defaultSuggestions: parseSuggestions(
+        process.env.CONTENT_SEARCH_DEFAULT_SUGGESTIONS ||
+          'AI Tools, Web Hosting, Databases, APIs, VPS'
+      ),
     },
     popular: {
       title: process.env.CONTENT_SEARCH_POPULAR_TITLE || 'Popular Searches',
@@ -321,5 +326,10 @@ export const contentConfig = {
     },
   },
 } as const
+
+// Helper function to parse comma-separated suggestions
+function parseSuggestions(value: string): string[] {
+  return value.split(',').map(s => s.trim())
+}
 
 export type ContentConfig = typeof contentConfig

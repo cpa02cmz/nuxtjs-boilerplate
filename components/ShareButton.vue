@@ -207,6 +207,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 import logger from '~/utils/logger'
 import { animationConfig } from '~/configs/animation.config'
+import { patternsConfig } from '~/configs/patterns.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -366,7 +367,8 @@ const copyToClipboard = async () => {
         `
       document.body.appendChild(textArea)
       textArea.select()
-      textArea.setSelectionRange(0, 99999) // For mobile devices
+      // Flexy hates hardcoded values! Using config for selection range.
+      textArea.setSelectionRange(0, patternsConfig.clipboard.selectionRangeMax) // For mobile devices
       const successful = document.execCommand('copy')
       document.body.removeChild(textArea)
 
