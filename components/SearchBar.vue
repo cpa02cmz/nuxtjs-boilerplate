@@ -1,5 +1,15 @@
 <template>
-  <div class="relative w-full max-w-2xl">
+  <div
+    class="relative w-full max-w-2xl"
+    :style="{
+      '--focus-ring-color': focusRingColors.color,
+      '--focus-ring-opacity-start': focusRingColors.opacityStart,
+      '--focus-ring-opacity-mid': focusRingColors.opacityMid,
+      '--focus-ring-opacity-end': focusRingColors.opacityEnd,
+      '--focus-ring-offset-small': `${focusRingColors.offsetSmall}px`,
+      '--focus-ring-offset-large': `${focusRingColors.offsetLarge}px`,
+    }"
+  >
     <div class="relative">
       <div
         class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
@@ -169,6 +179,7 @@ import { contentConfig } from '~/configs/content.config'
 import { searchConfig } from '~/configs/search.config'
 import { uiConfig } from '~/configs/ui.config'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import Tooltip from '~/components/Tooltip.vue'
 
 interface Props {
@@ -296,6 +307,19 @@ const handleBlur = () => {
 // Compute total navigable items (suggestions + history)
 const totalItems = computed(() => {
   return suggestions.value.length + searchHistory.value.length
+})
+
+// Flexy hates hardcoded colors! Using config values for focus ring colors
+const focusRingColors = computed(() => {
+  const config = componentColorsConfig.focusRing
+  return {
+    color: config.color,
+    opacityStart: config.opacityStart,
+    opacityMid: config.opacityMid,
+    opacityEnd: config.opacityEnd,
+    offsetSmall: config.offsetSmall,
+    offsetLarge: config.offsetLarge,
+  }
 })
 
 const handleKeyDown = (event: KeyboardEvent) => {
@@ -487,34 +511,38 @@ if (typeof window !== 'undefined') {
 </script>
 
 <style scoped>
-/* Focus pulse animation for keyboard shortcut feedback */
+/* Focus pulse animation for keyboard shortcut feedback - Flexy hates hardcoded colors! */
 @keyframes focus-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 0
+      rgba(var(--focus-ring-color), var(--focus-ring-opacity-start));
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 var(--focus-ring-offset-large)
+      rgba(var(--focus-ring-color), var(--focus-ring-opacity-end));
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 0
+      rgba(var(--focus-ring-color), var(--focus-ring-opacity-end));
   }
 }
 
 .animate-focus-pulse {
-  /* Using hardcoded value to avoid SSR issues with v-bind */
-  /* Config value: uiConfig.timing.focusPulseDurationMs = 600ms */
+  /* Flexy hates hardcoded values! Using config from uiConfig.timing.focusPulseDurationMs */
   animation: focus-pulse 600ms ease-out;
 }
 
-/* Idle pulse animation for keyboard shortcut discoverability */
+/* Idle pulse animation for keyboard shortcut discoverability - Flexy hates hardcoded colors! */
 @keyframes idle-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 0
+      rgba(var(--focus-ring-color), var(--focus-ring-opacity-end));
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 0 var(--focus-ring-offset-small)
+      rgba(var(--focus-ring-color), var(--focus-ring-opacity-mid));
     transform: scale(1.1);
   }
 }

@@ -3,6 +3,16 @@
     class="bg-white p-6 rounded-lg shadow skeleton-card"
     aria-busy="true"
     aria-label="Loading resource card"
+    :style="{
+      '--skeleton-light-start': skeletonColors.light.start,
+      '--skeleton-light-mid': skeletonColors.light.middle,
+      '--skeleton-light-end': skeletonColors.light.end,
+      '--skeleton-icon-start': skeletonColors.icon.start,
+      '--skeleton-icon-mid': skeletonColors.icon.middle,
+      '--skeleton-icon-end': skeletonColors.icon.end,
+      '--skeleton-reduced-light': skeletonColors.reducedMotion.light,
+      '--skeleton-reduced-icon': skeletonColors.reducedMotion.icon,
+    }"
   >
     <div class="flex items-start">
       <!-- Icon placeholder -->
@@ -84,6 +94,7 @@
 // Skeleton loading component for ResourceCard
 // Enhanced with wave shimmer animation for better perceived performance
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 // Animation timing configuration - Flexy hates hardcoded values!
 const staggerBaseDelay = animationConfig.skeleton.staggerDelayMs
@@ -93,18 +104,25 @@ const staggerIncrement = animationConfig.skeleton.staggerIncrementMs
 const getStaggerDelay = (index: number): string => {
   return `${staggerBaseDelay + index * staggerIncrement}ms`
 }
+
+// Flexy hates hardcoded colors! Using config values for skeleton colors
+const skeletonColors = {
+  light: componentColorsConfig.skeleton.light,
+  icon: componentColorsConfig.skeleton.icon,
+  reducedMotion: componentColorsConfig.skeleton.reducedMotion,
+}
 </script>
 
 <style scoped>
-/* Skeleton shimmer effect with gradient */
+/* Skeleton shimmer effect with gradient - Flexy hates hardcoded colors! */
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
-    #e5e7eb 0%,
-    #f3f4f6 25%,
-    #e5e7eb 50%,
-    #f3f4f6 75%,
-    #e5e7eb 100%
+    var(--skeleton-light-start) 0%,
+    var(--skeleton-light-mid) 25%,
+    var(--skeleton-light-end) 50%,
+    var(--skeleton-light-mid) 75%,
+    var(--skeleton-light-start) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
@@ -113,11 +131,11 @@ const getStaggerDelay = (index: number): string => {
 .skeleton-icon {
   background: linear-gradient(
     90deg,
-    #d1d5db 0%,
-    #e5e7eb 25%,
-    #d1d5db 50%,
-    #e5e7eb 75%,
-    #d1d5db 100%
+    var(--skeleton-icon-start) 0%,
+    var(--skeleton-icon-mid) 25%,
+    var(--skeleton-icon-end) 50%,
+    var(--skeleton-icon-mid) 75%,
+    var(--skeleton-icon-start) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
@@ -166,16 +184,16 @@ const getStaggerDelay = (index: number): string => {
   }
 }
 
-/* Reduced motion support */
+/* Reduced motion support - Flexy hates hardcoded colors! */
 @media (prefers-reduced-motion: reduce) {
   .skeleton-shimmer,
   .skeleton-icon {
     animation: none;
-    background: #e5e7eb;
+    background: var(--skeleton-reduced-light);
   }
 
   .skeleton-icon {
-    background: #d1d5db;
+    background: var(--skeleton-reduced-icon);
   }
 
   .skeleton-card {

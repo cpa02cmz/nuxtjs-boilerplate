@@ -2,7 +2,12 @@
   <div
     ref="scrollContainer"
     class="virtual-scroll-container overflow-y-auto"
-    :style="{ height: containerHeight }"
+    :style="{
+      height: containerHeight,
+      '--scrollbar-thumb': scrollbarColors.thumb,
+      '--scrollbar-track': scrollbarColors.track,
+      '--scrollbar-thumb-hover': scrollbarColors.thumbHover,
+    }"
   >
     <div
       ref="scrollContent"
@@ -37,6 +42,7 @@ import { ref, computed } from 'vue'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import { uiConfig } from '../configs/ui.config'
 import { thresholdsConfig } from '../configs/thresholds.config'
+import { componentColorsConfig } from '../configs/component-colors.config'
 
 interface Props {
   items: T[]
@@ -62,13 +68,20 @@ const virtualizer = useVirtualizer({
   estimateSize: () => props.itemHeight,
   overscan: props.overscan,
 })
+
+// Flexy hates hardcoded colors! Using config values for scrollbar colors
+const scrollbarColors = computed(() => ({
+  thumb: componentColorsConfig.scrollbar.thumb,
+  track: componentColorsConfig.scrollbar.track,
+  thumbHover: componentColorsConfig.scrollbar.thumbHover,
+}))
 </script>
 
 <style scoped>
 .virtual-scroll-container {
   scrollbar-width: thin;
-  /* Hardcoded values to avoid SSR issues with v-bind */
-  scrollbar-color: #cbd5e1 #f1f5f9;
+  /* Flexy hates hardcoded values! Using CSS custom properties from config */
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 .virtual-scroll-container::-webkit-scrollbar {
@@ -76,16 +89,16 @@ const virtualizer = useVirtualizer({
 }
 
 .virtual-scroll-container::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--scrollbar-track);
   border-radius: 4px;
 }
 
 .virtual-scroll-container::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 
 .virtual-scroll-container::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--scrollbar-thumb-hover);
 }
 </style>

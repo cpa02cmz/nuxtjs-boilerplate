@@ -1,5 +1,27 @@
 <template>
-  <div class="webhook-manager">
+  <div
+    class="webhook-manager"
+    :style="{
+      '--webhook-panel-bg': webhookColors.panelBg,
+      '--webhook-border': webhookColors.border,
+      '--webhook-muted-text': webhookColors.mutedText,
+      '--webhook-card-border': webhookColors.cardBorder,
+      '--webhook-status-active-bg': webhookColors.status.active.bg,
+      '--webhook-status-active-text': webhookColors.status.active.text,
+      '--webhook-status-enabled-bg': webhookColors.status.enabled.bg,
+      '--webhook-status-enabled-text': webhookColors.status.enabled.text,
+      '--webhook-status-disabled-bg': webhookColors.status.disabled.bg,
+      '--webhook-status-disabled-text': webhookColors.status.disabled.text,
+      '--webhook-status-error-bg': webhookColors.status.error.bg,
+      '--webhook-status-error-text': webhookColors.status.error.text,
+      '--webhook-btn-primary': webhookColors.button.primary,
+      '--webhook-btn-primary-hover': webhookColors.button.primaryHover,
+      '--webhook-btn-secondary': webhookColors.button.secondary,
+      '--webhook-btn-secondary-hover': webhookColors.button.secondaryHover,
+      '--webhook-btn-danger': webhookColors.button.danger,
+      '--webhook-btn-danger-hover': webhookColors.button.dangerHover,
+    }"
+  >
     <div class="webhook-header">
       <h2>Webhook Management</h2>
       <button
@@ -203,6 +225,17 @@
 <script setup lang="ts">
 import type { Webhook } from '~/types/webhook'
 import { useWebhooksManager } from '~/composables/useWebhooksManager'
+import { componentColorsConfig } from '~/configs/component-colors.config'
+
+// Flexy hates hardcoded colors! Using config values for webhook UI colors
+const webhookColors = {
+  panelBg: componentColorsConfig.webhookManager.panelBg,
+  border: componentColorsConfig.webhookManager.border,
+  mutedText: componentColorsConfig.webhookManager.mutedText,
+  cardBorder: componentColorsConfig.webhookManager.cardBorder,
+  status: componentColorsConfig.webhookManager.status,
+  button: componentColorsConfig.webhookManager.button,
+}
 
 const showCreateForm = ref(false)
 
@@ -251,7 +284,7 @@ onMounted(() => {
 }
 
 .webhook-form {
-  background: #f8f9fa;
+  background: var(--webhook-panel-bg);
   padding: 1.5rem;
   border-radius: 0.5rem;
   margin-bottom: 1.5rem;
@@ -270,7 +303,7 @@ onMounted(() => {
 .form-control {
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--webhook-border);
   border-radius: 0.375rem;
   font-size: 1rem;
 }
@@ -300,7 +333,7 @@ onMounted(() => {
 .empty-state {
   text-align: center;
   padding: 2rem;
-  color: #6b7280;
+  color: var(--webhook-muted-text);
 }
 
 .webhook-items {
@@ -314,7 +347,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--webhook-card-border);
   border-radius: 0.5rem;
   background: white;
 }
@@ -336,8 +369,8 @@ onMounted(() => {
 }
 
 .event-tag {
-  background: #dbeafe;
-  color: #1e40af;
+  background: var(--webhook-status-active-bg);
+  color: var(--webhook-status-active-text);
   padding: 0.25rem 0.5rem;
   border-radius: 9999px;
   font-size: 0.875rem;
@@ -356,23 +389,23 @@ onMounted(() => {
 }
 
 .status.active {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--webhook-status-enabled-bg);
+  color: var(--webhook-status-enabled-text);
 }
 
 .status.inactive {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--webhook-status-disabled-bg);
+  color: var(--webhook-status-disabled-text);
 }
 
 .status.success {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--webhook-status-enabled-bg);
+  color: var(--webhook-status-enabled-text);
 }
 
 .status.failed {
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--webhook-status-error-bg);
+  color: var(--webhook-status-error-text);
 }
 
 .webhook-actions {
@@ -391,21 +424,21 @@ onMounted(() => {
 }
 
 .btn-primary {
-  background: #3b82f6;
+  background: var(--webhook-btn-primary);
   color: white;
 }
 
 .btn-primary:hover {
-  background: #2563eb;
+  background: var(--webhook-btn-primary-hover);
 }
 
 .btn-secondary {
-  background: #6b7280;
+  background: var(--webhook-btn-secondary);
   color: white;
 }
 
 .btn-secondary:hover {
-  background: #374151;
+  background: var(--webhook-btn-secondary-hover);
 }
 
 .btn-sm {
@@ -414,17 +447,17 @@ onMounted(() => {
 }
 
 .btn-danger {
-  background: #ef4444;
+  background: var(--webhook-btn-danger);
   color: white;
 }
 
 .btn-danger:hover {
-  background: #dc2626;
+  background: var(--webhook-btn-danger-hover);
 }
 
 .error-message {
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--webhook-status-error-bg);
+  color: var(--webhook-status-error-text);
   padding: 0.75rem;
   border-radius: 0.375rem;
   margin-bottom: 1rem;
