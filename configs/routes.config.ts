@@ -61,7 +61,13 @@ export const routesConfig = {
   },
 
   // Cacheable page routes for security headers
-  cacheablePages: ['/', '/ai-keys', '/about', '/search', '/submit'],
+  cacheablePages: [
+    '/',
+    '/ai-keys',
+    '/about',
+    '/search',
+    '/submit',
+  ] as readonly string[],
 
   // Static build paths
   staticBuildPath: '/_nuxt',

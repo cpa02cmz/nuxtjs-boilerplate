@@ -444,7 +444,10 @@ describe('webhookStorage', () => {
   describe('API Key Methods', () => {
     describe('createApiKey', () => {
       it('should create a new API key', async () => {
-        const result = await webhookStorage.createApiKey(mockApiKey)
+        const result = await webhookStorage.createApiKey(
+          mockApiKey,
+          mockApiKey.key
+        )
 
         expect(result).toMatchObject({
           id: 'ak_test_apikey_001',
@@ -463,7 +466,7 @@ describe('webhookStorage', () => {
 
     describe('getApiKeyById', () => {
       it('should return API key by id', async () => {
-        await webhookStorage.createApiKey(mockApiKey)
+        await webhookStorage.createApiKey(mockApiKey, mockApiKey.key)
 
         const result = await webhookStorage.getApiKeyById('ak_test_apikey_001')
 
@@ -489,7 +492,7 @@ describe('webhookStorage', () => {
 
     describe('getApiKeyByValue', () => {
       it('should return API key by value', async () => {
-        await webhookStorage.createApiKey(mockApiKey)
+        await webhookStorage.createApiKey(mockApiKey, mockApiKey.key)
 
         const result = await webhookStorage.getApiKeyByValue('sk_test_123456')
 
@@ -521,8 +524,8 @@ describe('webhookStorage', () => {
           key: 'sk_test_789',
         }
 
-        await webhookStorage.createApiKey(mockApiKey)
-        await webhookStorage.createApiKey(apiKey2)
+        await webhookStorage.createApiKey(mockApiKey, mockApiKey.key)
+        await webhookStorage.createApiKey(apiKey2, apiKey2.key)
 
         const result = await webhookStorage.getAllApiKeys()
 
@@ -544,7 +547,7 @@ describe('webhookStorage', () => {
 
     describe('updateApiKey', () => {
       it('should update API key with partial data', async () => {
-        await webhookStorage.createApiKey(mockApiKey)
+        await webhookStorage.createApiKey(mockApiKey, mockApiKey.key)
 
         const result = await webhookStorage.updateApiKey('ak_test_apikey_001', {
           active: false,
@@ -566,7 +569,7 @@ describe('webhookStorage', () => {
 
     describe('deleteApiKey', () => {
       it('should delete API key by id', async () => {
-        await webhookStorage.createApiKey(mockApiKey)
+        await webhookStorage.createApiKey(mockApiKey, mockApiKey.key)
 
         const result = await webhookStorage.deleteApiKey('ak_test_apikey_001')
 
