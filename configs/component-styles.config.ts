@@ -140,6 +140,37 @@ export const componentStylesConfig = {
     modalOverlayBg: process.env.API_KEYS_MODAL_OVERLAY || 'rgba(0, 0, 0, 0.5)',
   },
 
+  // Error Boundary Component Styles
+  errorBoundary: {
+    minHeight: process.env.ERROR_BOUNDARY_MIN_HEIGHT || '300px',
+    maxWidth: process.env.ERROR_BOUNDARY_MAX_WIDTH || '400px',
+    iconMarginBottom: process.env.ERROR_BOUNDARY_ICON_MARGIN || '1rem',
+    titleFontSize: process.env.ERROR_BOUNDARY_TITLE_SIZE || '1.5rem',
+    titleMarginBottom: process.env.ERROR_BOUNDARY_TITLE_MARGIN || '0.5rem',
+    messageFontSize: process.env.ERROR_BOUNDARY_MSG_SIZE || '0.875rem',
+    buttonGap: process.env.ERROR_BOUNDARY_BUTTON_GAP || '0.5rem',
+    buttonPadding: process.env.ERROR_BOUNDARY_BUTTON_PADDING || '0.5rem 1rem',
+    buttonBorderRadius: process.env.ERROR_BOUNDARY_BUTTON_RADIUS || '0.375rem',
+    buttonFontSize: process.env.ERROR_BOUNDARY_BUTTON_SIZE || '0.875rem',
+  },
+
+  // Reading Progress Component Styles
+  readingProgress: {
+    height: process.env.READING_PROGRESS_HEIGHT || '3px',
+    gradient:
+      process.env.READING_PROGRESS_GRADIENT ||
+      'linear-gradient(90deg, #3b82f6 0%, #60a5fa 50%, #3b82f6 100%)',
+    shimmerWidth: process.env.READING_PROGRESS_SHIMMER_WIDTH || '100px',
+    tooltipTop: process.env.READING_PROGRESS_TOOLTIP_TOP || '12px',
+    tooltipPadding: process.env.READING_PROGRESS_TOOLTIP_PADDING || '6px 12px',
+    tooltipBorderRadius: process.env.READING_PROGRESS_TOOLTIP_RADIUS || '8px',
+    tooltipFontSize: process.env.READING_PROGRESS_TOOLTIP_SIZE || '12px',
+    tooltipFontWeight: process.env.READING_PROGRESS_TOOLTIP_WEIGHT || '600',
+    minHeightBreakpoint: parseInt(
+      process.env.READING_PROGRESS_MIN_HEIGHT || '600'
+    ),
+  },
+
   // Scroll To Top Component Styles
   scrollToTop: {
     position: {

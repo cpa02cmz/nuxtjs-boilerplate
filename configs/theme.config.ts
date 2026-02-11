@@ -144,7 +144,43 @@ export const themeConfig = {
   zIndex: {
     confetti: parseInt(process.env.Z_INDEX_CONFETTI || '9998'),
     toast: parseInt(process.env.Z_INDEX_TOAST || '9999'),
+    readingProgress: parseInt(process.env.Z_INDEX_READING_PROGRESS || '9999'),
+    tooltip: parseInt(process.env.Z_INDEX_TOOLTIP || '10000'),
   },
+
+  // Error Boundary Colors
+  errorBoundary: {
+    titleColor: process.env.ERROR_BOUNDARY_TITLE_COLOR || '#111827',
+    messageColor: process.env.ERROR_BOUNDARY_MSG_COLOR || '#6b7280',
+    primaryButtonBg: process.env.ERROR_BOUNDARY_PRIMARY_BTN_BG || '#3b82f6',
+    primaryButtonBorder:
+      process.env.ERROR_BOUNDARY_PRIMARY_BTN_BORDER || '#3b82f6',
+    primaryButtonHover:
+      process.env.ERROR_BOUNDARY_PRIMARY_BTN_HOVER || '#2563eb',
+    secondaryButtonBg: process.env.ERROR_BOUNDARY_SECONDARY_BTN_BG || '#f3f4f6',
+    secondaryButtonText:
+      process.env.ERROR_BOUNDARY_SECONDARY_BTN_TEXT || '#374151',
+    secondaryButtonBorder:
+      process.env.ERROR_BOUNDARY_SECONDARY_BTN_BORDER || '#d1d5db',
+    secondaryButtonHover:
+      process.env.ERROR_BOUNDARY_SECONDARY_BTN_HOVER || '#e5e7eb',
+  },
+
+  // Reading Progress Colors
+  readingProgress: {
+    shimmerColor:
+      process.env.READING_PROGRESS_SHIMMER || 'rgba(255, 255, 255, 0.4)',
+    tooltipGradient:
+      process.env.READING_PROGRESS_TOOLTIP_GRADIENT ||
+      'linear-gradient(135deg, #1f2937 0%, #374151 100%)',
+    tooltipTextColor: process.env.READING_PROGRESS_TOOLTIP_TEXT || 'white',
+    tooltipShadow:
+      process.env.READING_PROGRESS_TOOLTIP_SHADOW ||
+      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+  },
+
+  // Focus Ring
+  focusRing: process.env.FOCUS_RING_COLOR || '#3b82f6',
 } as const
 
 export type ThemeConfig = typeof themeConfig
