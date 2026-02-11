@@ -10,17 +10,17 @@
   >
     <svg
       class="loading-spinner__circular"
-      viewBox="25 25 50 50"
+      :viewBox="`${spinnerStyles.svg.viewBoxMin} ${spinnerStyles.svg.viewBoxMin} ${spinnerStyles.svg.viewBoxMax} ${spinnerStyles.svg.viewBoxMax}`"
       aria-hidden="true"
     >
       <circle
-        class="loading-spinner__path"
-        cx="50"
-        cy="50"
-        r="20"
+        :cx="spinnerStyles.svg.circleCx"
+        :cy="spinnerStyles.svg.circleCy"
+        :r="spinnerStyles.svg.circleR"
         fill="none"
-        stroke-width="2"
+        :stroke-width="spinnerStyles.svg.strokeWidth"
         stroke-miterlimit="10"
+        class="loading-spinner__path"
       />
     </svg>
     <span

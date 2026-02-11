@@ -278,7 +278,8 @@ onMounted(() => {
 
 .scroll-to-top__progress-ring-fill {
   stroke: v-bind('themeConfig.scrollToTop.progressFill');
-  transition: stroke-dashoffset 0.1s ease-out;
+  transition: stroke-dashoffset
+    v-bind('styles.transition.progressRingDurationSec') ease-out;
 }
 
 .scroll-to-top__icon {
