@@ -9,12 +9,10 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
           <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
-            My Bookmarks
+            {{ contentConfig.favorites.title }}
           </h1>
           <p class="mt-4 text-xl text-gray-600">
-            {{ bookmarkCount }} bookmarked resource<span
-              v-if="bookmarkCount !== 1"
-            >s</span>
+            {{ favoritesSubtitle }}
           </p>
         </div>
 
@@ -88,7 +86,7 @@
           </div>
 
           <h3 class="mt-4 text-xl font-medium text-gray-900">
-            No bookmarks yet
+            {{ contentConfig.favorites.emptyState.heading }}
           </h3>
           <p class="mt-2 text-gray-600 max-w-md mx-auto">
             Save your favorite resources for quick access later. Click the
@@ -112,7 +110,7 @@
               to="/"
               class="group inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
             >
-              Browse Resources
+              {{ contentConfig.favorites.emptyState.ctaButton }}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200"
@@ -147,7 +145,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-            Pro tip: Use the bookmark button on resource cards to save favorites
+            {{ contentConfig.favorites.proTip.text }}
           </div>
         </div>
 
@@ -187,8 +185,10 @@
                   </div>
                   <div>
                     <p class="text-sm font-medium text-blue-900">
-                      <span v-if="deletedBookmarks.size === 1">Bookmark removed</span>
-                      <span v-else>{{ deletedBookmarks.size }} bookmarks removed</span>
+                      {{ undoNotificationTitle }}
+                    </p>
+                    <p class="text-xs text-blue-700 mt-0.5">
+                      {{ contentConfig.favorites.undoNotification.undoHint }}
                     </p>
                     <p class="text-xs text-blue-700 mt-0.5">
                       You can undo this action
@@ -224,7 +224,7 @@
                         clip-rule="evenodd"
                       />
                     </svg>
-                    Undo
+                    {{ contentConfig.favorites.undoNotification.undoButton }}
                   </button>
                 </div>
               </div>
@@ -235,9 +235,7 @@
           <div class="flex flex-wrap justify-between items-center mb-8 gap-4">
             <div class="flex items-center space-x-4">
               <div class="text-sm text-gray-700">
-                Showing {{ getAllBookmarks.length }} bookmarked resource<span
-                  v-if="getAllBookmarks.length !== 1"
-                >s</span>
+                {{ showingBookmarksText }}
               </div>
             </div>
             <div class="flex space-x-3">
@@ -245,7 +243,7 @@
                 class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 @click="exportBookmarks"
               >
-                Export
+                {{ contentConfig.favorites.controls.export }}
               </button>
               <Transition
                 enter-active-class="transition-all duration-200 ease-out"
@@ -266,15 +264,19 @@
                   <span
                     class="text-sm text-red-700 font-medium whitespace-nowrap"
                   >
-                    Delete {{ bookmarkCount }} bookmark<span
-                      v-if="bookmarkCount !== 1"
-                    >s</span>?
+                    {{ confirmDeleteText }}
                   </span>
                   <button
                     class="text-sm text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-colors"
                     @click="handleCancelClear"
                   >
-                    Cancel
+                    {{ contentConfig.favorites.controls.cancel }}
+                  </button>
+                  <button
+                    class="text-sm text-red-700 font-medium px-2 py-1 rounded bg-red-100 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-colors"
+                    @click="handleConfirmClear"
+                  >
+                    {{ contentConfig.favorites.controls.delete }}
                   </button>
                   <button
                     class="text-sm text-red-700 font-medium px-2 py-1 rounded bg-red-100 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-colors"
@@ -289,7 +291,7 @@
                   class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                   @click="handleClearClick"
                 >
-                  Clear All
+                  {{ contentConfig.favorites.controls.clearAll }}
                 </button>
               </Transition>
             </div>
@@ -345,12 +347,52 @@ import { animationConfig } from '~/configs/animation.config'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import type { Bookmark } from '~/composables/useBookmarks'
 import { bookmarksConfig } from '~/configs/bookmarks.config'
+import { contentConfig } from '~/configs/content.config'
 import { PROGRESS } from '~/server/utils/constants'
 
 // Respect user's motion preferences for accessibility
 const prefersReducedMotion = computed(() => {
   if (typeof window === 'undefined') return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+})
+
+// Favorites subtitle with pluralization - Flexy hates hardcoded strings!
+const favoritesSubtitle = computed(() => {
+  const template = contentConfig.favorites.subtitle
+  const plural = bookmarkCount.value !== 1 ? 's' : ''
+  return template
+    .replace('{{ count }}', String(bookmarkCount.value))
+    .replace('{{ plural }}', plural)
+})
+
+// Showing bookmarks text with pluralization
+const showingBookmarksText = computed(() => {
+  const template = contentConfig.favorites.controls.showing
+  const count = getAllBookmarks.value.length
+  const plural = count !== 1 ? 's' : ''
+  return template
+    .replace('{{ count }}', String(count))
+    .replace('{{ plural }}', plural)
+})
+
+// Confirm delete text with pluralization
+const confirmDeleteText = computed(() => {
+  const template = contentConfig.favorites.controls.confirmDelete
+  const count = bookmarkCount.value
+  const plural = count !== 1 ? 's' : ''
+  return template
+    .replace('{{ count }}', String(count))
+    .replace('{{ plural }}', plural)
+})
+
+// Undo notification title with pluralization
+const undoNotificationTitle = computed(() => {
+  const count = deletedBookmarks.value.size
+  if (count === 1) {
+    return contentConfig.favorites.undoNotification.singleRemoved
+  }
+  const template = contentConfig.favorites.undoNotification.multipleRemoved
+  return template.replace('{{ count }}', String(count))
 })
 
 // Set page-specific meta tags
