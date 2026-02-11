@@ -265,7 +265,9 @@ const contentConfig = {
     ],
   },
   search: {
-    placeholder: 'Search free resources...',
+    placeholder: 'Search resources by name, description, tags...',
+    ariaLabel: 'Search resources',
+    clearAriaLabel: 'Clear search',
   },
 }
 
@@ -313,6 +315,11 @@ const componentColorsConfig = {
     opacityEnd: 0,
     offsetSmall: 4,
     offsetLarge: 8,
+  },
+  searchBar: {
+    defaultIcon: 'text-gray-400',
+    loadingIcon: 'text-blue-500',
+    successIcon: 'text-green-500',
   },
 }
 

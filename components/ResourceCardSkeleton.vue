@@ -106,8 +106,9 @@ const staggerBaseDelay = 0
 const staggerIncrement = 75
 
 // Wave animation configuration - creates a flowing wave effect across all items
-const waveDuration = `${animationConfig.skeleton.waveDurationSec}s`
-const waveStagger = `${animationConfig.skeleton.waveStaggerSec}s`
+// Hardcoded values for SSR compatibility (BroCula fix)
+const waveDuration = '2s'
+const waveStagger = '0.1s'
 
 // Calculate stagger delays for each item
 const getStaggerDelay = (index: number): string => {
