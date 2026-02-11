@@ -88,6 +88,9 @@
             'hidden sm:inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded-md shadow-sm transition-all duration-200 ease-out',
             'hover:bg-gray-100 hover:border-gray-300 hover:shadow-md hover:scale-105',
             showIdlePulse && !prefersReducedMotion ? 'animate-idle-pulse' : '',
+            showShortcutSuccess && !prefersReducedMotion
+              ? 'animate-shortcut-success'
+              : '',
           ]"
           aria-hidden="true"
           title="Press / to focus search"
@@ -214,8 +217,10 @@ const activeIndex = ref(-1)
 const isSearching = ref(false)
 const showFocusPulse = ref(false)
 const showIdlePulse = ref(false)
+const showShortcutSuccess = ref(false)
 const prefersReducedMotion = ref(false)
 let idlePulseTimeout: ReturnType<typeof setTimeout> | null = null
+let shortcutSuccessTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Use the resources composable
 const { resources } = useResourceData()
@@ -448,6 +453,15 @@ if (typeof window !== 'undefined') {
         setTimeout(() => {
           showFocusPulse.value = false
         }, uiConfig.timing.focusPulseDurationMs)
+
+        // Show shortcut success glow animation for positive reinforcement
+        showShortcutSuccess.value = true
+        if (shortcutSuccessTimeout) {
+          clearTimeout(shortcutSuccessTimeout)
+        }
+        shortcutSuccessTimeout = setTimeout(() => {
+          showShortcutSuccess.value = false
+        }, uiConfig.timing.shortcutSuccessDurationMs)
       }
 
       // Stop idle pulse animation when user knows the shortcut
@@ -506,6 +520,9 @@ if (typeof window !== 'undefined') {
     if (idlePulseTimeout) {
       clearTimeout(idlePulseTimeout)
     }
+    if (shortcutSuccessTimeout) {
+      clearTimeout(shortcutSuccessTimeout)
+    }
   })
 }
 </script>
@@ -549,6 +566,38 @@ if (typeof window !== 'undefined') {
 
 .animate-idle-pulse {
   animation: idle-pulse 2s ease-in-out 3;
+}
+
+/* Success glow animation when user uses keyboard shortcut */
+/* Provides positive reinforcement and delightful micro-interaction */
+@keyframes shortcut-success {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+    transform: scale(1);
+    background-color: rgb(34, 197, 94);
+    color: white;
+    border-color: rgb(34, 197, 94);
+  }
+  30% {
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+    transform: scale(1.15);
+  }
+  50% {
+    background-color: rgb(34, 197, 94);
+    color: white;
+    border-color: rgb(34, 197, 94);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    transform: scale(1);
+    background-color: rgb(249, 250, 251);
+    color: rgb(107, 114, 128);
+    border-color: rgb(229, 231, 235);
+  }
+}
+
+.animate-shortcut-success {
+  animation: shortcut-success 600ms ease-out forwards;
 }
 
 /* Respect reduced motion preferences for accessibility */
