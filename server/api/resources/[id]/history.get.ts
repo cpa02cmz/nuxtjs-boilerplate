@@ -22,7 +22,7 @@ export default defineEventHandler(async event => {
       return
     }
 
-    sendSuccessResponse(event, {
+    return sendSuccessResponse(event, {
       id: resource.id,
       title: resource.title,
       status: resource.status || 'active',

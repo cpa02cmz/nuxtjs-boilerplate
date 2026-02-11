@@ -64,7 +64,7 @@ export default defineEventHandler(async event => {
     // Add to flags (in a real app, this would be stored in a database)
     mockFlags.push(newFlag)
 
-    sendSuccessResponse(event, {
+    return sendSuccessResponse(event, {
       message: 'Resource flagged successfully',
       flag: newFlag,
     })

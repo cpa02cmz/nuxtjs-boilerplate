@@ -1,7 +1,23 @@
 // Content Configuration - UI Text, Labels, and User-Facing Strings
 // Flexy hates hardcoded values! All user-facing text is now configurable.
 
+/**
+ * Parse comma-separated categories from environment variable
+ * Flexy hates hardcoded arrays!
+ */
+function parseCategories(value: string): string[] {
+  return value.split(',').map(s => s.trim())
+}
+
 export const contentConfig = {
+  // Valid Categories - Flexy hates hardcoded category lists!
+  categories: {
+    validCategories: parseCategories(
+      process.env.VALID_CATEGORIES ||
+        'Development, Design, Productivity, Marketing, Analytics, Security, AI/ML, DevOps, Testing, Education'
+    ),
+  },
+
   // Navigation
   navigation: {
     skipToMain: process.env.CONTENT_NAV_SKIP_TO_MAIN || 'Skip to main content',

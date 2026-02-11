@@ -4,13 +4,11 @@
  */
 import bcrypt from 'bcrypt'
 import { randomBytes } from 'node:crypto'
+import { securityConfig } from '~/configs/security.config'
 
-// Cost factor for bcrypt (higher = more secure but slower)
-// 12 is a good balance between security and performance
-const BCRYPT_ROUNDS = 12
-
-// Length of key prefix to store for identification
-const KEY_PREFIX_LENGTH = 8
+// Flexy loves modularity! Using config values instead of hardcoded constants
+const BCRYPT_ROUNDS = securityConfig.apiKeyCrypto.bcryptRounds
+const KEY_PREFIX_LENGTH = securityConfig.apiKeyCrypto.keyPrefixLength
 
 /**
  * Extract a prefix from an API key for identification

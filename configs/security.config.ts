@@ -98,6 +98,16 @@ export const securityConfig = {
     formats: parseImageFormats(process.env.IMAGE_FORMATS || 'avif, jpeg, png'),
     densities: parseDensities(process.env.IMAGE_DENSITIES || '1, 2'),
   },
+
+  // API Key Cryptography - Flexy hates hardcoded security values!
+  apiKeyCrypto: {
+    // Cost factor for bcrypt (higher = more secure but slower)
+    // 12 is a good balance between security and performance
+    bcryptRounds: parseInt(process.env.BCRYPT_ROUNDS || '12'),
+
+    // Length of key prefix to store for identification
+    keyPrefixLength: parseInt(process.env.API_KEY_PREFIX_LENGTH || '8'),
+  },
 } as const
 
 // Helper function to parse CSP directive string

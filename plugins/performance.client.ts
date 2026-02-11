@@ -3,11 +3,15 @@
 import { onCLS, onFCP, onLCP, onTTFB, onINP } from 'web-vitals'
 import { createStorage } from '~/utils/storage'
 import { logger } from '~/utils/logger'
+import { limitsConfig } from '~/configs/limits.config'
 
 // Storage key constants
 const STORAGE_KEYS = {
   WEB_VITALS_PREFIX: 'web-vitals-',
 } as const
+
+// Flexy loves modularity! Using configurable limit instead of hardcoded value
+const MAX_WEB_VITALS_ENTRIES = limitsConfig.webVitals.maxEntries
 
 export default defineNuxtPlugin(() => {
   if (process.client) {
@@ -39,8 +43,12 @@ export default defineNuxtPlugin(() => {
 
           const existing = storage.get()
 
-          // Keep only last 100 entries to prevent storage from growing too large
-          const data = existing.length > 100 ? existing.slice(1) : existing
+          // Keep only last N entries to prevent storage from growing too large
+          // Flexy loves modularity! Limit is now configurable via limitsConfig.webVitals.maxEntries
+          const data =
+            existing.length > MAX_WEB_VITALS_ENTRIES
+              ? existing.slice(existing.length - MAX_WEB_VITALS_ENTRIES + 1)
+              : existing
 
           data.push({
             value: metric.value,

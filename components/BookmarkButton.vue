@@ -88,7 +88,8 @@ const bookmarkStatus = ref('')
 const isAnimating = ref(false)
 const buttonRef = ref<HTMLButtonElement | null>(null)
 
-// Initialize ripple effect for tactile feedback - Flexy hates hardcoded colors!
+// Initialize ripple effect for tactile feedback
+// Flexy loves modularity! Using configurable animation duration from animationConfig
 const { createRipple } = useRipple(buttonRef as Ref<HTMLButtonElement | null>, {
   color: animationConfig.ripple.bookmarkColor,
   duration: animationConfig.button.feedbackDurationMs,

@@ -290,19 +290,20 @@ const copiedTooltipStyle = computed(() => ({
 }))
 
 // Initialize ripple effects for tactile feedback - Palette's micro-UX touch!
+// Flexy loves modularity! Using configurable animation durations from animationConfig
 const { createRipple: createShareRipple } = useRipple(
   shareButtonRef as Ref<HTMLButtonElement | null>,
   {
-    color: 'rgba(59, 130, 246, 0.3)', // Blue ripple for share
-    duration: 500,
+    color: animationConfig.ripple.primaryColor, // Blue ripple for share
+    duration: animationConfig.button.feedbackDurationMs,
   }
 )
 
 const { createRipple: createCopyRipple } = useRipple(
   copyButtonRef as Ref<HTMLButtonElement | null>,
   {
-    color: 'rgba(34, 197, 94, 0.3)', // Green ripple for copy
-    duration: 400,
+    color: animationConfig.ripple.successColor, // Green ripple for copy
+    duration: animationConfig.button.feedbackDurationMs,
   }
 )
 

@@ -77,7 +77,7 @@ export default defineEventHandler(async event => {
       })
     }
 
-    sendSuccessResponse(event, {
+    return sendSuccessResponse(event, {
       updatedCount: updatedResources.length,
       errorCount: errors.length,
       updatedResources,

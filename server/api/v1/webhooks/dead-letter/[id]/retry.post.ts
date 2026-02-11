@@ -21,7 +21,7 @@ export default defineEventHandler(async event => {
       return
     }
 
-    sendSuccessResponse(event, {
+    return sendSuccessResponse(event, {
       message: 'Webhook re-queued for delivery',
       id,
     })

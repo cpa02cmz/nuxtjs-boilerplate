@@ -4,14 +4,18 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 export default defineEventHandler(async event => {
   try {
+    // Apply rate limiting: 30 requests per minute for queue status
+    await rateLimit(event)
+
     const queueStats = await webhookQueueSystem.getQueueStats()
     const queue = await webhookStorage.getQueue()
     const deadLetterQueue = await webhookStorage.getDeadLetterQueue()
 
-    sendSuccessResponse(event, {
+    return sendSuccessResponse(event, {
       stats: queueStats,
       queue: queue.map(item => ({
         id: item.id,

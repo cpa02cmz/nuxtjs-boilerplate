@@ -5,8 +5,12 @@ import {
   sendSuccessResponse,
   sendUnauthorizedError,
 } from '~/server/utils/api-response'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 export default defineEventHandler(async event => {
+  // Apply rate limiting: 10 requests per minute for API key listing (requires auth)
+  await rateLimit(event)
+
   // Authentication check - require valid API key
   const apiKey =
     getHeader(event, 'X-API-Key') || (getQuery(event).api_key as string)
