@@ -186,10 +186,11 @@ export const analyticsEventSchema = z.object({
     .string()
     .max(limitsConfig.validation.resourceIdMaxLength, 'Resource ID too long')
     .refine(
-      val => val === '' || /^[a-zA-Z0-9_-]+$/.test(val),
+      val => !val || /^[a-zA-Z0-9_-]+$/.test(val),
       'Resource ID contains invalid characters'
     )
-    .optional(),
+    .optional()
+    .transform(val => val || undefined),
   category: z
     .string()
     .max(limitsConfig.validation.categoryMaxLength, 'Category too long')
