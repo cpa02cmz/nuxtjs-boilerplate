@@ -8,6 +8,14 @@
       '--focus-ring-opacity-end': focusRingColors.opacityEnd,
       '--focus-ring-offset-small': `${focusRingColors.offsetSmall}px`,
       '--focus-ring-offset-large': `${focusRingColors.offsetLarge}px`,
+      '--shortcut-success-color': shortcutSuccessColors.successColor,
+      '--shortcut-success-color-alpha': shortcutSuccessColors.successColorAlpha,
+      '--shortcut-default-bg': shortcutSuccessColors.defaultBgColor,
+      '--shortcut-default-text': shortcutSuccessColors.defaultTextColor,
+      '--shortcut-default-border': shortcutSuccessColors.defaultBorderColor,
+      '--shortcut-peak-scale': shortcutSuccessColors.peakScale,
+      '--shortcut-shadow-spread-start': `${shortcutSuccessColors.shadowSpreadStart}px`,
+      '--shortcut-shadow-spread-mid': `${shortcutSuccessColors.shadowSpreadMid}px`,
     }"
   >
     <div class="relative">
@@ -328,6 +336,21 @@ const focusRingColors = computed(() => {
   }
 })
 
+// Flexy hates hardcoded CSS keyframe colors! Using config values for shortcut success animation
+const shortcutSuccessColors = computed(() => {
+  const config = animationConfig.searchShortcut
+  return {
+    successColor: config.successColor,
+    successColorAlpha: config.successColorAlpha,
+    defaultBgColor: config.defaultBgColor,
+    defaultTextColor: config.defaultTextColor,
+    defaultBorderColor: config.defaultBorderColor,
+    peakScale: config.peakScale,
+    shadowSpreadStart: config.shadowSpreadStart,
+    shadowSpreadMid: config.shadowSpreadMid,
+  }
+})
+
 const handleKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
     if (showSuggestions.value) {
@@ -571,29 +594,33 @@ if (typeof window !== 'undefined') {
 
 /* Success glow animation when user uses keyboard shortcut */
 /* Provides positive reinforcement and delightful micro-interaction */
+/* Flexy loves CSS custom properties - no more hardcoded colors! */
 @keyframes shortcut-success {
   0% {
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6);
+    box-shadow: 0 0 0 var(--shortcut-shadow-spread-start)
+      rgba(var(--shortcut-success-color-alpha));
     transform: scale(1);
-    background-color: rgb(34, 197, 94);
+    background-color: rgb(var(--shortcut-success-color));
     color: white;
-    border-color: rgb(34, 197, 94);
+    border-color: rgb(var(--shortcut-success-color));
   }
   30% {
-    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
-    transform: scale(1.15);
+    box-shadow: 0 0 0 var(--shortcut-shadow-spread-mid)
+      rgba(var(--shortcut-success-color), 0);
+    transform: scale(var(--shortcut-peak-scale));
   }
   50% {
-    background-color: rgb(34, 197, 94);
+    background-color: rgb(var(--shortcut-success-color));
     color: white;
-    border-color: rgb(34, 197, 94);
+    border-color: rgb(var(--shortcut-success-color));
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    box-shadow: 0 0 0 var(--shortcut-shadow-spread-start)
+      rgba(var(--shortcut-success-color), 0);
     transform: scale(1);
-    background-color: rgb(249, 250, 251);
-    color: rgb(107, 114, 128);
-    border-color: rgb(229, 231, 235);
+    background-color: rgb(var(--shortcut-default-bg));
+    color: rgb(var(--shortcut-default-text));
+    border-color: rgb(var(--shortcut-default-border));
   }
 }
 
