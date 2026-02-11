@@ -114,6 +114,88 @@ export const socialConfig = {
     medium: process.env.SHARE_UTM_MEDIUM || 'share',
     campaign: process.env.SHARE_UTM_CAMPAIGN || 'resource-sharing',
   },
+
+  // Platform Styling - Flexy hates hardcoded colors!
+  // Tailwind CSS classes for social platform buttons/icons
+  platformStyles: {
+    twitter: {
+      button: {
+        bg: process.env.STYLE_TWITTER_BG || 'bg-blue-500',
+        hover: process.env.STYLE_TWITTER_HOVER || 'hover:bg-blue-600',
+        text: process.env.STYLE_TWITTER_TEXT || 'text-white',
+      },
+      icon: {
+        color: process.env.STYLE_TWITTER_ICON || 'text-blue-400',
+      },
+    },
+    facebook: {
+      button: {
+        bg: process.env.STYLE_FACEBOOK_BG || 'bg-blue-700',
+        hover: process.env.STYLE_FACEBOOK_HOVER || 'hover:bg-blue-800',
+        text: process.env.STYLE_FACEBOOK_TEXT || 'text-white',
+      },
+      icon: {
+        color: process.env.STYLE_FACEBOOK_ICON || 'text-blue-600',
+      },
+    },
+    linkedin: {
+      button: {
+        bg: process.env.STYLE_LINKEDIN_BG || 'bg-blue-800',
+        hover: process.env.STYLE_LINKEDIN_HOVER || 'hover:bg-blue-900',
+        text: process.env.STYLE_LINKEDIN_TEXT || 'text-white',
+      },
+      icon: {
+        color: process.env.STYLE_LINKEDIN_ICON || 'text-blue-700',
+      },
+    },
+    reddit: {
+      button: {
+        bg: process.env.STYLE_REDDIT_BG || 'bg-orange-500',
+        hover: process.env.STYLE_REDDIT_HOVER || 'hover:bg-orange-600',
+        text: process.env.STYLE_REDDIT_TEXT || 'text-white',
+      },
+      icon: {
+        color: process.env.STYLE_REDDIT_ICON || 'text-orange-500',
+      },
+    },
+    email: {
+      button: {
+        bg: process.env.STYLE_EMAIL_BG || 'bg-gray-600',
+        hover: process.env.STYLE_EMAIL_HOVER || 'hover:bg-gray-700',
+        text: process.env.STYLE_EMAIL_TEXT || 'text-white',
+      },
+      icon: {
+        color: process.env.STYLE_EMAIL_ICON || 'text-gray-600',
+      },
+    },
+    copy: {
+      button: {
+        bg: process.env.STYLE_COPY_BG || 'bg-gray-600',
+        hover: process.env.STYLE_COPY_HOVER || 'hover:bg-gray-700',
+        text: process.env.STYLE_COPY_TEXT || 'text-white',
+      },
+      icon: {
+        color: process.env.STYLE_COPY_ICON || 'text-gray-600',
+        success: process.env.STYLE_COPY_SUCCESS || 'text-green-600',
+      },
+    },
+    shareButton: {
+      bg: process.env.STYLE_SHARE_BG || 'hover:bg-gray-100',
+      text: process.env.STYLE_SHARE_TEXT || 'text-gray-600',
+      ring: process.env.STYLE_SHARE_RING || 'focus:ring-blue-500',
+    },
+  },
+
+  // Dropdown Menu Styling
+  dropdown: {
+    container:
+      process.env.STYLE_DROPDOWN_CONTAINER ||
+      'absolute z-10 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5',
+    item:
+      process.env.STYLE_DROPDOWN_ITEM ||
+      'flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100',
+    position: process.env.STYLE_DROPDOWN_POSITION || 'right-0 origin-top-right',
+  },
 } as const
 
 export type SocialConfig = typeof socialConfig

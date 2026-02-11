@@ -6,12 +6,13 @@
       :aria-expanded="isOpen"
       aria-haspopup="true"
       aria-label="Share this resource"
-      class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      :class="shareButtonClasses"
       @click="toggleDropdown"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5 text-gray-600"
+        class="h-5 w-5"
+        :class="socialConfig.platformStyles.shareButton.text"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -29,8 +30,7 @@
     <div
       v-if="isOpen"
       ref="dropdownRef"
-      class="absolute z-10 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
-      :class="positionClass"
+      :class="dropdownContainerClasses"
     >
       <div class="py-1">
         <!-- Twitter/X -->
@@ -38,12 +38,13 @@
           :href="twitterUrl"
           target="_blank"
           rel="noopener noreferrer"
-          class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          :class="dropdownItemClasses"
           @click="trackShare('twitter')"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 mr-2 text-blue-400"
+            class="h-4 w-4 mr-2"
+            :class="socialConfig.platformStyles.twitter.icon.color"
             viewBox="0 0 24 24"
             fill="currentColor"
           >
@@ -59,12 +60,13 @@
           :href="linkedinUrl"
           target="_blank"
           rel="noopener noreferrer"
-          class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          :class="dropdownItemClasses"
           @click="trackShare('linkedin')"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 mr-2 text-blue-700"
+            class="h-4 w-4 mr-2"
+            :class="socialConfig.platformStyles.linkedin.icon.color"
             viewBox="0 0 24 24"
             fill="currentColor"
           >
@@ -80,12 +82,13 @@
           :href="facebookUrl"
           target="_blank"
           rel="noopener noreferrer"
-          class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          :class="dropdownItemClasses"
           @click="trackShare('facebook')"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 mr-2 text-blue-600"
+            class="h-4 w-4 mr-2"
+            :class="socialConfig.platformStyles.facebook.icon.color"
             viewBox="0 0 24 24"
             fill="currentColor"
           >
@@ -101,12 +104,13 @@
           :href="redditUrl"
           target="_blank"
           rel="noopener noreferrer"
-          class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          :class="dropdownItemClasses"
           @click="trackShare('reddit')"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 mr-2 text-orange-500"
+            class="h-4 w-4 mr-2"
+            :class="socialConfig.platformStyles.reddit.icon.color"
             viewBox="0 0 24 24"
             fill="currentColor"
           >
@@ -120,12 +124,13 @@
         <!-- Email -->
         <a
           :href="emailUrl"
-          class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          :class="dropdownItemClasses"
           @click="trackShare('email')"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 mr-2 text-gray-600"
+            class="h-4 w-4 mr-2"
+            :class="socialConfig.platformStyles.email.icon.color"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -143,13 +148,15 @@
         <!-- Copy Link -->
         <button
           type="button"
-          class="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          :class="dropdownItemClasses"
+          class="w-full text-left"
           @click="copyLink"
         >
           <svg
             v-if="!copySuccess"
             xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 mr-2 text-gray-600"
+            class="h-4 w-4 mr-2"
+            :class="socialConfig.platformStyles.copy.icon.color"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -164,7 +171,8 @@
           <svg
             v-else
             xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4 mr-2 text-green-600"
+            class="h-4 w-4 mr-2"
+            :class="socialConfig.platformStyles.copy.icon.success"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -212,6 +220,19 @@ const copySuccess = ref(false)
 // Use the enhanced social sharing composable
 const { share, copyLink: copyLinkWithTracking } = useSocialSharing()
 
+// Flexy hates hardcoded Tailwind classes!
+// Use configurable styles from socialConfig
+const shareButtonClasses = computed(() => {
+  const styles = socialConfig.platformStyles.shareButton
+  return `p-2 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 ${styles.bg} ${styles.ring}`
+})
+
+const dropdownContainerClasses = computed(() => {
+  return `${socialConfig.dropdown.container} ${socialConfig.dropdown.position}`
+})
+
+const dropdownItemClasses = computed(() => socialConfig.dropdown.item)
+
 // Computed URLs for different social platforms - Flexy hates hardcoded URLs!
 const twitterUrl = computed(() =>
   socialConfig.urlBuilders.twitter(props.title, props.description, props.url)
@@ -230,11 +251,6 @@ const redditUrl = computed(() =>
 const emailUrl = computed(() =>
   socialConfig.urlBuilders.email(props.title, props.description, props.url)
 )
-
-// Position class for dropdown (left or right aligned)
-const positionClass = computed(() => {
-  return 'right-0 origin-top-right'
-})
 
 // Toggle dropdown visibility
 const toggleDropdown = () => {
@@ -303,4 +319,3 @@ onUnmounted(() => {
 <style scoped>
 /* Add any necessary styles for the dropdown positioning */
 </style>
-// Additional comment for tracking
