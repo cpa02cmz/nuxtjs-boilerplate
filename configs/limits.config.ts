@@ -314,6 +314,28 @@ export const limitsConfig = {
       process.env.URL_VALIDATION_RETRY_DELAY || '1000'
     ),
   },
+
+  // Error Tracking Limits - Flexy hates hardcoded limits!
+  errorTracking: {
+    // Maximum characters for error message hash
+    messageMaxLength: parseInt(
+      process.env.ERROR_TRACKING_MESSAGE_MAX_LENGTH || '100'
+    ),
+    // Maximum characters for stack trace hash
+    stackMaxLength: parseInt(
+      process.env.ERROR_TRACKING_STACK_MAX_LENGTH || '200'
+    ),
+    // Number of recent errors to fetch
+    recentErrorsLimit: parseInt(
+      process.env.ERROR_TRACKING_RECENT_LIMIT || '10'
+    ),
+  },
+
+  // Web Vitals Limits - Flexy hates hardcoded limits!
+  webVitals: {
+    // Maximum number of web vitals entries to store
+    maxEntries: parseInt(process.env.WEB_VITALS_MAX_ENTRIES || '100'),
+  },
 } as const
 
 export type LimitsConfig = typeof limitsConfig

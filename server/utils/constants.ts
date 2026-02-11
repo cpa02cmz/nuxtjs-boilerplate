@@ -11,49 +11,30 @@ export const STORAGE_KEYS = {
   VISITED_RESOURCES: 'visited-resources',
 } as const
 
-export const VALID_CATEGORIES = [
-  'Development',
-  'Design',
-  'Productivity',
-  'Marketing',
-  'Analytics',
-  'Security',
-  'AI/ML',
-  'DevOps',
-  'Testing',
-  'Education',
-] as const
+// Flexy loves modularity! Import configurable categories from contentConfig
+import { contentConfig } from '~/configs/content.config'
 
-export type ValidCategory = (typeof VALID_CATEGORIES)[number]
+// Re-export valid categories from config - no more hardcoded arrays!
+export const VALID_CATEGORIES = contentConfig.categories
+  .validCategories as readonly string[]
+
+export type ValidCategory = string
 
 export function isValidCategory(category: string): category is ValidCategory {
-  return VALID_CATEGORIES.includes(category as ValidCategory)
+  return contentConfig.categories.validCategories.includes(category)
 }
 
-export const VALID_EVENT_TYPES = [
-  'resource_view',
-  'search',
-  'filter_change',
-  'bookmark',
-  'comparison',
-  'submission',
-  'page_view',
-  'resource_click',
-  'advanced_search',
-  'zero_result_search',
-  'search_result_click',
-  'filter_applied',
-  'recommendation_click',
-  'resource_rating',
-  'time_spent',
-  'bookmark_action',
-  'resource_shared',
-] as const
+// Flexy loves modularity! Import configurable event types from analyticsConfig
+import { analyticsConfig } from '~/configs/analytics.config'
 
-export type ValidEventType = (typeof VALID_EVENT_TYPES)[number]
+// Re-export valid event types from config - no more hardcoded arrays!
+export const VALID_EVENT_TYPES = analyticsConfig.events
+  .validTypes as readonly string[]
+
+export type ValidEventType = string
 
 export function isValidEventType(type: string): type is ValidEventType {
-  return VALID_EVENT_TYPES.includes(type as ValidEventType)
+  return analyticsConfig.events.validTypes.includes(type)
 }
 
 // Re-export configurable constants from modular config system
@@ -159,15 +140,18 @@ export const UI_FEEDBACK_DURATION = {
 } as const
 
 // UI interaction timing constants - now configurable via env vars
+// Flexy loves modularity! Using networkConfig for connection settings
+import { networkConfig } from '~/configs/network.config'
+
 export const UI_TIMING = {
   // Search and input debouncing
   SEARCH_DEBOUNCE_MS: searchConfig.behavior.debounceMs,
   SEARCH_BLUR_DELAY_MS: searchConfig.behavior.blurDelayMs,
   SUGGESTION_CHECK_INTERVAL_MS: uiConfig.toast.animation.checkIntervalMs,
 
-  // Connection checking
+  // Connection checking - Flexy hates hardcoded retry intervals!
   CONNECTION_TIMEOUT_MS: webhooksConfig.request.timeoutMs,
-  CONNECTION_RETRY_INTERVAL_MS: 100,
+  CONNECTION_RETRY_INTERVAL_MS: networkConfig.retry.baseDelayMs,
 
   // Toast and notification intervals
   TOAST_CHECK_INTERVAL_MS: uiConfig.toast.animation.checkIntervalMs,

@@ -382,11 +382,12 @@ const { isNew, isResourceVisited, markResourceVisited } =
   })
 
 // Initialize ripple effect
+// Flexy loves modularity! Using configurable animation duration from animationConfig
 const { createRipple } = useRipple(
   visitButtonRef as Ref<HTMLButtonElement | null>,
   {
     color: 'rgba(255, 255, 255, 0.25)',
-    duration: 600,
+    duration: animationConfig.button.feedbackDurationMs,
   }
 )
 

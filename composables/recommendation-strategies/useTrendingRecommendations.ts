@@ -8,6 +8,7 @@ import {
   type RecommendationResult,
 } from '~/utils/recommendation-algorithms'
 import { memoize } from '~/utils/memoize'
+import { recommendationConfig } from '~/configs/recommendation.config'
 
 export function useTrendingRecommendations(
   allResources: readonly Resource[],
@@ -19,14 +20,17 @@ export function useTrendingRecommendations(
     const resources = context?.allResources ?? allResources
     const configValue = context?.config ?? config
 
+    // Flexy loves modularity! Using configurable days from recommendationConfig
     const now = new Date()
-    const thirtyDaysAgo = new Date()
-    thirtyDaysAgo.setDate(now.getDate() - 30)
+    const trendingDaysAgo = new Date()
+    trendingDaysAgo.setDate(
+      now.getDate() - recommendationConfig.analyticsTrends.days
+    )
 
     const trending = resources
       .filter(resource => {
         const addedDate = new Date(resource.dateAdded)
-        return addedDate >= thirtyDaysAgo && resource.popularity > 5
+        return addedDate >= trendingDaysAgo && resource.popularity > 5
       })
       .map(resource => ({
         resource,
