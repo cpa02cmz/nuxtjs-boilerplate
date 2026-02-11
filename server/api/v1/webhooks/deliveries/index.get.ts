@@ -4,9 +4,13 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 export default defineEventHandler(async event => {
   try {
+    // Apply rate limiting: 30 requests per minute for delivery listing
+    await rateLimit(event)
+
     const query = getQuery(event)
     const webhookId = query.webhookId as string | undefined
     const status = query.status as string | undefined
