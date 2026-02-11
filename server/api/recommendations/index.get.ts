@@ -82,9 +82,9 @@ export default defineEventHandler(async event => {
 
       // Generate search trends - Flexy hates hardcoded values! Using config instead.
       const searchTrends = []
-      const trendsDays = 30 // Number of days for trends
-      const minCount = 10 // Minimum random count
-      const maxCount = 50 // Maximum random count
+      const trendsDays = recommendationConfig.analyticsTrends.days
+      const minCount = recommendationConfig.analyticsTrends.minRandomCount
+      const maxCount = recommendationConfig.analyticsTrends.maxRandomCount
       for (let i = trendsDays - 1; i >= 0; i--) {
         const date = new Date()
         date.setDate(date.getDate() - i)

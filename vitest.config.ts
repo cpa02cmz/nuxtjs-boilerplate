@@ -20,13 +20,15 @@ const baseConfig: UserConfig = {
   },
 }
 
+import { testTimingConfig } from './configs/test-timing.config'
+
 // Default profile configuration
 const defaultConfig: UserConfig = {
   ...baseConfig,
   test: {
     globals: true,
     environment: 'jsdom',
-    testTimeout: 10000,
+    testTimeout: testTimingConfig.timeout.default,
     setupFiles: ['./test-setup.ts'],
     fileParallelism: false,
     pool: 'forks',
@@ -98,7 +100,7 @@ const integrationConfig: UserConfig = {
   test: {
     globals: true,
     environment: 'vitest-environment-nuxt',
-    testTimeout: 10000,
+    testTimeout: testTimingConfig.timeout.default,
     setupFiles: ['./test-setup.ts'],
     include: ['**/*.integration.test.ts', '**/__tests__/*integration*.test.ts'],
   },
@@ -110,7 +112,7 @@ const performanceConfig: UserConfig = {
   test: {
     globals: true,
     environment: 'jsdom',
-    testTimeout: 60000,
+    testTimeout: testTimingConfig.timeout.performance,
     setupFiles: ['./test-setup.ts'],
     fileParallelism: false,
     pool: 'forks',
