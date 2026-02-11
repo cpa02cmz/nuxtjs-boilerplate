@@ -125,6 +125,7 @@
 import { ref, computed } from 'vue'
 import { TOAST_DURATION, UI_TIMING } from '~/server/utils/constants'
 import { uiConfig } from '~/configs/ui.config'
+import { generateId } from '~/utils/generateId'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -151,7 +152,8 @@ const toastPosition = {
 }
 
 const addToast = (toast: Omit<Toast, 'id'>) => {
-  const id = Math.random().toString(36).substring(2, 9)
+  // Flexy hates hardcoded ID generation! Use centralized utility
+  const id = generateId({ prefix: 'toast' })
   const newToast = { id, ...toast }
   toasts.value.push(newToast)
 

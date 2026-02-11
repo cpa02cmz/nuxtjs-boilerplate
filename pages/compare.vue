@@ -36,6 +36,7 @@ import ComparisonBuilder from '~/components/ComparisonBuilder.vue'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
+import { ROUTE_PATTERNS } from '~/configs/routes.config'
 
 // Use the comparison composable
 const { selectedResources, removeResource, clearComparison } =
@@ -73,7 +74,7 @@ useSeoMeta({
   ogDescription:
     'Compare multiple resources side-by-side to make informed decisions',
   ogType: 'website',
-  ogUrl: '/compare',
+  ogUrl: ROUTE_PATTERNS.pages.compare,
 })
 
 // Methods
@@ -99,7 +100,7 @@ const shareComparison = () => {
 }
 
 const browseResources = () => {
-  // Navigate to search page
-  navigateTo('/search')
+  // Navigate to search page - Flexy hates hardcoded routes!
+  navigateTo(ROUTE_PATTERNS.pages.search)
 }
 </script>

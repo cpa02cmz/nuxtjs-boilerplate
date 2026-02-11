@@ -2,6 +2,12 @@
 // Flexy hates hardcoded values! All UI settings are now configurable.
 
 export const uiConfig = {
+  // Tooltip Settings - Flexy hates hardcoded viewport padding!
+  tooltip: {
+    // Viewport padding to prevent tooltips from being cut off (px)
+    viewportPadding: parseInt(process.env.TOOLTIP_VIEWPORT_PADDING || '8'),
+  },
+
   // Toast/Notification Settings
   toast: {
     // Display durations (ms)
