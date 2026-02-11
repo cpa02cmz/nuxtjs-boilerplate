@@ -4,25 +4,43 @@ import logger from '~/utils/logger'
 import { TIMING } from '~/server/utils/constants'
 import { uiConfig } from '~/configs/ui.config'
 import type { Resource } from '~/types/resource'
+import { useLoading } from './useLoading'
 
 // Main composable for managing resource data
 export const useResourceData = () => {
   const resources = ref<Resource[]>([])
-  const loading = ref(true)
-  const error = ref<string | null>(null)
+  const { loadingState, withLoading } = useLoading()
   const retryCount = ref(0)
   const maxRetries = uiConfig.dataLoading.maxRetries // Flexy hates hardcoded 3! Using config now
   const lastError = ref<Error | null>(null)
 
+  // Computed refs for backward compatibility
+  // loadingState is already a readonly reactive object, not a ref
+  const loading = computed(() => loadingState.loading)
+  const error = computed(() => loadingState.error)
+
   // Initialize resources
   const initResources = async (attempt = 1) => {
-    try {
-      // Set loading state
-      if (attempt === 1) {
-        loading.value = true
-      }
-      error.value = null
+    // Use withLoading for the first attempt to show loading state
+    if (attempt === 1) {
+      return withLoading(
+        async () => {
+          await fetchResources(attempt)
+          return resources.value
+        },
+        {
+          errorMessage: 'Failed to load resources',
+        }
+      )
+    } else {
+      // For retry attempts, don't show loading state
+      await fetchResources(attempt)
+    }
+  }
 
+  // Internal fetch logic
+  const fetchResources = async (attempt = 1) => {
+    try {
       // Import resources from JSON
       const resourcesModule = await import('~/data/resources.json')
       const rawData = resourcesModule.default || resourcesModule
@@ -53,10 +71,8 @@ export const useResourceData = () => {
       }
 
       resources.value = validatedResources
-
-      loading.value = false
-      error.value = null
       lastError.value = null
+      retryCount.value = 0
     } catch (err) {
       // Ensure we have a proper Error object
       const errorObj = err instanceof Error ? err : new Error(String(err))
@@ -72,7 +88,6 @@ export const useResourceData = () => {
 
       // Log error using structured logger
       logger.error('Error loading resources:', err)
-      error.value = `Failed to load resources${attempt < maxRetries ? '. Retrying...' : ''}`
 
       // Retry if we haven't exceeded max retries
       if (attempt < maxRetries) {
@@ -81,17 +96,15 @@ export const useResourceData = () => {
         await new Promise(resolve =>
           setTimeout(resolve, TIMING.RETRY_BASE_DELAY_MS * attempt)
         )
-        await initResources(attempt + 1)
+        await fetchResources(attempt + 1)
       } else {
-        loading.value = false
+        throw errorObj
       }
     }
   }
 
   // Retry loading resources
   const retryResources = async () => {
-    loading.value = true
-    error.value = null
     retryCount.value = 0
     lastError.value = null
     await initResources()
