@@ -16,6 +16,39 @@ export const apiConfig = {
     analytics: '/api/analytics',
   },
 
+  // Contact Information - Flexy hates hardcoded contact info!
+  contact: {
+    name: process.env.API_CONTACT_NAME || 'API Support',
+    email: process.env.API_CONTACT_EMAIL || 'support@example.com',
+    url:
+      process.env.API_CONTACT_URL ||
+      'https://github.com/cpa02cmz/nuxtjs-boilerplate',
+  },
+
+  // License Information - Flexy hates hardcoded license URLs!
+  license: {
+    name: process.env.API_LICENSE_NAME || 'MIT',
+    url: process.env.API_LICENSE_URL || 'https://opensource.org/licenses/MIT',
+  },
+
+  // Documentation Examples - Flexy hates hardcoded examples!
+  docs: {
+    examples: {
+      baseUrl: process.env.API_DOCS_EXAMPLE_URL || 'https://example.com',
+      webhookUrl:
+        process.env.API_DOCS_EXAMPLE_WEBHOOK || 'https://example.com/webhook',
+      sitemapXml:
+        process.env.API_DOCS_EXAMPLE_SITEMAP ||
+        `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://example.com/resource/1</loc>
+    <lastmod>2024-01-01</lastmod>
+  </url>
+</urlset>`,
+    },
+  },
+
   // Auth endpoints
   auth: {
     apiKeys: '/api/v1/auth/api-keys',

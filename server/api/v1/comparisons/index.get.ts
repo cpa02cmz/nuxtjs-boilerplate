@@ -12,6 +12,7 @@ import {
 import { defineEventHandler, getQuery } from 'h3'
 import { randomUUID } from 'node:crypto'
 import { cacheConfig } from '~/configs/cache.config'
+import { contentConfig } from '~/configs/content.config'
 
 export default defineEventHandler(async event => {
   try {
@@ -50,7 +51,7 @@ export default defineEventHandler(async event => {
     }
 
     // Import resources from JSON
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Fetch requested resources

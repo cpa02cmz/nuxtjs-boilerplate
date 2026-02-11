@@ -9,6 +9,7 @@ import {
 } from '../../utils/sitemap'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { handleApiRouteError } from '~/server/utils/api-response'
+import { contentConfig } from '~/configs/content.config'
 
 const API_ENDPOINTS = [
   { url: '/api/v1/resources', priority: '0.9', changefreq: 'daily' },
@@ -22,7 +23,7 @@ const API_ENDPOINTS = [
 export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
     const baseUrl = getBaseUrlFromConfig()

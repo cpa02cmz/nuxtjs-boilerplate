@@ -8,6 +8,7 @@ import {
 } from '~/server/utils/api-response'
 import { generateCacheTags, cacheTagsConfig } from '~/configs/cache-tags.config'
 import { timeConfig, toSeconds } from '~/configs/time.config'
+import { contentConfig } from '~/configs/content.config'
 
 /**
  * GET /api/v1/categories
@@ -27,7 +28,7 @@ export default defineEventHandler(async event => {
     }
 
     // Import resources from JSON
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Get unique categories with counts

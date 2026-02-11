@@ -2,6 +2,9 @@ import { PrismaClient } from '@prisma/client'
 import { PrismaBetterSQLite3 as PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 import { databaseConfig } from '~/configs/database.config'
 
+// Flexy hates hardcoded values! Using config for log prefix
+const LOG_PREFIX = databaseConfig.logging.prefix
+
 declare global {
   var __dbPrisma: PrismaClient | undefined
 }
@@ -45,14 +48,14 @@ function createPrismaClient(): PrismaClient {
     try {
       const client = new PrismaClient({
         adapter: new PrismaBetterSqlite3({
-          url: process.env.DATABASE_URL || 'file:./data/dev.db',
+          url: databaseConfig.paths.defaultDb,
           timeout: dbConfig.timeout,
         }),
       })
 
       // Log successful connection
       if (process.env.NODE_ENV !== 'test') {
-        console.log('[Database] Prisma client initialized successfully')
+        console.log(`${LOG_PREFIX} Prisma client initialized successfully`)
       }
 
       return client
@@ -61,7 +64,7 @@ function createPrismaClient(): PrismaClient {
 
       if (retries < MAX_RETRIES) {
         console.warn(
-          `[Database] Connection attempt ${retries} failed, retrying...`,
+          `${LOG_PREFIX} Connection attempt ${retries} failed, retrying...`,
           error instanceof Error ? error.message : 'Unknown error'
         )
 
@@ -70,7 +73,7 @@ function createPrismaClient(): PrismaClient {
       }
 
       console.error(
-        '[Database] Failed to initialize Prisma client after retries:',
+        `${LOG_PREFIX} Failed to initialize Prisma client after retries:`,
         error
       )
       throw error
@@ -112,7 +115,7 @@ export async function checkDatabaseHealth(): Promise<boolean> {
     await prisma.$queryRaw`SELECT 1`
     return true
   } catch (error) {
-    console.error('[Database] Health check failed:', error)
+    console.error(`${LOG_PREFIX} Health check failed:`, error)
     return false
   }
 }
@@ -124,9 +127,9 @@ export async function checkDatabaseHealth(): Promise<boolean> {
 export async function disconnectDatabase(): Promise<void> {
   try {
     await prisma.$disconnect()
-    console.log('[Database] Prisma client disconnected successfully')
+    console.log(`${LOG_PREFIX} Prisma client disconnected successfully`)
   } catch (error) {
-    console.error('[Database] Error disconnecting Prisma client:', error)
+    console.error(`${LOG_PREFIX} Error disconnecting Prisma client:`, error)
   }
 }
 

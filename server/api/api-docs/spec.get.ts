@@ -1,6 +1,8 @@
 import { defineEventHandler } from 'h3'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
+import { apiConfig } from '~/configs/api.config'
+import { webhooksConfig } from '~/configs/webhooks.config'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
@@ -21,13 +23,13 @@ export default defineEventHandler(async event => {
         'and standardized error responses.',
       version: '1.0.0',
       contact: {
-        name: 'API Support',
-        url: 'https://github.com/cpa02cmz/nuxtjs-boilerplate',
-        email: 'support@example.com',
+        name: apiConfig.contact.name,
+        url: apiConfig.contact.url,
+        email: apiConfig.contact.email,
       },
       license: {
-        name: 'MIT',
-        url: 'https://opensource.org/licenses/MIT',
+        name: apiConfig.license.name,
+        url: apiConfig.license.url,
       },
     },
     servers: [
@@ -792,7 +794,7 @@ export default defineEventHandler(async event => {
                             properties: {
                               url: {
                                 type: 'string',
-                                example: 'https://example.com',
+                                example: apiConfig.docs.examples.baseUrl,
                               },
                               status: {
                                 type: 'string',
@@ -3673,8 +3675,7 @@ export default defineEventHandler(async event => {
                   'application/xml': {
                     schema: {
                       type: 'string',
-                      example:
-                        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>https://example.com</loc>\n    <priority>1.0</priority>\n  </url>\n</urlset>',
+                      example: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${apiConfig.docs.examples.baseUrl}</loc>\n    <priority>1.0</priority>\n  </url>\n</urlset>`,
                     },
                   },
                 },
@@ -4039,7 +4040,7 @@ export default defineEventHandler(async event => {
               url: {
                 type: 'string',
                 format: 'uri',
-                example: 'https://example.com',
+                example: apiConfig.docs.examples.baseUrl,
               },
               category: { type: 'string', example: 'Hosting' },
               pricingModel: {
@@ -4126,7 +4127,7 @@ export default defineEventHandler(async event => {
               url: {
                 type: 'string',
                 format: 'uri',
-                example: 'https://example.com',
+                example: apiConfig.docs.examples.baseUrl,
               },
               category: { type: 'string', example: 'Tools' },
               tags: {
@@ -4183,7 +4184,7 @@ export default defineEventHandler(async event => {
               url: {
                 type: 'string',
                 format: 'uri',
-                example: 'https://example.com/webhook',
+                example: webhooksConfig.placeholders.url,
               },
               events: {
                 type: 'array',

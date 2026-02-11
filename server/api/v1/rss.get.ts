@@ -15,7 +15,7 @@ export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
     // Import resources from JSON
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     let resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Sort by date added (newest first) and limit to 50 for RSS

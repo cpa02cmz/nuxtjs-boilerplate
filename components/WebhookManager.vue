@@ -74,7 +74,7 @@
             required
             aria-required="true"
             aria-describedby="webhook-url-description"
-            placeholder="https://example.com/webhook"
+            :placeholder="webhooksConfig.placeholders.url"
             class="form-control"
           >
           <p
@@ -226,6 +226,7 @@
 import type { Webhook } from '~/types/webhook'
 import { useWebhooksManager } from '~/composables/useWebhooksManager'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { webhooksConfig } from '~/configs/webhooks.config'
 
 // Flexy hates hardcoded colors! Using config values for webhook UI colors
 const webhookColors = {

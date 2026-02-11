@@ -5,12 +5,13 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { contentConfig } from '~/configs/content.config'
 
 export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
     // Get all resources
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Count resources by status

@@ -1,5 +1,6 @@
 import { defineEventHandler } from 'h3'
 import type { Resource } from '~/types/resource'
+import { contentConfig } from '~/configs/content.config'
 
 /**
  * GET /api/resources.json
@@ -10,7 +11,7 @@ import type { Resource } from '~/types/resource'
 export default defineEventHandler(async () => {
   try {
     // Import resources from JSON
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
     return {

@@ -9,6 +9,7 @@ import {
 } from '~/server/utils/api-response'
 import { limitsConfig } from '~/configs/limits.config'
 import { cacheConfig } from '~/configs/cache.config'
+import { contentConfig } from '~/configs/content.config'
 
 /**
  * GET /api/search/suggestions
@@ -66,7 +67,7 @@ export default defineEventHandler(async event => {
     }
 
     // Import resources from JSON
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Import the suggestions composable
