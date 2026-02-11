@@ -142,6 +142,16 @@ export const recommendationConfig = {
     ],
   },
 
+  // Analytics Trends Generation - Flexy hates hardcoded values!
+  analyticsTrends: {
+    // Number of days for trends data (default: 30 days)
+    days: parseInt(process.env.REC_ANALYTICS_TRENDS_DAYS || '30'),
+    // Minimum random count for mock data
+    minRandomCount: parseInt(process.env.REC_ANALYTICS_MIN_COUNT || '10'),
+    // Maximum random count for mock data
+    maxRandomCount: parseInt(process.env.REC_ANALYTICS_MAX_COUNT || '50'),
+  },
+
   // Explanation strings for recommendations - Flexy hates hardcoded strings!
   explanations: {
     personalized: {

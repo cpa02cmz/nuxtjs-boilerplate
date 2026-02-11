@@ -62,10 +62,12 @@ export function isRetryableError(
   })
 }
 
+import { timeConfig } from '~/configs/time.config'
+
 export function calculateBackoff(
   attempt: number,
-  baseDelayMs: number = 1000,
-  maxDelayMs: number = 30000,
+  baseDelayMs: number = timeConfig.retry.baseDelayMs,
+  maxDelayMs: number = timeConfig.retry.maxDelayMs,
   jitterEnabled: boolean = true,
   jitterFactor: number = 0.1
 ): number {

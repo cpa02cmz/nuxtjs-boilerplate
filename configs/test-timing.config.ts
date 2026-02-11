@@ -18,6 +18,9 @@ export const testTimingConfig = {
 
     // Default test timeout from Vitest config
     default: parseInt(process.env.TEST_TIMEOUT_DEFAULT_MS || '10000'),
+
+    // Performance test timeout (ms) - for performance benchmarks
+    performance: parseInt(process.env.TEST_TIMEOUT_PERFORMANCE_MS || '60000'),
   },
 
   // Animation/wait timing for component tests
