@@ -152,6 +152,7 @@
         :visible="showSuggestions"
         :focused-index="activeIndex"
         :has-query="!!props.modelValue"
+        :is-loading="isSearching"
         @select-suggestion="handleSuggestionSelect"
         @select-history="handleHistorySelect"
         @clear-history="handleClearHistory"
