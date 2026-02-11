@@ -32,6 +32,7 @@
 
 <script setup lang="ts">
 import { ref, useTemplateRef } from 'vue'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   src: string
@@ -81,7 +82,8 @@ const handleLoad = () => {
   inset: 0;
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: shimmer v-bind('animationConfig.skeleton.imageShimmerDurationSec')
+    infinite;
 }
 
 /* Dark mode support for skeleton placeholder */
@@ -100,7 +102,8 @@ const handleLoad = () => {
 
 .optimized-image {
   opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity v-bind('animationConfig.skeleton.imageFadeInDurationSec')
+    ease-in-out;
 }
 
 .optimized-image.is-loaded {
@@ -128,7 +131,9 @@ const handleLoad = () => {
 
 @media (prefers-reduced-motion: no-preference) {
   .optimized-image-wrapper.is-loading {
-    animation: subtle-pulse 2s ease-in-out infinite;
+    animation: subtle-pulse
+      v-bind('animationConfig.skeleton.subtlePulseDurationSec') ease-in-out
+      infinite;
   }
 
   @keyframes subtle-pulse {
