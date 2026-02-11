@@ -77,6 +77,8 @@ export const animationConfig = {
   // Copy Success Animation
   copySuccess: {
     resetDelayMs: parseInt(process.env.COPY_SUCCESS_RESET_MS || '2000'),
+    // Duration for the copied tooltip to remain visible (ms)
+    tooltipDurationMs: parseInt(process.env.COPY_SUCCESS_TOOLTIP_MS || '1500'),
   },
 
   // Copy Error Animation - UX feedback when clipboard fails

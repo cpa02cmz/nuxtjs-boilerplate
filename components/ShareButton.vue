@@ -1,5 +1,44 @@
 <template>
   <div class="relative">
+    <!-- Copied tooltip - appears at click position -->
+    <Transition
+      enter-active-class="transition-all duration-200 ease-out"
+      enter-from-class="opacity-0 scale-75 translate-y-2"
+      enter-to-class="opacity-100 scale-100 translate-y-0"
+      leave-active-class="transition-all duration-150 ease-in"
+      leave-from-class="opacity-100 scale-100 translate-y-0"
+      leave-to-class="opacity-0 scale-75 -translate-y-1"
+    >
+      <div
+        v-if="showCopiedTooltip"
+        class="copied-tooltip fixed z-50 px-3 py-1.5 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-lg pointer-events-none whitespace-nowrap"
+        :style="copiedTooltipStyle"
+        role="status"
+        aria-live="polite"
+      >
+        <span class="flex items-center gap-1.5">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          Copied!
+        </span>
+        <!-- Arrow pointing down -->
+        <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5">
+          <div class="w-2 h-2 bg-gray-900 transform rotate-45" />
+        </div>
+      </div>
+    </Transition>
+
     <!-- Share button -->
     <button
       ref="shareButtonRef"
@@ -163,7 +202,7 @@
             :aria-label="
               copySuccess ? 'Link copied!' : 'Copy link to clipboard'
             "
-            @click="copyToClipboard"
+            @click="copyToClipboard($event)"
             @keydown="handleMenuKeydown"
           >
             <svg
@@ -228,6 +267,18 @@ const shareMenuRef = ref<HTMLElement | null>(null)
 const copyButtonRef = ref<HTMLElement | null>(null)
 const copySuccess = ref(false)
 let copySuccessTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Copied tooltip state for micro-UX feedback
+const showCopiedTooltip = ref(false)
+const copiedTooltipPosition = ref({ x: 0, y: 0 })
+let copiedTooltipTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Computed style for the copied tooltip position
+const copiedTooltipStyle = computed(() => ({
+  left: `${copiedTooltipPosition.value.x}px`,
+  top: `${copiedTooltipPosition.value.y - 40}px`, // Position above the click
+  transform: 'translateX(-50%)',
+}))
 
 // Calculate position class based on available space
 const positionClass = computed(() => {
@@ -346,7 +397,13 @@ const showToast = (
 }
 
 // Copy URL to clipboard
-const copyToClipboard = async () => {
+const copyToClipboard = async (event: MouseEvent) => {
+  // Store click position for tooltip
+  copiedTooltipPosition.value = {
+    x: event.clientX,
+    y: event.clientY,
+  }
+
   try {
     await navigator.clipboard.writeText(props.url)
     showCopySuccess()
@@ -398,6 +455,19 @@ const showCopySuccess = async () => {
   // Haptic feedback for successful copy
   hapticSuccess()
 
+  // Show the copied tooltip at cursor position for immediate feedback
+  showCopiedTooltip.value = true
+
+  // Clear any existing tooltip timeout
+  if (copiedTooltipTimeout) {
+    clearTimeout(copiedTooltipTimeout)
+  }
+
+  // Hide tooltip after animation
+  copiedTooltipTimeout = setTimeout(() => {
+    showCopiedTooltip.value = false
+  }, animationConfig.copySuccess.tooltipDurationMs || 1500)
+
   // Close the menu immediately to show button feedback
   showShareMenu.value = false
 
@@ -418,6 +488,9 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+  if (copiedTooltipTimeout) {
+    clearTimeout(copiedTooltipTimeout)
+  }
 })
 </script>
 
@@ -435,7 +508,15 @@ onUnmounted(() => {
   }
 }
 
-/* Respect reduced motion preferences */
+/* Copied tooltip styles - Palette's micro-UX enhancement */
+.copied-tooltip {
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Reduced motion support for copied tooltip */
 @media (prefers-reduced-motion: reduce) {
   .checkmark-path {
     animation: none;
@@ -444,6 +525,11 @@ onUnmounted(() => {
   .transition-transform {
     transition: none !important;
     animation: none !important;
+  }
+
+  .copied-tooltip {
+    transition: opacity 0.15s ease-out !important;
+    transform: translateX(-50%) !important;
   }
 }
 </style>
