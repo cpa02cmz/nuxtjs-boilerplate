@@ -2,10 +2,7 @@
   <ClientErrorBoundary component-name="SubmitPage">
     <div class="py-12">
       <!-- Confetti celebration for successful submission -->
-      <ConfettiCelebration
-        ref="confettiRef"
-        intensity="medium"
-      />
+      <ConfettiCelebration ref="confettiRef" intensity="medium" />
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
           <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
@@ -52,7 +49,7 @@
                   placeholder="e.g., OpenAI API"
                   @focus="isTitleFocused = true"
                   @blur="handleTitleBlur"
-                >
+                />
                 <div
                   id="title-counter"
                   class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium tabular-nums transition-all duration-200"
@@ -62,10 +59,7 @@
                   {{ formData.title.length }}/{{ maxTitleLength }}
                 </div>
               </div>
-              <p
-                id="title-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              <p id="title-description" class="mt-1 text-sm text-gray-500">
                 The name of the resource or service
               </p>
               <!-- Character limit progress bar for visual feedback -->
@@ -190,11 +184,8 @@
                 ]"
                 :placeholder="contentConfig.placeholders.defaultUrl"
                 @blur="handleUrlBlur"
-              >
-              <p
-                id="url-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              />
+              <p id="url-description" class="mt-1 text-sm text-gray-500">
                 The official website or page for this resource
               </p>
               <div
@@ -232,12 +223,7 @@
                 ]"
                 @blur="handleCategoryBlur"
               >
-                <option
-                  value=""
-                  disabled
-                >
-                  Select a category
-                </option>
+                <option value="" disabled>Select a category</option>
                 <option
                   v-for="category in categoryOptions"
                   :key="category.value"
@@ -246,10 +232,7 @@
                   {{ category.label }}
                 </option>
               </select>
-              <p
-                id="category-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              <p id="category-description" class="mt-1 text-sm text-gray-500">
                 Choose the most appropriate category for this resource
               </p>
               <div
@@ -276,17 +259,56 @@
                 aria-describedby="tags-description"
                 class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
                 placeholder="Enter tags separated by commas"
-              >
-              <p
-                id="tags-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              />
+              <p id="tags-description" class="mt-1 text-sm text-gray-500">
                 Add relevant tags to help categorize this resource (e.g., "api,
                 free-tier, openai")
               </p>
             </div>
 
             <div class="pt-4">
+              <!-- Draft save indicator -->
+              <div
+                class="flex items-center justify-center mb-3 min-h-[20px]"
+                aria-live="polite"
+              >
+                <Transition
+                  enter-active-class="transition-all duration-300 ease-out"
+                  enter-from-class="opacity-0 transform -translate-y-1"
+                  enter-to-class="opacity-100 transform translate-y-0"
+                  leave-active-class="transition-all duration-300 ease-in"
+                  leave-from-class="opacity-100 transform translate-y-0"
+                  leave-to-class="opacity-0 transform -translate-y-1"
+                >
+                  <div
+                    v-if="showSavedIndicator && lastSavedTimestamp"
+                    class="flex items-center text-xs text-green-600"
+                  >
+                    <svg
+                      class="w-3.5 h-3.5 mr-1.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    <span>Draft saved {{ lastSavedText }}</span>
+                  </div>
+                  <div
+                    v-else-if="hasFormContent() && !submitSuccess"
+                    class="text-xs text-gray-400"
+                  >
+                    Auto-saving enabled
+                  </div>
+                </Transition>
+              </div>
+
               <button
                 type="submit"
                 :disabled="isSubmitting"
@@ -295,10 +317,7 @@
                 class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 <span v-if="!isSubmitting">Submit Resource</span>
-                <span
-                  v-else
-                  class="flex items-center"
-                >
+                <span v-else class="flex items-center">
                   <svg
                     class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
@@ -403,7 +422,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onUnmounted } from 'vue'
 import { useNuxtApp } from '#app'
 import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
@@ -452,6 +471,29 @@ const {
 
 // Track which fields should shake when validation fails
 const shakeFields = ref<Record<string, boolean>>({})
+
+// Draft save indicator state
+const lastSavedTimestamp = ref<number | null>(null)
+const showSavedIndicator = ref(false)
+const savedIndicatorTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+
+// Format relative time for saved indicator
+const lastSavedText = computed(() => {
+  if (!lastSavedTimestamp.value) return ''
+
+  const now = Date.now()
+  const diff = now - lastSavedTimestamp.value
+
+  if (diff < TIME_MS.MINUTE) {
+    return 'just now'
+  } else if (diff < TIME_MS.HOUR) {
+    const minutes = Math.floor(diff / TIME_MS.MINUTE)
+    return `${minutes}m ago`
+  } else {
+    const hours = Math.floor(diff / TIME_MS.HOUR)
+    return `${hours}h ago`
+  }
+})
 
 // Field blur handlers for inline validation
 const handleTitleBlur = () => {
@@ -588,8 +630,23 @@ const descriptionCounterClass = computed(() => {
 const saveDraft = debounce(() => {
   if (hasFormContent()) {
     const draftData = getFormData()
+    const now = Date.now()
     localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftData))
-    localStorage.setItem(DRAFT_TIMESTAMP_KEY, Date.now().toString())
+    localStorage.setItem(DRAFT_TIMESTAMP_KEY, now.toString())
+
+    // Update save indicator
+    lastSavedTimestamp.value = now
+    showSavedIndicator.value = true
+
+    // Clear previous timeout if exists
+    if (savedIndicatorTimeout.value) {
+      clearTimeout(savedIndicatorTimeout.value)
+    }
+
+    // Hide indicator after 3 seconds
+    savedIndicatorTimeout.value = setTimeout(() => {
+      showSavedIndicator.value = false
+    }, 3000)
   }
 }, timeConfig.debounce.draft)
 
@@ -685,6 +742,13 @@ onMounted(() => {
         return ''
       }
     })
+  }
+})
+
+// Cleanup timeout on unmount
+onUnmounted(() => {
+  if (savedIndicatorTimeout.value) {
+    clearTimeout(savedIndicatorTimeout.value)
   }
 })
 
