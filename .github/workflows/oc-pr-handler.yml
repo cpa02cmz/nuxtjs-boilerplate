@@ -12,9 +12,9 @@ permissions:
   issues: write
   actions: write
 
-# global lock: only 1 instance of this workflow running across events
+# workflow-specific lock: only 1 instance of this workflow running
 concurrency:
-  group: global-workflow-lock
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -28,11 +28,11 @@ jobs:
       pull-requests: write
       issues: write
       actions: write
-    
+
     env:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      GH_TOKEN: ${{ github.token }}
       IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,14 +40,23 @@ jobs:
           fetch-depth: 0
           token: ${{ env.GH_TOKEN }}
           ref: main
-      
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Install OpenCode CLI (cached if already installed)
         run: |
           if ! command -v opencode >/dev/null 2>&1; then
             curl -fsSL https://opencode.ai/install | bash
           fi
           echo "$HOME/.opencode/bin" >> "$GITHUB_PATH"
-      
+
       - name: Run PR Handler
         id: run_pr_handler
         timeout-minutes: 20
@@ -277,35 +286,35 @@ jobs:
             ========================================
             Execute AFTER all PR handling tasks complete:
 
-            1. SYNC AGENT BRANCH
-            ----------------------------------------
-            Commands:
-              git fetch origin
-              git pull origin main --no-edit
-              git pull origin agent || true
-            Conflict Resolution:
-              - If conflicts: git add <conflicted-files> && git commit -m "pr-handler: resolve merge conflicts"
+             1. SYNC AGENT BRANCH
+             ----------------------------------------
+             Commands:
+               git fetch origin
+               git pull origin main --no-edit
+               git pull origin agent-pr-handler || true
+             Conflict Resolution:
+               - If conflicts: git add <conflicted-files> && git commit -m "pr-handler: resolve merge conflicts"
 
-            2. COMMIT LOCAL CHANGES
-            ----------------------------------------
-            Commands:
-              git add .
-              git commit -m "pr-handler: updates from automated handling" || echo "No changes to commit"
+             2. COMMIT LOCAL CHANGES
+             ----------------------------------------
+             Commands:
+               git add .
+               git commit -m "pr-handler: updates from automated handling" || echo "No changes to commit"
 
-            3. PUSH TO REMOTE
-            ----------------------------------------
-            Command:
-              git push origin agent
+             3. PUSH TO REMOTE
+             ----------------------------------------
+             Command:
+               git push origin agent-pr-handler
 
-            4. CREATE/UPDATE PULL REQUEST
-            ----------------------------------------
-            Check:
-              gh pr list --head agent --json number
-            If NO PR exists:
-              gh pr create --title "PR Handler Updates" --body "Automated updates from PR handler workflow" --head agent --base main
-            If PR exists:
-              gh pr edit <PR_NUMBER> --title "PR Handler Updates"
-              gh pr comment <PR_NUMBER> --body "Updated by automated PR handler"
+             4. CREATE/UPDATE PULL REQUEST
+             ----------------------------------------
+             Check:
+               gh pr list --head agent-pr-handler --json number
+             If NO PR exists:
+               gh pr create --title "PR Handler Updates" --body "Automated updates from PR handler workflow" --head agent-pr-handler --base main
+             If PR exists:
+               gh pr edit <PR_NUMBER> --title "PR Handler Updates"
+               gh pr comment <PR_NUMBER> --body "Updated by automated PR handler"
 
             5. VERIFICATION
             ----------------------------------------
