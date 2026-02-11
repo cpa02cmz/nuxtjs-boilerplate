@@ -73,7 +73,14 @@
 
           <!-- Filters Sidebar -->
           <div class="lg:w-1/4">
+            <!-- Filter Skeleton Loading State -->
+            <FilterSidebarSkeleton
+              v-if="loading"
+              aria-label="Loading filter options"
+            />
+
             <LazyResourceFilters
+              v-else
               :categories="[...categories]"
               :pricing-models="[...pricingModels]"
               :difficulty-levels="[...difficultyLevels]"
