@@ -1,8 +1,12 @@
 import { defineEventHandler, getQuery } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import { sendSuccessResponse } from '~/server/utils/api-response'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 export default defineEventHandler(async event => {
+  // Apply rate limiting: 30 requests per minute for webhook listing
+  await rateLimit(event)
+
   // Get query parameters for filtering
   const query = getQuery(event)
   const active = query.active as string | undefined
