@@ -1,28 +1,30 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Confetti celebration when reaching max comparison limit -->
-    <ConfettiCelebration
-      ref="confettiRef"
-      intensity="heavy"
-    />
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-        Resource Comparison
-      </h1>
-      <p class="mt-2 text-gray-600 dark:text-gray-400">
-        Compare resources side-by-side to make informed decisions
-      </p>
-    </div>
+  <ErrorBoundary component-name="ComparePage">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Confetti celebration when reaching max comparison limit -->
+      <ConfettiCelebration
+        ref="confettiRef"
+        intensity="heavy"
+      />
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+          Resource Comparison
+        </h1>
+        <p class="mt-2 text-gray-600 dark:text-gray-400">
+          Compare resources side-by-side to make informed decisions
+        </p>
+      </div>
 
-    <ComparisonBuilder
-      :selected-resources="selectedResources"
-      :max-resources="maxResources"
-      @remove-resource="removeResource"
-      @clear-comparison="clearComparison"
-      @share-comparison="shareComparison"
-      @browse-resources="browseResources"
-    />
-  </div>
+      <ComparisonBuilder
+        :selected-resources="selectedResources"
+        :max-resources="maxResources"
+        @remove-resource="removeResource"
+        @clear-comparison="clearComparison"
+        @share-comparison="shareComparison"
+        @browse-resources="browseResources"
+      />
+    </div>
+  </ErrorBoundary>
 </template>
 
 <script setup lang="ts">

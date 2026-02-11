@@ -209,6 +209,8 @@ export default defineNuxtConfig({
   },
 
   // Image optimization configuration
+  // Note: provider is omitted as @nuxt/image defaults to 'ipx' internally.
+  // Setting it explicitly causes a duplicate key warning during build.
   image: {
     quality: securityConfig.image.quality,
     format: securityConfig.image.formats as (
