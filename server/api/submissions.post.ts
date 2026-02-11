@@ -9,6 +9,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { createSubmissionSchema } from '~/server/utils/validation-schemas'
+import { SUBMISSION_STATUS } from '~/configs/status.config'
 
 export default defineEventHandler(async event => {
   try {
@@ -48,7 +49,7 @@ export default defineEventHandler(async event => {
         technology: validatedData.technology,
         benefits: validatedData.benefits,
       },
-      status: 'pending',
+      status: SUBMISSION_STATUS.PENDING,
       submittedAt: new Date().toISOString(),
       submittedBy: 'anonymous',
     }

@@ -82,7 +82,7 @@ export interface Flag {
   reason: string
   userId: string
   reportedAt: string
-  status: 'pending' | 'resolved' | 'dismissed' | 'reviewed'
+  status: import('~/configs/status.config').ModerationStatus
   details?: string
   flaggedBy?: string
   moderator?: string

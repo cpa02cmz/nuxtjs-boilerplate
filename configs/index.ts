@@ -115,6 +115,26 @@ import {
 import { userConfig, type UserConfig } from './user.config'
 import { moderationConfig, type ModerationConfig } from './moderation.config'
 import { permissionsConfig, type PermissionsConfig } from './permissions.config'
+
+// Status constants - Flexy hates hardcoded status strings!
+import {
+  RESOURCE_STATUS,
+  COMMENT_STATUS,
+  MODERATION_STATUS,
+  SUBMISSION_STATUS,
+  WEBHOOK_STATUS,
+  USER_STATUS,
+  API_KEY_STATUS,
+  VALIDATION_STATUS,
+  type ResourceStatus,
+  type CommentStatus,
+  type ModerationStatus,
+  type SubmissionStatus,
+  type WebhookStatus,
+  type UserStatus,
+  type ApiKeyStatus,
+  type ValidationStatus,
+} from './status.config'
 import {
   componentColorsConfig,
   type ComponentColorsConfig,
@@ -242,6 +262,26 @@ export { userConfig, type UserConfig }
 export { moderationConfig, type ModerationConfig }
 export { permissionsConfig, type PermissionsConfig }
 export { componentColorsConfig, type ComponentColorsConfig }
+
+// Re-export status constants - Flexy hates hardcoded status strings!
+export {
+  RESOURCE_STATUS,
+  COMMENT_STATUS,
+  MODERATION_STATUS,
+  SUBMISSION_STATUS,
+  WEBHOOK_STATUS,
+  USER_STATUS,
+  API_KEY_STATUS,
+  VALIDATION_STATUS,
+  type ResourceStatus,
+  type CommentStatus,
+  type ModerationStatus,
+  type SubmissionStatus,
+  type WebhookStatus,
+  type UserStatus,
+  type ApiKeyStatus,
+  type ValidationStatus,
+}
 
 // Re-export URL config - Flexy hates hardcoded URLs!
 export {

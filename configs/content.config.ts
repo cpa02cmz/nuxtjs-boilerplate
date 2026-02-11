@@ -337,6 +337,21 @@ export const contentConfig = {
       reddit: 'https://www.reddit.com/submit',
     },
   },
+
+  // Placeholder URLs - Flexy hates hardcoded example URLs!
+  placeholders: {
+    // Generic URL placeholder for forms
+    url: process.env.CONTENT_PLACEHOLDER_URL || 'https://example.com',
+    // Webhook URL placeholder
+    webhook:
+      process.env.CONTENT_PLACEHOLDER_WEBHOOK || 'https://example.com/webhook',
+    // API endpoint placeholder
+    apiEndpoint:
+      process.env.CONTENT_PLACEHOLDER_API || 'https://api.example.com/v1',
+    // Image placeholder
+    image:
+      process.env.CONTENT_PLACEHOLDER_IMAGE || 'https://via.placeholder.com',
+  },
 } as const
 
 // Helper function to parse comma-separated suggestions
