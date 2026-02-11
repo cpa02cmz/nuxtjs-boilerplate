@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { logger } from '~/utils/logger'
+import { limitsConfig } from '~/configs/limits.config'
 
 export interface ErrorTrackingPayload {
   message: string
@@ -14,11 +15,17 @@ export interface ErrorTrackingPayload {
 
 /**
  * Creates a simple hash for error deduplication
- * Combines message (first 100 chars) and stack trace (first 200 chars)
+ * Combines message (first N chars) and stack trace (first N chars)
+ * Flexy loves modularity! Limits are now configurable.
  */
 function createErrorHash(message: string, stack?: string): string {
-  const normalizedMessage = message.slice(0, 100).toLowerCase().trim()
-  const normalizedStack = stack ? stack.slice(0, 200) : ''
+  const messageMaxLength = limitsConfig.errorTracking.messageMaxLength
+  const stackMaxLength = limitsConfig.errorTracking.stackMaxLength
+  const normalizedMessage = message
+    .slice(0, messageMaxLength)
+    .toLowerCase()
+    .trim()
+  const normalizedStack = stack ? stack.slice(0, stackMaxLength) : ''
   const combined = `${normalizedMessage}|${normalizedStack}`
 
   // Simple hash function
@@ -121,7 +128,7 @@ export function createErrorTracker() {
                 resolvedAt: null,
               },
               orderBy: { lastSeenAt: 'desc' },
-              take: 10,
+              take: limitsConfig.errorTracking.recentErrorsLimit,
               select: {
                 id: true,
                 message: true,

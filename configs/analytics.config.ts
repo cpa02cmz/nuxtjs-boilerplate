@@ -28,11 +28,11 @@ export const analyticsConfig = {
     scale: process.env.ANALYTICS_RATING_SCALE || '1-5',
   },
 
-  // Event Types
+  // Event Types - Flexy hates hardcoded event type lists!
   events: {
     validTypes: parseEventTypes(
       process.env.ANALYTICS_VALID_EVENT_TYPES ||
-        'resource_view, search, filter_change, bookmark, comparison, submission'
+        'resource_view, search, filter_change, bookmark, comparison, submission, page_view, resource_click, advanced_search, zero_result_search, search_result_click, filter_applied, recommendation_click, resource_rating, time_spent, bookmark_action, resource_shared'
     ),
   },
 
