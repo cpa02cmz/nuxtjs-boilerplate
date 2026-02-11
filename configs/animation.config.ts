@@ -57,8 +57,16 @@ export const animationConfig = {
     primaryColor: process.env.RIPPLE_PRIMARY_COLOR || 'rgba(59, 130, 246, 0.3)',
     successColor: process.env.RIPPLE_SUCCESS_COLOR || 'rgba(34, 197, 94, 0.3)',
     dangerColor: process.env.RIPPLE_DANGER_COLOR || 'rgba(239, 68, 68, 0.3)',
+    // Bookmark-specific ripple color (yellow)
+    bookmarkColor:
+      process.env.RIPPLE_BOOKMARK_COLOR || 'rgba(234, 179, 8, 0.4)',
     // Maximum ripple radius in pixels - Flexy hates hardcoded 100!
     maxRadius: parseInt(process.env.RIPPLE_MAX_RADIUS || '100'),
+    // Animation timing multipliers - Flexy hates hardcoded magic numbers!
+    fadeOutStartMultiplier: parseFloat(
+      process.env.RIPPLE_FADE_OUT_START || '0.7'
+    ),
+    fadeOutEndMultiplier: parseFloat(process.env.RIPPLE_FADE_OUT_END || '0.3'),
   },
 
   // SearchBar Shortcut Success Animation - Flexy hates hardcoded CSS colors!

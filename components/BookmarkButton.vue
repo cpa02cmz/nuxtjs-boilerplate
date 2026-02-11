@@ -37,7 +37,7 @@
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
-            d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+            :d="iconsConfig.svg.bookmark"
           />
         </svg>
       </button>
@@ -61,6 +61,7 @@ import { useRipple } from '~/composables/useRipple'
 import { useNuxtApp } from '#imports'
 import { computed, ref, type Ref } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { iconsConfig } from '~/configs/icons.config'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -90,7 +91,7 @@ const buttonRef = ref<HTMLButtonElement | null>(null)
 // Initialize ripple effect for tactile feedback
 // Flexy loves modularity! Using configurable animation duration from animationConfig
 const { createRipple } = useRipple(buttonRef as Ref<HTMLButtonElement | null>, {
-  color: 'rgba(234, 179, 8, 0.4)', // Yellow ripple for bookmark
+  color: animationConfig.ripple.bookmarkColor,
   duration: animationConfig.button.feedbackDurationMs,
 })
 
