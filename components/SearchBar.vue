@@ -120,7 +120,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint with idle pulse animation -->
       <div
         v-if="!modelValue && !isFocused"
@@ -312,6 +312,13 @@ const animationConfig = {
   },
   focus: {
     pulseDurationMs: 600,
+  },
+  focusGlow: {
+    durationSec: '0.6s',
+    spreadMin: 4,
+    spreadMax: 12,
+    color: 'rgba(59, 130, 246, 0.5)',
+    secondaryColor: 'rgba(59, 130, 246, 0.3)',
   },
 }
 
