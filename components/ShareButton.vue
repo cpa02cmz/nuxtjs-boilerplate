@@ -45,7 +45,7 @@
       :aria-label="copySuccess ? 'Link copied!' : `Share ${title}`"
       :aria-expanded="showShareMenu"
       :class="[
-        'p-2 rounded-full transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500',
+        'p-2 rounded-full transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 relative overflow-hidden',
         copySuccess
           ? 'bg-green-100 text-green-600 hover:bg-green-200'
           : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
@@ -102,10 +102,7 @@
         aria-labelledby="share-menu"
         @keydown="handleMenuKeydown"
       >
-        <div
-          class="py-1"
-          role="none"
-        >
+        <div class="py-1" role="none">
           <!-- Twitter -->
           <a
             :href="twitterUrl"
@@ -193,7 +190,7 @@
           <!-- Copy Link -->
           <button
             ref="copyButtonRef"
-            class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ease-out"
+            class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ease-out relative overflow-hidden"
             :class="{
               'bg-green-50 text-green-700': copySuccess,
               'scale-[1.02]': copySuccess,
@@ -228,10 +225,7 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path
-                class="checkmark-path"
-                d="M4 10l4 4 8-8"
-              />
+              <path class="checkmark-path" d="M4 10l4 4 8-8" />
             </svg>
             {{ copySuccess ? 'Copied!' : 'Copy link' }}
           </button>
@@ -242,12 +236,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import {
+  ref,
+  computed,
+  onMounted,
+  onUnmounted,
+  nextTick,
+  watch,
+  type Ref,
+} from 'vue'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 import logger from '~/utils/logger'
 import { animationConfig } from '~/configs/animation.config'
 import { patternsConfig } from '~/configs/patterns.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
+import { useRipple } from '~/composables/useRipple'
 
 interface Props {
   title?: string
@@ -262,9 +265,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const showShareMenu = ref(false)
-const shareButtonRef = ref<HTMLElement | null>(null)
+const shareButtonRef = ref<HTMLButtonElement | null>(null)
 const shareMenuRef = ref<HTMLElement | null>(null)
-const copyButtonRef = ref<HTMLElement | null>(null)
+const copyButtonRef = ref<HTMLButtonElement | null>(null)
 const copySuccess = ref(false)
 let copySuccessTimeout: ReturnType<typeof setTimeout> | null = null
 
@@ -279,6 +282,23 @@ const copiedTooltipStyle = computed(() => ({
   top: `${copiedTooltipPosition.value.y - 40}px`, // Position above the click
   transform: 'translateX(-50%)',
 }))
+
+// Initialize ripple effects for tactile feedback - Palette's micro-UX touch!
+const { createRipple: createShareRipple } = useRipple(
+  shareButtonRef as Ref<HTMLButtonElement | null>,
+  {
+    color: 'rgba(59, 130, 246, 0.3)', // Blue ripple for share
+    duration: 500,
+  }
+)
+
+const { createRipple: createCopyRipple } = useRipple(
+  copyButtonRef as Ref<HTMLButtonElement | null>,
+  {
+    color: 'rgba(34, 197, 94, 0.3)', // Green ripple for copy
+    duration: 400,
+  }
+)
 
 // Calculate position class based on available space
 const positionClass = computed(() => {
@@ -347,8 +367,11 @@ const linkedinUrl = computed(() => shareUrls.value.linkedin)
 const facebookUrl = computed(() => shareUrls.value.facebook)
 const redditUrl = computed(() => shareUrls.value.reddit)
 
-// Toggle the share menu
-const toggleShareMenu = async () => {
+// Toggle the share menu with ripple feedback
+const toggleShareMenu = async (event: MouseEvent) => {
+  // Create ripple effect first - Palette's micro-UX touch!
+  createShareRipple(event)
+
   showShareMenu.value = !showShareMenu.value
 
   if (showShareMenu.value) {
@@ -396,13 +419,15 @@ const showToast = (
   }
 }
 
-// Copy URL to clipboard
+// Copy URL to clipboard with ripple feedback
 const copyToClipboard = async (event: MouseEvent) => {
   // Store click position for tooltip
   copiedTooltipPosition.value = {
     x: event.clientX,
     y: event.clientY,
   }
+  // Create ripple effect first - Palette's micro-UX touch!
+  createCopyRipple(event)
 
   try {
     await navigator.clipboard.writeText(props.url)
