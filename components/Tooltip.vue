@@ -24,7 +24,7 @@
         :class="[
           'absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-lg',
           'pointer-events-none whitespace-nowrap',
-          positionClasses[position],
+          positionClasses[adjustedPosition],
         ]"
         @keydown.esc="hideTooltip"
       >
@@ -32,7 +32,7 @@
         <div
           :class="[
             'absolute w-2 h-2 bg-gray-900 transform rotate-45',
-            arrowClasses[position],
+            arrowClasses[adjustedPosition],
           ]"
         />
       </div>
@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 
 type TooltipPosition = 'top' | 'bottom' | 'left' | 'right'
@@ -87,6 +87,7 @@ const tooltipId = computed(() => `tooltip-${uniqueId}`)
 const isVisible = ref(false)
 const tooltipRef = ref<HTMLDivElement | null>(null)
 const triggerRef = ref<HTMLDivElement | null>(null)
+const adjustedPosition = ref<TooltipPosition>(props.position)
 let showTimeout: ReturnType<typeof setTimeout> | null = null
 let hideTimeout: ReturnType<typeof setTimeout> | null = null
 let autoDismissTimeout: ReturnType<typeof setTimeout> | null = null
@@ -105,6 +106,75 @@ const arrowClasses: Record<TooltipPosition, string> = {
   right: 'right-full top-1/2 -translate-y-1/2 -mr-1',
 }
 
+/**
+ * Calculates the optimal tooltip position based on viewport boundaries.
+ * Prevents tooltips from being cut off at viewport edges by flipping position
+ * when collision is detected.
+ */
+const calculateOptimalPosition = () => {
+  if (!tooltipRef.value || !triggerRef.value) return
+
+  const tooltipRect = tooltipRef.value.getBoundingClientRect()
+  const viewportWidth = window.innerWidth
+  const viewportHeight = window.innerHeight
+  const padding = 8 // Minimum padding from viewport edges
+
+  // Define collision checks for each position
+  const collisionChecks: Record<TooltipPosition, () => boolean> = {
+    top: () => tooltipRect.top < padding,
+    bottom: () => tooltipRect.bottom > viewportHeight - padding,
+    left: () => tooltipRect.left < padding,
+    right: () => tooltipRect.right > viewportWidth - padding,
+  }
+
+  // Define fallback positions when collision occurs
+  const fallbackPositions: Record<TooltipPosition, TooltipPosition> = {
+    top: 'bottom',
+    bottom: 'top',
+    left: 'right',
+    right: 'left',
+  }
+
+  // Check if preferred position causes collision
+  const preferredPosition = props.position
+  if (collisionChecks[preferredPosition]()) {
+    // Try fallback position
+    const fallback = fallbackPositions[preferredPosition]
+    adjustedPosition.value = fallback
+
+    // Force DOM update to recalculate tooltip position
+    nextTick(() => {
+      if (!tooltipRef.value) return
+
+      const fallbackTooltipRect = tooltipRef.value.getBoundingClientRect()
+
+      // If fallback also causes collision, try other positions
+      if (
+        fallbackTooltipRect.top < padding ||
+        fallbackTooltipRect.bottom > viewportHeight - padding ||
+        fallbackTooltipRect.left < padding ||
+        fallbackTooltipRect.right > viewportWidth - padding
+      ) {
+        // Try remaining positions in order: top, bottom, left, right
+        const allPositions: TooltipPosition[] = [
+          'top',
+          'bottom',
+          'left',
+          'right',
+        ]
+        for (const pos of allPositions) {
+          if (pos !== preferredPosition && pos !== fallback) {
+            adjustedPosition.value = pos
+            break
+          }
+        }
+      }
+    })
+  } else {
+    adjustedPosition.value = preferredPosition
+  }
+}
+
 const showTooltip = () => {
   if (hideTimeout) {
     clearTimeout(hideTimeout)
@@ -112,6 +182,11 @@ const showTooltip = () => {
   }
   showTimeout = setTimeout(() => {
     isVisible.value = true
+
+    // Calculate optimal position after tooltip is rendered
+    nextTick(() => {
+      calculateOptimalPosition()
+    })
 
     // Set up auto-dismiss if enabled
     if (props.autoDismiss > 0) {
