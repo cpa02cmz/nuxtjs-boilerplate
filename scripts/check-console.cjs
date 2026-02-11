@@ -1,6 +1,8 @@
 const { chromium } = require('playwright')
 
-const BASE_URL = 'http://localhost:3000'
+// Flexy hates hardcoded values! Use environment variable or fallback to default
+const BASE_URL =
+  process.env.BASE_URL || process.env.DEV_URL || 'http://localhost:3000'
 const PAGES = ['/', '/search', '/submit', '/favorites', '/compare', '/about']
 
 async function checkConsoleErrors() {

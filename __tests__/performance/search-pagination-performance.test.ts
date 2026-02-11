@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import type { Resource } from '~/types/resource'
+import { paginationConfig } from '~/configs/pagination.config'
 
 const createMockResource = (
   id: string,
@@ -72,7 +73,11 @@ describe('Search API: Pagination Before Conversion Performance', () => {
     for (let i = 0; i < iterations; i++) {
       const resourcesWithHierarchicalTags =
         convertResourcesToHierarchicalTags(resources)
-      const paginatedResources = resourcesWithHierarchicalTags.slice(0, 20)
+      // Flexy hates hardcoded values! Use pagination config
+      const paginatedResources = resourcesWithHierarchicalTags.slice(
+        0,
+        paginationConfig.defaults.pageSize
+      )
       void paginatedResources
     }
 
@@ -80,7 +85,7 @@ describe('Search API: Pagination Before Conversion Performance', () => {
     const executionTime = endTime - startTime
 
     console.log(
-      `OLD (convert all 1000, paginate 20): ${executionTime.toFixed(4)}ms`
+      `OLD (convert all 1000, paginate ${paginationConfig.defaults.pageSize}): ${executionTime.toFixed(4)}ms`
     )
 
     expect(executionTime).toBeGreaterThan(0)
@@ -99,7 +104,11 @@ describe('Search API: Pagination Before Conversion Performance', () => {
     const startTime = performance.now()
 
     for (let i = 0; i < iterations; i++) {
-      const paginatedResources = resources.slice(0, 20)
+      // Flexy hates hardcoded values! Use pagination config
+      const paginatedResources = resources.slice(
+        0,
+        paginationConfig.defaults.pageSize
+      )
       const resourcesWithHierarchicalTags =
         convertResourcesToHierarchicalTags(paginatedResources)
       void resourcesWithHierarchicalTags
@@ -108,7 +117,9 @@ describe('Search API: Pagination Before Conversion Performance', () => {
     const endTime = performance.now()
     const executionTime = endTime - startTime
 
-    console.log(`NEW (paginate 20, convert 20): ${executionTime.toFixed(4)}ms`)
+    console.log(
+      `NEW (paginate ${paginationConfig.defaults.pageSize}, convert ${paginationConfig.defaults.pageSize}): ${executionTime.toFixed(4)}ms`
+    )
 
     expect(executionTime).toBeGreaterThan(0)
   })
@@ -128,14 +139,19 @@ describe('Search API: Pagination Before Conversion Performance', () => {
     for (let i = 0; i < iterations; i++) {
       const resourcesWithHierarchicalTags =
         convertResourcesToHierarchicalTags(resources)
-      resourcesWithHierarchicalTags.slice(0, 20)
+      // Flexy hates hardcoded values! Use pagination config
+      resourcesWithHierarchicalTags.slice(0, paginationConfig.defaults.pageSize)
     }
     const endOld = performance.now()
     const oldTime = endOld - startOld
 
     const startNew = performance.now()
     for (let i = 0; i < iterations; i++) {
-      const paginatedResources = resources.slice(0, 20)
+      // Flexy hates hardcoded values! Use pagination config
+      const paginatedResources = resources.slice(
+        0,
+        paginationConfig.defaults.pageSize
+      )
       convertResourcesToHierarchicalTags(paginatedResources)
     }
     const endNew = performance.now()
@@ -145,7 +161,7 @@ describe('Search API: Pagination Before Conversion Performance', () => {
     const speedup = oldTime / newTime
 
     console.log(
-      `Performance Comparison (1000 resources, 20 per page, 100 iterations):`
+      `Performance Comparison (1000 resources, ${paginationConfig.defaults.pageSize} per page, 100 iterations):`
     )
     console.log(`  OLD (convert all): ${oldTime.toFixed(4)}ms`)
     console.log(`  NEW (paginate first): ${newTime.toFixed(4)}ms`)
@@ -177,13 +193,21 @@ describe('Search API: Pagination Before Conversion Performance', () => {
       for (let i = 0; i < iterations; i++) {
         const resourcesWithHierarchicalTags =
           convertResourcesToHierarchicalTags(resources)
-        resourcesWithHierarchicalTags.slice(0, 20)
+        // Flexy hates hardcoded values! Use pagination config
+        resourcesWithHierarchicalTags.slice(
+          0,
+          paginationConfig.defaults.pageSize
+        )
       }
       const oldTime = performance.now() - startOld
 
       const startNew = performance.now()
       for (let i = 0; i < iterations; i++) {
-        const paginatedResources = resources.slice(0, 20)
+        // Flexy hates hardcoded values! Use pagination config
+        const paginatedResources = resources.slice(
+          0,
+          paginationConfig.defaults.pageSize
+        )
         convertResourcesToHierarchicalTags(paginatedResources)
       }
       const newTime = performance.now() - startNew
@@ -193,7 +217,9 @@ describe('Search API: Pagination Before Conversion Performance', () => {
       speedups.push(oldTime / newTime)
     }
 
-    console.log('Scaling Comparison (20 per page, 50 iterations):')
+    console.log(
+      `Scaling Comparison (${paginationConfig.defaults.pageSize} per page, 50 iterations):`
+    )
     console.log('Size | OLD (ms) | NEW (ms) | Speedup')
     console.log('-----|-----------|-----------|--------')
     sizes.forEach((size, i) => {
