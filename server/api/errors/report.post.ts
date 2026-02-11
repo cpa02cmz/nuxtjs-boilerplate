@@ -1,6 +1,12 @@
 import { defineEventHandler, readBody } from 'h3'
 import { createErrorTracker } from '~/server/utils/error-tracker'
 import { logger } from '~/utils/logger'
+import {
+  sendMethodNotAllowedError,
+  sendBadRequestError,
+  sendSuccessResponse,
+  handleApiRouteError,
+} from '~/server/utils/api-response'
 
 /**
  * API endpoint for client-side error reporting
@@ -9,10 +15,7 @@ import { logger } from '~/utils/logger'
 export default defineEventHandler(async event => {
   // Only allow POST requests
   if (event.node.req.method !== 'POST') {
-    throw createError({
-      statusCode: 405,
-      statusMessage: 'Method Not Allowed',
-    })
+    return sendMethodNotAllowedError(event, 'POST')
   }
 
   try {
@@ -21,10 +24,7 @@ export default defineEventHandler(async event => {
 
     // Validate required fields
     if (!body.message) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Missing required field: message',
-      })
+      return sendBadRequestError(event, 'Missing required field: message')
     }
 
     // Get client info from request
@@ -52,17 +52,13 @@ export default defineEventHandler(async event => {
       severity: body.severity,
     })
 
-    return {
-      success: true,
+    return sendSuccessResponse(event, {
       message: 'Error reported successfully',
-    }
+    })
   } catch (err) {
     logger.error('[Error API] Failed to process error report:', err)
 
     // Don't expose internal errors to client
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Failed to process error report',
-    })
+    return handleApiRouteError(event, err)
   }
 })

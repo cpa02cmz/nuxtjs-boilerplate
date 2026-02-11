@@ -4,7 +4,10 @@
 import { readBody, getQuery } from 'h3'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { updateUserPreferencesSchema } from '~/server/utils/validation-schemas'
-import { sendBadRequestError } from '~/server/utils/api-response'
+import {
+  sendBadRequestError,
+  handleApiRouteError,
+} from '~/server/utils/api-response'
 import { logger } from '~/utils/logger'
 import { userConfig } from '~/configs/user.config'
 
@@ -58,11 +61,7 @@ export default defineEventHandler(async event => {
       preferences: updatedPreferences,
     }
   } catch (error) {
-    const err = error as { statusCode?: number; statusMessage?: string }
     logger.error('Error updating user preferences:', error)
-    throw createError({
-      statusCode: err.statusCode || 500,
-      statusMessage: err.statusMessage || 'Failed to update user preferences',
-    })
+    return handleApiRouteError(event, error)
   }
 })
