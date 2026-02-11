@@ -1,6 +1,18 @@
 import { defineEventHandler, getQuery } from 'h3'
 import { createErrorTracker } from '~/server/utils/error-tracker'
 import { logger } from '~/utils/logger'
+import {
+  sendMethodNotAllowedError,
+  sendBadRequestError,
+  sendSuccessResponse,
+  handleApiRouteError,
+  sendApiError,
+} from '~/server/utils/api-response'
+import {
+  createApiError,
+  ErrorCode,
+  ErrorCategory,
+} from '~/server/utils/api-error'
 
 /**
  * API endpoint for retrieving error statistics
@@ -9,10 +21,7 @@ import { logger } from '~/utils/logger'
 export default defineEventHandler(async event => {
   // Only allow GET requests
   if (event.node.req.method !== 'GET') {
-    throw createError({
-      statusCode: 405,
-      statusMessage: 'Method Not Allowed',
-    })
+    return sendMethodNotAllowedError(event, 'GET')
   }
 
   try {
@@ -22,10 +31,10 @@ export default defineEventHandler(async event => {
     // Validate hours parameter
     if (hours < 1 || hours > 168) {
       // Max 1 week
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Invalid hours parameter. Must be between 1 and 168.',
-      })
+      return sendBadRequestError(
+        event,
+        'Invalid hours parameter. Must be between 1 and 168.'
+      )
     }
 
     const errorTracker = createErrorTracker()
@@ -36,30 +45,20 @@ export default defineEventHandler(async event => {
     const stats = await errorTracker.getErrorStats({ start, end })
 
     if (!stats) {
-      throw createError({
-        statusCode: 500,
-        statusMessage: 'Failed to retrieve error statistics',
-      })
+      const error = createApiError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        'Failed to retrieve error statistics',
+        ErrorCategory.INTERNAL
+      )
+      return sendApiError(event, error)
     }
 
-    return {
-      success: true,
-      data: {
-        timeRange: { start, end, hours },
-        ...stats,
-      },
-    }
+    return sendSuccessResponse(event, {
+      timeRange: { start, end, hours },
+      ...stats,
+    })
   } catch (err) {
     logger.error('[Error API] Failed to get error stats:', err)
-
-    // Re-throw if it's already an H3 error
-    if (err && typeof err === 'object' && 'statusCode' in err) {
-      throw err
-    }
-
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'Failed to retrieve error statistics',
-    })
+    return handleApiRouteError(event, err)
   }
 })
