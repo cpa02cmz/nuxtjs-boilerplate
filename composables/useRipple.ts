@@ -117,9 +117,14 @@ export function useRipple(
     activeRipples.value.push(ripple)
 
     // Clean up ripple after animation
+    const fadeOutStartMs =
+      config.duration * animationConfig.ripple.fadeOutStartMultiplier
+    const fadeOutDurationMs =
+      config.duration * animationConfig.ripple.fadeOutEndMultiplier
+
     setTimeout(() => {
       ripple.style.opacity = '0'
-      ripple.style.transition = `opacity ${config.duration * 0.3}ms ease-out`
+      ripple.style.transition = `opacity ${fadeOutDurationMs}ms ease-out`
 
       setTimeout(() => {
         ripple.remove()
@@ -127,8 +132,8 @@ export function useRipple(
         if (index > -1) {
           activeRipples.value.splice(index, 1)
         }
-      }, config.duration * 0.3)
-    }, config.duration * 0.7)
+      }, fadeOutDurationMs)
+    }, fadeOutStartMs)
   }
 
   /**
