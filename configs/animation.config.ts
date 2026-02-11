@@ -39,6 +39,11 @@ export const animationConfig = {
     resetDelayMs: parseInt(process.env.COPY_SUCCESS_RESET_MS || '2000'),
   },
 
+  // Copy Error Animation - UX feedback when clipboard fails
+  copyError: {
+    resetDelayMs: parseInt(process.env.COPY_ERROR_RESET_MS || '2500'),
+  },
+
   // Suggestion/Filter Animations
   suggestion: {
     staggerDelayMs: parseInt(process.env.SUGGESTION_STAGGER_DELAY_MS || '100'),
