@@ -4,31 +4,14 @@ import * as chromeLauncher from 'chrome-launcher'
 import * as fs from 'fs'
 import * as path from 'path'
 import { DEFAULT_DEV_URL } from '../../configs/url.config'
+import {
+  lighthouseConfig,
+  buildLighthouseConfig,
+  getMinimumScores,
+} from '../../configs/lighthouse.config'
 
-// Lighthouse configuration
-const LIGHTHOUSE_CONFIG = {
-  extends: 'lighthouse:default',
-  settings: {
-    formFactor: 'desktop',
-    throttling: {
-      rttMs: 40,
-      throughputKbps: 10240,
-      cpuSlowdownMultiplier: 1,
-      requestLatencyMs: 0,
-      downloadThroughputKbps: 0,
-      uploadThroughputKbps: 0,
-    },
-    screenEmulation: {
-      mobile: false,
-      width: 1350,
-      height: 940,
-      deviceScaleFactor: 1,
-      disabled: false,
-    },
-    emulatedUserAgent:
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-  },
-}
+// Flexy loves modularity! Using configurable Lighthouse configuration
+const LIGHTHOUSE_CONFIG = buildLighthouseConfig()
 
 // Minimum scores required (BroCula is strict!)
 // NOTE: Development mode scores will be lower due to:
@@ -37,14 +20,10 @@ const LIGHTHOUSE_CONFIG = {
 // - Source maps included
 // - Vite client overhead
 // Run against production build for accurate scores: npm run build && npm run preview
+// Flexy hates hardcoded thresholds! Using configurable scores
 const isDev =
   !process.env.BASE_URL || process.env.BASE_URL.includes('localhost:3000')
-const MINIMUM_SCORES = {
-  performance: isDev ? 60 : 90, // Allow lower score in dev mode
-  accessibility: 90,
-  'best-practices': 90,
-  seo: 90,
-}
+const MINIMUM_SCORES = getMinimumScores(isDev)
 
 interface LighthouseReport {
   timestamp: string
@@ -87,24 +66,21 @@ test.describe('BroCula Lighthouse Auditor', () => {
       console.warn('  Then set BASE_URL environment variable\n')
     }
 
-    // Launch Chrome
+    // Launch Chrome - Flexy loves configurable flags!
     const chrome = await chromeLauncher.launch({
-      chromeFlags: ['--headless', '--no-sandbox', '--disable-gpu'],
+      chromeFlags: lighthouseConfig.chrome.flags,
     })
 
     try {
-      // Run Lighthouse
+      // Run Lighthouse - Flexy loves modularity!
       const runnerResult = await lighthouse(
         url,
         {
-          logLevel: 'error',
-          output: 'json',
-          onlyCategories: [
-            'performance',
-            'accessibility',
-            'best-practices',
-            'seo',
-          ],
+          logLevel: lighthouseConfig.audits.logLevel,
+          output: lighthouseConfig.audits.output,
+          onlyCategories: Object.entries(lighthouseConfig.categories)
+            .filter(([, enabled]) => enabled)
+            .map(([category]) => category),
           port: chrome.port,
         },
         LIGHTHOUSE_CONFIG as any
@@ -167,17 +143,26 @@ test.describe('BroCula Lighthouse Auditor', () => {
         }),
       }
 
-      // Save report
-      const reportDir = path.join(process.cwd(), 'playwright-report')
+      // Save report - Flexy loves configurable paths!
+      const reportDir = path.join(
+        process.cwd(),
+        lighthouseConfig.reports.directory
+      )
       if (!fs.existsSync(reportDir)) {
         fs.mkdirSync(reportDir, { recursive: true })
       }
 
-      const reportPath = path.join(reportDir, 'brocula-lighthouse-report.json')
+      const reportPath = path.join(
+        reportDir,
+        lighthouseConfig.reports.files.summary
+      )
       fs.writeFileSync(reportPath, JSON.stringify(report, null, 2))
 
       // Also save full Lighthouse report
-      const fullReportPath = path.join(reportDir, 'lighthouse-full-report.json')
+      const fullReportPath = path.join(
+        reportDir,
+        lighthouseConfig.reports.files.full
+      )
       fs.writeFileSync(fullReportPath, JSON.stringify(lhr, null, 2))
 
       // Log results

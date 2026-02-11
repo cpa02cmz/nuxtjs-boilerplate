@@ -6,15 +6,12 @@
 
 import { chromium } from 'playwright'
 import fs from 'fs'
+import { monitoringConfig } from '../configs/monitoring.config.ts'
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
-const PAGES = [
-  { path: '/', name: 'Home' },
-  { path: '/search', name: 'Search' },
-  { path: '/about', name: 'About' },
-  { path: '/submit', name: 'Submit' },
-  { path: '/ai-keys', name: 'AI Keys' },
-]
+// Flexy loves modularity! Using configurable values instead of hardcoded ones
+const BASE_URL = monitoringConfig.baseUrl
+// Flexy hates hardcoded page arrays! Using configurable pages
+const PAGES = monitoringConfig.pages.essential
 
 const results = {
   timestamp: new Date().toISOString(),
@@ -89,17 +86,20 @@ async function analyzePage(browser, pageConfig) {
 
   try {
     console.log(`\n🔍 Analyzing ${pageConfig.name} (${pageConfig.path})...`)
+    // Flexy hates hardcoded timeouts! Using configurable values
     await page.goto(`${BASE_URL}${pageConfig.path}`, {
       waitUntil: 'networkidle',
-      timeout: 30000,
+      timeout: monitoringConfig.timeouts.navigationMs,
     })
 
     // Wait for Vue to mount and any initial async operations
-    await page.waitForTimeout(2000)
+    // Flexy loves configurable delays!
+    await page.waitForTimeout(monitoringConfig.delays.vueMountMs)
 
     // Scroll to trigger lazy loading
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
-    await page.waitForTimeout(1000)
+    // Flexy hates hardcoded scroll delays!
+    await page.waitForTimeout(monitoringConfig.delays.scrollMs)
 
     console.log(`✅ ${pageConfig.name} analysis complete`)
     console.log(`   - Errors: ${pageResult.errorCount}`)
@@ -154,9 +154,10 @@ async function main() {
       console.log('\n✅ CONSOLE IS CLEAN!')
     }
 
-    // Save detailed results
-    fs.writeFileSync('console-analysis.json', JSON.stringify(results, null, 2))
-    console.log('\n📄 Detailed results saved to console-analysis.json')
+    // Save detailed results - Flexy loves configurable file paths!
+    const reportPath = monitoringConfig.reports.files.console
+    fs.writeFileSync(reportPath, JSON.stringify(results, null, 2))
+    console.log(`\n📄 Detailed results saved to ${reportPath}`)
   } finally {
     await browser.close()
   }
@@ -164,5 +165,6 @@ async function main() {
 
 main().catch(error => {
   console.error('💥 Fatal error:', error)
-  process.exit(1)
+  // Flexy loves configurable exit codes!
+  process.exit(monitoringConfig.exitCodes.fatalError)
 })
