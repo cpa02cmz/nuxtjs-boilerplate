@@ -29,9 +29,11 @@
     <div class="flex items-center">
       <button
         v-if="id"
+        ref="copyButtonRef"
         :class="[
           'p-2 rounded-full transition-all duration-200 ease-out',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+          'relative overflow-hidden',
           isCopied
             ? 'bg-green-100 text-green-600 scale-110'
             : isCopyError
@@ -40,7 +42,7 @@
         ]"
         :aria-label="copyButtonAriaLabel"
         :title="copyButtonTitle"
-        @click="copyResourceUrl"
+        @click="handleCopyClick"
       >
         <svg
           v-if="isCopyError"
@@ -130,6 +132,7 @@
         :class="[
           'p-2 rounded-full transition-all duration-200 ease-out',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+          'relative overflow-hidden',
           isAddingToComparison
             ? 'bg-blue-100 text-blue-600 scale-110'
             : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800',
@@ -137,7 +140,7 @@
         :aria-label="compareButtonAriaLabel"
         :title="compareButtonTitle"
         :aria-pressed="isAddingToComparison"
-        @click="addResourceToComparison"
+        @click="handleCompareClick"
       >
         <svg
           v-if="!isAddingToComparison"
@@ -196,8 +199,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import { useResourceCardActions } from '~/composables/useResourceCardActions'
+import { useRipple } from '~/composables/useRipple'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   id?: string
@@ -214,6 +219,28 @@ const props = withDefaults(defineProps<Props>(), {
   category: 'unknown',
   dateAdded: undefined,
 })
+
+// Refs for ripple effects
+const copyButtonRef = ref<HTMLButtonElement | null>(null)
+const compareButtonRef = ref<HTMLButtonElement | null>(null)
+
+// Initialize ripple effects for tactile feedback - Palette's micro-UX touch!
+// Flexy loves modularity! Using configurable animation durations from animationConfig
+const { createRipple: createCopyRipple } = useRipple(
+  copyButtonRef as Ref<HTMLButtonElement | null>,
+  {
+    color: animationConfig.ripple.successColor, // Green ripple for copy
+    duration: animationConfig.button.feedbackDurationMs,
+  }
+)
+
+const { createRipple: createCompareRipple } = useRipple(
+  compareButtonRef as Ref<HTMLButtonElement | null>,
+  {
+    color: animationConfig.ripple.primaryColor, // Blue ripple for compare
+    duration: animationConfig.button.feedbackDurationMs,
+  }
+)
 
 // Use the resource card actions composable
 const {
@@ -267,6 +294,22 @@ const compareButtonTitle = computed(() => {
     ? 'Added to comparison'
     : 'Add to comparison'
 })
+
+// Handle copy click with ripple effect - Palette's micro-UX touch!
+const handleCopyClick = (event: MouseEvent) => {
+  // Create ripple effect first for tactile feedback
+  createCopyRipple(event)
+  // Then handle the copy action
+  copyResourceUrl()
+}
+
+// Handle compare click with ripple effect - Palette's micro-UX touch!
+const handleCompareClick = (event: MouseEvent) => {
+  // Create ripple effect first for tactile feedback
+  createCompareRipple(event)
+  // Then handle the compare action
+  addResourceToComparison()
+}
 </script>
 
 <style scoped>
