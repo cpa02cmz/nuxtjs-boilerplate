@@ -62,7 +62,7 @@ describe('analytics-db', () => {
           properties: JSON.stringify({ referrer: 'google.com' }),
         })
 
-        const event: analyticsDb.AnalyticsEvent = {
+        const event: analyticsDb.AnalyticsEventInput = {
           type: 'resource_view',
           resourceId: 'resource-123',
           category: 'Development',
@@ -98,7 +98,7 @@ describe('analytics-db', () => {
           timestamp: new Date(),
         } as any)
 
-        const event: analyticsDb.AnalyticsEvent = {
+        const event: analyticsDb.AnalyticsEventInput = {
           type: 'search',
           timestamp: Date.now(),
         }
@@ -128,7 +128,7 @@ describe('analytics-db', () => {
           timestamp: new Date(),
         } as any)
 
-        const event: analyticsDb.AnalyticsEvent = {
+        const event: analyticsDb.AnalyticsEventInput = {
           type: 'resource_view',
           timestamp: Date.now(),
           ip: null,
@@ -151,7 +151,7 @@ describe('analytics-db', () => {
           new Error('Database connection failed')
         )
 
-        const event: analyticsDb.AnalyticsEvent = {
+        const event: analyticsDb.AnalyticsEventInput = {
           type: 'resource_view',
           timestamp: Date.now(),
         }

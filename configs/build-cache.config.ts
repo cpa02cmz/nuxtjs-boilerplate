@@ -14,7 +14,8 @@ export default defineNuxtConfig({
       cacheDir: '.vite-cache',
       // Optimize chunk size warnings
       chunkSizeWarningLimit: 1000,
-    },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any,
     optimizeDeps: {
       // Force pre-bundle these heavy dependencies
       force: true,
@@ -33,5 +34,6 @@ export default defineNuxtConfig({
         config: [import.meta.filename],
       },
     },
-  },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any,
 })
