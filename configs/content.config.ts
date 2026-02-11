@@ -83,6 +83,18 @@ export const contentConfig = {
           'AI Tools, Web Hosting, Databases, APIs, VPS'
       ),
     },
+    // Empty state configuration - Flexy hates hardcoded UX copy!
+    emptyState: {
+      noResultsTitle:
+        process.env.CONTENT_SEARCH_EMPTY_TITLE || 'No matching resources found',
+      noResultsSubtitle:
+        process.env.CONTENT_SEARCH_EMPTY_SUBTITLE ||
+        'Try a different search term or browse all resources',
+      tryThese:
+        process.env.CONTENT_SEARCH_EMPTY_TRY || 'Try these popular searches',
+      clearSearch: process.env.CONTENT_SEARCH_EMPTY_CLEAR || 'Clear search',
+      browseAll: process.env.CONTENT_SEARCH_EMPTY_BROWSE || 'Browse all',
+    },
     popular: {
       title: process.env.CONTENT_SEARCH_POPULAR_TITLE || 'Popular Searches',
       empty:
