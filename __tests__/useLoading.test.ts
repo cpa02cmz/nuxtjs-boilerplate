@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useLoading } from '~/composables/useLoading'
+import { TEST_TIMING } from '~/configs/test-timing.config'
+import { uiConfig } from '~/configs/ui.config'
 
 describe('useLoading', () => {
   beforeEach(() => {
@@ -37,7 +39,7 @@ describe('useLoading', () => {
     // Use a promise that resolves on next tick to simulate async behavior
     const promise = withLoading(async () => {
       // Simulate async operation using Promise.resolve().then()
-      await new Promise(resolve => setTimeout(resolve, 1))
+      await new Promise(resolve => setTimeout(resolve, TEST_TIMING.QUICK))
       return mockFn()
     })
 
@@ -45,7 +47,7 @@ describe('useLoading', () => {
     expect(loadingState.loading).toBe(true)
 
     // Advance fake timers to resolve the setTimeout
-    vi.advanceTimersByTime(1)
+    vi.advanceTimersByTime(TEST_TIMING.QUICK)
 
     await promise
 
@@ -167,8 +169,8 @@ describe('useLoading', () => {
     expect(loadingState.success).toBe(true)
     expect(loadingState.message).toBe('Success!')
 
-    // Advance timers by 3 seconds to trigger the timeout
-    vi.advanceTimersByTime(3000)
+    // Advance timers to trigger the success message clear timeout
+    vi.advanceTimersByTime(uiConfig.feedback.successMessageClearMs)
 
     expect(loadingState.success).toBe(false)
     expect(loadingState.message).toBeNull()

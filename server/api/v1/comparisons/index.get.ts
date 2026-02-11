@@ -11,6 +11,7 @@ import {
 } from '~/server/utils/api-response'
 import { defineEventHandler, getQuery } from 'h3'
 import { randomUUID } from 'node:crypto'
+import { cacheConfig } from '~/configs/cache.config'
 
 export default defineEventHandler(async event => {
   try {
@@ -82,11 +83,11 @@ export default defineEventHandler(async event => {
       resources: requestedResources,
     }
 
-    // Cache result for 5 minutes
+    // Cache result using configurable TTL
     await cacheSetWithTags(
       cacheKey,
       { success: true, data: responseData },
-      300,
+      cacheConfig.api.comparisonTtlSeconds,
       ['comparisons', 'api-v1', 'resource-comparisons', ...resourceIds]
     )
 

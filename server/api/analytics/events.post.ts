@@ -15,6 +15,7 @@ import {
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { logger } from '~/utils/logger'
 import { rateLimitConfig } from '~/configs/rate-limit.config'
+import { limitsConfig } from '~/configs/limits.config'
 
 /**
  * Hashes an IP address for privacy protection
@@ -27,7 +28,7 @@ function hashIP(ip: string): string {
   const hash = createHash('sha256')
     .update(ip + dailySalt)
     .digest('hex')
-    .substring(0, 16) // Use first 16 chars for shorter storage
+    .substring(0, limitsConfig.displayLength.hashStorage) // Use configured length for shorter storage
   return `hash_${hash}`
 }
 

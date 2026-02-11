@@ -49,6 +49,7 @@
 import { computed, ref, watch } from 'vue'
 import { themeConfig } from '../configs/theme.config'
 import { componentStylesConfig } from '../configs/component-styles.config'
+import { limitsConfig } from '../configs/limits.config'
 
 // Flexy hates hardcoded values! Using config instead.
 const spinnerStyles = componentStylesConfig.loadingSpinner
@@ -75,8 +76,12 @@ const props = withDefaults(defineProps<Props>(), {
   customMessage: undefined,
 })
 
-// Generate unique ID for this spinner instance
-const uniqueId = ref(`spinner-${Math.random().toString(36).substring(2, 9)}`)
+// Generate unique ID for this spinner instance using configurable length
+const uniqueId = ref(
+  `spinner-${Math.random()
+    .toString(36)
+    .substring(2, 2 + limitsConfig.displayLength.spinnerIdLength)}`
+)
 
 // Track the last announced state to prevent duplicate announcements
 const lastAnnouncedState = ref<string | null>(null)

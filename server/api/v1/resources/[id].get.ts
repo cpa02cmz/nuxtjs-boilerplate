@@ -9,6 +9,7 @@ import {
   sendNotFoundError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { cacheConfig } from '~/configs/cache.config'
 
 /**
  * GET /api/v1/resources/:id
@@ -62,11 +63,12 @@ export default defineEventHandler(async event => {
     }
 
     // Cache the result with tags for easier invalidation
-    await cacheSetWithTags(cacheKey, response, 600, [
-      'resource',
-      'api-v1',
-      `resource-${id}`,
-    ]) // Cache for 10 minutes
+    await cacheSetWithTags(
+      cacheKey,
+      response,
+      cacheConfig.api.resourceTtlSeconds,
+      ['resource', 'api-v1', `resource-${id}`]
+    )
 
     // Set cache miss header
     event.node.res?.setHeader('X-Cache', 'MISS')
