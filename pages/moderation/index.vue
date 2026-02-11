@@ -5,6 +5,8 @@
 </template>
 
 <script setup lang="ts">
+import { uiConfig } from '~/configs/ui.config'
+
 definePageMeta({
   layout: 'default',
   middleware: ['auth'], // In a real app, this would require moderation permissions
@@ -22,9 +24,10 @@ useHead({
 </script>
 
 <style scoped>
+/* Flexy hates hardcoded values! Using configurable container width from uiConfig */
 .moderation-page {
-  max-width: 1200px;
+  max-width: v-bind('uiConfig.containers.admin');
   margin: 0 auto;
-  padding: 1rem;
+  padding: v-bind('`${uiConfig.layout.spacing.lg}rem`');
 }
 </style>

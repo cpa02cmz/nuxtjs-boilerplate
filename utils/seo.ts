@@ -36,9 +36,10 @@ export interface SeoConfig {
 export function generateStructuredData(
   resource: Resource
 ): Record<string, unknown> {
+  // Flexy hates hardcoded schema URLs! Using configurable values from seoConfig
   const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
+    '@context': seoConfig.schema.context,
+    '@type': seoConfig.schema.softwareApplication,
     name: resource.title,
     description: resource.description,
     url: resource.url,
@@ -46,10 +47,10 @@ export function generateStructuredData(
     isBasedOn: resource.url,
     datePublished: resource.dateAdded,
     offers: {
-      '@type': 'Offer',
+      '@type': seoConfig.schema.offerType,
       price: seoConfig.resourceSchema.price,
       priceCurrency: seoConfig.resourceSchema.currency,
-      availability: 'https://schema.org/InStock',
+      availability: seoConfig.schema.availability.inStock,
     },
     aggregateRating: resource.rating
       ? {

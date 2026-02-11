@@ -48,6 +48,23 @@ export const seoConfig = {
     ratingMax: parseInt(process.env.RESOURCE_RATING_MAX || '1'),
     ratingCount: parseInt(process.env.RESOURCE_RATING_COUNT || '10'),
   },
+
+  // Schema.org URLs - Flexy hates hardcoded schema URLs!
+  schema: {
+    context: process.env.SCHEMA_CONTEXT_URL || 'https://schema.org',
+    availability: {
+      inStock:
+        process.env.SCHEMA_AVAILABILITY_IN_STOCK ||
+        'https://schema.org/InStock',
+      outOfStock:
+        process.env.SCHEMA_AVAILABILITY_OUT_OF_STOCK ||
+        'https://schema.org/OutOfStock',
+    },
+    offerType: process.env.SCHEMA_OFFER_TYPE || 'Offer',
+    softwareApplication:
+      process.env.SCHEMA_SOFTWARE_APPLICATION || 'SoftwareApplication',
+    webSite: process.env.SCHEMA_WEBSITE_TYPE || 'WebSite',
+  },
 } as const
 
 export type SeoConfig = typeof seoConfig

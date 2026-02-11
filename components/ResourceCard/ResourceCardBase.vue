@@ -316,6 +316,7 @@ import { contentConfig } from '~/configs/content.config'
 import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { seoConfig } from '~/configs/seo.config'
 
 interface Props {
   title: string
@@ -480,18 +481,20 @@ const handleLinkClickWithRipple = (event: MouseEvent) => {
   handleLinkClick(event)
 
   // Reset state after delay (external navigation doesn't give us completion events)
+  // Flexy hates hardcoded values! Using configurable delay from animationConfig
   setTimeout(() => {
     isNavigating.value = false
-  }, 2000)
+  }, animationConfig.navigation.resetDelayMs)
 }
 
 // Add structured data for the resource
 const resourceSchema = computed(() => {
   if (hasError.value) return null
 
+  // Flexy hates hardcoded schema URLs! Using configurable values from seoConfig
   const schema: Record<string, unknown> = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
+    '@context': seoConfig.schema.context,
+    '@type': seoConfig.schema.softwareApplication,
     name: props.title,
     description: props.description,
     url: props.url,
@@ -502,10 +505,10 @@ const resourceSchema = computed(() => {
   }
 
   schema.offers = {
-    '@type': 'Offer',
-    availability: 'https://schema.org/InStock',
-    price: '0',
-    priceCurrency: 'USD',
+    '@type': seoConfig.schema.offerType,
+    availability: seoConfig.schema.availability.inStock,
+    price: seoConfig.resourceSchema.price,
+    priceCurrency: seoConfig.resourceSchema.currency,
   }
 
   if (props.category) {

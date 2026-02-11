@@ -120,6 +120,8 @@ export const animationConfig = {
     reducedMotionDelayMs: parseInt(
       process.env.NAV_REDUCED_MOTION_DELAY_MS || '400'
     ),
+    // Reset delay for navigation state (e.g., after clicking external links)
+    resetDelayMs: parseInt(process.env.NAV_RESET_DELAY_MS || '2000'),
   },
 
   // Button/Interaction Animations
