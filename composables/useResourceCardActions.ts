@@ -81,10 +81,36 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
     return id ? isVisited(id) : false
   })
 
-  // Mark resource as visited
+  // Track when the viewed badge should animate (for delightful micro-UX feedback)
+  const isViewedAnimating = ref(false)
+  let viewedAnimationTimeout: ReturnType<typeof setTimeout> | null = null
+
+  // Mark resource as visited with animation feedback
   const markResourceVisited = () => {
     if (id) {
+      const wasVisited = isResourceVisited.value
       markVisited(id)
+
+      // Trigger animation only if this is a new visit (not already visited)
+      if (!wasVisited && typeof window !== 'undefined') {
+        const prefersReducedMotion = window.matchMedia(
+          '(prefers-reduced-motion: reduce)'
+        ).matches
+
+        if (!prefersReducedMotion) {
+          isViewedAnimating.value = true
+
+          // Clear any existing timeout
+          if (viewedAnimationTimeout) {
+            clearTimeout(viewedAnimationTimeout)
+          }
+
+          // Reset animation state after animation completes
+          viewedAnimationTimeout = setTimeout(() => {
+            isViewedAnimating.value = false
+          }, animationConfig.viewedBadge.popDurationMs)
+        }
+      }
     }
   }
 
@@ -216,6 +242,7 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
     copyStatus,
     showCopiedTooltip,
     copiedTooltipPosition,
+    isViewedAnimating,
     // Computed
     isNew,
     isResourceVisited,

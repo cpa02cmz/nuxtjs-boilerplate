@@ -76,7 +76,10 @@
 
             <span
               v-if="isResourceVisited && id"
-              class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 mr-2"
+              :class="[
+                'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 mr-2',
+                isViewedAnimating && 'animate-viewed-pop',
+              ]"
               role="status"
               aria-label="You have viewed this resource"
             >
@@ -370,7 +373,7 @@ const visitButtonText = computed(() => {
 })
 
 // Use the resource card actions composable
-const { isNew, isResourceVisited, markResourceVisited } =
+const { isNew, isResourceVisited, markResourceVisited, isViewedAnimating } =
   useResourceCardActions({
     id: props.id,
     title: props.title,
@@ -597,10 +600,41 @@ if (typeof useHead === 'function') {
   color: v-bind('componentColorsConfig.resourceCard.visited.linkHoverColor');
 }
 
+/* Viewed badge pop animation - Palette's micro-UX delight! */
+/* Provides satisfying feedback when a resource is marked as visited */
+.animate-viewed-pop {
+  animation: viewed-pop
+    v-bind('`${animationConfig.viewedBadge.popDurationMs}ms`')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes viewed-pop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  40% {
+    transform: scale(v-bind('animationConfig.viewedBadge.popScale'));
+  }
+  60% {
+    transform: scale(v-bind('animationConfig.viewedBadge.bounceScale'));
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .animate-new-pulse {
     animation: none;
+  }
+
+  .animate-viewed-pop {
+    animation: none;
+    opacity: 1;
+    transform: scale(1);
   }
 }
 </style>

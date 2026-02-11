@@ -251,6 +251,17 @@ export const animationConfig = {
     color: process.env.PWA_PULSE_COLOR || 'rgba(59, 130, 246, 0.4)',
   },
 
+  // Viewed Badge Animation - Palette's micro-UX touch for delightful feedback!
+  // Provides a subtle "pop" animation when the "Viewed" badge appears on resource cards
+  viewedBadge: {
+    // Duration of the pop animation in milliseconds
+    popDurationMs: parseInt(process.env.VIEWED_BADGE_POP_DURATION_MS || '600'),
+    // Scale factor at peak of animation (1.2 = 120%)
+    popScale: parseFloat(process.env.VIEWED_BADGE_POP_SCALE || '1.2'),
+    // Bounce back scale for elastic effect
+    bounceScale: parseFloat(process.env.VIEWED_BADGE_BOUNCE_SCALE || '0.95'),
+  },
+
   // Confetti Celebration Animations - Palette's delightful micro-UX touch!
   confetti: {
     // Delay before triggering confetti after success (ms) - allows UI to update first
