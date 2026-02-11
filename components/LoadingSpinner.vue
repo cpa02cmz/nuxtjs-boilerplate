@@ -42,11 +42,21 @@
     >
       {{ statusMessage }}
     </div>
+
+    <!-- Dedicated announcement region for state changes -->
+    <!-- This ensures screen readers announce completion/errors immediately -->
+    <div
+      aria-live="assertive"
+      aria-atomic="true"
+      class="sr-only"
+    >
+      {{ announcementMessage }}
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
 import { themeConfig } from '../configs/theme.config'
 import { componentStylesConfig } from '../configs/component-styles.config'
 import { limitsConfig } from '../configs/limits.config'
@@ -86,6 +96,10 @@ const uniqueId = ref(
 // Track the last announced state to prevent duplicate announcements
 const lastAnnouncedState = ref<string | null>(null)
 
+// Announcement message that triggers screen reader announcements
+// This is separate from statusMessage to ensure proper announcement timing
+const announcementMessage = ref('')
+
 // Computed status message based on state
 const statusMessage = computed(() => {
   if (props.customMessage) {
@@ -104,12 +118,39 @@ const statusMessage = computed(() => {
   }
 })
 
-// Watch for state changes and update last announced state
+// Function to trigger screen reader announcement
+// Uses nextTick to ensure DOM updates before announcement
+const announceToScreenReader = async (message: string) => {
+  // Clear first to ensure screen reader detects the change
+  announcementMessage.value = ''
+  await nextTick()
+  // Small delay to ensure the clear takes effect
+  setTimeout(() => {
+    announcementMessage.value = message
+  }, 100)
+}
+
+// Watch for state changes and announce to screen readers
 watch(
   () => props.state,
-  newState => {
+  (newState, oldState) => {
     if (newState && newState !== lastAnnouncedState.value) {
       lastAnnouncedState.value = newState
+      // Announce state changes to screen readers for better UX
+      if (newState === 'complete') {
+        announceToScreenReader(
+          props.label ? `${props.label} complete` : 'Loading complete'
+        )
+      } else if (newState === 'error') {
+        announceToScreenReader(
+          props.label ? `${props.label} failed` : 'Loading failed'
+        )
+      } else if (newState === 'loading' && oldState) {
+        // Only announce if transitioning from another state back to loading
+        announceToScreenReader(
+          props.label ? `${props.label} in progress` : 'Loading in progress'
+        )
+      }
     }
   },
   { immediate: true }

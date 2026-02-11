@@ -1,6 +1,9 @@
 <template>
   <Teleport to="body">
-    <Transition name="modal" @after-enter="focusCloseButton">
+    <Transition
+      name="modal"
+      @after-enter="focusCloseButton"
+    >
       <div
         v-if="isOpen"
         class="fixed inset-0 z-[100] flex items-center justify-center p-4"
@@ -90,9 +93,7 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300"
-                      >Focus search box</span
-                    >
+                    <span class="text-sm text-gray-700 dark:text-gray-300">Focus search box</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -102,9 +103,7 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300"
-                      >Clear search / Close suggestions</span
-                    >
+                    <span class="text-sm text-gray-700 dark:text-gray-300">Clear search / Close suggestions</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -114,9 +113,7 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300"
-                      >Navigate suggestions</span
-                    >
+                    <span class="text-sm text-gray-700 dark:text-gray-300">Navigate suggestions</span>
                     <div class="flex items-center gap-1">
                       <kbd
                         class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
@@ -144,9 +141,7 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300"
-                      >Move to next focusable element</span
-                    >
+                    <span class="text-sm text-gray-700 dark:text-gray-300">Move to next focusable element</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -156,9 +151,7 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300"
-                      >Move to previous focusable element</span
-                    >
+                    <span class="text-sm text-gray-700 dark:text-gray-300">Move to previous focusable element</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -168,9 +161,7 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300"
-                      >Close modals / menus</span
-                    >
+                    <span class="text-sm text-gray-700 dark:text-gray-300">Close modals / menus</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -191,9 +182,7 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300"
-                      >Undo clear filters</span
-                    >
+                    <span class="text-sm text-gray-700 dark:text-gray-300">Undo clear filters</span>
                     <div class="flex items-center gap-1">
                       <kbd
                         class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
@@ -211,9 +200,7 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300"
-                      >Select/deselect filter option</span
-                    >
+                    <span class="text-sm text-gray-700 dark:text-gray-300">Select/deselect filter option</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -234,9 +221,7 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300"
-                      >Open this help modal</span
-                    >
+                    <span class="text-sm text-gray-700 dark:text-gray-300">Open this help modal</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -256,8 +241,7 @@
               Tip: Press
               <kbd
                 class="px-1 py-0.5 text-xs bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 rounded"
-                >?</kbd
-              >
+              >?</kbd>
               anywhere to open this guide
             </p>
           </div>
