@@ -4,7 +4,10 @@
       <ErrorBoundary
         :component-name="componentName"
         :show-details="showDetails"
-        @error="$emit('error', $event)"
+        @error="
+          (err: Error, info: { componentStack: string }) =>
+            $emit('error', err, info)
+        "
         @reset="$emit('reset')"
       >
         <slot />

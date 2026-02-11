@@ -178,7 +178,7 @@ describe('ResourceFilters', () => {
 
     const checkboxes = wrapper.findAll('input[type="checkbox"]')
     checkboxes.forEach(checkbox => {
-      expect(checkbox.element.checked).toBe(false)
+      expect((checkbox.element as HTMLInputElement).checked).toBe(false)
     })
   })
 
@@ -196,21 +196,25 @@ describe('ResourceFilters', () => {
     })
 
     // First category checkbox should be checked
-    expect(wrapper.findAll('input[type="checkbox"]')[0].element.checked).toBe(
-      true
-    )
+    expect(
+      (wrapper.findAll('input[type="checkbox"]')[0].element as HTMLInputElement)
+        .checked
+    ).toBe(true)
     // First pricing checkbox should be checked
-    expect(wrapper.findAll('input[type="checkbox"]')[3].element.checked).toBe(
-      true
-    )
+    expect(
+      (wrapper.findAll('input[type="checkbox"]')[3].element as HTMLInputElement)
+        .checked
+    ).toBe(true)
     // First difficulty checkbox should be checked
-    expect(wrapper.findAll('input[type="checkbox"]')[6].element.checked).toBe(
-      true
-    )
+    expect(
+      (wrapper.findAll('input[type="checkbox"]')[6].element as HTMLInputElement)
+        .checked
+    ).toBe(true)
     // First technology checkbox should be checked
-    expect(wrapper.findAll('input[type="checkbox"]')[9].element.checked).toBe(
-      true
-    )
+    expect(
+      (wrapper.findAll('input[type="checkbox"]')[9].element as HTMLInputElement)
+        .checked
+    ).toBe(true)
   })
 
   it('displays result counts when facetCounts are provided', () => {

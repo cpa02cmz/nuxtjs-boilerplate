@@ -63,6 +63,6 @@ interface Props {
 
 defineProps<Props>()
 defineEmits<{
-  imageError: [event: Event]
+  imageError: [event: Event | string]
 }>()
 </script>

@@ -160,10 +160,12 @@ const initRecommendations = async () => {
       await userPrefs.initProfile()
 
       const engine = useRecommendationEngine(resources.value, {
-        interests: userPrefs.getUserInterests.value,
-        viewedResources: userPrefs.getViewedResources.value,
-        bookmarkedResources: userPrefs.getBookmarkedResources.value,
-        skillLevel: userPrefs.getUserSkillLevel.value,
+        userPreferences: {
+          interests: userPrefs.getUserInterests.value,
+          viewedResources: userPrefs.getViewedResources.value,
+          bookmarkedResources: userPrefs.getBookmarkedResources.value,
+          skillLevel: userPrefs.getUserSkillLevel.value,
+        },
       })
 
       // Use personalized recommendations if user preferences are available

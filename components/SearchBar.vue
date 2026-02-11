@@ -265,11 +265,11 @@ const handleInput = (event: Event) => {
 
 // Update suggestions based on input
 const updateSuggestions = (query: string) => {
-  if (query && query.length >= SEARCH_CONFIG.MIN_QUERY_LENGTH) {
+  if (query && query.length >= SEARCH_CONFIG.behavior.minQueryLength) {
     // Use advanced suggestions if enabled, otherwise use basic suggestions
     const suggestionsData = props.enableAdvancedFeatures
-      ? getAdvancedSuggestions(query, SEARCH_CONFIG.MAX_SUGGESTIONS)
-      : getBasicSuggestions(query, SEARCH_CONFIG.MAX_SUGGESTIONS)
+      ? getAdvancedSuggestions(query, SEARCH_CONFIG.behavior.maxSuggestions)
+      : getBasicSuggestions(query, SEARCH_CONFIG.behavior.maxSuggestions)
 
     suggestions.value = suggestionsData.map(resource => ({
       id: resource.id,
