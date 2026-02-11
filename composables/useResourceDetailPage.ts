@@ -19,6 +19,7 @@ import logger from '~/utils/logger'
 import type { Resource } from '~/types/resource'
 import { useResources } from '~/composables/useResources'
 import { useRecommendationEngine } from '~/composables/useRecommendationEngine'
+import { useErrorHandler } from '~/composables/useErrorHandler'
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 import { trackResourceView } from '~/utils/analytics'
 import { generateSeoData } from '~/utils/seo'
@@ -49,9 +50,9 @@ export const useResourceDetailPage = (
   const runtimeConfig = useRuntimeConfig()
   const { resources, loading: resourcesLoading } = useResources()
   const { $analytics } = useNuxtApp()
+  const { error, handleError, clearError } = useErrorHandler()
 
   const loading = ref(true)
-  const error = ref<string | null>(null)
   const resource = ref<Resource | null>(null)
   const relatedResources = ref<Resource[]>([])
   const analyticsData = ref<Record<string, unknown> | null>(null)
@@ -222,8 +223,12 @@ export const useResourceDetailPage = (
 
       setSeoMetadata()
     } catch (err) {
-      logger.error('Error loading resource:', err)
-      error.value = 'Failed to load resource'
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to load resource'
+      handleError(errorMessage, {
+        component: 'useResourceDetailPage',
+        severity: 'error',
+      })
     } finally {
       loading.value = false
     }
@@ -247,6 +252,8 @@ export const useResourceDetailPage = (
   return {
     loading,
     error,
+    handleError,
+    clearError,
     resource,
     relatedResources,
     analyticsData,

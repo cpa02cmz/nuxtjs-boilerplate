@@ -30,7 +30,11 @@ describe('useApiKeysManager', () => {
     it('should initialize with null error state', () => {
       const { error } = useApiKeysManager()
 
-      expect(error.value).toBeNull()
+      expect(error.value).toEqual({
+        hasError: false,
+        message: null,
+        details: null,
+      })
     })
 
     it('should export fetchApiKeys function', () => {
@@ -122,13 +126,14 @@ describe('useApiKeysManager', () => {
     })
 
     it('should maintain reactive error reference', () => {
-      const { error } = useApiKeysManager()
+      const { error, handleError, clearError } = useApiKeysManager()
 
-      error.value = null
-      expect(error.value).toBeNull()
+      clearError()
+      expect(error.value.hasError).toBe(false)
 
-      error.value = 'Test error'
-      expect(error.value).toBe('Test error')
+      handleError('Test error')
+      expect(error.value.message).toBe('Test error')
+      expect(error.value.hasError).toBe(true)
     })
   })
 
@@ -253,26 +258,30 @@ describe('useApiKeysManager', () => {
   })
 
   describe('Error State Handling', () => {
-    it('should support null error value', () => {
+    it('should initialize with no error', () => {
       const { error } = useApiKeysManager()
 
-      error.value = null
-      expect(error.value).toBeNull()
+      expect(error.value.hasError).toBe(false)
+      expect(error.value.message).toBeNull()
     })
 
-    it('should support string error value', () => {
-      const { error } = useApiKeysManager()
+    it('should support setting error via handleError', () => {
+      const { error, handleError } = useApiKeysManager()
 
-      error.value = 'Error message'
-      expect(error.value).toBe('Error message')
+      handleError('Error message', { component: 'test' })
+      expect(error.value.message).toBe('Error message')
+      expect(error.value.hasError).toBe(true)
     })
 
-    it('should support clearing error with null', () => {
-      const { error } = useApiKeysManager()
+    it('should support clearing error via clearError', () => {
+      const { error, handleError, clearError } = useApiKeysManager()
 
-      error.value = 'Error'
-      error.value = null
-      expect(error.value).toBeNull()
+      handleError('Error', { component: 'test' })
+      expect(error.value.hasError).toBe(true)
+
+      clearError()
+      expect(error.value.hasError).toBe(false)
+      expect(error.value.message).toBeNull()
     })
   })
 
