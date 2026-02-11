@@ -224,16 +224,54 @@
                   'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
                   isCopied
                     ? 'bg-green-100 text-green-600 scale-110'
-                    : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-500 dark:hover:text-gray-200 dark:hover:bg-gray-800',
+                    : isCopyError
+                      ? 'bg-red-100 text-red-600 scale-110'
+                      : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-500 dark:hover:text-gray-200 dark:hover:bg-gray-800',
                 ]"
                 :aria-label="
-                  isCopied ? `Copied link to ${title}` : `Copy link to ${title}`
+                  isCopied
+                    ? `Copied link to ${title}`
+                    : isCopyError
+                      ? `Failed to copy link to ${title}. Click to try again`
+                      : `Copy link to ${title}`
                 "
-                :title="isCopied ? 'Copied!' : 'Copy link'"
+                :title="
+                  isCopied
+                    ? 'Copied!'
+                    : isCopyError
+                      ? 'Failed to copy. Try again'
+                      : 'Copy link'
+                "
                 @click="copyResourceUrl"
               >
                 <svg
-                  v-if="!isCopied"
+                  v-if="isCopyError"
+                  xmlns="http://www.w3.org/2000/svg"
+                  :class="['h-5 w-5', isCopyAnimating && 'animate-shake']"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <svg
+                  v-else-if="isCopied"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 animate-check-pop"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <svg
+                  v-else
                   xmlns="http://www.w3.org/2000/svg"
                   :class="[
                     'h-5 w-5 transition-transform duration-200',
@@ -245,19 +283,6 @@
                   <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
                   <path
                     d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"
-                  />
-                </svg>
-                <svg
-                  v-else
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 animate-check-pop"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"
                   />
                 </svg>
               </button>
@@ -276,6 +301,13 @@
                   aria-hidden="true"
                 >
                   Copied!
+                </span>
+                <span
+                  v-else-if="isCopyError"
+                  class="ml-1 text-xs font-medium text-red-600 whitespace-nowrap"
+                  aria-hidden="true"
+                >
+                  Failed
                 </span>
               </transition>
             </div>
@@ -460,8 +492,10 @@ const isAddingToComparison = ref(false)
 const isCompareAnimating = ref(false)
 const compareButtonRef = ref<HTMLButtonElement | null>(null)
 const isCopied = ref(false)
+const isCopyError = ref(false)
 const isCopyAnimating = ref(false)
 const copyStatus = ref('')
+const copyErrorTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 const visitButtonRef = ref<HTMLAnchorElement | null>(null)
 
 // Initialize ripple effect for the visit button - Palette's micro-UX touch!
@@ -633,12 +667,19 @@ const addResourceToComparison = () => {
 
 // Method to copy resource URL to clipboard with visual feedback
 const copyResourceUrl = async () => {
-  if (!props.id || isCopied.value) return
+  if (!props.id || isCopied.value || isCopyError.value) return
 
   const resourceUrl = `${runtimeConfig.public.canonicalUrl}/resources/${props.id}`
   const result = await copyToClipboard(resourceUrl)
 
   if (result.success) {
+    // Clear any existing error state first
+    isCopyError.value = false
+    if (copyErrorTimeout.value) {
+      clearTimeout(copyErrorTimeout.value)
+      copyErrorTimeout.value = null
+    }
+
     // Show visual feedback
     isCopied.value = true
     isCopyAnimating.value = true
@@ -660,6 +701,18 @@ const copyResourceUrl = async () => {
       copyStatus.value = ''
     }, animationConfig.copySuccess.resetDelayMs)
   } else {
+    // Show error state on button
+    isCopyError.value = true
+    isCopyAnimating.value = true
+
+    // Clear any existing timeout
+    if (copyErrorTimeout.value) {
+      clearTimeout(copyErrorTimeout.value)
+    }
+
+    // Announce to screen readers
+    copyStatus.value = `Failed to copy link to "${props.title}". Please try again.`
+
     // Show error toast
     const { $toast } = useNuxtApp()
     $toast.error('Failed to copy link. Please try again.')
@@ -671,6 +724,13 @@ const copyResourceUrl = async () => {
       'ResourceCard',
       { resourceId: props.id, resourceTitle: props.title }
     )
+
+    // Reset error state after delay using animationConfig
+    copyErrorTimeout.value = setTimeout(() => {
+      isCopyError.value = false
+      isCopyAnimating.value = false
+      copyStatus.value = ''
+    }, animationConfig.copyError.resetDelayMs)
   }
 }
 
@@ -814,11 +874,37 @@ if (typeof useHead === 'function') {
   color: #4b5563; /* gray-600 */
 }
 
+/* Shake animation for error states - provides immediate visual feedback */
+.animate-shake {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .animate-icon-pop,
   .animate-check-pop,
-  .animate-new-pulse {
+  .animate-new-pulse,
+  .animate-shake {
     animation: none;
   }
 }
