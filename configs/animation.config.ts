@@ -48,6 +48,27 @@ export const animationConfig = {
     pulseColor: process.env.FOCUS_PULSE_COLOR || 'rgba(59, 130, 246, 0.5)',
   },
 
+  // Focus Glow Effect - Palette's micro-UX enhancement!
+  // Adds a subtle animated glow around focused inputs for better visibility
+  focusGlow: {
+    // Duration of the glow pulse animation (ms)
+    durationMs: parseInt(process.env.FOCUS_GLOW_DURATION_MS || '2000'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.FOCUS_GLOW_DURATION_MS || '2000') / 1000}s`,
+    // Glow color (blue-500 with opacity)
+    color: process.env.FOCUS_GLOW_COLOR || 'rgba(59, 130, 246, 0.3)',
+    // Secondary glow color for pulse effect
+    secondaryColor:
+      process.env.FOCUS_GLOW_SECONDARY_COLOR || 'rgba(59, 130, 246, 0.1)',
+    // Box shadow spread at minimum (px)
+    spreadMin: parseInt(process.env.FOCUS_GLOW_SPREAD_MIN || '2'),
+    // Box shadow spread at maximum (px)
+    spreadMax: parseInt(process.env.FOCUS_GLOW_SPREAD_MAX || '8'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.FOCUS_GLOW_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // Ripple Effect Animations - Flexy hates hardcoded colors!
   ripple: {
     // Default ripple color (white with 30% opacity)
