@@ -3,7 +3,7 @@
     v-if="hasActiveFilters"
     class="flex flex-wrap items-center gap-2 mb-4"
     role="region"
-    aria-label="Active filters"
+    aria-label="Active filters. Use left and right arrow keys to navigate between filters. Press Delete or Backspace to remove a filter."
   >
     <div class="flex items-center gap-2">
       <span class="text-sm text-gray-500 font-medium">Active filters</span>
@@ -35,10 +35,13 @@
       <!-- Search query chip -->
       <button
         v-if="searchQuery"
+        ref="chipRefs"
         key="search"
+        tabindex="0"
         class="filter-chip filter-chip-blue group"
-        aria-label="Remove search query filter"
+        :aria-label="`Remove search query filter: ${searchQuery}. Press Delete or Backspace to remove`"
         @click="handleRemove('search', searchQuery, $event)"
+        @keydown="e => handleChipKeydown(e, 'search', searchQuery)"
       >
         <span class="truncate max-w-[200px]">{{ searchQuery }}</span>
         <span
@@ -73,9 +76,12 @@
       <button
         v-for="category in selectedCategories"
         :key="`cat-${category}`"
+        ref="chipRefs"
+        tabindex="0"
         class="filter-chip filter-chip-gray group"
-        :aria-label="`Remove category filter: ${category}`"
+        :aria-label="`Remove category filter: ${category}. Press Delete or Backspace to remove`"
         @click="handleRemove('category', category, $event)"
+        @keydown="e => handleChipKeydown(e, 'category', category)"
       >
         <span class="text-gray-500 mr-1.5">Category:</span>
         <span class="truncate max-w-[150px]">{{ category }}</span>
@@ -110,9 +116,12 @@
       <button
         v-for="pricing in selectedPricingModels"
         :key="`price-${pricing}`"
+        ref="chipRefs"
+        tabindex="0"
         class="filter-chip filter-chip-green group"
-        :aria-label="`Remove pricing filter: ${pricing}`"
+        :aria-label="`Remove pricing filter: ${pricing}. Press Delete or Backspace to remove`"
         @click="handleRemove('pricing', pricing, $event)"
+        @keydown="e => handleChipKeydown(e, 'pricing', pricing)"
       >
         <span class="text-green-600 mr-1.5">Pricing:</span>
         <span class="truncate max-w-[150px]">{{ pricing }}</span>
@@ -147,9 +156,12 @@
       <button
         v-for="difficulty in selectedDifficultyLevels"
         :key="`diff-${difficulty}`"
+        ref="chipRefs"
+        tabindex="0"
         class="filter-chip filter-chip-purple group"
-        :aria-label="`Remove difficulty filter: ${difficulty}`"
+        :aria-label="`Remove difficulty filter: ${difficulty}. Press Delete or Backspace to remove`"
         @click="handleRemove('difficulty', difficulty, $event)"
+        @keydown="e => handleChipKeydown(e, 'difficulty', difficulty)"
       >
         <span class="text-purple-600 mr-1.5">Difficulty:</span>
         <span class="truncate max-w-[150px]">{{ difficulty }}</span>
@@ -184,9 +196,12 @@
       <button
         v-for="tech in selectedTechnologies"
         :key="`tech-${tech}`"
+        ref="chipRefs"
+        tabindex="0"
         class="filter-chip filter-chip-orange group"
-        :aria-label="`Remove technology filter: ${tech}`"
+        :aria-label="`Remove technology filter: ${tech}. Press Delete or Backspace to remove`"
         @click="handleRemove('technology', tech, $event)"
+        @keydown="e => handleChipKeydown(e, 'technology', tech)"
       >
         <span class="text-orange-600 mr-1.5">Tech:</span>
         <span class="truncate max-w-[150px]">{{ tech }}</span>
@@ -221,9 +236,12 @@
       <button
         v-for="tag in selectedTags"
         :key="`tag-${tag}`"
+        ref="chipRefs"
+        tabindex="0"
         class="filter-chip filter-chip-pink group"
-        :aria-label="`Remove tag filter: ${tag}`"
+        :aria-label="`Remove tag filter: ${tag}. Press Delete or Backspace to remove`"
         @click="handleRemove('tag', tag, $event)"
+        @keydown="e => handleChipKeydown(e, 'tag', tag)"
       >
         <span class="text-pink-600 mr-1.5">Tag:</span>
         <span class="truncate max-w-[150px]">{{ tag }}</span>
@@ -258,9 +276,12 @@
       <button
         v-for="benefit in selectedBenefits"
         :key="`benefit-${benefit}`"
+        ref="chipRefs"
+        tabindex="0"
         class="filter-chip filter-chip-teal group"
-        :aria-label="`Remove benefit filter: ${benefit}`"
+        :aria-label="`Remove benefit filter: ${benefit}. Press Delete or Backspace to remove`"
         @click="handleRemove('benefit', benefit, $event)"
+        @keydown="e => handleChipKeydown(e, 'benefit', benefit)"
       >
         <span class="text-teal-600 mr-1.5">Benefit:</span>
         <span class="truncate max-w-[150px]">{{ benefit }}</span>
@@ -294,10 +315,13 @@
       <!-- Date range chip -->
       <button
         v-if="selectedDateRange && selectedDateRange !== 'anytime'"
+        ref="chipRefs"
         key="date"
+        tabindex="0"
         class="filter-chip filter-chip-indigo group"
-        aria-label="Remove date filter"
+        :aria-label="`Remove date filter: ${formatDateRange(selectedDateRange)}. Press Delete or Backspace to remove`"
         @click="handleRemove('date', selectedDateRange, $event)"
+        @keydown="e => handleChipKeydown(e, 'date', selectedDateRange)"
       >
         <span class="text-indigo-600 mr-1.5">Date:</span>
         <span>{{ formatDateRange(selectedDateRange) }}</span>
@@ -424,6 +448,9 @@ const emit = defineEmits<{
 
 // Announcement state for screen readers
 const announcement = ref('')
+
+// Chip refs for keyboard navigation
+const chipRefs = ref<HTMLButtonElement[]>([])
 
 // Undo feature state
 const lastRemovedFilter = ref<RemovedFilter | null>(null)
@@ -650,6 +677,80 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 }
 
+// Handle keyboard navigation between chips
+const handleChipKeydown = (
+  event: KeyboardEvent,
+  type: string,
+  value: string
+) => {
+  const chips = chipRefs.value.filter(Boolean)
+  const currentIndex = chips.indexOf(event.target as HTMLButtonElement)
+
+  if (currentIndex === -1) return
+
+  switch (event.key) {
+    case 'ArrowLeft':
+    case 'Left':
+      event.preventDefault()
+      if (currentIndex > 0) {
+        chips[currentIndex - 1].focus()
+        announceFilterNavigation('previous')
+      }
+      break
+    case 'ArrowRight':
+    case 'Right':
+      event.preventDefault()
+      if (currentIndex < chips.length - 1) {
+        chips[currentIndex + 1].focus()
+        announceFilterNavigation('next')
+      }
+      break
+    case 'Delete':
+    case 'Backspace':
+      event.preventDefault()
+      handleRemove(type, value, event as unknown as Event)
+      // Focus the next chip or previous if this was the last one
+      setTimeout(() => {
+        const updatedChips = chipRefs.value.filter(Boolean)
+        if (updatedChips.length > 0) {
+          const focusIndex = Math.min(currentIndex, updatedChips.length - 1)
+          updatedChips[focusIndex]?.focus()
+        }
+      }, 50)
+      break
+    case 'Home':
+      event.preventDefault()
+      if (chips.length > 0) {
+        chips[0].focus()
+        announceFilterNavigation('first')
+      }
+      break
+    case 'End':
+      event.preventDefault()
+      if (chips.length > 0) {
+        chips[chips.length - 1].focus()
+        announceFilterNavigation('last')
+      }
+      break
+  }
+}
+
+// Announce filter navigation for screen readers
+const announceFilterNavigation = (
+  direction: 'previous' | 'next' | 'first' | 'last'
+) => {
+  const directionText: Record<string, string> = {
+    previous: 'Previous filter',
+    next: 'Next filter',
+    first: 'First filter',
+    last: 'Last filter',
+  }
+  announcement.value = `${directionText[direction]} focused`
+  setTimeout(() => {
+    announcement.value = ''
+  }, ANNOUNCEMENT_CLEAR_MS)
+}
+
 // Get display label for filter type
 const getFilterDisplayLabel = (type: string, value: string): string => {
   const typeLabels: Record<string, string> = {
@@ -873,5 +974,114 @@ onUnmounted(() => {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+/* Enhanced keyboard focus styles */
+.filter-chip:focus-visible {
+  @apply ring-2 ring-offset-2 ring-blue-500 outline-none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Keyboard navigation tooltip */
+.filter-chip::after {
+  content: 'Press Delete to remove';
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  padding: 6px 10px;
+  background-color: rgba(17, 24, 39, 0.9);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: 6px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 50;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Tooltip arrow */
+.filter-chip::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 3px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(17, 24, 39, 0.9) transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* Show tooltip on focus */
+.filter-chip:focus-visible::after,
+.filter-chip:focus-visible::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
+}
+
+/* Also show tooltip on hover for mouse users */
+@media (hover: hover) {
+  .filter-chip:hover::after,
+  .filter-chip:hover::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* Hide tooltip when user is navigating with mouse after keyboard use */
+.filter-chip:focus:not(:focus-visible)::after,
+.filter-chip:focus:not(:focus-visible)::before {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Keyboard shortcut hint in tooltip */
+.filter-chip[data-has-keyboard-hint='true']::after {
+  content: '← → Navigate  |  Delete Remove';
+}
+
+/* Enhanced active state for keyboard interaction */
+.filter-chip:active {
+  transform: scale(0.96);
+}
+
+/* Focus indicator animation */
+@keyframes focusPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.2);
+  }
+}
+
+.filter-chip:focus-visible {
+  animation: focusPulse 2s ease-in-out infinite;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .filter-chip::after,
+  .filter-chip::before {
+    transition: none;
+  }
+
+  .filter-chip:focus-visible {
+    animation: none;
+  }
 }
 </style>
