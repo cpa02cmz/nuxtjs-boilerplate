@@ -44,6 +44,10 @@ export const uiConfig = {
     successMessageClearMs: parseInt(
       process.env.SUCCESS_MESSAGE_CLEAR_DURATION || '3000'
     ),
+    // Reset confirmation duration for filter reset
+    resetConfirmationMs: parseInt(
+      process.env.FEEDBACK_RESET_CONFIRMATION_MS || '1500'
+    ),
   },
 
   // Animation Settings
@@ -310,6 +314,8 @@ export const uiConfig = {
     wide: process.env.CONTAINER_WIDE || 'max-w-6xl',
     full: process.env.CONTAINER_FULL || 'max-w-7xl',
     small: process.env.CONTAINER_SMALL || 'max-w-md',
+    // Admin/Moderation pages
+    admin: process.env.CONTAINER_ADMIN || '1200px',
   },
 
   // Layout Spacing - Flexy hates hardcoded spacing values!

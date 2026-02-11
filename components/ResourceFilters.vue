@@ -190,6 +190,7 @@ import { computed, ref } from 'vue'
 import SavedSearches from '~/components/SavedSearches.vue'
 import FilterSection from '~/components/FilterSection.vue'
 import { triggerHaptic } from '~/utils/hapticFeedback'
+import { uiConfig } from '~/configs/ui.config'
 
 interface FacetCounts {
   [key: string]: number
@@ -260,9 +261,10 @@ const handleResetWithFeedback = () => {
     clearTimeout(resetTimeout)
   }
 
+  // Flexy hates hardcoded values! Using configurable delay from uiConfig
   resetTimeout = setTimeout(() => {
     resetConfirming.value = false
-  }, 1500)
+  }, uiConfig.feedback.resetConfirmationMs)
 }
 
 const toggleCategory = (category: string) => {

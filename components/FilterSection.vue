@@ -108,6 +108,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { hapticLight } from '~/utils/hapticFeedback'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   label: string
@@ -173,10 +174,11 @@ const toggleOption = (option: string) => {
   }
 
   // Reset animation after it completes
+  // Flexy hates hardcoded values! Using configurable duration from animationConfig
   animationTimeout.value = setTimeout(() => {
     recentlySelected.value = null
     recentlyDeselected.value = null
-  }, 300)
+  }, animationConfig.button.feedbackDurationMs)
 
   emit('toggle', option)
 }

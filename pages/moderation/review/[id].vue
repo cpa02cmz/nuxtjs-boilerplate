@@ -11,6 +11,8 @@
 </template>
 
 <script setup lang="ts">
+import { uiConfig } from '~/configs/ui.config'
+
 const route = useRoute()
 const submissionId = computed(() => route.params.id as string)
 
@@ -28,18 +30,19 @@ useHead({
 </script>
 
 <style scoped>
+/* Flexy hates hardcoded values! Using configurable container width from uiConfig */
 .submission-review-page {
-  max-width: 1200px;
+  max-width: v-bind('uiConfig.containers.admin');
   margin: 0 auto;
-  padding: 1rem;
+  padding: v-bind('`${uiConfig.layout.spacing.lg}rem`');
 }
 
 .back-link {
   display: inline-block;
-  margin-bottom: 1rem;
+  margin-bottom: v-bind('`${uiConfig.layout.spacing.md}rem`');
   color: var(--color-primary);
   text-decoration: none;
-  padding: 0.5rem;
+  padding: v-bind('`${uiConfig.layout.spacing.sm}rem`');
 }
 
 .back-link:hover {
