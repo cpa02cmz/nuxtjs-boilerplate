@@ -792,27 +792,42 @@ onUnmounted(() => {
   }
 }
 
-/* Vue Transition Group animations */
-.filter-chip-enter-active,
-.filter-chip-leave-active {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+/* Vue Transition Group animations with Spring Physics */
+
+/* Enter transition - smooth fade and scale up */
+.filter-chip-enter-active {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .filter-chip-enter-from {
   opacity: 0;
-  transform: scale(0.85) translateY(-8px);
+  transform: scale(0.8) translateY(-12px);
 }
 
-.filter-chip-leave-to {
-  opacity: 0;
-  transform: scale(0.85) translateX(-12px);
-}
-
+/* Leave transition - spring physics with anticipation */
 .filter-chip-leave-active {
   position: absolute;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Reduced motion support */
+/* Anticipation phase - brief scale up before disappearing */
+.filter-chip-leave-from {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Final state - shrink and fade with slight overshoot */
+.filter-chip-leave-to {
+  opacity: 0;
+  transform: scale(0.75) translateX(-8px);
+}
+
+/* Staggered sibling movement - create fluid feel as chips reposition */
+.filter-chip-move {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Reduced motion support - disable spring physics */
 @media (prefers-reduced-motion: reduce) {
   .filter-chip,
   .remove-icon,
@@ -822,7 +837,8 @@ onUnmounted(() => {
   }
 
   .filter-chip-enter-active,
-  .filter-chip-leave-active {
+  .filter-chip-leave-active,
+  .filter-chip-move {
     transition: opacity 0.1s ease-out !important;
   }
 
