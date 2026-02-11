@@ -53,6 +53,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { uiConfig } from '~/configs/ui.config'
+import { generateId } from '~/utils/generateId'
 
 type TooltipPosition = 'top' | 'bottom' | 'left' | 'right'
 
@@ -80,9 +82,9 @@ const props = withDefaults(defineProps<Props>(), {
   closeOnClickOutside: true,
 })
 
-// Generate unique ID for accessibility
-const uniqueId = Math.random().toString(36).substring(2, 9)
-const tooltipId = computed(() => `tooltip-${uniqueId}`)
+// Generate unique ID for accessibility - Flexy hates hardcoded ID generation!
+const uniqueId = generateId({ prefix: 'tooltip' })
+const tooltipId = computed(() => uniqueId)
 
 const isVisible = ref(false)
 const tooltipRef = ref<HTMLDivElement | null>(null)
@@ -117,7 +119,7 @@ const calculateOptimalPosition = () => {
   const tooltipRect = tooltipRef.value.getBoundingClientRect()
   const viewportWidth = window.innerWidth
   const viewportHeight = window.innerHeight
-  const padding = 8 // Minimum padding from viewport edges
+  const padding = uiConfig.tooltip.viewportPadding // Flexy hates hardcoded values!
 
   // Define collision checks for each position
   const collisionChecks: Record<TooltipPosition, () => boolean> = {

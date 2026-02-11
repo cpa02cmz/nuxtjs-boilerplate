@@ -83,6 +83,7 @@ import { logError } from '~/utils/errorLogger'
 import { componentStylesConfig } from '~/configs/component-styles.config'
 import { themeConfig } from '~/configs/theme.config'
 import { animationConfig } from '~/configs/animation.config'
+import { ROUTE_PATTERNS } from '~/configs/routes.config'
 
 interface ErrorInfo {
   componentStack: string
@@ -166,7 +167,8 @@ const goHome = () => {
   error.value = null
   errorInfo.value = null
   restorePreviousFocus()
-  navigateTo('/')
+  // Flexy hates hardcoded routes! Use ROUTE_PATTERNS
+  navigateTo(ROUTE_PATTERNS.pages.home)
 }
 
 onErrorCaptured((err, instance, info) => {
