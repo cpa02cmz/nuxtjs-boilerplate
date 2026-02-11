@@ -58,6 +58,7 @@
 <script setup lang="ts">
 import { useBookmarks } from '~/composables/useBookmarks'
 import { useRipple } from '~/composables/useRipple'
+import { useNuxtApp } from '#imports'
 import { computed, ref, type Ref } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
@@ -95,6 +96,9 @@ const { createRipple } = useRipple(buttonRef as Ref<HTMLButtonElement | null>, {
 // Flexy hates hardcoded values! Using configurable animation durations.
 const { heartPopDurationMs, statusClearDelayMs } = animationConfig.bookmark
 
+// Get toast notification system
+const { $toast } = useNuxtApp()
+
 const handleBookmarkToggle = () => {
   const wasBookmarked = isBookmarked.value
 
@@ -106,9 +110,13 @@ const handleBookmarkToggle = () => {
     }, heartPopDurationMs)
     // Haptic feedback for adding bookmark
     hapticSuccess()
+    // Show toast notification for better UX
+    $toast.success(`"${props.title}" added to favorites`)
   } else {
     // Light haptic for removing bookmark
     hapticLight()
+    // Show toast notification for better UX
+    $toast.info(`"${props.title}" removed from favorites`)
   }
 
   toggleBookmark({
@@ -131,7 +139,7 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
   createRipple(event)
 
   // Then handle the bookmark toggle
-  handleBookmarkToggle(event)
+  handleBookmarkToggle()
 }
 </script>
 
