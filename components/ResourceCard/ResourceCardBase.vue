@@ -6,10 +6,7 @@
     role="article"
   >
     <div class="flex items-start">
-      <div
-        v-if="icon"
-        class="flex-shrink-0 mr-4"
-      >
+      <div v-if="icon" class="flex-shrink-0 mr-4">
         <OptimizedImage
           :src="icon"
           :alt="title"
@@ -104,10 +101,7 @@
         </div>
 
         <!-- Description -->
-        <p
-          id="resource-description"
-          class="mt-1 text-gray-800 text-sm"
-        >
+        <p id="resource-description" class="mt-1 text-gray-800 text-sm">
           <span
             v-if="highlightedDescription"
             v-html="sanitizedHighlightedDescription"
@@ -121,30 +115,18 @@
           role="region"
           aria-label="Free tier information"
         >
-          <p
-            id="free-tier-label"
-            class="font-medium text-gray-900 text-sm"
-          >
+          <p id="free-tier-label" class="font-medium text-gray-900 text-sm">
             {{ contentConfig.resourceCard.freeTier }}
           </p>
-          <ul
-            class="mt-1 space-y-1 text-xs text-gray-800"
-            role="list"
-          >
-            <li
-              v-for="(benefit, index) in benefits"
-              :key="index"
-            >
+          <ul class="mt-1 space-y-1 text-xs text-gray-800" role="list">
+            <li v-for="(benefit, index) in benefits" :key="index">
               {{ benefit }}
             </li>
           </ul>
         </div>
 
         <!-- Similarity information (for alternative suggestions) -->
-        <div
-          v-if="similarityScore && similarityScore > 0"
-          class="mt-3"
-        >
+        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
           <div class="flex items-center">
             <div
               class="w-full bg-gray-200 rounded-full h-2"
@@ -163,10 +145,7 @@
               {{ Math.round(similarityScore * 100) }}% match
             </span>
           </div>
-          <p
-            v-if="similarityReason"
-            class="mt-1 text-xs text-gray-600"
-          >
+          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
             {{ similarityReason }}
           </p>
         </div>
@@ -217,10 +196,7 @@
                 />
               </svg>
               {{ visitButtonText }}
-              <span
-                v-if="newTab && !isNavigating"
-                class="ml-1 text-xs"
-              >{{
+              <span v-if="newTab && !isNavigating" class="ml-1 text-xs">{{
                 contentConfig.resourceCard.newTab
               }}</span>
             </a>
@@ -265,10 +241,7 @@
   </article>
 
   <!-- Error state -->
-  <div
-    v-else
-    class="bg-white p-6 rounded-lg shadow border border-red-200"
-  >
+  <div v-else class="bg-white p-6 rounded-lg shadow border border-red-200">
     <div class="flex items-start">
       <div class="flex-shrink-0 mr-4">
         <svg
@@ -287,9 +260,7 @@
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-red-900">
-          Resource Unavailable
-        </h3>
+        <h3 class="text-lg font-medium text-red-900">Resource Unavailable</h3>
         <p class="mt-1 text-red-700 text-sm">
           This resource could not be displayed due to an error.
         </p>
@@ -315,6 +286,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   title: string
@@ -557,7 +529,8 @@ if (typeof useHead === 'function') {
   }
 }
 
-/* Visited resource link state */
+/* Visited resource link state - Flexy hates hardcoded values! */
+/* Using CSS custom properties bound to config values */
 .resource-link {
   position: relative;
   display: inline-flex;
@@ -565,23 +538,33 @@ if (typeof useHead === 'function') {
 }
 
 .resource-link:visited {
-  color: #6b7280;
+  color: v-bind('componentColorsConfig.resourceCard.visited.linkColor');
 }
 
 .resource-link:visited::after {
   content: '';
   display: inline-block;
-  width: 6px;
-  height: 6px;
-  margin-left: 6px;
-  background-color: #9ca3af;
+  width: v-bind(
+    '`${componentColorsConfig.resourceCard.visited.indicatorSize}px`'
+  );
+  height: v-bind(
+    '`${componentColorsConfig.resourceCard.visited.indicatorSize}px`'
+  );
+  margin-left: v-bind(
+    '`${componentColorsConfig.resourceCard.visited.indicatorMargin}px`'
+  );
+  background-color: v-bind(
+    'componentColorsConfig.resourceCard.visited.indicatorColor'
+  );
   border-radius: 50%;
-  opacity: 0.6;
+  opacity: v-bind(
+    'componentColorsConfig.resourceCard.visited.indicatorOpacity'
+  );
   flex-shrink: 0;
 }
 
 .resource-link:hover:visited {
-  color: #4b5563;
+  color: v-bind('componentColorsConfig.resourceCard.visited.linkHoverColor');
 }
 
 /* Reduced motion support */

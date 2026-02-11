@@ -192,6 +192,30 @@ export const componentColorsConfig = {
   scrollToTop: {
     focusOutline: process.env.SCROLL_TO_TOP_FOCUS || '#3b82f6',
   },
+
+  // Resource Card Visited Link Colors - Flexy hates hardcoded visited colors!
+  resourceCard: {
+    visited: {
+      // Visited link color (gray-500)
+      linkColor: process.env.RESOURCE_CARD_VISITED_LINK || '#6b7280',
+      // Visited link hover color (gray-600)
+      linkHoverColor: process.env.RESOURCE_CARD_VISITED_HOVER || '#4b5563',
+      // Visited indicator dot color (gray-400)
+      indicatorColor: process.env.RESOURCE_CARD_VISITED_INDICATOR || '#9ca3af',
+      // Visited indicator dot size (px)
+      indicatorSize: parseInt(
+        process.env.RESOURCE_CARD_VISITED_INDICATOR_SIZE || '6'
+      ),
+      // Visited indicator dot margin (px)
+      indicatorMargin: parseInt(
+        process.env.RESOURCE_CARD_VISITED_INDICATOR_MARGIN || '6'
+      ),
+      // Visited indicator opacity
+      indicatorOpacity: parseFloat(
+        process.env.RESOURCE_CARD_VISITED_INDICATOR_OPACITY || '0.6'
+      ),
+    },
+  },
 } as const
 
 export type ComponentColorsConfig = typeof componentColorsConfig
