@@ -71,7 +71,7 @@ export default defineEventHandler(async event => {
     // Return key with actual API key value and security warning
     // This is the ONLY time the full key is shown - never logged or stored in plaintext
     // The key is hashed with bcrypt before storage and only the hash is kept in the database
-    sendSuccessResponse(event, {
+    return sendSuccessResponse(event, {
       ...newKey,
       key: plaintextKey,
       _warning:

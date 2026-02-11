@@ -36,7 +36,7 @@ export default defineEventHandler(async event => {
     const existingDelivery =
       await webhookStorage.getDeliveryByIdempotencyKey(idempotencyKey)
     if (existingDelivery) {
-      sendSuccessResponse(event, {
+      return sendSuccessResponse(event, {
         message: 'Webhook already delivered (idempotent request)',
         triggered: 0,
         queued: 0,
@@ -46,7 +46,6 @@ export default defineEventHandler(async event => {
           createdAt: existingDelivery.createdAt,
         },
       })
-      return
     }
 
     const webhooks = await webhookStorage.getWebhooksByEvent(
@@ -54,12 +53,11 @@ export default defineEventHandler(async event => {
     )
 
     if (webhooks.length === 0) {
-      sendSuccessResponse(event, {
+      return sendSuccessResponse(event, {
         message: 'No webhooks to trigger',
         triggered: 0,
         queued: 0,
       })
-      return
     }
 
     const payload: WebhookPayload = {
@@ -81,7 +79,7 @@ export default defineEventHandler(async event => {
 
     const queueStats = await webhookQueueSystem.getQueueStats()
 
-    sendSuccessResponse(event, {
+    return sendSuccessResponse(event, {
       message: `Queued ${queuedWebhooks} webhooks for async delivery for event: ${validatedData.event}`,
       triggered: webhooks.length,
       queued: queuedWebhooks,

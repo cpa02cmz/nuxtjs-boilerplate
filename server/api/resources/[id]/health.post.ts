@@ -26,7 +26,7 @@ export default defineEventHandler(async event => {
     // Perform health check
     const healthStatus = await updateResourceHealth(resource)
 
-    sendSuccessResponse(event, {
+    return sendSuccessResponse(event, {
       healthStatus,
       resource: {
         id: resource.id,
