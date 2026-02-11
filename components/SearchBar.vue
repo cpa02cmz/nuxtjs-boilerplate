@@ -247,6 +247,7 @@ interface Emits {
 // The ~ alias doesn't resolve correctly in Nitro SSR context for config files
 const UI_TIMING = {
   SEARCH_DEBOUNCE_MS: 300,
+  SEARCH_BLUR_DELAY_MS: 200,
 }
 
 const SEARCH_CONFIG = {
@@ -312,6 +313,14 @@ const animationConfig = {
   },
   focus: {
     pulseDurationMs: 600,
+  },
+  focusGlow: {
+    durationMs: 600,
+    durationSec: '0.6s',
+    spreadMin: 4,
+    spreadMax: 12,
+    color: 'rgba(59, 130, 246, 0.5)',
+    secondaryColor: 'rgba(147, 197, 253, 0.3)',
   },
 }
 

@@ -182,8 +182,7 @@
                 id="description-description"
                 class="mt-1 text-sm text-gray-500"
               >
-                At least 10 characters. Explain what this resource offers and
-                why it's valuable.
+                {{ descriptionHelperText }}
               </p>
               <!-- Character limit progress bar for visual feedback -->
               <div
@@ -372,7 +371,7 @@
                     v-else-if="hasFormContent() && !submitSuccess"
                     class="text-xs text-gray-400"
                   >
-                    Auto-saving enabled
+                    {{ contentConfig.submit.draft.autoSaveEnabled }}
                   </div>
                 </Transition>
               </div>
@@ -384,7 +383,9 @@
                 aria-live="polite"
                 class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
-                <span v-if="!isSubmitting">Submit Resource</span>
+                <span v-if="!isSubmitting">{{
+                  contentConfig.submit.button.submit
+                }}</span>
                 <span
                   v-else
                   class="flex items-center"
@@ -410,7 +411,7 @@
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Submitting...
+                  {{ contentConfig.submit.button.submitting }}
                 </span>
               </button>
             </div>
@@ -441,7 +442,7 @@
               </div>
               <div class="ml-3">
                 <h3 class="text-sm font-medium text-green-800">
-                  Submission received!
+                  {{ contentConfig.submit.success.heading }}
                 </h3>
                 <div class="mt-2 text-sm text-green-700">
                   <p>
@@ -478,7 +479,7 @@
               </div>
               <div class="ml-3">
                 <h3 class="text-sm font-medium text-red-800">
-                  Submission failed
+                  {{ contentConfig.submit.error.heading }}
                 </h3>
                 <div class="mt-2 text-sm text-red-700">
                   <p>{{ submitError }}</p>
@@ -705,6 +706,15 @@ const descriptionCounterClass = computed(() => {
     return `${baseClasses} text-amber-500`
   }
   return `${baseClasses} text-gray-400`
+})
+
+// Description helper text with min characters - Flexy hates hardcoded strings!
+const descriptionHelperText = computed(() => {
+  const template = contentConfig.submit.form.descriptionHelper
+  return template.replace(
+    '{{ min }}',
+    String(validationConfig.resource.description.minLength)
+  )
 })
 
 // Draft auto-save functionality
