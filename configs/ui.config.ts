@@ -435,6 +435,12 @@ export const uiConfig = {
     // Default textarea rows
     textareaRows: parseInt(process.env.FORM_TEXTAREA_ROWS || '4'),
   },
+
+  // Load More Button Settings
+  loadMore: {
+    // Button text for pagination
+    buttonText: process.env.LOAD_MORE_BUTTON_TEXT || 'Load More',
+  },
 } as const
 
 export type UiConfig = typeof uiConfig
