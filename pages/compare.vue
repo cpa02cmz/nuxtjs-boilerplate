@@ -1,5 +1,5 @@
 <template>
-  <ErrorBoundary component-name="ComparePage">
+  <ClientErrorBoundary component-name="ComparePage">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Confetti celebration when reaching max comparison limit -->
       <ConfettiCelebration
@@ -24,7 +24,7 @@
         @browse-resources="browseResources"
       />
     </div>
-  </ErrorBoundary>
+  </ClientErrorBoundary>
 </template>
 
 <script setup lang="ts">

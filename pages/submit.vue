@@ -1,5 +1,5 @@
 <template>
-  <ErrorBoundary component-name="SubmitPage">
+  <ClientErrorBoundary component-name="SubmitPage">
     <div class="py-12">
       <!-- Confetti celebration for successful submission -->
       <ConfettiCelebration
@@ -399,7 +399,7 @@
         </div>
       </div>
     </div>
-  </ErrorBoundary>
+  </ClientErrorBoundary>
 </template>
 
 <script setup lang="ts">

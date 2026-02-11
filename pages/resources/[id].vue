@@ -1,5 +1,5 @@
 <template>
-  <ErrorBoundary component-name="ResourceDetailPage">
+  <ClientErrorBoundary component-name="ResourceDetailPage">
     <div class="py-8">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Breadcrumb Navigation -->
@@ -202,7 +202,7 @@
         </template>
       </div>
     </div>
-  </ErrorBoundary>
+  </ClientErrorBoundary>
 </template>
 
 <script setup lang="ts">

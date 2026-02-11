@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <ErrorBoundary component-name="SearchPage">
+  <ClientErrorBoundary component-name="SearchPage">
     <div class="py-12">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
@@ -181,7 +181,7 @@
         </div>
       </div>
     </div>
-  </ErrorBoundary>
+  </ClientErrorBoundary>
 </template>
 
 <script setup lang="ts">

@@ -121,9 +121,12 @@ const fallbackComponentName = computed(() => props.componentName || 'component')
 
 /**
  * Save the currently focused element before showing error
+ * Guarded for SSR - document is not available during server-side rendering
  */
 const saveCurrentFocus = () => {
-  previousFocus.value = document.activeElement as HTMLElement
+  if (typeof document !== 'undefined') {
+    previousFocus.value = document.activeElement as HTMLElement
+  }
 }
 
 /**

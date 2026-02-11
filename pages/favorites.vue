@@ -1,5 +1,5 @@
 <template>
-  <ErrorBoundary component-name="FavoritesPage">
+  <ClientErrorBoundary component-name="FavoritesPage">
     <div class="py-12">
       <!-- Confetti celebration when clearing all bookmarks -->
       <ConfettiCelebration
@@ -334,7 +334,7 @@
         </div>
       </div>
     </div>
-  </ErrorBoundary>
+  </ClientErrorBoundary>
 </template>
 
 <script setup lang="ts">
