@@ -1,4 +1,4 @@
-import { getHeader, getQuery } from 'h3'
+import { getHeader, getQuery, createError } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import { sendUnauthorizedError } from '~/server/utils/api-response'
 import { isProtectedApiRoute } from '~/configs/routes.config'
@@ -26,7 +26,11 @@ export default defineEventHandler(async event => {
 
   if (!storedKey || !storedKey.active) {
     sendUnauthorizedError(event, 'Invalid or inactive API key')
-    return
+    // Halt request processing to prevent API handler execution
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Invalid or inactive API key',
+    })
   }
 
   // Update last used timestamp with error handling
