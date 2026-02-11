@@ -14,10 +14,12 @@ export default defineNitroPlugin(nitroApp => {
         return
       }
 
-      // Generate a unique nonce for this request
-      const nonce = randomBytes(16).toString('base64')
+      // Only use nonces in production to avoid CSP blocking inline scripts in dev
+      // In development, we rely on 'unsafe-inline' instead
+      const isDev = process.env.NODE_ENV === 'development'
+      const nonce = isDev ? undefined : randomBytes(16).toString('base64')
 
-      // Get security headers with nonce
+      // Get security headers with nonce (nonce only in production)
       const securityHeaders = getSecurityHeaders(nonce)
 
       // Set security headers for this response
@@ -27,7 +29,8 @@ export default defineNitroPlugin(nitroApp => {
         })
       }
 
-      // Add nonce to script and style tags in the HTML if needed
+      // In production, we would inject nonces into script/style tags here
+      // For now, we skip nonces in development to allow inline scripts/styles
       // This is handled by Nuxt's built-in nonce support when configured properly
     } catch (error) {
       // Log errors but don't expose detailed errors in production

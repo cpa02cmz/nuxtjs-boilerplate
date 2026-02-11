@@ -11,8 +11,15 @@ const mockRoute = ref({
   path: '/search',
 })
 
-vi.mock('vue-router', () => ({
-  useRoute: () => mockRoute.value,
+vi.mock('#imports', () => ({
+  useRoute: () => ({
+    get query() {
+      return mockRoute.value.query
+    },
+    get path() {
+      return mockRoute.value.path
+    },
+  }),
   useRouter: () => ({
     replace: mockReplace,
   }),

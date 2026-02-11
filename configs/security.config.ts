@@ -128,16 +128,18 @@ function parseDensities(value: string): number[] {
 // Function to generate CSP string with optional nonce
 export function generateCsp(nonce?: string): string {
   let cspString = ''
+  const isDev = process.env.NODE_ENV === 'development'
 
   Object.entries(securityConfig.csp).forEach(([directive, sources]) => {
     if (sources.length > 0) {
       let sourceString = sources.join(' ')
 
-      // Add nonce to script-src and style-src if provided
+      // Add nonce to script-src and style-src if provided (only in production)
+      // In development, we skip nonces to avoid blocking inline scripts/styles
       if (
         nonce &&
         (directive === 'scriptSrc' || directive === 'styleSrc') &&
-        process.env.NODE_ENV !== 'development'
+        !isDev
       ) {
         sourceString = `'nonce-${nonce}' ${sourceString}`
       }
