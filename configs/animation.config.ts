@@ -302,6 +302,19 @@ export const animationConfig = {
       process.env.CARD_SHINE_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // Smart Paste Animations - Palette's micro-UX enhancement!
+  // Provides delightful visual feedback when users paste content
+  smartPaste: {
+    // Duration for the paste indicator to remain visible (ms)
+    indicatorDurationMs: parseInt(
+      process.env.SMART_PASTE_DURATION_MS || '1200'
+    ),
+    // Animation scale factor for the indicator pop effect
+    popScale: parseFloat(process.env.SMART_PASTE_POP_SCALE || '1.05'),
+    // Vertical offset for indicator position (px)
+    verticalOffset: parseInt(process.env.SMART_PASTE_VERTICAL_OFFSET || '8'),
+  },
+
   // Confetti Celebration Animations - Palette's delightful micro-UX touch!
   confetti: {
     // Delay before triggering confetti after success (ms) - allows UI to update first
