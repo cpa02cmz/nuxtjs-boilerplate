@@ -23,7 +23,10 @@
         </div>
 
         <!-- Error State -->
-        <div v-else-if="error || !resource" class="text-center py-12">
+        <div
+          v-else-if="error || !resource"
+          class="text-center py-12"
+        >
           <div class="mb-6">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -124,7 +127,9 @@
 
                   <!-- Tags -->
                   <div class="mb-8">
-                    <h3 class="text-lg font-medium text-gray-900 mb-3">Tags</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-3">
+                      Tags
+                    </h3>
                     <div class="flex flex-wrap gap-2">
                       <span
                         v-for="tag in resource.tags"
