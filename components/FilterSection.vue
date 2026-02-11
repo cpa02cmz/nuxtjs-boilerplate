@@ -71,6 +71,7 @@
               class="filter-checkbox h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500 focus:ring-offset-0 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
               :class="{
                 'animate-checkbox-pop': recentlySelected === option,
+                'animate-checkbox-pop-out': recentlyDeselected === option,
               }"
               @change="toggleOption(option)"
               @click.stop
@@ -134,6 +135,7 @@ const emit = defineEmits<Emits>()
 
 // Track recently selected option for animation
 const recentlySelected = ref<string | null>(null)
+const recentlyDeselected = ref<string | null>(null)
 const animationTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 
 const scrollableClass = computed(() =>
@@ -153,20 +155,28 @@ const toggleOption = (option: string) => {
   // Provide haptic feedback for mobile users
   hapticLight()
 
-  // Trigger animation if selecting (not deselecting)
-  if (!props.selectedOptions.includes(option)) {
+  // Determine if selecting or deselecting
+  const isSelecting = !props.selectedOptions.includes(option)
+
+  // Trigger animation based on action
+  if (isSelecting) {
     recentlySelected.value = option
-
-    // Clear existing timeout
-    if (animationTimeout.value) {
-      clearTimeout(animationTimeout.value)
-    }
-
-    // Reset animation after it completes
-    animationTimeout.value = setTimeout(() => {
-      recentlySelected.value = null
-    }, 300)
+    recentlyDeselected.value = null
+  } else {
+    recentlyDeselected.value = option
+    recentlySelected.value = null
   }
+
+  // Clear existing timeout
+  if (animationTimeout.value) {
+    clearTimeout(animationTimeout.value)
+  }
+
+  // Reset animation after it completes
+  animationTimeout.value = setTimeout(() => {
+    recentlySelected.value = null
+    recentlyDeselected.value = null
+  }, 300)
 
   emit('toggle', option)
 }
@@ -248,6 +258,23 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 }
 
+/* Checkbox pop-out animation when deselected */
+.animate-checkbox-pop-out {
+  animation: checkbox-pop-out 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes checkbox-pop-out {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.85);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* Enhanced focus styles for keyboard navigation */
 .filter-checkbox:focus-visible {
   outline: 2px solid #6b7280;
@@ -301,6 +328,7 @@ button:hover {
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .animate-checkbox-pop,
+  .animate-checkbox-pop-out,
   .text-blue-600.font-medium {
     animation: none;
   }
