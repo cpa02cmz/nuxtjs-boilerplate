@@ -154,6 +154,9 @@ export const uiConfig = {
     comparisonNavigationDelayMs: parseInt(
       process.env.TIMING_COMPARISON_NAVIGATION || '400'
     ),
+
+    // Focus restoration timing - Flexy hates hardcoded values!
+    focusRestoreDelayMs: parseInt(process.env.TIMING_FOCUS_RESTORE || '100'),
   },
 
   // Data Loading
