@@ -287,6 +287,48 @@
             </div>
 
             <div class="pt-4">
+              <!-- Draft save indicator -->
+              <div
+                class="flex items-center justify-center mb-3 min-h-[20px]"
+                aria-live="polite"
+              >
+                <Transition
+                  enter-active-class="transition-all duration-300 ease-out"
+                  enter-from-class="opacity-0 transform -translate-y-1"
+                  enter-to-class="opacity-100 transform translate-y-0"
+                  leave-active-class="transition-all duration-300 ease-in"
+                  leave-from-class="opacity-100 transform translate-y-0"
+                  leave-to-class="opacity-0 transform -translate-y-1"
+                >
+                  <div
+                    v-if="showSavedIndicator && lastSavedTimestamp"
+                    class="flex items-center text-xs text-green-600"
+                  >
+                    <svg
+                      class="w-3.5 h-3.5 mr-1.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    <span>Draft saved {{ lastSavedText }}</span>
+                  </div>
+                  <div
+                    v-else-if="hasFormContent() && !submitSuccess"
+                    class="text-xs text-gray-400"
+                  >
+                    Auto-saving enabled
+                  </div>
+                </Transition>
+              </div>
+
               <button
                 type="submit"
                 :disabled="isSubmitting"
@@ -403,7 +445,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onUnmounted } from 'vue'
 import { useNuxtApp } from '#app'
 import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
@@ -452,6 +494,29 @@ const {
 
 // Track which fields should shake when validation fails
 const shakeFields = ref<Record<string, boolean>>({})
+
+// Draft save indicator state
+const lastSavedTimestamp = ref<number | null>(null)
+const showSavedIndicator = ref(false)
+const savedIndicatorTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+
+// Format relative time for saved indicator
+const lastSavedText = computed(() => {
+  if (!lastSavedTimestamp.value) return ''
+
+  const now = Date.now()
+  const diff = now - lastSavedTimestamp.value
+
+  if (diff < TIME_MS.MINUTE) {
+    return 'just now'
+  } else if (diff < TIME_MS.HOUR) {
+    const minutes = Math.floor(diff / TIME_MS.MINUTE)
+    return `${minutes}m ago`
+  } else {
+    const hours = Math.floor(diff / TIME_MS.HOUR)
+    return `${hours}h ago`
+  }
+})
 
 // Field blur handlers for inline validation
 const handleTitleBlur = () => {
@@ -588,8 +653,23 @@ const descriptionCounterClass = computed(() => {
 const saveDraft = debounce(() => {
   if (hasFormContent()) {
     const draftData = getFormData()
+    const now = Date.now()
     localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftData))
-    localStorage.setItem(DRAFT_TIMESTAMP_KEY, Date.now().toString())
+    localStorage.setItem(DRAFT_TIMESTAMP_KEY, now.toString())
+
+    // Update save indicator
+    lastSavedTimestamp.value = now
+    showSavedIndicator.value = true
+
+    // Clear previous timeout if exists
+    if (savedIndicatorTimeout.value) {
+      clearTimeout(savedIndicatorTimeout.value)
+    }
+
+    // Hide indicator after 3 seconds
+    savedIndicatorTimeout.value = setTimeout(() => {
+      showSavedIndicator.value = false
+    }, 3000)
   }
 }, timeConfig.debounce.draft)
 
@@ -685,6 +765,13 @@ onMounted(() => {
         return ''
       }
     })
+  }
+})
+
+// Cleanup timeout on unmount
+onUnmounted(() => {
+  if (savedIndicatorTimeout.value) {
+    clearTimeout(savedIndicatorTimeout.value)
   }
 })
 
