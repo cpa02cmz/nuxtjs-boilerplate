@@ -6,17 +6,51 @@
     :aria-valuenow="Math.round(progress)"
     aria-valuemin="0"
     aria-valuemax="100"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+    @mousemove="handleMouseMove"
   >
     <div
       class="reading-progress-bar"
       :style="{ transform: `scaleX(${progress / 100})` }"
       aria-hidden="true"
     />
+
+    <!-- Progress tooltip -->
+    <Transition
+      enter-active-class="transition-all duration-200 ease-out"
+      enter-from-class="opacity-0 translate-y-2"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition-all duration-150 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 translate-y-2"
+    >
+      <div
+        v-if="showTooltip"
+        class="reading-progress-tooltip"
+        :style="tooltipStyle"
+        role="tooltip"
+        aria-hidden="true"
+      >
+        <span class="tooltip-text">{{ Math.round(progress) }}%</span>
+        <div class="tooltip-arrow" />
+      </div>
+    </Transition>
+
+    <!-- Screen reader announcement for progress changes -->
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >
+      {{ progressAnnouncement }}
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 
 interface Props {
   /**
@@ -34,19 +68,53 @@ interface Props {
    * @default 'bg-blue-500' - Tailwind blue-500
    */
   color?: string
+  /**
+   * Enable tooltip on hover
+   * @default true
+   */
+  showTooltipOnHover?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   targetSelector: 'main',
   ariaLabel: 'Reading progress',
   color: 'bg-blue-500',
+  showTooltipOnHover: true,
 })
 
 // Reactive state
 const progress = ref(0)
+const showTooltip = ref(false)
+const tooltipPosition = ref(0)
+const lastAnnouncedProgress = ref(0)
 
 // Track if component is mounted (to avoid SSR issues)
 let isMounted = false
+
+// Computed tooltip style
+const tooltipStyle = computed(() => ({
+  left: `${tooltipPosition.value}px`,
+}))
+
+// Progress announcement state
+const progressAnnouncement = ref('')
+
+// Watch for milestone announcements (25% intervals)
+watch(progress, newProgress => {
+  const currentProgress = Math.round(newProgress)
+  const milestone = Math.floor(currentProgress / 25) * 25
+
+  // Only announce when crossing a 25% milestone
+  if (milestone > lastAnnouncedProgress.value && milestone <= 100) {
+    lastAnnouncedProgress.value = milestone
+    progressAnnouncement.value = `${milestone}% reading progress`
+
+    // Clear announcement after screen reader has time to read it
+    setTimeout(() => {
+      progressAnnouncement.value = ''
+    }, 1000)
+  }
+})
 
 // Calculate scroll progress
 const calculateProgress = () => {
@@ -78,6 +146,23 @@ const calculateProgress = () => {
     )
   } else {
     progress.value = 0
+  }
+}
+
+// Tooltip event handlers
+const handleMouseEnter = () => {
+  if (props.showTooltipOnHover) {
+    showTooltip.value = true
+  }
+}
+
+const handleMouseLeave = () => {
+  showTooltip.value = false
+}
+
+const handleMouseMove = (event: MouseEvent) => {
+  if (props.showTooltipOnHover) {
+    tooltipPosition.value = event.clientX
   }
 }
 
@@ -171,6 +256,77 @@ onUnmounted(() => {
 @media (max-height: 600px) {
   .reading-progress-container {
     display: none;
+  }
+}
+
+/* Progress tooltip */
+.reading-progress-tooltip {
+  position: absolute;
+  top: 12px;
+  transform: translateX(-50%);
+  z-index: 10000;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tooltip-text {
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  animation: tooltip-appear 0.2s ease-out;
+}
+
+.tooltip-arrow {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid #374151;
+  margin-top: -1px;
+}
+
+@keyframes tooltip-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Reduced motion support for tooltip */
+@media (prefers-reduced-motion: reduce) {
+  .reading-progress-tooltip {
+    transition: none;
+  }
+
+  .tooltip-text {
+    animation: none;
   }
 }
 </style>
