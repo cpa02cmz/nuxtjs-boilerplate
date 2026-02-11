@@ -85,7 +85,7 @@ export default defineEventHandler(async event => {
     await cacheSetWithTags(
       cacheKey,
       response,
-      cacheConfig.server.defaultTtlMs / 1000,
+      cacheConfig.server.defaultTtlSeconds,
       generateCacheTags(
         cacheTagsConfig.resources.alternatives(resourceId),
         resourceId

@@ -7,6 +7,7 @@ import {
   themeConfig,
   cacheConfig,
   securityConfig,
+  httpConfig,
   DEFAULT_DEV_URL,
 } from './configs'
 
@@ -189,21 +190,22 @@ export default defineNuxtConfig({
       '~/server/plugins/resource-validation.ts',
     ],
     // Route rules for caching and performance
+    // Flexy hates hardcoded values! Using httpConfig for cache headers
     routeRules: {
       '/': {
         prerender: true,
-        headers: { 'Cache-Control': 'public, max-age=60, s-maxage=300' },
+        headers: { 'Cache-Control': httpConfig.cacheControl.dynamic.value },
       },
       '/search': {
         prerender: true,
-        headers: { 'Cache-Control': 'public, max-age=60, s-maxage=300' },
+        headers: { 'Cache-Control': httpConfig.cacheControl.dynamic.value },
       },
       '/about': {
         prerender: true,
-        headers: { 'Cache-Control': 'public, max-age=300, s-maxage=3600' },
+        headers: { 'Cache-Control': httpConfig.cacheControl.static.value },
       },
       '/_nuxt/**': {
-        headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+        headers: { 'Cache-Control': httpConfig.cacheControl.immutable.value },
       },
     },
   },

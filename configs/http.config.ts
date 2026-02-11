@@ -99,6 +99,34 @@ export const httpConfig = {
     maxRedirects: parseInt(process.env.HTTP_MAX_REDIRECTS || '5'),
     maxRetries: parseInt(process.env.HTTP_MAX_RETRIES || '3'),
   },
+
+  // Cache-Control header values for different route types
+  // Flexy hates hardcoded cache headers!
+  cacheControl: {
+    // Dynamic pages (home, search) - short cache
+    dynamic: {
+      maxAge: parseInt(process.env.CACHE_DYNAMIC_MAX_AGE || '60'),
+      sMaxAge: parseInt(process.env.CACHE_DYNAMIC_S_MAX_AGE || '300'),
+      get value(): string {
+        return `public, max-age=${this.maxAge}, s-maxage=${this.sMaxAge}`
+      },
+    },
+    // Static pages (about) - longer cache
+    static: {
+      maxAge: parseInt(process.env.CACHE_STATIC_MAX_AGE || '300'),
+      sMaxAge: parseInt(process.env.CACHE_STATIC_S_MAX_AGE || '3600'),
+      get value(): string {
+        return `public, max-age=${this.maxAge}, s-maxage=${this.sMaxAge}`
+      },
+    },
+    // Immutable assets - very long cache
+    immutable: {
+      maxAge: parseInt(process.env.CACHE_IMMUTABLE_MAX_AGE || '31536000'),
+      get value(): string {
+        return `public, max-age=${this.maxAge}, immutable`
+      },
+    },
+  },
 } as const
 
 // Type exports

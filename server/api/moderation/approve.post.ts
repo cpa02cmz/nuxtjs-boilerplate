@@ -16,6 +16,7 @@ import {
 } from '~/server/utils/api-response'
 import { prisma } from '~/server/utils/db'
 import { safeJsonParse } from '~/server/utils/safeJsonParse'
+import { moderationConfig } from '~/configs/moderation.config'
 
 // Validation schema for approve submission request
 const approveSubmissionSchema = z.object({
@@ -23,7 +24,10 @@ const approveSubmissionSchema = z.object({
   reviewedBy: z.string().min(1, 'Reviewer ID is required'),
   notes: z
     .string()
-    .max(1000, 'Notes must be less than 1000 characters')
+    .max(
+      moderationConfig.validation.notes.maxLength,
+      `Notes must be less than ${moderationConfig.validation.notes.maxLength} characters`
+    )
     .optional(),
 })
 

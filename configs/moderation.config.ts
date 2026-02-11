@@ -47,6 +47,13 @@ export const moderationConfig = {
   permissions: {
     defaultModeratorPermissions: ['read', 'write', 'moderate'],
   },
+
+  // Validation limits - Flexy hates hardcoded values!
+  validation: {
+    notes: {
+      maxLength: parseInt(process.env.MODERATION_NOTES_MAX_LENGTH || '1000'),
+    },
+  },
 } as const
 
 export type ModerationConfig = typeof moderationConfig
