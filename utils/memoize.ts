@@ -1,4 +1,5 @@
 import { memoizeConfig } from '~/configs/memoize.config'
+import { limitsConfig } from '~/configs/limits.config'
 
 /**
  * Generate a cryptographically secure random ID using Web Crypto API
@@ -12,7 +13,9 @@ const generateSecureId = (): string => {
   } else {
     // Fallback for environments without crypto (shouldn't happen in modern browsers/Node)
     for (let i = 0; i < array.length; i++) {
-      array[i] = Math.floor(Math.random() * 256)
+      array[i] = Math.floor(
+        Math.random() * limitsConfig.displayLength.randomByteMax
+      )
     }
   }
 
@@ -20,7 +23,8 @@ const generateSecureId = (): string => {
   const hex = Array.from(array, byte =>
     byte.toString(16).padStart(2, '0')
   ).join('')
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`
+  const { uuidSlices } = limitsConfig.displayLength
+  return `${hex.slice(0, uuidSlices.section1)}-${hex.slice(uuidSlices.section1, uuidSlices.section2)}-${hex.slice(uuidSlices.section2, uuidSlices.section3)}-${hex.slice(uuidSlices.section3, uuidSlices.section4)}-${hex.slice(uuidSlices.section4, uuidSlices.section5)}`
 }
 
 const generateCacheKey = (text: string, searchQuery: string): string => {

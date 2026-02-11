@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import SearchBar from '~/components/SearchBar.vue'
+import { TEST_TIMING } from '~/configs/test-timing.config'
 
 // Mock the composables used in SearchBar
 vi.mock('~/composables/useResourceData', () => ({
@@ -129,7 +130,9 @@ describe('SearchBar', () => {
     await input.setValue('New search query')
 
     // Wait for the debounce timeout
-    await new Promise(resolve => setTimeout(resolve, 350))
+    await new Promise(resolve =>
+      setTimeout(resolve, TEST_TIMING.DEBOUNCE_DELAY)
+    )
 
     expect(wrapper.emitted('update:modelValue')).toBeTruthy()
     expect(wrapper.emitted('update:modelValue')![0]).toEqual([
@@ -153,7 +156,9 @@ describe('SearchBar', () => {
     await input.setValue('Search query')
 
     // Wait for the debounce timeout
-    await new Promise(resolve => setTimeout(resolve, 350))
+    await new Promise(resolve =>
+      setTimeout(resolve, TEST_TIMING.DEBOUNCE_DELAY)
+    )
 
     expect(wrapper.emitted('search')).toBeTruthy()
     expect(wrapper.emitted('search')![0]).toEqual(['Search query'])
@@ -200,7 +205,9 @@ describe('SearchBar', () => {
     await input.setValue('test')
 
     // Wait for debounce timeout
-    await new Promise(resolve => setTimeout(resolve, 350))
+    await new Promise(resolve =>
+      setTimeout(resolve, TEST_TIMING.DEBOUNCE_DELAY)
+    )
 
     // The suggestions array should be populated
     // Actual component rendering is handled by LazySearchSuggestions inside ClientOnly
@@ -223,7 +230,9 @@ describe('SearchBar', () => {
     await input.setValue('')
 
     // Wait for the debounce timeout
-    await new Promise(resolve => setTimeout(resolve, 350))
+    await new Promise(resolve =>
+      setTimeout(resolve, TEST_TIMING.DEBOUNCE_DELAY)
+    )
 
     // The suggestions component should not be rendered when input is empty
     const searchSuggestions = wrapper.findComponent(mockSearchSuggestions)

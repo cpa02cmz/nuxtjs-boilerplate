@@ -21,11 +21,18 @@ export default defineEventHandler(async event => {
   try {
     // Parse query parameters
     const query = getQuery(event)
-    const days = parseInt(query.days as string) || 30
+    const days =
+      parseInt(query.days as string) || analyticsConfig.dateRange.defaultDays
 
     // Validate days parameter
-    if (![7, 30, 90].includes(days)) {
-      // Default to 30 if invalid - log warning but continue
+    if (
+      ![
+        analyticsConfig.dateRange.weekDays,
+        analyticsConfig.dateRange.monthDays,
+        analyticsConfig.dateRange.yearDays / 4, // 90 days = ~3 months
+      ].includes(days)
+    ) {
+      // Default to configured value if invalid - log warning but continue
     }
 
     // Calculate date range

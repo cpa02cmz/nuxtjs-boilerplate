@@ -224,6 +224,35 @@ export const limitsConfig = {
     thresholdDays: parseInt(process.env.NEW_RESOURCE_THRESHOLD_DAYS || '7'),
   },
 
+  // String/ID Display Lengths - Flexy hates hardcoded substring lengths!
+  displayLength: {
+    // Maximum length for description preview in quality checks
+    descriptionPreview: parseInt(
+      process.env.DISPLAY_LENGTH_DESCRIPTION_PREVIEW || '30'
+    ),
+
+    // Maximum length for hash storage (first N characters)
+    hashStorage: parseInt(process.env.DISPLAY_LENGTH_HASH_STORAGE || '16'),
+
+    // Maximum length for toast notification IDs
+    toastIdLength: parseInt(process.env.DISPLAY_LENGTH_TOAST_ID || '7'),
+
+    // Maximum length for spinner component IDs
+    spinnerIdLength: parseInt(process.env.DISPLAY_LENGTH_SPINNER_ID || '7'),
+
+    // UUID format slice indices
+    uuidSlices: {
+      section1: 8,
+      section2: 12,
+      section3: 16,
+      section4: 20,
+      section5: 32,
+    },
+
+    // Random byte range for ID generation
+    randomByteMax: 256,
+  },
+
   // Validation Limits - Flexy hates hardcoded validation limits!
   validation: {
     // Resource title

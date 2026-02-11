@@ -2,6 +2,7 @@ import { test, expect, type ConsoleMessage } from '@playwright/test'
 import * as fs from 'fs'
 import * as path from 'path'
 import { DEFAULT_DEV_URL } from '../../configs/url.config'
+import { TEST_TIMING } from '../../configs/test-timing.config'
 
 // Types for console monitoring
 interface ConsoleError {
@@ -116,7 +117,7 @@ test.describe('BroCula Console Monitor', () => {
       await page.waitForLoadState('networkidle')
 
       // Wait a bit for any delayed console messages
-      await page.waitForTimeout(2000)
+      await page.waitForTimeout(TEST_TIMING.EXTENDED)
 
       // Basic assertions to ensure page loaded
       await expect(page).toHaveTitle(/.+/)

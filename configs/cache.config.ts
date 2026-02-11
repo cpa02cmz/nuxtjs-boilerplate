@@ -119,6 +119,24 @@ export const cacheConfig = {
     ),
   },
 
+  // API Endpoint Cache TTLs - Flexy hates hardcoded TTL values!
+  api: {
+    // Default TTL for resource endpoints (seconds)
+    resourceTtlSeconds: parseInt(
+      process.env.CACHE_API_RESOURCE_TTL_SECONDS || '600'
+    ), // 10 minutes
+
+    // Default TTL for comparison endpoints (seconds)
+    comparisonTtlSeconds: parseInt(
+      process.env.CACHE_API_COMPARISON_TTL_SECONDS || '300'
+    ), // 5 minutes
+
+    // Default TTL for analytics endpoints (seconds)
+    analyticsTtlSeconds: parseInt(
+      process.env.CACHE_API_ANALYTICS_TTL_SECONDS || '60'
+    ), // 1 minute
+  },
+
   // Route Cache Settings - HTTP Cache-Control headers for different routes
   routes: {
     home: {

@@ -7,6 +7,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { logger } from '~/utils/logger'
+import { analyticsConfig } from '~/configs/analytics.config'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
@@ -21,7 +22,11 @@ export default defineEventHandler(async event => {
     const query = getQuery(event)
     const startDate = query.startDate
       ? new Date(query.startDate as string)
-      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      : new Date(
+          Date.now() -
+            analyticsConfig.dateRange.defaultDays *
+              analyticsConfig.dateRange.msPerDay
+        )
     const endDate = query.endDate
       ? new Date(query.endDate as string)
       : new Date()

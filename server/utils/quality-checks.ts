@@ -1,6 +1,7 @@
 import type { Resource } from '~/types/resource'
 import { VALID_CATEGORIES } from './constants'
 import { validationConfig } from '~/configs/validation.config'
+import { limitsConfig } from '~/configs/limits.config'
 
 interface QualityCheckResult {
   id: string
@@ -74,7 +75,7 @@ export function runQualityChecks(resource: Resource): QualityCheckResult[] {
       title: 'Description Length',
       description: 'Checks if the description is detailed enough',
       status: 'warn',
-      details: `Description "${resource.description.substring(0, 30)}..." is quite short (minimum ${descriptionMinLength} characters)`,
+      details: `Description "${resource.description.substring(0, limitsConfig.displayLength.descriptionPreview)}..." is quite short (minimum ${descriptionMinLength} characters)`,
     })
   } else {
     checks.push({

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useResourceData } from '~/composables/useResourceData'
+import { TEST_TIMING } from '~/configs/test-timing.config'
 
 describe('useResourceData', () => {
   beforeEach(() => {
@@ -9,7 +10,7 @@ describe('useResourceData', () => {
   it('should fetch resources successfully', async () => {
     const { resources, loading, error } = useResourceData()
 
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise(resolve => setTimeout(resolve, TEST_TIMING.STANDARD))
 
     expect(resources.value).toBeDefined()
     expect(resources.value!.length).toBeGreaterThan(0)
@@ -20,7 +21,7 @@ describe('useResourceData', () => {
   it('should have correct resource structure', async () => {
     const { resources } = useResourceData()
 
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise(resolve => setTimeout(resolve, TEST_TIMING.STANDARD))
 
     expect(resources.value).toBeDefined()
     expect(resources.value!.length).toBeGreaterThan(0)
@@ -40,7 +41,7 @@ describe('useResourceData', () => {
   it('should handle different pricing values', async () => {
     const { resources } = useResourceData()
 
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise(resolve => setTimeout(resolve, TEST_TIMING.STANDARD))
 
     const pricingModels = resources.value!.map(r => r.pricingModel)
     expect(pricingModels).toContain('Free Tier')
@@ -50,7 +51,7 @@ describe('useResourceData', () => {
   it('should handle different difficulty levels', async () => {
     const { resources } = useResourceData()
 
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise(resolve => setTimeout(resolve, TEST_TIMING.STANDARD))
 
     expect(resources.value).toBeDefined()
     expect(resources.value!.length).toBeGreaterThan(0)
@@ -69,7 +70,7 @@ describe('useResourceData', () => {
       technologies,
     } = useResourceData()
 
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise(resolve => setTimeout(resolve, TEST_TIMING.STANDARD))
 
     expect(resources.value).toBeDefined()
     expect(categories.value).toBeDefined()
@@ -85,13 +86,13 @@ describe('useResourceData', () => {
   it('should provide retry functionality', async () => {
     const { resources, retryResources, loading, error } = useResourceData()
 
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise(resolve => setTimeout(resolve, TEST_TIMING.STANDARD))
 
     const initialResources = [...resources.value!]
 
     retryResources()
 
-    await new Promise(resolve => setTimeout(resolve, 100))
+    await new Promise(resolve => setTimeout(resolve, TEST_TIMING.STANDARD))
 
     expect(loading.value).toBe(false)
     expect(error.value).toBe(null)

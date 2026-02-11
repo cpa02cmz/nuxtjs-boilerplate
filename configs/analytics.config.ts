@@ -42,6 +42,30 @@ export const analyticsConfig = {
     maxEntries: parseInt(process.env.ANALYTICS_MAX_STORAGE_ENTRIES || '100'),
   },
 
+  // Date Range Settings - Flexy hates hardcoded day values!
+  dateRange: {
+    // Default number of days for analytics queries
+    defaultDays: parseInt(process.env.ANALYTICS_DEFAULT_DAYS || '30'),
+
+    // Minimum days allowed
+    minDays: parseInt(process.env.ANALYTICS_MIN_DAYS || '1'),
+
+    // Maximum days allowed
+    maxDays: parseInt(process.env.ANALYTICS_MAX_DAYS || '365'),
+
+    // Days in a week
+    weekDays: 7,
+
+    // Days in a month
+    monthDays: 30,
+
+    // Days in a year
+    yearDays: 365,
+
+    // Milliseconds per day (for date calculations)
+    msPerDay: 24 * 60 * 60 * 1000,
+  },
+
   // Performance Tracking
   performance: {
     // Maximum performance history entries

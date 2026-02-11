@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { ref } from 'vue'
 import { useUserPreferences } from '~/composables/useUserPreferences'
+import { TEST_TIMING } from '~/configs/test-timing.config'
 
 const mockStorageValue = ref<unknown>(null)
 const mockSetResult = ref(true)
@@ -156,7 +157,9 @@ describe('useUserPreferences', () => {
     it('should update lastActive timestamp', async () => {
       const oldTimestamp = composable.userProfile.value?.lastActive
 
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await new Promise(resolve =>
+        setTimeout(resolve, TEST_TIMING.STATE_UPDATE)
+      )
 
       await composable.updatePreferences({ skillLevel: 'advanced' })
 
@@ -235,7 +238,9 @@ describe('useUserPreferences', () => {
     it('should update lastActive timestamp', async () => {
       const oldTimestamp = composable.userProfile.value?.lastActive
 
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await new Promise(resolve =>
+        setTimeout(resolve, TEST_TIMING.STATE_UPDATE)
+      )
 
       await composable.trackInteraction({
         interactionType: 'view',
