@@ -80,6 +80,9 @@
 <script setup lang="ts">
 import { onErrorCaptured, ref, computed, nextTick } from 'vue'
 import { logError } from '~/utils/errorLogger'
+import { componentStylesConfig } from '~/configs/component-styles.config'
+import { themeConfig } from '~/configs/theme.config'
+import { animationConfig } from '~/configs/animation.config'
 
 interface ErrorInfo {
   componentStack: string
@@ -173,52 +176,57 @@ onErrorCaptured((err, instance, info) => {
 </script>
 
 <style scoped>
+/* Flexy hates hardcoded values! Using config-bound CSS custom properties */
 .error-boundary {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 300px;
+  min-height: v-bind('componentStylesConfig.errorBoundary.minHeight');
   padding: 1rem;
 }
 
 .error-content {
   text-align: center;
-  max-width: 400px;
+  max-width: v-bind('componentStylesConfig.errorBoundary.maxWidth');
 }
 
 .error-icon {
-  margin-bottom: 1rem;
+  margin-bottom: v-bind('componentStylesConfig.errorBoundary.iconMarginBottom');
 }
 
 .error-title {
-  font-size: 1.5rem;
+  font-size: v-bind('componentStylesConfig.errorBoundary.titleFontSize');
   font-weight: bold;
-  color: #111827;
-  margin-bottom: 0.5rem;
+  color: v-bind('themeConfig.errorBoundary.titleColor');
+  margin-bottom: v-bind(
+    'componentStylesConfig.errorBoundary.titleMarginBottom'
+  );
 }
 
 .error-title:focus {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid v-bind('themeConfig.focusRing');
   outline-offset: 2px;
 }
 
 .error-message {
-  color: #6b7280;
+  color: v-bind('themeConfig.errorBoundary.messageColor');
   margin-bottom: 1.5rem;
-  font-size: 0.875rem;
+  font-size: v-bind('componentStylesConfig.errorBoundary.messageFontSize');
 }
 
 .error-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: v-bind('componentStylesConfig.errorBoundary.buttonGap');
   justify-content: center;
 }
 
 .retry-button,
 .home-button {
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
+  padding: v-bind('componentStylesConfig.errorBoundary.buttonPadding');
+  border-radius: v-bind(
+    'componentStylesConfig.errorBoundary.buttonBorderRadius'
+  );
+  font-size: v-bind('componentStylesConfig.errorBoundary.buttonFontSize');
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
@@ -226,36 +234,36 @@ onErrorCaptured((err, instance, info) => {
 
 .retry-button:focus,
 .home-button:focus {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid v-bind('themeConfig.focusRing');
   outline-offset: 2px;
 }
 
 .retry-button {
-  background-color: #3b82f6;
+  background-color: v-bind('themeConfig.errorBoundary.primaryButtonBg');
   color: white;
-  border: 1px solid #3b82f6;
+  border: 1px solid v-bind('themeConfig.errorBoundary.primaryButtonBorder');
 }
 
 .retry-button:hover {
-  background-color: #2563eb;
+  background-color: v-bind('themeConfig.errorBoundary.primaryButtonHover');
 }
 
 .home-button {
-  background-color: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background-color: v-bind('themeConfig.errorBoundary.secondaryButtonBg');
+  color: v-bind('themeConfig.errorBoundary.secondaryButtonText');
+  border: 1px solid v-bind('themeConfig.errorBoundary.secondaryButtonBorder');
 }
 
 .home-button:hover {
-  background-color: #e5e7eb;
+  background-color: v-bind('themeConfig.errorBoundary.secondaryButtonHover');
 }
 
 /* Vue Transition classes */
 .error-fade-enter-active,
 .error-fade-leave-active {
   transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
+    opacity v-bind('animationConfig.errorBoundary.transitionDuration') ease,
+    transform v-bind('animationConfig.errorBoundary.transitionDuration') ease;
 }
 
 .error-fade-enter-from,

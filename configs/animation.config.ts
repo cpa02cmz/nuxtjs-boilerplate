@@ -146,6 +146,41 @@ export const animationConfig = {
     shakeCycles: parseInt(process.env.VALIDATION_SHAKE_CYCLES || '3'),
   },
 
+  // Reading Progress Animations
+  readingProgress: {
+    transitionDuration: process.env.READING_PROGRESS_TRANSITION || '0.1s',
+    shimmerDurationSec: parseInt(
+      process.env.READING_PROGRESS_SHIMMER_DURATION || '2'
+    ),
+    tooltipAppearDuration:
+      process.env.READING_PROGRESS_TOOLTIP_APPEAR || '0.2s',
+  },
+
+  // Error Boundary Animations
+  errorBoundary: {
+    transitionDuration: process.env.ERROR_BOUNDARY_TRANSITION || '0.3s',
+  },
+
+  // Card Animations
+  cardAnimations: {
+    enterDistancePx: parseInt(process.env.CARD_ENTER_DISTANCE_PX || '30'),
+    enterScale: parseFloat(process.env.CARD_ENTER_SCALE || '0.92'),
+    hoverTranslateYPx: parseInt(process.env.CARD_HOVER_TRANSLATE_Y || '-4'),
+    hoverScale: parseFloat(process.env.CARD_HOVER_SCALE || '1.02'),
+    activeTranslateYPx: parseInt(process.env.CARD_ACTIVE_TRANSLATE_Y || '2'),
+    activeScale: parseFloat(process.env.CARD_ACTIVE_SCALE || '0.99'),
+  },
+
+  // Empty State Stagger
+  emptyStateStagger: {
+    baseDelayMs: parseInt(process.env.EMPTY_STATE_STAGGER_BASE || '100'),
+  },
+
+  // PWA Install Prompt Pulse
+  pwaPulse: {
+    color: process.env.PWA_PULSE_COLOR || 'rgba(59, 130, 246, 0.4)',
+  },
+
   // Confetti Celebration Animations - Palette's delightful micro-UX touch!
   confetti: {
     // Delay before triggering confetti after success (ms) - allows UI to update first
