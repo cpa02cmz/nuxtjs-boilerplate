@@ -42,6 +42,7 @@ export const useResources = () => {
     toggleDifficultyLevel,
     toggleTechnology,
     toggleTag,
+    setDateRange,
     resetFilters,
   } = useResourceFilters()
 
@@ -102,6 +103,7 @@ export const useResources = () => {
     toggleTechnology,
     toggleTag,
     setSortOption,
+    setDateRange,
     resetFilters,
     highlightSearchTerms,
     retryResources,

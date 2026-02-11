@@ -115,27 +115,29 @@
             />
           </div>
 
-          <!-- Category Filters (for mobile) -->
-          <div class="lg:hidden flex flex-wrap gap-2 mb-4 justify-center">
-            <button
-              v-for="category in categories"
-              :key="category"
-              :class="[
-                'px-3 py-1 text-sm rounded-full border',
-                selectedCategories.includes(category)
-                  ? 'bg-gray-800 text-white border-gray-800'
-                  : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-50',
-              ]"
-              :aria-label="
-                selectedCategories.includes(category)
-                  ? `Remove ${category} filter`
-                  : `Filter by ${category}`
-              "
-              :aria-pressed="selectedCategories.includes(category)"
-              @click="toggleCategory(category)"
-            >
-              {{ category }}
-            </button>
+          <!-- Mobile Filter Drawer Button -->
+          <div class="lg:hidden flex justify-center mb-4">
+            <LazyMobileFilterDrawer
+              :categories="[...categories]"
+              :pricing-models="[...pricingModels]"
+              :difficulty-levels="[...difficultyLevels]"
+              :technologies="[...technologies]"
+              :tags="[...allTags]"
+              :selected-categories="selectedCategories"
+              :selected-pricing-models="filterOptions.pricingModels || []"
+              :selected-difficulty-levels="filterOptions.difficultyLevels || []"
+              :selected-technologies="filterOptions.technologies || []"
+              :selected-tags="filterOptions.tags || []"
+              :selected-date-range="filterOptions.dateRange || 'anytime'"
+              :results-count="filteredResources.length"
+              @toggle-category="toggleCategory"
+              @toggle-pricing-model="togglePricingModel"
+              @toggle-difficulty-level="toggleDifficultyLevel"
+              @toggle-technology="toggleTechnology"
+              @toggle-tag="toggleTag"
+              @date-range-change="handleDateRangeChange"
+              @reset-filters="resetFilters"
+            />
           </div>
 
           <!-- Resources Grid -->
@@ -309,6 +311,7 @@ const {
   toggleTechnology,
   toggleTag,
   setSortOption,
+  setDateRange,
   resetFilters,
   resources,
   highlightSearchTerms,
@@ -328,6 +331,10 @@ const selectedCategories = computed(() => filterOptions.value.categories || [])
 
 const handleSearch = (query: string) => {
   updateSearchQuery(query)
+}
+
+const handleDateRangeChange = (dateRange: string) => {
+  setDateRange(dateRange)
 }
 
 const resetAllFilters = () => {

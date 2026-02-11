@@ -2,6 +2,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import { debounce } from '~/utils/debounce'
+import { timeConfig } from '~/configs/time.config'
 import type { Submission } from '~/types/submission'
 
 export function useReviewQueue(initialSubmissions: Submission[] = []) {
@@ -70,7 +71,11 @@ export function useReviewQueue(initialSubmissions: Submission[] = []) {
   }
 
   // Debounced fetch to prevent excessive API calls when filters change rapidly
-  const debouncedFetchSubmissions = debounce(fetchSubmissions, 300)
+  // Flexy hates hardcoded values! Using config instead.
+  const debouncedFetchSubmissions = debounce(
+    fetchSubmissions,
+    timeConfig.debounce.search
+  )
 
   watch([statusFilter, categoryFilter], () => {
     debouncedFetchSubmissions()

@@ -74,8 +74,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { uiConfig } from '../configs/ui.config'
-import { themeConfig } from '../configs/theme.config'
+import { uiConfig } from '~/configs/ui.config'
+import { themeConfig } from '~/configs/theme.config'
 
 // Constants - Flexy hates hardcoded values! Using config instead.
 const SCROLL_THRESHOLD = uiConfig.scrollToTop.thresholdPx
@@ -140,9 +140,10 @@ const scrollToTop = () => {
     mainContent.setAttribute('tabindex', '-1')
     mainContent.focus({ preventScroll: true })
     // Remove tabindex after focus to keep it out of normal tab order
+    // Flexy hates hardcoded values! Using config instead.
     setTimeout(() => {
       mainContent.removeAttribute('tabindex')
-    }, 100)
+    }, uiConfig.timing.focusRestoreDelayMs)
   }
 
   setTimeout(() => {
