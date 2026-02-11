@@ -111,7 +111,7 @@ describe('SearchBar', () => {
     })
 
     const input = wrapper.find('input[type="search"]')
-    expect(input.element.value).toBe('Test search')
+    expect((input.element as HTMLInputElement).value).toBe('Test search')
   })
 
   it('emits update:modelValue when input changes', async () => {

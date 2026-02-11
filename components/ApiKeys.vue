@@ -298,7 +298,7 @@ const closeModal = () => {
 
 const newApiKey = reactive<NewApiKey>({
   name: '',
-  permissions: permissionsConfig.apiKey.defaultPermissions,
+  permissions: [...permissionsConfig.apiKey.defaultPermissions],
 })
 
 // Create new API key
@@ -312,7 +312,7 @@ const createApiKey = async () => {
 
     // Reset form
     newApiKey.name = ''
-    newApiKey.permissions = permissionsConfig.apiKey.defaultPermissions
+    newApiKey.permissions = [...permissionsConfig.apiKey.defaultPermissions]
     showCreateForm.value = false
   }
 }

@@ -109,7 +109,7 @@ const onRemoveSavedSearch = (search: SavedSearch) => {
   // Emit removal event after brief delay to allow animation
   setTimeout(() => {
     emit('remove-saved-search', search.query)
-  }, uiConfig.animation.durationMs)
+  }, uiConfig.animation.leaveDurationMs)
 
   // Set timeout to permanently remove from undo list after configured duration
   const timeout = setTimeout(() => {

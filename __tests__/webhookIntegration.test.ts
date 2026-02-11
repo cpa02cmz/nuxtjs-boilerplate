@@ -29,7 +29,7 @@ describe.skip('Webhook Integration', () => {
   })
 
   it('should have webhook page', async () => {
-    const { page } = await createPage('/webhooks')
+    const page = await createPage('/webhooks')
     expect(page.locator('h1')).toBeDefined()
   })
 })

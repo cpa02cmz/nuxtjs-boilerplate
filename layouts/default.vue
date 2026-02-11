@@ -489,7 +489,7 @@ import { useRoute, navigateTo } from '#app'
 import { useResources } from '~/composables/useResources'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import { useTheme } from '~/composables/useTheme'
-import type { NodeListOf } from 'dom'
+// NodeListOf is a global DOM type, no need to import
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
 import KeyboardShortcutsHelp from '~/components/KeyboardShortcutsHelp.vue'
 import OfflineIndicator from '~/components/OfflineIndicator.vue'
@@ -581,9 +581,11 @@ const setupFocusTrap = () => {
   nextTick(() => {
     if (!mobileMenuRef.value) return
 
-    const focusableElements = mobileMenuRef.value.querySelectorAll(
-      'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled])'
-    ) as unknown as NodeListOf<HTMLElement>
+    const focusableElements = Array.from(
+      mobileMenuRef.value.querySelectorAll(
+        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled])'
+      )
+    ) as HTMLElement[]
 
     if (focusableElements.length > 0) {
       firstFocusableElement.value = focusableElements[0]

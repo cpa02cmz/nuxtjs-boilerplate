@@ -40,8 +40,9 @@ interface Props {
 defineProps<Props>()
 
 const getButtonLabel = (category: string) => {
+  type CategoryKey = keyof typeof contentConfig.similarResources.categoryLabels
   return (
-    contentConfig.similarResources.categoryLabels[category] ||
+    contentConfig.similarResources.categoryLabels[category as CategoryKey] ||
     contentConfig.similarResources.defaultButtonLabel
   )
 }

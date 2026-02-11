@@ -51,3 +51,51 @@ declare module '@vue/runtime-core' {
     $analytics: NuxtApp['$analytics']
   }
 }
+
+// Network Information API type declarations
+declare global {
+  interface NetworkInformation extends EventTarget {
+    readonly effectiveType: string
+    readonly downlink: number
+    readonly rtt: number
+    readonly saveData: boolean
+    readonly type?: string
+    onchange: ((this: NetworkInformation, ev: Event) => unknown) | null
+    addEventListener<K extends keyof NetworkInformationEventMap>(
+      type: K,
+      listener: (
+        this: NetworkInformation,
+        ev: NetworkInformationEventMap[K]
+      ) => unknown,
+      options?: boolean | AddEventListenerOptions
+    ): void
+    addEventListener(
+      type: string,
+      listener: EventListenerOrEventListenerObject,
+      options?: boolean | AddEventListenerOptions
+    ): void
+    removeEventListener<K extends keyof NetworkInformationEventMap>(
+      type: K,
+      listener: (
+        this: NetworkInformation,
+        ev: NetworkInformationEventMap[K]
+      ) => unknown,
+      options?: boolean | EventListenerOptions
+    ): void
+    removeEventListener(
+      type: string,
+      listener: EventListenerOrEventListenerObject,
+      options?: boolean | EventListenerOptions
+    ): void
+  }
+
+  interface NetworkInformationEventMap {
+    change: Event
+  }
+
+  interface Navigator {
+    connection?: NetworkInformation
+  }
+}
+
+export {}

@@ -52,7 +52,7 @@ interface Props {
 }
 
 // Flexy says: No more hardcoded defaults! Using config values.
-const props = withDefaults(defineProps<Props<T>>(), {
+const props = withDefaults(defineProps<Props>(), {
   itemHeight: uiConfig.virtualList.itemHeight,
   overscan: uiConfig.virtualList.overscan,
   containerHeight: thresholdsConfig.virtualList.defaultContainerHeight,
