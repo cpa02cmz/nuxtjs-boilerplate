@@ -103,10 +103,12 @@ const tooltipStyle = computed(() => ({
 // Progress announcement state
 const progressAnnouncement = ref('')
 
-// Watch for milestone announcements (25% intervals)
+// Watch for milestone announcements (configurable intervals)
 watch(progress, newProgress => {
   const currentProgress = Math.round(newProgress)
-  const milestone = Math.floor(currentProgress / 25) * 25
+  const milestoneInterval = animationConfig.readingProgress.milestoneInterval
+  const milestone =
+    Math.floor(currentProgress / milestoneInterval) * milestoneInterval
 
   // Only announce when crossing a 25% milestone
   if (milestone > lastAnnouncedProgress.value && milestone <= 100) {

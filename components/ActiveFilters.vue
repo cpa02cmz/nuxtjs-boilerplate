@@ -383,6 +383,8 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { uiConfig } from '../configs/ui.config'
+import { PROGRESS } from '~/server/utils/constants'
+import { triggerHaptic } from '~/utils/hapticFeedback'
 
 interface Props {
   searchQuery?: string
@@ -426,7 +428,7 @@ const announcement = ref('')
 // Undo feature state
 const lastRemovedFilter = ref<RemovedFilter | null>(null)
 const undoTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null)
-const undoProgress = ref(100)
+const undoProgress = ref(PROGRESS.MAX_PERCENT)
 const progressIntervalId = ref<ReturnType<typeof setInterval> | null>(null)
 // Flexy says: No more hardcoded values! Using config values instead.
 const UNDO_WINDOW_MS = uiConfig.filterChip.undoWindowMs
@@ -440,11 +442,12 @@ const _removingChips = ref<Set<string>>(new Set())
 
 // Computed property for progress bar color - transitions from amber to red as time runs out
 const undoProgressColorClass = computed(() => {
-  if (undoProgress.value > 60) {
+  const thresholds = uiConfig.filterChip.progressThresholds
+  if (undoProgress.value > thresholds.high) {
     return 'bg-amber-400'
-  } else if (undoProgress.value > 30) {
+  } else if (undoProgress.value > thresholds.medium) {
     return 'bg-amber-500'
-  } else if (undoProgress.value > 10) {
+  } else if (undoProgress.value > thresholds.low) {
     return 'bg-orange-500'
   } else {
     return 'bg-red-500'
@@ -487,10 +490,8 @@ const formatDateRange = (range: string): string => {
 }
 
 const handleRemove = (type: string, value: string, _event: Event) => {
-  // Add haptic feedback
-  if (typeof navigator !== 'undefined' && navigator.vibrate) {
-    navigator.vibrate(10)
-  }
+  // Add haptic feedback - Flexy hates hardcoded values!
+  triggerHaptic('light')
 
   // Store the removed filter for potential undo
   lastRemovedFilter.value = {

@@ -5,6 +5,7 @@ import {
   scryptSync,
 } from 'node:crypto'
 import { logger } from '~/utils/logger'
+import { securityConfig } from '~/configs/security.config'
 
 const ENCRYPTION_KEY = process.env.WEBHOOK_SECRET_ENCRYPTION_KEY
 
@@ -14,12 +15,15 @@ if (!ENCRYPTION_KEY && process.env.NODE_ENV === 'production') {
   )
 }
 
+// Flexy loves modularity! Using config values instead of hardcoded constants
+const { crypto: cryptoConfig } = securityConfig
+
 /**
- * Derives a 32-byte key from the environment variable using scrypt
+ * Derives a key from the environment variable using scrypt
  */
 function getKey(): Buffer | null {
   if (!ENCRYPTION_KEY) return null
-  return scryptSync(ENCRYPTION_KEY, 'webhook-salt', 32)
+  return scryptSync(ENCRYPTION_KEY, cryptoConfig.salt, cryptoConfig.keyLength)
 }
 
 /**
@@ -30,8 +34,8 @@ export function encryptSecret(plaintext: string): string {
   const key = getKey()
   if (!key) return plaintext // Return plaintext if no encryption key configured
 
-  const iv = randomBytes(16)
-  const cipher = createCipheriv('aes-256-gcm', key, iv)
+  const iv = randomBytes(cryptoConfig.ivLength)
+  const cipher = createCipheriv(cryptoConfig.algorithm, key, iv)
 
   let encrypted = cipher.update(plaintext, 'utf8', 'base64')
   encrypted += cipher.final('base64')
@@ -60,7 +64,7 @@ export function decryptSecret(encrypted: string): string | null {
     const iv = Buffer.from(ivBase64, 'base64')
     const authTag = Buffer.from(authTagBase64, 'base64')
 
-    const decipher = createDecipheriv('aes-256-gcm', key, iv)
+    const decipher = createDecipheriv(cryptoConfig.algorithm, key, iv)
     decipher.setAuthTag(authTag)
 
     let decrypted = decipher.update(ciphertext, 'base64', 'utf8')

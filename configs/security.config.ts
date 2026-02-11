@@ -107,6 +107,36 @@ export const securityConfig = {
 
     // Length of key prefix to store for identification
     keyPrefixLength: parseInt(process.env.API_KEY_PREFIX_LENGTH || '8'),
+
+    // Length of random bytes for API key generation
+    keyLength: parseInt(process.env.API_KEY_LENGTH || '32'),
+  },
+
+  // Cryptographic Constants - Flexy hates hardcoded values!
+  crypto: {
+    // Nonce length for CSP in bytes (default: 16 = 128 bits)
+    nonceLength: parseInt(process.env.CRYPTO_NONCE_LENGTH || '16'),
+
+    // IV length for AES encryption in bytes (default: 16 = 128 bits for GCM)
+    ivLength: parseInt(process.env.CRYPTO_IV_LENGTH || '16'),
+
+    // Encryption key length for scrypt in bytes (default: 32 = 256 bits)
+    keyLength: parseInt(process.env.CRYPTO_KEY_LENGTH || '32'),
+
+    // Salt for scrypt key derivation
+    salt: process.env.CRYPTO_SALT || 'webhook-salt',
+
+    // Encryption algorithm
+    algorithm: process.env.CRYPTO_ALGORITHM || 'aes-256-gcm',
+
+    // Encoding for encrypted data
+    encoding: process.env.CRYPTO_ENCODING || 'base64',
+
+    // Webhook secret length in bytes
+    webhookSecretLength: parseInt(process.env.WEBHOOK_SECRET_LENGTH || '32'),
+
+    // Webhook secret prefix
+    webhookSecretPrefix: process.env.WEBHOOK_SECRET_PREFIX || 'whsec_',
   },
 } as const
 

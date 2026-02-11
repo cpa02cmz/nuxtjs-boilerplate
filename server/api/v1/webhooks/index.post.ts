@@ -7,6 +7,7 @@ import {
   sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { securityConfig } from '~/configs/security.config'
 
 export default defineEventHandler(async event => {
   try {
@@ -24,7 +25,7 @@ export default defineEventHandler(async event => {
     const validatedBody = validationResult.data
 
     // Generate secret for webhook using cryptographically secure random bytes
-    const secret = `whsec_${randomBytes(32).toString('hex')}`
+    const secret = `${securityConfig.crypto.webhookSecretPrefix}${randomBytes(securityConfig.crypto.webhookSecretLength).toString('hex')}`
 
     const newWebhook: Webhook = {
       id: `wh_${randomUUID()}`,
