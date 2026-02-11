@@ -1,3 +1,4 @@
+import type { CipherGCM, DecipherGCM } from 'node:crypto'
 import {
   createCipheriv,
   createDecipheriv,
@@ -40,7 +41,7 @@ export function encryptSecret(plaintext: string): string {
   let encrypted = cipher.update(plaintext, 'utf8', 'base64')
   encrypted += cipher.final('base64')
 
-  const authTag = cipher.getAuthTag()
+  const authTag = (cipher as CipherGCM).getAuthTag()
 
   // Store as: iv:authTag:ciphertext
   return `${iv.toString('base64')}:${authTag.toString('base64')}:${encrypted}`
@@ -65,7 +66,7 @@ export function decryptSecret(encrypted: string): string | null {
     const authTag = Buffer.from(authTagBase64, 'base64')
 
     const decipher = createDecipheriv(cryptoConfig.algorithm, key, iv)
-    decipher.setAuthTag(authTag)
+    ;(decipher as DecipherGCM).setAuthTag(authTag)
 
     let decrypted = decipher.update(ciphertext, 'base64', 'utf8')
     decrypted += decipher.final('utf8')
