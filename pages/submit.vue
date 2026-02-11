@@ -172,30 +172,95 @@
                 URL <span aria-hidden="true">*</span>
                 <span class="sr-only">(required)</span>
               </label>
-              <input
-                id="url"
-                v-model="formData.url"
-                type="url"
-                required
-                aria-required="true"
-                aria-describedby="url-description url-error"
-                :aria-invalid="errors.url ? 'true' : 'false'"
-                :class="[
-                  'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200',
-                  errors.url
-                    ? 'border-red-500 animate-form-shake'
-                    : formData.url && !errors.url
-                      ? 'border-green-500'
-                      : 'border-gray-300',
-                ]"
-                placeholder="https://example.com"
-                @blur="handleUrlBlur"
-              >
+              <div class="relative">
+                <input
+                  id="url"
+                  ref="urlInput"
+                  v-model="formData.url"
+                  type="url"
+                  required
+                  aria-required="true"
+                  aria-describedby="url-description url-validation url-error"
+                  :aria-invalid="
+                    errors.url
+                      ? 'true'
+                      : urlValidationState.isInvalid
+                        ? 'true'
+                        : 'false'
+                  "
+                  :class="[
+                    'w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200',
+                    errors.url
+                      ? 'border-red-500 animate-form-shake'
+                      : urlValidationState.isValid
+                        ? 'border-green-500'
+                        : urlValidationState.isInvalid
+                          ? 'border-amber-500'
+                          : 'border-gray-300',
+                  ]"
+                  placeholder="https://example.com"
+                  @blur="handleUrlBlur"
+                >
+                <!-- Real-time URL validation indicator -->
+                <div
+                  v-if="formData.url"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 transition-all duration-200"
+                  aria-hidden="true"
+                >
+                  <!-- Valid URL icon -->
+                  <svg
+                    v-if="urlValidationState.isValid"
+                    class="h-5 w-5 text-green-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  <!-- Invalid URL warning icon -->
+                  <svg
+                    v-else-if="urlValidationState.isInvalid"
+                    class="h-5 w-5 text-amber-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+              </div>
               <p
                 id="url-description"
                 class="mt-1 text-sm text-gray-500"
               >
                 The official website or page for this resource
+              </p>
+              <!-- Real-time validation message -->
+              <p
+                v-if="urlValidationState.isInvalid && !errors.url"
+                id="url-validation"
+                class="mt-1 text-sm text-amber-600"
+                role="status"
+                aria-live="polite"
+              >
+                Please enter a valid URL (e.g., https://example.com)
+              </p>
+              <p
+                v-else-if="urlValidationState.isValid"
+                id="url-validation"
+                class="mt-1 text-sm text-green-600"
+                role="status"
+                aria-live="polite"
+              >
+                URL format looks good
               </p>
               <div
                 v-if="errors.url"
@@ -418,6 +483,7 @@ import { debounce } from '~/utils/debounce'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
+const urlInput = ref<HTMLInputElement | null>(null)
 const { $toast } = useNuxtApp()
 
 // Draft auto-save configuration - Flexy hates hardcoded values!
@@ -581,6 +647,25 @@ const descriptionCounterClass = computed(() => {
     return `${baseClasses} text-amber-500`
   }
   return `${baseClasses} text-gray-400`
+})
+
+// Real-time URL validation with visual feedback
+const urlValidationState = computed(() => {
+  const url = formData.value.url.trim()
+
+  if (!url) {
+    return { isValid: false, isInvalid: false }
+  }
+
+  // URL validation regex - checks for valid URL format
+  const urlPattern =
+    /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/
+  const isValidFormat = urlPattern.test(url)
+
+  return {
+    isValid: isValidFormat,
+    isInvalid: !isValidFormat,
+  }
 })
 
 // Draft auto-save functionality
