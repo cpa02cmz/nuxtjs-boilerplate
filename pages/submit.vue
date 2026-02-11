@@ -404,6 +404,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { useNuxtApp } from '#app'
 import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
 import { animationConfig } from '~/configs/animation.config'
@@ -411,9 +412,16 @@ import { thresholdsConfig } from '~/configs/thresholds.config'
 import { uiConfig } from '~/configs/ui.config'
 import { categoriesConfig } from '~/configs/categories.config'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
+import { timeConfig } from '~/configs/time.config'
+import { debounce } from '~/utils/debounce'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
+const { $toast } = useNuxtApp()
+
+// Draft auto-save configuration
+const DRAFT_STORAGE_KEY = 'resource-draft'
+const DRAFT_TIMESTAMP_KEY = 'resource-draft-timestamp'
 
 // Animation config values for CSS variables - Flexy hates hardcoded values!
 const shakeDurationMs = `${animationConfig.validation.shakeDurationMs}ms`
@@ -435,6 +443,9 @@ const {
   validateDescription,
   validateUrl,
   validateCategory,
+  restoreFormData,
+  getFormData,
+  hasFormContent,
 } = useSubmitPage()
 
 // Track which fields should shake when validation fails
@@ -570,8 +581,107 @@ const descriptionCounterClass = computed(() => {
   return `${baseClasses} text-gray-400`
 })
 
+// Draft auto-save functionality
+// Auto-save draft to localStorage with debounce
+const saveDraft = debounce(() => {
+  if (hasFormContent()) {
+    const draftData = getFormData()
+    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftData))
+    localStorage.setItem(DRAFT_TIMESTAMP_KEY, Date.now().toString())
+  }
+}, timeConfig.debounce.draft)
+
+// Watch for changes and auto-save
+watch(
+  () => ({ ...formData.value, tagsInput: tagsInput.value }),
+  () => {
+    saveDraft()
+  },
+  { deep: true }
+)
+
+// Restore draft on mount with subtle notification
+const restoreDraft = () => {
+  if (typeof window === 'undefined') return
+
+  const savedDraft = localStorage.getItem(DRAFT_STORAGE_KEY)
+  const savedTimestamp = localStorage.getItem(DRAFT_TIMESTAMP_KEY)
+
+  if (savedDraft && savedTimestamp) {
+    try {
+      const draftData = JSON.parse(savedDraft)
+      const timestamp = parseInt(savedTimestamp, 10)
+      const now = Date.now()
+      const hoursSinceSaved = (now - timestamp) / (1000 * 60 * 60)
+
+      // Only restore if draft is less than 7 days old
+      if (hoursSinceSaved < 168) {
+        restoreFormData(draftData)
+
+        // Show toast notification about restored draft
+        const timeAgo =
+          hoursSinceSaved < 1
+            ? 'just now'
+            : hoursSinceSaved < 24
+              ? `${Math.floor(hoursSinceSaved)} hours ago`
+              : `${Math.floor(hoursSinceSaved / 24)} days ago`
+
+        $toast.info('Draft restored', {
+          description: `Your previous submission draft from ${timeAgo} has been restored.`,
+          duration: 5000,
+        })
+      } else {
+        // Clear old draft
+        localStorage.removeItem(DRAFT_STORAGE_KEY)
+        localStorage.removeItem(DRAFT_TIMESTAMP_KEY)
+      }
+    } catch {
+      // Clear invalid draft data
+      localStorage.removeItem(DRAFT_STORAGE_KEY)
+      localStorage.removeItem(DRAFT_TIMESTAMP_KEY)
+    }
+  }
+}
+
+// Clear draft from storage
+const clearDraft = () => {
+  if (typeof window === 'undefined') return
+  localStorage.removeItem(DRAFT_STORAGE_KEY)
+  localStorage.removeItem(DRAFT_TIMESTAMP_KEY)
+}
+
+// Beforeunload warning when form has unsaved changes
+const hasUnsavedChanges = computed(() => {
+  return hasFormContent() && !submitSuccess.value
+})
+
+// Watch for successful submission to trigger confetti
+watch(submitSuccess, success => {
+  if (success) {
+    // Clear draft from storage
+    clearDraft()
+
+    // Small delay to let the success message appear first
+    setTimeout(() => {
+      confettiRef.value?.celebrate()
+    }, animationConfig.confetti.submissionDelayMs)
+  }
+})
+
 onMounted(() => {
   titleInput.value?.focus()
+  restoreDraft()
+
+  // Set up beforeunload handler
+  if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', event => {
+      if (hasUnsavedChanges.value) {
+        event.preventDefault()
+        event.returnValue = ''
+        return ''
+      }
+    })
+  }
 })
 
 definePageMeta({

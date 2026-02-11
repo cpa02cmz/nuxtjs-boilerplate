@@ -114,6 +114,7 @@ export const timeConfig = {
     input: parseInt(process.env.DEBOUNCE_INPUT_MS || '150'),
     resize: parseInt(process.env.DEBOUNCE_RESIZE_MS || '200'),
     scroll: parseInt(process.env.DEBOUNCE_SCROLL_MS || '100'),
+    draft: parseInt(process.env.DEBOUNCE_DRAFT_MS || '2000'),
   },
 
   // Validation and cleanup intervals
