@@ -222,12 +222,6 @@ import { ref, computed, onUnmounted, nextTick } from 'vue'
 import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
-import { UI_TIMING, SEARCH_CONFIG } from '~/server/utils/constants'
-import { contentConfig } from '~/configs/content.config'
-import { searchConfig } from '~/configs/search.config'
-import { uiConfig } from '~/configs/ui.config'
-import { animationConfig } from '~/configs/animation.config'
-import { componentColorsConfig } from '~/configs/component-colors.config'
 import Tooltip from '~/components/Tooltip.vue'
 
 interface Props {
@@ -241,8 +235,96 @@ interface Emits {
   (event: 'search', value: string): void
 }
 
+// BroCula fix: Hardcoded fallback values to prevent SSR import failures
+// The ~ alias doesn't resolve correctly in Nitro SSR context for config files
+const UI_TIMING = {
+  SEARCH_DEBOUNCE_MS: 300,
+}
+
+const SEARCH_CONFIG = {
+  behavior: {
+    minQueryLength: 2,
+    maxSuggestions: 5,
+  },
+}
+
+const contentConfig = {
+  categories: {
+    validCategories: [
+      'ai',
+      'cloud',
+      'database',
+      'design',
+      'developer-tools',
+      'education',
+      'hosting',
+      'infrastructure',
+      'monitoring',
+      'security',
+      'storage',
+    ],
+  },
+  search: {
+    placeholder: 'Search resources by name, description, tags...',
+    ariaLabel: 'Search resources',
+    clearAriaLabel: 'Clear search',
+  },
+}
+
+const searchConfig = {
+  behavior: {
+    descriptionTruncateLength: 100,
+  },
+}
+
+const uiConfig = {
+  timing: {
+    searchCompleteDurationMs: 800,
+    focusPulseDurationMs: 600,
+    shortcutSuccessDurationMs: 600,
+    idlePulseDelayMs: 3000,
+  },
+}
+
+const animationConfig = {
+  tooltip: {
+    showDelayMs: 300,
+    hideDelayMs: 100,
+  },
+  searchShortcut: {
+    durationMs: 600,
+    successColor: '34, 197, 94',
+    successColorAlpha: '34, 197, 94, 0.6',
+    defaultBgColor: '249, 250, 251',
+    defaultTextColor: '107, 114, 128',
+    defaultBorderColor: '229, 231, 235',
+    peakScale: 1.15,
+    shadowSpreadStart: 0,
+    shadowSpreadMid: 8,
+  },
+  focus: {
+    pulseDurationMs: 600,
+  },
+}
+
+const componentColorsConfig = {
+  focusRing: {
+    color: '59, 130, 246',
+    opacityStart: 0.5,
+    opacityMid: 0.3,
+    opacityEnd: 0,
+    offsetSmall: 4,
+    offsetLarge: 8,
+  },
+  searchBar: {
+    defaultIcon: 'text-gray-400',
+    loadingIcon: 'text-blue-500',
+    successIcon: 'text-green-500',
+  },
+}
+
 const props = withDefaults(defineProps<Props>(), {
-  debounceTime: UI_TIMING.SEARCH_DEBOUNCE_MS,
+  debounceTime: 300, // Hardcoded fallback - was UI_TIMING.SEARCH_DEBOUNCE_MS
   enableAdvancedFeatures: true,
 })
 const emit = defineEmits<Emits>()
@@ -693,9 +775,8 @@ if (typeof window !== 'undefined') {
 /* Search complete animation - provides positive feedback when search finishes */
 /* Draws attention to the completion state with a satisfying pop effect */
 .animate-search-complete {
-  animation: search-complete
-    v-bind('`${uiConfig.timing.searchCompleteDurationMs}ms`')
-    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: search-complete 800ms cubic-bezier(0.175, 0.885, 0.32, 1.275)
+    forwards;
 }
 
 @keyframes search-complete {
