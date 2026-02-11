@@ -1,40 +1,51 @@
 import { defineEventHandler, getQuery } from 'h3'
-
-// In-memory store for share counts (in production, use a database)
-const shareCounts = new Map<string, Map<string, number>>()
+import { getShareCounts } from '~/server/utils/social-share-store'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+import {
+  sendSuccessResponse,
+  sendBadRequestError,
+  sendApiError,
+} from '~/server/utils/api-response'
+import {
+  createApiError,
+  ErrorCode,
+  ErrorCategory,
+} from '~/server/utils/api-error'
+import { logger } from '~/utils/logger'
 
 /**
  * GET /api/v1/social/counts
  * Get share counts for a URL
  */
 export default defineEventHandler(async event => {
-  const query = getQuery(event)
-  const url = query.url as string
+  try {
+    // Apply rate limiting: 60 requests per minute for counts endpoint
+    await rateLimit(event)
 
-  if (!url) {
-    return {
-      statusCode: 400,
-      statusMessage: 'Bad Request',
-      message: 'URL parameter is required',
+    const query = getQuery(event)
+    const url = query.url as string
+
+    if (!url) {
+      return sendBadRequestError(event, 'URL parameter is required')
     }
-  }
 
-  const urlCounts = shareCounts.get(url)
-  const counts: Record<string, number> = {}
+    const counts = await getShareCounts(url)
+    const total = Object.values(counts).reduce((sum, count) => sum + count, 0)
 
-  if (urlCounts) {
-    urlCounts.forEach((count, platform) => {
-      counts[platform] = count
-    })
-  }
+    logger.debug('Retrieved share counts:', { url, counts, total })
 
-  return {
-    statusCode: 200,
-    statusMessage: 'OK',
-    data: {
+    return sendSuccessResponse(event, {
       url,
       counts,
-      total: Object.values(counts).reduce((sum, count) => sum + count, 0),
-    },
+      total,
+    })
+  } catch (error) {
+    logger.error('Error retrieving share counts:', error)
+    const apiError = createApiError(
+      ErrorCode.INTERNAL_SERVER_ERROR,
+      'Failed to retrieve share counts',
+      ErrorCategory.INTERNAL
+    )
+    return sendApiError(event, apiError)
   }
 })
