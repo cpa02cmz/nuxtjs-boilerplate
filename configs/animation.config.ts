@@ -251,6 +251,31 @@ export const animationConfig = {
     color: process.env.PWA_PULSE_COLOR || 'rgba(59, 130, 246, 0.4)',
   },
 
+  // Card Shine Effect - Palette's premium micro-UX touch!
+  // Adds a subtle moving gradient on hover for a polished, premium feel
+  cardShine: {
+    // Duration of the shine animation (seconds)
+    durationSec: parseFloat(process.env.CARD_SHINE_DURATION_SEC || '1.2'),
+    // Delay before shine starts on hover (ms)
+    delayMs: parseInt(process.env.CARD_SHINE_DELAY_MS || '0'),
+    // Gradient color start (white with low opacity)
+    gradientStart:
+      process.env.CARD_SHINE_GRADIENT_START || 'rgba(255, 255, 255, 0)',
+    // Gradient middle (white with higher opacity for the shine)
+    gradientMiddle:
+      process.env.CARD_SHINE_GRADIENT_MIDDLE || 'rgba(255, 255, 255, 0.15)',
+    // Gradient end (white with low opacity)
+    gradientEnd:
+      process.env.CARD_SHINE_GRADIENT_END || 'rgba(255, 255, 255, 0)',
+    // Angle of the shine sweep (degrees)
+    angleDegrees: parseInt(process.env.CARD_SHINE_ANGLE_DEGREES || '110'),
+    // Scale factor for the shine gradient
+    scaleFactor: parseFloat(process.env.CARD_SHINE_SCALE_FACTOR || '1.5'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.CARD_SHINE_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // Confetti Celebration Animations - Palette's delightful micro-UX touch!
   confetti: {
     // Delay before triggering confetti after success (ms) - allows UI to update first
