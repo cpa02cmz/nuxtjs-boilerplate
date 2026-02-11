@@ -1,18 +1,16 @@
 <template>
-  <Teleport to="body">
-    <div
-      v-if="isActive"
-      class="confetti-container"
-      aria-hidden="true"
-    >
-      <div
-        v-for="(particle, index) in particles"
-        :key="index"
-        class="confetti-particle"
-        :style="getParticleStyle(particle)"
-      />
-    </div>
-  </Teleport>
+  <ClientOnly>
+    <Teleport to="body">
+      <div v-if="isActive" class="confetti-container" aria-hidden="true">
+        <div
+          v-for="(particle, index) in particles"
+          :key="index"
+          class="confetti-particle"
+          :style="getParticleStyle(particle)"
+        />
+      </div>
+    </Teleport>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">

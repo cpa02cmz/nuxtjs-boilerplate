@@ -1,9 +1,6 @@
 <template>
   <div class="error-boundary-wrapper">
-    <Transition
-      name="error-fade"
-      @after-enter="onErrorEntered"
-    >
+    <Transition name="error-fade" @after-enter="onErrorEntered">
       <div
         v-if="hasError"
         ref="errorContainer"
@@ -38,20 +35,12 @@
           >
             Something went wrong
           </h2>
-          <p
-            id="error-message"
-            class="error-message"
-          >
+          <p id="error-message" class="error-message">
             {{ errorMessage }}
           </p>
-          <div
-            v-if="showDetails"
-            class="error-details"
-          >
+          <div v-if="showDetails" class="error-details">
             <details class="error-details-container">
-              <summary class="error-details-summary">
-                Error Details
-              </summary>
+              <summary class="error-details-summary">Error Details</summary>
               <pre class="error-stack">{{ errorStack }}</pre>
             </details>
           </div>
@@ -121,9 +110,12 @@ const fallbackComponentName = computed(() => props.componentName || 'component')
 
 /**
  * Save the currently focused element before showing error
+ * Guarded for SSR - document is not available during server-side rendering
  */
 const saveCurrentFocus = () => {
-  previousFocus.value = document.activeElement as HTMLElement
+  if (typeof document !== 'undefined') {
+    previousFocus.value = document.activeElement as HTMLElement
+  }
 }
 
 /**

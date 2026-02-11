@@ -1,9 +1,16 @@
 <template>
-  <ErrorBoundary>
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
-  </ErrorBoundary>
+  <ClientOnly>
+    <ErrorBoundary>
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
+    </ErrorBoundary>
+    <template #fallback>
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
+    </template>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
