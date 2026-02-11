@@ -108,6 +108,10 @@ import { bookmarksConfig, type BookmarksConfig } from './bookmarks.config'
 import { userConfig, type UserConfig } from './user.config'
 import { moderationConfig, type ModerationConfig } from './moderation.config'
 import { permissionsConfig, type PermissionsConfig } from './permissions.config'
+import {
+  componentColorsConfig,
+  type ComponentColorsConfig,
+} from './component-colors.config'
 
 // URL config - Flexy hates hardcoded URLs!
 import {
@@ -224,6 +228,7 @@ export { bookmarksConfig, type BookmarksConfig }
 export { userConfig, type UserConfig }
 export { moderationConfig, type ModerationConfig }
 export { permissionsConfig, type PermissionsConfig }
+export { componentColorsConfig, type ComponentColorsConfig }
 
 // Re-export URL config - Flexy hates hardcoded URLs!
 export {
@@ -282,6 +287,8 @@ export const config = {
   user: userConfig,
   moderation: moderationConfig,
   permissions: permissionsConfig,
+  // Component colors config - Flexy hates hardcoded component colors!
+  componentColors: componentColorsConfig,
 } as const
 
 export type Config = typeof config
