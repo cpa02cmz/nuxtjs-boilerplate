@@ -189,16 +189,48 @@
             d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <p class="text-sm text-gray-500 mb-3">
-          No matching resources found
+        <p class="text-sm text-gray-900 font-medium mb-1">
+          {{ contentConfig.search.emptyState.noResultsTitle }}
         </p>
-        <button
-          type="button"
-          class="text-sm text-blue-600 hover:text-blue-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-3 py-1.5 transition-colors duration-150"
-          @click="handleClearSearch"
-        >
-          Clear search
-        </button>
+        <p class="text-xs text-gray-500 mb-4">
+          {{ contentConfig.search.emptyState.noResultsSubtitle }}
+        </p>
+
+        <!-- Popular Suggestions Section -->
+        <div class="mb-4">
+          <p
+            class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
+          >
+            {{ contentConfig.search.emptyState.tryThese }}
+          </p>
+          <div class="flex flex-wrap justify-center gap-2">
+            <button
+              v-for="(suggestion, index) in defaultSuggestions"
+              :key="index"
+              type="button"
+              class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              @click="selectDefaultSuggestion(suggestion)"
+            >
+              {{ suggestion }}
+            </button>
+          </div>
+        </div>
+
+        <div class="flex justify-center gap-3">
+          <button
+            type="button"
+            class="text-sm text-gray-600 hover:text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 rounded px-3 py-1.5 transition-colors duration-150"
+            @click="handleClearSearch"
+          >
+            {{ contentConfig.search.emptyState.clearSearch }}
+          </button>
+          <NuxtLink
+            to="/search"
+            class="text-sm text-blue-600 hover:text-blue-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-3 py-1.5 transition-colors duration-150"
+          >
+            {{ contentConfig.search.emptyState.browseAll }}
+          </NuxtLink>
+        </div>
       </div>
     </div>
   </div>
@@ -208,6 +240,7 @@
 import { ref, watch, computed, nextTick } from 'vue'
 import { contentConfig } from '~/configs/content.config'
 import { uiConfig } from '~/configs/ui.config'
+import { NuxtLink } from '#components'
 
 interface SuggestionItem {
   id: string
@@ -232,6 +265,7 @@ interface Emits {
   (event: 'clear-history'): void
   (event: 'navigate', direction: 'up' | 'down'): void
   (event: 'clear-search'): void
+  (event: 'select-default-suggestion', suggestion: string): void
 }
 const props = withDefaults(defineProps<Props>(), {
   suggestions: () => [],
@@ -291,6 +325,15 @@ const clearHistory = () => {
 
 const handleClearSearch = () => {
   emit('clear-search')
+}
+
+// Default suggestions for empty state
+const defaultSuggestions = computed(() => {
+  return contentConfig.search.suggestions.defaultSuggestions.slice(0, 5)
+})
+
+const selectDefaultSuggestion = (suggestion: string) => {
+  emit('select-default-suggestion', suggestion)
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {

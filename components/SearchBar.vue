@@ -194,6 +194,7 @@
         @select-history="handleHistorySelect"
         @clear-history="handleClearHistory"
         @clear-search="clearSearch"
+        @select-default-suggestion="handleDefaultSuggestionSelect"
       />
     </ClientOnly>
 
@@ -460,6 +461,14 @@ const handleClearHistory = () => {
   // Clear both advanced and basic search history
   // Since we're using advanced search, we'll just update our local ref
   searchHistory.value = []
+}
+
+const handleDefaultSuggestionSelect = (suggestion: string) => {
+  emit('update:modelValue', suggestion)
+  emit('search', suggestion)
+  addToSearchHistory(suggestion)
+  showSuggestions.value = false
+  activeIndex.value = -1
 }
 
 // Expose focus method to parent components
