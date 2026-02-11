@@ -47,16 +47,8 @@ const particles = ref<Particle[]>([])
 let cleanupTimer: ReturnType<typeof setTimeout> | null = null
 
 // Brand colors for confetti - Flexy gets them from config, no hardcoding!
-const confettiColors = animationConfig.confetti?.colors || [
-  '#3b82f6',
-  '#8b5cf6',
-  '#10b981',
-  '#f59e0b',
-  '#ef4444',
-  '#06b6d4',
-  '#f97316',
-  '#ec4899',
-]
+// No fallback needed - config always provides default values
+const confettiColors = animationConfig.confetti.colors
 
 // Get particle count based on intensity
 const getParticleCount = () => {

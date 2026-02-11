@@ -34,6 +34,46 @@ export const animationConfig = {
     pulseColor: process.env.FOCUS_PULSE_COLOR || 'rgba(59, 130, 246, 0.5)',
   },
 
+  // Ripple Effect Animations - Flexy hates hardcoded colors!
+  ripple: {
+    // Default ripple color (white with 30% opacity)
+    defaultColor:
+      process.env.RIPPLE_DEFAULT_COLOR || 'rgba(255, 255, 255, 0.3)',
+    // Alternative colors for different themes
+    primaryColor: process.env.RIPPLE_PRIMARY_COLOR || 'rgba(59, 130, 246, 0.3)',
+    successColor: process.env.RIPPLE_SUCCESS_COLOR || 'rgba(34, 197, 94, 0.3)',
+    dangerColor: process.env.RIPPLE_DANGER_COLOR || 'rgba(239, 68, 68, 0.3)',
+  },
+
+  // SearchBar Shortcut Success Animation - Flexy hates hardcoded CSS colors!
+  searchShortcut: {
+    // Duration of the success animation (ms)
+    durationMs: parseInt(process.env.SEARCH_SHORTCUT_DURATION_MS || '600'),
+    // Success color (green-500)
+    successColor: process.env.SEARCH_SHORTCUT_SUCCESS_COLOR || '34, 197, 94',
+    // Success color with opacity for box-shadow
+    successColorAlpha:
+      process.env.SEARCH_SHORTCUT_SUCCESS_COLOR_ALPHA || '34, 197, 94, 0.6',
+    // Default background color (gray-50)
+    defaultBgColor: process.env.SEARCH_SHORTCUT_DEFAULT_BG || '249, 250, 251',
+    // Default text color (gray-500)
+    defaultTextColor:
+      process.env.SEARCH_SHORTCUT_DEFAULT_TEXT || '107, 114, 128',
+    // Default border color (gray-200)
+    defaultBorderColor:
+      process.env.SEARCH_SHORTCUT_DEFAULT_BORDER || '229, 231, 235',
+    // Scale factor at peak of animation
+    peakScale: parseFloat(process.env.SEARCH_SHORTCUT_PEAK_SCALE || '1.15'),
+    // Box-shadow spread at start
+    shadowSpreadStart: parseInt(
+      process.env.SEARCH_SHORTCUT_SHADOW_SPREAD_START || '0'
+    ),
+    // Box-shadow spread at 30%
+    shadowSpreadMid: parseInt(
+      process.env.SEARCH_SHORTCUT_SHADOW_SPREAD_MID || '8'
+    ),
+  },
+
   // Copy Success Animation
   copySuccess: {
     resetDelayMs: parseInt(process.env.COPY_SUCCESS_RESET_MS || '2000'),
