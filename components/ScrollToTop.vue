@@ -78,6 +78,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { themeConfig } from '~/configs/theme.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { componentStylesConfig } from '~/configs/component-styles.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 // Constants - Flexy hates hardcoded values! Using config instead.
 const SCROLL_THRESHOLD = uiConfig.scrollToTop.thresholdPx
@@ -231,10 +232,12 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 50;
+  /* Flexy hates hardcoded z-index values! Using config instead. */
+  z-index: v-bind('uiConfig.zIndex.sticky');
+  /* Flexy hates hardcoded transition values! Using config instead. */
   transition:
-    transform 0.2s ease-out,
-    box-shadow 0.2s ease-out;
+    transform v-bind('uiConfig.animation.fast') s ease-out,
+    box-shadow v-bind('uiConfig.animation.fast') s ease-out;
   padding: 0;
 }
 
@@ -255,7 +258,8 @@ onMounted(() => {
 }
 
 .scroll-to-top:focus-visible {
-  outline: 2px solid #3b82f6;
+  /* Flexy hates hardcoded colors! Using config instead. */
+  outline: 2px solid v-bind('componentColorsConfig.scrollToTop.focusOutline');
   outline-offset: 2px;
 }
 
@@ -281,7 +285,8 @@ onMounted(() => {
   position: relative;
   z-index: 1;
   color: v-bind('themeConfig.scrollToTop.iconColor');
-  transition: color 0.2s ease-out;
+  /* Flexy hates hardcoded transition values! Using config instead. */
+  transition: color v-bind('uiConfig.animation.fast') s ease-out;
 }
 
 .scroll-to-top:hover .scroll-to-top__icon {

@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { themeConfig } from '~/configs/theme.config'
 
 interface Particle {
   id: number
@@ -170,7 +171,8 @@ defineExpose({
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 9998;
+  /* Flexy hates hardcoded z-index values! Using config instead. */
+  z-index: v-bind('themeConfig.zIndex.confetti');
   overflow: hidden;
 }
 

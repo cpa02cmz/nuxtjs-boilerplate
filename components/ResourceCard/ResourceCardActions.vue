@@ -122,53 +122,73 @@
       {{ copyStatus }}
     </div>
 
-    <!-- Compare button -->
-    <button
-      v-if="id"
-      ref="compareButtonRef"
-      :class="[
-        'p-2 rounded-full transition-all duration-200 ease-out',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
-        isAddingToComparison
-          ? 'bg-blue-100 text-blue-600 scale-110'
-          : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800',
-      ]"
-      :aria-label="compareButtonAriaLabel"
-      :title="compareButtonTitle"
-      :aria-pressed="isAddingToComparison"
-      @click="addResourceToComparison"
-    >
-      <svg
-        v-if="!isAddingToComparison"
-        xmlns="http://www.w3.org/2000/svg"
+    <!-- Compare button with inline feedback -->
+    <div class="flex items-center">
+      <button
+        v-if="id"
+        ref="compareButtonRef"
         :class="[
-          'h-5 w-5 transition-transform duration-200',
-          isCompareAnimating && 'animate-icon-pop',
+          'p-2 rounded-full transition-all duration-200 ease-out',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
+          isAddingToComparison
+            ? 'bg-blue-100 text-blue-600 scale-110'
+            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800',
         ]"
-        viewBox="0 0 20 20"
-        fill="currentColor"
+        :aria-label="compareButtonAriaLabel"
+        :title="compareButtonTitle"
+        :aria-pressed="isAddingToComparison"
+        @click="addResourceToComparison"
       >
-        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-        <path
-          fill-rule="evenodd"
-          d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-          clip-rule="evenodd"
-        />
-      </svg>
-      <svg
-        v-else
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5 animate-check-pop"
-        viewBox="0 0 20 20"
-        fill="currentColor"
+        <svg
+          v-if="!isAddingToComparison"
+          xmlns="http://www.w3.org/2000/svg"
+          :class="[
+            'h-5 w-5 transition-transform duration-200',
+            isCompareAnimating && 'animate-icon-pop',
+          ]"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+          <path
+            fill-rule="evenodd"
+            d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <svg
+          v-else
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 animate-check-pop"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
+
+      <!-- Inline feedback label -->
+      <Transition
+        enter-active-class="transition-all duration-200 ease-out"
+        enter-from-class="opacity-0 -translate-x-2"
+        enter-to-class="opacity-100 translate-x-0"
+        leave-active-class="transition-all duration-150 ease-in"
+        leave-from-class="opacity-100 translate-x-0"
+        leave-to-class="opacity-0 -translate-x-2"
       >
-        <path
-          fill-rule="evenodd"
-          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-          clip-rule="evenodd"
-        />
-      </svg>
-    </button>
+        <span
+          v-if="showCompareFeedback"
+          class="ml-1 text-xs font-medium text-blue-600 whitespace-nowrap"
+          aria-hidden="true"
+        >
+          Added!
+        </span>
+      </Transition>
+    </div>
 
     <!-- Slot for additional actions -->
     <slot name="extra-actions" />
@@ -199,6 +219,7 @@ const props = withDefaults(defineProps<Props>(), {
 const {
   isAddingToComparison,
   isCompareAnimating,
+  showCompareFeedback,
   isCopied,
   isCopyError,
   isCopyAnimating,
