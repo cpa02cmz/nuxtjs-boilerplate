@@ -23,45 +23,74 @@
         class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
       >
         <!-- Loading spinner shown during debounce -->
-        <svg
-          v-if="isSearching"
-          class="w-5 h-5 text-blue-500 animate-spin"
-          fill="none"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
+        <Transition
+          enter-active-class="transition-all duration-200 ease-out"
+          enter-from-class="opacity-0 scale-75"
+          enter-to-class="opacity-100 scale-100"
+          leave-active-class="transition-all duration-150 ease-in"
+          leave-from-class="opacity-100 scale-100"
+          leave-to-class="opacity-0 scale-75"
+          mode="out-in"
         >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
+          <svg
+            v-if="isSearching"
+            key="loading"
+            class="w-5 h-5 text-blue-500 animate-spin"
+            fill="none"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            />
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
+          <!-- Success checkmark shown briefly after search completes -->
+          <svg
+            v-else-if="showSearchComplete"
+            key="success"
+            class="w-5 h-5 text-green-500 animate-search-complete"
+            fill="none"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          <!-- Search icon shown when not searching -->
+          <svg
+            v-else
+            key="search"
+            class="w-5 h-5 text-gray-400"
+            fill="none"
             stroke="currentColor"
-            stroke-width="4"
-          />
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          />
-        </svg>
-        <!-- Search icon shown when not searching -->
-        <svg
-          v-else
-          class="w-5 h-5 text-gray-400"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
-        </svg>
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </Transition>
       </div>
       <input
         id="search-input"
@@ -227,9 +256,11 @@ const isSearching = ref(false)
 const showFocusPulse = ref(false)
 const showIdlePulse = ref(false)
 const showShortcutSuccess = ref(false)
+const showSearchComplete = ref(false)
 const prefersReducedMotion = ref(false)
 let idlePulseTimeout: ReturnType<typeof setTimeout> | null = null
 let shortcutSuccessTimeout: ReturnType<typeof setTimeout> | null = null
+let searchCompleteTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Use the resources composable
 const { resources } = useResourceData()
@@ -249,6 +280,7 @@ const handleInput = (event: Event) => {
 
   // Show searching state for immediate feedback
   isSearching.value = true
+  showSearchComplete.value = false
 
   // Debounce the search to avoid constant updates
   if (inputTimeout.value) {
@@ -260,6 +292,18 @@ const handleInput = (event: Event) => {
     updateSuggestions(value)
     emit('search', value)
     isSearching.value = false
+
+    // Show search complete indicator for positive feedback
+    // Only show when there's actual input to provide meaningful feedback
+    if (value.length > 0 && !prefersReducedMotion.value) {
+      showSearchComplete.value = true
+      if (searchCompleteTimeout) {
+        clearTimeout(searchCompleteTimeout)
+      }
+      searchCompleteTimeout = setTimeout(() => {
+        showSearchComplete.value = false
+      }, uiConfig.timing.searchCompleteDurationMs)
+    }
   }, props.debounceTime)
 }
 
@@ -547,6 +591,9 @@ if (typeof window !== 'undefined') {
     if (shortcutSuccessTimeout) {
       clearTimeout(shortcutSuccessTimeout)
     }
+    if (searchCompleteTimeout) {
+      clearTimeout(searchCompleteTimeout)
+    }
   })
 }
 </script>
@@ -626,6 +673,29 @@ if (typeof window !== 'undefined') {
 
 .animate-shortcut-success {
   animation: shortcut-success 600ms ease-out forwards;
+}
+
+/* Search complete animation - provides positive feedback when search finishes */
+/* Draws attention to the completion state with a satisfying pop effect */
+.animate-search-complete {
+  animation: search-complete
+    v-bind('`${uiConfig.timing.searchCompleteDurationMs}ms`')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes search-complete {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* Respect reduced motion preferences for accessibility */
