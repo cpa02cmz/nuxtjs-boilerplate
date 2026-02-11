@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { useNuxtApp } from '#app'
-import { logError } from '~/utils/errorLogger'
+import { useErrorHandler } from '~/composables/useErrorHandler'
 import type { ApiClient } from '~/utils/api-client'
 import type { ApiKey } from '~/types/webhook'
 import { apiConfig } from '~/configs/api.config'
@@ -27,12 +27,12 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
   }
   const apiKeys = ref<ApiKey[]>([])
   const loading = ref(true)
-  const error = ref<string | null>(null)
+  const { error, handleError, clearError } = useErrorHandler()
 
   const fetchApiKeys = async (): Promise<void> => {
     try {
       loading.value = true
-      error.value = null
+      clearError()
 
       const client = getClient()
       const response = await client.get<{
@@ -43,15 +43,17 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
       if (response.success) {
         apiKeys.value = response.data?.apiKeys ?? response.data?.data ?? []
       } else {
-        error.value =
+        handleError(
           response.error?.message ||
-          validationConfig.messages.error.fetchApiKeys
+            validationConfig.messages.error.fetchApiKeys,
+          { component: 'useApiKeysManager', severity: 'error' }
+        )
         apiKeys.value = []
       }
-    } catch (err) {
-      error.value = validationConfig.messages.error.fetchApiKeys
-      logError('Error fetching API keys', err as Error, 'useApiKeysManager', {
-        operation: 'fetchApiKeys',
+    } catch {
+      handleError(validationConfig.messages.error.fetchApiKeys, {
+        component: 'useApiKeysManager',
+        severity: 'error',
       })
 
       apiKeys.value = []
@@ -63,7 +65,7 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
   const createApiKey = async (newApiKey: NewApiKey): Promise<ApiKey | null> => {
     try {
       loading.value = true
-      error.value = null
+      clearError()
 
       const client = getClient()
       const response = await client.post<{ apiKey: ApiKey; data?: ApiKey }>(
@@ -72,9 +74,11 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
       )
 
       if (!response.success) {
-        error.value =
+        handleError(
           response.error?.message ||
-          validationConfig.messages.error.createApiKey
+            validationConfig.messages.error.createApiKey,
+          { component: 'useApiKeysManager', severity: 'error' }
+        )
         return null
       }
 
@@ -85,11 +89,10 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
       }
 
       return createdKey ?? null
-    } catch (err) {
-      error.value = validationConfig.messages.error.createApiKey
-      logError('Error creating API key', err as Error, 'useApiKeysManager', {
-        operation: 'createApiKey',
-        keyName: newApiKey.name,
+    } catch {
+      handleError(validationConfig.messages.error.createApiKey, {
+        component: 'useApiKeysManager',
+        severity: 'error',
       })
 
       return null
@@ -101,26 +104,27 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
   const revokeApiKey = async (keyId: string): Promise<boolean> => {
     try {
       loading.value = true
-      error.value = null
+      clearError()
 
       const client = getClient()
       const response = await client.delete(apiConfig.auth.apiKeyById(keyId))
 
       if (!response.success) {
-        error.value =
+        handleError(
           response.error?.message ||
-          validationConfig.messages.error.revokeApiKey
+            validationConfig.messages.error.revokeApiKey,
+          { component: 'useApiKeysManager', severity: 'error' }
+        )
         return false
       }
 
       apiKeys.value = apiKeys.value.filter(key => key.id !== keyId)
 
       return true
-    } catch (err) {
-      error.value = validationConfig.messages.error.revokeApiKey
-      logError('Error revoking API key', err as Error, 'useApiKeysManager', {
-        operation: 'revokeApiKey',
-        keyId,
+    } catch {
+      handleError(validationConfig.messages.error.revokeApiKey, {
+        component: 'useApiKeysManager',
+        severity: 'error',
       })
 
       return false
@@ -133,6 +137,8 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
     apiKeys,
     loading,
     error,
+    handleError,
+    clearError,
     fetchApiKeys,
     createApiKey,
     revokeApiKey,
