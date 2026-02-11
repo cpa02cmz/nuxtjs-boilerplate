@@ -69,19 +69,31 @@ export class WebhookQueueManager {
   }
 
   private async processQueue(): Promise<void> {
-    const queue = await webhookStorage.getQueue()
+    if (!this.processCallback) {
+      return
+    }
+
+    // Process items atomically to prevent race conditions
+    // dequeueAtomic ensures only one worker processes each item
+    const item = await this.dequeue()
+
+    if (!item) {
+      return
+    }
+
+    const scheduledFor = new Date(item.scheduledFor)
     const now = new Date()
 
-    for (const item of queue) {
-      const scheduledFor = new Date(item.scheduledFor)
-
-      if (scheduledFor <= now && this.processCallback) {
-        try {
-          await this.processCallback(item)
-        } catch (error) {
-          logger.error(`Error processing queue item ${item.id}:`, error)
-        }
+    // Only process if the item is due
+    if (scheduledFor <= now) {
+      try {
+        await this.processCallback(item)
+      } catch (error) {
+        logger.error(`Error processing queue item ${item.id}:`, error)
       }
+    } else {
+      // Item is not due yet, re-enqueue it
+      await this.enqueue(item)
     }
   }
 
