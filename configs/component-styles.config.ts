@@ -241,6 +241,18 @@ export const componentStylesConfig = {
     // Progress bar transition
     progressDuration: process.env.SUBMIT_PROGRESS_DURATION || 'duration-300',
   },
+
+  // Swagger UI Styles - Flexy hates hardcoded CSS values!
+  swaggerUi: {
+    topbar: {
+      backgroundColor: process.env.SWAGGER_TOPBAR_BG || '#4f46e5',
+    },
+    info: {
+      titleFontSize: process.env.SWAGGER_TITLE_SIZE || '28px',
+      titleMarginBottom: process.env.SWAGGER_TITLE_MARGIN || '10px',
+      margin: process.env.SWAGGER_INFO_MARGIN || '20px 0',
+    },
+  },
 } as const
 
 export type ComponentStylesConfig = typeof componentStylesConfig
