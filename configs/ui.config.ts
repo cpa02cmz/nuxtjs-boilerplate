@@ -414,6 +414,12 @@ export const uiConfig = {
     announcementClearMs: parseInt(
       process.env.FILTER_ANNOUNCEMENT_CLEAR_MS || '1000'
     ),
+    // Progress bar color transition thresholds (percent)
+    progressThresholds: {
+      high: parseInt(process.env.FILTER_PROGRESS_THRESHOLD_HIGH || '60'),
+      medium: parseInt(process.env.FILTER_PROGRESS_THRESHOLD_MEDIUM || '30'),
+      low: parseInt(process.env.FILTER_PROGRESS_THRESHOLD_LOW || '10'),
+    },
   },
 
   // Offline Indicator Settings

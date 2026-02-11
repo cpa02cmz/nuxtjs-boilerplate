@@ -4,6 +4,7 @@ import { randomBytes } from 'node:crypto'
 import { getSecurityHeaders } from '../utils/security-config'
 import { logger } from '~/utils/logger'
 import { timeConfig } from '~/configs/time.config'
+import { securityConfig } from '~/configs/security.config'
 import {
   isApiRoute,
   isStaticBuildPath,
@@ -40,7 +41,9 @@ export default defineNitroPlugin(nitroApp => {
       // Only use nonces in production to avoid CSP blocking inline scripts in dev
       // In development, we rely on 'unsafe-inline' instead
       const isDev = process.env.NODE_ENV === 'development'
-      const nonce = isDev ? undefined : randomBytes(16).toString('base64')
+      const nonce = isDev
+        ? undefined
+        : randomBytes(securityConfig.crypto.nonceLength).toString('base64')
 
       // Get security headers with nonce (nonce only in production)
       const securityHeaders = getSecurityHeaders(nonce)

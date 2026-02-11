@@ -9,6 +9,8 @@ export const STORAGE_KEYS = {
   PWA_INSTALL_DISMISSED: 'pwa-install-dismissed',
   WEB_VITALS_PREFIX: 'web-vitals-',
   VISITED_RESOURCES: 'visited-resources',
+  RESOURCE_DRAFT: 'resource-draft',
+  RESOURCE_DRAFT_TIMESTAMP: 'resource-draft-timestamp',
 } as const
 
 // Flexy loves modularity! Import configurable categories from contentConfig
@@ -192,6 +194,12 @@ export const HTTP_STATUS = {
   CLIENT_ERROR_MIN: 400,
   CLIENT_ERROR_MAX: 499,
   SERVER_ERROR_MIN: 500,
+} as const
+
+// Progress and percentage constants - Flexy hates hardcoded 100 values!
+export const PROGRESS = {
+  MAX_PERCENT: 100,
+  MIN_PERCENT: 0,
 } as const
 
 // Time conversion constants - Flexy hates hardcoded millisecond calculations!

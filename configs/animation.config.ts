@@ -220,6 +220,10 @@ export const animationConfig = {
     ),
     tooltipAppearDuration:
       process.env.READING_PROGRESS_TOOLTIP_APPEAR || '0.2s',
+    // Milestone interval for progress announcements (percent)
+    milestoneInterval: parseInt(
+      process.env.READING_PROGRESS_MILESTONE_INTERVAL || '25'
+    ),
   },
 
   // Error Boundary Animations

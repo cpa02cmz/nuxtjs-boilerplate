@@ -46,6 +46,6 @@ export async function verifyApiKey(
  * @returns New API key with 'ak_' prefix
  */
 export function generateApiKey(): string {
-  const bytes = randomBytes(32)
-  return `ak_${bytes.toString('base64url')}`
+  const bytes = randomBytes(securityConfig.crypto.keyLength)
+  return `ak_${bytes.toString(securityConfig.crypto.encoding as BufferEncoding)}`
 }

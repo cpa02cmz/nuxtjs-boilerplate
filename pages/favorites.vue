@@ -345,6 +345,7 @@ import { animationConfig } from '~/configs/animation.config'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import type { Bookmark } from '~/composables/useBookmarks'
 import { bookmarksConfig } from '~/configs/bookmarks.config'
+import { PROGRESS } from '~/server/utils/constants'
 
 // Respect user's motion preferences for accessibility
 const prefersReducedMotion = computed(() => {
@@ -391,7 +392,7 @@ interface DeletedBookmark {
 }
 
 const deletedBookmarks = ref<Map<string, DeletedBookmark>>(new Map())
-const undoProgress = ref(100)
+const undoProgress = ref(PROGRESS.MAX_PERCENT)
 const undoProgressInterval = ref<ReturnType<typeof setInterval> | null>(null)
 
 // Cleanup on unmount

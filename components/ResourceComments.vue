@@ -74,6 +74,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { Comment } from '~/types/community'
+import { TIME } from '~/server/utils/constants'
 
 interface Props {
   comments: Comment[]
@@ -108,12 +109,17 @@ const formattedComments = computed(() => {
 const formatTimeAgo = (timestamp: string): string => {
   const date = new Date(timestamp)
   const now = new Date()
-  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+  const seconds = Math.floor(
+    (now.getTime() - date.getTime()) / TIME.MS_PER_SECOND
+  )
 
-  if (seconds < 60) return 'just now'
-  if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`
-  if (seconds < 604800) return `${Math.floor(seconds / 86400)} days ago`
+  if (seconds < TIME.SECONDS_PER_MINUTE) return 'just now'
+  if (seconds < TIME.SECONDS_PER_HOUR)
+    return `${Math.floor(seconds / TIME.SECONDS_PER_MINUTE)} minutes ago`
+  if (seconds < TIME.SECONDS_PER_DAY)
+    return `${Math.floor(seconds / TIME.SECONDS_PER_HOUR)} hours ago`
+  if (seconds < TIME.SECONDS_PER_WEEK)
+    return `${Math.floor(seconds / TIME.SECONDS_PER_DAY)} days ago`
   return date.toLocaleDateString()
 }
 </script>

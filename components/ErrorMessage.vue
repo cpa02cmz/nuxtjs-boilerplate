@@ -190,6 +190,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { themeConfig } from '../configs/theme.config'
 import { uiConfig } from '../configs/ui.config'
+import { PROGRESS } from '~/server/utils/constants'
 
 interface Action {
   label: string
@@ -236,7 +237,7 @@ const isVisible = ref(true)
 const isPaused = ref(false)
 const prefersReducedMotion = ref(false)
 const showUndo = ref(false)
-const undoProgress = ref(100)
+const undoProgress = ref(PROGRESS.MAX_PERCENT)
 const announcement = ref('')
 let dismissTimeout: ReturnType<typeof setTimeout> | null = null
 let undoTimeout: ReturnType<typeof setTimeout> | null = null

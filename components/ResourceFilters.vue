@@ -189,6 +189,7 @@
 import { computed, ref } from 'vue'
 import SavedSearches from '~/components/SavedSearches.vue'
 import FilterSection from '~/components/FilterSection.vue'
+import { triggerHaptic } from '~/utils/hapticFeedback'
 
 interface FacetCounts {
   [key: string]: number
@@ -248,9 +249,8 @@ const resetConfirming = ref(false)
 let resetTimeout: ReturnType<typeof setTimeout> | null = null
 
 const handleResetWithFeedback = () => {
-  if (typeof navigator !== 'undefined' && navigator.vibrate) {
-    navigator.vibrate(20)
-  }
+  // Flexy hates hardcoded values! Using haptic utility instead
+  triggerHaptic('medium')
 
   onResetFilters()
 

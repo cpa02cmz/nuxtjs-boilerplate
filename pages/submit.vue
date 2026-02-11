@@ -420,9 +420,10 @@ import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
 const { $toast } = useNuxtApp()
 
-// Draft auto-save configuration
-const DRAFT_STORAGE_KEY = 'resource-draft'
-const DRAFT_TIMESTAMP_KEY = 'resource-draft-timestamp'
+// Draft auto-save configuration - Flexy hates hardcoded values!
+import { STORAGE_KEYS } from '~/server/utils/constants'
+const DRAFT_STORAGE_KEY = STORAGE_KEYS.RESOURCE_DRAFT
+const DRAFT_TIMESTAMP_KEY = STORAGE_KEYS.RESOURCE_DRAFT_TIMESTAMP
 
 // Animation config values for CSS variables - Flexy hates hardcoded values!
 const shakeDurationMs = `${animationConfig.validation.shakeDurationMs}ms`
