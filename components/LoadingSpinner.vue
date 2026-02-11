@@ -48,6 +48,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { themeConfig } from '../configs/theme.config'
+import { componentStylesConfig } from '../configs/component-styles.config'
+
+// Flexy hates hardcoded values! Using config instead.
+const spinnerStyles = componentStylesConfig.loadingSpinner
 
 interface Props {
   label?: string
@@ -117,30 +121,32 @@ watch(
 }
 
 .loading-spinner--small .loading-spinner__circular {
-  width: 1rem;
-  height: 1rem;
+  width: v-bind('spinnerStyles.sizes.small.width');
+  height: v-bind('spinnerStyles.sizes.small.height');
 }
 
 .loading-spinner .loading-spinner__circular {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: v-bind('spinnerStyles.sizes.medium.width');
+  height: v-bind('spinnerStyles.sizes.medium.height');
 }
 
 .loading-spinner--large .loading-spinner__circular {
-  width: 3rem;
-  height: 3rem;
+  width: v-bind('spinnerStyles.sizes.large.width');
+  height: v-bind('spinnerStyles.sizes.large.height');
 }
 
 .loading-spinner__circular {
-  animation: rotate 2s linear infinite;
+  animation: rotate v-bind('spinnerStyles.animation.rotationDuration') linear
+    infinite;
 }
 
 .loading-spinner__path {
   stroke: currentColor;
-  stroke-dasharray: 1, 200;
-  stroke-dashoffset: 0;
+  stroke-dasharray: v-bind('spinnerStyles.stroke.dashArray');
+  stroke-dashoffset: v-bind('spinnerStyles.stroke.dashOffset');
   stroke-linecap: round;
-  animation: dash 1.5s ease-in-out infinite;
+  animation: dash v-bind('spinnerStyles.animation.dashDuration') ease-in-out
+    infinite;
 }
 
 /* Respect user's motion preferences for accessibility */
@@ -158,7 +164,9 @@ watch(
 
   /* Add a subtle pulse for reduced motion users */
   .loading-spinner__circular {
-    animation: pulse 2s ease-in-out infinite;
+    animation: pulse
+      v-bind('spinnerStyles.animation.reducedMotionPulseDuration') ease-in-out
+      infinite;
   }
 
   @keyframes pulse {
@@ -173,7 +181,7 @@ watch(
 }
 
 .loading-spinner__label {
-  font-size: 0.875rem;
+  font-size: v-bind('spinnerStyles.label.fontSize');
   color: v-bind('themeConfig.loadingSpinner.labelColor');
 }
 
@@ -185,8 +193,8 @@ watch(
 
 @keyframes dash {
   0% {
-    stroke-dasharray: 1, 200;
-    stroke-dashoffset: 0;
+    stroke-dasharray: v-bind('spinnerStyles.stroke.dashArray');
+    stroke-dashoffset: v-bind('spinnerStyles.stroke.dashOffset');
   }
   50% {
     stroke-dasharray: 89, 200;

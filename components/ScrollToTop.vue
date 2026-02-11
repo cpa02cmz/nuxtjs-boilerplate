@@ -76,11 +76,17 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { uiConfig } from '~/configs/ui.config'
 import { themeConfig } from '~/configs/theme.config'
+import { shadowsConfig } from '~/configs/shadows.config'
+import { componentStylesConfig } from '~/configs/component-styles.config'
 
 // Constants - Flexy hates hardcoded values! Using config instead.
 const SCROLL_THRESHOLD = uiConfig.scrollToTop.thresholdPx
 const CIRCLE_RADIUS = uiConfig.scrollToTop.circleRadius
 const CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS
+
+// Shadow and style configs
+const shadows = shadowsConfig.scrollToTop
+const styles = componentStylesConfig.scrollToTop
 
 // Reactive state
 const isVisible = ref(false)
@@ -213,15 +219,14 @@ onMounted(() => {
 <style scoped>
 .scroll-to-top {
   position: fixed;
-  /* Hardcoded values to avoid SSR issues with v-bind */
-  bottom: 2rem;
-  right: 2rem;
-  width: 48px;
-  height: 48px;
+  bottom: v-bind('styles.position.bottom');
+  right: v-bind('styles.position.right');
+  width: v-bind('styles.size.width');
+  height: v-bind('styles.size.height');
   border-radius: 50%;
   background: white;
   border: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: v-bind('shadows.default');
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -235,7 +240,7 @@ onMounted(() => {
 
 .scroll-to-top:hover {
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: v-bind('shadows.hover');
 }
 
 .scroll-to-top:active {
@@ -245,8 +250,8 @@ onMounted(() => {
 .scroll-to-top:focus {
   outline: none;
   box-shadow:
-    0 0 0 3px rgba(59, 130, 246, 0.5),
-    0 4px 12px rgba(0, 0, 0, 0.15);
+    0 0 0 3px v-bind('shadows.focus.primary'),
+    v-bind('shadows.default');
 }
 
 .scroll-to-top:focus-visible {
@@ -299,10 +304,10 @@ onMounted(() => {
 /* Mobile adjustments */
 @media (max-width: 640px) {
   .scroll-to-top {
-    bottom: 1.5rem;
-    right: 1.5rem;
-    width: 44px;
-    height: 44px;
+    bottom: v-bind('styles.mobile.bottom');
+    right: v-bind('styles.mobile.right');
+    width: v-bind('styles.mobile.width');
+    height: v-bind('styles.mobile.height');
   }
 
   .scroll-to-top__icon svg {

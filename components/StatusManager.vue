@@ -80,6 +80,10 @@
 
 <script setup lang="ts">
 import { useResourceStatusManager } from '~/composables/useResourceStatusManager'
+import { componentStylesConfig } from '~/configs/component-styles.config'
+
+// Flexy hates hardcoded values! Using config instead.
+const styles = componentStylesConfig.statusManager
 
 interface Props {
   resourceId: string
@@ -114,23 +118,24 @@ const handleUpdate = async () => {
 
 <style scoped>
 .status-manager {
-  padding: 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  background-color: #fafafa;
+  padding: v-bind('styles.padding');
+  border: v-bind('styles.borderWidth') v-bind('styles.borderStyle')
+    v-bind('styles.borderColor');
+  border-radius: v-bind('styles.borderRadius');
+  background-color: v-bind('styles.backgroundColor');
 }
 
 .status-manager h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #1f2937;
+  font-size: v-bind('styles.titleFontSize');
+  font-weight: v-bind('styles.titleFontWeight');
+  margin-bottom: v-bind('styles.titleMarginBottom');
+  color: v-bind('styles.titleColor');
 }
 
 .status-controls {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: v-bind('styles.controlGap');
 }
 
 .status-selector,
@@ -145,59 +150,62 @@ const handleUpdate = async () => {
 .reason-input label,
 .notes-input label {
   font-weight: 500;
-  color: #374151;
-  font-size: 0.875rem;
+  color: v-bind('styles.labelColor');
+  font-size: v-bind('styles.labelFontSize');
 }
 
 .status-dropdown {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
+  padding: v-bind('styles.inputPadding');
+  border: v-bind('styles.borderWidth') v-bind('styles.borderStyle')
+    v-bind('styles.inputBorderColor');
+  border-radius: v-bind('styles.inputBorderRadius');
   background-color: white;
-  font-size: 1rem;
+  font-size: v-bind('styles.inputFontSize');
 }
 
 .reason-field {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 1rem;
+  padding: v-bind('styles.inputPadding');
+  border: v-bind('styles.borderWidth') v-bind('styles.borderStyle')
+    v-bind('styles.inputBorderColor');
+  border-radius: v-bind('styles.inputBorderRadius');
+  font-size: v-bind('styles.inputFontSize');
 }
 
 .notes-field {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  min-height: 60px;
+  padding: v-bind('styles.inputPadding');
+  border: v-bind('styles.borderWidth') v-bind('styles.borderStyle')
+    v-bind('styles.inputBorderColor');
+  border-radius: v-bind('styles.inputBorderRadius');
+  font-size: v-bind('styles.inputFontSize');
+  min-height: v-bind('styles.notesMinHeight');
   resize: vertical;
 }
 
 .update-button {
   align-self: flex-start;
-  padding: 0.5rem 1rem;
-  background-color: #10b981;
-  color: white;
+  padding: v-bind('styles.buttonPadding');
+  background-color: v-bind('styles.buttonBgColor');
+  color: v-bind('styles.buttonTextColor');
   border: none;
-  border-radius: 0.375rem;
+  border-radius: v-bind('styles.buttonBorderRadius');
   cursor: pointer;
-  font-weight: 500;
-  font-size: 1rem;
+  font-weight: v-bind('styles.buttonFontWeight');
+  font-size: v-bind('styles.buttonFontSize');
 }
 
 .update-button:hover:not(:disabled) {
-  background-color: #059669;
+  background-color: v-bind('styles.buttonHoverBg');
 }
 
 .update-button:disabled {
-  background-color: #9ca3af;
+  background-color: v-bind('styles.buttonDisabledBg');
   cursor: not-allowed;
 }
 
 .update-result {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  border-radius: 0.375rem;
+  margin-top: v-bind('styles.resultMarginTop');
+  padding: v-bind('styles.resultPadding');
+  border-radius: v-bind('styles.resultBorderRadius');
 }
 
 .success-message {
