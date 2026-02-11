@@ -155,7 +155,8 @@
         </p>
         <div class="form-actions">
           <button
-            class="btn btn-primary"
+            class="btn"
+            :class="copySuccess ? 'btn-success' : 'btn-primary'"
             :aria-label="
               copySuccess
                 ? 'API key copied to clipboard'
@@ -163,6 +164,33 @@
             "
             @click="copyApiKey"
           >
+            <svg
+              v-if="!copySuccess"
+              xmlns="http://www.w3.org/2000/svg"
+              class="btn-icon"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+              <path
+                d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h4a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"
+              />
+            </svg>
+            <svg
+              v-else
+              xmlns="http://www.w3.org/2000/svg"
+              class="btn-icon animate-check-scale"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
             {{ copySuccess ? 'Copied!' : 'Copy Key' }}
           </button>
           <button
@@ -171,6 +199,15 @@
           >
             Close
           </button>
+        </div>
+        <!-- Screen reader announcement for copy feedback -->
+        <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          class="sr-only"
+        >
+          {{ copySuccess ? 'API key has been copied to clipboard' : '' }}
         </div>
       </div>
     </div>
@@ -183,6 +220,8 @@ import type { NewApiKey } from '~/composables/useApiKeysManager'
 import { useApiKeysManager } from '~/composables/useApiKeysManager'
 import logger from '~/utils/logger'
 import { permissionsConfig } from '~/configs/permissions.config'
+import { animationConfig } from '~/configs/animation.config'
+import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
 const {
   apiKeys,
@@ -288,19 +327,24 @@ const revokeApiKey = async (id: string) => {
   }
 }
 
-// Copy API key to clipboard
+// Copy API key to clipboard with visual and haptic feedback
 const copyApiKey = async () => {
   if (createdApiKey.value?.key) {
     try {
       await navigator.clipboard.writeText(createdApiKey.value.key)
       copySuccess.value = true
 
-      // Reset button text after 2 seconds
+      // Haptic feedback for successful copy
+      hapticSuccess()
+
+      // Reset button state after configured duration
       setTimeout(() => {
         copySuccess.value = false
-      }, 2000)
+      }, animationConfig.copySuccess.resetDelayMs)
     } catch (error) {
       logger.error('Error copying API key to clipboard', error)
+      // Haptic feedback for failed copy
+      hapticError()
     }
   }
 }
@@ -498,5 +542,66 @@ onMounted(() => {
 
 .btn-danger:hover {
   background: #dc2626;
+}
+
+.btn-success {
+  background: #22c55e;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #16a34a;
+}
+
+.btn-icon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Checkmark scale animation for copy feedback */
+.animate-check-scale {
+  animation: check-scale 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes check-scale {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Button transition for smooth color change */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms ease-out;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-check-scale {
+    animation: none;
+  }
+
+  .btn {
+    transition: none;
+  }
+
+  .btn:active {
+    transform: none;
+  }
 }
 </style>
