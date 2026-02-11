@@ -391,25 +391,36 @@ watch(
 
 <style>
 /* Staggered entrance animation for resource cards - Spring physics for delightful UX */
+/* Flexy hates hardcoded values! Using config-bound CSS custom properties */
 .resource-card-wrapper {
   opacity: 0;
   /* Spring cubic-bezier: overshoots slightly for organic, playful feel */
-  animation: card-enter 600ms cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: card-enter v-bind('animationConfig.card.enterDurationMs + "ms"')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   will-change: transform, opacity;
 }
 
 @keyframes card-enter {
   0% {
     opacity: 0;
-    transform: translateY(30px) scale(0.92);
+    transform: translateY(
+        v-bind('animationConfig.cardAnimations.enterDistancePx + "px"')
+      )
+      scale(v-bind('animationConfig.cardAnimations.enterScale'));
   }
   40% {
     opacity: 0.7;
-    transform: translateY(-4px) scale(1.02);
+    transform: translateY(
+        v-bind('animationConfig.cardAnimations.hoverTranslateYPx + "px"')
+      )
+      scale(v-bind('animationConfig.cardAnimations.hoverScale'));
   }
   70% {
     opacity: 0.95;
-    transform: translateY(2px) scale(0.99);
+    transform: translateY(
+        v-bind('animationConfig.cardAnimations.activeTranslateYPx + "px"')
+      )
+      scale(v-bind('animationConfig.cardAnimations.activeScale'));
   }
   100% {
     opacity: 1;

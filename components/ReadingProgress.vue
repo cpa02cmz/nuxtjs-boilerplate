@@ -51,6 +51,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { componentStylesConfig } from '~/configs/component-styles.config'
+import { themeConfig } from '~/configs/theme.config'
+import { animationConfig } from '~/configs/animation.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   /**
@@ -112,7 +116,7 @@ watch(progress, newProgress => {
     // Clear announcement after screen reader has time to read it
     setTimeout(() => {
       progressAnnouncement.value = ''
-    }, 1000)
+    }, uiConfig.feedback.announcementClearMs)
   }
 })
 
@@ -194,23 +198,25 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* Flexy hates hardcoded values! Using config-bound CSS custom properties */
 .reading-progress-container {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: v-bind('componentStylesConfig.readingProgress.height');
   background: transparent;
-  z-index: 9999;
+  z-index: v-bind('themeConfig.zIndex.readingProgress');
   pointer-events: none;
 }
 
 .reading-progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 50%, #3b82f6 100%);
+  background: v-bind('componentStylesConfig.readingProgress.gradient');
   background-size: 200% 100%;
   transform-origin: left;
-  transition: transform 0.1s ease-out;
+  transition: transform
+    v-bind('animationConfig.readingProgress.transitionDuration') ease-out;
   will-change: transform;
 }
 
@@ -230,14 +236,16 @@ onUnmounted(() => {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 100px;
+  width: v-bind('componentStylesConfig.readingProgress.shimmerWidth');
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.4) 50%,
+    v-bind('themeConfig.readingProgress.shimmerColor') 50%,
     transparent 100%
   );
-  animation: shimmer 2s ease-in-out infinite;
+  animation: shimmer
+    v-bind('animationConfig.readingProgress.shimmerDurationSec + "s"')
+    ease-in-out infinite;
 }
 
 /* Reduced motion support */
@@ -262,9 +270,9 @@ onUnmounted(() => {
 /* Progress tooltip */
 .reading-progress-tooltip {
   position: absolute;
-  top: 12px;
+  top: v-bind('componentStylesConfig.readingProgress.tooltipTop');
   transform: translateX(-50%);
-  z-index: 10000;
+  z-index: v-bind('themeConfig.zIndex.tooltip');
   pointer-events: none;
   display: flex;
   flex-direction: column;
@@ -272,18 +280,21 @@ onUnmounted(() => {
 }
 
 .tooltip-text {
-  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
+  background: v-bind('themeConfig.readingProgress.tooltipGradient');
+  color: v-bind('themeConfig.readingProgress.tooltipTextColor');
+  padding: v-bind('componentStylesConfig.readingProgress.tooltipPadding');
+  border-radius: v-bind(
+    'componentStylesConfig.readingProgress.tooltipBorderRadius'
+  );
+  font-size: v-bind('componentStylesConfig.readingProgress.tooltipFontSize');
+  font-weight: v-bind(
+    'componentStylesConfig.readingProgress.tooltipFontWeight'
+  );
   white-space: nowrap;
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: v-bind('themeConfig.readingProgress.tooltipShadow');
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  animation: tooltip-appear 0.2s ease-out;
+  animation: tooltip-appear
+    v-bind('animationConfig.readingProgress.tooltipAppearDuration') ease-out;
 }
 
 .tooltip-arrow {
