@@ -12,14 +12,16 @@
       '--skeleton-icon-end': skeletonColors.icon.end,
       '--skeleton-reduced-light': skeletonColors.reducedMotion.light,
       '--skeleton-reduced-icon': skeletonColors.reducedMotion.icon,
+      '--wave-duration': waveDuration,
+      '--wave-stagger': waveStagger,
     }"
   >
     <div class="flex items-start">
       <!-- Icon placeholder -->
       <div class="flex-shrink-0 mr-4">
         <div
-          class="skeleton-icon skeleton-shimmer rounded w-12 h-12"
-          :style="{ animationDelay: getStaggerDelay(0) }"
+          class="skeleton-icon skeleton-shimmer skeleton-wave rounded w-12 h-12"
+          :style="{ animationDelay: getStaggerDelay(0), '--wave-index': 0 }"
           aria-hidden="true"
         />
       </div>
@@ -27,51 +29,51 @@
         <div class="flex items-center justify-between mb-3">
           <!-- Title placeholder -->
           <div
-            class="skeleton-shimmer h-5 rounded w-3/4 skeleton-item"
-            :style="{ animationDelay: getStaggerDelay(1) }"
+            class="skeleton-shimmer h-5 rounded w-3/4 skeleton-item skeleton-wave"
+            :style="{ animationDelay: getStaggerDelay(1), '--wave-index': 1 }"
             aria-hidden="true"
           />
           <!-- New badge placeholder (occasional) -->
           <div
-            class="skeleton-shimmer h-5 rounded w-10 skeleton-item ml-2"
-            :style="{ animationDelay: getStaggerDelay(1) }"
+            class="skeleton-shimmer h-5 rounded w-10 skeleton-item skeleton-wave ml-2"
+            :style="{ animationDelay: getStaggerDelay(1), '--wave-index': 1 }"
             aria-hidden="true"
           />
         </div>
 
         <!-- Description placeholder -->
         <div
-          class="skeleton-shimmer h-4 rounded w-full mb-2 skeleton-item"
-          :style="{ animationDelay: getStaggerDelay(2) }"
+          class="skeleton-shimmer h-4 rounded w-full mb-2 skeleton-item skeleton-wave"
+          :style="{ animationDelay: getStaggerDelay(2), '--wave-index': 2 }"
           aria-hidden="true"
         />
         <div
-          class="skeleton-shimmer h-4 rounded w-5/6 mb-4 skeleton-item"
-          :style="{ animationDelay: getStaggerDelay(3) }"
+          class="skeleton-shimmer h-4 rounded w-5/6 mb-4 skeleton-item skeleton-wave"
+          :style="{ animationDelay: getStaggerDelay(3), '--wave-index': 3 }"
           aria-hidden="true"
         />
 
         <!-- Benefits section -->
         <div class="mt-3 bg-gray-50 p-3 rounded-md">
           <div
-            class="skeleton-shimmer h-4 rounded w-1/3 mb-3 skeleton-item"
-            :style="{ animationDelay: getStaggerDelay(4) }"
+            class="skeleton-shimmer h-4 rounded w-1/3 mb-3 skeleton-item skeleton-wave"
+            :style="{ animationDelay: getStaggerDelay(4), '--wave-index': 4 }"
             aria-hidden="true"
           />
           <div class="space-y-2">
             <div
-              class="skeleton-shimmer h-3 rounded w-full skeleton-item"
-              :style="{ animationDelay: getStaggerDelay(5) }"
+              class="skeleton-shimmer h-3 rounded w-full skeleton-item skeleton-wave"
+              :style="{ animationDelay: getStaggerDelay(5), '--wave-index': 5 }"
               aria-hidden="true"
             />
             <div
-              class="skeleton-shimmer h-3 rounded w-4/5 skeleton-item"
-              :style="{ animationDelay: getStaggerDelay(6) }"
+              class="skeleton-shimmer h-3 rounded w-4/5 skeleton-item skeleton-wave"
+              :style="{ animationDelay: getStaggerDelay(6), '--wave-index': 6 }"
               aria-hidden="true"
             />
             <div
-              class="skeleton-shimmer h-3 rounded w-3/4 skeleton-item"
-              :style="{ animationDelay: getStaggerDelay(7) }"
+              class="skeleton-shimmer h-3 rounded w-3/4 skeleton-item skeleton-wave"
+              :style="{ animationDelay: getStaggerDelay(7), '--wave-index': 7 }"
               aria-hidden="true"
             />
           </div>
@@ -80,8 +82,8 @@
         <!-- Button placeholder -->
         <div class="mt-4">
           <div
-            class="skeleton-shimmer h-8 rounded-md w-32 skeleton-item"
-            :style="{ animationDelay: getStaggerDelay(8) }"
+            class="skeleton-shimmer h-8 rounded-md w-32 skeleton-item skeleton-wave"
+            :style="{ animationDelay: getStaggerDelay(8), '--wave-index': 8 }"
             aria-hidden="true"
           />
         </div>
@@ -99,6 +101,10 @@ import { componentColorsConfig } from '~/configs/component-colors.config'
 // Animation timing configuration - Flexy hates hardcoded values!
 const staggerBaseDelay = animationConfig.skeleton.staggerDelayMs
 const staggerIncrement = animationConfig.skeleton.staggerIncrementMs
+
+// Wave animation configuration - creates a flowing wave effect across all items
+const waveDuration = `${animationConfig.skeleton.waveDurationSec}s`
+const waveStagger = `${animationConfig.skeleton.waveStaggerSec}s`
 
 // Calculate stagger delays for each item
 const getStaggerDelay = (index: number): string => {
@@ -188,6 +194,31 @@ const skeletonColors = {
   }
 }
 
+/* Wave shimmer effect - coordinates multiple items for a flowing wave pattern */
+/* This creates a more cohesive and polished loading experience */
+.skeleton-wave {
+  animation:
+    shimmer v-bind('animationConfig.skeleton.shimmerDurationSec') ease-in-out
+      infinite,
+    wave-pulse var(--wave-duration) ease-in-out infinite;
+  animation-delay:
+    calc(var(--wave-index) * var(--wave-stagger)),
+    calc(var(--wave-index) * var(--wave-stagger));
+}
+
+/* Wave pulse animation - subtle opacity and scale variation */
+@keyframes wave-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(0.995);
+  }
+}
+
 /* Reduced motion support - Flexy hates hardcoded colors! */
 @media (prefers-reduced-motion: reduce) {
   .skeleton-shimmer,
@@ -198,6 +229,11 @@ const skeletonColors = {
 
   .skeleton-icon {
     background: var(--skeleton-reduced-icon);
+  }
+
+  .skeleton-wave {
+    animation: none;
+    background: var(--skeleton-reduced-light);
   }
 
   .skeleton-card {
