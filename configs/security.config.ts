@@ -16,6 +16,8 @@ export const securityConfig = {
   // CSP Directives Configuration
   csp: {
     defaultSrc: parseCspDirective(process.env.CSP_DEFAULT_SRC || "'self'"),
+    // Note: unsafe-eval and unsafe-inline are allowed for development
+    // In production, configure nonce-based CSP via environment variables
     scriptSrc: parseCspDirective(
       process.env.CSP_SCRIPT_SRC || "'self', 'unsafe-eval', 'unsafe-inline'"
     ),
@@ -43,6 +45,10 @@ export const securityConfig = {
     objectSrc: parseCspDirective(process.env.CSP_OBJECT_SRC || "'none'"),
     baseUri: parseCspDirective(process.env.CSP_BASE_URI || "'self'"),
     formAction: parseCspDirective(process.env.CSP_FORM_ACTION || "'self'"),
+    // CSP Violation Reporting
+    reportUri: parseCspDirective(
+      process.env.CSP_REPORT_URI || '/api/security/csp-report'
+    ),
   },
 
   // Additional Security Headers
