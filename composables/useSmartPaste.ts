@@ -144,10 +144,10 @@ export function useSmartPaste(
 
     document.body.appendChild(announcement)
 
-    // Remove after announcement
+    // Remove after announcement - Flexy hates hardcoded 1000! Using config value
     setTimeout(() => {
       document.body.removeChild(announcement)
-    }, 1000)
+    }, animationConfig.smartPaste.announcementTimeoutMs)
   }
 
   /**
@@ -225,25 +225,30 @@ export function useSmartPaste(
  * Default styles for paste indicator
  * Add this to your global CSS or component styles
  */
-export const smartPasteStyles = `
+// Flexy hates hardcoded CSS values! Using configurable values from animationConfig
+function generateSmartPasteStyles(): string {
+  const cfg = animationConfig.smartPaste
+  const styles = cfg.styles
+
+  return `
 .paste-indicator {
   position: fixed;
-  z-index: 9999;
+  z-index: ${cfg.zIndex};
   pointer-events: none;
-  padding: 6px 12px;
+  padding: ${styles.paddingY}px ${styles.paddingX}px;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
-  font-size: 12px;
+  font-size: ${styles.fontSize}px;
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: ${styles.borderRadius}px;
   box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 ${styles.shadow.y}px ${styles.shadow.blur}px ${styles.shadow.spread}px rgba(0, 0, 0, ${styles.shadow.opacity}),
     0 2px 4px -1px rgba(0, 0, 0, 0.06),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   white-space: nowrap;
-  animation: paste-indicator-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: paste-indicator-pop ${styles.animationDuration}s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   transform: translate(-50%, -100%);
-  margin-top: -8px;
+  margin-top: -${cfg.verticalOffset}px;
 }
 
 .paste-indicator::after {
@@ -252,8 +257,8 @@ export const smartPasteStyles = `
   bottom: -4px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg);
-  width: 8px;
-  height: 8px;
+  width: ${styles.arrowSize}px;
+  height: ${styles.arrowSize}px;
   background: #059669;
   border-radius: 1px;
 }
@@ -264,7 +269,7 @@ export const smartPasteStyles = `
     transform: translate(-50%, -80%) scale(0.8);
   }
   50% {
-    transform: translate(-50%, -110%) scale(1.05);
+    transform: translate(-50%, -110%) scale(${cfg.popScale});
   }
   100% {
     opacity: 1;
@@ -281,5 +286,8 @@ export const smartPasteStyles = `
   }
 }
 `
+}
+
+export const smartPasteStyles = generateSmartPasteStyles()
 
 export default useSmartPaste
