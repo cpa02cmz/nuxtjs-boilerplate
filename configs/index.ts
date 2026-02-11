@@ -136,6 +136,9 @@ import {
   type DevPorts,
 } from './url.config'
 
+// Network config - Flexy hates hardcoded network errors!
+import { networkConfig, type NetworkConfig } from './network.config'
+
 // Re-export individual configs
 export { appConfig, type AppConfig }
 export { themeConfig, type ThemeConfig }
@@ -256,6 +259,9 @@ export {
   type DevPorts,
 }
 
+// Re-export Network config - Flexy hates hardcoded network errors!
+export { networkConfig, type NetworkConfig }
+
 // Default export with all configs
 export const config = {
   app: appConfig,
@@ -301,6 +307,8 @@ export const config = {
   permissions: permissionsConfig,
   // Component colors config - Flexy hates hardcoded component colors!
   componentColors: componentColorsConfig,
+  // Network config - Flexy hates hardcoded network errors!
+  network: networkConfig,
 } as const
 
 export type Config = typeof config
