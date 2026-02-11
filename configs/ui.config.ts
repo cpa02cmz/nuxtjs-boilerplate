@@ -56,6 +56,64 @@ export const uiConfig = {
     sticky: parseInt(process.env.Z_INDEX_STICKY || '100'),
   },
 
+  // Toast Styles - Flexy hates hardcoded CSS values!
+  toastStyles: {
+    padding: process.env.TOAST_PADDING || '0.75rem',
+    borderRadius: process.env.TOAST_BORDER_RADIUS || '0.5rem',
+    borderLeftWidth: process.env.TOAST_BORDER_LEFT_WIDTH || '4px',
+    gap: process.env.TOAST_GAP || '0.5rem',
+    minWidth: process.env.TOAST_MIN_WIDTH_CSS || '300px',
+    animationDuration: process.env.TOAST_ANIMATION_DURATION_CSS || '0.3s',
+    colors: {
+      success: {
+        bg: process.env.TOAST_SUCCESS_BG || '#f0fdf4',
+        border: process.env.TOAST_SUCCESS_BORDER || '#22c55e',
+        text: process.env.TOAST_SUCCESS_TEXT || '#166534',
+      },
+      error: {
+        bg: process.env.TOAST_ERROR_BG || '#fef2f2',
+        border: process.env.TOAST_ERROR_BORDER || '#ef4444',
+        text: process.env.TOAST_ERROR_TEXT || '#b91c1c',
+      },
+      warning: {
+        bg: process.env.TOAST_WARNING_BG || '#fffbeb',
+        border: process.env.TOAST_WARNING_BORDER || '#f59e0b',
+        text: process.env.TOAST_WARNING_TEXT || '#92400e',
+      },
+      info: {
+        bg: process.env.TOAST_INFO_BG || '#eff6ff',
+        border: process.env.TOAST_INFO_BORDER || '#3b82f6',
+        text: process.env.TOAST_INFO_TEXT || '#1e40af',
+      },
+    },
+    icon: {
+      marginRight: process.env.TOAST_ICON_MARGIN_RIGHT || '0.75rem',
+      marginTop: process.env.TOAST_ICON_MARGIN_TOP || '0.125rem',
+    },
+    message: {
+      fontWeight: process.env.TOAST_MESSAGE_FONT_WEIGHT || '500',
+      fontSize: process.env.TOAST_MESSAGE_FONT_SIZE || '0.875rem',
+      lineHeight: process.env.TOAST_MESSAGE_LINE_HEIGHT || '1.25rem',
+    },
+    description: {
+      fontSize: process.env.TOAST_DESC_FONT_SIZE || '0.75rem',
+      lineHeight: process.env.TOAST_DESC_LINE_HEIGHT || '1rem',
+      marginTop: process.env.TOAST_DESC_MARGIN_TOP || '0.25rem',
+      opacity: parseFloat(process.env.TOAST_DESC_OPACITY || '0.8'),
+    },
+    close: {
+      marginLeft: process.env.TOAST_CLOSE_MARGIN_LEFT || '0.5rem',
+      padding: process.env.TOAST_CLOSE_PADDING || '0.25rem',
+      borderRadius: process.env.TOAST_CLOSE_BORDER_RADIUS || '0.25rem',
+      opacity: parseFloat(process.env.TOAST_CLOSE_OPACITY || '0.7'),
+      hoverOpacity: parseFloat(process.env.TOAST_CLOSE_HOVER_OPACITY || '1'),
+    },
+    progress: {
+      height: process.env.TOAST_PROGRESS_HEIGHT || '3px',
+      opacity: parseFloat(process.env.TOAST_PROGRESS_OPACITY || '0.3'),
+    },
+  },
+
   // Icon Settings
   icons: {
     defaultSize: parseInt(process.env.ICON_DEFAULT_SIZE || '48'),

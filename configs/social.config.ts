@@ -23,6 +23,8 @@ export const socialConfig = {
         'https://www.linkedin.com/sharing/share-offsite/',
       params: {
         url: 'url',
+        title: 'title',
+        summary: 'summary',
       },
     },
     facebook: {
@@ -46,6 +48,35 @@ export const socialConfig = {
         subject: 'subject',
         body: 'body',
       },
+    },
+  },
+
+  // URL Builders - Flexy hates hardcoded URL construction!
+  urlBuilders: {
+    twitter: (title: string, description: string, url: string): string => {
+      const text = encodeURIComponent(`${title} - ${description}`)
+      const encodedUrl = encodeURIComponent(url)
+      return `${socialConfig.platforms.twitter.url}?text=${text}&url=${encodedUrl}`
+    },
+    facebook: (url: string): string => {
+      const encodedUrl = encodeURIComponent(url)
+      return `${socialConfig.platforms.facebook.url}?u=${encodedUrl}`
+    },
+    linkedin: (title: string, description: string, url: string): string => {
+      const encodedUrl = encodeURIComponent(url)
+      const encodedTitle = encodeURIComponent(title)
+      const encodedSummary = encodeURIComponent(description)
+      return `${socialConfig.platforms.linkedin.url}?url=${encodedUrl}&title=${encodedTitle}&summary=${encodedSummary}`
+    },
+    reddit: (title: string, url: string): string => {
+      const encodedTitle = encodeURIComponent(title)
+      const encodedUrl = encodeURIComponent(url)
+      return `${socialConfig.platforms.reddit.url}?title=${encodedTitle}&url=${encodedUrl}`
+    },
+    email: (title: string, description: string, url: string): string => {
+      const subject = encodeURIComponent(`Check out: ${title}`)
+      const body = encodeURIComponent(`${description}\n\n${url}`)
+      return `${socialConfig.platforms.email.url}?subject=${subject}&body=${body}`
     },
   },
 

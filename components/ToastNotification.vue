@@ -122,7 +122,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { TOAST_DURATION, UI_TIMING } from '~/server/utils/constants'
 import { uiConfig } from '~/configs/ui.config'
 
@@ -139,7 +139,9 @@ interface Toast {
 const toasts = ref<Toast[]>([])
 const pausedToastIds = ref<Set<string>>(new Set())
 
-// Flexy hates hardcoded values! Use config for positioning
+// Flexy hates hardcoded values! Use config for all styling
+const toastStyles = computed(() => uiConfig.toastStyles)
+
 const toastPosition = {
   top: `${uiConfig.toast.position.top}px`,
   right: `${uiConfig.toast.position.right}px`,
@@ -204,66 +206,69 @@ defineExpose({
 </script>
 
 <style scoped>
+/* Flexy hates hardcoded values! Using config-bound CSS custom properties */
 .toast-container {
   position: fixed;
-  /* Flexy hates hardcoded values! Using CSS custom properties from config */
-  top: var(--toast-top, 20px);
-  right: var(--toast-right, 20px);
-  z-index: var(--toast-z-index, 9999);
-  max-width: var(--toast-max-width, 400px);
+  top: v-bind('toastPosition.top');
+  right: v-bind('toastPosition.right');
+  z-index: v-bind('toastPosition.zIndex');
+  max-width: v-bind('toastPosition.maxWidth');
   width: 100%;
 }
 
 .toast-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: v-bind('toastStyles.gap');
 }
 
 .toast {
   display: flex;
   align-items: flex-start;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
+  padding: v-bind('toastStyles.padding');
+  border-radius: v-bind('toastStyles.borderRadius');
   box-shadow:
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  /* Flexy hates hardcoded values! Using CSS custom properties from config */
-  min-width: var(--toast-min-width, 300px);
+  min-width: v-bind('toastStyles.minWidth');
   max-width: 100%;
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn v-bind('toastStyles.animationDuration') ease-out;
   position: relative;
   overflow: hidden;
 }
 
 .toast--success {
-  background-color: #f0fdf4;
-  border-left: 4px solid #22c55e;
-  color: #166534;
+  background-color: v-bind('toastStyles.colors.success.bg');
+  border-left: v-bind('toastStyles.borderLeftWidth') solid
+    v-bind('toastStyles.colors.success.border');
+  color: v-bind('toastStyles.colors.success.text');
 }
 
 .toast--error {
-  background-color: #fef2f2;
-  border-left: 4px solid #ef4444;
-  color: #b91c1c;
+  background-color: v-bind('toastStyles.colors.error.bg');
+  border-left: v-bind('toastStyles.borderLeftWidth') solid
+    v-bind('toastStyles.colors.error.border');
+  color: v-bind('toastStyles.colors.error.text');
 }
 
 .toast--warning {
-  background-color: #fffbeb;
-  border-left: 4px solid #f59e0b;
-  color: #92400e;
+  background-color: v-bind('toastStyles.colors.warning.bg');
+  border-left: v-bind('toastStyles.borderLeftWidth') solid
+    v-bind('toastStyles.colors.warning.border');
+  color: v-bind('toastStyles.colors.warning.text');
 }
 
 .toast--info {
-  background-color: #eff6ff;
-  border-left: 4px solid #3b82f6;
-  color: #1e40af;
+  background-color: v-bind('toastStyles.colors.info.bg');
+  border-left: v-bind('toastStyles.borderLeftWidth') solid
+    v-bind('toastStyles.colors.info.border');
+  color: v-bind('toastStyles.colors.info.text');
 }
 
 .toast__icon {
-  margin-right: 0.75rem;
+  margin-right: v-bind('toastStyles.icon.marginRight');
   flex-shrink: 0;
-  margin-top: 0.125rem;
+  margin-top: v-bind('toastStyles.icon.marginTop');
 }
 
 .toast__content {
@@ -272,33 +277,33 @@ defineExpose({
 }
 
 .toast__message {
-  font-weight: 500;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-weight: v-bind('toastStyles.message.fontWeight');
+  font-size: v-bind('toastStyles.message.fontSize');
+  line-height: v-bind('toastStyles.message.lineHeight');
 }
 
 .toast__description {
-  font-size: 0.75rem;
-  line-height: 1rem;
-  margin-top: 0.25rem;
-  opacity: 0.8;
+  font-size: v-bind('toastStyles.description.fontSize');
+  line-height: v-bind('toastStyles.description.lineHeight');
+  margin-top: v-bind('toastStyles.description.marginTop');
+  opacity: v-bind('toastStyles.description.opacity');
 }
 
 .toast__close {
-  margin-left: 0.5rem;
+  margin-left: v-bind('toastStyles.close.marginLeft');
   flex-shrink: 0;
   background: none;
   border: none;
   color: inherit;
   cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 0.25rem;
-  opacity: 0.7;
+  padding: v-bind('toastStyles.close.padding');
+  border-radius: v-bind('toastStyles.close.borderRadius');
+  opacity: v-bind('toastStyles.close.opacity');
   transition: opacity 0.2s;
 }
 
 .toast__close:hover {
-  opacity: 1;
+  opacity: v-bind('toastStyles.close.hoverOpacity');
 }
 
 /* Progress bar showing remaining time */
@@ -306,11 +311,11 @@ defineExpose({
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 3px;
+  height: v-bind('toastStyles.progress.height');
   background: currentColor;
-  opacity: 0.3;
+  opacity: v-bind('toastStyles.progress.opacity');
   animation: progress linear forwards;
-  border-bottom-left-radius: 0.5rem;
+  border-bottom-left-radius: v-bind('toastStyles.borderRadius');
 }
 
 .toast__progress--paused {
