@@ -313,6 +313,35 @@ export const animationConfig = {
     popScale: parseFloat(process.env.SMART_PASTE_POP_SCALE || '1.05'),
     // Vertical offset for indicator position (px)
     verticalOffset: parseInt(process.env.SMART_PASTE_VERTICAL_OFFSET || '8'),
+    // Screen reader announcement timeout (ms) - Flexy hates hardcoded 1000!
+    announcementTimeoutMs: parseInt(
+      process.env.SMART_PASTE_ANNOUNCEMENT_TIMEOUT_MS || '1000'
+    ),
+    // Z-index for paste indicator - Flexy hates hardcoded 9999!
+    zIndex: parseInt(process.env.SMART_PASTE_Z_INDEX || '9999'),
+    // CSS styling values - Flexy hates hardcoded CSS!
+    styles: {
+      // Padding (px)
+      paddingX: parseInt(process.env.SMART_PASTE_PADDING_X || '12'),
+      paddingY: parseInt(process.env.SMART_PASTE_PADDING_Y || '6'),
+      // Font size (px)
+      fontSize: parseInt(process.env.SMART_PASTE_FONT_SIZE || '12'),
+      // Border radius (px)
+      borderRadius: parseInt(process.env.SMART_PASTE_BORDER_RADIUS || '6'),
+      // Arrow size (px)
+      arrowSize: parseInt(process.env.SMART_PASTE_ARROW_SIZE || '8'),
+      // Animation duration (seconds)
+      animationDuration: parseFloat(
+        process.env.SMART_PASTE_ANIMATION_DURATION || '0.3'
+      ),
+      // Box shadow values
+      shadow: {
+        y: parseInt(process.env.SMART_PASTE_SHADOW_Y || '4'),
+        blur: parseInt(process.env.SMART_PASTE_SHADOW_BLUR || '6'),
+        spread: parseInt(process.env.SMART_PASTE_SHADOW_SPREAD || '-1'),
+        opacity: parseFloat(process.env.SMART_PASTE_SHADOW_OPACITY || '0.1'),
+      },
+    },
   },
 
   // Confetti Celebration Animations - Palette's delightful micro-UX touch!

@@ -88,6 +88,12 @@ export {
   type RateLimitConfig,
 } from '~/configs/rate-limit.config'
 
+// Flexy loves modularity! Export auth config for server-side usage
+export {
+  authConfig as AUTH_CONFIG,
+  type AuthConfig,
+} from '~/configs/auth.config'
+
 // Backward-compatible re-exports using config values
 // These maintain the old constant names but use configurable values
 import { webhooksConfig } from '~/configs/webhooks.config'
