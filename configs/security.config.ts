@@ -144,6 +144,38 @@ export const securityConfig = {
     // Webhook secret prefix
     webhookSecretPrefix: process.env.WEBHOOK_SECRET_PREFIX || 'whsec_',
   },
+
+  // Sanitization Configuration - Flexy hates hardcoded forbidden tags!
+  sanitization: {
+    // HTML tags that are forbidden in user content
+    forbiddenTags: parseForbiddenTags(
+      process.env.SANITIZE_FORBIDDEN_TAGS ||
+        'script,iframe,object,embed,form,input,button,img,link,meta,base,basefont,frame,frameset,ilayer,layer,bgsound,title,style,svg,audio,video,canvas,applet,area,map,param,source,track,keygen,output,progress,meter,details,summary,menu,menuitem,dialog,a,strong,b,i,em,u,span,div,p,h1,h2,h3,h4,h5,h6,ul,ol,li,br,hr'
+    ),
+
+    // HTML attributes that are forbidden in user content
+    forbiddenAttributes: parseForbiddenAttributes(
+      process.env.SANITIZE_FORBIDDEN_ATTR ||
+        'src,href,style,onload,onerror,onclick,onmouseover,onmouseout,onfocus,onblur,onkeydown,onkeypress,onkeyup,ondblclick,ondrag,ondragend,ondragenter,ondragleave,ondragover,ondragstart,ondrop,onmousedown,onmouseenter,onmouseleave,onmousemove,onmouseup,onwheel,onpause,onplay,onplaying,onprogress,onratechange,onseeked,onseeking,onstalled,onsuspend,ontimeupdate,onvolumechange,onwaiting,onafterprint,onbeforeprint,onbeforeunload,onerror,onhashchange,onload,onmessage,onoffline,ononline,onpagehide,onpageshow,onpopstate,onresize,onscroll,onstorage,onunload,data,formaction,xmlns,xlink:href,usemap,ismap,action,code,codebase,classid,pluginspage,pluginurl,declare,standby,id,name'
+    ),
+
+    // Content tags that are forbidden
+    forbiddenContentTags: parseForbiddenTags(
+      process.env.SANITIZE_FORBIDDEN_CONTENT ||
+        'script,iframe,object,embed,form,input,button,img,link,meta,base,basefont,frame,frameset,ilayer,layer,bgsound,title,style,svg'
+    ),
+
+    // Allowed tags after sanitization
+    allowedTags: parseAllowedTags(process.env.SANITIZE_ALLOWED_TAGS || 'mark'),
+
+    // Allowed attributes after sanitization
+    allowedAttributes: parseAllowedAttributes(
+      process.env.SANITIZE_ALLOWED_ATTR || 'class'
+    ),
+
+    // Enable DOM sanitization
+    sanitizeDom: process.env.SANITIZE_DOM !== 'false',
+  },
 } as const
 
 // Helper function to parse CSP directive string
@@ -169,6 +201,26 @@ function parseImageFormats(value: string): string[] {
 // Helper function to parse image densities
 function parseDensities(value: string): number[] {
   return value.split(',').map(s => parseFloat(s.trim()))
+}
+
+// Helper function to parse forbidden tags
+function parseForbiddenTags(value: string): string[] {
+  return value.split(',').map(s => s.trim().toLowerCase())
+}
+
+// Helper function to parse forbidden attributes
+function parseForbiddenAttributes(value: string): string[] {
+  return value.split(',').map(s => s.trim().toLowerCase())
+}
+
+// Helper function to parse allowed tags
+function parseAllowedTags(value: string): string[] {
+  return value.split(',').map(s => s.trim().toLowerCase())
+}
+
+// Helper function to parse allowed attributes
+function parseAllowedAttributes(value: string): string[] {
+  return value.split(',').map(s => s.trim().toLowerCase())
 }
 
 // Function to generate CSP string with optional nonce
