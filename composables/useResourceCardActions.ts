@@ -17,6 +17,7 @@ import type { Resource } from '~/types/resource'
 export interface ResourceActionState {
   isAddingToComparison: boolean
   isCompareAnimating: boolean
+  showCompareFeedback: boolean
   isCopied: boolean
   isCopyError: boolean
   isCopyAnimating: boolean
@@ -51,6 +52,7 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
   // State
   const isAddingToComparison = ref(false)
   const isCompareAnimating = ref(false)
+  const showCompareFeedback = ref(false)
   const isCopied = ref(false)
   const isCopyError = ref(false)
   const isCopyAnimating = ref(false)
@@ -99,6 +101,7 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
     if (result.success) {
       isAddingToComparison.value = true
       isCompareAnimating.value = true
+      showCompareFeedback.value = true
       hapticSuccess()
 
       const prefersReducedMotion = window.matchMedia(
@@ -184,6 +187,7 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
     // State
     isAddingToComparison,
     isCompareAnimating,
+    showCompareFeedback,
     isCopied,
     isCopyError,
     isCopyAnimating,
