@@ -219,6 +219,12 @@ export const uiConfig = {
       process.env.TIMING_SHORTCUT_SUCCESS || '600'
     ),
 
+    // Search complete animation duration - shows checkmark when search finishes
+    // Provides positive feedback and closes the interaction loop
+    searchCompleteDurationMs: parseInt(
+      process.env.TIMING_SEARCH_COMPLETE || '800'
+    ),
+
     // Navigation delays
     comparisonNavigationDelayMs: parseInt(
       process.env.TIMING_COMPARISON_NAVIGATION || '400'
