@@ -92,8 +92,16 @@ describe('ResourceFilters', () => {
   })
 
   it('emits toggle-category event when a category checkbox is clicked', async () => {
+    const propsWithCounts = {
+      ...defaultProps,
+      facetCounts: {
+        category_Testing: 5,
+        category_Development: 3,
+        category_Design: 2,
+      },
+    }
     const wrapper = mount(ResourceFilters, {
-      props: defaultProps,
+      props: propsWithCounts,
     })
 
     const categoryCheckbox = wrapper.findAll('input[type="checkbox"]')[0] // First category
@@ -104,8 +112,16 @@ describe('ResourceFilters', () => {
   })
 
   it('emits toggle-pricing-model event when a pricing model checkbox is clicked', async () => {
+    const propsWithCounts = {
+      ...defaultProps,
+      facetCounts: {
+        pricing_Free: 10,
+        pricing_Paid: 5,
+        pricing_Freemium: 3,
+      },
+    }
     const wrapper = mount(ResourceFilters, {
-      props: defaultProps,
+      props: propsWithCounts,
     })
 
     const pricingCheckbox = wrapper.findAll('input[type="checkbox"]')[3] // First pricing model
@@ -116,8 +132,16 @@ describe('ResourceFilters', () => {
   })
 
   it('emits toggle-difficulty-level event when a difficulty checkbox is clicked', async () => {
+    const propsWithCounts = {
+      ...defaultProps,
+      facetCounts: {
+        difficulty_Beginner: 8,
+        difficulty_Intermediate: 5,
+        difficulty_Advanced: 3,
+      },
+    }
     const wrapper = mount(ResourceFilters, {
-      props: defaultProps,
+      props: propsWithCounts,
     })
 
     const difficultyCheckbox = wrapper.findAll('input[type="checkbox"]')[6] // First difficulty level
@@ -128,8 +152,16 @@ describe('ResourceFilters', () => {
   })
 
   it('emits toggle-technology event when a technology checkbox is clicked', async () => {
+    const propsWithCounts = {
+      ...defaultProps,
+      facetCounts: {
+        technology_Vue: 3,
+        technology_React: 5,
+        technology_Angular: 2,
+      },
+    }
     const wrapper = mount(ResourceFilters, {
-      props: defaultProps,
+      props: propsWithCounts,
     })
 
     const technologyCheckbox = wrapper.findAll('input[type="checkbox"]')[9] // First technology

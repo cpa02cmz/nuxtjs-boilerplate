@@ -48,13 +48,16 @@
       <div
         v-for="option in options"
         :key="option"
-        class="filter-option flex items-center cursor-pointer rounded-md transition-all duration-200 ease-out hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500 focus-within:bg-blue-50"
+        class="filter-option flex items-center rounded-md transition-all duration-200 ease-out"
         :class="{
           'justify-between': showCount,
           'bg-gray-50': selectedOptions.includes(option),
-          'active:bg-gray-100': true,
+          'active:bg-gray-100': !isOptionDisabled(option),
+          'cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500 focus-within:bg-blue-50':
+            !isOptionDisabled(option),
+          'cursor-not-allowed opacity-50': isOptionDisabled(option),
         }"
-        @click="toggleOption(option)"
+        @click="!isOptionDisabled(option) && toggleOption(option)"
       >
         <div class="flex items-center flex-1 py-2 px-2">
           <div class="relative flex items-center">
@@ -63,8 +66,9 @@
               type="checkbox"
               :value="option"
               :checked="selectedOptions.includes(option)"
+              :disabled="isOptionDisabled(option)"
               :aria-label="ariaLabelOption(option)"
-              class="filter-checkbox h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500 focus:ring-offset-0 transition-all duration-200"
+              class="filter-checkbox h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500 focus:ring-offset-0 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
               :class="{
                 'animate-checkbox-pop': recentlySelected === option,
               }"
@@ -74,9 +78,11 @@
           </div>
           <label
             :for="`${id}-${option}`"
-            class="ml-2 text-sm text-gray-800 cursor-pointer select-none flex-1 transition-colors duration-200"
+            class="ml-2 text-sm text-gray-800 select-none flex-1 transition-colors duration-200"
             :class="{
               'text-gray-900 font-medium': selectedOptions.includes(option),
+              'cursor-pointer': !isOptionDisabled(option),
+              'cursor-not-allowed text-gray-400': isOptionDisabled(option),
             }"
           >
             {{ option }}
@@ -87,6 +93,7 @@
           class="mr-2 text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5 transition-all duration-200"
           :class="{
             'bg-gray-200 text-gray-800': selectedOptions.includes(option),
+            'bg-gray-50 text-gray-400': isOptionDisabled(option),
           }"
           aria-label="result count"
         >
@@ -133,7 +140,16 @@ const scrollableClass = computed(() =>
   props.scrollable ? 'max-h-40 overflow-y-auto' : ''
 )
 
+// Check if an option should be disabled (zero count)
+const isOptionDisabled = (option: string): boolean => {
+  if (!props.showCount || !props.getCountForOption) return false
+  return props.getCountForOption(option) === 0
+}
+
 const toggleOption = (option: string) => {
+  // Don't allow toggling if option is disabled
+  if (isOptionDisabled(option)) return
+
   // Provide haptic feedback for mobile users
   hapticLight()
 
@@ -157,9 +173,10 @@ const toggleOption = (option: string) => {
 
 const ariaLabelOption = (option: string): string => {
   const count = props.getCountForOption?.(option) ?? 0
+  const disabledText = count === 0 ? ' - disabled, no results' : ''
   return props.showCount
-    ? `Filter by ${option} (${count} results)`
-    : `Filter by ${option}`
+    ? `Filter by ${option} (${count} results)${disabledText}`
+    : `Filter by ${option}${disabledText}`
 }
 
 // Bulk selection actions
@@ -167,9 +184,9 @@ const selectAll = () => {
   // Provide haptic feedback for bulk action
   hapticLight()
 
-  // Emit toggle for each unselected option
+  // Emit toggle for each unselected option that is not disabled
   props.options.forEach(option => {
-    if (!props.selectedOptions.includes(option)) {
+    if (!props.selectedOptions.includes(option) && !isOptionDisabled(option)) {
       emit('toggle', option)
     }
   })
