@@ -35,7 +35,10 @@
           <svg
             v-if="isSearching"
             key="loading"
-            class="w-5 h-5 text-blue-500 animate-spin"
+            :class="[
+              'w-5 h-5 animate-spin',
+              componentColorsConfig.searchBar.loadingIcon,
+            ]"
             fill="none"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +62,10 @@
           <svg
             v-else-if="showSearchComplete"
             key="success"
-            class="w-5 h-5 text-green-500 animate-search-complete"
+            :class="[
+              'w-5 h-5 animate-search-complete',
+              componentColorsConfig.searchBar.successIcon,
+            ]"
             fill="none"
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
@@ -76,7 +82,7 @@
           <svg
             v-else
             key="search"
-            class="w-5 h-5 text-gray-400"
+            :class="['w-5 h-5', componentColorsConfig.searchBar.defaultIcon]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -105,7 +111,7 @@
           'animate-focus-pulse': showFocusPulse,
         }"
         :placeholder="contentConfig.search.placeholder"
-        aria-label="Search resources (Press / to focus)"
+        :aria-label="contentConfig.search.ariaLabel"
         aria-describedby="search-results-info search-shortcut-hint"
         :aria-expanded="showSuggestions"
         aria-controls="search-suggestions-dropdown"
@@ -153,7 +159,7 @@
             ref="clearButtonRef"
             type="button"
             class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none transition-all duration-200 ease-out rounded-full p-0.5 hover:bg-gray-100 hover:rotate-90 focus:ring-2 focus:ring-blue-500 active:scale-90"
-            aria-label="Clear search"
+            :aria-label="contentConfig.search.clearAriaLabel"
             :aria-keyshortcuts="'Escape'"
             @click="clearSearch"
             @keydown.enter.prevent="clearSearch"

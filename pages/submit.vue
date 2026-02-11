@@ -49,7 +49,7 @@
                         ? 'border-green-500'
                         : 'border-gray-300',
                   ]"
-                  placeholder="e.g., OpenAI API"
+                  :placeholder="contentConfig.submit.form.namePlaceholder"
                   @focus="isTitleFocused = true"
                   @blur="handleTitleBlur"
                 >
@@ -119,7 +119,9 @@
                         ? 'border-green-500'
                         : 'border-gray-300',
                   ]"
-                  placeholder="Describe the resource and its benefits..."
+                  :placeholder="
+                    contentConfig.submit.form.descriptionPlaceholder
+                  "
                   @focus="isDescriptionFocused = true"
                   @blur="handleDescriptionBlur"
                 />
@@ -275,7 +277,7 @@
                 type="text"
                 aria-describedby="tags-description"
                 class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
-                placeholder="Enter tags separated by commas"
+                :placeholder="contentConfig.submit.form.tagsPlaceholder"
               >
               <p
                 id="tags-description"

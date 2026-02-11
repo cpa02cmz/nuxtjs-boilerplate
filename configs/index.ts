@@ -119,6 +119,10 @@ import {
   componentColorsConfig,
   type ComponentColorsConfig,
 } from './component-colors.config'
+import {
+  componentStylesConfig,
+  type ComponentStylesConfig,
+} from './component-styles.config'
 
 // URL config - Flexy hates hardcoded URLs!
 import {
@@ -242,6 +246,7 @@ export { userConfig, type UserConfig }
 export { moderationConfig, type ModerationConfig }
 export { permissionsConfig, type PermissionsConfig }
 export { componentColorsConfig, type ComponentColorsConfig }
+export { componentStylesConfig, type ComponentStylesConfig }
 
 // Re-export URL config - Flexy hates hardcoded URLs!
 export {

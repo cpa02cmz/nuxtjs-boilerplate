@@ -216,6 +216,57 @@ export const componentColorsConfig = {
       ),
     },
   },
+
+  // SearchBar Component Colors - Flexy hates hardcoded Tailwind classes!
+  searchBar: {
+    // Loading spinner color
+    loadingIcon: process.env.SEARCHBAR_LOADING_ICON || 'text-blue-500',
+    // Success checkmark color
+    successIcon: process.env.SEARCHBAR_SUCCESS_ICON || 'text-green-500',
+    // Default search icon color
+    defaultIcon: process.env.SEARCHBAR_DEFAULT_ICON || 'text-gray-400',
+    // Input focus ring color
+    focusRing: process.env.SEARCHBAR_FOCUS_RING || 'focus:ring-blue-500',
+    // Input focus border color
+    focusBorder: process.env.SEARCHBAR_FOCUS_BORDER || 'focus:border-blue-500',
+  },
+
+  // ResourceShare Component Colors - Flexy hates hardcoded brand colors!
+  resourceShare: {
+    // Twitter/X brand colors
+    twitter: {
+      bg: process.env.SHARE_TWITTER_BG || 'bg-blue-500',
+      hoverBg: process.env.SHARE_TWITTER_HOVER_BG || 'hover:bg-blue-600',
+    },
+    // Facebook brand colors
+    facebook: {
+      bg: process.env.SHARE_FACEBOOK_BG || 'bg-blue-700',
+      hoverBg: process.env.SHARE_FACEBOOK_HOVER_BG || 'hover:bg-blue-800',
+    },
+    // LinkedIn brand colors
+    linkedin: {
+      bg: process.env.SHARE_LINKEDIN_BG || 'bg-blue-800',
+      hoverBg: process.env.SHARE_LINKEDIN_HOVER_BG || 'hover:bg-blue-900',
+    },
+    // Reddit brand colors
+    reddit: {
+      bg: process.env.SHARE_REDDIT_BG || 'bg-orange-500',
+      hoverBg: process.env.SHARE_REDDIT_HOVER_BG || 'hover:bg-orange-600',
+    },
+    // Copy link button colors
+    copyButton: {
+      bg: process.env.SHARE_COPY_BG || 'bg-gray-600',
+      hoverBg: process.env.SHARE_COPY_HOVER_BG || 'hover:bg-gray-700',
+    },
+  },
+
+  // KeyboardShortcutsHelp Component - Flexy hates hardcoded values!
+  keyboardShortcuts: {
+    // Modal backdrop color
+    backdropColor: process.env.KB_SHORTCUTS_BACKDROP || 'bg-gray-900/50',
+    // Icon color in header
+    headerIcon: process.env.KB_SHORTCUTS_HEADER_ICON || 'text-blue-500',
+  },
 } as const
 
 export type ComponentColorsConfig = typeof componentColorsConfig
