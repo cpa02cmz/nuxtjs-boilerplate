@@ -65,6 +65,14 @@ export const componentStylesConfig = {
         height: process.env.SPINNER_LARGE_HEIGHT || '3rem',
       },
     },
+    svg: {
+      viewBoxMin: parseInt(process.env.SPINNER_VIEWBOX_MIN || '25'),
+      viewBoxMax: parseInt(process.env.SPINNER_VIEWBOX_MAX || '50'),
+      circleCx: parseInt(process.env.SPINNER_CIRCLE_CX || '50'),
+      circleCy: parseInt(process.env.SPINNER_CIRCLE_CY || '50'),
+      circleR: parseInt(process.env.SPINNER_CIRCLE_R || '20'),
+      strokeWidth: parseInt(process.env.SPINNER_STROKE_WIDTH || '2'),
+    },
     animation: {
       rotationDuration: process.env.SPINNER_ROTATION_DURATION || '2s',
       dashDuration: process.env.SPINNER_DASH_DURATION || '1.5s',
@@ -192,6 +200,10 @@ export const componentStylesConfig = {
       center: parseInt(process.env.SCROLLTOTOP_CENTER || '24'),
       radius: parseInt(process.env.SCROLLTOTOP_RADIUS || '20'),
       strokeWidth: parseInt(process.env.SCROLLTOTOP_STROKE_WIDTH || '3'),
+    },
+    transition: {
+      progressRingDurationSec:
+        process.env.SCROLLTOTOP_TRANSITION_DURATION || '0.1s',
     },
   },
 } as const

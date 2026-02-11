@@ -1,5 +1,5 @@
 import { watch, onMounted, onUnmounted, type Ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute, useRouter } from '#imports'
 import type { FilterOptions, SortOption } from '~/types/resource'
 
 export const useUrlSync = (

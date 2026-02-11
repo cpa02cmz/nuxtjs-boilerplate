@@ -125,7 +125,8 @@ const skeletonColors = {
     var(--skeleton-light-start) 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer v-bind('animationConfig.skeleton.shimmerDurationSec')
+    ease-in-out infinite;
 }
 
 .skeleton-icon {
@@ -138,7 +139,8 @@ const skeletonColors = {
     var(--skeleton-icon-start) 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer v-bind('animationConfig.skeleton.shimmerDurationSec')
+    ease-in-out infinite;
 }
 
 /* Staggered animation delays are now set via inline styles using animationConfig */
@@ -155,7 +157,8 @@ const skeletonColors = {
 
 /* Pulse animation for reduced motion fallback */
 .skeleton-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse v-bind('animationConfig.skeleton.pulseDurationSec')
+    cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes pulse {
@@ -170,7 +173,8 @@ const skeletonColors = {
 
 /* Card entrance animation */
 .skeleton-card {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn v-bind('animationConfig.skeleton.cardEnterDurationSec')
+    ease-out;
 }
 
 @keyframes fadeIn {
@@ -197,7 +201,8 @@ const skeletonColors = {
   }
 
   .skeleton-card {
-    animation: fadeIn 0.2s ease-out;
+    animation: fadeIn
+      v-bind('animationConfig.skeleton.reducedMotionEnterDurationSec') ease-out;
   }
 
   @keyframes fadeIn {

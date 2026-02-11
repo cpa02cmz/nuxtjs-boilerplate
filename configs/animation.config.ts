@@ -13,11 +13,25 @@ export const animationConfig = {
     shimmerDurationMs: parseInt(
       process.env.SKELETON_SHIMMER_DURATION_MS || '1500'
     ),
+    // CSS-compatible duration string for v-bind()
+    shimmerDurationSec: `${parseInt(process.env.SKELETON_SHIMMER_DURATION_MS || '1500') / 1000}s`,
     staggerDelayMs: parseInt(process.env.SKELETON_STAGGER_DELAY_MS || '0'),
     staggerIncrementMs: parseInt(
       process.env.SKELETON_STAGGER_INCREMENT_MS || '75'
     ),
     maxStaggerItems: parseInt(process.env.SKELETON_MAX_STAGGER_ITEMS || '8'),
+    // Pulse animation for reduced motion
+    pulseDurationSec: `${parseInt(process.env.SKELETON_PULSE_DURATION_SEC || '2')}s`,
+    // Card entrance animation
+    cardEnterDurationSec: `${parseInt(process.env.SKELETON_CARD_ENTER_DURATION_MS || '300') / 1000}s`,
+    // Reduced motion card entrance
+    reducedMotionEnterDurationSec: `${parseInt(process.env.SKELETON_REDUCED_ENTER_DURATION_MS || '200') / 1000}s`,
+    // Image loading shimmer
+    imageShimmerDurationSec: `${parseInt(process.env.IMAGE_SHIMMER_DURATION_MS || '1500') / 1000}s`,
+    // Image fade in duration
+    imageFadeInDurationSec: `${parseInt(process.env.IMAGE_FADE_IN_DURATION_MS || '300') / 1000}s`,
+    // Subtle pulse for loading state
+    subtlePulseDurationSec: `${parseInt(process.env.SUBTLE_PULSE_DURATION_SEC || '2')}s`,
   },
 
   // Card Entrance Animations
@@ -43,6 +57,8 @@ export const animationConfig = {
     primaryColor: process.env.RIPPLE_PRIMARY_COLOR || 'rgba(59, 130, 246, 0.3)',
     successColor: process.env.RIPPLE_SUCCESS_COLOR || 'rgba(34, 197, 94, 0.3)',
     dangerColor: process.env.RIPPLE_DANGER_COLOR || 'rgba(239, 68, 68, 0.3)',
+    // Maximum ripple radius in pixels - Flexy hates hardcoded 100!
+    maxRadius: parseInt(process.env.RIPPLE_MAX_RADIUS || '100'),
   },
 
   // SearchBar Shortcut Success Animation - Flexy hates hardcoded CSS colors!

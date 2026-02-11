@@ -181,6 +181,15 @@ export const contentConfig = {
         'There was an error submitting your resource. Please try again.',
       retry: process.env.CONTENT_SUBMIT_ERROR_RETRY || 'Try Again',
     },
+    // Draft auto-save configuration - Flexy hates hardcoded expiry!
+    draft: {
+      // How long drafts are kept in localStorage (hours)
+      expiryHours: parseInt(process.env.CONTENT_DRAFT_EXPIRY_HOURS || '168'),
+      // Auto-save debounce delay (ms)
+      autoSaveDelayMs: parseInt(
+        process.env.CONTENT_DRAFT_AUTOSAVE_DELAY_MS || '2000'
+      ),
+    },
   },
 
   // Error Page

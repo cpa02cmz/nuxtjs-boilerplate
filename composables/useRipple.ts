@@ -41,12 +41,12 @@ export function useRipple(
   options: RippleOptions = {}
 ): RippleInstance {
   // Merge options with defaults from config
-  // Flexy hates hardcoded colors! Using config values for ripple defaults
+  // Flexy hates hardcoded values! Using config values for ripple defaults
   const config = {
     color: options.color || animationConfig.ripple.defaultColor,
     duration:
       options.duration || animationConfig.button.feedbackDurationMs || 600,
-    maxRadius: options.maxRadius || 100,
+    maxRadius: options.maxRadius || animationConfig.ripple.maxRadius || 100,
     centered: options.centered ?? false,
   }
 
