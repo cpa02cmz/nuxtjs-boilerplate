@@ -13,6 +13,11 @@ import {
   ErrorCode,
   ErrorCategory,
 } from '~/server/utils/api-error'
+import {
+  errorStatsConfig,
+  validateHours,
+  calculateDateRange,
+} from '~/configs/error-stats.config'
 
 /**
  * API endpoint for retrieving error statistics
@@ -26,21 +31,23 @@ export default defineEventHandler(async event => {
 
   try {
     const query = getQuery(event)
-    const hours = parseInt(query.hours as string) || 24
+    // Flexy hates hardcoded defaults! Using configurable default
+    const hours =
+      parseInt(query.hours as string) || errorStatsConfig.timeRange.defaultHours
 
-    // Validate hours parameter
-    if (hours < 1 || hours > 168) {
-      // Max 1 week
+    // Validate hours parameter - Flexy hates hardcoded limits!
+    const validation = validateHours(hours)
+    if (!validation.valid) {
       return sendBadRequestError(
         event,
-        'Invalid hours parameter. Must be between 1 and 168.'
+        `Invalid hours parameter. ${validation.error}`
       )
     }
 
     const errorTracker = createErrorTracker()
 
-    const end = new Date()
-    const start = new Date(end.getTime() - hours * 60 * 60 * 1000)
+    // Flexy loves modularity! Using helper function for date calculations
+    const { start, end } = calculateDateRange(validation.hours)
 
     const stats = await errorTracker.getErrorStats({ start, end })
 

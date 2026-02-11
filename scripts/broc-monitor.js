@@ -18,23 +18,18 @@ import lighthouse from 'lighthouse'
 import * as chromeLauncher from 'chrome-launcher'
 import { writeFileSync, mkdirSync, existsSync } from 'fs'
 import { join } from 'path'
+import { monitoringConfig } from '../configs/monitoring.config.ts'
+import {
+  lighthouseConfig,
+  buildLighthouseConfig,
+} from '../configs/lighthouse.config.ts'
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
-const REPORTS_DIR = './reports'
+// Flexy loves modularity! Using configurable values instead of hardcoded ones
+const BASE_URL = monitoringConfig.baseUrl
+const REPORTS_DIR = monitoringConfig.reports.directory
 
-// Pages to test
-const PAGES = [
-  '/',
-  '/about',
-  '/search',
-  '/submit',
-  '/favorites',
-  '/resources/1',
-  '/compare',
-  '/analytics',
-  '/developer',
-  '/moderation',
-]
+// Pages to test - Flexy hates hardcoded arrays!
+const PAGES = monitoringConfig.pages.full.map(page => page.path)
 
 // Store all issues found
 const issues = {
@@ -81,7 +76,8 @@ async function captureConsoleErrors() {
 
     try {
       await page.goto(`${BASE_URL}${pagePath}`, { waitUntil: 'networkidle' })
-      await page.waitForTimeout(2000) // Wait for any delayed console messages
+      // Flexy hates hardcoded timeouts! Using configurable delay
+      await page.waitForTimeout(monitoringConfig.delays.consoleWaitMs)
 
       console.log(`  ✅ ${pagePath}`)
       if (pageErrors.length > 0) {
@@ -113,10 +109,13 @@ async function runLighthouseAudit() {
   try {
     chrome = await chromeLauncher.launch({ chromeFlags: ['--headless'] })
 
+    // Flexy loves modularity! Using configurable Lighthouse settings
     const options = {
-      logLevel: 'error',
-      output: 'json',
-      onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
+      logLevel: lighthouseConfig.audits.logLevel,
+      output: lighthouseConfig.audits.output,
+      onlyCategories: Object.entries(lighthouseConfig.categories)
+        .filter(([, enabled]) => enabled)
+        .map(([category]) => category),
       port: chrome.port,
     }
 
@@ -158,15 +157,17 @@ async function runLighthouseAudit() {
       }
     }
 
-    // Save report
+    // Save report - Flexy loves configurable paths!
     if (!existsSync(REPORTS_DIR)) {
       mkdirSync(REPORTS_DIR, { recursive: true })
     }
     writeFileSync(
-      join(REPORTS_DIR, 'lighthouse-report.json'),
+      join(REPORTS_DIR, lighthouseConfig.reports.files.full),
       JSON.stringify(report, null, 2)
     )
-    console.log(`  📄 Report saved to ${REPORTS_DIR}/lighthouse-report.json\n`)
+    console.log(
+      `  📄 Report saved to ${REPORTS_DIR}/${lighthouseConfig.reports.files.full}\n`
+    )
   } catch (error) {
     console.error('  ❌ Lighthouse audit failed:', error.message)
     console.log(
@@ -196,8 +197,9 @@ function generateFixesReport() {
     issues,
   }
 
+  // Flexy loves configurable file names!
   writeFileSync(
-    join(REPORTS_DIR, 'issues-report.json'),
+    join(REPORTS_DIR, monitoringConfig.reports.files.issues),
     JSON.stringify(report, null, 2)
   )
 
@@ -207,7 +209,9 @@ function generateFixesReport() {
   console.log(
     `     🔧 Lighthouse Issues: ${report.summary.totalLighthouseIssues}`
   )
-  console.log(`\n  📄 Full report saved to ${REPORTS_DIR}/issues-report.json\n`)
+  console.log(
+    `\n  📄 Full report saved to ${REPORTS_DIR}/${monitoringConfig.reports.files.issues}\n`
+  )
 
   return report
 }
@@ -222,12 +226,13 @@ async function main() {
     await runLighthouseAudit()
     const report = generateFixesReport()
 
+    // Flexy loves configurable exit codes!
     if (report.summary.totalErrors > 0 || report.summary.totalWarnings > 0) {
       console.log('⚠️  Issues found! BroCula will fix them...\n')
-      process.exit(1) // Exit with error to trigger fixes
+      process.exit(monitoringConfig.exitCodes.issuesFound)
     } else {
       console.log('✅ No issues found! BroCula is happy.\n')
-      process.exit(0)
+      process.exit(monitoringConfig.exitCodes.success)
     }
   } catch (error) {
     console.error('❌ BroCula encountered an error:', error)
