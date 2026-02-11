@@ -11,7 +11,7 @@ export default defineEventHandler(async event => {
     const queue = await webhookStorage.getQueue()
     const deadLetterQueue = await webhookStorage.getDeadLetterQueue()
 
-    sendSuccessResponse(event, {
+    return sendSuccessResponse(event, {
       stats: queueStats,
       queue: queue.map(item => ({
         id: item.id,

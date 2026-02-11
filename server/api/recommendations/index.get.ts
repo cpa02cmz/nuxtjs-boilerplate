@@ -192,7 +192,7 @@ export default defineEventHandler(async event => {
     }
 
     // Return the recommendations
-    sendSuccessResponse(event, {
+    return sendSuccessResponse(event, {
       recommendations: recommendations.map(r => ({
         id: r.resource.id,
         title: r.resource.title,

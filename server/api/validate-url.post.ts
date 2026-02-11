@@ -40,7 +40,7 @@ export default defineEventHandler(async event => {
       useCircuitBreaker: validatedBody.useCircuitBreaker,
     })
 
-    sendSuccessResponse(event, { validationResult: urlValidationResult })
+    return sendSuccessResponse(event, { validationResult: urlValidationResult })
   } catch (error) {
     logger.error('Error validating URL:', error)
     handleApiRouteError(event, error)
