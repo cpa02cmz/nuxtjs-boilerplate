@@ -34,6 +34,19 @@ export const componentStylesConfig = {
     resultMarginTop: process.env.STATUS_MANAGER_RESULT_MARGIN || '1rem',
     resultPadding: process.env.STATUS_MANAGER_RESULT_PADDING || '0.75rem',
     resultBorderRadius: process.env.STATUS_MANAGER_RESULT_RADIUS || '0.375rem',
+    // Message colors - Flexy hates hardcoded colors!
+    message: {
+      success: {
+        textColor: process.env.STATUS_MSG_SUCCESS_TEXT || '#16a34a',
+        bgColor: process.env.STATUS_MSG_SUCCESS_BG || '#dcfce7',
+        borderColor: process.env.STATUS_MSG_SUCCESS_BORDER || '#bbf7d0',
+      },
+      error: {
+        textColor: process.env.STATUS_MSG_ERROR_TEXT || '#dc2626',
+        bgColor: process.env.STATUS_MSG_ERROR_BG || '#fee2e2',
+        borderColor: process.env.STATUS_MSG_ERROR_BORDER || '#fecaca',
+      },
+    },
   },
 
   // Loading Spinner Component Styles

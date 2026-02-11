@@ -209,14 +209,14 @@ const handleUpdate = async () => {
 }
 
 .success-message {
-  color: #16a34a;
-  background-color: #dcfce7;
-  border: 1px solid #bbf7d0;
+  color: v-bind('styles.message.success.textColor');
+  background-color: v-bind('styles.message.success.bgColor');
+  border: 1px solid v-bind('styles.message.success.borderColor');
 }
 
 .error-message {
-  color: #dc2626;
-  background-color: #fee2e2;
-  border: 1px solid #fecaca;
+  color: v-bind('styles.message.error.textColor');
+  background-color: v-bind('styles.message.error.bgColor');
+  border: 1px solid v-bind('styles.message.error.borderColor');
 }
 </style>

@@ -186,6 +186,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { uiConfig } from '~/configs/ui.config'
+import { socialConfig } from '~/configs/social.config'
 import { useSocialSharing } from '~/composables/useSocialSharing'
 
 interface Props {
@@ -211,36 +212,24 @@ const copySuccess = ref(false)
 // Use the enhanced social sharing composable
 const { share, copyLink: copyLinkWithTracking } = useSocialSharing()
 
-// Computed URLs for different social platforms
-const twitterUrl = computed(() => {
-  const text = encodeURIComponent(`${props.title} - ${props.description}`)
-  const url = encodeURIComponent(props.url)
-  return `https://twitter.com/intent/tweet?text=${text}&url=${url}`
-})
+// Computed URLs for different social platforms - Flexy hates hardcoded URLs!
+const twitterUrl = computed(() =>
+  socialConfig.urlBuilders.twitter(props.title, props.description, props.url)
+)
 
-const facebookUrl = computed(() => {
-  const url = encodeURIComponent(props.url)
-  return `https://www.facebook.com/sharer/sharer.php?u=${url}`
-})
+const facebookUrl = computed(() => socialConfig.urlBuilders.facebook(props.url))
 
-const linkedinUrl = computed(() => {
-  const url = encodeURIComponent(props.url)
-  const title = encodeURIComponent(props.title)
-  const summary = encodeURIComponent(props.description)
-  return `https://www.linkedin.com/sharing/share-offsite/?url=${url}&title=${title}&summary=${summary}`
-})
+const linkedinUrl = computed(() =>
+  socialConfig.urlBuilders.linkedin(props.title, props.description, props.url)
+)
 
-const redditUrl = computed(() => {
-  const title = encodeURIComponent(props.title)
-  const url = encodeURIComponent(props.url)
-  return `https://www.reddit.com/submit?title=${title}&url=${url}`
-})
+const redditUrl = computed(() =>
+  socialConfig.urlBuilders.reddit(props.title, props.url)
+)
 
-const emailUrl = computed(() => {
-  const subject = encodeURIComponent(`Check out: ${props.title}`)
-  const body = encodeURIComponent(`${props.description}\n\n${props.url}`)
-  return `mailto:?subject=${subject}&body=${body}`
-})
+const emailUrl = computed(() =>
+  socialConfig.urlBuilders.email(props.title, props.description, props.url)
+)
 
 // Position class for dropdown (left or right aligned)
 const positionClass = computed(() => {
