@@ -3,6 +3,7 @@ import type { Resource } from '~/types/resource'
 import { resourcesToCsv } from '~/utils/csv'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { handleApiRouteError } from '~/server/utils/api-response'
+import { contentConfig } from '~/configs/content.config'
 
 /**
  * GET /api/v1/export/csv
@@ -13,7 +14,7 @@ export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
     // Import resources from JSON
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Convert resources to CSV

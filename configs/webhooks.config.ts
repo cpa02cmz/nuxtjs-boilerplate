@@ -117,6 +117,12 @@ export const webhooksConfig = {
     successMessage: process.env.WEBHOOK_SUCCESS_MESSAGE || 'OK',
   },
 
+  // UI Placeholders - Flexy hates hardcoded form placeholders!
+  placeholders: {
+    // Webhook URL input placeholder
+    url: process.env.WEBHOOK_PLACEHOLDER_URL || 'https://example.com/webhook',
+  },
+
   // Circuit Breaker Key Management - Flexy hates hardcoded limits!
   circuitBreakerKeys: {
     // Maximum number of circuit breaker keys to store

@@ -7,16 +7,17 @@ import {
 } from '~/server/utils/api-response'
 import { TIME_MS } from '~/configs/time.config'
 import { paginationConfig } from '~/configs/pagination.config'
+import { contentConfig } from '~/configs/content.config'
 
 // Mock data for demonstration - in a real application, this would come from a database
-// Flexy hates hardcoded time values! Using TIME_MS constants
-const mockSubmissions: Submission[] = [
+// Flexy hates hardcoded values! Using config for URLs and TIME_MS for time constants
+const mockSubmissions = (): Submission[] => [
   {
     id: 'sub_1648729345_abc123',
     resourceData: {
       title: 'Test Resource 1',
       description: 'This is a test resource for moderation',
-      url: 'https://example.com/test1',
+      url: `${contentConfig.placeholders.defaultUrl}/test1`,
       category: 'Development',
       tags: ['javascript', 'web'],
       pricingModel: 'Free',
@@ -32,7 +33,7 @@ const mockSubmissions: Submission[] = [
     resourceData: {
       title: 'Another Test Resource',
       description: 'Another test resource for moderation',
-      url: 'https://example.com/test2',
+      url: `${contentConfig.placeholders.defaultUrl}/test2`,
       category: 'Design',
       tags: ['ui', 'ux'],
       pricingModel: 'Paid',
@@ -63,7 +64,7 @@ export default defineEventHandler(async event => {
     const offset = query.offset ? parseInt(query.offset as string) : 0
 
     // Filter submissions based on query parameters
-    let filteredSubmissions = [...mockSubmissions]
+    let filteredSubmissions = [...mockSubmissions()]
 
     if (statusFilter) {
       filteredSubmissions = filteredSubmissions.filter(

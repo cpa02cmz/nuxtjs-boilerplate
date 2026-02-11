@@ -11,6 +11,7 @@ import {
 import { paginationConfig } from '~/configs/pagination.config'
 import { cacheConfig } from '~/configs/cache.config'
 import { apiConfig } from '~/configs/api.config'
+import { contentConfig } from '~/configs/content.config'
 
 /**
  * GET /api/v1/resources
@@ -47,7 +48,7 @@ export default defineEventHandler(async event => {
     }
 
     // Import resources from JSON
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     let resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Parse query parameters with validation

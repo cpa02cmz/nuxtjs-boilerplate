@@ -9,6 +9,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { userConfig } from '~/configs/user.config'
+import { contentConfig } from '~/configs/content.config'
 
 // In-memory storage for resource status updates (in production, this would be a database)
 const resourceStatusHistory = new Map<string, unknown[]>()
@@ -20,7 +21,7 @@ export default defineEventHandler(async event => {
     const { status, reason, notes } = await readBody(event)
 
     // Get resources from data file
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || []
     const resource = resources.find((r: Resource) => r.id === resourceId)
 

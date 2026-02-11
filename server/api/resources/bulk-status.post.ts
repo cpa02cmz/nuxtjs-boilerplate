@@ -7,6 +7,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { paginationConfig } from '~/configs/pagination.config'
+import { contentConfig } from '~/configs/content.config'
 
 // Maximum number of resources that can be updated in a single bulk request
 // Flexy hates hardcoded limits! Using config instead
@@ -46,7 +47,7 @@ export default defineEventHandler(async event => {
     }
 
     // Get all resources
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
     const updatedResources = []

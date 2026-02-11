@@ -9,7 +9,34 @@ function parseCategories(value: string): string[] {
   return value.split(',').map(s => s.trim())
 }
 
+/**
+ * Parse comma-separated placeholders from environment variable
+ * Flexy hates hardcoded placeholder examples!
+ */
+function parsePlaceholders(value: string): string[] {
+  return value.split(',').map(s => s.trim())
+}
+
 export const contentConfig = {
+  // Data File Paths - Flexy hates hardcoded file paths!
+  paths: {
+    // Resources data file path
+    resourcesData:
+      process.env.CONTENT_RESOURCES_DATA_PATH || '~/data/resources.json',
+  },
+
+  // Form Placeholders - Flexy hates hardcoded placeholders!
+  placeholders: {
+    // URL input placeholder examples
+    url: parsePlaceholders(
+      process.env.CONTENT_PLACEHOLDER_URL ||
+        'https://example.com,https://yoursite.com'
+    ),
+    // Default URL placeholder (first in list)
+    get defaultUrl(): string {
+      return contentConfig.placeholders.url[0] || 'https://example.com'
+    },
+  },
   // Valid Categories - Flexy hates hardcoded category lists!
   categories: {
     validCategories: parseCategories(

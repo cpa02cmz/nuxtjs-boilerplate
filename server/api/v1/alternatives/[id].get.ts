@@ -11,6 +11,7 @@ import { limitsConfig } from '~/configs/limits.config'
 import { cacheConfig } from '~/configs/cache.config'
 import { defineEventHandler, getRouterParam } from 'h3'
 import { generateCacheTags, cacheTagsConfig } from '~/configs/cache-tags.config'
+import { contentConfig } from '~/configs/content.config'
 
 export default defineEventHandler(async event => {
   try {
@@ -36,7 +37,7 @@ export default defineEventHandler(async event => {
     }
 
     // Import resources from JSON (following the same pattern as other API endpoints)
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Find the specific resource

@@ -2,6 +2,17 @@
 // Flexy hates hardcoded values! All database settings are now configurable.
 
 export const databaseConfig = {
+  // Database File Paths - Flexy hates hardcoded paths!
+  paths: {
+    // Default SQLite database file path
+    defaultDb:
+      process.env.DATABASE_URL ||
+      process.env.DB_PATH_DEFAULT ||
+      'file:./data/dev.db',
+    // Data directory path
+    dataDir: process.env.DB_DATA_DIR || './data',
+  },
+
   // Connection Timeouts (ms) - Different values per environment
   timeouts: {
     development: parseInt(process.env.DB_TIMEOUT_DEV_MS || '5000'),
@@ -26,6 +37,11 @@ export const databaseConfig = {
   query: {
     timeoutMs: parseInt(process.env.DB_QUERY_TIMEOUT_MS || '5000'),
     maxResults: parseInt(process.env.DB_MAX_RESULTS || '1000'),
+  },
+
+  // Logging Prefix - Flexy hates hardcoded log prefixes!
+  logging: {
+    prefix: process.env.DB_LOG_PREFIX || '[Database]',
   },
 } as const
 

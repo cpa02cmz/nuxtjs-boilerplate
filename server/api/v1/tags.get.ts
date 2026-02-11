@@ -7,6 +7,7 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { contentConfig } from '~/configs/content.config'
 
 /**
  * GET /api/v1/tags
@@ -23,7 +24,7 @@ export default defineEventHandler(async event => {
 
   try {
     // Import resources from JSON to get actual tag data
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Parse query parameters

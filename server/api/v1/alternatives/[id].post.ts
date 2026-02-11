@@ -8,6 +8,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { defineEventHandler, getRouterParam, readBody } from 'h3'
+import { contentConfig } from '~/configs/content.config'
 
 // This is a simplified implementation for demonstration
 // In a real implementation, you'd want to persist these relationships in a database
@@ -35,7 +36,7 @@ export default defineEventHandler(async event => {
     }
 
     // Import resources from JSON to validate IDs
-    const resourcesModule = await import('~/data/resources.json')
+    const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Validate both resources exist

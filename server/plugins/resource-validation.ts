@@ -7,6 +7,7 @@ import { defineNitroPlugin } from 'nitropack/runtime'
 import { updateAllResourceHealth } from '../utils/resourceHealth'
 import logger from '~/utils/logger'
 import { timeConfig } from '~/configs/time.config'
+import { contentConfig } from '~/configs/content.config'
 
 // Extended NitroApp interface for resource validation
 interface ExtendedNitroApp {
@@ -28,7 +29,7 @@ export default defineNitroPlugin(async nitroApp => {
   const validateAllResources = async () => {
     try {
       // Import resources from JSON
-      const resourcesModule = await import('~/data/resources.json')
+      const resourcesModule = await import(contentConfig.paths.resourcesData)
       const resources = resourcesModule.default || resourcesModule
 
       if (Array.isArray(resources) && resources.length > 0) {

@@ -188,7 +188,7 @@
                       ? 'border-green-500'
                       : 'border-gray-300',
                 ]"
-                placeholder="https://example.com"
+                :placeholder="contentConfig.placeholders.defaultUrl"
                 @blur="handleUrlBlur"
               >
               <p
