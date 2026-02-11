@@ -18,11 +18,16 @@
           v-if="resource.icon"
           class="ml-3 flex-shrink-0"
         >
-          <img
+          <OptimizedImage
             :src="resource.icon"
             :alt="resource.title"
-            class="w-8 h-8 rounded object-contain"
-          >
+            :width="32"
+            :height="32"
+            format="webp"
+            loading="lazy"
+            :quality="80"
+            img-class="w-8 h-8 rounded object-contain"
+          />
         </div>
       </div>
 
@@ -133,6 +138,7 @@ import { computed } from 'vue'
 import type { Resource } from '~/types/resource'
 import { limitsConfig } from '~/configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
+import OptimizedImage from '~/components/OptimizedImage.vue'
 
 interface Props {
   resource?: Resource

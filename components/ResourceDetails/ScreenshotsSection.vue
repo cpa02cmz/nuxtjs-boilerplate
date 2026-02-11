@@ -9,12 +9,15 @@
         :key="index"
         class="overflow-hidden rounded-lg border border-gray-200"
       >
-        <img
+        <NuxtImg
           :src="screenshot"
           :alt="`${title} screenshot ${index + 1}`"
           class="w-full h-48 object-cover"
+          loading="lazy"
+          format="webp"
+          quality="80"
           @error="$emit('imageError', $event)"
-        >
+        />
       </div>
     </div>
   </div>
