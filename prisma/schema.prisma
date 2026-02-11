@@ -225,3 +225,43 @@ model Submission {
   @@index([deletedAt])
   @@index([status, deletedAt])
 }
+
+model TrackedError {
+  id            String   @id @default(cuid())
+  message       String
+  stack         String?
+  component     String?
+  severity      String   @default("error") // info, warning, error, critical
+  url           String?
+  userAgent     String?
+  ip            String?
+  source        String   @default("client") // client, server, api
+  errorHash     String?  // For deduplication
+  occurrenceCount Int    @default(1)
+  firstSeenAt   DateTime @default(now())
+  lastSeenAt    DateTime @updatedAt
+  resolvedAt    DateTime?
+  deletedAt     DateTime?
+
+  @@index([severity])
+  @@index([source])
+  @@index([errorHash])
+  @@index([firstSeenAt])
+  @@index([lastSeenAt])
+  @@index([severity, source])
+  @@index([errorHash, resolvedAt])
+}
+
+model ErrorMetric {
+  id            String   @id @default(cuid())
+  date          DateTime @default(now())
+  hour          Int      @default(0)
+  severity      String
+  source        String
+  count         Int      @default(0)
+  deletedAt     DateTime?
+
+  @@unique([date, hour, severity, source])
+  @@index([date])
+  @@index([severity, source])
+}

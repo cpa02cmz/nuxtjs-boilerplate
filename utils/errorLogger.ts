@@ -15,9 +15,23 @@ export interface ErrorLog {
   additionalInfo?: Record<string, unknown>
 }
 
+/**
+ * Configuration for remote error reporting
+ */
+interface RemoteReportingConfig {
+  enabled: boolean
+  endpoint: string
+  sampleRate: number // 0-1, percentage of errors to report
+}
+
 class ErrorLogger {
   private logs: ErrorLog[] = []
   private maxLogs = limitsConfig.errorLog.maxLogs
+  private remoteConfig: RemoteReportingConfig = {
+    enabled: typeof window !== 'undefined', // Only enabled on client-side
+    endpoint: '/api/errors/report',
+    sampleRate: 1.0, // Report all errors by default
+  }
 
   // Log an error with different severity levels
   log(
@@ -70,8 +84,18 @@ class ErrorLogger {
       }
     }
 
-    // Here we could also send logs to an external service
-    // For example: sendToExternalService(log)
+    // Send to remote error tracking service (async, don't block)
+    if (
+      this.remoteConfig.enabled &&
+      Math.random() <= this.remoteConfig.sampleRate
+    ) {
+      this.sendToRemoteService(log).catch(err => {
+        // Silent fail - error reporting should never break the app
+        if (process.env.NODE_ENV === 'development') {
+          logger.error('Failed to send error to remote service:', err)
+        }
+      })
+    }
   }
 
   // Get all logs
@@ -96,15 +120,35 @@ class ErrorLogger {
     ).length
   }
 
-  // Send logs to external service (placeholder)
-  private async sendToExternalService(_log: ErrorLog): Promise<void> {
-    // This is a placeholder for sending logs to an external service like Sentry, LogRocket, etc.
-    // In a real implementation, you would send log to your preferred error tracking service
-    try {
-      // Example: await fetch('/api/logs', { method: 'POST', body: JSON.stringify(_log) })
-    } catch (err) {
-      logger.error('Failed to send log to external service:', err)
+  /**
+   * Send error log to remote tracking service
+   */
+  private async sendToRemoteService(log: ErrorLog): Promise<void> {
+    const response = await fetch(this.remoteConfig.endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: log.message,
+        stack: log.stack,
+        component: log.component,
+        severity: log.severity,
+        url: log.url,
+        userAgent: log.userAgent,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
     }
+  }
+
+  /**
+   * Configure remote error reporting
+   */
+  configureRemoteReporting(config: Partial<RemoteReportingConfig>): void {
+    this.remoteConfig = { ...this.remoteConfig, ...config }
   }
 }
 
