@@ -72,6 +72,10 @@ export const contentConfig = {
     placeholder:
       process.env.CONTENT_SEARCH_PLACEHOLDER ||
       'Search resources by name, description, tags...',
+    ariaLabel:
+      process.env.CONTENT_SEARCH_ARIA_LABEL ||
+      'Search resources (Press / to focus)',
+    clearAriaLabel: process.env.CONTENT_SEARCH_CLEAR_ARIA || 'Clear search',
     suggestions: {
       title: process.env.CONTENT_SEARCH_SUGGESTIONS_TITLE || 'Suggestions',
       recentTitle: process.env.CONTENT_SEARCH_RECENT_TITLE || 'Recent Searches',
@@ -201,16 +205,26 @@ export const contentConfig = {
       name: process.env.CONTENT_SUBMIT_NAME || 'Resource Name',
       nameDesc:
         process.env.CONTENT_SUBMIT_NAME_DESC || 'The name of the resource',
+      namePlaceholder:
+        process.env.CONTENT_SUBMIT_NAME_PLACEHOLDER || 'e.g., OpenAI API',
       description: process.env.CONTENT_SUBMIT_DESC || 'Description',
       descriptionDesc:
         process.env.CONTENT_SUBMIT_DESC_DESC ||
         'Brief description of what the resource offers',
+      descriptionPlaceholder:
+        process.env.CONTENT_SUBMIT_DESC_PLACEHOLDER ||
+        'Describe the resource and its benefits...',
       url: process.env.CONTENT_SUBMIT_URL || 'Website URL',
       category: process.env.CONTENT_SUBMIT_CATEGORY || 'Category',
+      categoryPlaceholder:
+        process.env.CONTENT_SUBMIT_CATEGORY_PLACEHOLDER || 'Select a category',
       tags: process.env.CONTENT_SUBMIT_TAGS || 'Tags',
       tagsDesc:
         process.env.CONTENT_SUBMIT_TAGS_DESC ||
         'Comma-separated tags (e.g., AI, API, hosting)',
+      tagsPlaceholder:
+        process.env.CONTENT_SUBMIT_TAGS_PLACEHOLDER ||
+        'Enter tags separated by commas',
     },
     categories: {
       ai: process.env.CONTENT_CATEGORY_AI || 'AI & Machine Learning',

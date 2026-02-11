@@ -32,6 +32,9 @@ export const animationConfig = {
     imageFadeInDurationSec: `${parseInt(process.env.IMAGE_FADE_IN_DURATION_MS || '300') / 1000}s`,
     // Subtle pulse for loading state
     subtlePulseDurationSec: `${parseInt(process.env.SUBTLE_PULSE_DURATION_SEC || '2')}s`,
+    // Wave animation for coordinated skeleton shimmer effect
+    waveDurationSec: parseFloat(process.env.SKELETON_WAVE_DURATION_SEC || '2'),
+    waveStaggerSec: parseFloat(process.env.SKELETON_WAVE_STAGGER_SEC || '0.08'),
   },
 
   // Card Entrance Animations

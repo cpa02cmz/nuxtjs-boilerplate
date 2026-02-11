@@ -206,6 +206,41 @@ export const componentStylesConfig = {
         process.env.SCROLLTOTOP_TRANSITION_DURATION || '0.1s',
     },
   },
+
+  // KeyboardShortcutsHelp Component - Flexy hates hardcoded layout values!
+  keyboardShortcuts: {
+    // Modal z-index
+    zIndex: process.env.KB_SHORTCUTS_Z_INDEX || 'z-[100]',
+    // Backdrop blur duration
+    backdropDuration:
+      process.env.KB_SHORTCUTS_BACKDROP_DURATION || 'duration-200',
+    // Modal content max height
+    maxHeight: process.env.KB_SHORTCUTS_MAX_HEIGHT || 'max-h-[60vh]',
+    // Modal width
+    modalWidth: process.env.KB_SHORTCUTS_MODAL_WIDTH || 'max-w-lg',
+  },
+
+  // SearchBar Component
+  searchBar: {
+    // Input transition duration
+    inputDuration: process.env.SEARCHBAR_INPUT_DURATION || 'duration-200',
+    // Clear button transition
+    clearButtonDuration: process.env.SEARCHBAR_CLEAR_DURATION || 'duration-200',
+  },
+
+  // ResourceShare Component
+  resourceShare: {
+    // Button transition duration
+    buttonDuration: process.env.SHARE_BUTTON_DURATION || 'transition-colors',
+  },
+
+  // Submit Page
+  submit: {
+    // Form input transition
+    inputDuration: process.env.SUBMIT_INPUT_DURATION || 'duration-200',
+    // Progress bar transition
+    progressDuration: process.env.SUBMIT_PROGRESS_DURATION || 'duration-300',
+  },
 } as const
 
 export type ComponentStylesConfig = typeof componentStylesConfig

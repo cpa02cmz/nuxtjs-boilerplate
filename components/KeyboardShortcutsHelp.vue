@@ -6,7 +6,10 @@
     >
       <div
         v-if="isOpen"
-        class="fixed inset-0 z-[100] flex items-center justify-center p-4"
+        :class="[
+          'fixed inset-0 flex items-center justify-center p-4',
+          componentStylesConfig.keyboardShortcuts.zIndex,
+        ]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="shortcuts-title"
@@ -14,14 +17,20 @@
       >
         <!-- Backdrop -->
         <div
-          class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity duration-200"
+          :class="[
+            'absolute inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity',
+            componentStylesConfig.keyboardShortcuts.backdropDuration,
+          ]"
           aria-hidden="true"
         />
 
         <!-- Modal -->
         <div
           ref="modalRef"
-          class="relative w-full max-w-lg bg-white dark:bg-gray-800 rounded-xl shadow-2xl transform transition-all duration-200 overflow-hidden"
+          :class="[
+            'relative w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl transform transition-all duration-200 overflow-hidden',
+            componentStylesConfig.keyboardShortcuts.modalWidth,
+          ]"
           role="document"
         >
           <!-- Header -->
@@ -31,7 +40,10 @@
             <div class="flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 text-blue-500"
+                :class="[
+                  'h-5 w-5',
+                  componentColorsConfig.keyboardShortcuts.headerIcon,
+                ]"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -76,7 +88,12 @@
           </div>
 
           <!-- Content -->
-          <div class="px-6 py-4 max-h-[60vh] overflow-y-auto">
+          <div
+            :class="[
+              'px-6 py-4 overflow-y-auto',
+              componentStylesConfig.keyboardShortcuts.maxHeight,
+            ]"
+          >
             <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
               Use these shortcuts to navigate faster and work more efficiently.
             </p>
@@ -253,6 +270,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { componentStylesConfig } from '~/configs/component-styles.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 // NodeListOf is a global DOM type, no need to import
 
 const isOpen = ref(false)
