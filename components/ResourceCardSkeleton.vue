@@ -106,8 +106,9 @@ const staggerBaseDelay = 0
 const staggerIncrement = 75
 
 // Wave animation configuration - creates a flowing wave effect across all items
-const waveDuration = `${animationConfig.skeleton.waveDurationSec}s`
-const waveStagger = `${animationConfig.skeleton.waveStaggerSec}s`
+// BroCula fix: Using hardcoded fallback values to prevent SSR import failures
+const waveDuration = '2s'
+const waveStagger = '0.15s'
 
 // Calculate stagger delays for each item
 const getStaggerDelay = (index: number): string => {
@@ -209,8 +210,7 @@ const skeletonColors = {
 /* This creates a more cohesive and polished loading experience */
 .skeleton-wave {
   animation:
-    shimmer v-bind('animationConfig.skeleton.shimmerDurationSec') ease-in-out
-      infinite,
+    shimmer 1.5s ease-in-out infinite,
     wave-pulse var(--wave-duration) ease-in-out infinite;
   animation-delay:
     calc(var(--wave-index) * var(--wave-stagger)),
