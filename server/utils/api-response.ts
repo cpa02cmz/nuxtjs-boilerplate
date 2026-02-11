@@ -11,6 +11,7 @@ import {
   createUnauthorizedError,
   createForbiddenError,
   createRateLimitError,
+  createMethodNotAllowedError,
   getStatusCodeFromErrorCode,
 } from '~/server/utils/api-error'
 import { sanitizeErrorMessage } from './api-key-security'
@@ -102,6 +103,14 @@ export function sendRateLimitError(event: H3Event, retryAfter?: number): void {
     event.node.res?.setHeader('Retry-After', retryAfter.toString())
   }
 
+  sendApiError(event, error)
+}
+
+export function sendMethodNotAllowedError(
+  event: H3Event,
+  message: string = 'Method not allowed'
+): void {
+  const error = createMethodNotAllowedError(message)
   sendApiError(event, error)
 }
 

@@ -12,6 +12,7 @@ export enum ErrorCode {
   GATEWAY_TIMEOUT = 'GATEWAY_TIMEOUT',
   CIRCUIT_BREAKER_OPEN = 'CIRCUIT_BREAKER_OPEN',
   EXTERNAL_SERVICE_ERROR = 'EXTERNAL_SERVICE_ERROR',
+  METHOD_NOT_ALLOWED = 'METHOD_NOT_ALLOWED',
 }
 
 export enum ErrorCategory {
@@ -160,6 +161,16 @@ export function createExternalServiceError(
   )
 }
 
+export function createMethodNotAllowedError(
+  message: string = 'Method not allowed'
+): ApiError {
+  return createApiError(
+    ErrorCode.METHOD_NOT_ALLOWED,
+    message,
+    ErrorCategory.VALIDATION
+  )
+}
+
 export function getStatusCodeFromErrorCode(code: ErrorCode): number {
   const statusCodeMap: Record<ErrorCode, number> = {
     [ErrorCode.INTERNAL_SERVER_ERROR]: 500,
@@ -174,6 +185,7 @@ export function getStatusCodeFromErrorCode(code: ErrorCode): number {
     [ErrorCode.GATEWAY_TIMEOUT]: 504,
     [ErrorCode.CIRCUIT_BREAKER_OPEN]: 503,
     [ErrorCode.EXTERNAL_SERVICE_ERROR]: 502,
+    [ErrorCode.METHOD_NOT_ALLOWED]: 405,
   }
 
   return statusCodeMap[code] || 500
