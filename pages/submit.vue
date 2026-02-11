@@ -42,7 +42,7 @@
                   aria-describedby="title-description title-counter title-error"
                   :aria-invalid="errors.title ? 'true' : 'false'"
                   :class="[
-                    'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200',
+                    'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
                     errors.title
                       ? 'border-red-500 animate-form-shake'
                       : formData.title && !errors.title
@@ -112,7 +112,7 @@
                   aria-describedby="description-description description-counter description-error"
                   :aria-invalid="errors.description ? 'true' : 'false'"
                   :class="[
-                    'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 resize-none',
+                    'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 resize-none input-focus-glow',
                     errors.description
                       ? 'border-red-500 animate-form-shake'
                       : formData.description && !errors.description
@@ -181,7 +181,7 @@
                 aria-describedby="url-description url-error"
                 :aria-invalid="errors.url ? 'true' : 'false'"
                 :class="[
-                  'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200',
+                  'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
                   errors.url
                     ? 'border-red-500 animate-form-shake'
                     : formData.url && !errors.url
@@ -223,7 +223,7 @@
                 aria-describedby="category-description category-error"
                 :aria-invalid="errors.category ? 'true' : 'false'"
                 :class="[
-                  'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200',
+                  'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
                   errors.category
                     ? 'border-red-500 animate-form-shake'
                     : formData.category && !errors.category
@@ -274,7 +274,7 @@
                 v-model="tagsInput"
                 type="text"
                 aria-describedby="tags-description"
-                class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
                 placeholder="Enter tags separated by commas"
               >
               <p
@@ -739,6 +739,47 @@ useSeoMeta({
 @media (prefers-reduced-motion: reduce) {
   .animate-form-shake {
     animation: none;
+  }
+}
+
+/* Input Focus Glow Effect - Palette's micro-UX enhancement! */
+/* Adds a subtle animated glow around focused inputs for better visibility */
+.input-focus-glow {
+  transition: box-shadow 0.2s ease-out;
+}
+
+.input-focus-glow:focus {
+  animation: focus-glow-pulse v-bind('animationConfig.focusGlow.durationSec')
+    ease-in-out infinite;
+}
+
+@keyframes focus-glow-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMin}px`')
+        v-bind('animationConfig.focusGlow.secondaryColor'),
+      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMin * 2}px`')
+        v-bind('animationConfig.focusGlow.color');
+  }
+  50% {
+    box-shadow:
+      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMax}px`')
+        v-bind('animationConfig.focusGlow.secondaryColor'),
+      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMax * 2}px`')
+        v-bind('animationConfig.focusGlow.color');
+  }
+}
+
+/* Respect reduced motion preferences for focus glow */
+@media (prefers-reduced-motion: reduce) {
+  .input-focus-glow:focus {
+    animation: none;
+    box-shadow:
+      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMin}px`')
+        v-bind('animationConfig.focusGlow.secondaryColor'),
+      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMin * 2}px`')
+        v-bind('animationConfig.focusGlow.color');
   }
 }
 </style>
