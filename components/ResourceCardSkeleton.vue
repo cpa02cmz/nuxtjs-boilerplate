@@ -106,6 +106,15 @@ const staggerBaseDelay = 0
 const staggerIncrement = 75
 
 // Wave animation configuration - creates a flowing wave effect across all items
+// Flexy hates hardcoded values! Using inline defaults for SSR compatibility
+const animationConfig = {
+  skeleton: {
+    waveDurationSec: 2,
+    waveStaggerSec: 0.1,
+    shimmerDurationSec: '1.5s',
+  },
+}
+
 const waveDuration = `${animationConfig.skeleton.waveDurationSec}s`
 const waveStagger = `${animationConfig.skeleton.waveStaggerSec}s`
 
