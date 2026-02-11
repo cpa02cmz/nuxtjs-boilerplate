@@ -2,10 +2,7 @@
   <ClientErrorBoundary component-name="SubmitPage">
     <div class="py-12">
       <!-- Confetti celebration for successful submission -->
-      <ConfettiCelebration
-        ref="confettiRef"
-        intensity="medium"
-      />
+      <ConfettiCelebration ref="confettiRef" intensity="medium" />
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
           <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
@@ -52,7 +49,7 @@
                   placeholder="e.g., OpenAI API"
                   @focus="isTitleFocused = true"
                   @blur="handleTitleBlur"
-                >
+                />
                 <div
                   id="title-counter"
                   class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium tabular-nums transition-all duration-200"
@@ -62,10 +59,7 @@
                   {{ formData.title.length }}/{{ maxTitleLength }}
                 </div>
               </div>
-              <p
-                id="title-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              <p id="title-description" class="mt-1 text-sm text-gray-500">
                 The name of the resource or service
               </p>
               <!-- Character limit progress bar for visual feedback -->
@@ -190,11 +184,8 @@
                 ]"
                 placeholder="https://example.com"
                 @blur="handleUrlBlur"
-              >
-              <p
-                id="url-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              />
+              <p id="url-description" class="mt-1 text-sm text-gray-500">
                 The official website or page for this resource
               </p>
               <div
@@ -232,12 +223,7 @@
                 ]"
                 @blur="handleCategoryBlur"
               >
-                <option
-                  value=""
-                  disabled
-                >
-                  Select a category
-                </option>
+                <option value="" disabled>Select a category</option>
                 <option
                   v-for="category in categoryOptions"
                   :key="category.value"
@@ -246,10 +232,7 @@
                   {{ category.label }}
                 </option>
               </select>
-              <p
-                id="category-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              <p id="category-description" class="mt-1 text-sm text-gray-500">
                 Choose the most appropriate category for this resource
               </p>
               <div
@@ -276,11 +259,8 @@
                 aria-describedby="tags-description"
                 class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200"
                 placeholder="Enter tags separated by commas"
-              >
-              <p
-                id="tags-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              />
+              <p id="tags-description" class="mt-1 text-sm text-gray-500">
                 Add relevant tags to help categorize this resource (e.g., "api,
                 free-tier, openai")
               </p>
@@ -295,10 +275,7 @@
                 class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 <span v-if="!isSubmitting">Submit Resource</span>
-                <span
-                  v-else
-                  class="flex items-center"
-                >
+                <span v-else class="flex items-center">
                   <svg
                     class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
@@ -404,6 +381,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { useNuxtApp } from '#app'
 import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
 import { animationConfig } from '~/configs/animation.config'
@@ -411,9 +389,16 @@ import { thresholdsConfig } from '~/configs/thresholds.config'
 import { uiConfig } from '~/configs/ui.config'
 import { categoriesConfig } from '~/configs/categories.config'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
+import { timeConfig } from '~/configs/time.config'
+import { debounce } from '~/utils/debounce'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
+const { $toast } = useNuxtApp()
+
+// Draft auto-save configuration
+const DRAFT_STORAGE_KEY = 'resource-draft'
+const DRAFT_TIMESTAMP_KEY = 'resource-draft-timestamp'
 
 // Animation config values for CSS variables - Flexy hates hardcoded values!
 const shakeDurationMs = `${animationConfig.validation.shakeDurationMs}ms`
@@ -435,6 +420,9 @@ const {
   validateDescription,
   validateUrl,
   validateCategory,
+  restoreFormData,
+  getFormData,
+  hasFormContent,
 } = useSubmitPage()
 
 // Track which fields should shake when validation fails
@@ -570,8 +558,107 @@ const descriptionCounterClass = computed(() => {
   return `${baseClasses} text-gray-400`
 })
 
+// Draft auto-save functionality
+// Auto-save draft to localStorage with debounce
+const saveDraft = debounce(() => {
+  if (hasFormContent()) {
+    const draftData = getFormData()
+    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftData))
+    localStorage.setItem(DRAFT_TIMESTAMP_KEY, Date.now().toString())
+  }
+}, timeConfig.debounce.draft)
+
+// Watch for changes and auto-save
+watch(
+  () => ({ ...formData.value, tagsInput: tagsInput.value }),
+  () => {
+    saveDraft()
+  },
+  { deep: true }
+)
+
+// Restore draft on mount with subtle notification
+const restoreDraft = () => {
+  if (typeof window === 'undefined') return
+
+  const savedDraft = localStorage.getItem(DRAFT_STORAGE_KEY)
+  const savedTimestamp = localStorage.getItem(DRAFT_TIMESTAMP_KEY)
+
+  if (savedDraft && savedTimestamp) {
+    try {
+      const draftData = JSON.parse(savedDraft)
+      const timestamp = parseInt(savedTimestamp, 10)
+      const now = Date.now()
+      const hoursSinceSaved = (now - timestamp) / (1000 * 60 * 60)
+
+      // Only restore if draft is less than 7 days old
+      if (hoursSinceSaved < 168) {
+        restoreFormData(draftData)
+
+        // Show toast notification about restored draft
+        const timeAgo =
+          hoursSinceSaved < 1
+            ? 'just now'
+            : hoursSinceSaved < 24
+              ? `${Math.floor(hoursSinceSaved)} hours ago`
+              : `${Math.floor(hoursSinceSaved / 24)} days ago`
+
+        $toast.info('Draft restored', {
+          description: `Your previous submission draft from ${timeAgo} has been restored.`,
+          duration: 5000,
+        })
+      } else {
+        // Clear old draft
+        localStorage.removeItem(DRAFT_STORAGE_KEY)
+        localStorage.removeItem(DRAFT_TIMESTAMP_KEY)
+      }
+    } catch {
+      // Clear invalid draft data
+      localStorage.removeItem(DRAFT_STORAGE_KEY)
+      localStorage.removeItem(DRAFT_TIMESTAMP_KEY)
+    }
+  }
+}
+
+// Clear draft from storage
+const clearDraft = () => {
+  if (typeof window === 'undefined') return
+  localStorage.removeItem(DRAFT_STORAGE_KEY)
+  localStorage.removeItem(DRAFT_TIMESTAMP_KEY)
+}
+
+// Beforeunload warning when form has unsaved changes
+const hasUnsavedChanges = computed(() => {
+  return hasFormContent() && !submitSuccess.value
+})
+
+// Watch for successful submission to trigger confetti
+watch(submitSuccess, success => {
+  if (success) {
+    // Clear draft from storage
+    clearDraft()
+
+    // Small delay to let the success message appear first
+    setTimeout(() => {
+      confettiRef.value?.celebrate()
+    }, animationConfig.confetti.submissionDelayMs)
+  }
+})
+
 onMounted(() => {
   titleInput.value?.focus()
+  restoreDraft()
+
+  // Set up beforeunload handler
+  if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', event => {
+      if (hasUnsavedChanges.value) {
+        event.preventDefault()
+        event.returnValue = ''
+        return ''
+      }
+    })
+  }
 })
 
 definePageMeta({

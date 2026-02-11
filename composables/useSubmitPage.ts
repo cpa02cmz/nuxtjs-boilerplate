@@ -261,6 +261,33 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
     submitSuccess.value = false
   }
 
+  const restoreFormData = (
+    data: Partial<FormData> & { tagsInput?: string }
+  ) => {
+    if (data.title !== undefined) formData.value.title = data.title
+    if (data.description !== undefined)
+      formData.value.description = data.description
+    if (data.url !== undefined) formData.value.url = data.url
+    if (data.category !== undefined) formData.value.category = data.category
+    if (data.tags !== undefined) formData.value.tags = data.tags
+    if (data.tagsInput !== undefined) tagsInput.value = data.tagsInput
+  }
+
+  const getFormData = (): FormData & { tagsInput: string } => ({
+    ...formData.value,
+    tagsInput: tagsInput.value,
+  })
+
+  const hasFormContent = (): boolean => {
+    return (
+      formData.value.title.trim().length > 0 ||
+      formData.value.description.trim().length > 0 ||
+      formData.value.url.trim().length > 0 ||
+      formData.value.category.length > 0 ||
+      tagsInput.value.trim().length > 0
+    )
+  }
+
   return {
     formData: readonly(formData),
     tagsInput: readonly(tagsInput),
@@ -275,5 +302,8 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
     validateCategory,
     submitResource,
     resetForm,
+    restoreFormData,
+    getFormData,
+    hasFormContent,
   }
 }
