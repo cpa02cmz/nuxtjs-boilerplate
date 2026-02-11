@@ -82,6 +82,14 @@ export const thresholdsConfig = {
     ),
   },
 
+  // Pagination Settings - Prevents DOM bloat on resource grids
+  pagination: {
+    // Initial number of resources to show
+    initialCount: parseInt(process.env.PAGINATION_INITIAL_COUNT || '12'),
+    // Number of resources to load on each "Load More" click
+    loadMoreCount: parseInt(process.env.PAGINATION_LOAD_MORE_COUNT || '12'),
+  },
+
   // Character Counter Thresholds - Flexy hates hardcoded percentage values!
   characterCounter: {
     // Progress bar color change thresholds (percentage)

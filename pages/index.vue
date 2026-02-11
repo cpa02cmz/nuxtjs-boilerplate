@@ -159,7 +159,7 @@
             <!-- Resources Grid -->
             <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               <div
-                v-for="(resource, index) in filteredResources"
+                v-for="(resource, index) in paginatedResources"
                 :key="resource.id"
                 class="resource-card-wrapper"
                 :style="{
@@ -182,6 +182,23 @@
                   :date-added="resource.dateAdded"
                 />
               </div>
+            </div>
+
+            <!-- Load More Button -->
+            <div
+              v-if="hasMoreResources"
+              class="mt-8 text-center"
+            >
+              <button
+                class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                @click="loadMore"
+              >
+                <span>{{ uiConfig.loadMore.buttonText }}</span>
+                <span class="ml-2 text-gray-500">
+                  ({{ paginatedResources.length }} of
+                  {{ filteredResources.length }})
+                </span>
+              </button>
             </div>
           </div>
 
@@ -256,6 +273,7 @@
 
 <script setup lang="ts">
 import type { SortOption } from '~/types/resource'
+import { ref, computed, watch } from 'vue'
 import { useResources } from '~/composables/useResources'
 import { useUrlSync } from '~/composables/useUrlSync'
 import { useHomePage } from '~/composables/useHomePage'
@@ -267,6 +285,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
 import { thresholdsConfig } from '~/configs/thresholds.config'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
+import { uiConfig } from '~/configs/ui.config'
 
 definePageMeta({
   layout: 'default',
@@ -341,6 +360,33 @@ const resetAllFilters = () => {
   resetFilters()
   searchQuery.value = ''
 }
+
+// Pagination state - prevents DOM bloat with large resource collections
+const displayedCount = ref(thresholdsConfig.pagination.initialCount)
+
+// Computed property for paginated resources
+const paginatedResources = computed(() => {
+  return filteredResources.value.slice(0, displayedCount.value)
+})
+
+// Check if there are more resources to load
+const hasMoreResources = computed(() => {
+  return displayedCount.value < filteredResources.value.length
+})
+
+// Load more resources
+const loadMore = () => {
+  displayedCount.value += thresholdsConfig.pagination.loadMoreCount
+}
+
+// Reset pagination when filters change
+watch(
+  () => filterOptions.value,
+  () => {
+    displayedCount.value = thresholdsConfig.pagination.initialCount
+  },
+  { deep: true }
+)
 </script>
 
 <style>
