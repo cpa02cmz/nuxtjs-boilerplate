@@ -89,6 +89,9 @@ export const contentConfig = {
   resourceCard: {
     freeTier: process.env.CONTENT_RESOURCE_FREE_TIER || 'Free Tier:',
     newTab: process.env.CONTENT_RESOURCE_NEW_TAB || '(new tab)',
+    defaultButtonLabel:
+      process.env.CONTENT_RESOURCE_BUTTON_LABEL || 'Visit Resource',
+    openingLabel: process.env.CONTENT_RESOURCE_OPENING_LABEL || 'Opening...',
   },
 
   // Comparison
