@@ -208,6 +208,11 @@ export const uiConfig = {
     // Idle pulse animation delay (for keyboard shortcut discoverability)
     idlePulseDelayMs: parseInt(process.env.TIMING_IDLE_PULSE_DELAY || '3000'),
 
+    // Shortcut success animation duration (for positive reinforcement)
+    shortcutSuccessDurationMs: parseInt(
+      process.env.TIMING_SHORTCUT_SUCCESS || '600'
+    ),
+
     // Navigation delays
     comparisonNavigationDelayMs: parseInt(
       process.env.TIMING_COMPARISON_NAVIGATION || '400'
