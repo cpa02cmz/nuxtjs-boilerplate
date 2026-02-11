@@ -22,6 +22,8 @@ export interface ResourceActionState {
   isCopyError: boolean
   isCopyAnimating: boolean
   copyStatus: string
+  showCopiedTooltip: boolean
+  copiedTooltipPosition: { x: number; y: number }
 }
 
 export interface UseResourceCardActionsOptions {
@@ -58,6 +60,9 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
   const isCopyAnimating = ref(false)
   const copyStatus = ref('')
   const copyErrorTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+  const showCopiedTooltip = ref(false)
+  const copiedTooltipPosition = ref({ x: 0, y: 0 })
+  let copiedTooltipTimeout: ReturnType<typeof setTimeout> | null = null
 
   // Check if resource is new (added within the configured threshold days)
   const isNew = computed(() => {
@@ -129,8 +134,16 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
   }
 
   // Copy resource URL to clipboard with visual feedback
-  const copyResourceUrl = async () => {
+  const copyResourceUrl = async (event?: MouseEvent) => {
     if (!id || isCopied.value || isCopyError.value) return
+
+    // Store click position for tooltip if event is provided
+    if (event) {
+      copiedTooltipPosition.value = {
+        x: event.clientX,
+        y: event.clientY,
+      }
+    }
 
     const resourceUrl = `${runtimeConfig.public.canonicalUrl}/resources/${id}`
     const result = await copyToClipboard(resourceUrl)
@@ -146,6 +159,15 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
       isCopyAnimating.value = true
       copyStatus.value = `Link to "${title}" copied to clipboard`
       hapticSuccess()
+
+      // Show cursor-positioned tooltip for delightful micro-UX feedback
+      showCopiedTooltip.value = true
+      if (copiedTooltipTimeout) {
+        clearTimeout(copiedTooltipTimeout)
+      }
+      copiedTooltipTimeout = setTimeout(() => {
+        showCopiedTooltip.value = false
+      }, animationConfig.copySuccess.tooltipDurationMs)
 
       const { $toast } = useNuxtApp()
       $toast.success(`Link to "${title}" copied to clipboard!`)
@@ -192,6 +214,8 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
     isCopyError,
     isCopyAnimating,
     copyStatus,
+    showCopiedTooltip,
+    copiedTooltipPosition,
     // Computed
     isNew,
     isResourceVisited,

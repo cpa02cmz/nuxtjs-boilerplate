@@ -4,6 +4,45 @@
     role="group"
     :aria-label="`Actions for ${title}`"
   >
+    <!-- Copied tooltip - appears at click position for delightful micro-UX feedback -->
+    <Transition
+      enter-active-class="transition-all duration-200 ease-out"
+      enter-from-class="opacity-0 scale-75 translate-y-2"
+      enter-to-class="opacity-100 scale-100 translate-y-0"
+      leave-active-class="transition-all duration-150 ease-in"
+      leave-from-class="opacity-100 scale-100 translate-y-0"
+      leave-to-class="opacity-0 scale-75 -translate-y-1"
+    >
+      <div
+        v-if="showCopiedTooltip"
+        class="copied-tooltip fixed z-50 px-3 py-1.5 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-lg pointer-events-none whitespace-nowrap"
+        :style="copiedTooltipStyle"
+        role="status"
+        aria-live="polite"
+      >
+        <span class="flex items-center gap-1.5">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          Copied!
+        </span>
+        <!-- Arrow pointing down -->
+        <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5">
+          <div class="w-2 h-2 bg-gray-900 transform rotate-45" />
+        </div>
+      </div>
+    </Transition>
+
     <!-- Bookmark button -->
     <ClientOnly>
       <LazyBookmarkButton
@@ -40,7 +79,7 @@
         ]"
         :aria-label="copyButtonAriaLabel"
         :title="copyButtonTitle"
-        @click="copyResourceUrl"
+        @click="copyResourceUrl($event)"
       >
         <svg
           v-if="isCopyError"
@@ -224,6 +263,8 @@ const {
   isCopyError,
   isCopyAnimating,
   copyStatus,
+  showCopiedTooltip,
+  copiedTooltipPosition,
   addResourceToComparison,
   copyResourceUrl,
 } = useResourceCardActions({
@@ -235,6 +276,13 @@ const {
   category: props.category,
   dateAdded: props.dateAdded,
 })
+
+// Computed style for the copied tooltip position - appears at click location
+const copiedTooltipStyle = computed(() => ({
+  left: `${copiedTooltipPosition.value.x}px`,
+  top: `${copiedTooltipPosition.value.y - 40}px`, // Position above the click
+  transform: 'translateX(-50%)',
+}))
 
 // Compute share URL
 const shareUrl = computed(() => {
@@ -338,6 +386,22 @@ const compareButtonTitle = computed(() => {
   .animate-check-pop,
   .animate-shake {
     animation: none;
+  }
+}
+
+/* Copied tooltip styles - Palette's micro-UX enhancement */
+.copied-tooltip {
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Reduced motion support for copied tooltip */
+@media (prefers-reduced-motion: reduce) {
+  .copied-tooltip {
+    transition: opacity 0.15s ease-out !important;
+    transform: translateX(-50%) !important;
   }
 }
 </style>
