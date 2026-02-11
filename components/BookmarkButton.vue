@@ -10,7 +10,7 @@
           'flex items-center justify-center w-10 h-10 rounded-full',
           'transition-all duration-200 ease-out',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500',
-          'active:scale-95',
+          'active:scale-95 relative overflow-hidden',
           isBookmarked
             ? 'text-yellow-500 bg-yellow-50 hover:bg-yellow-100 bookmarked'
             : 'text-gray-400 hover:text-yellow-500 hover:bg-gray-100',
@@ -20,7 +20,7 @@
           isBookmarked ? 'Remove from favorites' : 'Add to favorites'
         "
         :aria-pressed="isBookmarked"
-        @click="handleBookmarkToggle"
+        @click="handleBookmarkToggleWithRipple"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -57,7 +57,8 @@
 
 <script setup lang="ts">
 import { useBookmarks } from '~/composables/useBookmarks'
-import { computed, ref } from 'vue'
+import { useRipple } from '~/composables/useRipple'
+import { computed, ref, type Ref } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
 
@@ -84,6 +85,12 @@ const isBookmarked = computed(() =>
 const bookmarkStatus = ref('')
 const isAnimating = ref(false)
 const buttonRef = ref<HTMLButtonElement | null>(null)
+
+// Initialize ripple effect for tactile feedback
+const { createRipple } = useRipple(buttonRef as Ref<HTMLButtonElement | null>, {
+  color: 'rgba(234, 179, 8, 0.4)', // Yellow ripple for bookmark
+  duration: 500,
+})
 
 // Flexy hates hardcoded values! Using configurable animation durations.
 const { heartPopDurationMs, statusClearDelayMs } = animationConfig.bookmark
@@ -116,6 +123,15 @@ const handleBookmarkToggle = () => {
   setTimeout(() => {
     bookmarkStatus.value = ''
   }, statusClearDelayMs)
+}
+
+// Handle click with ripple effect - Palette's micro-UX touch!
+const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
+  // Create ripple effect first
+  createRipple(event)
+
+  // Then handle the bookmark toggle
+  handleBookmarkToggle(event)
 }
 </script>
 
