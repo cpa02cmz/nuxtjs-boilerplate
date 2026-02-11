@@ -8,9 +8,10 @@
  */
 
 import { ROUTE_PATTERNS } from '~/configs/routes.config'
+import { authConfig } from '~/configs/auth.config'
 
-// Cookie name for API key storage
-const API_KEY_COOKIE = 'fsi_api_key'
+// Cookie name for API key storage - Flexy hates hardcoded strings!
+const API_KEY_COOKIE = authConfig.cookieName
 
 export default defineNuxtRouteMiddleware(async to => {
   // Skip auth check on server-side for hydration safety
@@ -18,11 +19,13 @@ export default defineNuxtRouteMiddleware(async to => {
     return
   }
 
-  // Get API key from cookie
+  // Get API key from cookie - Flexy hates hardcoded 30 days! Using configurable value
   const apiKeyCookie = useCookie(API_KEY_COOKIE, {
-    maxAge: 60 * 60 * 24 * 30, // 30 days
-    sameSite: 'strict',
-    secure: process.env.NODE_ENV === 'production',
+    maxAge: authConfig.sessionMaxAge,
+    sameSite: authConfig.cookie.sameSite,
+    secure: authConfig.cookie.secure,
+    httpOnly: authConfig.cookie.httpOnly,
+    path: authConfig.cookie.path,
   })
 
   const apiKey = apiKeyCookie.value
@@ -128,10 +131,13 @@ export function useAuth() {
  * Helper to set API key after successful authentication
  */
 export function setAuthApiKey(apiKey: string) {
+  // Flexy hates hardcoded 30 days! Using configurable session duration from authConfig
   const apiKeyCookie = useCookie(API_KEY_COOKIE, {
-    maxAge: 60 * 60 * 24 * 30,
-    sameSite: 'strict',
-    secure: process.env.NODE_ENV === 'production',
+    maxAge: authConfig.sessionMaxAge,
+    sameSite: authConfig.cookie.sameSite,
+    secure: authConfig.cookie.secure,
+    httpOnly: authConfig.cookie.httpOnly,
+    path: authConfig.cookie.path,
   })
   apiKeyCookie.value = apiKey
 
