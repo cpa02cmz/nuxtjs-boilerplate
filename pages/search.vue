@@ -47,7 +47,7 @@
           v-else-if="!filteredResources.length && !loading"
           :title="contentConfig.searchResults.noResults.title"
           :description="contentConfig.searchResults.noResults.message"
-          :suggestions="['AI Tools', 'Web Hosting', 'Databases', 'APIs', 'VPS']"
+          :suggestions="contentConfig.search.suggestions.defaultSuggestions"
           show-reset
           show-browse-all
           show-tips
