@@ -1,7 +1,6 @@
 // utils/analytics.ts
 // Client-side analytics tracking utilities
 import logger from '~/utils/logger'
-import { apiConfig } from '~/configs/api.config'
 import { patternsConfig } from '~/configs/patterns.config'
 import { appConfig } from '~/configs/app.config'
 
@@ -13,6 +12,19 @@ export interface AnalyticsEvent {
   properties?: Record<string, unknown>
 }
 
+// Event queue for batching analytics events
+// BroCula fix: Prevents rate limiting by batching and debouncing events
+interface QueuedEvent {
+  event: AnalyticsEvent
+  timestamp: number
+  resolve: (value: boolean) => void
+}
+
+const eventQueue: QueuedEvent[] = []
+let flushTimeout: ReturnType<typeof setTimeout> | null = null
+const FLUSH_DELAY_MS = 2000 // Batch events over 2 seconds
+const MAX_QUEUE_SIZE = 50 // Flush if queue reaches this size (max for batch endpoint)
+
 // Get CSRF token from cookie
 function getCsrfToken(): string | null {
   if (typeof document === 'undefined') return null
@@ -20,53 +32,126 @@ function getCsrfToken(): string | null {
   return match ? match[2] : null
 }
 
-// Track an analytics event
-export async function trackEvent(event: AnalyticsEvent): Promise<boolean> {
+// Flush queued events to the server using batch endpoint
+async function flushEvents(): Promise<void> {
+  if (eventQueue.length === 0) return
+
+  // Clear existing timeout
+  if (flushTimeout) {
+    clearTimeout(flushTimeout)
+    flushTimeout = null
+  }
+
+  // Take all current events from queue
+  const eventsToSend = eventQueue.splice(0, eventQueue.length)
+
+  // Deduplicate events by type + resourceId + url combination
+  const seen = new Set<string>()
+  const deduplicated = eventsToSend.filter(({ event }) => {
+    const key = `${event.type}:${event.resourceId || ''}:${event.url || ''}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+
+  // Send all events in a single batch request
+  const csrfToken = getCsrfToken()
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
+  if (csrfToken) {
+    headers['X-CSRF-Token'] = csrfToken
+  }
+
   try {
-    // In development, log events to console
-    if (process.env.NODE_ENV === 'development') {
-      // Development logging removed for production
-    }
+    const events = deduplicated.map(({ event }) => ({
+      type: event.type,
+      resourceId: event.resourceId,
+      category: event.category,
+      url: event.url,
+      properties: event.properties,
+      timestamp: Date.now(),
+    }))
 
-    // Get CSRF token for POST request
-    const csrfToken = getCsrfToken()
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    }
-
-    if (csrfToken) {
-      headers['X-CSRF-Token'] = csrfToken
-    }
-
-    // Send the event to the analytics API
-    const response = await fetch(apiConfig.analytics.events, {
+    const response = await fetch('/api/analytics/batch', {
       method: 'POST',
       headers,
-      body: JSON.stringify(event),
+      body: JSON.stringify({ events }),
     })
 
-    // Check if response is OK before parsing JSON
     if (!response.ok) {
       const errorText = await response.text()
-      logger.error(`Analytics API error (${response.status}):`, errorText)
-      return false
+      logger.error(`Analytics batch API error (${response.status}):`, errorText)
+      // Mark all events as failed
+      deduplicated.forEach(({ resolve }) => resolve(false))
+    } else {
+      // Mark all events as successful (batch endpoint handles individual failures)
+      deduplicated.forEach(({ resolve }) => resolve(true))
     }
-
-    const result = await response.json()
-
-    if (!result.success) {
-      logger.error(
-        'Failed to track analytics event:',
-        result.message || 'Unknown error'
-      )
-      return false
-    }
-
-    return true
   } catch (error) {
-    logger.error('Error tracking analytics event:', error)
-    return false
+    logger.error('Error sending batch analytics events:', error)
+    deduplicated.forEach(({ resolve }) => resolve(false))
   }
+}
+
+// Schedule a flush of the event queue
+function scheduleFlush(): void {
+  if (flushTimeout) return
+
+  flushTimeout = setTimeout(() => {
+    flushEvents()
+  }, FLUSH_DELAY_MS)
+}
+
+// Flush events before page unload to prevent data loss
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    if (eventQueue.length > 0) {
+      // Use sendBeacon for reliable delivery during page unload
+      const csrfToken = getCsrfToken()
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      }
+      if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken
+      }
+
+      const events = eventQueue.map(({ event }) => ({
+        type: event.type,
+        resourceId: event.resourceId,
+        category: event.category,
+        url: event.url,
+        properties: event.properties,
+        timestamp: Date.now(),
+      }))
+
+      const blob = new Blob([JSON.stringify({ events })], {
+        type: 'application/json',
+      })
+      navigator.sendBeacon('/api/analytics/batch', blob)
+    }
+  })
+}
+
+// Track an analytics event
+// BroCula fix: Events are now queued and batched to prevent rate limiting
+export async function trackEvent(event: AnalyticsEvent): Promise<boolean> {
+  return new Promise(resolve => {
+    // Add event to queue
+    eventQueue.push({
+      event,
+      timestamp: Date.now(),
+      resolve,
+    })
+
+    // Flush immediately if queue is full
+    if (eventQueue.length >= MAX_QUEUE_SIZE) {
+      flushEvents()
+    } else {
+      // Otherwise schedule a flush
+      scheduleFlush()
+    }
+  })
 }
 
 // Track a page view
