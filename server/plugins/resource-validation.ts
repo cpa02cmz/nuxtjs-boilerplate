@@ -7,7 +7,6 @@ import { defineNitroPlugin } from 'nitropack/runtime'
 import { updateAllResourceHealth } from '../utils/resourceHealth'
 import logger from '~/utils/logger'
 import { timeConfig } from '~/configs/time.config'
-import { contentConfig } from '~/configs/content.config'
 
 // Extended NitroApp interface for resource validation
 interface ExtendedNitroApp {
@@ -28,13 +27,15 @@ export default defineNitroPlugin(async nitroApp => {
   // Function to validate all resources
   const validateAllResources = async () => {
     try {
-      // Import resources from JSON (use relative path for server-side dynamic import)
-      const resourcesDataPath = contentConfig.paths.resourcesData.replace(
-        /^~\//,
-        '../../data/'
-      )
-      const resourcesModule = await import(resourcesDataPath)
-      const resources = resourcesModule.default || resourcesModule
+      // Import resources from JSON using fs instead of dynamic import
+      // This avoids SSR path resolution issues during prerender
+      const { readFileSync } = await import('fs')
+      const { resolve } = await import('path')
+
+      // Resolve path relative to project root
+      const resourcesPath = resolve(process.cwd(), 'data/resources.json')
+      const fileContent = readFileSync(resourcesPath, 'utf-8')
+      const resources = JSON.parse(fileContent)
 
       if (Array.isArray(resources) && resources.length > 0) {
         if (process.env.NODE_ENV !== 'production') {
@@ -51,7 +52,7 @@ export default defineNitroPlugin(async nitroApp => {
       }
     } catch (error) {
       // Log errors using structured logging
-      logger.error('Error during resource validation:', error)
+      logger.error('[ERROR] Error during resource validation:', error)
     }
   }
 
