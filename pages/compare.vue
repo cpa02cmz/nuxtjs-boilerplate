@@ -8,10 +8,10 @@
       />
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          Resource Comparison
+          {{ contentConfig.comparePage.title }}
         </h1>
         <p class="mt-2 text-gray-600 dark:text-gray-400">
-          Compare resources side-by-side to make informed decisions
+          {{ contentConfig.comparePage.subtitle }}
         </p>
       </div>
 
@@ -66,14 +66,12 @@ watch(
   }
 )
 
-// Page metadata
+// Page metadata - Flexy hates hardcoded SEO!
 useSeoMeta({
-  title: 'Resource Comparison Tool - Compare Side-by-Side',
-  description:
-    'Compare multiple resources side-by-side to make informed decisions. Find the best alternatives and evaluate features, pricing, and more.',
-  ogTitle: 'Resource Comparison Tool',
-  ogDescription:
-    'Compare multiple resources side-by-side to make informed decisions',
+  title: contentConfig.comparePage.seo.title,
+  description: contentConfig.comparePage.seo.description,
+  ogTitle: contentConfig.comparePage.title,
+  ogDescription: contentConfig.comparePage.seo.description,
   ogType: 'website',
   ogUrl: ROUTE_PATTERNS.pages.compare,
 })

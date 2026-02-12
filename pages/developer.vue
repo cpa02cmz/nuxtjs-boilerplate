@@ -3,126 +3,166 @@
     <div class="max-w-4xl mx-auto px-4">
       <div class="bg-white rounded-lg shadow-md p-6">
         <h1 class="text-3xl font-bold text-gray-800 mb-6">
-          Developer Portal
+          {{ contentConfig.developerPage.title }}
         </h1>
 
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-gray-700 mb-4">
-            Getting Started
+            {{ contentConfig.developerPage.sections.gettingStarted.title }}
           </h2>
           <p class="text-gray-600 mb-4">
-            Welcome to the Free Stuff on the Internet API! Our API allows you to
-            access and interact with our collection of free resources
-            programmatically.
+            {{
+              contentConfig.developerPage.sections.gettingStarted.description
+            }}
           </p>
 
           <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
             <h3 class="font-medium text-blue-800 mb-2">
-              Base URL
+              {{
+                contentConfig.developerPage.sections.gettingStarted.baseUrl
+                  .label
+              }}
             </h3>
             <p class="font-mono text-sm bg-white p-2 rounded">
-              https://yourdomain.com/api
+              {{
+                contentConfig.developerPage.sections.gettingStarted.baseUrl.url
+              }}
             </p>
           </div>
         </section>
 
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-gray-700 mb-4">
-            Authentication
+            {{ contentConfig.developerPage.sections.authentication.title }}
           </h2>
           <p class="text-gray-600 mb-4">
-            To use the API, you need to include your API key in the request
-            headers.
+            {{
+              contentConfig.developerPage.sections.authentication.description
+            }}
           </p>
 
           <div class="bg-gray-100 rounded-md p-4 mb-4">
             <h3 class="font-medium text-gray-800 mb-2">
-              Header Format
+              {{
+                contentConfig.developerPage.sections.authentication.headerFormat
+              }}
             </h3>
-            <pre class="font-mono text-sm bg-white p-3 rounded overflow-x-auto">
-X-API-Key: your-api-key-here</pre>
+            <pre
+              class="font-mono text-sm bg-white p-3 rounded overflow-x-auto"
+            >{{
+                contentConfig.developerPage.sections.authentication.example
+            }}</pre>
           </div>
 
           <button
             class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
             @click="goToApiKeys"
           >
-            Manage API Keys
+            {{
+              contentConfig.developerPage.sections.authentication.manageButton
+            }}
           </button>
         </section>
 
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-gray-700 mb-4">
-            API Examples
+            {{ contentConfig.developerPage.sections.apiExamples.title }}
           </h2>
 
           <div class="mb-6">
             <h3 class="font-medium text-gray-800 mb-2">
-              Get Resources
+              {{
+                contentConfig.developerPage.sections.apiExamples.getResources
+                  .title
+              }}
             </h3>
             <div class="bg-gray-100 rounded-md p-4">
               <pre
                 class="font-mono text-sm bg-white p-3 rounded overflow-x-auto"
-              >
-curl -X GET \
-  -H "X-API-Key: your-api-key-here" \
-  "https://yourdomain.com/api/v1/resources?limit=10&category=tools"</pre>
+              >{{
+                  contentConfig.developerPage.sections.apiExamples.getResources
+                    .code
+              }}</pre>
             </div>
           </div>
 
           <div class="mb-6">
             <h3 class="font-medium text-gray-800 mb-2">
-              Search Resources
+              {{
+                contentConfig.developerPage.sections.apiExamples.searchResources
+                  .title
+              }}
             </h3>
             <div class="bg-gray-100 rounded-md p-4">
               <pre
                 class="font-mono text-sm bg-white p-3 rounded overflow-x-auto"
-              >
-curl -X GET \
-  -H "X-API-Key: your-api-key-here" \
-  "https://yourdomain.com/api/v1/search?q=hosting&pricing=Free"</pre>
+              >{{
+                  contentConfig.developerPage.sections.apiExamples
+                    .searchResources.code
+              }}</pre>
             </div>
           </div>
 
           <div class="mb-6">
             <h3 class="font-medium text-gray-800 mb-2">
-              Submit a Resource
+              {{
+                contentConfig.developerPage.sections.apiExamples.submitResource
+                  .title
+              }}
             </h3>
             <div class="bg-gray-100 rounded-md p-4">
               <pre
                 class="font-mono text-sm bg-white p-3 rounded overflow-x-auto"
-              >
-curl -X POST \
-  -H "X-API-Key: your-api-key-here" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "My Resource",
-    "description": "A brief description of my resource",
-    "url": "https://example.com",
-    "category": "Tools"
-  }' \
-  "https://yourdomain.com/api/submissions"</pre>
+              >{{
+                  contentConfig.developerPage.sections.apiExamples
+                    .submitResource.code
+              }}</pre>
             </div>
           </div>
         </section>
 
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-gray-700 mb-4">
-            Rate Limiting
+            {{ contentConfig.developerPage.sections.rateLimiting.title }}
           </h2>
           <p class="text-gray-600 mb-4">
-            Our API implements rate limiting to ensure fair usage. Each API key
-            has its own rate limits:
+            {{ contentConfig.developerPage.sections.rateLimiting.description }}
           </p>
 
           <ul class="list-disc pl-6 text-gray-600 space-y-2">
-            <li><strong>General requests</strong>: 100 requests per minute</li>
             <li>
-              <strong>Search requests</strong>: 50 requests per minute (more
-              restrictive due to resource usage)
+              <strong>{{
+                contentConfig.developerPage.sections.rateLimiting.limits.general
+                  .label
+              }}</strong>:
+              {{
+                contentConfig.developerPage.sections.rateLimiting.limits.general
+                  .value
+              }}
             </li>
             <li>
-              <strong>Submission requests</strong>: 10 requests per minute
+              <strong>{{
+                contentConfig.developerPage.sections.rateLimiting.limits.search
+                  .label
+              }}</strong>:
+              {{
+                contentConfig.developerPage.sections.rateLimiting.limits.search
+                  .value
+              }}
+              {{
+                contentConfig.developerPage.sections.rateLimiting.limits.search
+                  .note
+              }}
+            </li>
+            <li>
+              <strong>{{
+                contentConfig.developerPage.sections.rateLimiting.limits
+                  .submission.label
+              }}</strong>:
+              {{
+                contentConfig.developerPage.sections.rateLimiting.limits
+                  .submission.value
+              }}
             </li>
           </ul>
 
@@ -130,58 +170,79 @@ curl -X POST \
             class="mt-4 bg-yellow-50 border border-yellow-200 rounded-md p-4"
           >
             <h3 class="font-medium text-yellow-800 mb-2">
-              Rate Limit Headers
+              {{
+                contentConfig.developerPage.sections.rateLimiting.headers.title
+              }}
             </h3>
             <p class="text-sm text-gray-700">
-              Rate limit responses include headers:
-              <code class="font-mono">X-RateLimit-Limit</code>,
-              <code class="font-mono">X-RateLimit-Remaining</code>, and
-              <code class="font-mono">X-RateLimit-Reset</code>.
+              {{
+                contentConfig.developerPage.sections.rateLimiting.headers
+                  .description
+              }}
+              <code
+                v-for="(header, index) in contentConfig.developerPage.sections
+                  .rateLimiting.headers.headers"
+                :key="header"
+                class="font-mono"
+              >
+                {{ header
+                }}<template
+                  v-if="
+                    index <
+                      contentConfig.developerPage.sections.rateLimiting.headers
+                        .headers.length -
+                      1
+                  "
+                >,
+                </template> </code>.
             </p>
           </div>
         </section>
 
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-gray-700 mb-4">
-            Error Handling
+            {{ contentConfig.developerPage.sections.errorHandling.title }}
           </h2>
           <p class="text-gray-600 mb-4">
-            The API returns standard HTTP status codes and error responses:
+            {{ contentConfig.developerPage.sections.errorHandling.description }}
           </p>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="border border-gray-200 rounded-md p-4">
               <h3 class="font-medium text-gray-800 mb-2">
-                Success Response
+                {{
+                  contentConfig.developerPage.sections.errorHandling
+                    .successExample.title
+                }}
               </h3>
               <pre
                 class="font-mono text-xs bg-white p-2 rounded overflow-x-auto"
-              >
-{
-  "success": true,
-  "data": { ... }
-}</pre>
+              >{{
+                  contentConfig.developerPage.sections.errorHandling
+                    .successExample.code
+              }}</pre>
             </div>
 
             <div class="border border-gray-200 rounded-md p-4">
               <h3 class="font-medium text-gray-800 mb-2">
-                Error Response
+                {{
+                  contentConfig.developerPage.sections.errorHandling
+                    .errorExample.title
+                }}
               </h3>
               <pre
                 class="font-mono text-xs bg-white p-2 rounded overflow-x-auto"
-              >
-{
-  "success": false,
-  "message": "Error message",
-  "error": "Detailed error"
-}</pre>
+              >{{
+                  contentConfig.developerPage.sections.errorHandling
+                    .errorExample.code
+              }}</pre>
             </div>
           </div>
         </section>
 
         <section>
           <h2 class="text-xl font-semibold text-gray-700 mb-4">
-            API Documentation
+            {{ contentConfig.developerPage.sections.apiDocumentation.title }}
           </h2>
           <div class="flex flex-col sm:flex-row gap-4">
             <a
@@ -189,13 +250,18 @@ curl -X POST \
               target="_blank"
               class="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-center"
             >
-              Interactive API Documentation
+              {{
+                contentConfig.developerPage.sections.apiDocumentation
+                  .interactiveButton
+              }}
             </a>
             <a
               href="/api-keys"
               class="px-6 py-3 bg-gray-800 text-white rounded-md hover:bg-gray-900 text-center"
             >
-              API Key Management
+              {{
+                contentConfig.developerPage.sections.apiDocumentation.keysButton
+              }}
             </a>
           </div>
         </section>
@@ -205,17 +271,18 @@ curl -X POST \
 </template>
 
 <script setup lang="ts">
+import { contentConfig } from '~/configs/content.config'
+
 const goToApiKeys = () => {
   navigateTo('/api-keys')
 }
 
 useHead({
-  title: 'Developer Portal - Free Stuff on the Internet',
+  title: contentConfig.developerPage.seo.title,
   meta: [
     {
       name: 'description',
-      content:
-        'Developer documentation and API access for Free Stuff on the Internet',
+      content: contentConfig.developerPage.seo.description,
     },
   ],
 })

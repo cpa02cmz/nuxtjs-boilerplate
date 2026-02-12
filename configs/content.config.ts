@@ -268,6 +268,188 @@ export const contentConfig = {
     },
   },
 
+  // AI Keys Page - Flexy hates hardcoded AI keys page content!
+  aiKeysPage: {
+    title: process.env.CONTENT_AI_KEYS_TITLE || 'Free AI API Keys',
+    subtitle:
+      process.env.CONTENT_AI_KEYS_SUBTITLE ||
+      'Access powerful AI models with these free API keys and tools',
+    emptyState: {
+      title: process.env.CONTENT_AI_KEYS_EMPTY_TITLE || 'No AI resources found',
+      description:
+        process.env.CONTENT_AI_KEYS_EMPTY_DESC ||
+        'Try adjusting your search or filter criteria',
+      resetButton: process.env.CONTENT_AI_KEYS_RESET_BTN || 'Reset Filters',
+    },
+    loading: {
+      ariaLabel:
+        process.env.CONTENT_AI_KEYS_LOADING_ARIA || 'Loading AI API keys',
+    },
+    buttonLabels: {
+      exploreAITools:
+        process.env.CONTENT_AI_KEYS_BTN_AI_TOOLS || 'Explore AI Tools',
+      getVPS: process.env.CONTENT_AI_KEYS_BTN_VPS || 'Get VPS',
+      findHosting: process.env.CONTENT_AI_KEYS_BTN_HOSTING || 'Find Hosting',
+      exploreDatabases:
+        process.env.CONTENT_AI_KEYS_BTN_DATABASES || 'Explore Databases',
+      getCDN: process.env.CONTENT_AI_KEYS_BTN_CDN || 'Get CDN',
+      default: process.env.CONTENT_AI_KEYS_BTN_DEFAULT || 'Get Free Access',
+    },
+    seo: {
+      title:
+        process.env.CONTENT_AI_KEYS_SEO_TITLE ||
+        'Free AI API Keys - Free Stuff on Internet',
+      description:
+        process.env.CONTENT_AI_KEYS_SEO_DESC ||
+        'Access powerful AI models with these free API keys and tools. Discover OpenAI, Hugging Face, Google AI Studio, and more free AI resources.',
+    },
+  },
+
+  // Developer Page - Flexy hates hardcoded developer documentation!
+  developerPage: {
+    title: process.env.CONTENT_DEV_TITLE || 'Developer Portal',
+    sections: {
+      gettingStarted: {
+        title:
+          process.env.CONTENT_DEV_GETTING_STARTED_TITLE || 'Getting Started',
+        description:
+          process.env.CONTENT_DEV_GETTING_STARTED_DESC ||
+          'Welcome to the Free Stuff on the Internet API! Our API allows you to access and interact with our collection of free resources programmatically.',
+        baseUrl: {
+          label: process.env.CONTENT_DEV_BASE_URL_LABEL || 'Base URL',
+          url: process.env.CONTENT_DEV_BASE_URL || 'https://yourdomain.com/api',
+        },
+      },
+      authentication: {
+        title: process.env.CONTENT_DEV_AUTH_TITLE || 'Authentication',
+        description:
+          process.env.CONTENT_DEV_AUTH_DESC ||
+          'To use the API, you need to include your API key in the request headers.',
+        headerFormat: process.env.CONTENT_DEV_AUTH_HEADER || 'Header Format',
+        example: 'X-API-Key: your-api-key-here',
+        manageButton:
+          process.env.CONTENT_DEV_MANAGE_KEYS_BTN || 'Manage API Keys',
+      },
+      apiExamples: {
+        title: process.env.CONTENT_DEV_API_EXAMPLES_TITLE || 'API Examples',
+        getResources: {
+          title: process.env.CONTENT_DEV_GET_RESOURCES_TITLE || 'Get Resources',
+          code:
+            process.env.CONTENT_DEV_GET_RESOURCES_CODE ||
+            `curl -X GET \\\n  -H "X-API-Key: your-api-key-here" \\\n  "https://yourdomain.com/api/v1/resources?limit=10&category=tools"`,
+        },
+        searchResources: {
+          title:
+            process.env.CONTENT_DEV_SEARCH_RESOURCES_TITLE ||
+            'Search Resources',
+          code:
+            process.env.CONTENT_DEV_SEARCH_RESOURCES_CODE ||
+            `curl -X GET \\\n  -H "X-API-Key: your-api-key-here" \\\n  "https://yourdomain.com/api/v1/search?q=hosting&pricing=Free"`,
+        },
+        submitResource: {
+          title:
+            process.env.CONTENT_DEV_SUBMIT_RESOURCE_TITLE ||
+            'Submit a Resource',
+          code:
+            process.env.CONTENT_DEV_SUBMIT_RESOURCE_CODE ||
+            `curl -X POST \\\n  -H "X-API-Key: your-api-key-here" \\\n  -H "Content-Type: application/json" \\\n  -d '{\n    "title": "My Resource",\n    "description": "A brief description of my resource",\n    "url": "https://example.com",\n    "category": "Tools"\n  }' \\\n  "https://yourdomain.com/api/submissions"`,
+        },
+      },
+      rateLimiting: {
+        title: process.env.CONTENT_DEV_RATE_LIMIT_TITLE || 'Rate Limiting',
+        description:
+          process.env.CONTENT_DEV_RATE_LIMIT_DESC ||
+          'Our API implements rate limiting to ensure fair usage. Each API key has its own rate limits:',
+        limits: {
+          general: {
+            label:
+              process.env.CONTENT_DEV_RATE_GENERAL_LABEL || 'General requests',
+            value:
+              process.env.CONTENT_DEV_RATE_GENERAL_VALUE ||
+              '100 requests per minute',
+          },
+          search: {
+            label:
+              process.env.CONTENT_DEV_RATE_SEARCH_LABEL || 'Search requests',
+            value:
+              process.env.CONTENT_DEV_RATE_SEARCH_VALUE ||
+              '50 requests per minute',
+            note:
+              process.env.CONTENT_DEV_RATE_SEARCH_NOTE ||
+              '(more restrictive due to resource usage)',
+          },
+          submission: {
+            label:
+              process.env.CONTENT_DEV_RATE_SUBMISSION_LABEL ||
+              'Submission requests',
+            value:
+              process.env.CONTENT_DEV_RATE_SUBMISSION_VALUE ||
+              '10 requests per minute',
+          },
+        },
+        headers: {
+          title:
+            process.env.CONTENT_DEV_RATE_HEADERS_TITLE || 'Rate Limit Headers',
+          description:
+            process.env.CONTENT_DEV_RATE_HEADERS_DESC ||
+            'Rate limit responses include headers:',
+          headers: [
+            'X-RateLimit-Limit',
+            'X-RateLimit-Remaining',
+            'X-RateLimit-Reset',
+          ],
+        },
+      },
+      errorHandling: {
+        title: process.env.CONTENT_DEV_ERROR_HANDLING_TITLE || 'Error Handling',
+        description:
+          process.env.CONTENT_DEV_ERROR_HANDLING_DESC ||
+          'The API returns standard HTTP status codes and error responses:',
+        successExample: {
+          title:
+            process.env.CONTENT_DEV_SUCCESS_EXAMPLE_TITLE || 'Success Response',
+          code: '{\n  "success": true,\n  "data": { ... }\n}',
+        },
+        errorExample: {
+          title:
+            process.env.CONTENT_DEV_ERROR_EXAMPLE_TITLE || 'Error Response',
+          code: '{\n  "success": false,\n  "message": "Error message",\n  "error": "Detailed error"\n}',
+        },
+      },
+      apiDocumentation: {
+        title: process.env.CONTENT_DEV_API_DOCS_TITLE || 'API Documentation',
+        interactiveButton:
+          process.env.CONTENT_DEV_INTERACTIVE_BTN ||
+          'Interactive API Documentation',
+        keysButton: process.env.CONTENT_DEV_KEYS_BTN || 'API Key Management',
+      },
+    },
+    seo: {
+      title:
+        process.env.CONTENT_DEV_SEO_TITLE ||
+        'Developer Portal - Free Stuff on the Internet',
+      description:
+        process.env.CONTENT_DEV_SEO_DESC ||
+        'Developer documentation and API access for Free Stuff on the Internet',
+    },
+  },
+
+  // Compare Page - Flexy hates hardcoded page titles!
+  comparePage: {
+    title: process.env.CONTENT_COMPARE_TITLE || 'Resource Comparison',
+    subtitle:
+      process.env.CONTENT_COMPARE_SUBTITLE ||
+      'Compare resources side-by-side to make informed decisions',
+    seo: {
+      title:
+        process.env.CONTENT_COMPARE_SEO_TITLE ||
+        'Resource Comparison Tool - Compare Side-by-Side',
+      description:
+        process.env.CONTENT_COMPARE_SEO_DESC ||
+        'Compare multiple resources side-by-side to make informed decisions. Find the best alternatives and evaluate features, pricing, and more.',
+    },
+  },
+
   // Comparison
   comparison: {
     title: process.env.CONTENT_COMPARISON_TITLE || 'Compare Resources',

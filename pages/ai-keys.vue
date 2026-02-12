@@ -3,10 +3,10 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-          Free AI API Keys
+          {{ contentConfig.aiKeysPage.title }}
         </h1>
         <p class="mt-4 text-xl text-gray-500">
-          Access powerful AI models with these free API keys and tools
+          {{ contentConfig.aiKeysPage.subtitle }}
         </p>
       </div>
 
@@ -26,7 +26,7 @@
         <div
           class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-800"
           role="status"
-          aria-label="Loading AI API keys"
+          :aria-label="contentConfig.aiKeysPage.loading.ariaLabel"
         />
       </div>
 
@@ -89,16 +89,16 @@
           class="text-center py-12"
         >
           <h3 class="text-xl font-medium text-gray-900 mb-2">
-            No AI resources found
+            {{ contentConfig.aiKeysPage.emptyState.title }}
           </h3>
           <p class="text-gray-500 mb-6">
-            Try adjusting your search or filter criteria
+            {{ contentConfig.aiKeysPage.emptyState.description }}
           </p>
           <button
             class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900"
             @click="resetAllFilters"
           >
-            Reset Filters
+            {{ contentConfig.aiKeysPage.emptyState.resetButton }}
           </button>
         </div>
       </div>
@@ -111,6 +111,7 @@ import { useAIResources } from '~/composables/useAIResources'
 import { useUrlSync } from '~/composables/useUrlSync'
 import ResourceSort from '~/components/ResourceSort.vue'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
+import { contentConfig } from '~/configs/content.config'
 
 definePageMeta({
   layout: 'default',
@@ -118,12 +119,10 @@ definePageMeta({
 
 const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
-  title: 'Free AI API Keys - Free Stuff on Internet',
-  ogTitle: 'Free AI API Keys - Free Stuff on Internet',
-  description:
-    'Access powerful AI models with these free API keys and tools. Discover OpenAI, Hugging Face, Google AI Studio, and more free AI resources.',
-  ogDescription:
-    'Access powerful AI models with these free API keys and tools. Discover OpenAI, Hugging Face, Google AI Studio, and more free AI resources.',
+  title: contentConfig.aiKeysPage.seo.title,
+  ogTitle: contentConfig.aiKeysPage.seo.title,
+  description: contentConfig.aiKeysPage.seo.description,
+  ogDescription: contentConfig.aiKeysPage.seo.description,
   ogImage: '/og-image.jpg',
   ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || DEFAULT_DEV_URL}/ai-keys`,
   twitterCard: 'summary_large_image',
@@ -162,20 +161,22 @@ const resetAllFilters = () => {
   searchQuery.value = ''
 }
 
+// Flexy hates hardcoded button labels! Use config instead
 const getButtonLabel = (category: string) => {
+  const labels = contentConfig.aiKeysPage.buttonLabels
   switch (category.toLowerCase()) {
     case 'ai tools':
-      return 'Explore AI Tools'
+      return labels.exploreAITools
     case 'vps':
-      return 'Get VPS'
+      return labels.getVPS
     case 'web hosting':
-      return 'Find Hosting'
+      return labels.findHosting
     case 'databases':
-      return 'Explore Databases'
+      return labels.exploreDatabases
     case 'cdn':
-      return 'Get CDN'
+      return labels.getCDN
     default:
-      return 'Get Free Access'
+      return labels.default
   }
 }
 </script>
