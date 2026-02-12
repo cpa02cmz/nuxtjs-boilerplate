@@ -132,13 +132,14 @@ export class WebhookDeliveryService {
       updatedAt: new Date().toISOString(),
     }
 
-    await webhookStorage.createDelivery(delivery)
-
+    // Atomically create delivery and store idempotency key to prevent duplicate deliveries
     if (payload.idempotencyKey) {
-      await webhookStorage.setDeliveryByIdempotencyKey(
-        payload.idempotencyKey,
-        delivery
+      await webhookStorage.createDeliveryWithIdempotencyKey(
+        delivery,
+        payload.idempotencyKey
       )
+    } else {
+      await webhookStorage.createDelivery(delivery)
     }
 
     await webhookStorage.updateWebhook(webhook.id, {

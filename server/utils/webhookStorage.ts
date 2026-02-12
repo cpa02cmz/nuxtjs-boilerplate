@@ -639,6 +639,53 @@ export const webhookStorage = {
     }
   },
 
+  /**
+   * Atomically create delivery and set idempotency key
+   * Prevents race conditions where delivery is created but idempotency key is not set
+   */
+  async createDeliveryWithIdempotencyKey(
+    delivery: WebhookDelivery,
+    idempotencyKey: string
+  ): Promise<WebhookDelivery> {
+    try {
+      return await prisma.$transaction(async tx => {
+        // Create the delivery record
+        const created = await tx.webhookDelivery.create({
+          data: {
+            id: delivery.id,
+            webhookId: delivery.webhookId,
+            event: delivery.event,
+            payload: JSON.stringify(delivery.payload),
+            status: delivery.status,
+            statusCode: delivery.statusCode,
+            responseBody: delivery.responseBody
+              ? JSON.stringify(delivery.responseBody)
+              : null,
+            errorMessage: delivery.errorMessage,
+            attemptCount: delivery.attemptCount,
+            idempotencyKey: idempotencyKey,
+          },
+        })
+
+        // Store idempotency key reference atomically
+        await tx.idempotencyKey.upsert({
+          where: { key: idempotencyKey },
+          create: {
+            key: idempotencyKey,
+            deliveryId: delivery.id,
+          },
+          update: {
+            deliveryId: delivery.id,
+          },
+        })
+
+        return mapPrismaToWebhookDelivery(created)
+      })
+    } catch (error) {
+      handleStorageError('create delivery with idempotency key', error)
+    }
+  },
+
   // Idempotency methods
   async getDeliveryByIdempotencyKey(key: string) {
     try {
