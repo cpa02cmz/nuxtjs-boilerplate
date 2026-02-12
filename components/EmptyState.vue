@@ -91,7 +91,7 @@
           v-for="(suggestion, index) in suggestions"
           :key="index"
           :aria-label="`Search for ${suggestion}`"
-          class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 hover:scale-105 active:scale-95 active:bg-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
           :style="{
             animationDelay: `${index * animationConfig.emptyStateStagger.baseDelayMs}ms`,
           }"
@@ -141,7 +141,7 @@
 
       <button
         v-if="showBrowseAll"
-        class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-transparent hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
+        class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-transparent hover:bg-gray-50 hover:border-gray-400 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
         @click="$emit('browse-all')"
       >
         <svg
