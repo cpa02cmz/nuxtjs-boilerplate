@@ -1,7 +1,11 @@
 <template>
   <div>
     <Tooltip
-      :content="isBookmarked ? 'Remove from favorites' : 'Add to favorites'"
+      :content="
+        isBookmarked
+          ? contentConfig.bookmarkButton.tooltip.remove
+          : contentConfig.bookmarkButton.tooltip.add
+      "
       position="top"
     >
       <button
@@ -17,7 +21,9 @@
           isAnimating && 'animate-bounce-scale',
         ]"
         :aria-label="
-          isBookmarked ? 'Remove from favorites' : 'Add to favorites'
+          isBookmarked
+            ? contentConfig.bookmarkButton.aria.remove
+            : contentConfig.bookmarkButton.aria.add
         "
         :aria-pressed="isBookmarked"
         @click="handleBookmarkToggleWithRipple"
@@ -62,6 +68,7 @@ import { useNuxtApp } from '#imports'
 import { computed, ref, onUnmounted, type Ref } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { iconsConfig } from '~/configs/icons.config'
+import { contentConfig } from '~/configs/content.config'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -118,12 +125,19 @@ const handleBookmarkToggle = () => {
     // Haptic feedback for adding bookmark
     hapticSuccess()
     // Show toast notification for better UX
-    $toast.success(`"${props.title}" added to favorites`)
+    $toast.success(
+      contentConfig.bookmarkButton.toast.added.replace('{{title}}', props.title)
+    )
   } else {
     // Light haptic for removing bookmark
     hapticLight()
     // Show toast notification for better UX
-    $toast.info(`"${props.title}" removed from favorites`)
+    $toast.info(
+      contentConfig.bookmarkButton.toast.removed.replace(
+        '{{title}}',
+        props.title
+      )
+    )
   }
 
   toggleBookmark({
@@ -133,7 +147,9 @@ const handleBookmarkToggle = () => {
     url: props.url,
   })
 
-  bookmarkStatus.value = wasBookmarked ? 'Bookmark removed' : 'Bookmark added'
+  bookmarkStatus.value = wasBookmarked
+    ? contentConfig.bookmarkButton.status.removed
+    : contentConfig.bookmarkButton.status.added
 
   // Tracked for cleanup - preventing memory leaks (Issue #1826)
   if (statusTimeout) clearTimeout(statusTimeout)

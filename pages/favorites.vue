@@ -509,9 +509,12 @@ const removeBookmark = (resourceId: string) => {
   startUndoProgress()
 
   // Show simple toast notification - Flexy uses config!
-  $toast.info(`"${bookmark.title}" removed`, {
-    duration: bookmarksConfig.toast.removeDurationMs,
-  })
+  $toast.info(
+    contentConfig.favorites.toast.removed.replace('{{title}}', bookmark.title),
+    {
+      duration: bookmarksConfig.toast.removeDurationMs,
+    }
+  )
 }
 
 /**
@@ -548,9 +551,14 @@ const undoAllDeletions = () => {
   // Show success toast - Flexy uses config!
   const count = bookmarksToRestore.length
   $toast.success(
-    count === 1 ? 'Bookmark restored' : `${count} bookmarks restored`,
+    count === 1
+      ? contentConfig.favorites.toast.restored
+      : contentConfig.favorites.toast.multipleRestored.replace(
+          '{{count}}',
+          String(count)
+        ),
     {
-      description: 'All items have been added back',
+      description: contentConfig.favorites.toast.restoredDescription,
       duration: bookmarksConfig.toast.undoSuccessDurationMs,
     }
   )
