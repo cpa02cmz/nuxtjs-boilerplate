@@ -4,25 +4,36 @@
     :class="{
       'loading-spinner--small': size === 'small',
       'loading-spinner--large': size === 'large',
+      'loading-spinner--glow': showGlow,
     }"
     role="status"
     :aria-label="label || config.default"
   >
-    <svg
-      class="loading-spinner__circular"
-      :viewBox="`${spinnerStyles.svg.viewBoxMin} ${spinnerStyles.svg.viewBoxMin} ${spinnerStyles.svg.viewBoxMax} ${spinnerStyles.svg.viewBoxMax}`"
+    <!-- Shimmer Glow Effect - Palette's micro-UX delight! -->
+    <div
+      v-if="showGlow && !prefersReducedMotion"
+      class="loading-spinner__glow"
       aria-hidden="true"
-    >
-      <circle
-        :cx="spinnerStyles.svg.circleCx"
-        :cy="spinnerStyles.svg.circleCy"
-        :r="spinnerStyles.svg.circleR"
-        fill="none"
-        :stroke-width="spinnerStyles.svg.strokeWidth"
-        stroke-miterlimit="10"
-        class="loading-spinner__path"
-      />
-    </svg>
+    />
+
+    <div class="loading-spinner__container">
+      <svg
+        class="loading-spinner__circular"
+        :viewBox="`${spinnerStyles.svg.viewBoxMin} ${spinnerStyles.svg.viewBoxMin} ${spinnerStyles.svg.viewBoxMax} ${spinnerStyles.svg.viewBoxMax}`"
+        aria-hidden="true"
+      >
+        <circle
+          :cx="spinnerStyles.svg.circleCx"
+          :cy="spinnerStyles.svg.circleCy"
+          :r="spinnerStyles.svg.circleR"
+          fill="none"
+          :stroke-width="spinnerStyles.svg.strokeWidth"
+          stroke-miterlimit="10"
+          class="loading-spinner__path"
+        />
+      </svg>
+    </div>
+
     <span
       v-if="label"
       class="loading-spinner__label"
@@ -46,11 +57,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { themeConfig } from '../configs/theme.config'
 import { componentStylesConfig } from '../configs/component-styles.config'
 import { limitsConfig } from '../configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
+import { animationConfig } from '~/configs/animation.config'
 
 // Flexy hates hardcoded values! Using config instead.
 const spinnerStyles = componentStylesConfig.loadingSpinner
@@ -69,6 +81,8 @@ interface Props {
   state?: 'loading' | 'complete' | 'error' | null
   /** Custom message to announce when state changes. Overrides default messages. */
   customMessage?: string
+  /** Enable shimmer glow effect around the spinner */
+  glow?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -76,6 +90,7 @@ const props = withDefaults(defineProps<Props>(), {
   size: 'medium',
   state: null,
   customMessage: undefined,
+  glow: true,
 })
 
 // Generate unique ID for this spinner instance using configurable length
@@ -87,6 +102,22 @@ const uniqueId = ref(
 
 // Track the last announced state to prevent duplicate announcements
 const lastAnnouncedState = ref<string | null>(null)
+
+// Check for reduced motion preference
+const prefersReducedMotion = ref(false)
+
+// Check reduced motion preference on mount
+onMounted(() => {
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.value = mediaQuery.matches
+  }
+})
+
+// Show glow when enabled and not in reduced motion
+const showGlow = computed(() => {
+  return props.glow && animationConfig.spinnerGlow.respectReducedMotion
+})
 
 // Computed status message based on state
 const statusMessage = computed(() => {
@@ -131,6 +162,7 @@ watch(
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  position: relative;
 }
 
 .loading-spinner--small .loading-spinner__circular {
@@ -148,6 +180,11 @@ watch(
   height: v-bind('spinnerStyles.sizes.large.height');
 }
 
+.loading-spinner__container {
+  position: relative;
+  z-index: 1;
+}
+
 .loading-spinner__circular {
   animation: rotate v-bind('spinnerStyles.animation.rotationDuration') linear
     infinite;
@@ -160,6 +197,53 @@ watch(
   stroke-linecap: round;
   animation: dash v-bind('spinnerStyles.animation.dashDuration') ease-in-out
     infinite;
+}
+
+/* Shimmer Glow Effect - Palette's micro-UX delight!
+   Adds a subtle pulsing glow around the loading spinner */
+.loading-spinner__glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: v-bind('spinnerStyles.sizes.medium.width');
+  height: v-bind('spinnerStyles.sizes.medium.height');
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: spinner-glow-pulse
+    v-bind('animationConfig.spinnerGlow.durationSec') ease-in-out infinite;
+}
+
+.loading-spinner--small .loading-spinner__glow {
+  width: v-bind('spinnerStyles.sizes.small.width');
+  height: v-bind('spinnerStyles.sizes.small.height');
+}
+
+.loading-spinner--large .loading-spinner__glow {
+  width: v-bind('spinnerStyles.sizes.large.width');
+  height: v-bind('spinnerStyles.sizes.large.height');
+}
+
+@keyframes spinner-glow-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 v-bind('animationConfig.spinnerGlow.spreadMin + "px"')
+        v-bind('animationConfig.spinnerGlow.primaryColor'),
+      0 0 calc(v-bind('animationConfig.spinnerGlow.spreadMin + "px"') * 2)
+        v-bind('animationConfig.spinnerGlow.secondaryColor');
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    box-shadow:
+      0 0 v-bind('animationConfig.spinnerGlow.spreadMax + "px"')
+        v-bind('animationConfig.spinnerGlow.primaryColor'),
+      0 0 calc(v-bind('animationConfig.spinnerGlow.spreadMax + "px"') * 1.5)
+        v-bind('animationConfig.spinnerGlow.secondaryColor');
+    transform: translate(-50%, -50%)
+      scale(v-bind('animationConfig.spinnerGlow.scale'));
+  }
 }
 
 /* Respect user's motion preferences for accessibility */
@@ -180,6 +264,11 @@ watch(
     animation: pulse
       v-bind('spinnerStyles.animation.reducedMotionPulseDuration') ease-in-out
       infinite;
+  }
+
+  /* Hide glow effect for reduced motion users */
+  .loading-spinner__glow {
+    display: none;
   }
 
   @keyframes pulse {

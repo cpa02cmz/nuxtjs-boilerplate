@@ -56,59 +56,86 @@
           'cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500 focus-within:bg-blue-50':
             !isOptionDisabled(option),
           'cursor-not-allowed opacity-50': isOptionDisabled(option),
+          'checkbox-selected':
+            recentlySelected === option && !prefersReducedMotion,
+          'checkbox-deselected':
+            recentlyDeselected === option && !prefersReducedMotion,
         }"
+        :style="getCheckboxBloomStyle(option)"
         @click="!isOptionDisabled(option) && toggleOption(option)"
       >
         <div class="flex items-center flex-1 py-2 px-2">
           <div class="relative flex items-center">
-            <input
-              :id="`${id}-${option}`"
-              type="checkbox"
-              :value="option"
-              :checked="selectedOptions.includes(option)"
-              :disabled="isOptionDisabled(option)"
-              :aria-label="ariaLabelOption(option)"
-              class="filter-checkbox h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500 focus:ring-offset-0 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
+            <div class="checkbox-wrapper relative">
+              <!-- Bloom effect ring - Palette's micro-UX delight! -->
+              <span
+                v-if="
+                  !prefersReducedMotion &&
+                    (recentlySelected === option || recentlyDeselected === option)
+                "
+                class="checkbox-bloom absolute inset-0 rounded pointer-events-none"
+                :class="{
+                  'checkbox-bloom--active': recentlySelected === option,
+                  'checkbox-bloom--out': recentlyDeselected === option,
+                }"
+                aria-hidden="true"
+              />
+              <input
+                :id="`${id}-${option}`"
+                type="checkbox"
+                :value="option"
+                :checked="selectedOptions.includes(option)"
+                :disabled="isOptionDisabled(option)"
+                :aria-label="ariaLabelOption(option)"
+                class="filter-checkbox h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500 focus:ring-offset-0 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 relative z-10"
+                :class="{
+                  'animate-checkbox-pop':
+                    recentlySelected === option && !prefersReducedMotion,
+                  'animate-checkbox-pop-out':
+                    recentlyDeselected === option && !prefersReducedMotion,
+                  'animate-check-draw':
+                    selectedOptions.includes(option) &&
+                    recentlySelected === option &&
+                    !prefersReducedMotion,
+                }"
+                @change="toggleOption(option)"
+                @click.stop
+              >
+            </div>
+            <label
+              :for="`${id}-${option}`"
+              class="ml-2 text-sm text-gray-800 select-none flex-1 transition-colors duration-200"
               :class="{
-                'animate-checkbox-pop': recentlySelected === option,
-                'animate-checkbox-pop-out': recentlyDeselected === option,
+                'text-gray-900 font-medium': selectedOptions.includes(option),
+                'cursor-pointer': !isOptionDisabled(option),
+                'cursor-not-allowed text-gray-400': isOptionDisabled(option),
               }"
-              @change="toggleOption(option)"
-              @click.stop
             >
+              {{ option }}
+            </label>
           </div>
-          <label
-            :for="`${id}-${option}`"
-            class="ml-2 text-sm text-gray-800 select-none flex-1 transition-colors duration-200"
+          <span
+            v-if="showCount && getCountForOption"
+            class="mr-2 text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5 transition-all duration-200"
             :class="{
-              'text-gray-900 font-medium': selectedOptions.includes(option),
-              'cursor-pointer': !isOptionDisabled(option),
-              'cursor-not-allowed text-gray-400': isOptionDisabled(option),
+              'bg-gray-200 text-gray-800': selectedOptions.includes(option),
+              'bg-gray-50 text-gray-400': isOptionDisabled(option),
             }"
+            aria-label="result count"
           >
-            {{ option }}
-          </label>
+            {{ getCountForOption(option) }}
+          </span>
         </div>
-        <span
-          v-if="showCount && getCountForOption"
-          class="mr-2 text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5 transition-all duration-200"
-          :class="{
-            'bg-gray-200 text-gray-800': selectedOptions.includes(option),
-            'bg-gray-50 text-gray-400': isOptionDisabled(option),
-          }"
-          aria-label="result count"
-        >
-          {{ getCountForOption(option) }}
-        </span>
       </div>
     </div>
   </fieldset>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onUnmounted } from 'vue'
+import { computed, ref, onUnmounted, onMounted } from 'vue'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   label: string
@@ -119,6 +146,13 @@ interface Props {
   showCount?: boolean
   scrollable?: boolean
   getCountForOption?: (option: string) => number
+}
+
+// Check for reduced motion preference
+const prefersReducedMotion = ref(false)
+const checkReducedMotion = () => {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 interface Emits {
@@ -142,6 +176,26 @@ const animationTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 const scrollableClass = computed(() =>
   props.scrollable ? 'max-h-40 overflow-y-auto' : ''
 )
+
+// Get checkbox bloom animation style - Palette's micro-UX enhancement!
+const getCheckboxBloomStyle = (option: string) => {
+  if (prefersReducedMotion.value) return {}
+
+  const isRecentlySelected = recentlySelected.value === option
+  const isRecentlyDeselected = recentlyDeselected.value === option
+
+  if (!isRecentlySelected && !isRecentlyDeselected) return {}
+
+  const config = animationConfig.checkbox
+
+  return {
+    '--bloom-scale': config.bloomScale,
+    '--bloom-opacity': config.bloomOpacity,
+    '--bloom-duration': `${config.bloomDurationMs}ms`,
+    '--pop-scale': config.popScale,
+    '--pop-duration': `${config.popDurationMs}ms`,
+  } as Record<string, string>
+}
 
 // Check if an option should be disabled (zero count)
 const isOptionDisabled = (option: string): boolean => {
@@ -178,7 +232,7 @@ const toggleOption = (option: string) => {
   animationTimeout.value = setTimeout(() => {
     recentlySelected.value = null
     recentlyDeselected.value = null
-  }, animationConfig.button.feedbackDurationMs)
+  }, animationConfig.checkbox.bloomDurationMs)
 
   emit('toggle', option)
 }
@@ -241,6 +295,25 @@ const handleKeydown = (event: KeyboardEvent) => {
   }
 }
 
+// Setup and cleanup
+onMounted(() => {
+  prefersReducedMotion.value = checkReducedMotion()
+
+  // Listen for reduced motion preference changes
+  if (typeof window !== 'undefined') {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handleChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.value = e.matches
+    }
+    mediaQuery.addEventListener('change', handleChange)
+
+    // Cleanup
+    onUnmounted(() => {
+      mediaQuery.removeEventListener('change', handleChange)
+    })
+  }
+})
+
 // Cleanup timeout on unmount to prevent memory leaks
 onUnmounted(() => {
   if (animationTimeout.value) {
@@ -284,16 +357,17 @@ onUnmounted(() => {
   }
 }
 
-/* Enhanced focus styles for keyboard navigation */
+/* Enhanced focus styles for keyboard navigation - Flexy hates hardcoded colors! */
 .filter-checkbox:focus-visible {
-  outline: 2px solid #6b7280;
+  outline: 2px solid v-bind('componentColorsConfig.filterSection.focusOutline');
   outline-offset: 2px;
 }
 
-/* Smooth scrollbar styling for the scrollable container */
+/* Smooth scrollbar styling for the scrollable container - Flexy hates hardcoded colors! */
 .max-h-40 {
   scrollbar-width: thin;
-  scrollbar-color: #d1d5db transparent;
+  scrollbar-color: v-bind('componentColorsConfig.filterSection.scrollbar.thumb')
+    v-bind('componentColorsConfig.filterSection.scrollbar.track');
 }
 
 .max-h-40::-webkit-scrollbar {
@@ -301,16 +375,20 @@ onUnmounted(() => {
 }
 
 .max-h-40::-webkit-scrollbar-track {
-  background: transparent;
+  background: v-bind('componentColorsConfig.filterSection.scrollbar.track');
 }
 
 .max-h-40::-webkit-scrollbar-thumb {
-  background-color: #d1d5db;
+  background-color: v-bind(
+    'componentColorsConfig.filterSection.scrollbar.thumb'
+  );
   border-radius: 2px;
 }
 
 .max-h-40::-webkit-scrollbar-thumb:hover {
-  background-color: #9ca3af;
+  background-color: v-bind(
+    'componentColorsConfig.filterSection.scrollbar.thumbHover'
+  );
 }
 
 /* Quick action buttons hover state */
@@ -334,12 +412,134 @@ button:hover {
   animation: count-pulse 0.3s ease-out;
 }
 
+/* Checkbox bloom effect - Palette's micro-UX enhancement! */
+.checkbox-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox-bloom {
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, var(--bloom-opacity)) 0%,
+    rgba(59, 130, 246, 0) 70%
+  );
+  transform: scale(1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkbox-bloom--active {
+  animation: checkbox-bloom var(--bloom-duration, 400ms) ease-out forwards;
+}
+
+.checkbox-bloom--out {
+  animation: checkbox-bloom-out var(--bloom-duration, 400ms) ease-out forwards;
+}
+
+@keyframes checkbox-bloom {
+  0% {
+    transform: scale(1);
+    opacity: var(--bloom-opacity, 0.3);
+  }
+  100% {
+    transform: scale(var(--bloom-scale, 1.8));
+    opacity: 0;
+  }
+}
+
+@keyframes checkbox-bloom-out {
+  0% {
+    transform: scale(var(--bloom-scale, 1.8));
+    opacity: var(--bloom-opacity, 0.3);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* Enhanced checkbox pop animation */
+.animate-checkbox-pop {
+  animation: checkbox-pop-enhanced var(--pop-duration, 250ms)
+    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.animate-checkbox-pop-out {
+  animation: checkbox-pop-out-enhanced var(--pop-duration, 250ms)
+    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes checkbox-pop-enhanced {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(var(--pop-scale, 1.25));
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes checkbox-pop-out-enhanced {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.85);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Check draw animation for the checkmark */
+.animate-check-draw {
+  animation: check-bounce var(--check-duration, 300ms) ease-out;
+}
+
+@keyframes check-bounce {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.1);
+  }
+  60% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Checkbox selected state background highlight */
+.checkbox-selected {
+  animation: checkbox-highlight
+    v-bind('`${animationConfig.checkbox.highlightDurationMs}ms`') ease-out;
+}
+
+@keyframes checkbox-highlight {
+  0% {
+    background-color: rgba(59, 130, 246, 0.2);
+  }
+  100% {
+    background-color: rgb(249, 250, 251);
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .animate-checkbox-pop,
   .animate-checkbox-pop-out,
-  .text-blue-600.font-medium {
-    animation: none;
+  .text-blue-600.font-medium,
+  .animate-check-draw,
+  .checkbox-bloom,
+  .checkbox-selected {
+    animation: none !important;
   }
 
   .filter-option,
@@ -347,6 +547,10 @@ button:hover {
   .filter-option label,
   .filter-option span {
     transition: none !important;
+  }
+
+  .checkbox-bloom {
+    display: none;
   }
 }
 </style>

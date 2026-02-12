@@ -593,6 +593,34 @@ export const animationConfig = {
       process.env.SCROLL_PROGRESS_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // Checkbox Micro-Interactions - Palette's delightful micro-UX touch!
+  // Adds satisfying visual feedback when selecting/deselecting filter checkboxes
+  checkbox: {
+    // Duration of the check draw animation (ms)
+    checkDrawDurationMs: parseInt(
+      process.env.CHECKBOX_DRAW_DURATION_MS || '300'
+    ),
+    // CSS duration string
+    checkDrawDurationSec: `${parseInt(process.env.CHECKBOX_DRAW_DURATION_MS || '300') / 1000}s`,
+    // Duration of the pop animation (ms)
+    popDurationMs: parseInt(process.env.CHECKBOX_POP_DURATION_MS || '250'),
+    // Scale factor at peak of pop animation
+    popScale: parseFloat(process.env.CHECKBOX_POP_SCALE || '1.25'),
+    // Duration of color bloom effect (ms)
+    bloomDurationMs: parseInt(process.env.CHECKBOX_BLOOM_DURATION_MS || '400'),
+    // Scale factor for bloom ring
+    bloomScale: parseFloat(process.env.CHECKBOX_BLOOM_SCALE || '1.8'),
+    // Bloom ring opacity
+    bloomOpacity: parseFloat(process.env.CHECKBOX_BLOOM_OPACITY || '0.3'),
+    // Duration of background highlight fade (ms)
+    highlightDurationMs: parseInt(
+      process.env.CHECKBOX_HIGHLIGHT_DURATION_MS || '300'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.CHECKBOX_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // Spring Physics Micro-Interaction - Palette's delightful micro-UX touch!
   // Adds tactile spring physics animations to filter chips for satisfying interactions
   filterChipSpring: {
@@ -627,6 +655,70 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.FILTER_CHIP_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // Loading Spinner Glow Effect - Palette's micro-UX delight!
+  // Adds a subtle pulsing glow around the loading spinner for visual engagement
+  spinnerGlow: {
+    // Duration of the glow pulse animation (ms)
+    durationMs: parseInt(process.env.SPINNER_GLOW_DURATION_MS || '2000'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.SPINNER_GLOW_DURATION_MS || '2000') / 1000}s`,
+    // Primary glow color (blue-500 with opacity)
+    primaryColor:
+      process.env.SPINNER_GLOW_PRIMARY_COLOR || 'rgba(59, 130, 246, 0.4)',
+    // Secondary glow color for pulse effect (blue-400 with lower opacity)
+    secondaryColor:
+      process.env.SPINNER_GLOW_SECONDARY_COLOR || 'rgba(96, 165, 250, 0.2)',
+    // Box shadow spread at minimum (px)
+    spreadMin: parseInt(process.env.SPINNER_GLOW_SPREAD_MIN || '4'),
+    // Box shadow spread at maximum (px)
+    spreadMax: parseInt(process.env.SPINNER_GLOW_SPREAD_MAX || '16'),
+    // Scale factor for the glow ring
+    scale: parseFloat(process.env.SPINNER_GLOW_SCALE || '1.2'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SPINNER_GLOW_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // Alternative Suggestions Animations - Palette's micro-UX delight!
+  // Staggered card entrance with subtle hover effects
+  alternativeSuggestions: {
+    // Duration of each card's entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.ALTERNATIVES_ENTRANCE_DURATION_MS || '500'
+    ),
+    // CSS duration string
+    entranceDurationSec: `${parseInt(process.env.ALTERNATIVES_ENTRANCE_DURATION_MS || '500') / 1000}s`,
+    // Delay between each card's entrance (stagger effect) (ms)
+    staggerDelayMs: parseInt(process.env.ALTERNATIVES_STAGGER_MS || '100'),
+    // Maximum stagger delay to prevent long waits (ms)
+    maxStaggerDelayMs: parseInt(
+      process.env.ALTERNATIVES_MAX_STAGGER_MS || '600'
+    ),
+    // Distance cards travel during entrance (px)
+    entranceDistancePx: parseInt(
+      process.env.ALTERNATIVES_ENTRANCE_DISTANCE || '30'
+    ),
+    // Scale at start of entrance animation
+    entranceStartScale: parseFloat(
+      process.env.ALTERNATIVES_ENTRANCE_SCALE || '0.92'
+    ),
+    // Hover lift amount (px)
+    hoverLiftPx: parseInt(process.env.ALTERNATIVES_HOVER_LIFT || '4'),
+    // Hover scale factor
+    hoverScale: parseFloat(process.env.ALTERNATIVES_HOVER_SCALE || '1.02'),
+    // Shine effect duration on hover (seconds)
+    shineDurationSec: parseFloat(
+      process.env.ALTERNATIVES_SHINE_DURATION || '0.8'
+    ),
+    // Loading pulse duration (seconds)
+    loadingPulseDurationSec: parseFloat(
+      process.env.ALTERNATIVES_LOADING_PULSE || '1.5'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.ALTERNATIVES_RESPECT_REDUCED_MOTION !== 'false',
   },
 } as const
 
