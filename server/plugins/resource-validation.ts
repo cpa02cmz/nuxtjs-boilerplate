@@ -7,17 +7,19 @@ import { defineNitroPlugin } from 'nitropack/runtime'
 import { updateAllResourceHealth } from '../utils/resourceHealth'
 import logger from '~/utils/logger'
 import { timeConfig } from '~/configs/time.config'
-import { contentConfig } from '~/configs/content.config'
 
 // Extended NitroApp interface for resource validation
 interface ExtendedNitroApp {
   _resourceValidationInterval?: NodeJS.Timeout
 }
 
+// Import resources data statically to avoid dynamic import issues during prerender
+import resourcesData from '~/data/resources.json'
+
 export default defineNitroPlugin(async nitroApp => {
-  // Skip resource validation during Vercel build to prevent long build times
-  if (process.env.VERCEL === '1') {
-    return // Skip plugin initialization on Vercel
+  // Skip resource validation during build/prerender to prevent import errors
+  if (process.env.NITRO_PRERENDER || process.env.VERCEL === '1') {
+    return // Skip plugin initialization during build
   }
 
   // Only log in development or test environments to prevent information disclosure in production
@@ -28,13 +30,7 @@ export default defineNitroPlugin(async nitroApp => {
   // Function to validate all resources
   const validateAllResources = async () => {
     try {
-      // Import resources from JSON (use relative path for server-side dynamic import)
-      const resourcesDataPath = contentConfig.paths.resourcesData.replace(
-        /^~\//,
-        '../../data/'
-      )
-      const resourcesModule = await import(resourcesDataPath)
-      const resources = resourcesModule.default || resourcesModule
+      const resources = resourcesData
 
       if (Array.isArray(resources) && resources.length > 0) {
         if (process.env.NODE_ENV !== 'production') {
