@@ -9,9 +9,13 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { securityConfig } from '~/configs/security.config'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 export default defineEventHandler(async event => {
   try {
+    // Apply rate limiting: 10 requests per minute for webhook creation
+    await rateLimit(event, 'webhook-create')
+
     // Check authentication
     if (!event.context.apiKey) {
       return sendUnauthorizedError(event, 'Authentication required')
