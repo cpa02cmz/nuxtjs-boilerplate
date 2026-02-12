@@ -176,6 +176,7 @@ import { useResourceData } from '~/composables/useResourceData'
 import type { Resource, AlternativeSuggestion } from '~/types/resource'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import { getButtonLabel } from '~/utils/resourceHelper'
 
 interface Props {
@@ -322,12 +323,17 @@ watch(
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 0.75rem;
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  background: linear-gradient(
+    135deg,
+    v-bind('componentColorsConfig.alternativeSuggestions.icon.gradientStart') 0%,
+    v-bind('componentColorsConfig.alternativeSuggestions.icon.gradientEnd') 100%
+  );
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 6px -1px rgba(251, 191, 36, 0.3);
+  box-shadow: 0 4px 6px -1px
+    v-bind('componentColorsConfig.alternativeSuggestions.icon.shadow');
 }
 
 .animate-icon-pulse {
@@ -342,24 +348,26 @@ watch(
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 4px 6px -1px rgba(251, 191, 36, 0.3);
+    box-shadow: 0 4px 6px -1px
+      v-bind('componentColorsConfig.alternativeSuggestions.icon.shadow');
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 8px 12px -2px rgba(251, 191, 36, 0.4);
+    box-shadow: 0 8px 12px -2px
+      v-bind('componentColorsConfig.alternativeSuggestions.icon.shadowHover');
   }
 }
 
 .alternative-suggestions__title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
+  color: v-bind('componentColorsConfig.alternativeSuggestions.title');
   line-height: 1.2;
 }
 
 .alternative-suggestions__subtitle {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: v-bind('componentColorsConfig.alternativeSuggestions.subtitle');
   margin-top: 0.25rem;
 }
 
@@ -368,13 +376,13 @@ watch(
   align-items: center;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #2563eb;
+  color: v-bind('componentColorsConfig.alternativeSuggestions.link.default');
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .alternative-suggestions__view-all:hover {
-  color: #1d4ed8;
+  color: v-bind('componentColorsConfig.alternativeSuggestions.link.hover');
 }
 
 /* Loading State */
@@ -397,11 +405,18 @@ watch(
 }
 
 .alternative-suggestions__skeleton-card {
-  background: white;
+  background: v-bind(
+    'componentColorsConfig.alternativeSuggestions.card.background'
+  );
   border-radius: 0.75rem;
   padding: 1.5rem;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid
+    v-bind('componentColorsConfig.alternativeSuggestions.card.border');
+  box-shadow: 0 1px 3px 0
+    rgba(
+      v-bind('componentColorsConfig.alternativeSuggestions.card.shadow'),
+      0.1
+    );
 }
 
 .skeleton-icon {
@@ -413,11 +428,26 @@ watch(
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
-    #f3f4f6 0%,
-    #e5e7eb 25%,
-    #f3f4f6 50%,
-    #e5e7eb 75%,
-    #f3f4f6 100%
+    v-bind(
+        'componentColorsConfig.alternativeSuggestions.skeleton.gradientStart'
+      )
+      0%,
+    v-bind(
+        'componentColorsConfig.alternativeSuggestions.skeleton.gradientMiddle'
+      )
+      25%,
+    v-bind(
+        'componentColorsConfig.alternativeSuggestions.skeleton.gradientStart'
+      )
+      50%,
+    v-bind(
+        'componentColorsConfig.alternativeSuggestions.skeleton.gradientMiddle'
+      )
+      75%,
+    v-bind(
+        'componentColorsConfig.alternativeSuggestions.skeleton.gradientStart'
+      )
+      100%
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s ease-in-out infinite;
@@ -515,26 +545,41 @@ watch(
 .alternative-suggestions__empty {
   text-align: center;
   padding: 3rem 1.5rem;
-  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  background: linear-gradient(
+    135deg,
+    v-bind(
+        'componentColorsConfig.alternativeSuggestions.emptyState.backgroundStart'
+      )
+      0%,
+    v-bind(
+        'componentColorsConfig.alternativeSuggestions.emptyState.backgroundEnd'
+      )
+      100%
+  );
   border-radius: 1rem;
-  border: 2px dashed #e5e7eb;
+  border: 2px dashed
+    v-bind('componentColorsConfig.alternativeSuggestions.emptyState.border');
 }
 
 .alternative-suggestions__empty-icon {
-  color: #9ca3af;
+  color: v-bind('componentColorsConfig.alternativeSuggestions.emptyState.icon');
   margin-bottom: 1rem;
 }
 
 .alternative-suggestions__empty-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #374151;
+  color: v-bind(
+    'componentColorsConfig.alternativeSuggestions.emptyState.title'
+  );
   margin-bottom: 0.5rem;
 }
 
 .alternative-suggestions__empty-message {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: v-bind(
+    'componentColorsConfig.alternativeSuggestions.emptyState.message'
+  );
   margin-bottom: 1.5rem;
   max-width: 24rem;
   margin-left: auto;
@@ -545,7 +590,9 @@ watch(
   display: inline-flex;
   align-items: center;
   padding: 0.625rem 1.25rem;
-  background-color: #2563eb;
+  background-color: v-bind(
+    'componentColorsConfig.alternativeSuggestions.emptyState.ctaBg'
+  );
   color: white;
   font-size: 0.875rem;
   font-weight: 500;
@@ -557,7 +604,9 @@ watch(
 }
 
 .alternative-suggestions__empty-cta:hover {
-  background-color: #1d4ed8;
+  background-color: v-bind(
+    'componentColorsConfig.alternativeSuggestions.emptyState.ctaHover'
+  );
   transform: translateY(-1px);
 }
 
