@@ -1,7 +1,9 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
     <div class="flex justify-between items-center mb-4">
-      <h2 class="text-lg font-medium text-gray-900">Filters</h2>
+      <h2 class="text-lg font-medium text-gray-900">
+        {{ contentConfig.filters.title }}
+      </h2>
       <button
         :class="[
           'text-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded px-2 py-1 rounded',
@@ -10,7 +12,9 @@
             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
         ]"
         :aria-label="
-          resetConfirming ? 'Filters reset successfully' : 'Reset all filters'
+          resetConfirming
+            ? contentConfig.filters.ariaLabels.resetSuccess
+            : contentConfig.filters.ariaLabels.resetAll
         "
         @click="handleResetWithFeedback"
       >
@@ -29,15 +33,19 @@
               d="M5 13l4 4L19 7"
             />
           </svg>
-          {{ resetConfirming ? 'Reset!' : 'Reset all' }}
+          {{
+            resetConfirming
+              ? contentConfig.filters.resetSuccess
+              : contentConfig.filters.resetAll
+          }}
         </span>
       </button>
     </div>
 
     <FilterSection
       id="category"
-      label="Category"
-      aria-label="Category filters"
+      :label="contentConfig.filters.sectionLabels.category"
+      :aria-label="contentConfig.filters.ariaLabels.category"
       :options="categories"
       :selected-options="selectedCategories"
       :show-count="true"
@@ -47,8 +55,8 @@
 
     <FilterSection
       id="pricing"
-      label="Pricing Model"
-      aria-label="Pricing model filters"
+      :label="contentConfig.filters.sectionLabels.pricingModel"
+      :aria-label="contentConfig.filters.ariaLabels.pricingModel"
       :options="pricingModels"
       :selected-options="selectedPricingModels"
       :show-count="true"
@@ -58,8 +66,8 @@
 
     <FilterSection
       id="difficulty"
-      label="Difficulty"
-      aria-label="Difficulty level filters"
+      :label="contentConfig.filters.sectionLabels.difficulty"
+      :aria-label="contentConfig.filters.ariaLabels.difficulty"
       :options="difficultyLevels"
       :selected-options="selectedDifficultyLevels"
       :show-count="true"
@@ -69,8 +77,8 @@
 
     <FilterSection
       id="technology"
-      label="Technology"
-      aria-label="Technology filters"
+      :label="contentConfig.filters.sectionLabels.technology"
+      :aria-label="contentConfig.filters.ariaLabels.technology"
       :options="technologies"
       :selected-options="selectedTechnologies"
       :show-count="true"
@@ -80,8 +88,8 @@
 
     <FilterSection
       id="tags"
-      label="Tags"
-      aria-label="Tag filters"
+      :label="contentConfig.filters.sectionLabels.tags"
+      :aria-label="contentConfig.filters.ariaLabels.tags"
       :options="tags"
       :selected-options="selectedTags"
       :show-count="false"
@@ -92,8 +100,8 @@
     <FilterSection
       v-if="allBenefits.length > 0"
       id="benefits"
-      label="Benefits"
-      aria-label="Benefit filters"
+      :label="contentConfig.filters.sectionLabels.benefits"
+      :aria-label="contentConfig.filters.ariaLabels.benefits"
       :options="allBenefits"
       :selected-options="selectedBenefits"
       :show-count="true"
@@ -102,10 +110,12 @@
     />
 
     <fieldset class="mb-6">
-      <legend class="text-sm font-medium text-gray-900 mb-3">Date Added</legend>
+      <legend class="text-sm font-medium text-gray-900 mb-3">
+        {{ contentConfig.filters.sectionLabels.dateAdded }}
+      </legend>
       <div
         role="radiogroup"
-        aria-label="Filter by date added"
+        :aria-label="contentConfig.filters.ariaLabels.dateAdded"
         class="space-y-2"
       >
         <label class="flex items-center" :for="'date-anytime'">
@@ -118,7 +128,9 @@
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('anytime')"
           />
-          <span class="ml-2 text-sm text-gray-800">Any time</span>
+          <span class="ml-2 text-sm text-gray-800">{{
+            contentConfig.filters.dateRanges.any
+          }}</span>
         </label>
         <label class="flex items-center" :for="'date-last-week'">
           <input
@@ -130,7 +142,9 @@
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastWeek')"
           />
-          <span class="ml-2 text-sm text-gray-800">Last week</span>
+          <span class="ml-2 text-sm text-gray-800">{{
+            contentConfig.filters.dateRanges.week
+          }}</span>
         </label>
         <label class="flex items-center" :for="'date-last-month'">
           <input
@@ -142,7 +156,9 @@
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastMonth')"
           />
-          <span class="ml-2 text-sm text-gray-800">Last month</span>
+          <span class="ml-2 text-sm text-gray-800">{{
+            contentConfig.filters.dateRanges.month
+          }}</span>
         </label>
         <label class="flex items-center" :for="'date-last-year'">
           <input
@@ -154,7 +170,9 @@
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastYear')"
           />
-          <span class="ml-2 text-sm text-gray-800">Last year</span>
+          <span class="ml-2 text-sm text-gray-800">{{
+            contentConfig.filters.dateRanges.year
+          }}</span>
         </label>
       </div>
     </fieldset>
@@ -175,6 +193,7 @@ import SavedSearches from '~/components/SavedSearches.vue'
 import FilterSection from '~/components/FilterSection.vue'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 import { uiConfig } from '~/configs/ui.config'
+import { contentConfig } from '~/configs/content.config'
 
 interface FacetCounts {
   [key: string]: number
