@@ -1,6 +1,7 @@
 import { defineEventHandler } from 'h3'
 import type { Resource } from '~/types/resource'
 import { contentConfig } from '~/configs/content.config'
+import { handleApiRouteError } from '~/server/utils/api-response'
 
 /**
  * GET /api/resources.json
@@ -8,7 +9,7 @@ import { contentConfig } from '~/configs/content.config'
  * Returns all resources in JSON format
  * This endpoint is used for prefetching data on the client side
  */
-export default defineEventHandler(async () => {
+export default defineEventHandler(async event => {
   try {
     // Import resources from JSON
     const resourcesModule = await import(contentConfig.paths.resourcesData)
@@ -20,10 +21,6 @@ export default defineEventHandler(async () => {
       total: resources.length,
     }
   } catch (error) {
-    return {
-      success: false,
-      error: 'Failed to load resources',
-      message: error instanceof Error ? error.message : 'Unknown error',
-    }
+    return handleApiRouteError(event, error)
   }
 })

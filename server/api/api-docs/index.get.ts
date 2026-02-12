@@ -2,11 +2,13 @@ import { defineEventHandler } from 'h3'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { cdnConfig } from '~/configs/cdn.config'
 import { componentStylesConfig } from '~/configs/component-styles.config'
+import { handleApiRouteError } from '~/server/utils/api-response'
 
 export default defineEventHandler(async event => {
-  await rateLimit(event)
-  // Flexy hates hardcoded values! Using config for all CSS values
-  const swaggerHtml = `
+  try {
+    await rateLimit(event)
+    // Flexy hates hardcoded values! Using config for all CSS values
+    const swaggerHtml = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,5 +63,8 @@ export default defineEventHandler(async event => {
 </html>
 `
 
-  return swaggerHtml
+    return swaggerHtml
+  } catch (error) {
+    return handleApiRouteError(event, error)
+  }
 })
