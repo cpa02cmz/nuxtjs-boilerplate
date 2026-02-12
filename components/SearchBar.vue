@@ -120,7 +120,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint with idle pulse animation -->
       <div
         v-if="!modelValue && !isFocused"
@@ -367,6 +367,9 @@ const showFocusGlow = ref(false)
 const prefersReducedMotion = ref(false)
 let idlePulseTimeout: ReturnType<typeof setTimeout> | null = null
 let shortcutSuccessTimeout: ReturnType<typeof setTimeout> | null = null
+// Additional timeouts for cleanup - preventing memory leaks (Issue #1825)
+let focusPulseTimeout: ReturnType<typeof setTimeout> | null = null
+let focusGlowTimeout: ReturnType<typeof setTimeout> | null = null
 let searchCompleteTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Use the resources composable
@@ -633,7 +636,9 @@ if (typeof window !== 'undefined') {
       // Trigger focus pulse animation for visual feedback (skip if reduced motion)
       if (!userPrefersReducedMotion) {
         showFocusPulse.value = true
-        setTimeout(() => {
+        // Tracked for cleanup - preventing memory leaks (Issue #1825)
+        if (focusPulseTimeout) clearTimeout(focusPulseTimeout)
+        focusPulseTimeout = setTimeout(() => {
           showFocusPulse.value = false
         }, uiConfig.timing.focusPulseDurationMs)
 
@@ -647,8 +652,10 @@ if (typeof window !== 'undefined') {
         }, uiConfig.timing.shortcutSuccessDurationMs)
 
         // Trigger enhanced focus glow effect - Palette's micro-UX enhancement!
+        // Tracked for cleanup - preventing memory leaks (Issue #1825)
         showFocusGlow.value = true
-        setTimeout(() => {
+        if (focusGlowTimeout) clearTimeout(focusGlowTimeout)
+        focusGlowTimeout = setTimeout(() => {
           showFocusGlow.value = false
         }, animationConfig.focusGlow.durationMs)
       }
@@ -711,6 +718,13 @@ if (typeof window !== 'undefined') {
     }
     if (shortcutSuccessTimeout) {
       clearTimeout(shortcutSuccessTimeout)
+    }
+    // Clean up additional timeouts - preventing memory leaks (Issue #1825)
+    if (focusPulseTimeout) {
+      clearTimeout(focusPulseTimeout)
+    }
+    if (focusGlowTimeout) {
+      clearTimeout(focusGlowTimeout)
     }
     if (searchCompleteTimeout) {
       clearTimeout(searchCompleteTimeout)
