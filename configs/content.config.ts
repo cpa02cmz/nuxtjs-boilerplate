@@ -266,6 +266,11 @@ export const contentConfig = {
         process.env.CONTENT_FAVORITES_UNDO_HINT || 'You can undo this action',
       undoButton: process.env.CONTENT_FAVORITES_UNDO_BTN || 'Undo',
     },
+    // ARIA labels - Flexy hates hardcoded accessibility text!
+    aria: {
+      removeBookmark:
+        process.env.CONTENT_FAVORITES_ARIA_REMOVE || 'Remove bookmark',
+    },
   },
 
   // Comparison
@@ -751,6 +756,9 @@ export const contentConfig = {
   // API Keys - Flexy hates hardcoded API key strings!
   apiKeys: {
     title: process.env.CONTENT_API_KEYS_TITLE || 'API Keys',
+    description:
+      process.env.CONTENT_API_KEYS_DESCRIPTION ||
+      'Generate and manage API keys to access the API',
     form: {
       title: process.env.CONTENT_API_KEYS_FORM_TITLE || 'Create New API Key',
       keyNameLabel: process.env.CONTENT_API_KEYS_LABEL_NAME || 'Key Name',
@@ -761,6 +769,8 @@ export const contentConfig = {
       create: process.env.CONTENT_API_KEYS_BTN_CREATE || 'Create API Key',
       createSubmit:
         process.env.CONTENT_API_KEYS_BTN_CREATE_SUBMIT || 'Create API Key',
+      generate: process.env.CONTENT_API_KEYS_BTN_GENERATE || 'Generate API Key',
+      revoke: process.env.CONTENT_API_KEYS_BTN_REVOKE || 'Revoke',
     },
     permissions: {
       read: process.env.CONTENT_API_KEYS_PERM_READ || 'Read',
@@ -770,19 +780,49 @@ export const contentConfig = {
       admin: process.env.CONTENT_API_KEYS_PERM_ADMIN || 'Admin',
     },
     list: {
-      title: process.env.CONTENT_API_KEYS_LIST_TITLE || 'API Keys',
+      title: process.env.CONTENT_API_KEYS_LIST_TITLE || 'Your API Keys',
     },
     labels: {
       id: process.env.CONTENT_API_KEYS_LABEL_ID || 'ID:',
       created: process.env.CONTENT_API_KEYS_LABEL_CREATED || 'Created:',
       lastUsed: process.env.CONTENT_API_KEYS_LABEL_LAST_USED || 'Last Used:',
+      expires: process.env.CONTENT_API_KEYS_LABEL_EXPIRES || 'Expires:',
+      yourKeys: process.env.CONTENT_API_KEYS_LABEL_YOUR_KEYS || 'Your API Keys',
+      apiKeyPrefix: process.env.CONTENT_API_KEYS_LABEL_PREFIX || 'API Key:',
     },
     empty: {
-      message: process.env.CONTENT_API_KEYS_EMPTY || 'No API keys created',
+      message:
+        process.env.CONTENT_API_KEYS_EMPTY ||
+        "You don't have any API keys yet.",
+      description:
+        process.env.CONTENT_API_KEYS_EMPTY_DESC ||
+        'Generate your first API key to start using the API.',
     },
     placeholders: {
       keyName:
         process.env.CONTENT_API_KEYS_PLACEHOLDER_NAME || 'My Application Key',
+    },
+    toggle: {
+      hide: process.env.CONTENT_API_KEYS_TOGGLE_HIDE || 'Hide Key',
+      show: process.env.CONTENT_API_KEYS_TOGGLE_SHOW || 'Show Key',
+    },
+    messages: {
+      copyWarning:
+        process.env.CONTENT_API_KEYS_COPY_WARNING ||
+        "Make sure to copy this key now. You won't be able to see it again.",
+    },
+    documentation: {
+      title: process.env.CONTENT_API_KEYS_DOC_TITLE || 'API Documentation',
+      description:
+        process.env.CONTENT_API_KEYS_DOC_DESC ||
+        'For detailed information about available endpoints, request/response formats, and authentication requirements, visit our interactive API documentation.',
+      button:
+        process.env.CONTENT_API_KEYS_DOC_BUTTON || 'View API Documentation',
+    },
+    toast: {
+      copied:
+        process.env.CONTENT_API_KEYS_TOAST_COPIED ||
+        '{{ name }} API key copied to clipboard',
     },
   },
 

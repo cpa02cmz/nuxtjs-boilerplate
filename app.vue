@@ -24,31 +24,31 @@ const runtimeConfig = useRuntimeConfig()
 // Import ErrorBoundary component for global error handling
 import ErrorBoundary from '~/components/ErrorBoundary.vue'
 
+// Import SEO config - Flexy hates hardcoded values!
+import { seoConfig } from '~/configs/seo.config'
+
 useSeoMeta({
-  title: 'Free Stuff on the Internet - Free Resources for Developers',
-  ogTitle: 'Free Stuff on the Internet - Free Resources for Developers',
-  description:
-    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-  ogDescription:
-    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
-  ogImage: `${runtimeConfig.public.canonicalUrl}/og-image.jpg`,
-  ogImageWidth: '1200',
-  ogImageHeight: '630',
+  title: seoConfig.meta.title,
+  ogTitle: seoConfig.meta.title,
+  description: seoConfig.meta.description,
+  ogDescription: seoConfig.meta.description,
+  ogImage: `${runtimeConfig.public.canonicalUrl}${seoConfig.og.image}`,
+  ogImageWidth: String(seoConfig.og.imageWidth),
+  ogImageHeight: String(seoConfig.og.imageHeight),
   ogImageType: 'image/jpeg',
   ogUrl: runtimeConfig.public.canonicalUrl,
-  ogType: 'website',
-  twitterCard: 'summary_large_image',
-  twitterSite: '@yourTwitterHandle', // Replace with actual Twitter handle if available
-  twitterCreator: '@yourTwitterHandle', // Replace with actual Twitter handle if available
+  ogType: seoConfig.og.type,
+  twitterCard: seoConfig.twitter.card,
+  twitterSite: seoConfig.twitter.site,
+  twitterCreator: seoConfig.twitter.creator,
 })
 
 // Add structured data for the website using JSON-LD
 const websiteSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'Free Stuff on the Internet',
-  description:
-    'Discover amazing free resources available on the internet - from AI tools to hosting services.',
+  '@context': seoConfig.schema.context,
+  '@type': seoConfig.structuredData.type,
+  name: seoConfig.structuredData.name,
+  description: seoConfig.structuredData.description,
   url: runtimeConfig.public.canonicalUrl,
   potentialAction: {
     '@type': 'SearchAction',
