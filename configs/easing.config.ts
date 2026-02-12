@@ -173,4 +173,7 @@ export const easingConfig = {
   },
 } as const
 
+// Convenience exports for commonly used easing values
+export const EASING = easingConfig.cubicBezier
+
 export type EasingConfig = typeof easingConfig
