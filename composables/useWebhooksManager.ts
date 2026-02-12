@@ -11,7 +11,7 @@
  * - ApiClient can be injected for testing
  * - Falls back to useNuxtApp() for production use
  */
-import { ref, reactive } from 'vue'
+import { ref, reactive, onUnmounted } from 'vue'
 import { useNuxtApp } from '#app'
 import logger from '~/utils/logger'
 import { UI_FEEDBACK_DURATION } from '~/server/utils/constants'
@@ -45,6 +45,7 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
   const loading = ref(true)
   const errorMessage = ref('')
   const announcement = ref('')
+  const timeouts = ref<ReturnType<typeof setTimeout>[]>([])
 
   const newWebhook = reactive<WebhookFormData>({
     url: '',
@@ -110,9 +111,10 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
 
       announcement.value = validationConfig.messages.success.webhookCreated
 
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         announcement.value = ''
       }, UI_FEEDBACK_DURATION.ANNOUNCEMENT_CLEAR)
+      timeouts.value.push(timeout)
 
       await fetchWebhooks()
       return true
@@ -142,9 +144,10 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
         ? validationConfig.messages.success.webhookActivated
         : validationConfig.messages.success.webhookDeactivated
 
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         announcement.value = ''
       }, UI_FEEDBACK_DURATION.ANNOUNCEMENT_CLEAR)
+      timeouts.value.push(timeout)
 
       await fetchWebhooks()
     } catch (error) {
@@ -171,9 +174,10 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
 
       announcement.value = validationConfig.messages.success.webhookDeleted
 
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         announcement.value = ''
       }, UI_FEEDBACK_DURATION.ANNOUNCEMENT_CLEAR)
+      timeouts.value.push(timeout)
 
       await fetchWebhooks()
     } catch (error) {
@@ -187,6 +191,11 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
     newWebhook.events = []
     newWebhook.active = true
   }
+
+  onUnmounted(() => {
+    timeouts.value.forEach(clearTimeout)
+    timeouts.value = []
+  })
 
   return {
     webhooks,
