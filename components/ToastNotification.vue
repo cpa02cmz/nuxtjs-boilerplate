@@ -35,7 +35,7 @@
           >
             <path
               fill-rule="evenodd"
-              :d="iconsConfig.svg.filled.success"
+              :d="iconsConfig.paths.filled.success"
               clip-rule="evenodd"
             />
           </svg>
@@ -48,7 +48,7 @@
           >
             <path
               fill-rule="evenodd"
-              :d="iconsConfig.svg.filled.error"
+              :d="iconsConfig.paths.filled.error"
               clip-rule="evenodd"
             />
           </svg>
@@ -61,7 +61,7 @@
           >
             <path
               fill-rule="evenodd"
-              :d="iconsConfig.svg.filled.warning"
+              :d="iconsConfig.paths.filled.warning"
               clip-rule="evenodd"
             />
           </svg>
@@ -74,7 +74,7 @@
           >
             <path
               fill-rule="evenodd"
-              :d="iconsConfig.svg.filled.info"
+              :d="iconsConfig.paths.filled.info"
               clip-rule="evenodd"
             />
           </svg>
@@ -104,7 +104,7 @@
           >
             <path
               fill-rule="evenodd"
-              :d="iconsConfig.svg.filled.close"
+              :d="iconsConfig.paths.filled.close"
               clip-rule="evenodd"
             />
           </svg>

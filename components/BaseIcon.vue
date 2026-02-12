@@ -36,16 +36,17 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  viewBox: '0 0 24 24',
-  fill: 'none',
-  stroke: 'currentColor',
+  viewBox: iconsConfig.svg.viewBox.standard,
+  fill: iconsConfig.svg.defaults.fill,
+  stroke: iconsConfig.svg.defaults.stroke,
   class: '',
   ariaHidden: true,
   ariaLabel: undefined,
 })
 
-// Flexy hates hardcoded values! Using centralized constant
-const SVG_NS = 'http://www.w3.org/2000/svg'
+// Flexy hates hardcoded values! Using centralized config
+import { iconsConfig } from '~/configs/icons.config'
+const SVG_NS = iconsConfig.svg.xmlns
 
 const svgClass = computed(() => props.class)
 </script>

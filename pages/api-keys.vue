@@ -127,7 +127,7 @@
                         <path
                           stroke-linecap="round"
                           stroke-linejoin="round"
-                          :d="iconsConfig.svg.copy"
+                          :d="iconsConfig.paths.copy"
                         />
                       </svg>
                       <!-- Checkmark Icon with animation -->

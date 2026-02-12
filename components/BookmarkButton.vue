@@ -37,7 +37,7 @@
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
-            :d="iconsConfig.svg.bookmark"
+            :d="iconsConfig.paths.bookmark"
           />
         </svg>
       </button>

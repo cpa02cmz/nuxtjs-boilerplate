@@ -2,8 +2,50 @@
 // Flexy hates hardcoded values! All icon mappings are now centralized.
 
 export const iconsConfig = {
-  // SVG Paths - Flexy hates hardcoded SVG paths in components!
+  // SVG Attributes - Flexy hates hardcoded viewBox and xmlns!
+  // These are the standard SVG attributes used across 70+ components
   svg: {
+    // Standard viewBox values - Flexy hates hardcoded "0 0 24 24" repeated 50+ times!
+    viewBox: {
+      standard: process.env.ICONS_VIEWBOX_STANDARD || '0 0 24 24',
+      small: process.env.ICONS_VIEWBOX_SMALL || '0 0 20 20',
+      large: process.env.ICONS_VIEWBOX_LARGE || '0 0 48 48',
+    },
+    // XML namespace - Flexy hates repeating this 74+ times!
+    xmlns: process.env.ICONS_XMLNS || 'http://www.w3.org/2000/svg',
+    // Default SVG attributes
+    defaults: {
+      fill: process.env.ICONS_DEFAULT_FILL || 'none',
+      stroke: process.env.ICONS_DEFAULT_STROKE || 'currentColor',
+      strokeLinecap: process.env.ICONS_DEFAULT_STROKE_LINECAP || 'round',
+      strokeLinejoin: process.env.ICONS_DEFAULT_STROKE_LINEJOIN || 'round',
+    },
+    // Stroke widths - Flexy hates hardcoded stroke-width="2"!
+    strokeWidth: {
+      thin: parseInt(process.env.ICONS_STROKE_WIDTH_THIN || '1'),
+      default: parseInt(process.env.ICONS_STROKE_WIDTH_DEFAULT || '2'),
+      thick: parseInt(process.env.ICONS_STROKE_WIDTH_THICK || '3'),
+    },
+  },
+
+  // Icon Sizes - Flexy hates hardcoded Tailwind size classes!
+  // Use these with icon components for consistent sizing
+  sizes: {
+    xs: process.env.ICONS_SIZE_XS || 'w-3 h-3',
+    sm: process.env.ICONS_SIZE_SM || 'w-4 h-4',
+    md: process.env.ICONS_SIZE_MD || 'w-5 h-5',
+    lg: process.env.ICONS_SIZE_LG || 'w-6 h-6',
+    xl: process.env.ICONS_SIZE_XL || 'w-8 h-8',
+    '2xl': process.env.ICONS_SIZE_2XL || 'w-10 h-10',
+    '3xl': process.env.ICONS_SIZE_3XL || 'w-12 h-12',
+    '4xl': process.env.ICONS_SIZE_4XL || 'w-16 h-16',
+    '5xl': process.env.ICONS_SIZE_5XL || 'w-20 h-20',
+    '6xl': process.env.ICONS_SIZE_6XL || 'w-24 h-24',
+  },
+
+  // SVG Paths - Flexy hates hardcoded SVG paths in components!
+  // All icon paths centralized here
+  paths: {
     // Error/Warning Icons (Outline style)
     error:
       process.env.ICONS_PATH_ERROR ||
