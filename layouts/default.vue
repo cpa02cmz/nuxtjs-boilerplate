@@ -20,7 +20,7 @@
             <NuxtLink
               to="/"
               class="text-xl font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 focus:rounded transition-colors duration-200"
-              :aria-label="'Free Stuff on the Internet - Return to home page'"
+              :aria-label="contentConfig.layout.ariaLabels.homeLink"
             >
               Free Stuff on the Internet
             </NuxtLink>
@@ -30,7 +30,7 @@
           <div class="hidden lg:flex items-center flex-1 max-w-lg mx-8">
             <LazySearchBar
               v-model="searchQuery"
-              :aria-label="'Search for free resources'"
+              :aria-label="contentConfig.layout.ariaLabels.search"
               @search="handleSearch"
             />
           </div>
@@ -38,7 +38,7 @@
           <nav
             class="hidden lg:flex items-center space-x-4"
             role="navigation"
-            aria-label="Main navigation"
+            :aria-label="contentConfig.layout.ariaLabels.mainNav"
           >
             <!-- Theme Toggle Button -->
             <ClientOnly>
@@ -109,7 +109,7 @@
             <NuxtLink
               to="/"
               class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
-              :aria-label="'Free Stuff on the Internet - Return to home page'"
+              :aria-label="contentConfig.layout.ariaLabels.homeLink"
             >
               Home
             </NuxtLink>
@@ -167,7 +167,12 @@
               to="/compare"
               class="relative inline-flex items-center px-3 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
               :class="{ 'animate-bounce-scale': isCountAnimating }"
-              :aria-label="`Compare ${comparisonCount} resources`"
+              :aria-label="
+                contentConfig.layout.ariaLabels.compare.replace(
+                  '{{count}}',
+                  String(comparisonCount)
+                )
+              "
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -415,7 +420,7 @@
           <div class="px-2 pt-2 sm:px-3">
             <LazySearchBar
               v-model="searchQuery"
-              :aria-label="'Search for free resources'"
+              :aria-label="contentConfig.layout.ariaLabels.search"
               @search="handleMobileSearch"
             />
           </div>
@@ -426,7 +431,7 @@
       id="main-content"
       role="main"
       tabindex="-1"
-      aria-label="Main content"
+      :aria-label="contentConfig.layout.ariaLabels.mainContent"
     >
       <slot />
     </main>
@@ -444,7 +449,7 @@
             rights reserved.</span>
           <button
             class="inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1 transition-colors duration-200"
-            aria-label="View keyboard shortcuts (press ? to open)"
+            :aria-label="contentConfig.layout.ariaLabels.keyboardShortcuts"
             @click="openShortcutsHelp"
           >
             <kbd
@@ -489,6 +494,7 @@ import { useRoute, navigateTo } from '#app'
 import { useResources } from '~/composables/useResources'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import { useTheme } from '~/composables/useTheme'
+import { contentConfig } from '~/configs/content.config'
 // NodeListOf is a global DOM type, no need to import
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
 import KeyboardShortcutsHelp from '~/components/KeyboardShortcutsHelp.vue'
