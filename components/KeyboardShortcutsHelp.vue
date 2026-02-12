@@ -60,13 +60,13 @@
                 id="shortcuts-title"
                 class="text-lg font-semibold text-gray-900 dark:text-white"
               >
-                Keyboard Shortcuts
+                {{ config.title }}
               </h2>
             </div>
             <button
               ref="closeButtonRef"
               class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
-              aria-label="Close keyboard shortcuts (press Escape)"
+              :aria-label="config.aria.close"
               @click="close"
             >
               <svg
@@ -95,7 +95,7 @@
             ]"
           >
             <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Use these shortcuts to navigate faster and work more efficiently.
+              {{ config.description }}
             </p>
 
             <div class="space-y-4">
@@ -104,13 +104,15 @@
                 <h3
                   class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
                 >
-                  Search
+                  {{ config.sections.search }}
                 </h3>
                 <ul class="space-y-2">
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300">Focus search box</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{
+                      config.shortcuts.focusSearch
+                    }}</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -120,7 +122,9 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300">Clear search / Close suggestions</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{
+                      config.shortcuts.clearSearch
+                    }}</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -130,7 +134,9 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300">Navigate suggestions</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{
+                      config.shortcuts.navigate
+                    }}</span>
                     <div class="flex items-center gap-1">
                       <kbd
                         class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
@@ -152,13 +158,15 @@
                 <h3
                   class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
                 >
-                  Navigation
+                  {{ config.sections.navigation }}
                 </h3>
                 <ul class="space-y-2">
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300">Move to next focusable element</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{
+                      config.shortcuts.nextFocus
+                    }}</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -168,7 +176,9 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300">Move to previous focusable element</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{
+                      config.shortcuts.prevFocus
+                    }}</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -178,7 +188,9 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300">Close modals / menus</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{
+                      config.shortcuts.closeModal
+                    }}</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -193,13 +205,15 @@
                 <h3
                   class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
                 >
-                  Filters
+                  {{ config.sections.filters }}
                 </h3>
                 <ul class="space-y-2">
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300">Undo clear filters</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{
+                      config.shortcuts.undoFilters
+                    }}</span>
                     <div class="flex items-center gap-1">
                       <kbd
                         class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
@@ -217,7 +231,9 @@
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300">Select/deselect filter option</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{
+                      config.shortcuts.selectFilter
+                    }}</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -232,13 +248,15 @@
                 <h3
                   class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2"
                 >
-                  Quick Actions
+                  {{ config.sections.quickActions }}
                 </h3>
                 <ul class="space-y-2">
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
                   >
-                    <span class="text-sm text-gray-700 dark:text-gray-300">Open this help modal</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{
+                      config.shortcuts.openHelp
+                    }}</span>
                     <kbd
                       class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
                     >
@@ -272,7 +290,11 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { componentStylesConfig } from '~/configs/component-styles.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { contentConfig } from '~/configs/content.config'
+
 // NodeListOf is a global DOM type, no need to import
+
+const config = contentConfig.keyboardShortcuts
 
 const isOpen = ref(false)
 const modalRef = ref<HTMLElement | null>(null)

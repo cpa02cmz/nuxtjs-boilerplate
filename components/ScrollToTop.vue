@@ -13,8 +13,8 @@
       class="scroll-to-top"
       :class="{ 'scroll-to-top--reduced-motion': prefersReducedMotion }"
       :style="progressStyle"
-      aria-label="Scroll to top of page"
-      title="Scroll to top"
+      :aria-label="config.aria.scrollToTop"
+      :title="config.buttons.scrollToTop"
       @click="scrollToTop"
       @keydown="handleKeyDown"
     >
@@ -79,8 +79,10 @@ import { themeConfig } from '~/configs/theme.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { componentStylesConfig } from '~/configs/component-styles.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { contentConfig } from '~/configs/content.config'
 
 // Constants - Flexy hates hardcoded values! Using config instead.
+const config = contentConfig
 const SCROLL_THRESHOLD = uiConfig.scrollToTop.thresholdPx
 const CIRCLE_RADIUS = uiConfig.scrollToTop.circleRadius
 const CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS
