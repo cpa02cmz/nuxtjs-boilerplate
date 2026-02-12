@@ -34,14 +34,8 @@
       </svg>
     </div>
 
-    <span
-      v-if="label"
-      class="loading-spinner__label"
-    >{{ label }}</span>
-    <span
-      v-else
-      class="sr-only"
-    >{{ config.default }}</span>
+    <span v-if="label" class="loading-spinner__label">{{ label }}</span>
+    <span v-else class="sr-only">{{ config.default }}</span>
 
     <!-- Live region for status announcement to screen readers -->
     <div
@@ -108,7 +102,7 @@ const prefersReducedMotion = ref(false)
 
 // Check reduced motion preference on mount
 onMounted(() => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && window.matchMedia) {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     prefersReducedMotion.value = mediaQuery.matches
   }
