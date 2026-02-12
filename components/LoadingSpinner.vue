@@ -254,8 +254,8 @@ watch(
 
   .loading-spinner__path {
     animation: none;
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -35px;
+    stroke-dasharray: v-bind('spinnerStyles.stroke.reducedMotionDashArray');
+    stroke-dashoffset: v-bind('spinnerStyles.stroke.reducedMotionDashOffset');
     opacity: 0.6;
   }
 
@@ -299,12 +299,12 @@ watch(
     stroke-dashoffset: v-bind('spinnerStyles.stroke.dashOffset');
   }
   50% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -35px;
+    stroke-dasharray: v-bind('spinnerStyles.stroke.dashArrayMid');
+    stroke-dashoffset: v-bind('spinnerStyles.stroke.dashOffsetMid');
   }
   100% {
-    stroke-dasharray: 89, 200;
-    stroke-dashoffset: -124px;
+    stroke-dasharray: v-bind('spinnerStyles.stroke.dashArrayMid');
+    stroke-dashoffset: v-bind('spinnerStyles.stroke.dashOffsetEnd');
   }
 }
 </style>
