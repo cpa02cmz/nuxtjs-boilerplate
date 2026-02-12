@@ -108,7 +108,7 @@
           <td
             v-for="(resource, index) in resources"
             :key="`data-${index}-${criterion.id}`"
-            class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center"
+            class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 text-center"
           >
             <div class="flex justify-center">
               <LazyComparisonValue
