@@ -76,7 +76,7 @@ export function useLoadingFocus() {
             focusableChild.focus()
           }
         }
-      } else if (fallbackSelector) {
+      } else if (fallbackSelector && typeof document !== 'undefined') {
         // Try fallback selector
         const fallback = document.querySelector(fallbackSelector) as HTMLElement
         if (fallback) {

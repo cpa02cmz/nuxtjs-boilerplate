@@ -178,6 +178,8 @@ export const useBookmarks = () => {
     const exportFileDefaultName =
       patternsConfig.export.bookmarksFilenameTemplate.replace('{date}', dateStr)
 
+    if (typeof document === 'undefined') return
+
     const linkElement = document.createElement('a')
     linkElement.setAttribute('href', dataUri)
     linkElement.setAttribute('download', exportFileDefaultName)

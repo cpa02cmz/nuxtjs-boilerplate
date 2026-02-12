@@ -22,6 +22,7 @@ export const useFocusManagement = () => {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return
+      if (typeof document === 'undefined') return
 
       if (e.shiftKey && document.activeElement === firstFocusable) {
         // If shift-tabbing from first element, go to last

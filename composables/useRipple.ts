@@ -60,13 +60,13 @@ export function useRipple(
     const button = buttonRef.value
     if (!button) return
 
-    // Check for reduced motion preference
-    if (typeof window !== 'undefined') {
-      const prefersReducedMotion = window.matchMedia(
-        '(prefers-reduced-motion: reduce)'
-      ).matches
-      if (prefersReducedMotion) return
-    }
+    // Check for reduced motion preference and SSR
+    if (typeof window === 'undefined' || typeof document === 'undefined') return
+
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches
+    if (prefersReducedMotion) return
 
     // Get click coordinates
     const rect = button.getBoundingClientRect()
