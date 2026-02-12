@@ -325,3 +325,73 @@ button:has(.ripple-effect) {
     transition: none;
   }
 }
+
+/* ============================================
+   Typing Indicator Animation - Palette's micro-UX delight! ✨
+   Animated bouncing dots that indicate active typing
+   ============================================ */
+
+@keyframes typing-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+.animate-typing-bounce {
+  animation: typing-bounce 600ms ease-in-out infinite;
+}
+
+/* Reduced motion support for typing indicator */
+@media (prefers-reduced-motion: reduce) {
+  .animate-typing-bounce {
+    animation: none !important;
+    opacity: 0.6 !important;
+  }
+}
+
+/* Input focus glow effect - Palette's micro-UX enhancement! */
+.input-focus-glow:focus {
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.1),
+    0 0 0 1px rgba(59, 130, 246, 0.3);
+}
+
+/* Form shake animation for validation errors */
+@keyframes form-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+.animate-form-shake {
+  animation: form-shake 0.5s ease-in-out;
+}
+
+/* Reduced motion support for form shake */
+@media (prefers-reduced-motion: reduce) {
+  .animate-form-shake {
+    animation: none !important;
+    border-color: rgb(239, 68, 68) !important;
+  }
+}

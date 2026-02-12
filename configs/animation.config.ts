@@ -724,6 +724,42 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.ALTERNATIVES_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Typing Indicator Micro-UX - Palette's delightful touch! ✨
+  // Animated bouncing dots that provide visual feedback during typing
+  typingIndicator: {
+    // Duration to show the indicator after last keystroke (ms)
+    indicatorDurationMs: parseInt(
+      process.env.TYPING_INDICATOR_DURATION_MS || '800'
+    ),
+    // Duration of each dot's bounce animation (ms)
+    bounceDurationMs: parseInt(
+      process.env.TYPING_INDICATOR_BOUNCE_DURATION_MS || '600'
+    ),
+    // Delay between each dot's animation start (ms)
+    staggerDelayMs: parseInt(process.env.TYPING_INDICATOR_STAGGER_MS || '150'),
+    // Size of each indicator dot (px)
+    dotSizePx: parseInt(process.env.TYPING_INDICATOR_DOT_SIZE || '6'),
+    // Dot color (blue-500)
+    dotColor: process.env.TYPING_INDICATOR_DOT_COLOR || 'bg-blue-500',
+    // Vertical bounce distance (px)
+    bounceDistancePx: parseInt(
+      process.env.TYPING_INDICATOR_BOUNCE_DISTANCE || '4'
+    ),
+    // Enable haptic feedback on mobile devices
+    hapticFeedback: process.env.TYPING_INDICATOR_HAPTIC !== 'false',
+    // Haptic feedback duration (ms)
+    hapticDurationMs: parseInt(
+      process.env.TYPING_INDICATOR_HAPTIC_DURATION || '5'
+    ),
+    // Debounce time for haptic feedback (ms) - prevents excessive vibration
+    hapticDebounceMs: parseInt(
+      process.env.TYPING_INDICATOR_HAPTIC_DEBOUNCE || '100'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.TYPING_INDICATOR_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
