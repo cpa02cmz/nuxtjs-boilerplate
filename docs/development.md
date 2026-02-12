@@ -228,7 +228,7 @@ test(components): add unit tests for ResourceCard
 4. **PR Requirements**
    - Clear title and description
    - Link to relevant issues
-   - Tests pass (when implemented)
+   - Tests pass
    - Code follows guidelines
    - Documentation updated if needed
 
@@ -523,7 +523,7 @@ Each major directory should include a README.md explaining:
 ### **System Requirements**
 
 - Node.js 18.x or higher
-- **npm 9.x or higher** (recommended)
+- **npm 10+** (recommended)
 - Git 2.x or higher
 - Modern web browser for development
 
@@ -557,4 +557,4 @@ cp .env.example .env
 
 ---
 
-_Last Updated: 2026-02-08_
+_Last Updated: 2026-02-12_
