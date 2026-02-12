@@ -639,6 +639,10 @@ const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
 const urlInputRef = ref<HTMLInputElement | null>(null)
 const { $toast } = useNuxtApp()
 
+// Timeout refs for cleanup - preventing memory leaks (Issue #1827)
+const shakeTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+const confettiTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+
 // Initialize smart paste for URL field - Palette's micro-UX enhancement!
 const { state: smartPasteState, handlePaste: handleSmartPaste } = useSmartPaste(
   urlInputRef,
@@ -747,8 +751,9 @@ const handleSubmitWithShake = async () => {
       shakeFields.value[field] = true
     })
 
-    // Clear shake after animation completes
-    setTimeout(() => {
+    // Clear shake after animation completes - tracked for cleanup (Issue #1827)
+    if (shakeTimeout.value) clearTimeout(shakeTimeout.value)
+    shakeTimeout.value = setTimeout(() => {
       shakeFields.value = {}
     }, animationConfig.validation.shakeDurationMs)
   }
@@ -762,8 +767,9 @@ const handleSubmitWithShake = async () => {
 // Watch for successful submission to trigger confetti
 watch(submitSuccess, success => {
   if (success) {
-    // Small delay to let the success message appear first
-    setTimeout(() => {
+    // Small delay to let the success message appear first - tracked for cleanup (Issue #1827)
+    if (confettiTimeout.value) clearTimeout(confettiTimeout.value)
+    confettiTimeout.value = setTimeout(() => {
       confettiRef.value?.celebrate()
     }, animationConfig.confetti.submissionDelayMs)
   }
@@ -997,10 +1003,16 @@ onMounted(() => {
   }
 })
 
-// Cleanup timeout and event listener on unmount
+// Cleanup timeouts and event listener on unmount - preventing memory leaks (Issues #1814, #1827)
 onUnmounted(() => {
   if (savedIndicatorTimeout.value) {
     clearTimeout(savedIndicatorTimeout.value)
+  }
+  if (shakeTimeout.value) {
+    clearTimeout(shakeTimeout.value)
+  }
+  if (confettiTimeout.value) {
+    clearTimeout(confettiTimeout.value)
   }
   if (typeof window !== 'undefined') {
     window.removeEventListener('beforeunload', beforeUnloadHandler)

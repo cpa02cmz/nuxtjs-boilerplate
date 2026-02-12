@@ -352,6 +352,13 @@ export const rateLimitConfigs = {
     intervalMs: parseInt(process.env.RATE_LIMIT_API_INTERVAL_MS || '60000'),
     message: rateLimitConfig.api.message,
   }),
+  errorReport: new RateLimiter({
+    windowMs: 60 * 1000, // 1 minute
+    maxRequests: 10,
+    tokensPerInterval: 10,
+    intervalMs: 60 * 1000,
+    message: 'Too many error reports. Please try again later.',
+  }),
 }
 
 /**
@@ -371,6 +378,9 @@ export function getRateLimiterForPath(path: string): RateLimiter {
   } else if (path.includes('/api/submissions')) {
     // Submissions endpoint uses API rate limit (not heavy) since it's lightweight
     return rateLimitConfigs.api
+  } else if (path.includes('/api/errors/report')) {
+    // Error reporting endpoint has stricter rate limiting
+    return rateLimitConfigs.errorReport
   } else if (path.includes('/api/')) {
     return rateLimitConfigs.api
   } else {

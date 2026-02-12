@@ -59,7 +59,7 @@
 import { useBookmarks } from '~/composables/useBookmarks'
 import { useRipple } from '~/composables/useRipple'
 import { useNuxtApp } from '#imports'
-import { computed, ref, type Ref } from 'vue'
+import { computed, ref, onUnmounted, type Ref } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { iconsConfig } from '~/configs/icons.config'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
@@ -88,6 +88,10 @@ const bookmarkStatus = ref('')
 const isAnimating = ref(false)
 const buttonRef = ref<HTMLButtonElement | null>(null)
 
+// Timeout refs for cleanup - preventing memory leaks (Issue #1826)
+let animationTimeout: ReturnType<typeof setTimeout> | null = null
+let statusTimeout: ReturnType<typeof setTimeout> | null = null
+
 // Initialize ripple effect for tactile feedback
 // Flexy loves modularity! Using configurable animation duration from animationConfig
 const { createRipple } = useRipple(buttonRef as Ref<HTMLButtonElement | null>, {
@@ -104,10 +108,11 @@ const { $toast } = useNuxtApp()
 const handleBookmarkToggle = () => {
   const wasBookmarked = isBookmarked.value
 
-  // Trigger animation when adding bookmark
+  // Trigger animation when adding bookmark - tracked for cleanup (Issue #1826)
   if (!wasBookmarked) {
     isAnimating.value = true
-    setTimeout(() => {
+    if (animationTimeout) clearTimeout(animationTimeout)
+    animationTimeout = setTimeout(() => {
       isAnimating.value = false
     }, heartPopDurationMs)
     // Haptic feedback for adding bookmark
@@ -130,10 +135,18 @@ const handleBookmarkToggle = () => {
 
   bookmarkStatus.value = wasBookmarked ? 'Bookmark removed' : 'Bookmark added'
 
-  setTimeout(() => {
+  // Tracked for cleanup - preventing memory leaks (Issue #1826)
+  if (statusTimeout) clearTimeout(statusTimeout)
+  statusTimeout = setTimeout(() => {
     bookmarkStatus.value = ''
   }, statusClearDelayMs)
 }
+
+// Cleanup timeouts on unmount - preventing memory leaks (Issue #1826)
+onUnmounted(() => {
+  if (animationTimeout) clearTimeout(animationTimeout)
+  if (statusTimeout) clearTimeout(statusTimeout)
+})
 
 // Handle click with ripple effect - Palette's micro-UX touch!
 const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
