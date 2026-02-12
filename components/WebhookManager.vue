@@ -44,10 +44,7 @@
     </div>
 
     <!-- Create Webhook Form -->
-    <div
-      v-if="showCreateForm"
-      class="webhook-form"
-    >
+    <div v-if="showCreateForm" class="webhook-form">
       <h3>{{ contentConfig.webhooks.form.title }}</h3>
 
       <div
@@ -59,12 +56,10 @@
         {{ errorMessage }}
       </div>
 
-      <form
-        novalidate
-        @submit.prevent="handleCreateWebhook"
-      >
+      <form novalidate @submit.prevent="handleCreateWebhook">
         <div class="form-group">
-          <label for="webhook-url">{{ contentConfig.webhooks.form.urlLabel }}
+          <label for="webhook-url"
+            >{{ contentConfig.webhooks.form.urlLabel }}
             <span aria-hidden="true">*</span>
             <span class="sr-only">{{
               contentConfig.webhooks.form.required
@@ -79,11 +74,8 @@
             aria-describedby="webhook-url-description"
             :placeholder="webhooksConfig.placeholders.url"
             class="form-control"
-          >
-          <p
-            id="webhook-url-description"
-            class="mt-1 text-sm text-gray-500"
-          >
+          />
+          <p id="webhook-url-description" class="mt-1 text-sm text-gray-500">
             {{ contentConfig.webhooks.form.urlDescription }}
           </p>
         </div>
@@ -108,7 +100,7 @@
                   type="checkbox"
                   :value="event"
                   :aria-label="`Subscribe to ${event} event`"
-                >
+                />
                 {{ event }}
               </label>
             </div>
@@ -121,7 +113,7 @@
               v-model="newWebhook.active"
               type="checkbox"
               :aria-label="contentConfig.webhooks.ariaLabels.enableWebhook"
-            >
+            />
             {{ contentConfig.webhooks.form.activeLabel }}
           </label>
         </div>
@@ -158,10 +150,7 @@
         aria-live="polite"
       >
         <!-- Animated Illustration -->
-        <div
-          class="webhook-illustration"
-          aria-hidden="true"
-        >
+        <div class="webhook-illustration" aria-hidden="true">
           <!-- Background Circle -->
           <div
             class="webhook-bg-circle"
@@ -244,10 +233,7 @@
           {{ contentConfig.webhooks.empty.ctaButton }}
         </button>
       </div>
-      <div
-        v-else
-        class="webhook-items"
-      >
+      <div v-else class="webhook-items">
         <div
           v-for="webhook in webhooks"
           :key="webhook.id"
@@ -328,12 +314,96 @@
                   : contentConfig.webhooks.buttons.activate
               }}
             </button>
+            <!-- Delete button with Press and Hold protection - Palette's micro-UX enhancement! -->
             <button
-              class="btn btn-sm btn-danger"
-              :aria-label="contentConfig.webhooks.ariaLabels.deleteWebhook"
-              @click="handleDeleteWebhook(webhook)"
+              class="btn btn-sm btn-danger press-hold-button"
+              :class="{
+                'is-pressing': getPressAndHold(webhook.id, webhook).isPressing
+                  .value,
+                'is-complete': getPressAndHold(webhook.id, webhook).isComplete
+                  .value,
+              }"
+              :style="getPressAndHold(webhook.id, webhook).progressStyle.value"
+              :aria-label="
+                contentConfig.webhooks.ariaLabels.deleteWebhook +
+                ' (Press and hold to confirm)'
+              "
+              @mousedown="getPressAndHold(webhook.id, webhook).startPress"
+              @mouseup="getPressAndHold(webhook.id, webhook).endPress"
+              @mouseleave="getPressAndHold(webhook.id, webhook).endPress"
+              @touchstart.prevent="
+                getPressAndHold(webhook.id, webhook).startPress
+              "
+              @touchend.prevent="getPressAndHold(webhook.id, webhook).endPress"
+              @touchcancel.prevent="
+                getPressAndHold(webhook.id, webhook).endPress
+              "
             >
-              {{ contentConfig.webhooks.buttons.delete }}
+              <!-- Progress Ring SVG -->
+              <span
+                v-if="
+                  getPressAndHold(webhook.id, webhook).isPressing.value &&
+                  !reducedMotion
+                "
+                class="press-hold-ring"
+                aria-hidden="true"
+              >
+                <svg
+                  class="progress-ring"
+                  :width="animationConfig.pressAndHold.ringSize"
+                  :height="animationConfig.pressAndHold.ringSize"
+                  :viewBox="`0 0 ${animationConfig.pressAndHold.ringSize} ${animationConfig.pressAndHold.ringSize}`"
+                >
+                  <!-- Background circle -->
+                  <circle
+                    class="progress-ring-bg"
+                    :cx="animationConfig.pressAndHold.ringSize / 2"
+                    :cy="animationConfig.pressAndHold.ringSize / 2"
+                    :r="
+                      (animationConfig.pressAndHold.ringSize -
+                        animationConfig.pressAndHold.strokeWidth) /
+                      2
+                    "
+                    fill="none"
+                    :stroke-width="animationConfig.pressAndHold.strokeWidth"
+                  />
+                  <!-- Progress circle -->
+                  <circle
+                    class="progress-ring-fill"
+                    :cx="animationConfig.pressAndHold.ringSize / 2"
+                    :cy="animationConfig.pressAndHold.ringSize / 2"
+                    :r="
+                      (animationConfig.pressAndHold.ringSize -
+                        animationConfig.pressAndHold.strokeWidth) /
+                      2
+                    "
+                    fill="none"
+                    :stroke-width="animationConfig.pressAndHold.strokeWidth"
+                    :stroke-dasharray="`var(--circumference)`"
+                    :stroke-dashoffset="`var(--progress-offset)`"
+                    stroke-linecap="round"
+                    :style="{
+                      transform: 'rotate(-90deg)',
+                      transformOrigin: 'center',
+                    }"
+                  />
+                </svg>
+              </span>
+              <!-- Button text changes during press -->
+              <span class="button-text">
+                <template
+                  v-if="getPressAndHold(webhook.id, webhook).isPressing.value"
+                >
+                  {{
+                    Math.round(
+                      getPressAndHold(webhook.id, webhook).progress.value
+                    )
+                  }}%
+                </template>
+                <template v-else>
+                  {{ contentConfig.webhooks.buttons.delete }}
+                </template>
+              </span>
             </button>
           </div>
         </div>
@@ -345,9 +415,11 @@
 <script setup lang="ts">
 import type { Webhook } from '~/types/webhook'
 import { useWebhooksManager } from '~/composables/useWebhooksManager'
+import { usePressAndHold } from '~/composables/usePressAndHold'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { webhooksConfig } from '~/configs/webhooks.config'
 import { contentConfig } from '~/configs/content.config'
+import { animationConfig } from '~/configs/animation.config'
 
 // Flexy hates hardcoded colors! Using config values for webhook UI colors
 const webhookColors = {
@@ -390,6 +462,27 @@ const handleCreateWebhook = async () => {
 
 const handleDeleteWebhook = async (webhook: Webhook) => {
   await deleteWebhook(webhook)
+}
+
+// Press and Hold state management for destructive delete action
+const pressAndHoldStates = ref<Map<string, ReturnType<typeof usePressAndHold>>>(
+  new Map()
+)
+
+// Initialize press and hold for a specific webhook
+const getPressAndHold = (webhookId: string, webhook: Webhook) => {
+  if (!pressAndHoldStates.value.has(webhookId)) {
+    const pressAndHold = usePressAndHold({
+      onComplete: () => {
+        handleDeleteWebhook(webhook)
+      },
+      onCancel: () => {
+        // Optional: Add haptic feedback or visual cancellation cue
+      },
+    })
+    pressAndHoldStates.value.set(webhookId, pressAndHold)
+  }
+  return pressAndHoldStates.value.get(webhookId)!
 }
 
 onMounted(() => {
@@ -768,6 +861,61 @@ onMounted(() => {
   animation: webhook-draw-delayed 1.5s ease-out forwards;
 }
 
+/* Press and Hold Button Styles - Palette's protective micro-UX enhancement! */
+.press-hold-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+  transition: all var(--duration, 200ms) ease-out;
+  overflow: hidden;
+}
+
+.press-hold-button.is-pressing {
+  transform: scale(v-bind('animationConfig.pressAndHold.pressScale'));
+}
+
+.press-hold-button.is-complete {
+  background-color: #dc2626 !important;
+}
+
+.press-hold-ring {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+  stroke: var(--ring-bg-color, rgba(239, 68, 68, 0.2));
+}
+
+.progress-ring-fill {
+  stroke: var(--ring-color, #ef4444);
+  transition: stroke-dashoffset 50ms linear;
+}
+
+.button-text {
+  position: relative;
+  z-index: 1;
+  font-variant-numeric: tabular-nums;
+  min-width: 2ch;
+  text-align: center;
+}
+
+/* Shrink progress ring slightly to fit inside button */
+.press-hold-ring .progress-ring {
+  width: calc(var(--ring-size, 24px) * 0.9) !important;
+  height: calc(var(--ring-size, 24px) * 0.9) !important;
+}
+
 /* Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   .animate-pulse-slow,
@@ -780,6 +928,18 @@ onMounted(() => {
 
   .webhook-empty-cta:hover {
     transform: none;
+  }
+
+  .press-hold-button {
+    transition: none;
+  }
+
+  .press-hold-button.is-pressing {
+    transform: none;
+  }
+
+  .progress-ring-fill {
+    transition: none;
   }
 }
 </style>
