@@ -502,6 +502,30 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.FLOATING_LABEL_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Card 3D Tilt Effect - Palette's premium micro-UX touch!
+  // Adds a subtle 3D tilt effect on hover for a tactile, premium feel
+  cardTilt: {
+    // Maximum rotation in degrees
+    maxRotationDeg: parseInt(process.env.CARD_TILT_MAX_ROTATION || '5'),
+    // Scale factor on hover (1.02 = 102% of original size)
+    scale: parseFloat(process.env.CARD_TILT_SCALE || '1.02'),
+    // Transition duration in ms
+    transitionDurationMs: parseInt(
+      process.env.CARD_TILT_TRANSITION_MS || '150'
+    ),
+    // CSS duration string for v-bind
+    transitionDurationSec: `${parseInt(process.env.CARD_TILT_TRANSITION_MS || '150') / 1000}s`,
+    // Perspective depth for 3D effect (lower = more dramatic)
+    perspectivePx: parseInt(process.env.CARD_TILT_PERSPECTIVE || '1000'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.CARD_TILT_RESPECT_REDUCED_MOTION !== 'false',
+    // Glow effect on hover
+    glowColor: process.env.CARD_TILT_GLOW_COLOR || 'rgba(59, 130, 246, 0.15)',
+    glowBlurPx: parseInt(process.env.CARD_TILT_GLOW_BLUR || '20'),
+    glowSpreadPx: parseInt(process.env.CARD_TILT_GLOW_SPREAD || '5'),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

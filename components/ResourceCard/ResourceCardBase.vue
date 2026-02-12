@@ -2,14 +2,16 @@
 <template>
   <article
     v-if="!hasError"
-    class="bg-white p-6 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 border border-gray-200 hover:border-blue-300 focus-within:border-blue-300 transition-all duration-200 ease-out group card-shine-container"
+    ref="cardRef"
+    class="bg-white p-6 rounded-lg shadow hover:shadow-lg border border-gray-200 hover:border-blue-300 focus-within:border-blue-300 transition-all duration-200 ease-out group card-shine-container"
+    :class="{ 'card-tilt': !prefersReducedMotion }"
+    :style="cardTiltStyle"
     role="article"
+    @mousemove="handleMouseMove"
+    @mouseleave="handleMouseLeave"
   >
     <div class="flex items-start">
-      <div
-        v-if="icon"
-        class="flex-shrink-0 mr-4"
-      >
+      <div v-if="icon" class="flex-shrink-0 mr-4">
         <OptimizedImage
           :src="icon"
           :alt="title"
@@ -104,10 +106,7 @@
         </div>
 
         <!-- Description -->
-        <p
-          id="resource-description"
-          class="mt-1 text-gray-800 text-sm"
-        >
+        <p id="resource-description" class="mt-1 text-gray-800 text-sm">
           <span
             v-if="highlightedDescription"
             v-html="sanitizedHighlightedDescription"
@@ -121,30 +120,18 @@
           role="region"
           aria-label="Free tier information"
         >
-          <p
-            id="free-tier-label"
-            class="font-medium text-gray-900 text-sm"
-          >
+          <p id="free-tier-label" class="font-medium text-gray-900 text-sm">
             {{ contentConfig.resourceCard.freeTier }}
           </p>
-          <ul
-            class="mt-1 space-y-1 text-xs text-gray-800"
-            role="list"
-          >
-            <li
-              v-for="(benefit, index) in benefits"
-              :key="index"
-            >
+          <ul class="mt-1 space-y-1 text-xs text-gray-800" role="list">
+            <li v-for="(benefit, index) in benefits" :key="index">
               {{ benefit }}
             </li>
           </ul>
         </div>
 
         <!-- Similarity information (for alternative suggestions) -->
-        <div
-          v-if="similarityScore && similarityScore > 0"
-          class="mt-3"
-        >
+        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
           <div class="flex items-center">
             <div
               class="w-full bg-gray-200 rounded-full h-2"
@@ -163,10 +150,7 @@
               {{ Math.round(similarityScore * 100) }}% match
             </span>
           </div>
-          <p
-            v-if="similarityReason"
-            class="mt-1 text-xs text-gray-600"
-          >
+          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
             {{ similarityReason }}
           </p>
         </div>
@@ -280,10 +264,7 @@
   </article>
 
   <!-- Error state -->
-  <div
-    v-else
-    class="bg-white p-6 rounded-lg shadow border border-red-200"
-  >
+  <div v-else class="bg-white p-6 rounded-lg shadow border border-red-200">
     <div class="flex items-start">
       <div class="flex-shrink-0 mr-4">
         <svg
@@ -302,9 +283,7 @@
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-red-900">
-          Resource Unavailable
-        </h3>
+        <h3 class="text-lg font-medium text-red-900">Resource Unavailable</h3>
         <p class="mt-1 text-red-700 text-sm">
           This resource could not be displayed due to an error.
         </p>
@@ -314,7 +293,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted, type Ref } from 'vue'
 import { useHead } from '#imports'
 import { useRipple } from '~/composables/useRipple'
 import { useResourceCardActions } from '~/composables/useResourceCardActions'
@@ -377,6 +356,73 @@ const emit = defineEmits<{
 const hasError = ref(false)
 const visitButtonRef = ref<HTMLAnchorElement | null>(null)
 const isNavigating = ref(false)
+const cardRef = ref<HTMLElement | null>(null)
+
+// 3D Tilt Effect State - Palette's premium micro-UX touch!
+const tiltX = ref(0)
+const tiltY = ref(0)
+const isHovering = ref(false)
+const prefersReducedMotion = ref(false)
+
+// Check for reduced motion preference (safely for SSR and test environments)
+if (typeof window !== 'undefined' && window.matchMedia) {
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  prefersReducedMotion.value = mediaQuery.matches
+
+  const handleChange = (e: MediaQueryListEvent) => {
+    prefersReducedMotion.value = e.matches
+  }
+
+  mediaQuery.addEventListener('change', handleChange)
+
+  // Cleanup listener on component unmount
+  onUnmounted(() => {
+    mediaQuery.removeEventListener('change', handleChange)
+  })
+}
+
+// Computed style for 3D tilt effect
+const cardTiltStyle = computed(() => {
+  if (prefersReducedMotion.value || !isHovering.value) {
+    return {
+      transform: 'translateY(-4px)',
+      boxShadow:
+        '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+    }
+  }
+
+  const config = animationConfig.cardTilt
+  const rotateX = tiltY.value * config.maxRotationDeg
+  const rotateY = tiltX.value * config.maxRotationDeg
+
+  return {
+    transform: `perspective(${config.perspectivePx}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${config.scale}, ${config.scale}, ${config.scale})`,
+    transition: `transform ${config.transitionDurationSec} ease-out`,
+    boxShadow: `${-tiltX.value * config.glowSpreadPx}px ${tiltY.value * config.glowSpreadPx}px ${config.glowBlurPx}px ${config.glowColor}`,
+  }
+})
+
+// Handle mouse move for tilt effect
+const handleMouseMove = (event: MouseEvent) => {
+  if (prefersReducedMotion.value || !cardRef.value) return
+
+  const rect = cardRef.value.getBoundingClientRect()
+  const centerX = rect.left + rect.width / 2
+  const centerY = rect.top + rect.height / 2
+
+  // Calculate normalized position (-1 to 1) from center
+  tiltX.value = (event.clientX - centerX) / (rect.width / 2)
+  tiltY.value = (event.clientY - centerY) / (rect.height / 2)
+
+  isHovering.value = true
+}
+
+// Handle mouse leave - reset tilt
+const handleMouseLeave = () => {
+  tiltX.value = 0
+  tiltY.value = 0
+  isHovering.value = false
+}
 
 // Computed button text based on navigation state
 const visitButtonText = computed(() => {
@@ -669,6 +715,35 @@ if (typeof useHead === 'function') {
 @media (prefers-reduced-motion: reduce) {
   .card-shine-container::before {
     display: none;
+  }
+}
+
+/* 3D Card Tilt Effect - Palette's premium micro-UX touch! */
+.card-tilt {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.card-tilt:hover {
+  z-index: 10;
+}
+
+/* Smooth transition for non-hover state */
+article:not(:hover) {
+  transition:
+    transform v-bind('animationConfig.cardTilt.transitionDurationSec') ease-out,
+    box-shadow v-bind('animationConfig.cardTilt.transitionDurationSec') ease-out;
+}
+
+/* Ensure card content stays flat during tilt */
+.card-tilt > * {
+  transform: translateZ(20px);
+}
+
+/* Reduced motion support for card tilt */
+@media (prefers-reduced-motion: reduce) {
+  .card-tilt {
+    transform: none !important;
   }
 }
 </style>
