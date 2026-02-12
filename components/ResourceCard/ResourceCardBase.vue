@@ -2,8 +2,16 @@
 <template>
   <article
     v-if="!hasError"
-    class="bg-white p-6 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 border border-gray-200 hover:border-blue-300 focus-within:border-blue-300 transition-all duration-200 ease-out group card-shine-container"
+    ref="cardRef"
+    class="bg-white p-6 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 border border-gray-200 hover:border-blue-300 focus-within:border-blue-300 transition-all duration-200 ease-out group card-shine-container card-3d-tilt"
+    :class="{
+      'is-tilting': isTilting && !prefersReducedMotion,
+    }"
+    :style="tiltStyle"
     role="article"
+    @mouseenter="handleMouseEnter"
+    @mousemove="handleMouseMove"
+    @mouseleave="handleMouseLeave"
   >
     <div class="flex items-start">
       <div
@@ -378,6 +386,86 @@ const hasError = ref(false)
 const visitButtonRef = ref<HTMLAnchorElement | null>(null)
 const isNavigating = ref(false)
 
+// Palette's 3D Card Tilt Micro-UX Enhancement!
+// Adds subtle parallax effect based on mouse position for premium feel
+const cardRef = ref<HTMLElement | null>(null)
+const isTilting = ref(false)
+const tiltX = ref(0)
+const tiltY = ref(0)
+const prefersReducedMotion = ref(false)
+
+// Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (typeof window === 'undefined' || !window.matchMedia) return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// Calculate tilt based on mouse position
+const calculateTilt = (event: MouseEvent) => {
+  if (!cardRef.value || prefersReducedMotion.value) return
+
+  const rect = cardRef.value.getBoundingClientRect()
+  const centerX = rect.left + rect.width / 2
+  const centerY = rect.top + rect.height / 2
+
+  // Calculate mouse position relative to card center (-1 to 1)
+  const mouseX = (event.clientX - centerX) / (rect.width / 2)
+  const mouseY = (event.clientY - centerY) / (rect.height / 2)
+
+  // Apply tilt configuration values - Flexy hates hardcoded values!
+  const maxTiltX = animationConfig.card3dTilt.maxTiltXPx
+  const maxTiltY = animationConfig.card3dTilt.maxTiltYPx
+
+  // Invert Y axis so tilting up feels natural
+  tiltX.value = mouseY * maxTiltX
+  tiltY.value = -mouseX * maxTiltY
+}
+
+// Handle mouse enter - start tilting
+const handleMouseEnter = () => {
+  if (prefersReducedMotion.value) return
+  isTilting.value = true
+}
+
+// Handle mouse move - update tilt
+const handleMouseMove = (event: MouseEvent) => {
+  if (!isTilting.value || prefersReducedMotion.value) return
+  calculateTilt(event)
+}
+
+// Handle mouse leave - reset tilt
+const handleMouseLeave = () => {
+  isTilting.value = false
+  tiltX.value = 0
+  tiltY.value = 0
+}
+
+// Computed tilt style for dynamic CSS transforms
+const tiltStyle = computed(() => {
+  if (
+    prefersReducedMotion.value ||
+    (!isTilting.value && tiltX.value === 0 && tiltY.value === 0)
+  ) {
+    return {}
+  }
+
+  const config = animationConfig.card3dTilt
+
+  return {
+    transform: `
+      perspective(${config.perspectivePx}px)
+      rotateX(${tiltX.value}deg)
+      rotateY(${tiltY.value}deg)
+      translateZ(${isTilting.value ? config.hoverLiftPx : 0}px)
+      scale(${isTilting.value ? config.hoverScale : 1})
+    `,
+    transition: isTilting.value
+      ? 'transform 0.1s ease-out'
+      : `transform ${config.resetDurationSec}s cubic-bezier(0.4, 0, 0.2, 1)`,
+    transformStyle: 'preserve-3d' as const,
+  }
+})
+
 // Computed button text based on navigation state
 const visitButtonText = computed(() => {
   return isNavigating.value
@@ -425,6 +513,24 @@ const memoizedHighlight = memoizeHighlight(sanitizeAndHighlight)
 onMounted(() => {
   if (props.id) {
     trackResourceView(props.id, props.title, props.category || 'unknown')
+  }
+
+  // Check reduced motion preference for 3D tilt effect
+  prefersReducedMotion.value = checkReducedMotion()
+
+  // Listen for changes to reduced motion preference
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handleMotionChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.value = e.matches
+      if (e.matches) {
+        // Reset tilt when reduced motion is enabled
+        isTilting.value = false
+        tiltX.value = 0
+        tiltY.value = 0
+      }
+    }
+    mediaQuery.addEventListener('change', handleMotionChange)
   }
 })
 
@@ -668,6 +774,65 @@ if (typeof useHead === 'function') {
 /* Reduced motion support for card shine */
 @media (prefers-reduced-motion: reduce) {
   .card-shine-container::before {
+    display: none;
+  }
+}
+
+/* 3D Card Tilt Effect - Palette's micro-UX delight! */
+.card-3d-tilt {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.card-3d-tilt.is-tilting {
+  will-change: transform;
+}
+
+/* Add subtle inner glow during tilt for depth perception */
+.card-3d-tilt.is-tilting::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.15) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.card-3d-tilt.is-tilting::after {
+  opacity: 1;
+}
+
+/* Ensure card content stays flat during tilt */
+.card-3d-tilt > * {
+  transform: translateZ(0);
+}
+
+/* Enhanced shadow during tilt for depth */
+.card-3d-tilt.is-tilting {
+  box-shadow:
+    0 20px 40px -10px rgba(0, 0, 0, 0.15),
+    0 10px 20px -5px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(59, 130, 246, 0.1);
+}
+
+/* Reduced motion support for 3D tilt */
+@media (prefers-reduced-motion: reduce) {
+  .card-3d-tilt,
+  .card-3d-tilt.is-tilting {
+    transform: none !important;
+    transition:
+      box-shadow 0.2s ease,
+      border-color 0.2s ease !important;
+  }
+
+  .card-3d-tilt::after {
     display: none;
   }
 }
