@@ -6,6 +6,20 @@ interface WebhookListResponse {
   data: unknown[]
 }
 
+/**
+ * Integration tests for webhook functionality
+ *
+ * These tests are excluded from default test runs (see vitest.config.ts line 40)
+ * and require the integration test profile to run:
+ *   VITEST_PROFILE=integration npm test
+ *
+ * Tests require:
+ * - Running Nuxt dev server
+ * - Playwright browser for e2e tests
+ * - Proper API authentication setup
+ *
+ * Skipped by default because they need infrastructure not available in CI
+ */
 describe.skip('Webhook Integration', () => {
   it('should have webhook API endpoints', async () => {
     const response = await $fetch<WebhookListResponse>('/api/v1/webhooks', {
