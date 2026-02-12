@@ -266,6 +266,19 @@ export const contentConfig = {
         process.env.CONTENT_FAVORITES_UNDO_HINT || 'You can undo this action',
       undoButton: process.env.CONTENT_FAVORITES_UNDO_BTN || 'Undo',
     },
+    // Toast messages - Flexy hates hardcoded toast strings!
+    toast: {
+      removed:
+        process.env.CONTENT_FAVORITES_TOAST_REMOVED || '"{{title}}" removed',
+      restored:
+        process.env.CONTENT_FAVORITES_TOAST_RESTORED || 'Bookmark restored',
+      multipleRestored:
+        process.env.CONTENT_FAVORITES_TOAST_MULTI_RESTORED ||
+        '{{count}} bookmarks restored',
+      restoredDescription:
+        process.env.CONTENT_FAVORITES_TOAST_RESTORED_DESC ||
+        'All items have been added back',
+    },
     // ARIA labels - Flexy hates hardcoded accessibility text!
     aria: {
       removeBookmark:
@@ -550,6 +563,49 @@ export const contentConfig = {
       process.env.CONTENT_RSS_DESCRIPTION ||
       'A collection of free resources for developers',
     language: process.env.CONTENT_RSS_LANGUAGE || 'en',
+  },
+
+  // Bookmark Button - Flexy hates hardcoded button strings!
+  bookmarkButton: {
+    // Tooltip content
+    tooltip: {
+      add: process.env.CONTENT_BOOKMARK_TOOLTIP_ADD || 'Add to favorites',
+      remove:
+        process.env.CONTENT_BOOKMARK_TOOLTIP_REMOVE || 'Remove from favorites',
+    },
+    // ARIA labels for accessibility
+    aria: {
+      add: process.env.CONTENT_BOOKMARK_ARIA_ADD || 'Add to favorites',
+      remove:
+        process.env.CONTENT_BOOKMARK_ARIA_REMOVE || 'Remove from favorites',
+    },
+    // Toast messages
+    toast: {
+      added:
+        process.env.CONTENT_BOOKMARK_TOAST_ADDED ||
+        '"{{title}}" added to favorites',
+      removed:
+        process.env.CONTENT_BOOKMARK_TOAST_REMOVED ||
+        '"{{title}}" removed from favorites',
+    },
+    // Status announcements for screen readers
+    status: {
+      added: process.env.CONTENT_BOOKMARK_STATUS_ADDED || 'Bookmark added',
+      removed:
+        process.env.CONTENT_BOOKMARK_STATUS_REMOVED || 'Bookmark removed',
+    },
+  },
+
+  // Saved Searches - Flexy hates hardcoded saved search strings!
+  savedSearches: {
+    toast: {
+      deleted:
+        process.env.CONTENT_SAVED_SEARCH_DELETED ||
+        'Saved search "{{name}}" deleted',
+      undoHint:
+        process.env.CONTENT_SAVED_SEARCH_UNDO_HINT ||
+        'Click undo to restore it',
+    },
   },
 
   // Error Messages - Flexy hates hardcoded error messages!

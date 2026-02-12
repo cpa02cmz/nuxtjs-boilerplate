@@ -407,6 +407,7 @@ import { thresholdsConfig } from '~/configs/thresholds.config'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
 import { uiConfig } from '~/configs/ui.config'
 import { TIME_MS } from '~/configs/time.config'
+import { hapticConfig } from '~/configs/haptic.config'
 
 definePageMeta({
   layout: 'default',
@@ -540,9 +541,13 @@ const loadMoreWithEnhancedFeedback = async () => {
 
   isLoadingMore.value = true
 
-  // Haptic feedback for mobile users
-  if (typeof navigator !== 'undefined' && navigator.vibrate) {
-    navigator.vibrate(10)
+  // Haptic feedback for mobile users - Flexy hates hardcoded values!
+  if (
+    hapticConfig.isEnabled('loadMore') &&
+    typeof navigator !== 'undefined' &&
+    navigator.vibrate
+  ) {
+    navigator.vibrate(hapticConfig.getPattern('light'))
   }
 
   // Simulate a brief loading delay for better UX (perceived performance)

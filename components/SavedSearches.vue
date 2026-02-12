@@ -101,8 +101,11 @@ const onRemoveSavedSearch = (search: SavedSearch) => {
   // Create toast with undo action
   if ($toast) {
     $toast.info(
-      `Saved search "${search.name || search.query}" deleted`,
-      'Click undo to restore it'
+      contentConfig.savedSearches.toast.deleted.replace(
+        '{{name}}',
+        search.name || search.query
+      ),
+      contentConfig.savedSearches.toast.undoHint
     )
   }
 
