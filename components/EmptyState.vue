@@ -23,32 +23,38 @@
           class="w-24 h-24 text-gray-400"
           fill="none"
           stroke="currentColor"
-          viewBox="0 0 24 24"
+          :viewBox="emptyStateStyles.illustration.viewBox"
           xmlns="http://www.w3.org/2000/svg"
         >
           <!-- Magnifying Glass -->
           <circle
-            cx="11"
-            cy="11"
-            r="7"
-            stroke-width="1.5"
+            :cx="emptyStateStyles.illustration.magnifyingGlass.outerCircle.cx"
+            :cy="emptyStateStyles.illustration.magnifyingGlass.outerCircle.cy"
+            :r="emptyStateStyles.illustration.magnifyingGlass.outerCircle.r"
+            :stroke-width="
+              emptyStateStyles.illustration.magnifyingGlass.outerCircle
+                .strokeWidth
+            "
             class="origin-center"
             :class="{ 'animate-draw': !reducedMotion }"
           />
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
-            stroke-width="1.5"
-            d="M21 21l-4.35-4.35"
+            :stroke-width="
+              emptyStateStyles.illustration.magnifyingGlass.outerCircle
+                .strokeWidth
+            "
+            :d="`M${emptyStateStyles.illustration.magnifyingGlass.handle.x1} ${emptyStateStyles.illustration.magnifyingGlass.handle.y1}l-${emptyStateStyles.illustration.magnifyingGlass.handle.x1 - emptyStateStyles.illustration.magnifyingGlass.handle.x2} -${emptyStateStyles.illustration.magnifyingGlass.handle.y1 - emptyStateStyles.illustration.magnifyingGlass.handle.y2}`"
             class="origin-bottom-left"
             :class="{ 'animate-draw-delayed': !reducedMotion }"
           />
 
           <!-- Decorative Elements -->
           <circle
-            cx="11"
-            cy="11"
-            r="2"
+            :cx="emptyStateStyles.illustration.magnifyingGlass.innerCircle.cx"
+            :cy="emptyStateStyles.illustration.magnifyingGlass.innerCircle.cy"
+            :r="emptyStateStyles.illustration.magnifyingGlass.innerCircle.r"
             fill="currentColor"
             class="opacity-20"
           />
@@ -199,6 +205,10 @@
 import { computed } from 'vue'
 import { animationConfig } from '../configs/animation.config'
 import { contentConfig } from '../configs/content.config'
+import { componentStylesConfig } from '../configs/component-styles.config'
+
+// Flexy hates hardcoded values! Using config for SVG coordinates
+const emptyStateStyles = componentStylesConfig.emptyState
 
 interface Props {
   title?: string

@@ -87,6 +87,15 @@ export const componentStylesConfig = {
       width: parseInt(process.env.SPINNER_STROKE_WIDTH || '2'),
       dashArray: process.env.SPINNER_DASH_ARRAY || '1, 200',
       dashOffset: parseInt(process.env.SPINNER_DASH_OFFSET || '0'),
+      // Animation keyframe values - Flexy hates hardcoded CSS!
+      dashArrayMid: process.env.SPINNER_DASH_ARRAY_MID || '89, 200',
+      dashOffsetMid: process.env.SPINNER_DASH_OFFSET_MID || '-35px',
+      dashOffsetEnd: process.env.SPINNER_DASH_OFFSET_END || '-124px',
+      // Reduced motion values
+      reducedMotionDashArray:
+        process.env.SPINNER_REDUCED_MOTION_DASH_ARRAY || '89, 200',
+      reducedMotionDashOffset:
+        process.env.SPINNER_REDUCED_MOTION_DASH_OFFSET || '-35px',
     },
   },
 
@@ -106,6 +115,31 @@ export const componentStylesConfig = {
       staggerDelayMs: parseInt(process.env.EMPTY_STATE_STAGGER_DELAY || '100'),
       floatDurationSec: parseInt(process.env.EMPTY_STATE_FLOAT_DURATION || '3'),
       pulseDurationSec: parseInt(process.env.EMPTY_STATE_PULSE_DURATION || '3'),
+    },
+    // SVG Illustration Coordinates - Flexy hates hardcoded values!
+    illustration: {
+      magnifyingGlass: {
+        outerCircle: {
+          cx: parseInt(process.env.EMPTY_STATE_OUTER_CIRCLE_CX || '11'),
+          cy: parseInt(process.env.EMPTY_STATE_OUTER_CIRCLE_CY || '11'),
+          r: parseInt(process.env.EMPTY_STATE_OUTER_CIRCLE_R || '7'),
+          strokeWidth: parseFloat(
+            process.env.EMPTY_STATE_OUTER_CIRCLE_STROKE || '1.5'
+          ),
+        },
+        innerCircle: {
+          cx: parseInt(process.env.EMPTY_STATE_INNER_CIRCLE_CX || '11'),
+          cy: parseInt(process.env.EMPTY_STATE_INNER_CIRCLE_CY || '11'),
+          r: parseInt(process.env.EMPTY_STATE_INNER_CIRCLE_R || '2'),
+        },
+        handle: {
+          x1: parseInt(process.env.EMPTY_STATE_HANDLE_X1 || '21'),
+          y1: parseInt(process.env.EMPTY_STATE_HANDLE_Y1 || '21'),
+          x2: parseFloat(process.env.EMPTY_STATE_HANDLE_X2 || '16.65'),
+          y2: parseFloat(process.env.EMPTY_STATE_HANDLE_Y2 || '16.65'),
+        },
+      },
+      viewBox: process.env.EMPTY_STATE_VIEWBOX || '0 0 24 24',
     },
   },
 
