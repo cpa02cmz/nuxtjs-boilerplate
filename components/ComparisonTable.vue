@@ -25,7 +25,7 @@
               <div class="font-bold text-sm">
                 {{ resource.title }}
               </div>
-              <div class="text-xs text-gray-400 dark:text-gray-500">
+              <div class="text-xs text-gray-600 dark:text-gray-500">
                 {{ resource.category }}
               </div>
               <Transition

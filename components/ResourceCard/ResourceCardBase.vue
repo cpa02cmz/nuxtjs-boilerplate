@@ -249,7 +249,7 @@
           >
             <!-- Actions hint - visible on desktop when not hovered -->
             <div
-              class="hidden md:flex items-center text-gray-400 text-xs transition-opacity duration-200 ease-out group-hover:opacity-0 pointer-events-none"
+              class="hidden md:flex items-center text-gray-600 text-xs transition-opacity duration-200 ease-out group-hover:opacity-0 pointer-events-none"
               aria-hidden="true"
             >
               <svg
