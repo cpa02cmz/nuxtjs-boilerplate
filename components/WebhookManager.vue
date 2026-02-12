@@ -149,13 +149,100 @@
     <!-- Webhooks List -->
     <div class="webhooks-list">
       <h3>{{ contentConfig.webhooks.list.title }}</h3>
+
+      <!-- Enhanced Empty State -->
       <div
         v-if="webhooks.length === 0"
-        class="empty-state"
+        class="webhook-empty-state"
         role="status"
         aria-live="polite"
       >
-        {{ contentConfig.webhooks.empty.message }}
+        <!-- Animated Illustration -->
+        <div
+          class="webhook-illustration"
+          aria-hidden="true"
+        >
+          <!-- Background Circle -->
+          <div
+            class="webhook-bg-circle"
+            :class="{ 'animate-pulse-slow': !reducedMotion }"
+          />
+
+          <!-- Webhook Icon Container -->
+          <div
+            class="webhook-icon-wrapper"
+            :class="{ 'animate-bounce-subtle': !reducedMotion }"
+          >
+            <svg
+              class="webhook-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <!-- Webhook/Link Icon -->
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="webhook-link-path"
+                :class="{ 'animate-draw': !reducedMotion }"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="webhook-link-path-delayed"
+                :class="{ 'animate-draw-delayed': !reducedMotion }"
+              />
+            </svg>
+          </div>
+
+          <!-- Floating Dots -->
+          <div
+            v-if="!reducedMotion"
+            class="webhook-float-dot webhook-float-dot-1"
+          />
+          <div
+            v-if="!reducedMotion"
+            class="webhook-float-dot webhook-float-dot-2"
+          />
+        </div>
+
+        <!-- Title -->
+        <h4 class="webhook-empty-title">
+          {{ contentConfig.webhooks.empty.title }}
+        </h4>
+
+        <!-- Description -->
+        <p class="webhook-empty-description">
+          {{ contentConfig.webhooks.empty.description }}
+        </p>
+
+        <!-- CTA Button -->
+        <button
+          class="btn btn-primary webhook-empty-cta"
+          :aria-label="contentConfig.webhooks.ariaLabels.createButton"
+          @click="showCreateForm = true"
+        >
+          <svg
+            class="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          {{ contentConfig.webhooks.empty.ctaButton }}
+        </button>
       </div>
       <div
         v-else
@@ -273,6 +360,12 @@ const webhookColors = {
 }
 
 const showCreateForm = ref(false)
+
+// Respect user's motion preferences - Palette cares about accessibility!
+const reducedMotion = computed(() => {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+})
 
 const {
   webhooks,
@@ -496,5 +589,197 @@ onMounted(() => {
   padding: 0.75rem;
   border-radius: 0.375rem;
   margin-bottom: 1rem;
+}
+
+/* Webhook Empty State - Palette's delightful micro-UX enhancement! */
+.webhook-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.webhook-illustration {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 1.5rem;
+}
+
+.webhook-bg-circle {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-radius: 50%;
+}
+
+.webhook-icon-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.webhook-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--webhook-muted-text);
+}
+
+.webhook-float-dot {
+  position: absolute;
+  background: var(--webhook-border);
+  border-radius: 50%;
+}
+
+.webhook-float-dot-1 {
+  width: 8px;
+  height: 8px;
+  top: 20%;
+  right: 15%;
+  animation: webhook-float 3s ease-in-out infinite;
+}
+
+.webhook-float-dot-2 {
+  width: 6px;
+  height: 6px;
+  bottom: 25%;
+  left: 20%;
+  animation: webhook-float-delayed 3s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+.webhook-empty-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.webhook-empty-description {
+  font-size: 0.875rem;
+  color: var(--webhook-muted-text);
+  max-width: 280px;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.webhook-empty-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.webhook-empty-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.webhook-empty-cta:active {
+  transform: translateY(0);
+}
+
+/* Animation Keyframes */
+@keyframes webhook-float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.1);
+  }
+}
+
+@keyframes webhook-float-delayed {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.05);
+  }
+}
+
+@keyframes webhook-draw {
+  from {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes webhook-draw-delayed {
+  0%,
+  30% {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+  100% {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes webhook-pulse-slow {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes webhook-bounce-subtle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Animation Classes */
+.animate-pulse-slow {
+  animation: webhook-pulse-slow 4s ease-in-out infinite;
+}
+
+.animate-bounce-subtle {
+  animation: webhook-bounce-subtle 2s ease-in-out infinite;
+}
+
+.animate-draw {
+  animation: webhook-draw 1.5s ease-out forwards;
+}
+
+.animate-draw-delayed {
+  animation: webhook-draw-delayed 1.5s ease-out forwards;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-slow,
+  .animate-bounce-subtle,
+  .animate-draw,
+  .animate-draw-delayed {
+    animation: none;
+    opacity: 1;
+  }
+
+  .webhook-empty-cta:hover {
+    transform: none;
+  }
 }
 </style>
