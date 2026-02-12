@@ -4,6 +4,7 @@ import { webhookQueueSystem } from '~/server/utils/webhookQueue'
 import {
   sendSuccessResponse,
   sendValidationError,
+  sendUnauthorizedError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { triggerWebhookSchema } from '~/server/utils/validation-schemas'
@@ -12,6 +13,11 @@ import { randomUUID } from 'node:crypto'
 
 export default defineEventHandler(async event => {
   try {
+    // Check authentication
+    if (!event.context.apiKey) {
+      return sendUnauthorizedError(event, 'Authentication required')
+    }
+
     const body = await readBody(event)
 
     // Validate using Zod schema
