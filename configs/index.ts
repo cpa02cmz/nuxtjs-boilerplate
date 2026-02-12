@@ -125,6 +125,9 @@ import {
 } from './component-styles.config'
 import { shadowsConfig, type ShadowsConfig } from './shadows.config'
 
+// Shadows config - Flexy hates hardcoded rgba values!
+import { shadowsConfig, type ShadowsConfig } from './shadows.config'
+
 // URL config - Flexy hates hardcoded URLs!
 import {
   urlConfig,
@@ -250,6 +253,9 @@ export { componentColorsConfig, type ComponentColorsConfig }
 export { componentStylesConfig, type ComponentStylesConfig }
 export { shadowsConfig, type ShadowsConfig }
 
+// Re-export shadows config - Flexy hates hardcoded rgba values!
+export { shadowsConfig, type ShadowsConfig }
+
 // Re-export URL config - Flexy hates hardcoded URLs!
 export {
   urlConfig,
@@ -314,6 +320,8 @@ export const config = {
   permissions: permissionsConfig,
   // Component colors config - Flexy hates hardcoded component colors!
   componentColors: componentColorsConfig,
+  // Shadows config - Flexy hates hardcoded rgba values!
+  shadows: shadowsConfig,
   // Network config - Flexy hates hardcoded network errors!
   network: networkConfig,
 } as const

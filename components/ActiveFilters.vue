@@ -559,7 +559,7 @@ import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { uiConfig } from '../configs/ui.config'
 import { contentConfig } from '../configs/content.config'
 import { animationConfig } from '../configs/animation.config'
-import { easingConfig } from '../configs/easing.config'
+import { easingConfig, EASING } from '../configs/easing.config'
 import { PROGRESS } from '~/server/utils/constants'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 
@@ -1030,6 +1030,9 @@ onMounted(() => {
   mediaQuery.addEventListener('change', handleMotionChange)
 })
 
+// 🎯 Flexy: Modular easing values for tooltip transitions
+const tooltipEasing = computed(() => EASING.MATERIAL_STANDARD)
+
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
   clearUndoState()
@@ -1309,7 +1312,7 @@ onUnmounted(() => {
   border-radius: 6px;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s v-bind('tooltipEasing');
   pointer-events: none;
   z-index: 50;
   box-shadow:
@@ -1329,7 +1332,7 @@ onUnmounted(() => {
   border-color: rgba(17, 24, 39, 0.9) transparent transparent transparent;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s v-bind('tooltipEasing');
   pointer-events: none;
   z-index: 50;
 }

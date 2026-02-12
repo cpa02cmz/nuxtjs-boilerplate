@@ -97,12 +97,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onUnmounted, computed } from 'vue'
+import { EASING } from '~/configs/easing.config'
 
 // Skeleton loading component for ResourceCard
 // Enhanced with wave shimmer animation for better perceived performance
 // BroCula fixed SSR issues! 🦇 All values are now SSR-safe.
 // Palette enhanced with interactive hover states! 🎨
+// Flexy: All cubic-bezier values now use modular EASING config! 🎯
 
 // SSR-safe animation configuration with defaults
 // During SSR, we use these defaults; on client, we could enhance
@@ -159,6 +161,13 @@ const cardEnterDurationSec = SKELETON_CONFIG.cardEnterDurationSec
 const reducedMotionEnterDurationSec =
   SKELETON_CONFIG.reducedMotionEnterDurationSec
 
+// 🎯 Flexy: Modular easing values from config - no more hardcoded cubic-bezier!
+const easingValues = computed(() => ({
+  materialStandard: EASING.MATERIAL_STANDARD,
+  materialSharp: EASING.MATERIAL_SHARP,
+  springSnappy: EASING.SPRING_SNAPPY,
+}))
+
 // 🎨 Palette: Interactive hover state for delightful micro-UX
 const skeletonRef = ref<HTMLElement | null>(null)
 const hoverIntensity = ref(0)
@@ -208,8 +217,8 @@ onUnmounted(() => {
 /* 🎨 Palette: Interactive skeleton card with hover response */
 .skeleton-interactive {
   transition:
-    transform var(--hover-transition) cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow var(--hover-transition) cubic-bezier(0.4, 0, 0.2, 1);
+    transform var(--hover-transition) v-bind('easingValues.materialStandard'),
+    box-shadow var(--hover-transition) v-bind('easingValues.materialStandard');
   cursor: progress;
   --hover-transition: 0.3s;
 }
@@ -268,7 +277,7 @@ onUnmounted(() => {
     shimmer v-bind('shimmerDurationSec') ease-in-out infinite,
     breathe 3s ease-in-out infinite,
     icon-pulse 4s ease-in-out infinite;
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.4s v-bind('easingValues.springSnappy');
 }
 
 /* 🎨 Palette: Icon hover interaction */
@@ -300,8 +309,8 @@ onUnmounted(() => {
 
 /* Pulse animation for reduced motion fallback */
 .skeleton-pulse {
-  animation: pulse v-bind('pulseDurationSec') cubic-bezier(0.4, 0, 0.6, 1)
-    infinite;
+  animation: pulse v-bind('pulseDurationSec')
+    v-bind('easingValues.materialSharp') infinite;
 }
 
 @keyframes pulse {
@@ -317,7 +326,7 @@ onUnmounted(() => {
 /* 🎨 Palette: Enhanced card entrance with spring physics */
 .skeleton-card {
   animation: springFadeIn v-bind('cardEnterDurationSec')
-    cubic-bezier(0.34, 1.56, 0.64, 1);
+    v-bind('easingValues.springSnappy');
 }
 
 @keyframes springFadeIn {
@@ -350,7 +359,7 @@ onUnmounted(() => {
     calc(var(--wave-index) * var(--wave-stagger)),
     calc(var(--wave-index) * 0.1s);
   transition:
-    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s v-bind('easingValues.materialStandard'),
     opacity 0.3s ease;
 }
 

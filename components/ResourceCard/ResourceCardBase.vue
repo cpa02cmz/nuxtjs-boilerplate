@@ -478,6 +478,9 @@ const visitButtonText = computed(() => {
     : props.buttonLabel || contentConfig.resourceCard.defaultButtonLabel
 })
 
+// 🎯 Flexy: Modular easing for new badge pulse animation
+const newPulseEasing = computed(() => EASING.MATERIAL_SHARP)
+
 // Use the resource card actions composable
 const { isNew, isResourceVisited, markResourceVisited } =
   useResourceCardActions({
@@ -681,7 +684,7 @@ if (typeof useHead === 'function') {
 <style scoped>
 /* New badge pulse animation */
 .animate-new-pulse {
-  animation: new-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: new-pulse 2s v-bind('newPulseEasing') infinite;
 }
 
 @keyframes new-pulse {
