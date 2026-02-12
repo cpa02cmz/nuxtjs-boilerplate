@@ -174,3 +174,19 @@ export const easingConfig = {
 } as const
 
 export type EasingConfig = typeof easingConfig
+
+/**
+ * Backward-compatible EASING export - maps legacy naming to new structure
+ * @deprecated Use easingConfig instead for new code
+ */
+export const EASING = {
+  // Material Design standard easing
+  MATERIAL_STANDARD: easingConfig.cubicBezier.standard,
+  // Spring standard easing
+  SPRING_STANDARD: easingConfig.cubicBezier.spring,
+  // Spring snappy (bouncy)
+  SPRING_SNAPPY: easingConfig.cubicBezier.bouncy,
+  // Standard ease out
+  EASE_OUT: easingConfig.standard.easeOut,
+  // Add more mappings as needed for backward compatibility
+} as const
