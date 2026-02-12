@@ -483,6 +483,413 @@ export const contentConfig = {
       copied:
         process.env.CONTENT_ARIA_CLIPBOARD_COPIED || 'Copied to clipboard',
     },
+    mainNavigation: process.env.CONTENT_ARIA_MAIN_NAV || 'Main navigation',
+    mainContent: process.env.CONTENT_ARIA_MAIN_CONTENT || 'Main content',
+    scrollToTop: process.env.CONTENT_ARIA_SCROLL_TOP || 'Scroll to top of page',
+  },
+
+  // Moderation - Flexy hates hardcoded moderation strings!
+  moderation: {
+    dashboard: {
+      title:
+        process.env.CONTENT_MODERATION_DASHBOARD_TITLE ||
+        'Content Moderation Dashboard',
+      subtitle:
+        process.env.CONTENT_MODERATION_SUBTITLE ||
+        'Manage resource submissions and content quality',
+      recentActivity:
+        process.env.CONTENT_MODERATION_RECENT_ACTIVITY || 'Recent Activity',
+      quickActions:
+        process.env.CONTENT_MODERATION_QUICK_ACTIONS || 'Quick Actions',
+    },
+    stats: {
+      pendingTitle:
+        process.env.CONTENT_MODERATION_PENDING_TITLE || 'Pending Reviews',
+      approvedTitle:
+        process.env.CONTENT_MODERATION_APPROVED_TITLE || 'Approved This Week',
+      rejectedTitle:
+        process.env.CONTENT_MODERATION_REJECTED_TITLE || 'Rejected This Week',
+      flaggedTitle:
+        process.env.CONTENT_MODERATION_FLAGGED_TITLE || 'Flagged Resources',
+      viewQueue: process.env.CONTENT_MODERATION_VIEW_QUEUE || 'View Queue',
+      viewFlags: process.env.CONTENT_MODERATION_VIEW_FLAGS || 'View Flags',
+    },
+    actions: {
+      reviewQueue:
+        process.env.CONTENT_MODERATION_REVIEW_QUEUE || 'Review Queue',
+      flaggedContent:
+        process.env.CONTENT_MODERATION_FLAGGED_CONTENT || 'Flagged Content',
+      submissions: process.env.CONTENT_MODERATION_SUBMISSIONS || 'Submissions',
+      settings: process.env.CONTENT_MODERATION_SETTINGS || 'Settings',
+    },
+    review: {
+      resourceInfo:
+        process.env.CONTENT_MODERATION_RESOURCE_INFO || 'Resource Information',
+      submissionDetails:
+        process.env.CONTENT_MODERATION_SUBMISSION_DETAILS ||
+        'Submission Details',
+    },
+    labels: {
+      description:
+        process.env.CONTENT_MODERATION_LABEL_DESCRIPTION || 'Description:',
+      url: process.env.CONTENT_MODERATION_LABEL_URL || 'URL:',
+      category: process.env.CONTENT_MODERATION_LABEL_CATEGORY || 'Category:',
+      pricingModel:
+        process.env.CONTENT_MODERATION_LABEL_PRICING || 'Pricing Model:',
+      difficulty:
+        process.env.CONTENT_MODERATION_LABEL_DIFFICULTY || 'Difficulty:',
+      technologies:
+        process.env.CONTENT_MODERATION_LABEL_TECH || 'Technologies:',
+      tags: process.env.CONTENT_MODERATION_LABEL_TAGS || 'Tags:',
+      benefits: process.env.CONTENT_MODERATION_LABEL_BENEFITS || 'Benefits:',
+      submittedBy:
+        process.env.CONTENT_MODERATION_LABEL_SUBMITTED_BY || 'Submitted By:',
+      submittedAt:
+        process.env.CONTENT_MODERATION_LABEL_SUBMITTED_AT || 'Submitted At:',
+      reviewedBy:
+        process.env.CONTENT_MODERATION_LABEL_REVIEWED_BY || 'Reviewed By:',
+      reviewedAt:
+        process.env.CONTENT_MODERATION_LABEL_REVIEWED_AT || 'Reviewed At:',
+      rejectionReason:
+        process.env.CONTENT_MODERATION_LABEL_REJECTION_REASON ||
+        'Rejection Reason:',
+      notes: process.env.CONTENT_MODERATION_LABEL_NOTES || 'Notes:',
+    },
+    buttons: {
+      approve: process.env.CONTENT_MODERATION_BTN_APPROVE || 'Approve',
+      reject: process.env.CONTENT_MODERATION_BTN_REJECT || 'Reject',
+    },
+    placeholders: {
+      rejectionReason:
+        process.env.CONTENT_MODERATION_PLACEHOLDER_REJECTION ||
+        'Enter reason for rejection...',
+      statusReason:
+        process.env.CONTENT_MODERATION_PLACEHOLDER_STATUS_REASON ||
+        'Enter reason for status change',
+      statusNotes:
+        process.env.CONTENT_MODERATION_PLACEHOLDER_STATUS_NOTES ||
+        'Additional notes about this change',
+    },
+    defaults: {
+      anonymous:
+        process.env.CONTENT_MODERATION_DEFAULT_ANONYMOUS || 'Anonymous',
+      notAvailable: process.env.CONTENT_MODERATION_DEFAULT_NA || 'N/A',
+    },
+    loading: {
+      submission:
+        process.env.CONTENT_MODERATION_LOADING_SUBMISSION ||
+        'Loading submission...',
+    },
+    queue: {
+      title: process.env.CONTENT_MODERATION_QUEUE_TITLE || 'Moderation Queue',
+    },
+    status: {
+      title:
+        process.env.CONTENT_MODERATION_STATUS_TITLE || 'Manage Resource Status',
+    },
+  },
+
+  // API Keys - Flexy hates hardcoded API key strings!
+  apiKeys: {
+    title: process.env.CONTENT_API_KEYS_TITLE || 'API Keys',
+    form: {
+      title: process.env.CONTENT_API_KEYS_FORM_TITLE || 'Create New API Key',
+      keyNameLabel: process.env.CONTENT_API_KEYS_LABEL_NAME || 'Key Name',
+      permissionsLabel:
+        process.env.CONTENT_API_KEYS_LABEL_PERMISSIONS || 'Permissions',
+    },
+    buttons: {
+      create: process.env.CONTENT_API_KEYS_BTN_CREATE || 'Create API Key',
+      createSubmit:
+        process.env.CONTENT_API_KEYS_BTN_CREATE_SUBMIT || 'Create API Key',
+    },
+    permissions: {
+      read: process.env.CONTENT_API_KEYS_PERM_READ || 'Read',
+      write: process.env.CONTENT_API_KEYS_PERM_WRITE || 'Write',
+      delete: process.env.CONTENT_API_KEYS_PERM_DELETE || 'Delete',
+      webhooks: process.env.CONTENT_API_KEYS_PERM_WEBHOOKS || 'Webhooks',
+      admin: process.env.CONTENT_API_KEYS_PERM_ADMIN || 'Admin',
+    },
+    list: {
+      title: process.env.CONTENT_API_KEYS_LIST_TITLE || 'API Keys',
+    },
+    labels: {
+      id: process.env.CONTENT_API_KEYS_LABEL_ID || 'ID:',
+      created: process.env.CONTENT_API_KEYS_LABEL_CREATED || 'Created:',
+      lastUsed: process.env.CONTENT_API_KEYS_LABEL_LAST_USED || 'Last Used:',
+    },
+    empty: {
+      message: process.env.CONTENT_API_KEYS_EMPTY || 'No API keys created',
+    },
+    placeholders: {
+      keyName:
+        process.env.CONTENT_API_KEYS_PLACEHOLDER_NAME || 'My Application Key',
+    },
+  },
+
+  // Webhooks - Flexy hates hardcoded webhook strings!
+  webhooks: {
+    title: process.env.CONTENT_WEBHOOKS_TITLE || 'Webhook Management',
+    buttons: {
+      create: process.env.CONTENT_WEBHOOKS_BTN_CREATE || 'Create Webhook',
+      createSubmit:
+        process.env.CONTENT_WEBHOOKS_BTN_CREATE_SUBMIT || 'Create Webhook',
+      activate: process.env.CONTENT_WEBHOOKS_BTN_ACTIVATE || 'Activate',
+      deactivate: process.env.CONTENT_WEBHOOKS_BTN_DEACTIVATE || 'Deactivate',
+    },
+    form: {
+      title: process.env.CONTENT_WEBHOOKS_FORM_TITLE || 'Create New Webhook',
+      urlLabel: process.env.CONTENT_WEBHOOKS_LABEL_URL || 'Webhook URL',
+      urlDescription:
+        process.env.CONTENT_WEBHOOKS_URL_DESC ||
+        'Enter the endpoint URL where webhook events will be sent',
+      eventsLabel: process.env.CONTENT_WEBHOOKS_LABEL_EVENTS || 'Events',
+      activeLabel: process.env.CONTENT_WEBHOOKS_LABEL_ACTIVE || 'Active',
+    },
+    list: {
+      title: process.env.CONTENT_WEBHOOKS_LIST_TITLE || 'Webhooks',
+    },
+    status: {
+      active: process.env.CONTENT_WEBHOOKS_STATUS_ACTIVE || 'Active',
+      inactive: process.env.CONTENT_WEBHOOKS_STATUS_INACTIVE || 'Inactive',
+    },
+    labels: {
+      lastDelivery: process.env.CONTENT_WEBHOOKS_LABEL_LAST || 'Last:',
+    },
+    empty: {
+      message: process.env.CONTENT_WEBHOOKS_EMPTY || 'No webhooks configured',
+    },
+  },
+
+  // Loading States - Flexy hates hardcoded loading messages!
+  loading: {
+    default: process.env.CONTENT_LOADING_DEFAULT || 'Loading',
+    resourceCard:
+      process.env.CONTENT_LOADING_RESOURCE_CARD || 'Loading resource card',
+    filters: process.env.CONTENT_LOADING_FILTERS || 'Loading filters',
+    searchResults:
+      process.env.CONTENT_LOADING_SEARCH_RESULTS || 'Loading search results',
+    filterOptions:
+      process.env.CONTENT_LOADING_FILTER_OPTIONS || 'Loading filter options',
+    analytics:
+      process.env.CONTENT_LOADING_ANALYTICS || 'Loading analytics data',
+    aiKeys: process.env.CONTENT_LOADING_AI_KEYS || 'Loading AI API keys',
+    comparison:
+      process.env.CONTENT_LOADING_COMPARISON || 'Loading comparison data',
+    searchAnalytics:
+      process.env.CONTENT_LOADING_SEARCH_ANALYTICS ||
+      'Loading search analytics',
+    recommendations:
+      process.env.CONTENT_LOADING_RECOMMENDATIONS || 'Loading recommendations',
+    inProgress: process.env.CONTENT_LOADING_IN_PROGRESS || 'in progress',
+    complete: process.env.CONTENT_LOADING_COMPLETE || 'complete',
+    failed: process.env.CONTENT_LOADING_FAILED || 'failed',
+  },
+
+  // Keyboard Shortcuts - Flexy hates hardcoded shortcut descriptions!
+  keyboardShortcuts: {
+    title: process.env.CONTENT_KEYBOARD_TITLE || 'Keyboard Shortcuts',
+    description:
+      process.env.CONTENT_KEYBOARD_DESCRIPTION ||
+      'Use these shortcuts to navigate faster and work more efficiently.',
+    sections: {
+      search: process.env.CONTENT_KEYBOARD_SECTION_SEARCH || 'Search',
+      navigation: process.env.CONTENT_KEYBOARD_SECTION_NAV || 'Navigation',
+      filters: process.env.CONTENT_KEYBOARD_SECTION_FILTERS || 'Filters',
+      quickActions:
+        process.env.CONTENT_KEYBOARD_SECTION_ACTIONS || 'Quick Actions',
+    },
+    shortcuts: {
+      focusSearch:
+        process.env.CONTENT_KEYBOARD_FOCUS_SEARCH || 'Focus search box',
+      clearSearch:
+        process.env.CONTENT_KEYBOARD_CLEAR_SEARCH ||
+        'Clear search / Close suggestions',
+      navigate: process.env.CONTENT_KEYBOARD_NAVIGATE || 'Navigate suggestions',
+      nextFocus:
+        process.env.CONTENT_KEYBOARD_NEXT_FOCUS ||
+        'Move to next focusable element',
+      prevFocus:
+        process.env.CONTENT_KEYBOARD_PREV_FOCUS ||
+        'Move to previous focusable element',
+      closeModal:
+        process.env.CONTENT_KEYBOARD_CLOSE_MODAL || 'Close modals / menus',
+      undoFilters:
+        process.env.CONTENT_KEYBOARD_UNDO_FILTERS || 'Undo clear filters',
+      selectFilter:
+        process.env.CONTENT_KEYBOARD_SELECT_FILTER ||
+        'Select/deselect filter option',
+      openHelp:
+        process.env.CONTENT_KEYBOARD_OPEN_HELP || 'Open this help modal',
+    },
+    trigger: {
+      label: process.env.CONTENT_KEYBOARD_TRIGGER_LABEL || 'Shortcuts',
+      aria:
+        process.env.CONTENT_KEYBOARD_TRIGGER_ARIA ||
+        'View keyboard shortcuts (press ? to open)',
+    },
+    aria: {
+      close:
+        process.env.CONTENT_KEYBOARD_CLOSE_ARIA ||
+        'Close keyboard shortcuts (press Escape)',
+    },
+  },
+
+  // Health Monitor - Flexy hates hardcoded health strings!
+  health: {
+    title: process.env.CONTENT_HEALTH_TITLE || 'Resource Health',
+    recentChecks: process.env.CONTENT_HEALTH_RECENT_CHECKS || 'Recent Checks',
+  },
+
+  // About Page - Flexy hates hardcoded about content!
+  about: {
+    title:
+      process.env.CONTENT_ABOUT_TITLE || 'About Free Stuff on the Internet',
+    sectionTitle:
+      process.env.CONTENT_ABOUT_SECTION_TITLE || 'About This Resource',
+    description:
+      process.env.CONTENT_ABOUT_DESC ||
+      `Free Stuff on the Internet is a curated collection of free resources for developers, designers, and tech enthusiasts. We gather the best free tiers, trials, and genuinely free tools to help you build amazing things without breaking the bank.`,
+    categoriesTitle:
+      process.env.CONTENT_ABOUT_CATEGORIES_TITLE || 'Categories Covered',
+    categories: {
+      ai: process.env.CONTENT_ABOUT_CATEGORY_AI || 'Free AI API Keys and Tools',
+      vps:
+        process.env.CONTENT_ABOUT_CATEGORY_VPS || 'Free VPS and Cloud Services',
+      hosting:
+        process.env.CONTENT_ABOUT_CATEGORY_HOSTING ||
+        'Free Web Hosting Platforms',
+      databases:
+        process.env.CONTENT_ABOUT_CATEGORY_DATABASES ||
+        'Free Databases and Storage Solutions',
+      cdn:
+        process.env.CONTENT_ABOUT_CATEGORY_CDN ||
+        'Free CDN and Performance Tools',
+    },
+  },
+
+  // Developer Page - Flexy hates hardcoded developer strings!
+  developer: {
+    rateLimits: {
+      general: process.env.CONTENT_DEV_RATE_GENERAL || 'General requests',
+      search: process.env.CONTENT_DEV_RATE_SEARCH || 'Search requests',
+      submission:
+        process.env.CONTENT_DEV_RATE_SUBMISSION || 'Submission requests',
+    },
+  },
+
+  // Analytics - Flexy hates hardcoded analytics labels!
+  analytics: {
+    labels: {
+      startDate: process.env.CONTENT_ANALYTICS_START_DATE || 'Start Date',
+      endDate: process.env.CONTENT_ANALYTICS_END_DATE || 'End Date',
+    },
+  },
+
+  // Error Message Component - Flexy hates hardcoded error strings!
+  errorMessage: {
+    undo: {
+      aria:
+        process.env.CONTENT_ERROR_UNDO_ARIA ||
+        'Undo dismissal of {variant} message. Press Control Z to restore',
+    },
+    dismissed:
+      process.env.CONTENT_ERROR_DISMISSED ||
+      '{variant} message dismissed. Press Control Z to restore.',
+    restored:
+      process.env.CONTENT_ERROR_RESTORED || '{variant} message restored.',
+    dismiss: {
+      aria:
+        process.env.CONTENT_ERROR_DISMISS_ARIA || 'Dismiss {variant} message',
+    },
+  },
+
+  // Profile Page - Flexy hates hardcoded profile strings!
+  profile: {
+    settings: {
+      recommendations:
+        process.env.CONTENT_PROFILE_RECOMMENDATIONS ||
+        'Personalized recommendations',
+      dataCollection:
+        process.env.CONTENT_PROFILE_DATA_COLLECTION || 'Data collection',
+      explanations:
+        process.env.CONTENT_PROFILE_EXPLANATIONS ||
+        'Recommendation explanations',
+    },
+  },
+
+  // Common Buttons - Flexy hates hardcoded button labels!
+  buttons: {
+    cancel: process.env.CONTENT_BTN_CANCEL || 'Cancel',
+    delete: process.env.CONTENT_BTN_DELETE || 'Delete',
+    undo: process.env.CONTENT_BTN_UNDO || 'Undo',
+    scrollToTop: process.env.CONTENT_BTN_SCROLL_TOP || 'Scroll to top',
+  },
+
+  // Search - Flexy hates hardcoded search strings!
+  searchExtra: {
+    tooltip: {
+      focus:
+        process.env.CONTENT_SEARCH_TOOLTIP_FOCUS || 'Press / to focus search',
+    },
+    autoUpdateMessage:
+      process.env.CONTENT_SEARCH_AUTO_UPDATE ||
+      'Search results will be updated automatically',
+  },
+
+  // Resource Card - Flexy hates hardcoded card strings!
+  resourceCardExtra: {
+    hoverHint: process.env.CONTENT_RESOURCE_HOVER_HINT || 'Hover for actions',
+  },
+
+  // Resource Detail - Flexy hates hardcoded detail strings!
+  resourceDetailExtra: {
+    updateHistory:
+      process.env.CONTENT_RESOURCE_UPDATE_HISTORY || 'Update History',
+  },
+
+  // Comments - Flexy hates hardcoded comment strings!
+  comments: {
+    placeholder:
+      process.env.CONTENT_COMMENTS_PLACEHOLDER ||
+      'Share your thoughts about this resource...',
+    aria: {
+      add: process.env.CONTENT_COMMENTS_ARIA_ADD || 'Add a comment',
+      like: process.env.CONTENT_COMMENTS_ARIA_LIKE || 'Like this comment',
+      reply: process.env.CONTENT_COMMENTS_ARIA_REPLY || 'Reply to this comment',
+    },
+  },
+
+  // Social Share - Flexy hates hardcoded social strings!
+  socialShareExtra: {
+    aria: {
+      share: process.env.CONTENT_SOCIAL_SHARE_ARIA || 'Share this resource',
+    },
+  },
+
+  // Empty State - Flexy hates hardcoded empty state strings!
+  emptyState: {
+    buttons: {
+      reset: process.env.CONTENT_EMPTY_RESET || 'Reset Filters',
+      browseAll: process.env.CONTENT_EMPTY_BROWSE_ALL || 'Browse All Resources',
+    },
+    tips: {
+      title: process.env.CONTENT_EMPTY_TIPS_TITLE || 'Search Tips',
+      fewerFilters:
+        process.env.CONTENT_EMPTY_TIPS_FEWER ||
+        'Use fewer filters to see more results',
+      synonyms:
+        process.env.CONTENT_EMPTY_TIPS_SYNONYMS ||
+        'Try synonyms or related terms',
+      spelling:
+        process.env.CONTENT_EMPTY_TIPS_SPELLING ||
+        'Check spelling and try broader keywords',
+    },
+  },
+
+  // Form - Flexy hates hardcoded form strings!
+  form: {
+    required: process.env.CONTENT_FORM_REQUIRED || '(required)',
   },
 } as const
 
