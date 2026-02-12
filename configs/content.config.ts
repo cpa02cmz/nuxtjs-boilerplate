@@ -319,6 +319,35 @@ export const contentConfig = {
     },
   },
 
+  // Offline Indicator - Palette's micro-UX enhancement!
+  offline: {
+    // Main status messages
+    offlineTitle: process.env.CONTENT_OFFLINE_TITLE || "You're offline",
+    offlineSubtitle:
+      process.env.CONTENT_OFFLINE_SUBTITLE ||
+      'Some features may be unavailable',
+    reconnectingText:
+      process.env.CONTENT_OFFLINE_RECONNECTING || 'Reconnecting...',
+    backOnlineText: process.env.CONTENT_OFFLINE_BACK_ONLINE || 'Back online!',
+    // Retry button
+    retryButton: process.env.CONTENT_OFFLINE_RETRY || 'Tap to retry',
+    retryingButton: process.env.CONTENT_OFFLINE_RETRYING || 'Checking...',
+    retrySuccess: process.env.CONTENT_OFFLINE_RETRY_SUCCESS || 'Connected!',
+    retryFailed: process.env.CONTENT_OFFLINE_RETRY_FAILED || 'Still offline',
+    // ARIA labels
+    aria: {
+      offlineAlert:
+        process.env.CONTENT_OFFLINE_ARIA_ALERT ||
+        'You are currently offline. Some features may be unavailable.',
+      backOnlineStatus:
+        process.env.CONTENT_OFFLINE_ARIA_BACK_ONLINE ||
+        'Connection restored. You are back online.',
+      retryButton:
+        process.env.CONTENT_OFFLINE_ARIA_RETRY ||
+        'Check connection status. Press Enter or Space to retry.',
+    },
+  },
+
   // Submit Page
   submit: {
     title: process.env.CONTENT_SUBMIT_TITLE || 'Submit a Resource',
