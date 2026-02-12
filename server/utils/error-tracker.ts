@@ -53,46 +53,49 @@ export function createErrorTracker() {
         const source = payload.source || 'server'
         const errorHash = createErrorHash(payload.message, payload.stack)
 
-        // Check for existing unresolved error with same hash
-        const existingError = await prisma.trackedError.findFirst({
-          where: {
-            errorHash,
-            resolvedAt: null,
-          },
+        // Wrap all database operations in a transaction to prevent race conditions
+        await prisma.$transaction(async tx => {
+          // Check for existing unresolved error with same hash
+          const existingError = await tx.trackedError.findFirst({
+            where: {
+              errorHash,
+              resolvedAt: null,
+            },
+          })
+
+          if (existingError) {
+            // Increment occurrence count
+            await tx.trackedError.update({
+              where: { id: existingError.id },
+              data: {
+                occurrenceCount: { increment: 1 },
+                lastSeenAt: new Date(),
+              },
+            })
+            logger.debug(
+              `[ErrorTracker] Incremented count for existing error: ${errorHash}`
+            )
+          } else {
+            // Create new error entry
+            await tx.trackedError.create({
+              data: {
+                message: payload.message,
+                stack: payload.stack,
+                component: payload.component,
+                severity,
+                url: payload.url,
+                userAgent: payload.userAgent,
+                ip: payload.ip,
+                source,
+                errorHash,
+                occurrenceCount: 1,
+              },
+            })
+            logger.info(`[ErrorTracker] Created new error entry: ${errorHash}`)
+          }
         })
 
-        if (existingError) {
-          // Increment occurrence count
-          await prisma.trackedError.update({
-            where: { id: existingError.id },
-            data: {
-              occurrenceCount: { increment: 1 },
-              lastSeenAt: new Date(),
-            },
-          })
-          logger.debug(
-            `[ErrorTracker] Incremented count for existing error: ${errorHash}`
-          )
-        } else {
-          // Create new error entry
-          await prisma.trackedError.create({
-            data: {
-              message: payload.message,
-              stack: payload.stack,
-              component: payload.component,
-              severity,
-              url: payload.url,
-              userAgent: payload.userAgent,
-              ip: payload.ip,
-              source,
-              errorHash,
-              occurrenceCount: 1,
-            },
-          })
-          logger.info(`[ErrorTracker] Created new error entry: ${errorHash}`)
-        }
-
-        // Update error metrics
+        // Update error metrics (outside transaction for performance)
         await updateErrorMetrics(severity, source)
       } catch (err) {
         logger.error('[ErrorTracker] Failed to track error:', err)
