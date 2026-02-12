@@ -1,6 +1,12 @@
 <template>
   <fieldset
     class="mb-6"
+    :style="{
+      '--checkbox-pop-duration': `${animationConfig.checkbox.popDurationMs}ms`,
+      '--checkbox-bloom-duration': `${animationConfig.checkbox.bloomDurationMs}ms`,
+      '--checkbox-check-duration': `${animationConfig.checkbox.checkDrawDurationMs}ms`,
+      '--count-pulse-duration': '300ms',
+    }"
     @keydown="handleKeydown"
   >
     <div class="flex items-center justify-between mb-3">
@@ -323,9 +329,10 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Checkbox pop animation when selected */
+/* Checkbox pop animation when selected - Flexy hates hardcoded values! */
 .animate-checkbox-pop {
-  animation: checkbox-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: checkbox-pop var(--checkbox-pop-duration)
+    cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes checkbox-pop {
@@ -340,9 +347,10 @@ onUnmounted(() => {
   }
 }
 
-/* Checkbox pop-out animation when deselected */
+/* Checkbox pop-out animation when deselected - Flexy hates hardcoded values! */
 .animate-checkbox-pop-out {
-  animation: checkbox-pop-out 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: checkbox-pop-out var(--checkbox-pop-duration)
+    cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes checkbox-pop-out {
@@ -409,7 +417,7 @@ button:hover {
 }
 
 .text-blue-600.font-medium {
-  animation: count-pulse 0.3s ease-out;
+  animation: count-pulse var(--count-pulse-duration) ease-out;
 }
 
 /* Checkbox bloom effect - Palette's micro-UX enhancement! */
@@ -432,11 +440,13 @@ button:hover {
 }
 
 .checkbox-bloom--active {
-  animation: checkbox-bloom var(--bloom-duration, 400ms) ease-out forwards;
+  animation: checkbox-bloom
+    var(--bloom-duration, var(--checkbox-bloom-duration)) ease-out forwards;
 }
 
 .checkbox-bloom--out {
-  animation: checkbox-bloom-out var(--bloom-duration, 400ms) ease-out forwards;
+  animation: checkbox-bloom-out
+    var(--bloom-duration, var(--checkbox-bloom-duration)) ease-out forwards;
 }
 
 @keyframes checkbox-bloom {
@@ -463,12 +473,14 @@ button:hover {
 
 /* Enhanced checkbox pop animation */
 .animate-checkbox-pop {
-  animation: checkbox-pop-enhanced var(--pop-duration, 250ms)
+  animation: checkbox-pop-enhanced
+    var(--pop-duration, var(--checkbox-pop-duration))
     cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .animate-checkbox-pop-out {
-  animation: checkbox-pop-out-enhanced var(--pop-duration, 250ms)
+  animation: checkbox-pop-out-enhanced
+    var(--pop-duration, var(--checkbox-pop-duration))
     cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -498,7 +510,8 @@ button:hover {
 
 /* Check draw animation for the checkmark */
 .animate-check-draw {
-  animation: check-bounce var(--check-duration, 300ms) ease-out;
+  animation: check-bounce var(--check-duration, var(--checkbox-check-duration))
+    ease-out;
 }
 
 @keyframes check-bounce {

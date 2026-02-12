@@ -16,6 +16,11 @@
       '--shortcut-peak-scale': shortcutSuccessColors.peakScale,
       '--shortcut-shadow-spread-start': `${shortcutSuccessColors.shadowSpreadStart}px`,
       '--shortcut-shadow-spread-mid': `${shortcutSuccessColors.shadowSpreadMid}px`,
+      '--focus-pulse-duration': animationDurations.focusPulse,
+      '--idle-pulse-duration': animationDurations.idlePulse,
+      '--idle-pulse-iterations': animationDurations.idlePulseIterations,
+      '--shortcut-success-duration': animationDurations.shortcutSuccess,
+      '--search-complete-duration': animationDurations.searchComplete,
     }"
   >
     <div class="relative">
@@ -413,6 +418,17 @@ const shortcutSuccessColors = computed(() => {
   }
 })
 
+// Flexy hates hardcoded animation durations! Using config values for CSS animations
+const animationDurations = computed(() => {
+  return {
+    focusPulse: `${animationConfig.focus.pulseDurationMs}ms`,
+    idlePulse: `${animationConfig.focusGlow.durationMs}ms`,
+    idlePulseIterations: '3',
+    shortcutSuccess: `${animationConfig.searchShortcut.durationMs}ms`,
+    searchComplete: `${animationConfig.card.enterDurationMs}ms`,
+  }
+})
+
 const handleKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Escape') {
     if (showSuggestions.value) {
@@ -668,8 +684,8 @@ if (typeof window !== 'undefined') {
 }
 
 .animate-focus-pulse {
-  /* Flexy hates hardcoded values! Using config from uiConfig.timing.focusPulseDurationMs */
-  animation: focus-pulse 600ms ease-out;
+  /* Flexy hates hardcoded values! Using config from animationConfig.focus.pulseDurationMs */
+  animation: focus-pulse var(--focus-pulse-duration) ease-out;
 }
 
 /* Idle pulse animation for keyboard shortcut discoverability - Flexy hates hardcoded colors! */
@@ -688,7 +704,8 @@ if (typeof window !== 'undefined') {
 }
 
 .animate-idle-pulse {
-  animation: idle-pulse 2s ease-in-out 3;
+  animation: idle-pulse var(--idle-pulse-duration) ease-in-out
+    var(--idle-pulse-iterations);
 }
 
 /* Success glow animation when user uses keyboard shortcut */
@@ -724,14 +741,14 @@ if (typeof window !== 'undefined') {
 }
 
 .animate-shortcut-success {
-  animation: shortcut-success 600ms ease-out forwards;
+  animation: shortcut-success var(--shortcut-success-duration) ease-out forwards;
 }
 
 /* Search complete animation - provides positive feedback when search finishes */
 /* Draws attention to the completion state with a satisfying pop effect */
 .animate-search-complete {
-  animation: search-complete 800ms cubic-bezier(0.175, 0.885, 0.32, 1.275)
-    forwards;
+  animation: search-complete var(--search-complete-duration)
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 @keyframes search-complete {
