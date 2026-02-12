@@ -28,8 +28,12 @@ export default defineNitroPlugin(async nitroApp => {
   // Function to validate all resources
   const validateAllResources = async () => {
     try {
-      // Import resources from JSON
-      const resourcesModule = await import(contentConfig.paths.resourcesData)
+      // Import resources from JSON (use relative path for server-side dynamic import)
+      const resourcesDataPath = contentConfig.paths.resourcesData.replace(
+        /^~\//,
+        '../../data/'
+      )
+      const resourcesModule = await import(resourcesDataPath)
       const resources = resourcesModule.default || resourcesModule
 
       if (Array.isArray(resources) && resources.length > 0) {
