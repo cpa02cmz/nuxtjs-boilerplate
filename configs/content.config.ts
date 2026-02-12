@@ -324,6 +324,9 @@ export const contentConfig = {
     notNow: process.env.CONTENT_PWA_NOT_NOW || 'Not now',
     install: process.env.CONTENT_PWA_INSTALL || 'Install',
     installing: process.env.CONTENT_PWA_INSTALLING || 'Installing...',
+    installSuccess:
+      process.env.CONTENT_PWA_INSTALL_SUCCESS ||
+      'App installed successfully! 🎉',
     // ARIA labels
     aria: {
       installPrompt:
