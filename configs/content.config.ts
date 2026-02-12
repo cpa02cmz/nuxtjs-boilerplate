@@ -22,7 +22,7 @@ export const contentConfig = {
   paths: {
     // Resources data file path
     resourcesData:
-      process.env.CONTENT_RESOURCES_DATA_PATH || '~/data/resources.json',
+      process.env.CONTENT_RESOURCES_DATA_PATH || './data/resources.json',
   },
 
   // Form Placeholders - Flexy hates hardcoded placeholders!
@@ -901,47 +901,6 @@ export const contentConfig = {
     required: process.env.CONTENT_FORM_REQUIRED || '(required)',
   },
 
-  // API Keys Management - Flexy hates hardcoded API key UI text!
-  apiKeys: {
-    title: process.env.CONTENT_APIKEYS_TITLE || 'API Keys',
-    description:
-      process.env.CONTENT_APIKEYS_DESC ||
-      'Manage your API keys for accessing the API',
-    placeholders: {
-      keyName:
-        process.env.CONTENT_APIKEYS_PLACEHOLDER_NAME ||
-        'Enter a name for your API key',
-      keyNameAlt:
-        process.env.CONTENT_APIKEYS_PLACEHOLDER_NAME_ALT ||
-        'My Application Key',
-    },
-    buttons: {
-      generate: process.env.CONTENT_APIKEYS_BTN_GENERATE || 'Generate API Key',
-      revoke: process.env.CONTENT_APIKEYS_BTN_REVOKE || 'Revoke',
-      create: process.env.CONTENT_APIKEYS_BTN_CREATE || 'Create API Key',
-      cancel: process.env.CONTENT_APIKEYS_BTN_CANCEL || 'Cancel',
-    },
-    labels: {
-      yourKeys: process.env.CONTENT_APIKEYS_LABEL_YOURS || 'Your API Keys',
-      keyName: process.env.CONTENT_APIKEYS_LABEL_NAME || 'Key Name',
-      permissions:
-        process.env.CONTENT_APIKEYS_LABEL_PERMISSIONS || 'Permissions',
-      id: process.env.CONTENT_APIKEYS_LABEL_ID || 'ID:',
-      created: process.env.CONTENT_APIKEYS_LABEL_CREATED || 'Created:',
-      expires: process.env.CONTENT_APIKEYS_LABEL_EXPIRES || 'Expires:',
-    },
-    emptyState: {
-      message: process.env.CONTENT_APIKEYS_EMPTY || 'No API keys created',
-    },
-    permissions: {
-      read: process.env.CONTENT_APIKEYS_PERM_READ || 'Read',
-      write: process.env.CONTENT_APIKEYS_PERM_WRITE || 'Write',
-      delete: process.env.CONTENT_APIKEYS_PERM_DELETE || 'Delete',
-      webhooks: process.env.CONTENT_APIKEYS_PERM_WEBHOOKS || 'Webhooks',
-      admin: process.env.CONTENT_APIKEYS_PERM_ADMIN || 'Admin',
-    },
-  },
-
   // Status Management - Flexy hates hardcoded status UI text!
   statusManager: {
     title: process.env.CONTENT_STATUS_TITLE || 'Manage Resource Status',
@@ -1040,29 +999,6 @@ export const contentConfig = {
     },
   },
 
-  // Resource Comments - Flexy hates hardcoded comment UI text!
-  comments: {
-    title: process.env.CONTENT_COMMENTS_TITLE || 'Comments',
-    countLabel: process.env.CONTENT_COMMENTS_COUNT || 'comments',
-    placeholders: {
-      newComment:
-        process.env.CONTENT_COMMENTS_PLACEHOLDER ||
-        'Share your thoughts about this resource...',
-    },
-    buttons: {
-      post: process.env.CONTENT_COMMENTS_BTN_POST || 'Post Comment',
-      like: process.env.CONTENT_COMMENTS_BTN_LIKE || 'Like',
-      reply: process.env.CONTENT_COMMENTS_BTN_REPLY || 'Reply',
-    },
-    aria: {
-      addComment: process.env.CONTENT_COMMENTS_ARIA_ADD || 'Add a comment',
-      likeComment:
-        process.env.CONTENT_COMMENTS_ARIA_LIKE || 'Like this comment',
-      replyComment:
-        process.env.CONTENT_COMMENTS_ARIA_REPLY || 'Reply to this comment',
-    },
-  },
-
   // Toast Messages - Flexy hates hardcoded toast messages!
   toast: {
     draft: {
@@ -1079,20 +1015,6 @@ export const contentConfig = {
           process.env.CONTENT_TOAST_COMPARISON_TITLE ||
           'Comparison URL copied to clipboard!',
       },
-    },
-  },
-
-  // Moderation Pages - Flexy hates hardcoded moderation UI text!
-  moderation: {
-    review: {
-      description:
-        process.env.CONTENT_MOD_REVIEW_DESC ||
-        'Review and moderate resource submission',
-    },
-    queue: {
-      description:
-        process.env.CONTENT_MOD_QUEUE_DESC ||
-        'Review pending resource submissions',
     },
   },
 } as const
