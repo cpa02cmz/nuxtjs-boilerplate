@@ -184,52 +184,141 @@
               </div>
             </div>
 
-            <!-- Load More Button -->
+            <!-- Load More Button with Progress Ring -->
             <div
-              v-if="hasMoreResources"
+              v-if="hasMoreResources || showCompletionState"
               class="mt-8 text-center"
             >
-              <button
-                class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-white"
-                :disabled="isLoadingMore"
-                @click="loadMoreWithFeedback"
+              <!-- Completion Celebration State -->
+              <div
+                v-if="showCompletionState"
+                class="inline-flex items-center px-6 py-3 bg-green-50 text-green-700 rounded-lg animate-celebration-pulse"
+                role="status"
+                aria-live="polite"
               >
-                <!-- Loading Spinner -->
                 <svg
-                  v-if="isLoadingMore"
-                  class="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-500"
-                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5 mr-2 animate-check-bounce"
                   fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
-                  aria-hidden="true"
                 >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  />
                   <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
                   />
                 </svg>
-                <span>{{
-                  isLoadingMore
-                    ? uiConfig.loadMore.loadingText
-                    : uiConfig.loadMore.buttonText
+                <span class="font-medium">{{
+                  uiConfig.loadMore.allLoadedText
                 }}</span>
+              </div>
+
+              <!-- Load More Button with Progress Ring -->
+              <button
+                v-else
+                ref="loadMoreButtonRef"
+                class="relative inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-white group"
+                :disabled="isLoadingMore"
+                :aria-label="loadMoreAriaLabel"
+                @click="loadMoreWithEnhancedFeedback"
+              >
+                <!-- Progress Ring SVG -->
+                <svg
+                  class="absolute inset-0 w-full h-full -rotate-90"
+                  viewBox="0 0 100 100"
+                  aria-hidden="true"
+                >
+                  <!-- Background circle -->
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="46"
+                    fill="none"
+                    stroke="#e5e7eb"
+                    stroke-width="2"
+                  />
+                  <!-- Progress circle -->
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="46"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    :stroke-dasharray="loadMoreProgressCircumference"
+                    :stroke-dashoffset="loadMoreProgressOffset"
+                    class="text-indigo-500 transition-all duration-500 ease-out"
+                  />
+                </svg>
+
+                <!-- Button Content -->
+                <span class="relative z-10 flex items-center">
+                  <!-- Loading Spinner -->
+                  <svg
+                    v-if="isLoadingMore"
+                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    />
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+
+                  <!-- Arrow Down Icon -->
+                  <svg
+                    v-else
+                    class="w-5 h-5 mr-2 text-gray-500 group-hover:translate-y-0.5 transition-transform duration-200"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+
+                  <span>{{
+                    isLoadingMore
+                      ? uiConfig.loadMore.loadingText
+                      : uiConfig.loadMore.buttonText
+                  }}</span>
+                </span>
+
+                <!-- Progress Percentage Badge -->
                 <span
                   v-if="!isLoadingMore"
-                  class="ml-2 text-gray-500"
+                  class="relative z-10 ml-3 text-sm text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full"
                 >
-                  ({{ paginatedResources.length }} of
-                  {{ filteredResources.length }})
+                  {{ loadMoreProgressPercentage }}%
                 </span>
               </button>
+
+              <!-- Screen reader announcement for progress -->
+              <div
+                role="status"
+                aria-live="polite"
+                class="sr-only"
+              >
+                {{ loadMoreProgressAnnouncement }}
+              </div>
             </div>
           </div>
 
@@ -304,7 +393,7 @@
 
 <script setup lang="ts">
 import type { SortOption } from '~/types/resource'
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useResources } from '~/composables/useResources'
 import { useUrlSync } from '~/composables/useUrlSync'
 import { useHomePage } from '~/composables/useHomePage'
@@ -395,6 +484,9 @@ const resetAllFilters = () => {
 // Pagination state - prevents DOM bloat with large resource collections
 const displayedCount = ref(thresholdsConfig.pagination.initialCount)
 const isLoadingMore = ref(false)
+const showCompletionState = ref(false)
+const loadMoreButtonRef = ref<HTMLButtonElement | null>(null)
+const lastLoadedCount = ref(0)
 
 // Computed property for paginated resources
 const paginatedResources = computed(() => {
@@ -406,11 +498,51 @@ const hasMoreResources = computed(() => {
   return displayedCount.value < filteredResources.value.length
 })
 
-// Load more resources with visual feedback for perceived performance
-const loadMoreWithFeedback = async () => {
+// Progress calculations for the circular progress indicator
+const loadMoreProgressPercentage = computed(() => {
+  if (filteredResources.value.length === 0) return 0
+  return Math.round(
+    (displayedCount.value / filteredResources.value.length) * 100
+  )
+})
+
+const loadMoreProgressCircumference = computed(() => 2 * Math.PI * 46)
+
+const loadMoreProgressOffset = computed(() => {
+  const circumference = loadMoreProgressCircumference.value
+  const percentage = loadMoreProgressPercentage.value / 100
+  return circumference - percentage * circumference
+})
+
+// ARIA label for accessibility
+const loadMoreAriaLabel = computed(() => {
+  if (isLoadingMore.value) {
+    return `Loading more resources. ${loadMoreProgressPercentage.value}% loaded`
+  }
+  return `Load more resources. Currently showing ${displayedCount.value} of ${filteredResources.value.length} resources (${loadMoreProgressPercentage.value}% loaded)`
+})
+
+// Screen reader announcement
+const loadMoreProgressAnnouncement = computed(() => {
+  if (isLoadingMore.value) {
+    return `Loading more resources...`
+  }
+  return `${displayedCount.value} of ${filteredResources.value.length} resources loaded (${loadMoreProgressPercentage.value}%)`
+})
+
+// Load more resources with enhanced visual feedback - Palette's micro-UX delight!
+const loadMoreWithEnhancedFeedback = async () => {
   if (isLoadingMore.value) return
 
+  // Store the current count for scroll positioning
+  lastLoadedCount.value = displayedCount.value
+
   isLoadingMore.value = true
+
+  // Haptic feedback for mobile users
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    navigator.vibrate(10)
+  }
 
   // Simulate a brief loading delay for better UX (perceived performance)
   // This makes the action feel more substantial and prevents rapid double-clicks
@@ -421,6 +553,37 @@ const loadMoreWithFeedback = async () => {
   displayedCount.value += thresholdsConfig.pagination.loadMoreCount
 
   isLoadingMore.value = false
+
+  // Check if we've loaded all resources
+  if (displayedCount.value >= filteredResources.value.length) {
+    showCompletionState.value = true
+
+    // Hide completion state after a delay
+    setTimeout(() => {
+      showCompletionState.value = false
+    }, 3000)
+  }
+
+  // Scroll to the newly loaded content smoothly
+  await nextTick()
+  scrollToNewlyLoadedContent()
+}
+
+// Scroll to the first newly loaded resource card
+const scrollToNewlyLoadedContent = () => {
+  // Find all resource card wrappers
+  const cards = document.querySelectorAll('.resource-card-wrapper')
+
+  // Scroll to the first newly loaded card
+  if (cards.length > lastLoadedCount.value) {
+    const newCard = cards[lastLoadedCount.value]
+    if (newCard) {
+      newCard.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      })
+    }
+  }
 }
 
 // Reset pagination when filters change
@@ -475,6 +638,52 @@ watch(
 /* Respect reduced motion preferences for accessibility */
 @media (prefers-reduced-motion: reduce) {
   .resource-card-wrapper {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Load More Button - Completion Celebration Animation */
+.animate-celebration-pulse {
+  animation: celebration-pulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes celebration-pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Checkmark bounce animation */
+.animate-check-bounce {
+  animation: check-bounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes check-bounce {
+  0% {
+    transform: scale(0) rotate(-45deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+/* Reduced motion support for new animations */
+@media (prefers-reduced-motion: reduce) {
+  .animate-celebration-pulse,
+  .animate-check-bounce {
     animation: none;
     opacity: 1;
     transform: none;

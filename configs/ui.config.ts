@@ -470,12 +470,15 @@ export const uiConfig = {
     textareaRows: parseInt(process.env.FORM_TEXTAREA_ROWS || '4'),
   },
 
-  // Load More Button Settings
+  // Load More Button Settings - Palette's micro-UX enhancement!
   loadMore: {
     // Button text for pagination
     buttonText: process.env.LOAD_MORE_BUTTON_TEXT || 'Load More',
     // Button text when loading
     loadingText: process.env.LOAD_MORE_LOADING_TEXT || 'Loading...',
+    // Text shown when all resources are loaded (completion celebration)
+    allLoadedText:
+      process.env.LOAD_MORE_ALL_LOADED_TEXT || 'All resources loaded!',
     // Minimum loading duration for perceived performance (ms)
     minLoadingDurationMs: parseInt(process.env.LOAD_MORE_MIN_DURATION || '400'),
     // Spinner animation duration (seconds)
