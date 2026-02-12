@@ -534,11 +534,13 @@
             </div>
 
             <button
+              ref="magneticSubmitRef"
               type="submit"
               :disabled="isSubmitting"
               :aria-busy="isSubmitting"
               aria-live="polite"
-              class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              :style="magneticTransformStyle"
+              class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 magnetic-button"
             >
               <span v-if="!isSubmitting">{{
                 contentConfig.submit.button.submit
@@ -663,6 +665,7 @@ import { timeConfig, TIME_MS } from '~/configs/time.config'
 import { contentConfig } from '~/configs/content.config'
 import { debounce } from '~/utils/debounce'
 import { useSmartPaste } from '~/composables/useSmartPaste'
+import { useMagneticButton } from '~/composables/useMagneticButton'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
@@ -727,6 +730,16 @@ const draftPulseTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 const prefersReducedMotion = computed(() => {
   if (typeof window === 'undefined') return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+})
+
+// Palette's micro-UX delight: Magnetic button effect for submit button
+// Creates a subtle "magnetic" pull that draws the button toward the cursor
+const {
+  elementRef: magneticSubmitRef,
+  transformStyle: magneticTransformStyle,
+} = useMagneticButton({
+  strength: 0.4,
+  maxDistancePx: 12,
 })
 
 // Format relative time for saved indicator
