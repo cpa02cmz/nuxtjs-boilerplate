@@ -101,6 +101,7 @@ import { useReviewQueue } from '~/composables/useReviewQueue'
 import type { Submission } from '~/types/submission'
 import { moderationConfig } from '~/configs/moderation.config'
 import { contentConfig } from '~/configs/content.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 
 interface Props {
   initialSubmissions?: Submission[]
@@ -160,7 +161,7 @@ const {
   padding: 1rem;
   margin-bottom: 1rem;
   background: var(--color-card-background);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: v-bind('shadowsConfig.reviewQueue.cardShadow');
 }
 
 .submission-header {

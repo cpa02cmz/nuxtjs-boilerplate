@@ -178,6 +178,7 @@
 <script setup lang="ts">
 import { useModerationDashboard } from '~/composables/useModerationDashboard'
 import { contentConfig } from '~/configs/content.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 
 const {
   pendingCount,
@@ -301,22 +302,22 @@ const config = contentConfig.moderation
 }
 
 .activity-approve {
-  background: rgba(40, 167, 69, 0.1);
+  background: v-bind('shadowsConfig.moderationDashboard.approvedBg');
   color: var(--color-success);
 }
 
 .activity-reject {
-  background: rgba(220, 53, 69, 0.1);
+  background: v-bind('shadowsConfig.moderationDashboard.rejectedBg');
   color: var(--color-error);
 }
 
 .activity-flag {
-  background: rgba(255, 193, 7, 0.1);
+  background: v-bind('shadowsConfig.moderationDashboard.flaggedBg');
   color: #ffc107;
 }
 
 .activity-submit {
-  background: rgba(0, 123, 255, 0.1);
+  background: v-bind('shadowsConfig.moderationDashboard.pendingBg');
   color: var(--color-primary);
 }
 
@@ -356,7 +357,7 @@ const config = contentConfig.moderation
 .action-btn:hover {
   background: var(--color-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: v-bind('shadowsConfig.moderationDashboard.cardShadow');
 }
 
 .action-icon {

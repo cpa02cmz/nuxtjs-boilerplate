@@ -123,6 +123,7 @@ import {
   componentStylesConfig,
   type ComponentStylesConfig,
 } from './component-styles.config'
+import { shadowsConfig, type ShadowsConfig } from './shadows.config'
 
 // URL config - Flexy hates hardcoded URLs!
 import {
@@ -247,6 +248,7 @@ export { moderationConfig, type ModerationConfig }
 export { permissionsConfig, type PermissionsConfig }
 export { componentColorsConfig, type ComponentColorsConfig }
 export { componentStylesConfig, type ComponentStylesConfig }
+export { shadowsConfig, type ShadowsConfig }
 
 // Re-export URL config - Flexy hates hardcoded URLs!
 export {
