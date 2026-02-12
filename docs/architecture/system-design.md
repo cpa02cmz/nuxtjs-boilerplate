@@ -145,4 +145,4 @@ nuxtjs-boilerplate/
 
 ---
 
-_Last Updated: 2026-11-29_
+**Last Updated**: 2026-02-12
