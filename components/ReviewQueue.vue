@@ -3,10 +3,7 @@
     <div class="queue-header">
       <h2>{{ contentConfig.reviewQueue.title }}</h2>
       <div class="queue-filters">
-        <select
-          v-model="statusFilter"
-          class="filter-select"
-        >
+        <select v-model="statusFilter" class="filter-select">
           <option value="">
             {{ contentConfig.reviewQueue.filters.allStatuses }}
           </option>
@@ -25,21 +22,15 @@
           type="text"
           :placeholder="moderationConfig.ui.categoryFilterPlaceholder"
           class="filter-input"
-        >
+        />
       </div>
     </div>
 
-    <div
-      v-if="loading"
-      class="loading"
-    >
+    <div v-if="loading" class="loading">
       {{ contentConfig.reviewQueue.loading }}
     </div>
 
-    <div
-      v-else-if="filteredSubmissions.length > 0"
-      class="submissions-list"
-    >
+    <div v-else-if="filteredSubmissions.length > 0" class="submissions-list">
       <div
         v-for="submission in filteredSubmissions"
         :key="submission.id"
@@ -57,12 +48,18 @@
             {{ submission.resourceData?.description }}
           </p>
           <div class="meta-info">
-            <span class="category">{{ contentConfig.reviewQueue.labels.category }}
-              {{ submission.resourceData?.category }}</span>
-            <span class="submitted-by">{{ contentConfig.reviewQueue.labels.submittedBy }}
-              {{ submission.submittedBy }}</span>
-            <span class="submitted-at">{{ contentConfig.reviewQueue.labels.submittedAt }}
-              {{ formatDate(submission.submittedAt) }}</span>
+            <span class="category"
+              >{{ contentConfig.reviewQueue.labels.category }}
+              {{ submission.resourceData?.category }}</span
+            >
+            <span class="submitted-by"
+              >{{ contentConfig.reviewQueue.labels.submittedBy }}
+              {{ submission.submittedBy }}</span
+            >
+            <span class="submitted-at"
+              >{{ contentConfig.reviewQueue.labels.submittedAt }}
+              {{ formatDate(submission.submittedAt) }}</span
+            >
           </div>
 
           <div class="tags">
@@ -87,10 +84,7 @@
       </div>
     </div>
 
-    <div
-      v-else
-      class="empty-state"
-    >
+    <div v-else class="empty-state">
       {{ contentConfig.reviewQueue.emptyState }}
     </div>
   </div>
@@ -101,6 +95,7 @@ import { useReviewQueue } from '~/composables/useReviewQueue'
 import type { Submission } from '~/types/submission'
 import { moderationConfig } from '~/configs/moderation.config'
 import { contentConfig } from '~/configs/content.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 
 interface Props {
   initialSubmissions?: Submission[]
@@ -160,7 +155,7 @@ const {
   padding: 1rem;
   margin-bottom: 1rem;
   background: var(--color-card-background);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: v-bind('shadowsConfig.reviewQueue.cardShadow');
 }
 
 .submission-header {

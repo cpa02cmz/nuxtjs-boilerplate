@@ -5,22 +5,13 @@
       <p>{{ config.dashboard.subtitle }}</p>
     </header>
 
-    <section
-      aria-label="Dashboard statistics"
-      class="dashboard-stats"
-    >
+    <section aria-label="Dashboard statistics" class="dashboard-stats">
       <article class="stat-card">
         <h2>{{ config.stats.pendingTitle }}</h2>
-        <div
-          class="stat-value"
-          :aria-label="`Number of pending reviews`"
-        >
+        <div class="stat-value" :aria-label="`Number of pending reviews`">
           {{ pendingCount }}
         </div>
-        <NuxtLink
-          to="/moderation/queue"
-          class="stat-link"
-        >
+        <NuxtLink to="/moderation/queue" class="stat-link">
           {{ config.stats.viewQueue }}
         </NuxtLink>
       </article>
@@ -33,12 +24,7 @@
         >
           {{ approvedCount }}
         </div>
-        <div
-          class="stat-trend up"
-          aria-label="12 percent increase"
-        >
-          +12%
-        </div>
+        <div class="stat-trend up" aria-label="12 percent increase">+12%</div>
       </article>
 
       <article class="stat-card">
@@ -49,26 +35,15 @@
         >
           {{ rejectedCount }}
         </div>
-        <div
-          class="stat-trend down"
-          aria-label="5 percent decrease"
-        >
-          -5%
-        </div>
+        <div class="stat-trend down" aria-label="5 percent decrease">-5%</div>
       </article>
 
       <article class="stat-card">
         <h2>{{ config.stats.flaggedTitle }}</h2>
-        <div
-          class="stat-value"
-          :aria-label="`Number of flagged resources`"
-        >
+        <div class="stat-value" :aria-label="`Number of flagged resources`">
           {{ flaggedCount }}
         </div>
-        <NuxtLink
-          to="/moderation/flags"
-          class="stat-link"
-        >
+        <NuxtLink to="/moderation/flags" class="stat-link">
           {{ config.stats.viewFlags }}
         </NuxtLink>
       </article>
@@ -82,10 +57,7 @@
         <h2 id="recent-activity-heading">
           {{ config.dashboard.recentActivity }}
         </h2>
-        <ul
-          class="activity-list"
-          role="list"
-        >
+        <ul class="activity-list" role="list">
           <li
             v-for="activity in recentActivity"
             :key="activity.id"
@@ -100,10 +72,7 @@
             </div>
             <div class="activity-content">
               <p>{{ activity.message }}</p>
-              <time
-                class="activity-time"
-                :datetime="activity.timestamp"
-              >{{
+              <time class="activity-time" :datetime="activity.timestamp">{{
                 formatDate(activity.timestamp)
               }}</time>
             </div>
@@ -111,26 +80,17 @@
         </ul>
       </section>
 
-      <section
-        class="quick-actions"
-        aria-labelledby="quick-actions-heading"
-      >
+      <section class="quick-actions" aria-labelledby="quick-actions-heading">
         <h2 id="quick-actions-heading">
           {{ config.dashboard.quickActions }}
         </h2>
-        <nav
-          class="action-buttons"
-          aria-label="Quick actions navigation"
-        >
+        <nav class="action-buttons" aria-label="Quick actions navigation">
           <NuxtLink
             to="/moderation/queue"
             class="action-btn"
             aria-label="Go to review queue"
           >
-            <span
-              class="action-icon"
-              aria-hidden="true"
-            >📋</span>
+            <span class="action-icon" aria-hidden="true">📋</span>
             <span>{{ config.actions.reviewQueue }}</span>
           </NuxtLink>
 
@@ -139,10 +99,7 @@
             class="action-btn"
             aria-label="View flagged content"
           >
-            <span
-              class="action-icon"
-              aria-hidden="true"
-            >🚩</span>
+            <span class="action-icon" aria-hidden="true">🚩</span>
             <span>{{ config.actions.flaggedContent }}</span>
           </NuxtLink>
 
@@ -151,10 +108,7 @@
             class="action-btn"
             aria-label="View submissions"
           >
-            <span
-              class="action-icon"
-              aria-hidden="true"
-            >📝</span>
+            <span class="action-icon" aria-hidden="true">📝</span>
             <span>{{ config.actions.submissions }}</span>
           </NuxtLink>
 
@@ -163,10 +117,7 @@
             class="action-btn"
             aria-label="Go to settings"
           >
-            <span
-              class="action-icon"
-              aria-hidden="true"
-            >⚙️</span>
+            <span class="action-icon" aria-hidden="true">⚙️</span>
             <span>{{ config.actions.settings }}</span>
           </NuxtLink>
         </nav>
@@ -178,6 +129,7 @@
 <script setup lang="ts">
 import { useModerationDashboard } from '~/composables/useModerationDashboard'
 import { contentConfig } from '~/configs/content.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 
 const {
   pendingCount,
@@ -301,22 +253,22 @@ const config = contentConfig.moderation
 }
 
 .activity-approve {
-  background: rgba(40, 167, 69, 0.1);
+  background: v-bind('shadowsConfig.moderationDashboard.approvedBg');
   color: var(--color-success);
 }
 
 .activity-reject {
-  background: rgba(220, 53, 69, 0.1);
+  background: v-bind('shadowsConfig.moderationDashboard.rejectedBg');
   color: var(--color-error);
 }
 
 .activity-flag {
-  background: rgba(255, 193, 7, 0.1);
+  background: v-bind('shadowsConfig.moderationDashboard.flaggedBg');
   color: #ffc107;
 }
 
 .activity-submit {
-  background: rgba(0, 123, 255, 0.1);
+  background: v-bind('shadowsConfig.moderationDashboard.pendingBg');
   color: var(--color-primary);
 }
 
@@ -356,7 +308,7 @@ const config = contentConfig.moderation
 .action-btn:hover {
   background: var(--color-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: v-bind('shadowsConfig.moderationDashboard.cardShadow');
 }
 
 .action-icon {

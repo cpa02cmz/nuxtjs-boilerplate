@@ -81,6 +81,7 @@ import { computed } from 'vue'
 import { uiConfig } from '../configs/ui.config'
 import { limitsConfig } from '../configs/limits.config'
 import { themeConfig } from '../configs/theme.config'
+import { shadowsConfig } from '../configs/shadows.config'
 
 interface Props {
   status?:
@@ -195,7 +196,7 @@ const healthLabel = computed(() => {
 
 .status-badge:hover {
   transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: v-bind('shadowsConfig.colors.black.opacity15');
 }
 
 .status-badge:focus {
@@ -210,7 +211,7 @@ const healthLabel = computed(() => {
 
   .status-badge:hover {
     transform: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: v-bind('shadowsConfig.colors.black.opacity10');
   }
 }
 
