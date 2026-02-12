@@ -5,12 +5,18 @@ import { createWebhookSchema } from '~/server/utils/validation-schemas'
 import {
   sendSuccessResponse,
   sendBadRequestError,
+  sendUnauthorizedError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { securityConfig } from '~/configs/security.config'
 
 export default defineEventHandler(async event => {
   try {
+    // Check authentication
+    if (!event.context.apiKey) {
+      return sendUnauthorizedError(event, 'Authentication required')
+    }
+
     const body = await readBody<CreateWebhookRequest>(event)
 
     const validationResult = createWebhookSchema.safeParse(body)
