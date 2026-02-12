@@ -284,6 +284,45 @@ export const animationConfig = {
     ),
   },
 
+  // Offline Indicator Connection Pulse - Palette's micro-UX enhancement!
+  // Adds a radar-like pulse animation to indicate active reconnection attempts
+  offlineConnectionPulse: {
+    // Duration of the radar pulse animation (ms)
+    durationMs: parseInt(process.env.OFFLINE_PULSE_DURATION_MS || '2000'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.OFFLINE_PULSE_DURATION_MS || '2000') / 1000}s`,
+    // Delay between successive pulses (ms)
+    delayMs: parseInt(process.env.OFFLINE_PULSE_DELAY_MS || '500'),
+    // Scale of the pulse at its peak (1.0 = 100%)
+    maxScale: parseFloat(process.env.OFFLINE_PULSE_MAX_SCALE || '2.5'),
+    // Starting opacity of the pulse ring
+    startOpacity: parseFloat(process.env.OFFLINE_PULSE_START_OPACITY || '0.6'),
+    // Ending opacity of the pulse ring
+    endOpacity: parseFloat(process.env.OFFLINE_PULSE_END_OPACITY || '0'),
+    // Color of the pulse ring (amber-500 with opacity)
+    color: process.env.OFFLINE_PULSE_COLOR || 'rgba(245, 158, 11, 0.4)',
+    // Number of pulse rings to show simultaneously
+    ringCount: parseInt(process.env.OFFLINE_PULSE_RING_COUNT || '3'),
+  },
+
+  // Offline Indicator Retry Button Animation
+  offlineRetry: {
+    // Duration of the button press feedback (ms)
+    pressDurationMs: parseInt(
+      process.env.OFFLINE_RETRY_PRESS_DURATION_MS || '150'
+    ),
+    // Scale when button is pressed
+    pressScale: parseFloat(process.env.OFFLINE_RETRY_PRESS_SCALE || '0.95'),
+    // Duration of the success checkmark animation (ms)
+    successDurationMs: parseInt(
+      process.env.OFFLINE_RETRY_SUCCESS_DURATION_MS || '600'
+    ),
+    // Spin duration for the retry spinner (ms)
+    spinDurationMs: parseInt(
+      process.env.OFFLINE_RETRY_SPIN_DURATION_MS || '800'
+    ),
+  },
+
   // Form Validation Animations - Gentle feedback for validation errors
   validation: {
     // Duration of shake animation when validation fails (ms)
