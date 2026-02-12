@@ -113,8 +113,75 @@ export const contentConfig = {
   filters: {
     title: process.env.CONTENT_FILTERS_TITLE || 'Filters',
     resetAll: process.env.CONTENT_FILTERS_RESET_ALL || 'Reset all',
+    resetSuccess: process.env.CONTENT_FILTERS_RESET_SUCCESS || 'Reset!',
     activeFilters: process.env.CONTENT_FILTERS_ACTIVE || 'Active filters:',
     clearAll: process.env.CONTENT_FILTERS_CLEAR_ALL || 'Clear all',
+    // Section labels for filter sections (without colons)
+    sectionLabels: {
+      category: process.env.CONTENT_FILTER_SECTION_CATEGORY || 'Category',
+      pricingModel:
+        process.env.CONTENT_FILTER_SECTION_PRICING || 'Pricing Model',
+      difficulty: process.env.CONTENT_FILTER_SECTION_DIFFICULTY || 'Difficulty',
+      technology: process.env.CONTENT_FILTER_SECTION_TECHNOLOGY || 'Technology',
+      tags: process.env.CONTENT_FILTER_SECTION_TAGS || 'Tags',
+      benefits: process.env.CONTENT_FILTER_SECTION_BENEFITS || 'Benefits',
+      dateAdded: process.env.CONTENT_FILTER_SECTION_DATE || 'Date Added',
+    },
+    // ARIA labels for accessibility
+    ariaLabels: {
+      resetAll:
+        process.env.CONTENT_FILTER_ARIA_RESET_ALL || 'Reset all filters',
+      resetSuccess:
+        process.env.CONTENT_FILTER_ARIA_RESET_SUCCESS ||
+        'Filters reset successfully',
+      category: process.env.CONTENT_FILTER_ARIA_CATEGORY || 'Category filters',
+      pricingModel:
+        process.env.CONTENT_FILTER_ARIA_PRICING || 'Pricing model filters',
+      difficulty:
+        process.env.CONTENT_FILTER_ARIA_DIFFICULTY ||
+        'Difficulty level filters',
+      technology:
+        process.env.CONTENT_FILTER_ARIA_TECHNOLOGY || 'Technology filters',
+      tags: process.env.CONTENT_FILTER_ARIA_TAGS || 'Tag filters',
+      benefits: process.env.CONTENT_FILTER_ARIA_BENEFITS || 'Benefit filters',
+      dateAdded: process.env.CONTENT_FILTER_ARIA_DATE || 'Filter by date added',
+      region:
+        process.env.CONTENT_FILTER_ARIA_REGION ||
+        'Active filters. Use left and right arrow keys to navigate between filters. Press Delete or Backspace to remove a filter.',
+      clearAll:
+        process.env.CONTENT_FILTER_ARIA_CLEAR_ALL ||
+        'Clear all filters (press Escape to clear all)',
+    },
+    // Chip aria-label templates
+    chipAriaLabels: {
+      removeSearch:
+        process.env.CONTENT_FILTER_CHIP_REMOVE_SEARCH ||
+        'Remove search query filter: {{value}}. Press Delete or Backspace to remove',
+      removeCategory:
+        process.env.CONTENT_FILTER_CHIP_REMOVE_CATEGORY ||
+        'Remove category filter: {{value}}. Press Delete or Backspace to remove',
+      removePricing:
+        process.env.CONTENT_FILTER_CHIP_REMOVE_PRICING ||
+        'Remove pricing filter: {{value}}. Press Delete or Backspace to remove',
+      removeDifficulty:
+        process.env.CONTENT_FILTER_CHIP_REMOVE_DIFFICULTY ||
+        'Remove difficulty filter: {{value}}. Press Delete or Backspace to remove',
+      removeTechnology:
+        process.env.CONTENT_FILTER_CHIP_REMOVE_TECH ||
+        'Remove technology filter: {{value}}. Press Delete or Backspace to remove',
+      removeTag:
+        process.env.CONTENT_FILTER_CHIP_REMOVE_TAG ||
+        'Remove tag filter: {{value}}. Press Delete or Backspace to remove',
+      removeBenefit:
+        process.env.CONTENT_FILTER_CHIP_REMOVE_BENEFIT ||
+        'Remove benefit filter: {{value}}. Press Delete or Backspace to remove',
+      removeDate:
+        process.env.CONTENT_FILTER_CHIP_REMOVE_DATE ||
+        'Remove date filter: {{value}}. Press Delete or Backspace to remove',
+      undo:
+        process.env.CONTENT_FILTER_CHIP_UNDO ||
+        'Undo removal of {{value}} filter. Press Control Z to undo',
+    },
     labels: {
       category: process.env.CONTENT_FILTER_CATEGORY || 'Category:',
       pricing: process.env.CONTENT_FILTER_PRICING || 'Pricing:',
@@ -129,6 +196,11 @@ export const contentConfig = {
       week: process.env.CONTENT_DATE_WEEK || 'Last week',
       month: process.env.CONTENT_DATE_MONTH || 'Last month',
       year: process.env.CONTENT_DATE_YEAR || 'Last year',
+    },
+    // Keyboard shortcuts display
+    keyboard: {
+      ctrlZ: process.env.CONTENT_FILTER_KEY_CTRL_Z || 'Ctrl+Z',
+      esc: process.env.CONTENT_FILTER_KEY_ESC || 'Esc',
     },
   },
 
