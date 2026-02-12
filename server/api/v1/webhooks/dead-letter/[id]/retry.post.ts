@@ -2,11 +2,17 @@ import { webhookQueueSystem } from '~/server/utils/webhookQueue'
 import {
   sendNotFoundError,
   sendSuccessResponse,
+  sendUnauthorizedError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 
 export default defineEventHandler(async event => {
   try {
+    // Check authentication
+    if (!event.context.apiKey) {
+      return sendUnauthorizedError(event, 'Authentication required')
+    }
+
     const id = getRouterParam(event, 'id')
 
     if (!id) {
