@@ -1,4 +1,55 @@
 <template>
+  <!-- Success Celebration Toast -->
+  <Transition
+    enter-active-class="transition-all duration-500 ease-out"
+    enter-from-class="opacity-0 translate-y-8 scale-50"
+    enter-to-class="opacity-100 translate-y-0 scale-100"
+    leave-active-class="transition-all duration-300 ease-in"
+    leave-from-class="opacity-100 translate-y-0 scale-100"
+    leave-to-class="opacity-0 translate-y-4 scale-95"
+  >
+    <div
+      v-if="showSuccess"
+      class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <div
+        class="bg-green-500 text-white px-5 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-success-pop"
+      >
+        <!-- Animated checkmark -->
+        <div
+          class="w-8 h-8 bg-white rounded-full flex items-center justify-center animate-check-pop"
+        >
+          <svg
+            class="w-5 h-5 text-green-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="3"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M5 13l4 4L19 7"
+              class="animate-check-draw"
+            />
+          </svg>
+        </div>
+        <span class="font-medium">{{ contentConfig.pwa.installSuccess }}</span>
+      </div>
+      <!-- Confetti celebration -->
+      <ConfettiCelebration
+        :trigger="showSuccess"
+        intensity="light"
+        :duration="2000"
+      />
+    </div>
+  </Transition>
+
+  <!-- Install Prompt -->
   <Transition
     enter-active-class="transition-all duration-500 ease-out"
     enter-from-class="opacity-0 translate-y-8 scale-95"
@@ -18,7 +69,7 @@
       :class="[
         'fixed bottom-4 left-1/2 transform -translate-x-1/2',
         'bg-white shadow-lg rounded-lg p-4 border border-gray-200',
-        'z-50 max-w-sm w-full mx-4',
+        'z-40 max-w-sm w-full mx-4',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
       ]"
       @keydown.esc="handleEscape"
@@ -176,9 +227,11 @@ const userDismissed = ref(false)
 const isDismissing = ref(false)
 const isInstalling = ref(false)
 const showIconPulse = ref(false)
+const showSuccess = ref(false)
 const announcement = ref('')
 const promptRef = ref<HTMLDivElement | null>(null)
 const dismissButtonRef = ref<HTMLButtonElement | null>(null)
+let successDismissTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Auto-dismiss feature (disabled by default, can be enabled with prop)
 const autoDismissDuration = ref(0) // milliseconds, 0 = disabled
@@ -229,7 +282,15 @@ const installPWA = async (): Promise<void> => {
 
   try {
     await pwa?.installPWA()
-    announce('App installed successfully')
+    // Show success celebration
+    showSuccess.value = true
+    triggerHaptic([50, 100, 50]) // Celebration pattern
+    announce(contentConfig.pwa.installSuccess)
+
+    // Auto-dismiss success toast after 4 seconds
+    successDismissTimeout = setTimeout(() => {
+      showSuccess.value = false
+    }, 4000)
   } catch {
     announce('Installation cancelled or failed')
   } finally {
@@ -327,6 +388,9 @@ onMounted(async () => {
 // Cleanup on unmount
 onUnmounted(() => {
   clearAutoDismiss()
+  if (successDismissTimeout) {
+    clearTimeout(successDismissTimeout)
+  }
 })
 </script>
 
@@ -394,10 +458,81 @@ onUnmounted(() => {
   border-width: 0;
 }
 
+/* Success toast spring animation */
+.animate-success-pop {
+  animation: success-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes success-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(20px);
+  }
+  60% {
+    transform: scale(1.05) translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Checkmark container pop animation */
+.animate-check-pop {
+  animation: check-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+
+@keyframes check-pop {
+  0% {
+    transform: scale(0);
+  }
+  60% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Checkmark draw animation */
+.animate-check-draw {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: check-draw 0.3s ease-out 0.4s forwards;
+}
+
+@keyframes check-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   div[role='alertdialog'] {
     border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion support for success animations */
+@media (prefers-reduced-motion: reduce) {
+  .animate-success-pop,
+  .animate-check-pop,
+  .animate-check-draw {
+    animation: none;
+  }
+
+  .animate-success-pop {
+    opacity: 1;
+    transform: none;
+  }
+
+  .animate-check-pop {
+    transform: scale(1);
+  }
+
+  .animate-check-draw {
+    stroke-dashoffset: 0;
   }
 }
 </style>
