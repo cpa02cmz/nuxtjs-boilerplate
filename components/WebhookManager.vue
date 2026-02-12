@@ -23,13 +23,13 @@
     }"
   >
     <div class="webhook-header">
-      <h2>Webhook Management</h2>
+      <h2>{{ contentConfig.webhooks.title }}</h2>
       <button
         class="btn btn-primary"
-        aria-label="Create new webhook"
+        :aria-label="contentConfig.webhooks.ariaLabels.createButton"
         @click="showCreateForm = true"
       >
-        Create Webhook
+        {{ contentConfig.webhooks.buttons.create }}
       </button>
     </div>
 
@@ -48,7 +48,7 @@
       v-if="showCreateForm"
       class="webhook-form"
     >
-      <h3>Create New Webhook</h3>
+      <h3>{{ contentConfig.webhooks.form.title }}</h3>
 
       <div
         v-if="errorMessage"
@@ -64,8 +64,11 @@
         @submit.prevent="handleCreateWebhook"
       >
         <div class="form-group">
-          <label for="webhook-url">Webhook URL <span aria-hidden="true">*</span>
-            <span class="sr-only">(required)</span>
+          <label for="webhook-url">{{ contentConfig.webhooks.form.urlLabel }}
+            <span aria-hidden="true">*</span>
+            <span class="sr-only">{{
+              contentConfig.webhooks.form.required
+            }}</span>
           </label>
           <input
             id="webhook-url"
@@ -81,18 +84,18 @@
             id="webhook-url-description"
             class="mt-1 text-sm text-gray-500"
           >
-            Enter the endpoint URL where webhook events will be sent
+            {{ contentConfig.webhooks.form.urlDescription }}
           </p>
         </div>
 
         <div class="form-group">
           <fieldset>
             <legend class="font-medium mb-2">
-              Events
+              {{ contentConfig.webhooks.form.eventsLabel }}
             </legend>
             <div
               role="group"
-              aria-label="Select webhook events"
+              :aria-label="contentConfig.webhooks.ariaLabels.eventsGroup"
               class="event-checkboxes"
             >
               <label
@@ -117,9 +120,9 @@
             <input
               v-model="newWebhook.active"
               type="checkbox"
-              aria-label="Enable webhook"
+              :aria-label="contentConfig.webhooks.ariaLabels.enableWebhook"
             >
-            Active
+            {{ contentConfig.webhooks.form.activeLabel }}
           </label>
         </div>
 
@@ -127,17 +130,17 @@
           <button
             type="submit"
             class="btn btn-primary"
-            aria-label="Create new webhook"
+            :aria-label="contentConfig.webhooks.ariaLabels.submitCreate"
           >
-            Create Webhook
+            {{ contentConfig.webhooks.buttons.createSubmit }}
           </button>
           <button
             type="button"
             class="btn btn-secondary"
-            aria-label="Cancel webhook creation"
+            :aria-label="contentConfig.webhooks.ariaLabels.cancelCreate"
             @click="showCreateForm = false"
           >
-            Cancel
+            {{ contentConfig.webhooks.buttons.cancel }}
           </button>
         </div>
       </form>
@@ -145,14 +148,14 @@
 
     <!-- Webhooks List -->
     <div class="webhooks-list">
-      <h3>Webhooks</h3>
+      <h3>{{ contentConfig.webhooks.list.title }}</h3>
       <div
         v-if="webhooks.length === 0"
         class="empty-state"
         role="status"
         aria-live="polite"
       >
-        No webhooks configured
+        {{ contentConfig.webhooks.empty.message }}
       </div>
       <div
         v-else
@@ -170,7 +173,7 @@
             </div>
             <div
               class="webhook-events"
-              aria-label="Subscribed events"
+              :aria-label="contentConfig.webhooks.labels.subscribedEvents"
             >
               <span
                 v-for="event in webhook.events"
@@ -183,37 +186,67 @@
             <div class="webhook-status">
               <span
                 :class="`status ${webhook.active ? 'active' : 'inactive'}`"
-                :aria-label="`Webhook is ${webhook.active ? 'active' : 'inactive'}`"
+                :aria-label="
+                  contentConfig.webhooks.ariaLabels.webhookStatus.replace(
+                    '{{ status }}',
+                    webhook.active
+                      ? contentConfig.webhooks.status.active
+                      : contentConfig.webhooks.status.inactive
+                  )
+                "
               >
-                {{ webhook.active ? 'Active' : 'Inactive' }}
+                {{
+                  webhook.active
+                    ? contentConfig.webhooks.status.active
+                    : contentConfig.webhooks.status.inactive
+                }}
               </span>
               <span
                 v-if="webhook.lastDeliveryStatus"
                 :class="`status ${webhook.lastDeliveryStatus}`"
-                :aria-label="`Last delivery status: ${webhook.lastDeliveryStatus}`"
+                :aria-label="
+                  contentConfig.webhooks.ariaLabels.deliveryStatus.replace(
+                    '{{ status }}',
+                    webhook.lastDeliveryStatus
+                  )
+                "
               >
-                Last: {{ webhook.lastDeliveryStatus }}
+                {{ contentConfig.webhooks.labels.lastDelivery }}
+                {{ webhook.lastDeliveryStatus }}
               </span>
             </div>
           </div>
           <div
             class="webhook-actions"
             role="group"
-            aria-label="Webhook actions"
+            :aria-label="contentConfig.webhooks.ariaLabels.webhookActions"
           >
             <button
               class="btn btn-sm"
-              :aria-label="`${webhook.active ? 'Deactivate' : 'Activate'} webhook at ${webhook.url}`"
+              :aria-label="
+                contentConfig.webhooks.ariaLabels.toggleWebhook
+                  .replace(
+                    '{{ action }}',
+                    webhook.active
+                      ? contentConfig.webhooks.buttons.deactivate
+                      : contentConfig.webhooks.buttons.activate
+                  )
+                  .replace('{{ url }}', webhook.url)
+              "
               @click="toggleWebhook(webhook)"
             >
-              {{ webhook.active ? 'Deactivate' : 'Activate' }}
+              {{
+                webhook.active
+                  ? contentConfig.webhooks.buttons.deactivate
+                  : contentConfig.webhooks.buttons.activate
+              }}
             </button>
             <button
               class="btn btn-sm btn-danger"
-              aria-label="Delete webhook"
+              :aria-label="contentConfig.webhooks.ariaLabels.deleteWebhook"
               @click="handleDeleteWebhook(webhook)"
             >
-              Delete
+              {{ contentConfig.webhooks.buttons.delete }}
             </button>
           </div>
         </div>
@@ -227,6 +260,7 @@ import type { Webhook } from '~/types/webhook'
 import { useWebhooksManager } from '~/composables/useWebhooksManager'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { webhooksConfig } from '~/configs/webhooks.config'
+import { contentConfig } from '~/configs/content.config'
 
 // Flexy hates hardcoded colors! Using config values for webhook UI colors
 const webhookColors = {

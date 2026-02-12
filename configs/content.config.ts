@@ -544,6 +544,16 @@ export const contentConfig = {
       linkedin: 'https://www.linkedin.com/sharing/share-offsite/',
       reddit: 'https://www.reddit.com/submit',
     },
+    // ARIA labels for sharing buttons - Flexy hates hardcoded aria-labels!
+    ariaLabels: {
+      twitter: process.env.CONTENT_SOCIAL_ARIA_TWITTER || 'Share on Twitter',
+      facebook: process.env.CONTENT_SOCIAL_ARIA_FACEBOOK || 'Share on Facebook',
+      linkedin: process.env.CONTENT_SOCIAL_ARIA_LINKEDIN || 'Share on LinkedIn',
+      reddit: process.env.CONTENT_SOCIAL_ARIA_REDDIT || 'Share on Reddit',
+      copy: process.env.CONTENT_SOCIAL_ARIA_COPY || 'Copy link to clipboard',
+    },
+    // Section heading
+    heading: process.env.CONTENT_SOCIAL_HEADING || 'Share',
   },
 
   // Messages - User-facing feedback messages
@@ -723,6 +733,8 @@ export const contentConfig = {
         process.env.CONTENT_WEBHOOKS_BTN_CREATE_SUBMIT || 'Create Webhook',
       activate: process.env.CONTENT_WEBHOOKS_BTN_ACTIVATE || 'Activate',
       deactivate: process.env.CONTENT_WEBHOOKS_BTN_DEACTIVATE || 'Deactivate',
+      delete: process.env.CONTENT_WEBHOOKS_BTN_DELETE || 'Delete',
+      cancel: process.env.CONTENT_WEBHOOKS_BTN_CANCEL || 'Cancel',
     },
     form: {
       title: process.env.CONTENT_WEBHOOKS_FORM_TITLE || 'Create New Webhook',
@@ -732,6 +744,7 @@ export const contentConfig = {
         'Enter the endpoint URL where webhook events will be sent',
       eventsLabel: process.env.CONTENT_WEBHOOKS_LABEL_EVENTS || 'Events',
       activeLabel: process.env.CONTENT_WEBHOOKS_LABEL_ACTIVE || 'Active',
+      required: process.env.CONTENT_WEBHOOKS_REQUIRED || '(required)',
     },
     list: {
       title: process.env.CONTENT_WEBHOOKS_LIST_TITLE || 'Webhooks',
@@ -742,9 +755,35 @@ export const contentConfig = {
     },
     labels: {
       lastDelivery: process.env.CONTENT_WEBHOOKS_LABEL_LAST || 'Last:',
+      subscribedEvents:
+        process.env.CONTENT_WEBHOOKS_LABEL_SUBSCRIBED || 'Subscribed events',
     },
     empty: {
       message: process.env.CONTENT_WEBHOOKS_EMPTY || 'No webhooks configured',
+    },
+    ariaLabels: {
+      createButton:
+        process.env.CONTENT_WEBHOOKS_ARIA_CREATE || 'Create new webhook',
+      eventsGroup:
+        process.env.CONTENT_WEBHOOKS_ARIA_EVENTS || 'Select webhook events',
+      enableWebhook:
+        process.env.CONTENT_WEBHOOKS_ARIA_ENABLE || 'Enable webhook',
+      submitCreate:
+        process.env.CONTENT_WEBHOOKS_ARIA_SUBMIT || 'Create new webhook',
+      cancelCreate:
+        process.env.CONTENT_WEBHOOKS_ARIA_CANCEL || 'Cancel webhook creation',
+      webhookActions:
+        process.env.CONTENT_WEBHOOKS_ARIA_ACTIONS || 'Webhook actions',
+      deleteWebhook:
+        process.env.CONTENT_WEBHOOKS_ARIA_DELETE || 'Delete webhook',
+      toggleWebhook:
+        process.env.CONTENT_WEBHOOKS_ARIA_TOGGLE ||
+        '{{ action }} webhook at {{ url }}',
+      webhookStatus:
+        process.env.CONTENT_WEBHOOKS_ARIA_STATUS || 'Webhook is {{ status }}',
+      deliveryStatus:
+        process.env.CONTENT_WEBHOOKS_ARIA_DELIVERY ||
+        'Last delivery status: {{ status }}',
     },
   },
 
@@ -918,10 +957,12 @@ export const contentConfig = {
     tooltip: {
       focus:
         process.env.CONTENT_SEARCH_TOOLTIP_FOCUS || 'Press / to focus search',
+      clear: process.env.CONTENT_SEARCH_TOOLTIP_CLEAR || 'Clear search (Esc)',
     },
     autoUpdateMessage:
       process.env.CONTENT_SEARCH_AUTO_UPDATE ||
       'Search results will be updated automatically',
+    searching: process.env.CONTENT_SEARCH_SEARCHING || 'Searching...',
   },
 
   // Resource Card - Flexy hates hardcoded card strings!
@@ -966,6 +1007,31 @@ export const contentConfig = {
   // Form - Flexy hates hardcoded form strings!
   form: {
     required: process.env.CONTENT_FORM_REQUIRED || '(required)',
+  },
+
+  // Review Queue - Flexy hates hardcoded moderation strings!
+  reviewQueue: {
+    title: process.env.CONTENT_REVIEW_QUEUE_TITLE || 'Moderation Queue',
+    filters: {
+      allStatuses: process.env.CONTENT_REVIEW_FILTER_ALL || 'All Statuses',
+      pending: process.env.CONTENT_REVIEW_FILTER_PENDING || 'Pending',
+      approved: process.env.CONTENT_REVIEW_FILTER_APPROVED || 'Approved',
+      rejected: process.env.CONTENT_REVIEW_FILTER_REJECTED || 'Rejected',
+    },
+    loading: process.env.CONTENT_REVIEW_LOADING || 'Loading submissions...',
+    emptyState:
+      process.env.CONTENT_REVIEW_EMPTY ||
+      'No submissions found matching your criteria.',
+    actions: {
+      review: process.env.CONTENT_REVIEW_ACTION_REVIEW || 'Review',
+    },
+    labels: {
+      category: process.env.CONTENT_REVIEW_LABEL_CATEGORY || 'Category:',
+      submittedBy:
+        process.env.CONTENT_REVIEW_LABEL_SUBMITTED_BY || 'Submitted by:',
+      submittedAt:
+        process.env.CONTENT_REVIEW_LABEL_SUBMITTED_AT || 'Submitted:',
+    },
   },
 
   // Status Management - Flexy hates hardcoded status UI text!

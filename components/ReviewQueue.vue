@@ -1,23 +1,23 @@
 <template>
   <div class="review-queue">
     <div class="queue-header">
-      <h2>Moderation Queue</h2>
+      <h2>{{ contentConfig.reviewQueue.title }}</h2>
       <div class="queue-filters">
         <select
           v-model="statusFilter"
           class="filter-select"
         >
           <option value="">
-            All Statuses
+            {{ contentConfig.reviewQueue.filters.allStatuses }}
           </option>
           <option value="pending">
-            Pending
+            {{ contentConfig.reviewQueue.filters.pending }}
           </option>
           <option value="approved">
-            Approved
+            {{ contentConfig.reviewQueue.filters.approved }}
           </option>
           <option value="rejected">
-            Rejected
+            {{ contentConfig.reviewQueue.filters.rejected }}
           </option>
         </select>
         <input
@@ -33,7 +33,7 @@
       v-if="loading"
       class="loading"
     >
-      Loading submissions...
+      {{ contentConfig.reviewQueue.loading }}
     </div>
 
     <div
@@ -57,9 +57,12 @@
             {{ submission.resourceData?.description }}
           </p>
           <div class="meta-info">
-            <span class="category">Category: {{ submission.resourceData?.category }}</span>
-            <span class="submitted-by">Submitted by: {{ submission.submittedBy }}</span>
-            <span class="submitted-at">Submitted: {{ formatDate(submission.submittedAt) }}</span>
+            <span class="category">{{ contentConfig.reviewQueue.labels.category }}
+              {{ submission.resourceData?.category }}</span>
+            <span class="submitted-by">{{ contentConfig.reviewQueue.labels.submittedBy }}
+              {{ submission.submittedBy }}</span>
+            <span class="submitted-at">{{ contentConfig.reviewQueue.labels.submittedAt }}
+              {{ formatDate(submission.submittedAt) }}</span>
           </div>
 
           <div class="tags">
@@ -78,7 +81,7 @@
             :to="`/moderation/review/${submission.id}`"
             class="btn btn-primary"
           >
-            Review
+            {{ contentConfig.reviewQueue.actions.review }}
           </NuxtLink>
         </div>
       </div>
@@ -88,7 +91,7 @@
       v-else
       class="empty-state"
     >
-      No submissions found matching your criteria.
+      {{ contentConfig.reviewQueue.emptyState }}
     </div>
   </div>
 </template>
@@ -97,6 +100,7 @@
 import { useReviewQueue } from '~/composables/useReviewQueue'
 import type { Submission } from '~/types/submission'
 import { moderationConfig } from '~/configs/moderation.config'
+import { contentConfig } from '~/configs/content.config'
 
 interface Props {
   initialSubmissions?: Submission[]
