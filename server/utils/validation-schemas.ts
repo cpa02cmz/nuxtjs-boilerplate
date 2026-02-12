@@ -28,13 +28,26 @@ export const validateUrlSchema = z.object({
 })
 
 export const createWebhookSchema = z.object({
-  url: z.string().url('Invalid webhook URL format'),
+  url: z
+    .string()
+    .url('Invalid webhook URL format')
+    .refine(
+      url => url.startsWith('https://'),
+      'Webhook URL must use HTTPS protocol for security'
+    ),
   events: z.array(z.string()).min(1, 'At least one event is required'),
   active: z.boolean().optional(),
 })
 
 export const updateWebhookSchema = z.object({
-  url: z.string().url('Invalid webhook URL format').optional(),
+  url: z
+    .string()
+    .url('Invalid webhook URL format')
+    .refine(
+      url => url.startsWith('https://'),
+      'Webhook URL must use HTTPS protocol for security'
+    )
+    .optional(),
   events: z
     .array(z.string())
     .min(1, 'At least one event is required')
