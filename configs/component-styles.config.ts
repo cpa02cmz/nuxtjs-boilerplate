@@ -298,6 +298,18 @@ export const componentStylesConfig = {
     buttonTransitionDuration:
       process.env.API_KEYS_BTN_TRANSITION_DURATION || '200ms',
     buttonActiveScale: process.env.API_KEYS_BTN_ACTIVE_SCALE || '0.95',
+
+    // Enhanced Empty State - Palette's micro-UX enhancement!
+    emptyStateGradientStart:
+      process.env.API_KEYS_EMPTY_GRADIENT_START || '#f0f9ff',
+    emptyStateGradientEnd: process.env.API_KEYS_EMPTY_GRADIENT_END || '#e0f2fe',
+    emptyStateBorderRadius: process.env.API_KEYS_EMPTY_RADIUS || '1rem',
+    emptyStateBorder: process.env.API_KEYS_EMPTY_BORDER || '#bae6fd',
+    emptyStateCircleBg: process.env.API_KEYS_EMPTY_CIRCLE_BG || '#0ea5e9',
+    emptyStateIconColor: process.env.API_KEYS_EMPTY_ICON_COLOR || '#0284c7',
+    emptyStateDotColor: process.env.API_KEYS_EMPTY_DOT_COLOR || '#38bdf8',
+    emptyStateTitleColor: process.env.API_KEYS_EMPTY_TITLE_COLOR || '#0c4a6e',
+    emptyStateDescColor: process.env.API_KEYS_EMPTY_DESC_COLOR || '#0369a1',
   },
 
   // Error Message Component Styles - Flexy hates hardcoded CSS!

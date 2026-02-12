@@ -2,19 +2,13 @@
   <div class="api-keys-manager">
     <div class="api-keys-header">
       <h2>{{ contentConfig.apiKeys.title }}</h2>
-      <button
-        class="btn btn-primary"
-        @click="showCreateForm = true"
-      >
+      <button class="btn btn-primary" @click="showCreateForm = true">
         {{ contentConfig.apiKeys.buttons.create }}
       </button>
     </div>
 
     <!-- Create API Key Form -->
-    <div
-      v-if="showCreateForm"
-      class="api-key-form"
-    >
+    <div v-if="showCreateForm" class="api-key-form">
       <h3>{{ contentConfig.apiKeys.buttons.create }}</h3>
       <form @submit.prevent="createApiKey">
         <div class="form-group">
@@ -26,7 +20,7 @@
             required
             :placeholder="contentConfig.apiKeys.placeholders.keyNameAlt"
             class="form-control"
-          >
+          />
         </div>
 
         <div class="form-group">
@@ -58,10 +52,7 @@
         </div>
 
         <div class="form-actions">
-          <button
-            type="submit"
-            class="btn btn-primary"
-          >
+          <button type="submit" class="btn btn-primary">
             {{ contentConfig.apiKeys.buttons.create }}
           </button>
           <button
@@ -78,21 +69,90 @@
     <!-- API Keys List -->
     <div class="api-keys-list">
       <h3>{{ contentConfig.apiKeys.labels.yourKeys }}</h3>
+
+      <!-- Enhanced Empty State -->
       <div
         v-if="apiKeys.length === 0"
-        class="empty-state"
+        class="api-key-empty-state"
+        role="status"
+        aria-live="polite"
       >
-        {{ contentConfig.apiKeys.emptyState.message }}
-      </div>
-      <div
-        v-else
-        class="api-key-items"
-      >
-        <div
-          v-for="key in apiKeys"
-          :key="key.id"
-          class="api-key-item"
+        <!-- Animated Illustration -->
+        <div class="api-key-illustration" aria-hidden="true">
+          <!-- Background Circle -->
+          <div
+            class="api-key-bg-circle"
+            :class="{ 'animate-pulse-slow': !reducedMotion }"
+          />
+
+          <!-- Key Icon Container -->
+          <div
+            class="api-key-icon-wrapper"
+            :class="{ 'animate-bounce-subtle': !reducedMotion }"
+          >
+            <svg
+              class="api-key-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <!-- Key Icon -->
+              <path
+                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="api-key-path"
+                :class="{ 'animate-draw': !reducedMotion }"
+              />
+            </svg>
+          </div>
+
+          <!-- Floating Dots -->
+          <div
+            v-if="!reducedMotion"
+            class="api-key-float-dot api-key-float-dot-1"
+          />
+          <div
+            v-if="!reducedMotion"
+            class="api-key-float-dot api-key-float-dot-2"
+          />
+        </div>
+
+        <!-- Title -->
+        <h4 class="api-key-empty-title">
+          {{ contentConfig.apiKeys.empty.title }}
+        </h4>
+
+        <!-- Description -->
+        <p class="api-key-empty-description">
+          {{ contentConfig.apiKeys.empty.description }}
+        </p>
+
+        <!-- CTA Button -->
+        <button
+          class="btn btn-primary api-key-empty-cta"
+          @click="showCreateForm = true"
         >
+          <svg
+            class="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          {{ contentConfig.apiKeys.empty.ctaButton }}
+        </button>
+      </div>
+      <div v-else class="api-key-items">
+        <div v-for="key in apiKeys" :key="key.id" class="api-key-item">
           <div class="api-key-info">
             <div class="api-key-name">
               {{ key.name }}
@@ -121,10 +181,7 @@
             </div>
           </div>
           <div class="api-key-actions">
-            <button
-              class="btn btn-sm btn-danger"
-              @click="revokeApiKey(key.id)"
-            >
+            <button class="btn btn-sm btn-danger" @click="revokeApiKey(key.id)">
               {{ contentConfig.apiKeys.buttons.revoke }}
             </button>
           </div>
@@ -133,11 +190,7 @@
     </div>
 
     <!-- API Key Created Modal -->
-    <div
-      v-if="showKeyCreatedModal"
-      class="modal-overlay"
-      @click="closeModal"
-    >
+    <div v-if="showKeyCreatedModal" class="modal-overlay" @click="closeModal">
       <div
         ref="modalContent"
         class="modal-content"
@@ -151,10 +204,7 @@
           {{ contentConfig.apiKeys.buttons.create }}
         </h3>
         <p><strong>Key:</strong> {{ createdApiKey?.key }}</p>
-        <p
-          class="warning"
-          role="alert"
-        >
+        <p class="warning" role="alert">
           Make sure to copy this key now. You won't be able to see it again.
         </p>
         <div class="form-actions">
@@ -201,10 +251,7 @@
                 : contentConfig.messages.clipboard.copy
             }}
           </button>
-          <button
-            class="btn btn-secondary"
-            @click="closeModal"
-          >
+          <button class="btn btn-secondary" @click="closeModal">
             {{ contentConfig.apiKeys.buttons.cancel }}
           </button>
         </div>
@@ -239,6 +286,12 @@ const {
   createApiKey: createApiKeys,
   revokeApiKey: revokeApiKeys,
 } = useApiKeysManager()
+
+// Accessibility: Respect reduced motion preferences - Palette cares about accessibility!
+const reducedMotion = computed(() => {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+})
 
 const showCreateForm = ref(false)
 const showKeyCreatedModal = ref(false)
@@ -607,6 +660,167 @@ onMounted(() => {
   transform: scale(v-bind('componentStylesConfig.apiKeys.buttonActiveScale'));
 }
 
+/* Enhanced Empty State Styles */
+.api-key-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: linear-gradient(
+    135deg,
+    v-bind('componentStylesConfig.apiKeys.emptyStateGradientStart'),
+    v-bind('componentStylesConfig.apiKeys.emptyStateGradientEnd')
+  );
+  border-radius: v-bind('componentStylesConfig.apiKeys.emptyStateBorderRadius');
+  border: 1px solid v-bind('componentStylesConfig.apiKeys.emptyStateBorder');
+}
+
+.api-key-illustration {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 1.5rem;
+}
+
+.api-key-bg-circle {
+  position: absolute;
+  inset: 0;
+  background: v-bind('componentStylesConfig.apiKeys.emptyStateCircleBg');
+  border-radius: 50%;
+  opacity: 0.3;
+}
+
+.api-key-icon-wrapper {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.api-key-icon {
+  width: 48px;
+  height: 48px;
+  color: v-bind('componentStylesConfig.apiKeys.emptyStateIconColor');
+}
+
+.api-key-path {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+}
+
+.api-key-float-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: v-bind('componentStylesConfig.apiKeys.emptyStateDotColor');
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.api-key-float-dot-1 {
+  top: 20%;
+  right: 15%;
+  animation: api-key-float-1 3s ease-in-out infinite;
+}
+
+.api-key-float-dot-2 {
+  bottom: 25%;
+  left: 10%;
+  animation: api-key-float-2 3.5s ease-in-out infinite;
+}
+
+.api-key-empty-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: v-bind('componentStylesConfig.apiKeys.emptyStateTitleColor');
+  margin-bottom: 0.5rem;
+}
+
+.api-key-empty-description {
+  font-size: 0.875rem;
+  color: v-bind('componentStylesConfig.apiKeys.emptyStateDescColor');
+  margin-bottom: 1.5rem;
+  max-width: 300px;
+}
+
+.api-key-empty-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+}
+
+.api-key-empty-cta svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.5rem;
+}
+
+/* Animation Keyframes */
+@keyframes api-key-float-1 {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.1);
+  }
+}
+
+@keyframes api-key-float-2 {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(0.95);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+.animate-draw {
+  animation: draw 1.5s ease-out forwards;
+}
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.5;
+  }
+}
+
+@keyframes bounce-subtle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 /* Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   .animate-check-scale {
@@ -619,6 +833,16 @@ onMounted(() => {
 
   .btn:active {
     transform: none;
+  }
+
+  .animate-pulse-slow,
+  .animate-bounce-subtle,
+  .animate-draw {
+    animation: none;
+  }
+
+  .api-key-path {
+    stroke-dasharray: none;
   }
 }
 </style>
