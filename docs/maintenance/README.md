@@ -4,35 +4,27 @@ This section contains guides and procedures for maintaining the Free Stuff on th
 
 ## 📚 Available Documentation
 
-### [CI/CD Processes](./maintenance/ci-cd.md)
+### [Dependency Management](./dependency-management.md)
 
-- GitHub Actions workflows
-- Automated testing
-- Deployment pipelines
-- Quality gates
+- Regular dependency updates
+- Security audits and automated scanning
+- Vulnerability monitoring
+- Update scheduling
 
-### [Troubleshooting Guide](./maintenance/troubleshooting.md)
+### [Troubleshooting Guide](./troubleshooting.md)
 
 - Common issues and solutions
 - Debugging procedures
 - Performance issues
 - Environment-specific problems
 
-### [Maintenance Procedures](./maintenance/procedures.md)
+### [Workflow Setup](./workflow-setup.md)
 
-- Regular maintenance tasks
-- Dependency updates
-- Security audits and automated scanning
-- Performance monitoring
-- Repository automation
-
-### [Monitoring & Analytics](./maintenance/monitoring.md)
-
-- Performance monitoring
-- Error tracking
-- User analytics
-- uptime monitoring
+- Git workflows and branching strategies
+- Code review processes
+- PR automation
+- Repository maintenance
 
 ---
 
-_Last Updated: 2026-11-19_
+**Last Updated**: 2026-02-12

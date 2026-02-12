@@ -320,7 +320,7 @@ If you encounter issues:
 
 1. Check the [troubleshooting section](#troubleshooting) above
 2. Review existing [GitHub Issues](https://github.com/cpa02cmz/nuxtjs-boilerplate/issues)
-3. Check the [AGENTS.md](AGENTS.md) for project conventions
+3. Check the [AGENTS.md](../AGENTS.md) for project conventions
 4. Create a new issue with:
    - Description of the problem
    - Steps to reproduce
@@ -330,4 +330,4 @@ If you encounter issues:
 ---
 
 **Setup Time**: ~10 minutes  
-**Last Updated**: 2026-02-08
+**Last Updated**: 2026-02-12
