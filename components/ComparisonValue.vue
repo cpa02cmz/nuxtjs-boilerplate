@@ -7,7 +7,7 @@
       >{{ value }}</span>
       <span
         v-else
-        class="text-gray-400 dark:text-gray-500 text-sm"
+        class="text-gray-600 dark:text-gray-500 text-sm"
       >-</span>
     </template>
 
@@ -20,7 +20,7 @@
       }}</span>
       <span
         v-else
-        class="text-gray-400 dark:text-gray-500 text-sm"
+        class="text-gray-600 dark:text-gray-500 text-sm"
       >-</span>
     </template>
 
@@ -39,7 +39,7 @@
       </span>
       <span
         v-else
-        class="text-gray-400 dark:text-gray-500 text-sm"
+        class="text-gray-600 dark:text-gray-500 text-sm"
       >-</span>
     </template>
 
@@ -65,7 +65,7 @@
       </div>
       <span
         v-else
-        class="text-gray-400 dark:text-gray-500 text-sm"
+        class="text-gray-600 dark:text-gray-500 text-sm"
       >-</span>
     </template>
   </div>
