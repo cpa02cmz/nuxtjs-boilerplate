@@ -391,6 +391,7 @@
 
     <!-- Clear all button with keyboard shortcut hint -->
     <button
+      ref="clearAllButtonRef"
       class="group ml-2 text-sm text-gray-500 hover:text-gray-700 underline focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-400 rounded px-1 transition-colors"
       aria-label="Clear all filters (press Escape to clear all)"
       @click="handleClearAll"
@@ -405,7 +406,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { uiConfig } from '../configs/ui.config'
 import { PROGRESS } from '~/server/utils/constants'
 import { triggerHaptic } from '~/utils/hapticFeedback'
@@ -451,6 +452,9 @@ const announcement = ref('')
 
 // Chip refs for keyboard navigation
 const chipRefs = ref<HTMLButtonElement[]>([])
+
+// Ref for the Clear all button to return focus when all chips are removed
+const clearAllButtonRef = ref<HTMLButtonElement | null>(null)
 
 // Undo feature state
 const lastRemovedFilter = ref<RemovedFilter | null>(null)
@@ -709,14 +713,19 @@ const handleChipKeydown = (
     case 'Backspace':
       event.preventDefault()
       handleRemove(type, value, event as unknown as Event)
-      // Focus the next chip or previous if this was the last one
-      setTimeout(() => {
+      // Focus the next chip, previous chip, or Clear all button if this was the last one
+      // Use nextTick to ensure DOM has updated after filter removal
+      nextTick(() => {
         const updatedChips = chipRefs.value.filter(Boolean)
         if (updatedChips.length > 0) {
+          // Focus the chip at the same index, or the last one if we removed the last chip
           const focusIndex = Math.min(currentIndex, updatedChips.length - 1)
           updatedChips[focusIndex]?.focus()
+        } else {
+          // All filters removed - return focus to Clear all button for better accessibility
+          clearAllButtonRef.value?.focus()
         }
-      }, 50)
+      })
       break
     case 'Home':
       event.preventDefault()
