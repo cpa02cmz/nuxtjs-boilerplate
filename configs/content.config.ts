@@ -853,9 +853,12 @@ export const contentConfig = {
       message:
         process.env.CONTENT_API_KEYS_EMPTY ||
         "You don't have any API keys yet.",
+      title: process.env.CONTENT_API_KEYS_EMPTY_TITLE || 'No API keys yet',
       description:
         process.env.CONTENT_API_KEYS_EMPTY_DESC ||
         'Generate your first API key to start using the API.',
+      ctaButton:
+        process.env.CONTENT_API_KEYS_EMPTY_CTA || 'Create Your First API Key',
     },
     placeholders: {
       keyName:
