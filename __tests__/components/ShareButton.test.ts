@@ -201,7 +201,7 @@ describe('ShareButton', () => {
     // Check for the copy link button
     const copyButton = wrapper.find('button[role="menuitem"]')
     expect(copyButton.exists()).toBe(true)
-    expect(copyButton.text()).toContain('Copy link')
+    expect(copyButton.text()).toContain('Copy to clipboard')
   })
 
   it('copies URL to clipboard when copy button is clicked', async () => {
