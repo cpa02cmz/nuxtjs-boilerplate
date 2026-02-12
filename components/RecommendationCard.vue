@@ -106,17 +106,17 @@
           :href="resource.url"
           target="_blank"
           rel="noopener noreferrer"
-          class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 hover:scale-105 active:scale-95 active:bg-indigo-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 transition-all duration-150 ease-out relative overflow-hidden"
+          class="group flex-1 inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 hover:scale-105 active:scale-95 active:bg-indigo-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 transition-all duration-150 ease-out relative overflow-hidden"
           :aria-label="`View ${resource.title} - opens in new tab`"
         >
           View Resource
           <span
-            class="ml-1.5 inline-flex items-center"
+            class="ml-1.5 inline-flex items-center external-link-icon"
             aria-hidden="true"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-3.5 w-3.5 opacity-70 group-hover:opacity-100 transition-opacity duration-200"
+              class="h-3.5 w-3.5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
