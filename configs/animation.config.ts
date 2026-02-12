@@ -337,6 +337,30 @@ export const animationConfig = {
     color: process.env.PWA_PULSE_COLOR || 'rgba(59, 130, 246, 0.4)',
   },
 
+  // New Badge Entrance Animation - Palette's micro-UX delight!
+  // Adds a playful entrance animation when new badges first appear on cards
+  newBadge: {
+    // Duration of the entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.NEW_BADGE_ENTRANCE_DURATION_MS || '600'
+    ),
+    // CSS duration string for v-bind
+    entranceDurationSec: `${parseInt(process.env.NEW_BADGE_ENTRANCE_DURATION_MS || '600') / 1000}s`,
+    // Delay before animation starts (ms) - allows card to render first
+    entranceDelayMs: parseInt(process.env.NEW_BADGE_ENTRANCE_DELAY_MS || '200'),
+    // Scale factor at start (0 = invisible, 1 = normal)
+    startScale: parseFloat(process.env.NEW_BADGE_START_SCALE || '0'),
+    // Scale factor at peak (overshoot for bounce effect)
+    peakScale: parseFloat(process.env.NEW_BADGE_PEAK_SCALE || '1.2'),
+    // Rotation at start (degrees)
+    startRotation: parseInt(process.env.NEW_BADGE_START_ROTATION || '-180'),
+    // Rotation at end (degrees)
+    endRotation: parseInt(process.env.NEW_BADGE_END_ROTATION || '0'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.NEW_BADGE_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // Card Shine Effect - Palette's premium micro-UX touch!
   // Adds a subtle moving gradient on hover for a polished, premium feel
   cardShine: {

@@ -6,10 +6,7 @@
     role="article"
   >
     <div class="flex items-start">
-      <div
-        v-if="icon"
-        class="flex-shrink-0 mr-4"
-      >
+      <div v-if="icon" class="flex-shrink-0 mr-4">
         <OptimizedImage
           :src="icon"
           :alt="title"
@@ -55,7 +52,13 @@
           <div class="flex items-center">
             <span
               v-if="isNew"
-              class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-sm animate-new-pulse mr-2"
+              :class="[
+                'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-sm mr-2',
+                'animate-new-pulse',
+                isNewBadgeVisible &&
+                  !prefersReducedMotion &&
+                  'animate-new-entrance',
+              ]"
               role="status"
               :aria-label="`New resource added within the last ${limitsConfig.newResourceBadge.thresholdDays} days`"
             >
@@ -104,10 +107,7 @@
         </div>
 
         <!-- Description -->
-        <p
-          id="resource-description"
-          class="mt-1 text-gray-800 text-sm"
-        >
+        <p id="resource-description" class="mt-1 text-gray-800 text-sm">
           <span
             v-if="highlightedDescription"
             v-html="sanitizedHighlightedDescription"
@@ -121,30 +121,18 @@
           role="region"
           aria-label="Free tier information"
         >
-          <p
-            id="free-tier-label"
-            class="font-medium text-gray-900 text-sm"
-          >
+          <p id="free-tier-label" class="font-medium text-gray-900 text-sm">
             {{ contentConfig.resourceCard.freeTier }}
           </p>
-          <ul
-            class="mt-1 space-y-1 text-xs text-gray-800"
-            role="list"
-          >
-            <li
-              v-for="(benefit, index) in benefits"
-              :key="index"
-            >
+          <ul class="mt-1 space-y-1 text-xs text-gray-800" role="list">
+            <li v-for="(benefit, index) in benefits" :key="index">
               {{ benefit }}
             </li>
           </ul>
         </div>
 
         <!-- Similarity information (for alternative suggestions) -->
-        <div
-          v-if="similarityScore && similarityScore > 0"
-          class="mt-3"
-        >
+        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
           <div class="flex items-center">
             <div
               class="w-full bg-gray-200 rounded-full h-2"
@@ -163,10 +151,7 @@
               {{ Math.round(similarityScore * 100) }}% match
             </span>
           </div>
-          <p
-            v-if="similarityReason"
-            class="mt-1 text-xs text-gray-600"
-          >
+          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
             {{ similarityReason }}
           </p>
         </div>
@@ -217,10 +202,7 @@
                 />
               </svg>
               {{ visitButtonText }}
-              <span
-                v-if="newTab && !isNavigating"
-                class="ml-1 text-xs"
-              >{{
+              <span v-if="newTab && !isNavigating" class="ml-1 text-xs">{{
                 contentConfig.resourceCard.newTab
               }}</span>
             </a>
@@ -265,10 +247,7 @@
   </article>
 
   <!-- Error state -->
-  <div
-    v-else
-    class="bg-white p-6 rounded-lg shadow border border-red-200"
-  >
+  <div v-else class="bg-white p-6 rounded-lg shadow border border-red-200">
     <div class="flex items-start">
       <div class="flex-shrink-0 mr-4">
         <svg
@@ -287,9 +266,7 @@
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-red-900">
-          Resource Unavailable
-        </h3>
+        <h3 class="text-lg font-medium text-red-900">Resource Unavailable</h3>
         <p class="mt-1 text-red-700 text-sm">
           This resource could not be displayed due to an error.
         </p>
@@ -299,7 +276,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted, onBeforeMount, type Ref } from 'vue'
 import { useHead } from '#imports'
 import { useRipple } from '~/composables/useRipple'
 import { useResourceCardActions } from '~/composables/useResourceCardActions'
@@ -363,6 +340,22 @@ const hasError = ref(false)
 const visitButtonRef = ref<HTMLAnchorElement | null>(null)
 const isNavigating = ref(false)
 
+// New badge entrance animation state - Palette's micro-UX delight!
+const isNewBadgeVisible = ref(false)
+const prefersReducedMotion = ref(false)
+
+// Check reduced motion preference before mount
+onBeforeMount(() => {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function'
+  ) {
+    prefersReducedMotion.value = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches
+  }
+})
+
 // Computed button text based on navigation state
 const visitButtonText = computed(() => {
   return isNavigating.value
@@ -410,6 +403,17 @@ const memoizedHighlight = memoizeHighlight(sanitizeAndHighlight)
 onMounted(() => {
   if (props.id) {
     trackResourceView(props.id, props.title, props.category || 'unknown')
+  }
+
+  // Trigger new badge entrance animation with delay for visual delight
+  // Palette's micro-UX: Staggered entrance makes the badge feel alive!
+  if (isNew.value && !prefersReducedMotion.value) {
+    setTimeout(() => {
+      isNewBadgeVisible.value = true
+    }, animationConfig.newBadge.entranceDelayMs)
+  } else {
+    // Show immediately for reduced motion users
+    isNewBadgeVisible.value = true
   }
 })
 
@@ -562,6 +566,32 @@ if (typeof useHead === 'function') {
   }
 }
 
+/* New badge entrance animation - Palette's micro-UX delight! */
+.animate-new-entrance {
+  animation: new-entrance
+    v-bind('`${animationConfig.newBadge.entranceDurationSec}`')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  transform-origin: center center;
+}
+
+@keyframes new-entrance {
+  0% {
+    opacity: 0;
+    transform: scale(v-bind('animationConfig.newBadge.startScale'))
+      rotate(v-bind('`${animationConfig.newBadge.startRotation}deg`'));
+  }
+  60% {
+    opacity: 1;
+    transform: scale(v-bind('animationConfig.newBadge.peakScale'))
+      rotate(v-bind('`${animationConfig.newBadge.endRotation + 10}deg`'));
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1)
+      rotate(v-bind('`${animationConfig.newBadge.endRotation}deg`'));
+  }
+}
+
 /* Visited resource link state - Flexy hates hardcoded values! */
 /* Using CSS custom properties bound to config values */
 .resource-link {
@@ -604,6 +634,12 @@ if (typeof useHead === 'function') {
 @media (prefers-reduced-motion: reduce) {
   .animate-new-pulse {
     animation: none;
+  }
+
+  .animate-new-entrance {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 
