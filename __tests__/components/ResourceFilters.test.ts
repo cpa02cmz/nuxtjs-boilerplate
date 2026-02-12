@@ -1,8 +1,19 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeAll, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import ResourceFilters from '~/components/ResourceFilters.vue'
 
 describe('ResourceFilters', () => {
+  // Mock window.matchMedia for reduced motion preference checks
+  beforeAll(() => {
+    Object.defineProperty(global.window, 'matchMedia', {
+      value: vi.fn().mockReturnValue({
+        matches: false,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+      }),
+      writable: true,
+    })
+  })
   const defaultProps = {
     categories: ['Testing', 'Development', 'Design'],
     pricingModels: ['Free', 'Paid', 'Freemium'],
