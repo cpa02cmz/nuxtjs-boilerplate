@@ -6,7 +6,11 @@
     <h4 class="text-sm font-medium text-gray-900 mb-3">
       {{ contentConfig.search.suggestions.recentTitle }}
     </h4>
-    <TransitionGroup name="saved-search" tag="div" class="space-y-2">
+    <TransitionGroup
+      name="saved-search"
+      tag="div"
+      class="space-y-2"
+    >
       <div
         v-for="search in savedSearches"
         :key="search.query"

@@ -62,7 +62,10 @@
         @touchend="handleChipPressEnd('search', searchQuery)"
       >
         <span class="truncate max-w-[200px]">{{ searchQuery }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -81,7 +84,10 @@
           </svg>
         </span>
         <!-- Shimmer effect on hover -->
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Category chips -->
@@ -115,7 +121,10 @@
           contentConfig.filters.labels.category
         }}</span>
         <span class="truncate max-w-[150px]">{{ category }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -133,7 +142,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Pricing model chips -->
@@ -167,7 +179,10 @@
           contentConfig.filters.labels.pricing
         }}</span>
         <span class="truncate max-w-[150px]">{{ pricing }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -185,7 +200,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Difficulty chips -->
@@ -219,7 +237,10 @@
           contentConfig.filters.labels.difficulty
         }}</span>
         <span class="truncate max-w-[150px]">{{ difficulty }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -237,7 +258,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Technology chips -->
@@ -271,7 +295,10 @@
           contentConfig.filters.labels.tech
         }}</span>
         <span class="truncate max-w-[150px]">{{ tech }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -289,7 +316,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Tag chips -->
@@ -323,7 +353,10 @@
           contentConfig.filters.labels.tag
         }}</span>
         <span class="truncate max-w-[150px]">{{ tag }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -341,7 +374,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Benefit chips -->
@@ -375,7 +411,10 @@
           contentConfig.filters.labels.benefit
         }}</span>
         <span class="truncate max-w-[150px]">{{ benefit }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -393,7 +432,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Date range chip -->
@@ -427,7 +469,10 @@
           contentConfig.filters.labels.date
         }}</span>
         <span>{{ formatDateRange(selectedDateRange) }}</span>
-        <span class="remove-icon" aria-hidden="true">
+        <span
+          class="remove-icon"
+          aria-hidden="true"
+        >
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -445,7 +490,10 @@
             />
           </svg>
         </span>
-        <span class="shimmer-effect" aria-hidden="true" />
+        <span
+          class="shimmer-effect"
+          aria-hidden="true"
+        />
       </button>
 
       <!-- Undo button for recently removed filter -->
@@ -475,14 +523,11 @@
             d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
           />
         </svg>
-        <span class="truncate max-w-[150px]"
-          >{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span
-        >
+        <span class="truncate max-w-[150px]">{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span>
         <kbd
           class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
           aria-hidden="true"
-          >{{ contentConfig.filters.keyboard.ctrlZ }}</kbd
-        >
+        >{{ contentConfig.filters.keyboard.ctrlZ }}</kbd>
         <!-- Progress bar for undo window with color transition -->
         <span
           class="undo-progress-bar"
@@ -504,8 +549,7 @@
       <kbd
         class="hidden sm:inline-block ml-1.5 px-1.5 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded group-hover:bg-gray-200 transition-colors"
         aria-hidden="true"
-        >{{ contentConfig.filters.keyboard.esc }}</kbd
-      >
+      >{{ contentConfig.filters.keyboard.esc }}</kbd>
     </button>
   </div>
 </template>

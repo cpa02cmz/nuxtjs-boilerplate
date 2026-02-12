@@ -26,7 +26,10 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <!-- Animated offline icon with connection pulse - Palette's micro-UX enhancement! -->
-                <div class="relative flex-shrink-0 w-8 h-8" aria-hidden="true">
+                <div
+                  class="relative flex-shrink-0 w-8 h-8"
+                  aria-hidden="true"
+                >
                   <!-- Connection pulse rings (shown when reconnecting) -->
                   <template v-if="isReconnecting && !prefersReducedMotion">
                     <div
@@ -235,7 +238,12 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ announcement }}
     </div>
   </Teleport>
