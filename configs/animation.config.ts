@@ -134,6 +134,44 @@ export const animationConfig = {
     resetDelayMs: parseInt(process.env.COPY_ERROR_RESET_MS || '2500'),
   },
 
+  // Copy Feedback Animation - Palette's delightful micro-UX touch!
+  // Provides satisfying visual feedback when users copy text to clipboard
+  copyFeedback: {
+    // Duration the feedback tooltip remains visible (ms)
+    durationMs: parseInt(process.env.COPY_FEEDBACK_DURATION_MS || '1500'),
+    // Position of the tooltip relative to trigger element
+    position: process.env.COPY_FEEDBACK_POSITION || 'top',
+    // Offset from trigger element (px)
+    offsetPx: parseInt(process.env.COPY_FEEDBACK_OFFSET_PX || '8'),
+    // Animation scale factor for the pop effect
+    popScale: parseFloat(process.env.COPY_FEEDBACK_POP_SCALE || '1.05'),
+    // Checkmark draw animation duration (seconds)
+    checkmarkDrawDurationSec: parseFloat(
+      process.env.COPY_FEEDBACK_CHECKMARK_DURATION || '0.18'
+    ),
+    // Delay before checkmark starts drawing (seconds)
+    checkmarkDelaySec: parseFloat(
+      process.env.COPY_FEEDBACK_CHECKMARK_DELAY || '0.06'
+    ),
+    // Tooltip styling values - Flexy hates hardcoded CSS!
+    styles: {
+      paddingX: parseInt(process.env.COPY_FEEDBACK_PADDING_X || '12'),
+      paddingY: parseInt(process.env.COPY_FEEDBACK_PADDING_Y || '6'),
+      fontSize: parseInt(process.env.COPY_FEEDBACK_FONT_SIZE || '12'),
+      borderRadius: parseInt(process.env.COPY_FEEDBACK_BORDER_RADIUS || '6'),
+      arrowSize: parseInt(process.env.COPY_FEEDBACK_ARROW_SIZE || '8'),
+      animationDuration: parseFloat(
+        process.env.COPY_FEEDBACK_ANIMATION_DURATION || '0.3'
+      ),
+      shadow: {
+        y: parseInt(process.env.COPY_FEEDBACK_SHADOW_Y || '4'),
+        blur: parseInt(process.env.COPY_FEEDBACK_SHADOW_BLUR || '6'),
+        spread: parseInt(process.env.COPY_FEEDBACK_SHADOW_SPREAD || '-1'),
+        opacity: parseFloat(process.env.COPY_FEEDBACK_SHADOW_OPACITY || '0.1'),
+      },
+    },
+  },
+
   // Suggestion/Filter Animations
   suggestion: {
     staggerDelayMs: parseInt(process.env.SUGGESTION_STAGGER_DELAY_MS || '100'),
