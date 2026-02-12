@@ -54,6 +54,15 @@
         </option>
       </select>
     </div>
+    <!-- Screen reader announcement for sort order changes -->
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {{ sortAnnouncement }}
+    </div>
   </div>
 </template>
 
@@ -91,6 +100,18 @@ const changeIndicatorText = computed(() => {
   if (change > 0) return `+${change}`
   if (change < 0) return `${change}`
   return ''
+})
+
+// Compute screen reader announcement for sort order
+const sortAnnouncement = computed(() => {
+  const sortLabels: Record<string, string> = {
+    'popularity-desc': 'sorted by most popular',
+    'alphabetical-asc': 'sorted alphabetically A to Z',
+    'alphabetical-desc': 'sorted alphabetically Z to A',
+    'date-added-desc': 'sorted by newest first',
+  }
+  const sortLabel = sortLabels[props.selectedSortOption ?? 'popularity-desc']
+  return `Showing ${props.totalResources} resources, ${sortLabel}`
 })
 
 // Compute change indicator styling based on magnitude
