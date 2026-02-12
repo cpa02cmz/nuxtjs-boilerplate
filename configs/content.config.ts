@@ -153,6 +153,49 @@ export const contentConfig = {
     openingLabel: process.env.CONTENT_RESOURCE_OPENING_LABEL || 'Opening...',
   },
 
+  // Favorites Page - Flexy hates hardcoded page content!
+  favorites: {
+    title: process.env.CONTENT_FAVORITES_TITLE || 'My Bookmarks',
+    subtitle:
+      process.env.CONTENT_FAVORITES_SUBTITLE ||
+      '{{ count }} bookmarked resource{{ plural }}',
+    emptyState: {
+      heading:
+        process.env.CONTENT_FAVORITES_EMPTY_HEADING || 'No bookmarks yet',
+      description:
+        process.env.CONTENT_FAVORITES_EMPTY_DESC ||
+        'Save your favorite resources for quick access later. Click the bookmark icon on any resource card to bookmark it.',
+      ctaButton: process.env.CONTENT_FAVORITES_CTA || 'Browse Resources',
+    },
+    proTip: {
+      text:
+        process.env.CONTENT_FAVORITES_PRO_TIP ||
+        'Pro tip: Use the bookmark button on resource cards to save favorites',
+    },
+    controls: {
+      showing:
+        process.env.CONTENT_FAVORITES_SHOWING ||
+        'Showing {{ count }} bookmarked resource{{ plural }}',
+      export: process.env.CONTENT_FAVORITES_EXPORT || 'Export',
+      clearAll: process.env.CONTENT_FAVORITES_CLEAR_ALL || 'Clear All',
+      confirmDelete:
+        process.env.CONTENT_FAVORITES_CONFIRM_DELETE ||
+        'Delete {{ count }} bookmark{{ plural }}?',
+      cancel: process.env.CONTENT_FAVORITES_CANCEL || 'Cancel',
+      delete: process.env.CONTENT_FAVORITES_DELETE || 'Delete',
+    },
+    undoNotification: {
+      singleRemoved:
+        process.env.CONTENT_FAVORITES_SINGLE_REMOVED || 'Bookmark removed',
+      multipleRemoved:
+        process.env.CONTENT_FAVORITES_MULTI_REMOVED ||
+        '{{ count }} bookmarks removed',
+      undoHint:
+        process.env.CONTENT_FAVORITES_UNDO_HINT || 'You can undo this action',
+      undoButton: process.env.CONTENT_FAVORITES_UNDO_BTN || 'Undo',
+    },
+  },
+
   // Comparison
   comparison: {
     title: process.env.CONTENT_COMPARISON_TITLE || 'Compare Resources',
@@ -211,6 +254,9 @@ export const contentConfig = {
       descriptionDesc:
         process.env.CONTENT_SUBMIT_DESC_DESC ||
         'Brief description of what the resource offers',
+      descriptionHelper:
+        process.env.CONTENT_SUBMIT_DESC_HELPER ||
+        "At least {{ min }} characters. Explain what this resource offers and why it's valuable.",
       descriptionPlaceholder:
         process.env.CONTENT_SUBMIT_DESC_PLACEHOLDER ||
         'Describe the resource and its benefits...',
@@ -235,8 +281,14 @@ export const contentConfig = {
       security: process.env.CONTENT_CATEGORY_SECURITY || 'Security',
       learning: process.env.CONTENT_CATEGORY_LEARNING || 'Learning & Education',
     },
+    button: {
+      submit: process.env.CONTENT_SUBMIT_BTN || 'Submit Resource',
+      submitting: process.env.CONTENT_SUBMIT_BTN_SUBMITTING || 'Submitting...',
+    },
     success: {
       title: process.env.CONTENT_SUBMIT_SUCCESS_TITLE || 'Thank you!',
+      heading:
+        process.env.CONTENT_SUBMIT_SUCCESS_HEADING || 'Submission received!',
       message:
         process.env.CONTENT_SUBMIT_SUCCESS_MSG ||
         'Your resource has been submitted for review.',
@@ -244,7 +296,8 @@ export const contentConfig = {
         process.env.CONTENT_SUBMIT_SUCCESS_ANOTHER || 'Submit Another',
     },
     error: {
-      title: process.env.CONTENT_SUBMIT_ERROR_TITLE || 'Submission Failed',
+      title: process.env.CONTENT_SUBMIT_ERROR_TITLE || 'Submission failed',
+      heading: process.env.CONTENT_SUBMIT_ERROR_HEADING || 'Submission failed',
       message:
         process.env.CONTENT_SUBMIT_ERROR_MSG ||
         'There was an error submitting your resource. Please try again.',
@@ -258,6 +311,11 @@ export const contentConfig = {
       autoSaveDelayMs: parseInt(
         process.env.CONTENT_DRAFT_AUTOSAVE_DELAY_MS || '2000'
       ),
+      // UI text for draft functionality
+      autoSaveEnabled:
+        process.env.CONTENT_SUBMIT_AUTOSAVE_ENABLED || 'Auto-saving enabled',
+      draftSaved: process.env.CONTENT_SUBMIT_DRAFT_SAVED || 'Draft saved',
+      justNow: process.env.CONTENT_SUBMIT_JUST_NOW || 'just now',
     },
   },
 
@@ -404,6 +462,26 @@ export const contentConfig = {
       facebook: 'https://www.facebook.com/sharer/sharer.php',
       linkedin: 'https://www.linkedin.com/sharing/share-offsite/',
       reddit: 'https://www.reddit.com/submit',
+    },
+  },
+
+  // Messages - User-facing feedback messages
+  messages: {
+    clipboard: {
+      copy: process.env.CONTENT_MSG_CLIPBOARD_COPY || 'Copy to clipboard',
+      copied: process.env.CONTENT_MSG_CLIPBOARD_COPIED || 'Copied!',
+      copyFailed:
+        process.env.CONTENT_MSG_CLIPBOARD_FAILED ||
+        'Failed to copy to clipboard',
+    },
+  },
+
+  // ARIA Labels - Accessibility labels
+  aria: {
+    clipboard: {
+      copy: process.env.CONTENT_ARIA_CLIPBOARD_COPY || 'Copy to clipboard',
+      copied:
+        process.env.CONTENT_ARIA_CLIPBOARD_COPIED || 'Copied to clipboard',
     },
   },
 } as const

@@ -5,7 +5,7 @@ import type { ApiKey } from '~/types/webhook'
 import { dateConfig } from '~/configs/date.config'
 import { permissionsConfig } from '~/configs/permissions.config'
 
-interface ApiKeyDisplay extends ApiKey {
+export interface ApiKeyDisplay extends ApiKey {
   showFullKey?: boolean
 }
 

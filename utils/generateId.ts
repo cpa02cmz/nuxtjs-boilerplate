@@ -167,3 +167,13 @@ export { defaultConfig as idGenerationConfig }
 
 // Default export
 export default generateId
+
+/**
+ * Generate cryptographically secure unique ID
+ * Uses crypto.randomUUID() for security (replaces insecure Math.random())
+ * Available in Node.js 14.17+ and all modern browsers
+ * @deprecated Use generateId() instead for consistency
+ */
+export const generateUniqueId = (): string => {
+  return crypto.randomUUID()
+}

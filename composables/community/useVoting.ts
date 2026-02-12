@@ -4,7 +4,7 @@
  */
 import { ref } from 'vue'
 import type { Vote, UserProfile } from '~/types/community'
-import { generateUniqueId } from '~/utils/id'
+import { generateUniqueId } from '~/utils/generateId'
 import type {
   UpdateVoteCountCallback,
   UpdateUserContributionsCallback,

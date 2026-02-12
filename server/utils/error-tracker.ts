@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from './db'
 import { logger } from '~/utils/logger'
 import { limitsConfig } from '~/configs/limits.config'
 
@@ -43,8 +43,6 @@ function createErrorHash(message: string, stack?: string): string {
  * Provides deduplication and aggregation capabilities
  */
 export function createErrorTracker() {
-  const prisma = new PrismaClient()
-
   return {
     /**
      * Track an error with automatic deduplication
@@ -95,7 +93,7 @@ export function createErrorTracker() {
         }
 
         // Update error metrics
-        await updateErrorMetrics(prisma, severity, source)
+        await updateErrorMetrics(severity, source)
       } catch (err) {
         logger.error('[ErrorTracker] Failed to track error:', err)
         // Don't throw - error tracking should never break the app
@@ -180,7 +178,6 @@ export function createErrorTracker() {
  * Update hourly error metrics
  */
 async function updateErrorMetrics(
-  prisma: PrismaClient,
   severity: string,
   source: string
 ): Promise<void> {
