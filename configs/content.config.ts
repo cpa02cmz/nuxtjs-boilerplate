@@ -537,6 +537,9 @@ export const contentConfig = {
       submissionDetails:
         process.env.CONTENT_MODERATION_SUBMISSION_DETAILS ||
         'Submission Details',
+      description:
+        process.env.CONTENT_MOD_REVIEW_DESC ||
+        'Review and moderate resource submission',
     },
     labels: {
       description:
@@ -591,6 +594,9 @@ export const contentConfig = {
     },
     queue: {
       title: process.env.CONTENT_MODERATION_QUEUE_TITLE || 'Moderation Queue',
+      description:
+        process.env.CONTENT_MOD_QUEUE_DESC ||
+        'Review pending resource submissions',
     },
     status: {
       title:
@@ -858,17 +864,6 @@ export const contentConfig = {
   },
 
   // Comments - Flexy hates hardcoded comment strings!
-  comments: {
-    placeholder:
-      process.env.CONTENT_COMMENTS_PLACEHOLDER ||
-      'Share your thoughts about this resource...',
-    aria: {
-      add: process.env.CONTENT_COMMENTS_ARIA_ADD || 'Add a comment',
-      like: process.env.CONTENT_COMMENTS_ARIA_LIKE || 'Like this comment',
-      reply: process.env.CONTENT_COMMENTS_ARIA_REPLY || 'Reply to this comment',
-    },
-  },
-
   // Social Share - Flexy hates hardcoded social strings!
   socialShareExtra: {
     aria: {

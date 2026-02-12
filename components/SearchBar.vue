@@ -231,6 +231,11 @@ import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
 import Tooltip from '~/components/Tooltip.vue'
+import { animationConfig } from '~/configs/animation.config'
+import { contentConfig } from '~/configs/content.config'
+import { searchConfig } from '~/configs/search.config'
+import { uiConfig } from '~/configs/ui.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   modelValue: string
@@ -243,105 +248,8 @@ interface Emits {
   (event: 'search', value: string): void
 }
 
-// BroCula fix: Hardcoded fallback values to prevent SSR import failures
-// The ~ alias doesn't resolve correctly in Nitro SSR context for config files
-const UI_TIMING = {
-  SEARCH_DEBOUNCE_MS: 300,
-  SEARCH_BLUR_DELAY_MS: 200,
-}
-
-const SEARCH_CONFIG = {
-  behavior: {
-    minQueryLength: 2,
-    maxSuggestions: 5,
-  },
-}
-
-const contentConfig = {
-  categories: {
-    validCategories: [
-      'ai',
-      'cloud',
-      'database',
-      'design',
-      'developer-tools',
-      'education',
-      'hosting',
-      'infrastructure',
-      'monitoring',
-      'security',
-      'storage',
-    ],
-  },
-  search: {
-    placeholder: 'Search resources by name, description, tags...',
-    ariaLabel: 'Search resources',
-    clearAriaLabel: 'Clear search',
-  },
-}
-
-const searchConfig = {
-  behavior: {
-    descriptionTruncateLength: 100,
-  },
-}
-
-const uiConfig = {
-  timing: {
-    searchCompleteDurationMs: 800,
-    focusPulseDurationMs: 600,
-    shortcutSuccessDurationMs: 600,
-    idlePulseDelayMs: 3000,
-  },
-}
-
-const animationConfig = {
-  tooltip: {
-    showDelayMs: 300,
-    hideDelayMs: 100,
-  },
-  searchShortcut: {
-    durationMs: 600,
-    successColor: '34, 197, 94',
-    successColorAlpha: '34, 197, 94, 0.6',
-    defaultBgColor: '249, 250, 251',
-    defaultTextColor: '107, 114, 128',
-    defaultBorderColor: '229, 231, 235',
-    peakScale: 1.15,
-    shadowSpreadStart: 0,
-    shadowSpreadMid: 8,
-  },
-  focus: {
-    pulseDurationMs: 600,
-  },
-  focusGlow: {
-    durationMs: 600,
-    durationSec: '0.6s',
-    spreadMin: 4,
-    spreadMax: 12,
-    color: 'rgba(59, 130, 246, 0.5)',
-    secondaryColor: 'rgba(147, 197, 253, 0.3)',
-  },
-}
-
-const componentColorsConfig = {
-  focusRing: {
-    color: '59, 130, 246',
-    opacityStart: 0.5,
-    opacityMid: 0.3,
-    opacityEnd: 0,
-    offsetSmall: 4,
-    offsetLarge: 8,
-  },
-  searchBar: {
-    defaultIcon: 'text-gray-400',
-    loadingIcon: 'text-blue-500',
-    successIcon: 'text-green-500',
-  },
-}
-
 const props = withDefaults(defineProps<Props>(), {
-  debounceTime: 300, // Hardcoded fallback - was UI_TIMING.SEARCH_DEBOUNCE_MS
+  debounceTime: searchConfig.behavior.debounceMs,
   enableAdvancedFeatures: true,
 })
 const emit = defineEmits<Emits>()
@@ -419,11 +327,11 @@ const handleInput = (event: Event) => {
 
 // Update suggestions based on input
 const updateSuggestions = (query: string) => {
-  if (query && query.length >= SEARCH_CONFIG.behavior.minQueryLength) {
+  if (query && query.length >= searchConfig.behavior.minQueryLength) {
     // Use advanced suggestions if enabled, otherwise use basic suggestions
     const suggestionsData = props.enableAdvancedFeatures
-      ? getAdvancedSuggestions(query, SEARCH_CONFIG.behavior.maxSuggestions)
-      : getBasicSuggestions(query, SEARCH_CONFIG.behavior.maxSuggestions)
+      ? getAdvancedSuggestions(query, searchConfig.behavior.maxSuggestions)
+      : getBasicSuggestions(query, searchConfig.behavior.maxSuggestions)
 
     suggestions.value = suggestionsData.map(resource => ({
       id: resource.id,
@@ -469,7 +377,7 @@ const handleBlur = () => {
   setTimeout(() => {
     showSuggestions.value = false
     isFocused.value = false
-  }, UI_TIMING.SEARCH_BLUR_DELAY_MS)
+  }, searchConfig.behavior.blurDelayMs)
 }
 
 // Compute total navigable items (suggestions + history)

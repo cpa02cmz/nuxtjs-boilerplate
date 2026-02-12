@@ -5,6 +5,7 @@ import { TIMING } from '~/server/utils/constants'
 import { uiConfig } from '~/configs/ui.config'
 import type { Resource } from '~/types/resource'
 import { useLoading } from './useLoading'
+import resourcesData from '~/data/resources.json'
 
 // Main composable for managing resource data
 export const useResourceData = () => {
@@ -41,9 +42,8 @@ export const useResourceData = () => {
   // Internal fetch logic
   const fetchResources = async (attempt = 1) => {
     try {
-      // Import resources from JSON
-      const resourcesModule = await import('~/data/resources.json')
-      const rawData = resourcesModule.default || resourcesModule
+      // Use imported resources data
+      const rawData = resourcesData
 
       // Type validation to ensure data integrity
       if (!Array.isArray(rawData)) {

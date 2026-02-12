@@ -134,6 +134,44 @@ export const animationConfig = {
     resetDelayMs: parseInt(process.env.COPY_ERROR_RESET_MS || '2500'),
   },
 
+  // Copy Feedback Animation - Palette's delightful micro-UX touch!
+  // Provides satisfying visual feedback when users copy text to clipboard
+  copyFeedback: {
+    // Duration the feedback tooltip remains visible (ms)
+    durationMs: parseInt(process.env.COPY_FEEDBACK_DURATION_MS || '1500'),
+    // Position of the tooltip relative to trigger element
+    position: process.env.COPY_FEEDBACK_POSITION || 'top',
+    // Offset from trigger element (px)
+    offsetPx: parseInt(process.env.COPY_FEEDBACK_OFFSET_PX || '8'),
+    // Animation scale factor for the pop effect
+    popScale: parseFloat(process.env.COPY_FEEDBACK_POP_SCALE || '1.05'),
+    // Checkmark draw animation duration (seconds)
+    checkmarkDrawDurationSec: parseFloat(
+      process.env.COPY_FEEDBACK_CHECKMARK_DURATION || '0.18'
+    ),
+    // Delay before checkmark starts drawing (seconds)
+    checkmarkDelaySec: parseFloat(
+      process.env.COPY_FEEDBACK_CHECKMARK_DELAY || '0.06'
+    ),
+    // Tooltip styling values - Flexy hates hardcoded CSS!
+    styles: {
+      paddingX: parseInt(process.env.COPY_FEEDBACK_PADDING_X || '12'),
+      paddingY: parseInt(process.env.COPY_FEEDBACK_PADDING_Y || '6'),
+      fontSize: parseInt(process.env.COPY_FEEDBACK_FONT_SIZE || '12'),
+      borderRadius: parseInt(process.env.COPY_FEEDBACK_BORDER_RADIUS || '6'),
+      arrowSize: parseInt(process.env.COPY_FEEDBACK_ARROW_SIZE || '8'),
+      animationDuration: parseFloat(
+        process.env.COPY_FEEDBACK_ANIMATION_DURATION || '0.3'
+      ),
+      shadow: {
+        y: parseInt(process.env.COPY_FEEDBACK_SHADOW_Y || '4'),
+        blur: parseInt(process.env.COPY_FEEDBACK_SHADOW_BLUR || '6'),
+        spread: parseInt(process.env.COPY_FEEDBACK_SHADOW_SPREAD || '-1'),
+        opacity: parseFloat(process.env.COPY_FEEDBACK_SHADOW_OPACITY || '0.1'),
+      },
+    },
+  },
+
   // Suggestion/Filter Animations
   suggestion: {
     staggerDelayMs: parseInt(process.env.SUGGESTION_STAGGER_DELAY_MS || '100'),
@@ -428,6 +466,41 @@ export const animationConfig = {
     rectangleHeightRatio: parseFloat(
       process.env.CONFETTI_RECTANGLE_HEIGHT_RATIO || '0.6'
     ),
+  },
+
+  // Floating Label Animations - Palette's micro-UX delight!
+  // Creates smooth floating label transitions for form inputs
+  floatingLabel: {
+    // Duration of the label float animation (ms)
+    durationMs: parseInt(process.env.FLOATING_LABEL_DURATION_MS || '200'),
+    // CSS duration string for transitions
+    durationSec: `${parseInt(process.env.FLOATING_LABEL_DURATION_MS || '200') / 1000}s`,
+    // Easing function for the animation
+    easing: process.env.FLOATING_LABEL_EASING || 'cubic-bezier(0.4, 0, 0.2, 1)',
+    // Scale factor when label floats up (0.85 = 85% of original size)
+    scale: parseFloat(process.env.FLOATING_LABEL_SCALE || '0.85'),
+    // Vertical translation when floating (px) - moves up
+    translateYPx: parseInt(process.env.FLOATING_LABEL_TRANSLATE_Y || '-24'),
+    // Background color for floating label (to cover input border)
+    bgColor: process.env.FLOATING_LABEL_BG_COLOR || 'rgba(255, 255, 255, 1)',
+    // Padding for floating label background
+    paddingX: parseInt(process.env.FLOATING_LABEL_PADDING_X || '4'),
+    // Horizontal offset when floating (px)
+    translateXPx: parseInt(process.env.FLOATING_LABEL_TRANSLATE_X || '4'),
+    // Label color when floating
+    colorFloating:
+      process.env.FLOATING_LABEL_COLOR_FLOATING || 'rgb(59, 130, 246)',
+    // Label color when not floating
+    colorDefault:
+      process.env.FLOATING_LABEL_COLOR_DEFAULT || 'rgb(107, 114, 128)',
+    // Label color when input has error
+    colorError: process.env.FLOATING_LABEL_COLOR_ERROR || 'rgb(239, 68, 68)',
+    // Label color when input is valid
+    colorSuccess:
+      process.env.FLOATING_LABEL_COLOR_SUCCESS || 'rgb(34, 197, 94)',
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.FLOATING_LABEL_RESPECT_REDUCED_MOTION !== 'false',
   },
 } as const
 
