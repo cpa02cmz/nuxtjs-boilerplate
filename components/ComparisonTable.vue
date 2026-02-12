@@ -13,7 +13,7 @@
             scope="col"
             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
           >
-            Criteria
+            {{ contentConfig.comparison.headers.criteria }}
           </th>
           <th
             v-for="(resource, index) in resources"
@@ -47,20 +47,20 @@
                   <span
                     class="text-xs text-red-700 dark:text-red-400 font-medium"
                   >
-                    Remove?
+                    {{ contentConfig.comparison.actions.removeConfirm }}
                   </span>
                   <div class="flex space-x-1">
                     <button
                       class="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 px-1.5 py-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 transition-colors"
                       @click="cancelRemove"
                     >
-                      Cancel
+                      {{ contentConfig.comparison.actions.cancel }}
                     </button>
                     <button
                       class="text-xs text-red-700 dark:text-red-400 font-medium px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 transition-colors"
                       @click="confirmRemove(resource.id)"
                     >
-                      Yes
+                      {{ contentConfig.comparison.actions.yes }}
                     </button>
                   </div>
                 </div>
@@ -85,7 +85,7 @@
                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                     />
                   </svg>
-                  Remove
+                  {{ contentConfig.comparison.actions.remove }}
                 </button>
               </Transition>
             </div>
@@ -140,10 +140,10 @@
       />
     </svg>
     <h3 class="mt-2 text-sm font-medium">
-      No resources to compare
+      {{ contentConfig.comparison.emptyState.title }}
     </h3>
     <p class="mt-1 text-sm">
-      Add at least 2 resources to see the comparison table.
+      {{ contentConfig.comparison.emptyState.description }}
     </p>
   </div>
 </template>
@@ -152,6 +152,7 @@
 import { ref } from 'vue'
 import type { Resource } from '~/types/resource'
 import type { ComparisonCriteria } from '~/types/comparison'
+import { contentConfig } from '~/configs/content.config'
 
 interface Props {
   resources?: Resource[]

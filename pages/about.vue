@@ -3,27 +3,20 @@
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-          About Free Stuff on the Internet
+          {{ contentConfig.about.title }}
         </h1>
       </div>
 
       <div class="bg-white shadow rounded-lg p-6">
         <h2 class="text-xl font-semibold text-gray-800 mb-4">
-          About This Resource
+          {{ contentConfig.about.sectionTitle }}
         </h2>
         <p class="mb-4 text-gray-600">
-          This website is a curated collection of free resources available on
-          the internet for developers, students, and anyone looking to save
-          money while accessing powerful tools and services.
-        </p>
-        <p class="mb-6 text-gray-600">
-          We regularly update this list to include the latest free offerings
-          from tech companies, ensuring you have access to the most valuable
-          resources available.
+          {{ contentConfig.about.description }}
         </p>
 
         <h3 class="text-lg font-semibold text-gray-800 mb-3">
-          Categories Covered
+          {{ contentConfig.about.categoriesTitle }}
         </h3>
         <ul class="space-y-2">
           <li class="flex items-start">
@@ -40,7 +33,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <span>Free AI API Keys and Tools</span>
+            <span>{{ contentConfig.about.categories.ai }}</span>
           </li>
           <li class="flex items-start">
             <svg
@@ -56,7 +49,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <span>Free VPS and Cloud Services</span>
+            <span>{{ contentConfig.about.categories.vps }}</span>
           </li>
           <li class="flex items-start">
             <svg
@@ -72,7 +65,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <span>Free Web Hosting Platforms</span>
+            <span>{{ contentConfig.about.categories.hosting }}</span>
           </li>
           <li class="flex items-start">
             <svg
@@ -88,7 +81,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <span>Free Databases and Storage Solutions</span>
+            <span>{{ contentConfig.about.categories.databases }}</span>
           </li>
           <li class="flex items-start">
             <svg
@@ -104,7 +97,7 @@
                 d="M5 13l4 4L19 7"
               />
             </svg>
-            <span>Free CDN and Performance Tools</span>
+            <span>{{ contentConfig.about.categories.cdn }}</span>
           </li>
         </ul>
       </div>
@@ -113,6 +106,7 @@
 </template>
 
 <script setup>
+import { contentConfig } from '~/configs/content.config'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
 
 definePageMeta({
@@ -122,12 +116,10 @@ definePageMeta({
 // Set page-specific meta tags
 const runtimeConfig = useRuntimeConfig()
 useSeoMeta({
-  title: 'About - Free Stuff on the Internet',
-  ogTitle: 'About - Free Stuff on the Internet',
-  description:
-    'Learn more about Free Stuff on the Internet - a curated collection of free resources for developers, students, and anyone looking to save money while accessing powerful tools and services.',
-  ogDescription:
-    'Learn more about Free Stuff on the Internet - a curated collection of free resources for developers, students, and anyone looking to save money while accessing powerful tools and services.',
+  title: `About - ${contentConfig.navigation.appName}`,
+  ogTitle: `About - ${contentConfig.navigation.appName}`,
+  description: contentConfig.about.description,
+  ogDescription: contentConfig.about.description,
   ogImage: '/og-image.jpg',
   ogUrl: `${runtimeConfig.public.siteUrl || runtimeConfig.public.canonicalUrl || DEFAULT_DEV_URL}/about`,
   twitterCard: 'summary_large_image',
