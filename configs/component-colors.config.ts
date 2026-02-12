@@ -277,6 +277,77 @@ export const componentColorsConfig = {
     // Arrow color (matches background)
     arrowBg: process.env.TOOLTIP_ARROW_BG || 'bg-gray-900',
   },
+
+  // Health Monitor Colors - Flexy hates hardcoded health colors!
+  healthMonitor: {
+    container: {
+      border: process.env.HEALTH_CONTAINER_BORDER || '#e5e7eb',
+      background: process.env.HEALTH_CONTAINER_BG || '#fafafa',
+      borderRadius: process.env.HEALTH_CONTAINER_RADIUS || '0.5rem',
+      padding: process.env.HEALTH_CONTAINER_PADDING || '1rem',
+    },
+    header: {
+      text: process.env.HEALTH_HEADER_TEXT || '#1f2937',
+      fontSize: process.env.HEALTH_HEADER_FONT_SIZE || '1.25rem',
+    },
+    button: {
+      primaryBg: process.env.HEALTH_BTN_PRIMARY_BG || '#3b82f6',
+      primaryHover: process.env.HEALTH_BTN_PRIMARY_HOVER || '#2563eb',
+      disabledBg: process.env.HEALTH_BTN_DISABLED_BG || '#9ca3af',
+      text: process.env.HEALTH_BTN_TEXT || 'white',
+      borderRadius: process.env.HEALTH_BTN_RADIUS || '0.375rem',
+    },
+    status: {
+      healthy: {
+        bg: process.env.HEALTH_STATUS_HEALTHY_BG || '#dcfce7',
+        text: process.env.HEALTH_STATUS_HEALTHY_TEXT || '#16a34a',
+      },
+      unhealthy: {
+        bg: process.env.HEALTH_STATUS_UNHEALTHY_BG || '#fee2e2',
+        text: process.env.HEALTH_STATUS_UNHEALTHY_TEXT || '#dc2626',
+      },
+      unknown: {
+        bg: process.env.HEALTH_STATUS_UNKNOWN_BG || '#f3f4f6',
+        text: process.env.HEALTH_STATUS_UNKNOWN_TEXT || '#6b7280',
+      },
+    },
+    labels: {
+      primary: process.env.HEALTH_LABEL_PRIMARY || '#374151',
+      secondary: process.env.HEALTH_LABEL_SECONDARY || '#6b7280',
+      info: process.env.HEALTH_LABEL_INFO || '#4b5563',
+    },
+    error: {
+      bg: process.env.HEALTH_ERROR_BG || '#fef2f2',
+      border: process.env.HEALTH_ERROR_BORDER || '#ef4444',
+      text: process.env.HEALTH_ERROR_TEXT || '#dc2626',
+    },
+    history: {
+      sectionHeader: process.env.HEALTH_HISTORY_HEADER || '#1f2937',
+      success: {
+        bg: process.env.HEALTH_HISTORY_SUCCESS_BG || '#f0fdf4',
+        border: process.env.HEALTH_HISTORY_SUCCESS_BORDER || '#bbf7d0',
+        icon: process.env.HEALTH_HISTORY_SUCCESS_ICON || '#16a34a',
+      },
+      error: {
+        bg: process.env.HEALTH_HISTORY_ERROR_BG || '#fef2f2',
+        border: process.env.HEALTH_HISTORY_ERROR_BORDER || '#fecaca',
+        icon: process.env.HEALTH_HISTORY_ERROR_ICON || '#dc2626',
+      },
+      info: process.env.HEALTH_HISTORY_INFO || '#6b7280',
+      responseTime: process.env.HEALTH_HISTORY_RESPONSE_TIME || '#9ca3af',
+    },
+    emptyState: process.env.HEALTH_EMPTY_STATE || '#6b7280',
+  },
+
+  // Filter Section Colors - Flexy hates hardcoded filter colors!
+  filterSection: {
+    focusOutline: process.env.FILTER_FOCUS_OUTLINE || '#6b7280',
+    scrollbar: {
+      track: process.env.FILTER_SCROLLBAR_TRACK || 'transparent',
+      thumb: process.env.FILTER_SCROLLBAR_THUMB || '#d1d5db',
+      thumbHover: process.env.FILTER_SCROLLBAR_THUMB_HOVER || '#9ca3af',
+    },
+  },
 } as const
 
 export type ComponentColorsConfig = typeof componentColorsConfig

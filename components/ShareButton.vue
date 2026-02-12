@@ -30,7 +30,7 @@
               d="M5 13l4 4L19 7"
             />
           </svg>
-          Copied!
+          {{ contentConfig.messages.clipboard.copied }}
         </span>
         <!-- Arrow pointing down -->
         <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5">
@@ -102,10 +102,7 @@
         aria-labelledby="share-menu"
         @keydown="handleMenuKeydown"
       >
-        <div
-          class="py-1"
-          role="none"
-        >
+        <div class="py-1" role="none">
           <!-- Twitter -->
           <a
             :href="twitterUrl"
@@ -228,12 +225,13 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path
-                class="checkmark-path"
-                d="M4 10l4 4 8-8"
-              />
+              <path class="checkmark-path" d="M4 10l4 4 8-8" />
             </svg>
-            {{ copySuccess ? 'Copied!' : 'Copy link' }}
+            {{
+              copySuccess
+                ? contentConfig.messages.clipboard.copied
+                : contentConfig.messages.clipboard.copy
+            }}
           </button>
         </div>
       </div>
@@ -255,6 +253,7 @@ import { generateResourceShareUrls } from '~/utils/shareUtils'
 import logger from '~/utils/logger'
 import { animationConfig } from '~/configs/animation.config'
 import { patternsConfig } from '~/configs/patterns.config'
+import { contentConfig } from '~/configs/content.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 import { useRipple } from '~/composables/useRipple'
 

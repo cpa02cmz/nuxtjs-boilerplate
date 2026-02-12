@@ -926,7 +926,30 @@ export const contentConfig = {
   // Health Monitor - Flexy hates hardcoded health strings!
   health: {
     title: process.env.CONTENT_HEALTH_TITLE || 'Resource Health',
+    button: {
+      check: process.env.CONTENT_HEALTH_BTN_CHECK || 'Check Health',
+      checking: process.env.CONTENT_HEALTH_BTN_CHECKING || 'Checking...',
+    },
+    status: {
+      healthy: process.env.CONTENT_HEALTH_STATUS_HEALTHY || 'Healthy',
+      unhealthy: process.env.CONTENT_HEALTH_STATUS_UNHEALTHY || 'Unhealthy',
+      unknown: process.env.CONTENT_HEALTH_STATUS_UNKNOWN || 'Unknown',
+    },
+    labels: {
+      status: process.env.CONTENT_HEALTH_LABEL_STATUS || 'Status:',
+      lastChecked:
+        process.env.CONTENT_HEALTH_LABEL_LAST_CHECKED || 'Last checked:',
+      responseTime:
+        process.env.CONTENT_HEALTH_LABEL_RESPONSE_TIME || 'Response time:',
+      error: process.env.CONTENT_HEALTH_LABEL_ERROR || 'Error:',
+    },
+    units: {
+      ms: process.env.CONTENT_HEALTH_UNIT_MS || 'ms',
+    },
     recentChecks: process.env.CONTENT_HEALTH_RECENT_CHECKS || 'Recent Checks',
+    emptyState:
+      process.env.CONTENT_HEALTH_EMPTY ||
+      'Health data not available for this resource.',
   },
 
   // About Page - Flexy hates hardcoded about content!
