@@ -445,8 +445,10 @@
         <div
           class="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <span>© {{ new Date().getFullYear() }} Free Stuff on the Internet. All
-            rights reserved.</span>
+          <span
+            >© {{ new Date().getFullYear() }} Free Stuff on the Internet. All
+            rights reserved.</span
+          >
           <button
             class="inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1 transition-colors duration-200"
             :aria-label="contentConfig.layout.ariaLabels.keyboardShortcuts"
@@ -460,9 +462,7 @@
             <span>Shortcuts</span>
           </button>
         </div>
-        <p class="sr-only">
-          Footer content ends
-        </p>
+        <p class="sr-only">Footer content ends</p>
       </div>
     </footer>
 
@@ -626,8 +626,10 @@ onUnmounted(() => {
 /* Flexy hates hardcoded values! Using modular easing config */
 .animate-bounce-scale {
   animation: bounce-scale
-    v-bind('easingConfig.animations.bounceScale.durationMs + "ms"')
-    v-bind('easingConfig.animations.bounceScale.easing');
+    v-bind('easingConfig?.animations?.bounceScale?.durationMs ?? 400 + "ms"')
+    v-bind(
+      'easingConfig?.animations?.bounceScale?.easing ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+    );
 }
 
 @keyframes bounce-scale {
@@ -648,8 +650,11 @@ onUnmounted(() => {
 /* Pop animation for counter badge */
 /* Flexy hates hardcoded values! Using modular easing config */
 .animate-pop {
-  animation: pop v-bind('easingConfig.animations.pop.durationMs + "ms"')
-    v-bind('easingConfig.animations.pop.easing');
+  animation: pop
+    v-bind('easingConfig?.animations?.pop?.durationMs ?? 400 + "ms"')
+    v-bind(
+      'easingConfig?.animations?.pop?.easing ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+    );
 }
 
 @keyframes pop {

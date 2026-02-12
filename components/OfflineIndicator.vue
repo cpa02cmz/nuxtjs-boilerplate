@@ -26,10 +26,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <!-- Animated offline icon with connection pulse - Palette's micro-UX enhancement! -->
-                <div
-                  class="relative flex-shrink-0 w-8 h-8"
-                  aria-hidden="true"
-                >
+                <div class="relative flex-shrink-0 w-8 h-8" aria-hidden="true">
                   <!-- Connection pulse rings (shown when reconnecting) -->
                   <template v-if="isReconnecting && !prefersReducedMotion">
                     <div
@@ -238,12 +235,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </Teleport>
@@ -555,7 +547,10 @@ onUnmounted(() => {
 
 /* Flexy hates hardcoded values! Using configurable easing from easingConfig */
 .animate-check-pop {
-  animation: check-pop 0.4s v-bind('easingConfig.cubicBezier.spring');
+  animation: check-pop 0.4s
+    v-bind(
+      'easingConfig?.cubicBezier?.spring ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+    );
 }
 
 /* Spinner animation */
@@ -578,20 +573,20 @@ onUnmounted(() => {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 2px solid v-bind('pulseConfig.color');
-  animation: connection-pulse v-bind('pulseConfig.durationSec') ease-out
-    infinite;
+  border: 2px solid v-bind('pulseConfig?.color ?? "rgb(245, 158, 11)"');
+  animation: connection-pulse v-bind('pulseConfig?.durationSec ?? "1.5s"')
+    ease-out infinite;
   opacity: 0;
 }
 
 @keyframes connection-pulse {
   0% {
     transform: scale(1);
-    opacity: v-bind('pulseConfig.startOpacity');
+    opacity: v-bind('pulseConfig?.startOpacity ?? 0.6');
   }
   100% {
-    transform: scale(v-bind('pulseConfig.maxScale'));
-    opacity: v-bind('pulseConfig.endOpacity');
+    transform: scale(v-bind('pulseConfig?.maxScale ?? 2'));
+    opacity: v-bind('pulseConfig?.endOpacity ?? 0');
   }
 }
 
@@ -629,9 +624,10 @@ onUnmounted(() => {
 
 .retry-button:active:not(:disabled),
 .retry-button.is-pressed {
-  transform: scale(v-bind('animationConfig.offlineRetry.pressScale'));
+  transform: scale(v-bind('animationConfig?.offlineRetry?.pressScale ?? 0.95'));
   transition: transform
-    v-bind('`${animationConfig.offlineRetry.pressDurationMs}ms`') ease-out;
+    v-bind('`${animationConfig?.offlineRetry?.pressDurationMs ?? 100}ms`')
+    ease-out;
 }
 
 .retry-button:disabled {
@@ -660,7 +656,8 @@ onUnmounted(() => {
 .retry-spinner {
   width: 0.875rem;
   height: 0.875rem;
-  animation: spin v-bind('`${animationConfig.offlineRetry.spinDurationMs}ms`')
+  animation: spin
+    v-bind('`${animationConfig?.offlineRetry?.spinDurationMs ?? 1000}ms`')
     linear infinite;
 }
 
@@ -671,8 +668,11 @@ onUnmounted(() => {
   stroke-dasharray: 20;
   stroke-dashoffset: 20;
   animation: draw-check
-    v-bind('`${animationConfig.offlineRetry.successDurationMs}ms`')
-    v-bind('easingConfig.cubicBezier.standard') forwards;
+    v-bind('`${animationConfig?.offlineRetry?.successDurationMs ?? 400}ms`')
+    v-bind(
+      'easingConfig?.cubicBezier?.standard ?? "cubic-bezier(0.4, 0, 0.2, 1)"'
+    )
+    forwards;
 }
 
 @keyframes draw-check {

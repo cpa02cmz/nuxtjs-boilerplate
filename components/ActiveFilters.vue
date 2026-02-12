@@ -62,10 +62,7 @@
         @touchend="handleChipPressEnd('search', searchQuery)"
       >
         <span class="truncate max-w-[200px]">{{ searchQuery }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -84,10 +81,7 @@
           </svg>
         </span>
         <!-- Shimmer effect on hover -->
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Category chips -->
@@ -121,10 +115,7 @@
           contentConfig.filters.labels.category
         }}</span>
         <span class="truncate max-w-[150px]">{{ category }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -142,10 +133,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Pricing model chips -->
@@ -179,10 +167,7 @@
           contentConfig.filters.labels.pricing
         }}</span>
         <span class="truncate max-w-[150px]">{{ pricing }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -200,10 +185,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Difficulty chips -->
@@ -237,10 +219,7 @@
           contentConfig.filters.labels.difficulty
         }}</span>
         <span class="truncate max-w-[150px]">{{ difficulty }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -258,10 +237,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Technology chips -->
@@ -295,10 +271,7 @@
           contentConfig.filters.labels.tech
         }}</span>
         <span class="truncate max-w-[150px]">{{ tech }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -316,10 +289,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Tag chips -->
@@ -353,10 +323,7 @@
           contentConfig.filters.labels.tag
         }}</span>
         <span class="truncate max-w-[150px]">{{ tag }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -374,10 +341,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Benefit chips -->
@@ -411,10 +375,7 @@
           contentConfig.filters.labels.benefit
         }}</span>
         <span class="truncate max-w-[150px]">{{ benefit }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -432,10 +393,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Date range chip -->
@@ -469,10 +427,7 @@
           contentConfig.filters.labels.date
         }}</span>
         <span>{{ formatDateRange(selectedDateRange) }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -490,10 +445,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Undo button for recently removed filter -->
@@ -523,11 +475,14 @@
             d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
           />
         </svg>
-        <span class="truncate max-w-[150px]">{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span>
+        <span class="truncate max-w-[150px]"
+          >{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span
+        >
         <kbd
           class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
           aria-hidden="true"
-        >{{ contentConfig.filters.keyboard.ctrlZ }}</kbd>
+          >{{ contentConfig.filters.keyboard.ctrlZ }}</kbd
+        >
         <!-- Progress bar for undo window with color transition -->
         <span
           class="undo-progress-bar"
@@ -549,7 +504,8 @@
       <kbd
         class="hidden sm:inline-block ml-1.5 px-1.5 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded group-hover:bg-gray-200 transition-colors"
         aria-hidden="true"
-      >{{ contentConfig.filters.keyboard.esc }}</kbd>
+        >{{ contentConfig.filters.keyboard.esc }}</kbd
+      >
     </button>
   </div>
 </template>
@@ -1110,7 +1066,10 @@ onUnmounted(() => {
 .filter-chip-undo {
   @apply relative bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100 focus:ring-amber-500;
   @apply overflow-hidden;
-  animation: undo-chip-in 0.3s v-bind('easingConfig.cubicBezier.standard');
+  animation: undo-chip-in 0.3s
+    v-bind(
+      'easingConfig?.cubicBezier?.standard ?? "cubic-bezier(0.4, 0, 0.2, 1)"'
+    );
 }
 
 /* Progress bar for undo countdown */
@@ -1144,21 +1103,32 @@ onUnmounted(() => {
 
 /* Pressed state - immediate scale down */
 .filter-chip.spring-physics.is-pressed {
-  transform: scale(v-bind('animationConfig.filterChipSpring.pressScale'));
+  transform: scale(
+    v-bind('animationConfig?.filterChipSpring?.pressScale ?? 0.95')
+  );
   transition: transform 0.1s ease-out;
 }
 
 /* Exiting state - spring physics exit animation */
 .filter-chip.spring-physics.is-exiting {
   transform: translateX(
-      v-bind('animationConfig.filterChipSpring.removeTranslateXPx + "px"')
+      v-bind(
+        'animationConfig?.filterChipSpring?.removeTranslateXPx ?? 100 + "px"'
+      )
     )
-    rotate(v-bind('animationConfig.filterChipSpring.removeRotationDeg + "deg"'))
+    rotate(
+      v-bind(
+        'animationConfig?.filterChipSpring?.removeRotationDeg ?? 10 + "deg"'
+      )
+    )
     scale(0.8);
   opacity: 0;
   /* Flexy hates hardcoded values! Using configurable easing from easingConfig */
-  transition: all v-bind('animationConfig.filterChipSpring.durationSec')
-    v-bind('easingConfig.cubicBezier.standard');
+  transition: all
+    v-bind('animationConfig?.filterChipSpring?.durationSec ?? "0.3s"')
+    v-bind(
+      'easingConfig?.cubicBezier?.standard ?? "cubic-bezier(0.4, 0, 0.2, 1)"'
+    );
 }
 
 /* Entrance animation with spring physics */
@@ -1168,7 +1138,9 @@ onUnmounted(() => {
     transform: scale(0.5) translateY(-20px);
   }
   60% {
-    transform: scale(v-bind('animationConfig.filterChipSpring.enterScale'))
+    transform: scale(
+        v-bind('animationConfig?.filterChipSpring?.enterScale ?? 1.1')
+      )
       translateY(2px);
   }
   100% {
@@ -1180,20 +1152,29 @@ onUnmounted(() => {
 /* Apply spring entrance to filter chips - Flexy hates hardcoded values! */
 .filter-chip.spring-physics:not(.is-exiting):not(.is-pressed) {
   animation: chip-spring-enter
-    v-bind('animationConfig.filterChipSpring.durationSec')
-    v-bind('easingConfig.cubicBezier.bouncy') forwards;
+    v-bind('animationConfig?.filterChipSpring?.durationSec ?? "0.3s"')
+    v-bind(
+      'easingConfig?.cubicBezier?.bouncy ?? "cubic-bezier(0.34, 1.56, 0.64, 1)"'
+    )
+    forwards;
 }
 
 /* Hover enhancement with subtle lift - Flexy hates hardcoded values! */
 .filter-chip.spring-physics:hover:not(.is-pressed):not(.is-exiting) {
   transform: translateY(-2px);
-  transition: transform 0.2s v-bind('easingConfig.cubicBezier.spring');
+  transition: transform 0.2s
+    v-bind(
+      'easingConfig?.cubicBezier?.spring ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+    );
 }
 
 /* Focus state enhancement - Flexy hates hardcoded values! */
 .filter-chip.spring-physics:focus-visible {
   transform: translateY(-1px) scale(1.02);
-  transition: all 0.2s v-bind('easingConfig.cubicBezier.spring');
+  transition: all 0.2s
+    v-bind(
+      'easingConfig?.cubicBezier?.spring ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+    );
 }
 
 /* Reduced motion support - disable spring physics */
@@ -1211,7 +1192,10 @@ onUnmounted(() => {
 
 /* Enter transition - smooth fade and scale up - Flexy hates hardcoded values! */
 .filter-chip-enter-active {
-  transition: all 0.3s v-bind('easingConfig.cubicBezier.bouncy');
+  transition: all 0.3s
+    v-bind(
+      'easingConfig?.cubicBezier?.bouncy ?? "cubic-bezier(0.34, 1.56, 0.64, 1)"'
+    );
 }
 
 .filter-chip-enter-from {
@@ -1222,7 +1206,10 @@ onUnmounted(() => {
 /* Leave transition - spring physics with anticipation - Flexy hates hardcoded values! */
 .filter-chip-leave-active {
   position: absolute;
-  transition: all 0.35s v-bind('easingConfig.cubicBezier.bouncy');
+  transition: all 0.35s
+    v-bind(
+      'easingConfig?.cubicBezier?.bouncy ?? "cubic-bezier(0.34, 1.56, 0.64, 1)"'
+    );
 }
 
 /* Anticipation phase - brief scale up before disappearing */
@@ -1239,7 +1226,10 @@ onUnmounted(() => {
 
 /* Staggered sibling movement - create fluid feel as chips reposition - Flexy hates hardcoded values! */
 .filter-chip-move {
-  transition: transform 0.4s v-bind('easingConfig.cubicBezier.bouncy');
+  transition: transform 0.4s
+    v-bind(
+      'easingConfig?.cubicBezier?.bouncy ?? "cubic-bezier(0.34, 1.56, 0.64, 1)"'
+    );
 }
 
 /* Reduced motion support - disable spring physics */

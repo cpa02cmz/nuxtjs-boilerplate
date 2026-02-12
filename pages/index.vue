@@ -14,17 +14,11 @@
 
       <!-- Search Bar -->
       <div class="mt-8 max-w-2xl mx-auto">
-        <LazySearchBar
-          v-model="searchQuery"
-          @search="handleSearch"
-        />
+        <LazySearchBar v-model="searchQuery" @search="handleSearch" />
       </div>
 
       <!-- Loading State with Skeletons -->
-      <div
-        v-if="loading"
-        class="mt-16"
-      >
+      <div v-if="loading" class="mt-16">
         <div class="flex flex-wrap gap-2 mb-8 justify-center">
           <div
             v-for="i in 5"
@@ -43,18 +37,12 @@
 
         <!-- Resources Grid with Skeletons -->
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <ResourceCardSkeleton
-            v-for="i in 6"
-            :key="`skeleton-${i}`"
-          />
+          <ResourceCardSkeleton v-for="i in 6" :key="`skeleton-${i}`" />
         </div>
       </div>
 
       <!-- Error State -->
-      <div
-        v-else-if="error"
-        class="mt-16"
-      >
+      <div v-else-if="error" class="mt-16">
         <ErrorMessage
           :message="errorMessage || error"
           variant="error"
@@ -63,10 +51,7 @@
       </div>
 
       <!-- Resources Grid -->
-      <div
-        v-else
-        class="mt-16"
-      >
+      <div v-else class="mt-16">
         <!-- ARIA live region for search results -->
         <div
           id="search-results-status"
@@ -312,11 +297,7 @@
               </button>
 
               <!-- Screen reader announcement for progress -->
-              <div
-                role="status"
-                aria-live="polite"
-                class="sr-only"
-              >
+              <div role="status" aria-live="polite" class="sr-only">
                 {{ loadMoreProgressAnnouncement }}
               </div>
             </div>
@@ -342,10 +323,7 @@
           </div>
 
           <!-- Trending Resources Section -->
-          <div
-            v-if="filteredResources.length > 0 && !loading"
-            class="mt-16"
-          >
+          <div v-if="filteredResources.length > 0 && !loading" class="mt-16">
             <h2 class="text-2xl font-bold text-gray-900 mb-6">
               Trending Resources
             </h2>
@@ -378,10 +356,7 @@
         </div>
 
         <!-- Recommendations Section -->
-        <div
-          v-if="filteredResources.length > 0 && !loading"
-          class="mt-16"
-        >
+        <div v-if="filteredResources.length > 0 && !loading" class="mt-16">
           <ClientOnly>
             <LazyRecommendationsSection />
           </ClientOnly>
@@ -610,8 +585,12 @@ watch(
   opacity: 0;
   /* Spring cubic-bezier: overshoots slightly for organic, playful feel */
   /* Flexy hates hardcoded values! Using modular easing config */
-  animation: card-enter v-bind('animationConfig.card.enterDurationMs + "ms"')
-    v-bind('easingConfig.cubicBezier.spring') forwards;
+  animation: card-enter
+    v-bind('animationConfig?.card?.enterDurationMs ?? 500 + "ms"')
+    v-bind(
+      'easingConfig?.cubicBezier?.spring ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+    )
+    forwards;
   will-change: transform, opacity;
 }
 
@@ -619,23 +598,27 @@ watch(
   0% {
     opacity: 0;
     transform: translateY(
-        v-bind('animationConfig.cardAnimations.enterDistancePx + "px"')
+        v-bind('animationConfig?.cardAnimations?.enterDistancePx ?? 30 + "px"')
       )
-      scale(v-bind('animationConfig.cardAnimations.enterScale'));
+      scale(v-bind('animationConfig?.cardAnimations?.enterScale ?? 0.95'));
   }
   40% {
     opacity: 0.7;
     transform: translateY(
-        v-bind('animationConfig.cardAnimations.hoverTranslateYPx + "px"')
+        v-bind(
+          'animationConfig?.cardAnimations?.hoverTranslateYPx ?? -8 + "px"'
+        )
       )
-      scale(v-bind('animationConfig.cardAnimations.hoverScale'));
+      scale(v-bind('animationConfig?.cardAnimations?.hoverScale ?? 1.02'));
   }
   70% {
     opacity: 0.95;
     transform: translateY(
-        v-bind('animationConfig.cardAnimations.activeTranslateYPx + "px"')
+        v-bind(
+          'animationConfig?.cardAnimations?.activeTranslateYPx ?? -4 + "px"'
+        )
       )
-      scale(v-bind('animationConfig.cardAnimations.activeScale'));
+      scale(v-bind('animationConfig?.cardAnimations?.activeScale ?? 1.01'));
   }
   100% {
     opacity: 1;
@@ -656,8 +639,12 @@ watch(
 /* Flexy hates hardcoded values! Using modular easing config */
 .animate-celebration-pulse {
   animation: celebration-pulse
-    v-bind('easingConfig.animations.celebrationPulse.durationMs + "ms"')
-    v-bind('easingConfig.animations.celebrationPulse.easing');
+    v-bind(
+      'easingConfig?.animations?.celebrationPulse?.durationMs ?? 600 + "ms"'
+    )
+    v-bind(
+      'easingConfig?.animations?.celebrationPulse?.easing ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+    );
 }
 
 @keyframes celebration-pulse {
@@ -678,8 +665,10 @@ watch(
 /* Flexy hates hardcoded values! Using modular easing config */
 .animate-check-bounce {
   animation: check-bounce
-    v-bind('easingConfig.animations.checkBounce.durationMs + "ms"')
-    v-bind('easingConfig.animations.checkBounce.easing');
+    v-bind('easingConfig?.animations?.checkBounce?.durationMs ?? 500 + "ms"')
+    v-bind(
+      'easingConfig?.animations?.checkBounce?.easing ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+    );
 }
 
 @keyframes check-bounce {

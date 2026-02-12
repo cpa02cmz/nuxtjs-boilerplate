@@ -53,12 +53,7 @@
     </Teleport>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </div>
@@ -297,9 +292,11 @@ defineExpose({
   /* Flexy hates hardcoded values! Using configurable easing from easingConfig */
   animation: feedback-pop
     v-bind(
-      '`${animationConfig.copyFeedback?.styles?.animationDuration || 0.3}s`'
+      '`${animationConfig?.copyFeedback?.styles?.animationDuration ?? 0.3}s`'
     )
-    v-bind('easingConfig.cubicBezier.spring');
+    v-bind(
+      'easingConfig?.cubicBezier?.spring ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+    );
 }
 
 .copy-feedback-checkmark {
