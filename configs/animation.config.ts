@@ -553,6 +553,11 @@ export const animationConfig = {
       durationMs: parseInt(process.env.TRANSITION_SLOW_DURATION_MS || '300'),
       class: 'duration-300',
     },
+    // Slower transitions (500ms) - for prominent entrances and exits
+    slower: {
+      durationMs: parseInt(process.env.TRANSITION_SLOWER_DURATION_MS || '500'),
+      class: 'duration-500',
+    },
     // Easing functions
     easeOut: process.env.TRANSITION_EASE_OUT || 'ease-out',
     easeIn: process.env.TRANSITION_EASE_IN || 'ease-in',

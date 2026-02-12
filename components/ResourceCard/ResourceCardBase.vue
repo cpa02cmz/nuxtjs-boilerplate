@@ -3,10 +3,12 @@
   <article
     v-if="!hasError"
     ref="cardRef"
-    class="bg-white p-6 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 border border-gray-200 hover:border-blue-300 focus-within:border-blue-300 transition-all duration-200 ease-out group card-shine-container card-3d-tilt"
-    :class="{
-      'is-tilting': isTilting && !prefersReducedMotion,
-    }"
+    :class="[
+      `bg-white p-6 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 border border-gray-200 hover:border-blue-300 focus-within:border-blue-300 transition-all ${transitionClasses.card} ease-out group card-shine-container card-3d-tilt`,
+      {
+        'is-tilting': isTilting && !prefersReducedMotion,
+      },
+    ]"
     :style="tiltStyle"
     role="article"
     @mouseenter="handleMouseEnter"
@@ -40,7 +42,7 @@
             <NuxtLink
               v-if="id"
               :to="`/resources/${id}`"
-              class="resource-link hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:rounded-sm transition-colors duration-200"
+              :class="`resource-link hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:rounded-sm transition-colors ${transitionClasses.normal}`"
               :aria-label="`View details for ${title}`"
               @click="markVisited"
             >
@@ -191,14 +193,16 @@
               :href="url"
               :target="newTab ? '_blank' : '_self'"
               rel="noopener noreferrer"
-              class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 hover:scale-105 active:bg-gray-950 active:scale-95 transition-all duration-150 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 relative overflow-hidden disabled:opacity-75 disabled:cursor-not-allowed"
+              :class="[
+                `inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 hover:scale-105 active:bg-gray-950 active:scale-95 transition-all ${transitionClasses.fast} ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 relative overflow-hidden disabled:opacity-75 disabled:cursor-not-allowed`,
+                { 'pointer-events-none': isNavigating },
+              ]"
               :aria-label="
                 isNavigating
                   ? `Opening ${title}...`
                   : `Visit ${title} - opens in ${newTab ? 'new tab' : 'same window'}`
               "
               :aria-busy="isNavigating"
-              :class="{ 'pointer-events-none': isNavigating }"
               @click="handleLinkClickWithRipple"
             >
               <!-- Loading Spinner -->
@@ -233,7 +237,7 @@
                 <!-- External link indicator - Palette's micro-UX touch! -->
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-3.5 w-3.5 opacity-70 group-hover:opacity-100 transition-opacity duration-200"
+                  :class="`h-3.5 w-3.5 opacity-70 group-hover:opacity-100 transition-opacity ${transitionClasses.normal}`"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -257,7 +261,7 @@
           >
             <!-- Actions hint - visible on desktop when not hovered -->
             <div
-              class="hidden md:flex items-center text-gray-600 text-xs transition-opacity duration-200 ease-out group-hover:opacity-0 pointer-events-none"
+              :class="`hidden md:flex items-center text-gray-600 text-xs transition-opacity ${transitionClasses.normal} ease-out group-hover:opacity-0 pointer-events-none`"
               aria-hidden="true"
             >
               <svg
@@ -277,7 +281,7 @@
 
             <!-- Actions slot with progressive disclosure -->
             <div
-              class="flex items-center transition-all duration-200 ease-out opacity-100 md:opacity-0 md:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 focus-within:opacity-100 focus-within:translate-x-0"
+              :class="`flex items-center transition-all ${transitionClasses.normal} ease-out opacity-100 md:opacity-0 md:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 focus-within:opacity-100 focus-within:translate-x-0`"
             >
               <slot name="actions" />
             </div>
@@ -484,6 +488,14 @@ const { isNew, isResourceVisited, markResourceVisited } =
     category: props.category,
     dateAdded: props.dateAdded,
   })
+
+// Flexy hates hardcoded values! Config-based transition classes
+const transitionClasses = computed(() => ({
+  fast: animationConfig.transition.fast.class,
+  normal: animationConfig.transition.normal.class,
+  slow: animationConfig.transition.slow.class,
+  card: animationConfig.transition.normal.class,
+}))
 
 // Initialize ripple effect
 // Flexy loves modularity! Using configurable animation duration from animationConfig
