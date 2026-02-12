@@ -2,10 +2,14 @@ import { computed, ref, readonly, watch } from 'vue'
 import type { SortOption } from '~/types/resource'
 import { useResourceData } from './useResourceData'
 import { useAdvancedResourceSearch } from './useAdvancedResourceSearch'
-import { toggleArrayItem } from '~/utils/filter-utils'
+import {
+  toggleArrayItem,
+  filterByAllCriteriaWithDateRange,
+} from '~/utils/filter-utils'
 import { useResourceSort } from './useResourceSort'
 import { trackSearch, trackFilter } from '~/utils/analytics'
 import { animationConfig } from '~/configs/animation.config'
+import { limitsConfig } from '~/configs/limits.config'
 
 // Extended filter options for search page
 export interface SearchPageFilterOptions {
@@ -34,6 +38,9 @@ export const useSearchPage = () => {
   const allTags = ref<string[]>([])
   const allBenefits = ref<string[]>([])
 
+  // Cache for facet counts to avoid recalculation on every filter change
+  const facetCountsCache = ref<Map<string, Record<string, number>>>(new Map())
+
   watch(
     () => resources.value,
     newResources => {
@@ -47,6 +54,9 @@ export const useSearchPage = () => {
 
       allTags.value = Array.from(tagsSet).sort()
       allBenefits.value = Array.from(benefitsSet).sort()
+
+      // Clear facet counts cache when resources change to ensure data consistency
+      facetCountsCache.value.clear()
     },
     { immediate: true }
   )
@@ -71,22 +81,62 @@ export const useSearchPage = () => {
     computed(() => sortOption.value)
   )
 
+  const maxCacheSize = limitsConfig.search.maxCacheSize
+
+  // Computed property for search results based on query only (not filters)
+  const searchResultsByQuery = computed(() => {
+    if (!resources.value.length) {
+      return []
+    }
+
+    const query = filterOptions.value.searchQuery || ''
+    return advancedSearch.advancedSearchResources(query)
+  })
+
+  // Computed property for filtered resources (applies filters to search results)
   const filteredResources = computed(() => {
     if (!resources.value.length) {
       return []
     }
 
     const query = filterOptions.value.searchQuery || ''
-    const result = advancedSearch.advancedSearchResources(
-      query,
-      filterOptions.value
-    )
+    // Get search results for the query (cached internally by advancedSearch)
+    let results = advancedSearch.advancedSearchResources(query)
 
-    return sortResources(result, sortOption.value)
+    // Apply filters separately to avoid recalculating search on every filter change
+    if (results.length > 0 && hasActiveFilters(filterOptions.value)) {
+      results = filterByAllCriteriaWithDateRange(results, filterOptions.value)
+    }
+
+    return sortResources(results, sortOption.value)
   })
 
+  // Helper function to check if any filters are active
+  const hasActiveFilters = (filters: SearchPageFilterOptions): boolean => {
+    return !!(
+      (filters.categories && filters.categories.length > 0) ||
+      (filters.pricingModels && filters.pricingModels.length > 0) ||
+      (filters.difficultyLevels && filters.difficultyLevels.length > 0) ||
+      (filters.technologies && filters.technologies.length > 0) ||
+      (filters.tags && filters.tags.length > 0) ||
+      (filters.benefits && filters.benefits.length > 0) ||
+      (filters.dateRange && filters.dateRange !== 'anytime')
+    )
+  }
+
+  // Computed property for facet counts with caching
   const facetCounts = computed(() => {
     const query = filterOptions.value.searchQuery || ''
+    const cacheKey = query
+
+    // Check cache first
+    const cached = facetCountsCache.value.get(cacheKey)
+    if (cached) {
+      return cached
+    }
+
+    // Calculate facet counts based on search results only (before filters)
+    // Note: calculateAllFacetCounts internally calls advancedSearchResources
     const allFacets = advancedSearch.calculateAllFacetCounts(query)
 
     const allCounts: Record<string, number> = {}
@@ -114,6 +164,16 @@ export const useSearchPage = () => {
     Object.entries(allFacets.benefits).forEach(([key, value]) => {
       allCounts[`benefit_${key}`] = value
     })
+
+    // Cache the results
+    if (facetCountsCache.value.size >= maxCacheSize) {
+      // Remove oldest entry (simple FIFO)
+      const firstKey = facetCountsCache.value.keys().next().value
+      if (firstKey !== undefined) {
+        facetCountsCache.value.delete(firstKey)
+      }
+    }
+    facetCountsCache.value.set(cacheKey, allCounts)
 
     return allCounts
   })
@@ -194,10 +254,16 @@ export const useSearchPage = () => {
     }, animationConfig.analytics.trackingDelayMs)
   }
 
+  // Clear cache when filters are reset
+  const clearFacetCache = () => {
+    facetCountsCache.value.clear()
+  }
+
   return {
     filterOptions: readonly(filterOptions),
     sortOption: readonly(sortOption),
     filteredResources,
+    searchResultsByQuery,
     facetCounts,
     updateSearchQuery,
     toggleCategory,
@@ -210,6 +276,7 @@ export const useSearchPage = () => {
     setSortOption,
     resetFilters,
     handleSearch,
+    clearFacetCache,
     savedSearches: advancedSearch.savedSearches,
     saveSearch: advancedSearch.saveSearch,
     removeSavedSearch: advancedSearch.removeSavedSearch,
