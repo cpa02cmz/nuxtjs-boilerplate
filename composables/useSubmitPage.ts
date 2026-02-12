@@ -1,4 +1,4 @@
-import { ref, readonly } from 'vue'
+import { ref, readonly, onUnmounted } from 'vue'
 import { useNuxtApp } from '#app'
 import type { ApiClient } from '~/utils/api-client'
 import { logError } from '~/utils/errorLogger'
@@ -52,6 +52,7 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
   const isSubmitting = ref(false)
   const submitSuccess = ref(false)
   const submitError = ref('')
+  const timeouts = ref<ReturnType<typeof setTimeout>[]>([])
 
   const validateTitle = (): boolean => {
     delete errors.value.title
@@ -160,9 +161,12 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
 
     document.body.appendChild(announcement)
 
-    setTimeout(() => {
-      document.body.removeChild(announcement)
+    const timeout = setTimeout(() => {
+      if (document.body.contains(announcement)) {
+        document.body.removeChild(announcement)
+      }
     }, uiConfig.feedback.announcementClearMs)
+    timeouts.value.push(timeout)
   }
 
   const processTags = (tagsString: string): string[] => {
@@ -205,9 +209,10 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
         tagsInput.value = ''
         submitSuccess.value = true
 
-        setTimeout(() => {
+        const timeout = setTimeout(() => {
           submitSuccess.value = false
         }, uiConfig.feedback.successMessageClearMs)
+        timeouts.value.push(timeout)
       } else {
         const responseData = response.data as
           | { errors?: { field: string; message: string }[]; message?: string }
@@ -287,6 +292,11 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
       tagsInput.value.trim().length > 0
     )
   }
+
+  onUnmounted(() => {
+    timeouts.value.forEach(clearTimeout)
+    timeouts.value = []
+  })
 
   return {
     formData: readonly(formData),
