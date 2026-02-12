@@ -838,6 +838,30 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.MAGNETIC_BUTTON_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Character Counter Ring - Palette's micro-UX delight! 🎯
+  // Visual progress ring showing character count with color-coded feedback
+  characterCounterRing: {
+    // Duration of progress ring animation (ms)
+    transitionDurationMs: parseInt(
+      process.env.CHARACTER_COUNTER_TRANSITION_MS || '300'
+    ),
+    // Screen reader announcement timeout (ms)
+    announcementTimeoutMs: parseInt(
+      process.env.CHARACTER_COUNTER_ANNOUNCEMENT_MS || '1000'
+    ),
+    // Default ring color
+    defaultColor: process.env.CHARACTER_COUNTER_DEFAULT_COLOR || '#10b981',
+    // Warning ring color (approaching limit)
+    warningColor: process.env.CHARACTER_COUNTER_WARNING_COLOR || '#f59e0b',
+    // Error ring color (at limit)
+    errorColor: process.env.CHARACTER_COUNTER_ERROR_COLOR || '#ef4444',
+    // Background track color
+    trackColor: process.env.CHARACTER_COUNTER_TRACK_COLOR || '#e5e7eb',
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.CHARACTER_COUNTER_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

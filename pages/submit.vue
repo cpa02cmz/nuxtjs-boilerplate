@@ -1,10 +1,7 @@
 <template>
   <div class="py-12">
     <!-- Confetti celebration for successful submission -->
-    <ConfettiCelebration
-      ref="confettiRef"
-      intensity="medium"
-    />
+    <ConfettiCelebration ref="confettiRef" intensity="medium" />
 
     <!-- Smart Paste indicator - Palette's micro-UX enhancement! -->
     <ClientOnly>
@@ -77,10 +74,7 @@
                 'has-success': formData.title && !errors.title,
               }"
             >
-              <label
-                for="title"
-                class="floating-label"
-              >
+              <label for="title" class="floating-label">
                 Resource Title <span aria-hidden="true">*</span>
                 <span class="sr-only">(required)</span>
               </label>
@@ -104,14 +98,20 @@
                 ]"
                 @focus="isTitleFocused = true"
                 @blur="handleTitleBlur"
-              >
+              />
+              <!-- Character Counter Ring - Palette's micro-UX delight! -->
               <div
                 id="title-counter"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium tabular-nums transition-all duration-200"
-                :class="titleCounterClass"
+                class="absolute right-3 top-1/2 -translate-y-1/2"
                 aria-live="polite"
               >
-                {{ formData.title.length }}/{{ maxTitleLength }}
+                <CharacterCounterRing
+                  :current="formData.title.length"
+                  :max="maxTitleLength"
+                  :size="32"
+                  :warning-threshold="80"
+                  :error-threshold="100"
+                />
               </div>
               <!-- Validation checkmark - Palette's micro-UX delight! -->
               <Transition
@@ -143,27 +143,9 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="title-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="title-description" class="mt-1 text-sm text-gray-500">
               The name of the resource or service
             </p>
-            <!-- Character limit progress bar for visual feedback -->
-            <div
-              v-if="formData.title.length > 0"
-              class="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden"
-              aria-hidden="true"
-            >
-              <div
-                class="h-full transition-all duration-300 ease-out rounded-full"
-                :class="titleProgressClass"
-                :style="{
-                  width: `${(formData.title.length / maxTitleLength) * 100}%`,
-                }"
-              />
-            </div>
-
             <div
               v-if="errors.title"
               id="title-error"
@@ -204,13 +186,19 @@
                 @focus="isDescriptionFocused = true"
                 @blur="handleDescriptionBlur"
               />
+              <!-- Character Counter Ring - Palette's micro-UX delight! -->
               <div
                 id="description-counter"
-                class="absolute right-3 bottom-2 text-xs font-medium tabular-nums transition-all duration-200"
-                :class="descriptionCounterClass"
+                class="absolute right-3 bottom-2"
                 aria-live="polite"
               >
-                {{ formData.description.length }}/{{ maxDescriptionLength }}
+                <CharacterCounterRing
+                  :current="formData.description.length"
+                  :max="maxDescriptionLength"
+                  :size="32"
+                  :warning-threshold="80"
+                  :error-threshold="100"
+                />
               </div>
               <!-- Validation checkmark - Palette's micro-UX delight! -->
               <Transition
@@ -242,27 +230,9 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="description-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="description-description" class="mt-1 text-sm text-gray-500">
               {{ descriptionHelperText }}
             </p>
-            <!-- Character limit progress bar for visual feedback -->
-            <div
-              v-if="formData.description.length > 0"
-              class="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden"
-              aria-hidden="true"
-            >
-              <div
-                class="h-full transition-all duration-300 ease-out rounded-full"
-                :class="descriptionProgressClass"
-                :style="{
-                  width: `${(formData.description.length / maxDescriptionLength) * 100}%`,
-                }"
-              />
-            </div>
-
             <div
               v-if="errors.description"
               id="description-error"
@@ -283,10 +253,7 @@
                 'has-success': formData.url && !errors.url,
               }"
             >
-              <label
-                for="url"
-                class="floating-label"
-              >
+              <label for="url" class="floating-label">
                 URL <span aria-hidden="true">*</span>
                 <span class="sr-only">(required)</span>
               </label>
@@ -309,7 +276,7 @@
                 ]"
                 @blur="handleUrlBlur"
                 @paste="handleSmartPaste"
-              >
+              />
               <!-- Validation checkmark - Palette's micro-UX delight! -->
               <Transition
                 enter-active-class="transition-all duration-200 ease-out"
@@ -376,12 +343,7 @@
                 ]"
                 @blur="handleCategoryBlur"
               >
-                <option
-                  value=""
-                  disabled
-                >
-                  Select a category
-                </option>
+                <option value="" disabled>Select a category</option>
                 <option
                   v-for="category in categoryOptions"
                   :key="category.value"
@@ -439,10 +401,7 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="category-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="category-description" class="mt-1 text-sm text-gray-500">
               Choose the most appropriate category for this resource
             </p>
             <div
@@ -463,22 +422,16 @@
                 'has-value': tagsInput.length > 0,
               }"
             >
-              <label
-                for="tags"
-                class="floating-label"
-              > Tags (Optional) </label>
+              <label for="tags" class="floating-label"> Tags (Optional) </label>
               <input
                 id="tags"
                 v-model="tagsInput"
                 type="text"
                 aria-describedby="tags-description"
                 class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
-              >
+              />
             </div>
-            <p
-              id="tags-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="tags-description" class="mt-1 text-sm text-gray-500">
               Add relevant tags to help categorize this resource (e.g., "api,
               free-tier, openai")
             </p>
@@ -522,7 +475,9 @@
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <span class="relative z-10">Draft saved {{ lastSavedText }}</span>
+                  <span class="relative z-10"
+                    >Draft saved {{ lastSavedText }}</span
+                  >
                 </div>
                 <div
                   v-else-if="hasFormContent() && !submitSuccess"
@@ -545,10 +500,7 @@
               <span v-if="!isSubmitting">{{
                 contentConfig.submit.button.submit
               }}</span>
-              <span
-                v-else
-                class="flex items-center"
-              >
+              <span v-else class="flex items-center">
                 <svg
                   class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                   xmlns="http://www.w3.org/2000/svg"
@@ -657,7 +609,7 @@ import { useNuxtApp } from '#app'
 import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
 import { animationConfig } from '~/configs/animation.config'
-import { thresholdsConfig } from '~/configs/thresholds.config'
+
 import { uiConfig } from '~/configs/ui.config'
 import { categoriesConfig } from '~/configs/categories.config'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
@@ -667,6 +619,7 @@ import { debounce } from '~/utils/debounce'
 import { useSmartPaste } from '~/composables/useSmartPaste'
 import { useMagneticButton } from '~/composables/useMagneticButton'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
+import CharacterCounterRing from '~/components/CharacterCounterRing.vue'
 
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
 const urlInputRef = ref<HTMLInputElement | null>(null)
@@ -827,70 +780,6 @@ const titleInput = ref<HTMLInputElement | null>(null)
 // Focus states for character counters
 const isTitleFocused = ref(false)
 const isDescriptionFocused = ref(false)
-
-// Character counter styling with accessibility considerations
-// Progress bar color based on character usage percentage - using config thresholds
-const titleProgressClass = computed(() => {
-  const percentage = (formData.value.title.length / maxTitleLength) * 100
-  const { errorPercent, warningPercent } =
-    thresholdsConfig.characterCounter.progress
-  if (percentage >= errorPercent) {
-    return 'bg-red-500'
-  } else if (percentage >= warningPercent) {
-    return 'bg-amber-500'
-  }
-  return 'bg-green-500'
-})
-
-const titleCounterClass = computed(() => {
-  const length = formData.value.title.length
-  const remaining = maxTitleLength - length
-
-  // Always visible when field has content, fade in/out based on focus
-  const baseClasses = length > 0 ? 'opacity-100' : 'opacity-0'
-
-  // Color coding based on remaining characters - using config thresholds
-  const { titleError, titleWarning } =
-    thresholdsConfig.characterCounter.remaining
-  if (remaining <= titleError) {
-    return `${baseClasses} text-red-500`
-  } else if (remaining <= titleWarning) {
-    return `${baseClasses} text-amber-500`
-  }
-  return `${baseClasses} text-gray-400`
-})
-
-// Progress bar color based on character usage percentage - using config thresholds
-const descriptionProgressClass = computed(() => {
-  const percentage =
-    (formData.value.description.length / maxDescriptionLength) * 100
-  const { errorPercent, warningPercent } =
-    thresholdsConfig.characterCounter.progress
-  if (percentage >= errorPercent) {
-    return 'bg-red-500'
-  } else if (percentage >= warningPercent) {
-    return 'bg-amber-500'
-  }
-  return 'bg-green-500'
-})
-
-const descriptionCounterClass = computed(() => {
-  const length = formData.value.description.length
-  const remaining = maxDescriptionLength - length
-
-  // Always visible when field has content, fade in/out based on focus
-  const baseClasses = length > 0 ? 'opacity-100' : 'opacity-0'
-
-  // Color coding based on remaining characters - using config thresholds
-  const { descriptionError, descriptionWarning } =
-    thresholdsConfig.characterCounter.remaining
-  if (remaining <= descriptionError) {
-    return `${baseClasses} text-red-500`
-  } else if (remaining <= descriptionWarning) {
-    return `${baseClasses} text-amber-500`
-  }
-  return `${baseClasses} text-gray-400`
-})
 
 // Description helper text with min characters - Flexy hates hardcoded strings!
 const descriptionHelperText = computed(() => {
