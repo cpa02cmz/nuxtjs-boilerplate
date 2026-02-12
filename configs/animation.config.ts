@@ -780,6 +780,20 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.CARD_3D_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Magnetic Button Effect - Palette's premium micro-UX delight! 🧲
+  // Creates a subtle "magnetic" pull that draws buttons toward the cursor
+  magneticButton: {
+    // Strength of the magnetic pull (0-1, where 1 is strongest)
+    strength: parseFloat(process.env.MAGNETIC_BUTTON_STRENGTH || '0.4'),
+    // Maximum distance the button can move (pixels)
+    maxDistancePx: parseInt(process.env.MAGNETIC_BUTTON_MAX_DISTANCE || '12'),
+    // Duration of the return animation when mouse leaves (ms)
+    returnDurationMs: parseInt(process.env.MAGNETIC_BUTTON_RETURN_MS || '400'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.MAGNETIC_BUTTON_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
