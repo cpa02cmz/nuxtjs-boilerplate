@@ -209,9 +209,9 @@ import { useApiKeysPage } from '~/composables/useApiKeysPage'
 import { copyToClipboard } from '~/utils/clipboard'
 import { useRipple } from '~/composables/useRipple'
 import { animationConfig } from '~/configs/animation.config'
+import { easingConfig } from '~/configs/easing.config'
 import { iconsConfig } from '~/configs/icons.config'
 import { contentConfig } from '~/configs/content.config'
-import { EASING } from '~/configs/easing.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 import Tooltip from '~/components/Tooltip.vue'
 import type { ApiKeyDisplay } from '~/composables/useApiKeysPage'
@@ -360,10 +360,13 @@ onMounted(() => {
 
 <style scoped>
 /* Checkmark animation - Palette's micro-UX delight! */
+/* Flexy hates hardcoded values! Using modular easing config */
 .checkmark-path {
   stroke-dasharray: 20;
   stroke-dashoffset: 20;
-  animation: draw-check 0.4s v-bind('EASING.MATERIAL_STANDARD') forwards;
+  animation: draw-check
+    v-bind('easingConfig.animations.checkmarkDraw.durationMs + "ms"')
+    v-bind('easingConfig.animations.checkmarkDraw.easing') forwards;
 }
 
 @keyframes draw-check {
@@ -374,7 +377,9 @@ onMounted(() => {
 
 /* Pop animation for checkmark icon */
 .animate-check-pop {
-  animation: check-pop 0.4s v-bind('EASING.SPRING_STANDARD');
+  animation: check-pop
+    v-bind('easingConfig.animations.checkmarkPop.durationMs + "ms"')
+    v-bind('easingConfig.animations.checkmarkPop.easing');
 }
 
 @keyframes check-pop {

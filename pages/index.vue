@@ -402,13 +402,13 @@ import ResourceSort from '~/components/ResourceSort.vue'
 import { appConfig } from '~/configs/app.config'
 import { seoConfig } from '~/configs/seo.config'
 import { animationConfig } from '~/configs/animation.config'
+import { easingConfig } from '~/configs/easing.config'
 import { contentConfig } from '~/configs/content.config'
 import { thresholdsConfig } from '~/configs/thresholds.config'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
 import { uiConfig } from '~/configs/ui.config'
 import { TIME_MS } from '~/configs/time.config'
 import { hapticConfig } from '~/configs/haptic.config'
-import { EASING } from '~/configs/easing.config'
 
 definePageMeta({
   layout: 'default',
@@ -609,8 +609,9 @@ watch(
 .resource-card-wrapper {
   opacity: 0;
   /* Spring cubic-bezier: overshoots slightly for organic, playful feel */
+  /* Flexy hates hardcoded values! Using modular easing config */
   animation: card-enter v-bind('animationConfig.card.enterDurationMs + "ms"')
-    v-bind('EASING.SPRING_STANDARD') forwards;
+    v-bind('easingConfig.cubicBezier.spring') forwards;
   will-change: transform, opacity;
 }
 
@@ -652,8 +653,11 @@ watch(
 }
 
 /* Load More Button - Completion Celebration Animation */
+/* Flexy hates hardcoded values! Using modular easing config */
 .animate-celebration-pulse {
-  animation: celebration-pulse 0.6s v-bind('EASING.SPRING_STANDARD');
+  animation: celebration-pulse
+    v-bind('easingConfig.animations.celebrationPulse.durationMs + "ms"')
+    v-bind('easingConfig.animations.celebrationPulse.easing');
 }
 
 @keyframes celebration-pulse {
@@ -671,8 +675,11 @@ watch(
 }
 
 /* Checkmark bounce animation */
+/* Flexy hates hardcoded values! Using modular easing config */
 .animate-check-bounce {
-  animation: check-bounce 0.5s v-bind('EASING.SPRING_STANDARD');
+  animation: check-bounce
+    v-bind('easingConfig.animations.checkBounce.durationMs + "ms"')
+    v-bind('easingConfig.animations.checkBounce.easing');
 }
 
 @keyframes check-bounce {
