@@ -190,9 +190,6 @@
                     <p class="text-xs text-blue-700 mt-0.5">
                       {{ contentConfig.favorites.undoNotification.undoHint }}
                     </p>
-                    <p class="text-xs text-blue-700 mt-0.5">
-                      You can undo this action
-                    </p>
                   </div>
                 </div>
                 <div class="flex items-center space-x-3">
@@ -278,12 +275,6 @@
                   >
                     {{ contentConfig.favorites.controls.delete }}
                   </button>
-                  <button
-                    class="text-sm text-red-700 font-medium px-2 py-1 rounded bg-red-100 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-colors"
-                    @click="handleConfirmClear"
-                  >
-                    Delete
-                  </button>
                 </div>
                 <button
                   v-else
@@ -307,14 +298,17 @@
               :description="bookmark.description"
               :benefits="['Bookmarked resource']"
               :url="bookmark.url"
-              :button-label="'Visit Resource'"
+              :button-label="contentConfig.resourceCard.defaultButtonLabel"
               :date-added="bookmark.dateAdded"
             >
               <template #actions>
                 <button
                   class="text-red-500 hover:text-red-700 transition-all duration-200 hover:scale-110 active:scale-95"
                   :aria-label="`Remove ${bookmark.title} from bookmarks`"
-                  title="Remove bookmark"
+                  :title="
+                    contentConfig.favorites.aria?.removeBookmark ||
+                      'Remove bookmark'
+                  "
                   @click="removeBookmark(bookmark.id)"
                 >
                   <svg

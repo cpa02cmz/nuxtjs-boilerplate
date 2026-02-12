@@ -89,7 +89,8 @@
               >
                 <div class="flex items-start justify-between gap-3">
                   <p class="font-mono text-sm break-all flex-1">
-                    API Key: {{ key.key }}
+                    {{ contentConfig.apiKeys.labels.apiKeyPrefix }}
+                    {{ key.key }}
                   </p>
                   <!-- Copy Button - Palette's micro-UX enhancement! -->
                   <Tooltip
@@ -151,8 +152,7 @@
                   </Tooltip>
                 </div>
                 <p class="text-xs text-gray-500 mt-2">
-                  Make sure to copy this key now. You won't be able to see it
-                  again.
+                  {{ contentConfig.apiKeys.messages.copyWarning }}
                 </p>
               </div>
               <div class="mt-2">
@@ -160,7 +160,11 @@
                   class="text-sm text-indigo-600 hover:text-indigo-800"
                   @click="toggleKeyVisibility(key)"
                 >
-                  {{ key.showFullKey ? 'Hide Key' : 'Show Key' }}
+                  {{
+                    key.showFullKey
+                      ? contentConfig.apiKeys.toggle.hide
+                      : contentConfig.apiKeys.toggle.show
+                  }}
                 </button>
               </div>
             </div>
@@ -172,28 +176,26 @@
           class="text-center py-12"
         >
           <p class="text-gray-600">
-            You don't have any API keys yet.
+            {{ contentConfig.apiKeys.empty.message }}
           </p>
           <p class="text-gray-500 text-sm mt-2">
-            Generate your first API key to start using the API.
+            {{ contentConfig.apiKeys.empty.description }}
           </p>
         </div>
 
         <div class="mt-12">
           <h2 class="text-lg font-semibold text-gray-700 mb-4">
-            API Documentation
+            {{ contentConfig.apiKeys.documentation.title }}
           </h2>
           <p class="text-gray-600 mb-4">
-            For detailed information about available endpoints, request/response
-            formats, and authentication requirements, visit our interactive API
-            documentation.
+            {{ contentConfig.apiKeys.documentation.description }}
           </p>
           <a
             href="/api-docs"
             target="_blank"
             class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
           >
-            View API Documentation
+            {{ contentConfig.apiKeys.documentation.button }}
           </a>
         </div>
       </div>
@@ -291,7 +293,10 @@ const handleCopyKey = async (key: ApiKeyDisplay) => {
         window.dispatchEvent(
           new CustomEvent('show-toast', {
             detail: {
-              message: `"${key.name}" API key copied to clipboard`,
+              message: contentConfig.apiKeys.toast.copied.replace(
+                '{{ name }}',
+                key.name
+              ),
               type: 'success',
             },
           })
@@ -338,11 +343,11 @@ onUnmounted(() => {
 })
 
 useHead({
-  title: 'API Keys - Free Stuff on the Internet',
+  title: `${contentConfig.apiKeys.title} - ${contentConfig.navigation.appName}`,
   meta: [
     {
       name: 'description',
-      content: 'Generate and manage API keys to access the API',
+      content: contentConfig.apiKeys.description,
     },
   ],
 })
