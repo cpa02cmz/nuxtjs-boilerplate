@@ -505,6 +505,39 @@ export const contentConfig = {
     moreItemsText: process.env.CONTENT_SIMILAR_MORE_TEXT || 'more',
   },
 
+  // Alternative Suggestions Section - Palette's micro-UX enhancement!
+  alternativeSuggestions: {
+    title: process.env.CONTENT_ALTERNATIVES_TITLE || 'Alternative Suggestions',
+    subtitle:
+      process.env.CONTENT_ALTERNATIVES_SUBTITLE ||
+      'Users who viewed this resource also found these alternatives useful',
+    emptyState: {
+      title:
+        process.env.CONTENT_ALTERNATIVES_EMPTY_TITLE || 'No alternatives found',
+      message:
+        process.env.CONTENT_ALTERNATIVES_EMPTY_MESSAGE ||
+        'This resource is unique! Check out related resources below.',
+      browseAll: process.env.CONTENT_ALTERNATIVES_BROWSE_ALL || 'Browse All',
+    },
+    loading: {
+      title: process.env.CONTENT_ALTERNATIVES_LOADING_TITLE || 'Loading...',
+      message:
+        process.env.CONTENT_ALTERNATIVES_LOADING_MESSAGE ||
+        'Finding similar resources for you',
+    },
+    aria: {
+      regionLabel:
+        process.env.CONTENT_ALTERNATIVES_ARIA_REGION ||
+        'Alternative resource suggestions',
+      loadingAnnouncement:
+        process.env.CONTENT_ALTERNATIVES_ARIA_LOADING ||
+        'Loading alternative suggestions',
+      loadedAnnouncement:
+        process.env.CONTENT_ALTERNATIVES_ARIA_LOADED ||
+        'Alternative suggestions loaded',
+    },
+  },
+
   // RSS Feed Configuration - Flexy hates hardcoded RSS values!
   rss: {
     title: process.env.CONTENT_RSS_TITLE || 'Free Developer Resources',
