@@ -173,4 +173,25 @@ export const easingConfig = {
   },
 } as const
 
+// EASING constants - Flexy hates hardcoded cubic-bezier values!
+// These are used throughout the app for consistent animations
+export const EASING = {
+  // Material Design standard easing - elements entering the screen
+  MATERIAL_STANDARD: 'cubic-bezier(0.4, 0, 0.2, 1)',
+  // Material Design deceleration - elements exiting the screen
+  MATERIAL_DECELERATE: 'cubic-bezier(0, 0, 0.2, 1)',
+  // Material Design acceleration - elements entering at full velocity
+  MATERIAL_ACCELERATE: 'cubic-bezier(0.4, 0, 1, 1)',
+  // Spring standard - bouncy but controlled
+  SPRING_STANDARD: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+  // Spring snappy - quicker bounce
+  SPRING_SNAPPY: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+  // Standard ease-out
+  EASE_OUT: 'ease-out',
+  // Standard ease-in
+  EASE_IN: 'ease-in',
+  // Standard ease-in-out
+  EASE_IN_OUT: 'ease-in-out',
+} as const
+
 export type EasingConfig = typeof easingConfig
