@@ -95,26 +95,17 @@
 <script setup lang="ts">
 // Skeleton loading component for ResourceCard
 // Enhanced with wave shimmer animation for better perceived performance
+// Flexy loves modularity! All values imported from config system.
 
-// BroCula fix: Hardcoded fallback values to prevent SSR import failures
-// The ~ alias doesn't resolve correctly in Nitro SSR context
-// Using inline defaults ensures component works in both client and server
+import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 // Animation timing configuration - Flexy hates hardcoded values!
-// Fallback defaults matching animation.config.ts
-const staggerBaseDelay = 0
-const staggerIncrement = 75
+// Using config values for maximum modularity
+const staggerBaseDelay = animationConfig.skeleton.staggerDelayMs
+const staggerIncrement = animationConfig.skeleton.staggerIncrementMs
 
 // Wave animation configuration - creates a flowing wave effect across all items
-// Flexy hates hardcoded values! Using inline defaults for SSR compatibility
-const animationConfig = {
-  skeleton: {
-    waveDurationSec: 2,
-    waveStaggerSec: 0.1,
-    shimmerDurationSec: '1.5s',
-  },
-}
-
 const waveDuration = `${animationConfig.skeleton.waveDurationSec}s`
 const waveStagger = `${animationConfig.skeleton.waveStaggerSec}s`
 
@@ -123,28 +114,13 @@ const getStaggerDelay = (index: number): string => {
   return `${staggerBaseDelay + index * staggerIncrement}ms`
 }
 
-// Flexy hates hardcoded colors! Using inline defaults for SSR compatibility
-// Fallback defaults matching component-colors.config.ts
-const skeletonColors = {
-  light: {
-    start: '#e5e7eb',
-    middle: '#f3f4f6',
-    end: '#e5e7eb',
-  },
-  icon: {
-    start: '#d1d5db',
-    middle: '#e5e7eb',
-    end: '#d1d5db',
-  },
-  reducedMotion: {
-    light: '#e5e7eb',
-    icon: '#d1d5db',
-  },
-}
+// Skeleton colors - Flexy hates hardcoded colors!
+// Using config values from component-colors.config.ts
+const skeletonColors = componentColorsConfig.skeleton
 </script>
 
 <style scoped>
-/* Skeleton shimmer effect with gradient - Flexy hates hardcoded colors! */
+/* Skeleton shimmer effect with gradient - Flexy hates hardcoded values! */
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
@@ -155,7 +131,8 @@ const skeletonColors = {
     var(--skeleton-light-start) 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer v-bind('animationConfig.skeleton.shimmerDurationSec')
+    ease-in-out infinite;
 }
 
 .skeleton-icon {
@@ -168,7 +145,8 @@ const skeletonColors = {
     var(--skeleton-icon-start) 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer v-bind('animationConfig.skeleton.shimmerDurationSec')
+    ease-in-out infinite;
 }
 
 /* Staggered animation delays are now set via inline styles using animationConfig */
@@ -183,9 +161,10 @@ const skeletonColors = {
   }
 }
 
-/* Pulse animation for reduced motion fallback */
+/* Pulse animation for reduced motion fallback - Flexy hates hardcoded values! */
 .skeleton-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse v-bind('animationConfig.skeleton.pulseDurationSec')
+    cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 @keyframes pulse {
@@ -198,9 +177,10 @@ const skeletonColors = {
   }
 }
 
-/* Card entrance animation */
+/* Card entrance animation - Flexy hates hardcoded values! */
 .skeleton-card {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn v-bind('animationConfig.skeleton.cardEnterDurationSec')
+    ease-out;
 }
 
 @keyframes fadeIn {
@@ -257,7 +237,8 @@ const skeletonColors = {
   }
 
   .skeleton-card {
-    animation: fadeIn 0.2s ease-out;
+    animation: fadeIn
+      v-bind('animationConfig.skeleton.reducedMotionEnterDurationSec') ease-out;
   }
 
   @keyframes fadeIn {
