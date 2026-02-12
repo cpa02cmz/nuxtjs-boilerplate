@@ -136,7 +136,7 @@
               : '',
           ]"
           aria-hidden="true"
-          title="Press / to focus search"
+          :title="contentConfig.searchExtra.tooltip.focus"
         >
           /
         </kbd>
@@ -159,7 +159,7 @@
       >
         <Tooltip
           v-if="modelValue"
-          content="Clear search (Esc)"
+          :content="contentConfig.searchExtra.tooltip.clear"
           position="bottom"
           :delay="animationConfig.tooltip.showDelayMs"
         >
@@ -219,8 +219,8 @@
       aria-live="polite"
       class="sr-only"
     >
-      <span v-if="isSearching">Searching...</span>
-      <span v-else>Search results will be updated automatically</span>
+      <span v-if="isSearching">{{ contentConfig.searchExtra.searching }}</span>
+      <span v-else>{{ contentConfig.searchExtra.autoUpdateMessage }}</span>
     </div>
   </div>
 </template>

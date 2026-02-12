@@ -1,7 +1,7 @@
 <template>
   <div class="mb-8">
     <h3 class="text-lg font-medium text-gray-900 mb-3">
-      Share
+      {{ contentConfig.socialShare.heading }}
     </h3>
     <div class="flex flex-wrap gap-3">
       <a
@@ -9,7 +9,7 @@
         target="_blank"
         rel="noopener noreferrer"
         :class="getButtonClasses('twitter')"
-        aria-label="Share on Twitter"
+        :aria-label="contentConfig.socialShare.ariaLabels.twitter"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +27,7 @@
         target="_blank"
         rel="noopener noreferrer"
         :class="getButtonClasses('facebook')"
-        aria-label="Share on Facebook"
+        :aria-label="contentConfig.socialShare.ariaLabels.facebook"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +45,7 @@
         target="_blank"
         rel="noopener noreferrer"
         :class="getButtonClasses('linkedin')"
-        aria-label="Share on LinkedIn"
+        :aria-label="contentConfig.socialShare.ariaLabels.linkedin"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +63,7 @@
         target="_blank"
         rel="noopener noreferrer"
         :class="getButtonClasses('reddit')"
-        aria-label="Share on Reddit"
+        :aria-label="contentConfig.socialShare.ariaLabels.reddit"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +78,7 @@
       </a>
       <button
         :class="getButtonClasses('copy')"
-        aria-label="Copy link to clipboard"
+        :aria-label="contentConfig.socialShare.ariaLabels.copy"
         @click="$emit('copy')"
       >
         <svg
@@ -99,6 +99,7 @@
 
 <script setup lang="ts">
 import { socialConfig } from '~/configs/social.config'
+import { contentConfig } from '~/configs/content.config'
 
 interface ShareUrls {
   twitter: string
