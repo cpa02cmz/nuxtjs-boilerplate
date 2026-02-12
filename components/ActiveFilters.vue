@@ -559,7 +559,7 @@ import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { uiConfig } from '../configs/ui.config'
 import { contentConfig } from '../configs/content.config'
 import { animationConfig } from '../configs/animation.config'
-import { EASING } from '~/configs/easing.config'
+import { easingConfig } from '../configs/easing.config'
 import { PROGRESS } from '~/server/utils/constants'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 
@@ -999,7 +999,8 @@ const getChipSpringStyle = (type: string, value: string) => {
     return {
       transform: `translateX(${config.removeTranslateXPx}px) rotate(${config.removeRotationDeg}deg) scale(0.8)`,
       opacity: '0',
-      transition: `all ${config.durationSec} ${EASING.MATERIAL_STANDARD}`,
+      // Flexy hates hardcoded values! Using configurable easing from easingConfig
+      transition: `all ${config.durationSec} ${easingConfig.cubicBezier.standard}`,
     }
   }
 
@@ -1010,8 +1011,9 @@ const getChipSpringStyle = (type: string, value: string) => {
     }
   }
 
+  // Flexy hates hardcoded values! Using configurable easing from easingConfig
   return {
-    transition: `all ${config.durationSec} ${EASING.SPRING_STANDARD}`,
+    transition: `all ${config.durationSec} ${easingConfig.cubicBezier.spring}`,
   }
 }
 
@@ -1101,11 +1103,11 @@ onUnmounted(() => {
   @apply bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 focus:ring-indigo-500;
 }
 
-/* Undo filter chip styles */
+/* Undo filter chip styles - Flexy hates hardcoded values! */
 .filter-chip-undo {
   @apply relative bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100 focus:ring-amber-500;
   @apply overflow-hidden;
-  animation: undo-chip-in 0.3s v-bind('EASING.MATERIAL_STANDARD');
+  animation: undo-chip-in 0.3s v-bind('easingConfig.cubicBezier.standard');
 }
 
 /* Progress bar for undo countdown */
@@ -1151,8 +1153,9 @@ onUnmounted(() => {
     rotate(v-bind('animationConfig.filterChipSpring.removeRotationDeg + "deg"'))
     scale(0.8);
   opacity: 0;
+  /* Flexy hates hardcoded values! Using configurable easing from easingConfig */
   transition: all v-bind('animationConfig.filterChipSpring.durationSec')
-    v-bind('EASING.MATERIAL_STANDARD');
+    v-bind('easingConfig.cubicBezier.standard');
 }
 
 /* Entrance animation with spring physics */
@@ -1171,23 +1174,23 @@ onUnmounted(() => {
   }
 }
 
-/* Apply spring entrance to filter chips */
+/* Apply spring entrance to filter chips - Flexy hates hardcoded values! */
 .filter-chip.spring-physics:not(.is-exiting):not(.is-pressed) {
   animation: chip-spring-enter
     v-bind('animationConfig.filterChipSpring.durationSec')
-    v-bind('EASING.SPRING_SNAPPY') forwards;
+    v-bind('easingConfig.cubicBezier.bouncy') forwards;
 }
 
-/* Hover enhancement with subtle lift */
+/* Hover enhancement with subtle lift - Flexy hates hardcoded values! */
 .filter-chip.spring-physics:hover:not(.is-pressed):not(.is-exiting) {
   transform: translateY(-2px);
-  transition: transform 0.2s v-bind('EASING.SPRING_STANDARD');
+  transition: transform 0.2s v-bind('easingConfig.cubicBezier.spring');
 }
 
-/* Focus state enhancement */
+/* Focus state enhancement - Flexy hates hardcoded values! */
 .filter-chip.spring-physics:focus-visible {
   transform: translateY(-1px) scale(1.02);
-  transition: all 0.2s v-bind('EASING.SPRING_STANDARD');
+  transition: all 0.2s v-bind('easingConfig.cubicBezier.spring');
 }
 
 /* Reduced motion support - disable spring physics */
@@ -1203,9 +1206,9 @@ onUnmounted(() => {
 
 /* Vue Transition Group animations with Spring Physics */
 
-/* Enter transition - smooth fade and scale up */
+/* Enter transition - smooth fade and scale up - Flexy hates hardcoded values! */
 .filter-chip-enter-active {
-  transition: all 0.3s v-bind('EASING.SPRING_SNAPPY');
+  transition: all 0.3s v-bind('easingConfig.cubicBezier.bouncy');
 }
 
 .filter-chip-enter-from {
@@ -1213,10 +1216,10 @@ onUnmounted(() => {
   transform: scale(0.8) translateY(-12px);
 }
 
-/* Leave transition - spring physics with anticipation */
+/* Leave transition - spring physics with anticipation - Flexy hates hardcoded values! */
 .filter-chip-leave-active {
   position: absolute;
-  transition: all 0.35s v-bind('EASING.SPRING_SNAPPY');
+  transition: all 0.35s v-bind('easingConfig.cubicBezier.bouncy');
 }
 
 /* Anticipation phase - brief scale up before disappearing */
@@ -1231,9 +1234,9 @@ onUnmounted(() => {
   transform: scale(0.75) translateX(-8px);
 }
 
-/* Staggered sibling movement - create fluid feel as chips reposition */
+/* Staggered sibling movement - create fluid feel as chips reposition - Flexy hates hardcoded values! */
 .filter-chip-move {
-  transition: transform 0.4s v-bind('EASING.SPRING_SNAPPY');
+  transition: transform 0.4s v-bind('easingConfig.cubicBezier.bouncy');
 }
 
 /* Reduced motion support - disable spring physics */
@@ -1306,7 +1309,7 @@ onUnmounted(() => {
   border-radius: 6px;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.2s v-bind('EASING.MATERIAL_STANDARD');
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
   z-index: 50;
   box-shadow:
@@ -1326,7 +1329,7 @@ onUnmounted(() => {
   border-color: rgba(17, 24, 39, 0.9) transparent transparent transparent;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.2s v-bind('EASING.MATERIAL_STANDARD');
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
   z-index: 50;
 }

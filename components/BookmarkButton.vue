@@ -67,7 +67,7 @@ import { useRipple } from '~/composables/useRipple'
 import { useNuxtApp } from '#imports'
 import { computed, ref, onUnmounted, type Ref } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
-import { EASING } from '~/configs/easing.config'
+import { easingConfig } from '~/configs/easing.config'
 import { iconsConfig } from '~/configs/icons.config'
 import { contentConfig } from '~/configs/content.config'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
@@ -208,7 +208,7 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
 .animate-heart-pop {
   animation: heart-pop
     v-bind('`${animationConfig.bookmark.heartPopDurationMs}ms`')
-    v-bind('EASING.SPRING_STANDARD');
+    v-bind('easingConfig.cubicBezier.spring');
 }
 
 @keyframes heart-pop {
@@ -227,7 +227,7 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
 .animate-bounce-scale {
   animation: bounce-scale
     v-bind('`${animationConfig.bookmark.bounceScaleDurationMs}ms`')
-    v-bind('EASING.SPRING_STANDARD');
+    v-bind('easingConfig.cubicBezier.spring');
 }
 
 @keyframes bounce-scale {

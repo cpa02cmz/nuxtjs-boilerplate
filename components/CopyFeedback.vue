@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
-import { EASING } from '~/configs/easing.config'
+import { easingConfig } from '~/configs/easing.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 import { generateId } from '~/utils/generateId'
 
@@ -294,11 +294,12 @@ defineExpose({
   font-weight: 600;
   color: white;
   white-space: nowrap;
+  /* Flexy hates hardcoded values! Using configurable easing from easingConfig */
   animation: feedback-pop
     v-bind(
       '`${animationConfig.copyFeedback?.styles?.animationDuration || 0.3}s`'
     )
-    v-bind('EASING.SPRING_STANDARD');
+    v-bind('easingConfig.cubicBezier.spring');
 }
 
 .copy-feedback-checkmark {
