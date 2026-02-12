@@ -84,7 +84,7 @@
       <p
         class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4"
       >
-        Try searching for
+        {{ contentConfig.search.emptyState.tryThese }}
       </p>
       <div class="flex flex-wrap justify-center gap-2">
         <button
@@ -136,7 +136,7 @@
             d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
           />
         </svg>
-        Reset Filters
+        {{ contentConfig.emptyState.buttons.reset }}
       </button>
 
       <button
@@ -157,7 +157,7 @@
             d="M4 6h16M4 12h16M4 18h16"
           />
         </svg>
-        Browse All Resources
+        {{ contentConfig.emptyState.buttons.browseAll }}
       </button>
     </div>
 
@@ -182,12 +182,12 @@
         </svg>
         <div class="text-left">
           <p class="text-sm font-medium text-gray-900 mb-1">
-            Search Tips
+            {{ contentConfig.emptyState.tips.title }}
           </p>
           <ul class="text-sm text-gray-500 space-y-1">
-            <li>• Use fewer filters to see more results</li>
-            <li>• Try synonyms or related terms</li>
-            <li>• Check spelling and try broader keywords</li>
+            <li>• {{ contentConfig.emptyState.tips.fewerFilters }}</li>
+            <li>• {{ contentConfig.emptyState.tips.synonyms }}</li>
+            <li>• {{ contentConfig.emptyState.tips.spelling }}</li>
           </ul>
         </div>
       </div>

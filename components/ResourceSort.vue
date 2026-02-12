@@ -5,9 +5,9 @@
         ref="countRef"
         class="font-bold text-lg tabular-nums transition-colors duration-300"
         :class="countChangeClass"
-        :aria-label="`${displayCount} resources found`"
+        :aria-label="`${displayCount} ${contentConfig.sort.resultsFound}`"
       >{{ displayCount }}</span>
-      <span class="text-gray-800"> resources found</span>
+      <span class="text-gray-800"> {{ contentConfig.sort.resultsFound }}</span>
       <Transition
         enter-active-class="transition-all duration-300 ease-out"
         enter-from-class="opacity-0 -translate-y-2"
@@ -31,7 +31,9 @@
       <label
         for="sort"
         class="text-sm text-gray-800"
-      >Sort by:</label>
+      >{{
+        contentConfig.sort.label
+      }}</label>
       <select
         id="sort"
         :value="selectedSortOption ?? 'popularity-desc'"
@@ -41,16 +43,16 @@
         @keydown.space="handleChange"
       >
         <option value="popularity-desc">
-          Most Popular
+          {{ contentConfig.sort.options.popular }}
         </option>
         <option value="alphabetical-asc">
-          A-Z
+          {{ contentConfig.sort.options.az }}
         </option>
         <option value="alphabetical-desc">
-          Z-A
+          {{ contentConfig.sort.options.za }}
         </option>
         <option value="date-added-desc">
-          Newest First
+          {{ contentConfig.sort.options.newest }}
         </option>
       </select>
     </div>
@@ -69,6 +71,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { thresholdsConfig } from '~/configs/thresholds.config'
+import { contentConfig } from '~/configs/content.config'
 
 interface Props {
   selectedSortOption?: string

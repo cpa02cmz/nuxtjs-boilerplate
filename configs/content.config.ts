@@ -207,7 +207,16 @@ export const contentConfig = {
     copySuccess:
       process.env.CONTENT_COMPARISON_COPY_SUCCESS ||
       'Comparison URL copied to clipboard!',
-    empty: {
+    headers: {
+      criteria: process.env.CONTENT_COMPARISON_HEADER_CRITERIA || 'Criteria',
+    },
+    actions: {
+      remove: process.env.CONTENT_COMPARISON_ACTION_REMOVE || 'Remove',
+      removeConfirm: process.env.CONTENT_COMPARISON_REMOVE_CONFIRM || 'Remove?',
+      cancel: process.env.CONTENT_COMPARISON_CANCEL || 'Cancel',
+      yes: process.env.CONTENT_COMPARISON_YES || 'Yes',
+    },
+    emptyState: {
       title:
         process.env.CONTENT_COMPARISON_EMPTY_TITLE || 'No resources selected',
       description:
