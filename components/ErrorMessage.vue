@@ -190,6 +190,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { themeConfig } from '../configs/theme.config'
 import { uiConfig } from '../configs/ui.config'
+import { componentStylesConfig } from '../configs/component-styles.config'
 import { PROGRESS } from '~/server/utils/constants'
 
 interface Action {
@@ -456,80 +457,94 @@ onUnmounted(() => {
 
 <style scoped>
 .error-message-container {
-  position: relative;
+  position: v-bind('componentStylesConfig.errorMessage.containerPosition');
 }
 
 .error-message {
-  padding: 0.75rem;
-  border-radius: 0.375rem;
+  padding: v-bind('componentStylesConfig.errorMessage.padding');
+  border-radius: v-bind('componentStylesConfig.errorMessage.borderRadius');
   display: flex;
-  gap: 0.5rem;
-  position: relative;
-  overflow: hidden;
+  gap: v-bind('componentStylesConfig.errorMessage.gap');
+  position: v-bind('componentStylesConfig.errorMessage.position');
+  overflow: v-bind('componentStylesConfig.errorMessage.overflow');
 }
 
 /* Undo Button Styles - Palette's micro-UX enhancement */
 .error-message__undo {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #92400e;
-  background-color: #fffbeb;
-  border: 1px solid #fcd34d;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  overflow: hidden;
-  animation: undo-slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: v-bind('componentStylesConfig.errorMessage.undoPosition');
+  display: v-bind('componentStylesConfig.errorMessage.undoDisplay');
+  align-items: v-bind('componentStylesConfig.errorMessage.undoAlignItems');
+  padding: v-bind('componentStylesConfig.errorMessage.undoPadding');
+  margin-bottom: v-bind('componentStylesConfig.errorMessage.undoMarginBottom');
+  font-size: v-bind('componentStylesConfig.errorMessage.undoFontSize');
+  font-weight: v-bind('componentStylesConfig.errorMessage.undoFontWeight');
+  color: v-bind('componentStylesConfig.errorMessage.undoColor');
+  background-color: v-bind('componentStylesConfig.errorMessage.undoBackground');
+  border: v-bind('componentStylesConfig.errorMessage.undoBorder');
+  border-radius: v-bind('componentStylesConfig.errorMessage.undoBorderRadius');
+  cursor: v-bind('componentStylesConfig.errorMessage.undoCursor');
+  transition: v-bind('componentStylesConfig.errorMessage.undoTransition');
+  overflow: v-bind('componentStylesConfig.errorMessage.undoOverflow');
+  animation: v-bind('componentStylesConfig.errorMessage.undoAnimation');
 }
 
 .error-message__undo:hover {
-  background-color: #fef3c7;
-  border-color: #f59e0b;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: v-bind(
+    'componentStylesConfig.errorMessage.undoHoverBackground'
+  );
+  border-color: v-bind(
+    'componentStylesConfig.errorMessage.undoHoverBorderColor'
+  );
+  transform: v-bind('componentStylesConfig.errorMessage.undoHoverTransform');
+  box-shadow: v-bind('componentStylesConfig.errorMessage.undoHoverShadow');
 }
 
 .error-message__undo:focus {
   outline: none;
-  box-shadow:
-    0 0 0 2px #fff,
-    0 0 0 4px #f59e0b;
+  box-shadow: v-bind('componentStylesConfig.errorMessage.undoFocusShadow');
 }
 
 .error-message__undo:active {
-  transform: translateY(0);
+  transform: v-bind('componentStylesConfig.errorMessage.undoActiveTransform');
 }
 
 /* Undo progress bar */
 .error-message__undo-progress {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 2px;
-  transition: width 0.05s linear;
+  position: v-bind('componentStylesConfig.errorMessage.undoProgressPosition');
+  bottom: v-bind('componentStylesConfig.errorMessage.undoProgressBottom');
+  left: v-bind('componentStylesConfig.errorMessage.undoProgressLeft');
+  height: v-bind('componentStylesConfig.errorMessage.undoProgressHeight');
+  transition: v-bind(
+    'componentStylesConfig.errorMessage.undoProgressTransition'
+  );
 }
 
 @keyframes undo-slide-in {
   0% {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.95);
+    opacity: v-bind(
+      'componentStylesConfig.errorMessage.undoSlideInStartOpacity'
+    );
+    transform: v-bind(
+      'componentStylesConfig.errorMessage.undoSlideInStartTransform'
+    );
   }
   50% {
-    transform: translateY(2px) scale(1.02);
+    transform: v-bind(
+      'componentStylesConfig.errorMessage.undoSlideInMidTransform'
+    );
   }
   100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    opacity: v-bind('componentStylesConfig.errorMessage.undoSlideInEndOpacity');
+    transform: v-bind(
+      'componentStylesConfig.errorMessage.undoSlideInEndTransform'
+    );
   }
 }
 
 .error-message--dismissible {
-  padding-right: 2.5rem;
+  padding-right: v-bind(
+    'componentStylesConfig.errorMessage.dismissiblePaddingRight'
+  );
 }
 
 .error-message--error {
@@ -551,13 +566,15 @@ onUnmounted(() => {
 }
 
 .error-message__icon {
-  flex-shrink: 0;
-  display: flex;
-  align-items: flex-start;
+  flex-shrink: v-bind('componentStylesConfig.errorMessage.iconFlexShrink');
+  display: v-bind('componentStylesConfig.errorMessage.iconDisplay');
+  align-items: v-bind('componentStylesConfig.errorMessage.iconAlignItems');
 }
 
 .error-message__icon--pulse {
-  animation: icon-pulse 2s ease-in-out infinite;
+  animation: icon-pulse
+    v-bind('componentStylesConfig.errorMessage.iconPulseDuration') ease-in-out
+    infinite;
 }
 
 @keyframes icon-pulse {
@@ -567,98 +584,124 @@ onUnmounted(() => {
     opacity: 1;
   }
   50% {
-    transform: scale(1.1);
-    opacity: 0.8;
+    transform: scale(
+      v-bind('componentStylesConfig.errorMessage.iconPulseScale')
+    );
+    opacity: v-bind('componentStylesConfig.errorMessage.iconPulseOpacity');
   }
 }
 
 .error-message__content {
-  flex: 1;
-  min-width: 0;
+  flex: v-bind('componentStylesConfig.errorMessage.contentFlex');
+  min-width: v-bind('componentStylesConfig.errorMessage.contentMinWidth');
 }
 
 .error-message__text {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: v-bind('componentStylesConfig.errorMessage.textFontSize');
+  line-height: v-bind('componentStylesConfig.errorMessage.textLineHeight');
 }
 
 .error-message__action {
-  margin-top: 0.25rem;
+  margin-top: v-bind('componentStylesConfig.errorMessage.actionMarginTop');
 }
 
 .error-message__action-button {
-  font-size: 0.75rem;
-  font-weight: 500;
-  background-color: transparent;
-  border: none;
+  font-size: v-bind('componentStylesConfig.errorMessage.actionButtonFontSize');
+  font-weight: v-bind(
+    'componentStylesConfig.errorMessage.actionButtonFontWeight'
+  );
+  background-color: v-bind(
+    'componentStylesConfig.errorMessage.actionButtonBackground'
+  );
+  border: v-bind('componentStylesConfig.errorMessage.actionButtonBorder');
   color: inherit;
   text-decoration: underline;
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  transition: all 0.2s ease;
-  margin: -0.25rem -0.5rem;
+  padding: v-bind('componentStylesConfig.errorMessage.actionButtonPadding');
+  border-radius: v-bind(
+    'componentStylesConfig.errorMessage.actionButtonBorderRadius'
+  );
+  transition: v-bind(
+    'componentStylesConfig.errorMessage.actionButtonTransition'
+  );
+  margin: v-bind('componentStylesConfig.errorMessage.actionButtonMargin');
 }
 
 .error-message__action-button:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: v-bind(
+    'componentStylesConfig.errorMessage.actionButtonHoverBg'
+  );
   text-decoration: none;
 }
 
 .error-message__action-button:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
+  outline: v-bind(
+    'componentStylesConfig.errorMessage.actionButtonFocusOutline'
+  );
+  outline-offset: v-bind(
+    'componentStylesConfig.errorMessage.actionButtonFocusOffset'
+  );
   text-decoration: none;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: v-bind(
+    'componentStylesConfig.errorMessage.actionButtonHoverBg'
+  );
 }
 
 /* Dismiss button styles */
 .error-message__dismiss {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  padding: 0.25rem;
-  background: transparent;
-  border: none;
+  position: v-bind('componentStylesConfig.errorMessage.dismissPosition');
+  top: v-bind('componentStylesConfig.errorMessage.dismissTop');
+  right: v-bind('componentStylesConfig.errorMessage.dismissRight');
+  padding: v-bind('componentStylesConfig.errorMessage.dismissPadding');
+  background: v-bind('componentStylesConfig.errorMessage.dismissBackground');
+  border: v-bind('componentStylesConfig.errorMessage.dismissBorder');
   color: inherit;
   cursor: pointer;
-  border-radius: 0.25rem;
-  opacity: 0.6;
-  transition: all 0.2s ease;
+  border-radius: v-bind(
+    'componentStylesConfig.errorMessage.dismissBorderRadius'
+  );
+  opacity: v-bind('componentStylesConfig.errorMessage.dismissOpacity');
+  transition: v-bind('componentStylesConfig.errorMessage.dismissTransition');
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .error-message__dismiss:hover {
-  opacity: 1;
-  background-color: rgba(0, 0, 0, 0.05);
-  transform: rotate(90deg);
+  opacity: v-bind('componentStylesConfig.errorMessage.dismissHoverOpacity');
+  background-color: v-bind('componentStylesConfig.errorMessage.dismissHoverBg');
+  transform: v-bind('componentStylesConfig.errorMessage.dismissHoverTransform');
 }
 
 .error-message__dismiss:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-  opacity: 1;
+  outline: v-bind('componentStylesConfig.errorMessage.dismissFocusOutline');
+  outline-offset: v-bind(
+    'componentStylesConfig.errorMessage.dismissFocusOffset'
+  );
+  opacity: v-bind('componentStylesConfig.errorMessage.dismissHoverOpacity');
 }
 
 /* Progress bar for auto-dismiss */
 .error-message__progress {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background-color: rgba(0, 0, 0, 0.1);
+  position: v-bind('componentStylesConfig.errorMessage.progressPosition');
+  bottom: v-bind('componentStylesConfig.errorMessage.progressBottom');
+  left: v-bind('componentStylesConfig.errorMessage.progressLeft');
+  right: v-bind('componentStylesConfig.errorMessage.progressRight');
+  height: v-bind('componentStylesConfig.errorMessage.progressHeight');
+  background-color: v-bind(
+    'componentStylesConfig.errorMessage.progressBgColor'
+  );
   overflow: hidden;
 }
 
 .error-message__progress-bar {
-  height: 100%;
+  height: v-bind('componentStylesConfig.errorMessage.progressBarHeight');
   background-color: currentColor;
-  opacity: 0.3;
+  opacity: v-bind('componentStylesConfig.errorMessage.progressBarOpacity');
   animation: progress-shrink linear forwards;
-  transform-origin: left;
+  transform-origin: v-bind(
+    'componentStylesConfig.errorMessage.progressBarTransformOrigin'
+  );
 }
 
 .error-message__progress-bar--paused {
@@ -707,14 +750,14 @@ onUnmounted(() => {
 
 /* Screen reader only */
 .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
+  position: v-bind('componentStylesConfig.errorMessage.srOnlyPosition');
+  width: v-bind('componentStylesConfig.errorMessage.srOnlyWidth');
+  height: v-bind('componentStylesConfig.errorMessage.srOnlyHeight');
+  padding: v-bind('componentStylesConfig.errorMessage.srOnlyPadding');
+  margin: v-bind('componentStylesConfig.errorMessage.srOnlyMargin');
+  overflow: v-bind('componentStylesConfig.errorMessage.srOnlyOverflow');
+  clip: v-bind('componentStylesConfig.errorMessage.srOnlyClip');
+  white-space: v-bind('componentStylesConfig.errorMessage.srOnlyWhiteSpace');
+  border-width: v-bind('componentStylesConfig.errorMessage.srOnlyBorderWidth');
 }
 </style>

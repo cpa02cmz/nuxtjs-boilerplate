@@ -265,3 +265,63 @@ button:has(.ripple-effect) {
     display: none !important;
   }
 }
+
+/* ============================================
+   Floating Label Styles - Palette's micro-UX delight!
+   Smooth animated labels that float above inputs
+   ============================================ */
+
+/* Container for floating label and input */
+.floating-label-container {
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+/* The floating label itself */
+.floating-label {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.875rem;
+  color: rgb(107, 114, 128);
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: transparent;
+  padding: 0 0.25rem;
+  z-index: 1;
+  transform-origin: left center;
+}
+
+/* Floating state - when input is focused or has value */
+.floating-label-container:focus-within .floating-label,
+.floating-label-container.has-value .floating-label {
+  top: 0;
+  transform: translateY(-50%) scale(0.85);
+  color: rgb(59, 130, 246);
+  background-color: white;
+}
+
+/* Error state */
+.floating-label-container.has-error .floating-label {
+  color: rgb(239, 68, 68);
+}
+
+/* Success state */
+.floating-label-container.has-success .floating-label {
+  color: rgb(34, 197, 94);
+}
+
+/* Input with floating label needs extra top padding */
+.floating-label-container input,
+.floating-label-container textarea {
+  padding-top: 1.25rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Reduced motion support for floating labels */
+@media (prefers-reduced-motion: reduce) {
+  .floating-label {
+    transition: none;
+  }
+}

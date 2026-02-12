@@ -2,12 +2,18 @@ import { defineEventHandler, getQuery } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import {
   sendSuccessResponse,
+  sendUnauthorizedError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 export default defineEventHandler(async event => {
   try {
+    // Check authentication
+    if (!event.context.apiKey) {
+      return sendUnauthorizedError(event, 'Authentication required')
+    }
+
     // Apply rate limiting: 30 requests per minute for delivery listing
     await rateLimit(event)
 

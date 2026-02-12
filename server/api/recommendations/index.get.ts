@@ -1,8 +1,8 @@
 // server/api/recommendations/index.get.ts
 // API endpoint for personalized recommendations with search analytics integration
 
-import { useResourceData } from '~/composables/useResourceData'
 import { useRecommendationEngine } from '~/composables/useRecommendationEngine'
+import { loadServerResources } from '~/server/utils/server-resources'
 import type { Resource } from '~/types/resource'
 import type { SearchAnalyticsData } from '~/types/analytics'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
@@ -38,8 +38,8 @@ export default defineEventHandler(async event => {
     )
 
     // Get all resources
-    const { resources } = useResourceData()
-    const allResources = resources.value || []
+    const resources = loadServerResources()
+    const allResources = resources || []
 
     // Find specific resource if resourceId is provided
     let targetResource: Resource | undefined
@@ -81,18 +81,21 @@ export default defineEventHandler(async event => {
           : 100
 
       // Generate search trends - Flexy hates hardcoded values! Using config instead.
-      const searchTrends = []
+      const searchTrends: Array<{ date: string; count: number }> = []
       const trendsDays = recommendationConfig.analyticsTrends.days
       const minCount = recommendationConfig.analyticsTrends.minRandomCount
       const maxCount = recommendationConfig.analyticsTrends.maxRandomCount
       for (let i = trendsDays - 1; i >= 0; i--) {
         const date = new Date()
         date.setDate(date.getDate() - i)
-        searchTrends.push({
-          date: date.toISOString().split('T')[0],
-          count:
-            Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount,
-        })
+        const dateStr = date.toISOString().split('T')[0]
+        if (dateStr) {
+          searchTrends.push({
+            date: dateStr,
+            count:
+              Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount,
+          })
+        }
       }
 
       searchAnalytics = {
@@ -131,10 +134,11 @@ export default defineEventHandler(async event => {
         },
         dateRange: {
           // Flexy hates hardcoded time calculations! Using TIME_MS config instead.
-          start: new Date(Date.now() - TIME_MS.THIRTY_DAYS)
-            .toISOString()
-            .split('T')[0],
-          end: new Date().toISOString().split('T')[0],
+          start:
+            new Date(Date.now() - TIME_MS.THIRTY_DAYS)
+              .toISOString()
+              .split('T')[0] || '',
+          end: new Date().toISOString().split('T')[0] || '',
         },
       }
     } catch (error) {
