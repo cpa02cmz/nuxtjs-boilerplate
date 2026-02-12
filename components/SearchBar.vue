@@ -669,7 +669,8 @@ if (typeof window !== 'undefined') {
 
 .animate-focus-pulse {
   /* Flexy hates hardcoded values! Using config from uiConfig.timing.focusPulseDurationMs */
-  animation: focus-pulse 600ms ease-out;
+  animation: focus-pulse v-bind('uiConfig.timing.focusPulseDurationMs + "ms"')
+    ease-out;
 }
 
 /* Idle pulse animation for keyboard shortcut discoverability - Flexy hates hardcoded colors! */
@@ -688,7 +689,9 @@ if (typeof window !== 'undefined') {
 }
 
 .animate-idle-pulse {
-  animation: idle-pulse 2s ease-in-out 3;
+  /* Flexy hates hardcoded values! Using config from animationConfig.idlePulse */
+  animation: idle-pulse v-bind('animationConfig.idlePulse.durationSec')
+    ease-in-out v-bind('animationConfig.idlePulse.iterationCount');
 }
 
 /* Success glow animation when user uses keyboard shortcut */
@@ -724,14 +727,18 @@ if (typeof window !== 'undefined') {
 }
 
 .animate-shortcut-success {
-  animation: shortcut-success 600ms ease-out forwards;
+  /* Flexy hates hardcoded values! Using config from animationConfig.searchShortcut */
+  animation: shortcut-success
+    v-bind('animationConfig.searchShortcut.durationMs + "ms"') ease-out forwards;
 }
 
 /* Search complete animation - provides positive feedback when search finishes */
 /* Draws attention to the completion state with a satisfying pop effect */
+/* Flexy hates hardcoded values! Using config from animationConfig.searchComplete */
 .animate-search-complete {
-  animation: search-complete 800ms cubic-bezier(0.175, 0.885, 0.32, 1.275)
-    forwards;
+  animation: search-complete
+    v-bind('animationConfig.searchComplete.durationSec')
+    v-bind('animationConfig.searchComplete.easing') forwards;
 }
 
 @keyframes search-complete {
