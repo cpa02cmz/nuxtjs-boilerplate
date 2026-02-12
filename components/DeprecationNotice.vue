@@ -5,9 +5,15 @@
     :class="noticeClass"
   >
     <div class="notice-icon">
-      <span v-if="status === 'deprecated'">⚠️</span>
-      <span v-else-if="status === 'discontinued'">🚫</span>
-      <span v-else-if="status === 'pending'">⏳</span>
+      <span v-if="status === 'deprecated'">{{
+        contentConfig.deprecation.icons.deprecated
+      }}</span>
+      <span v-else-if="status === 'discontinued'">{{
+        contentConfig.deprecation.icons.discontinued
+      }}</span>
+      <span v-else-if="status === 'pending'">{{
+        contentConfig.deprecation.icons.pending
+      }}</span>
     </div>
     <div class="notice-content">
       <h4>{{ noticeTitle }}</h4>
@@ -22,14 +28,14 @@
           target="_blank"
           class="migration-link"
         >
-          Migration Path
+          {{ contentConfig.deprecation.actions.migrationPath }}
         </a>
         <a
           v-if="alternatives && alternatives.length > 0"
           href="/search"
           class="alternatives-link"
         >
-          View Alternatives
+          {{ contentConfig.deprecation.actions.viewAlternatives }}
         </a>
       </div>
     </div>
@@ -38,6 +44,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { contentConfig } from '~/configs/content.config'
 
 interface Props {
   status?:
@@ -83,11 +90,11 @@ const noticeClass = computed(() => {
 const noticeTitle = computed(() => {
   switch (props.status) {
     case 'deprecated':
-      return 'Deprecated Resource'
+      return contentConfig.deprecation.titles.deprecated
     case 'discontinued':
-      return 'Discontinued Resource'
+      return contentConfig.deprecation.titles.discontinued
     case 'pending':
-      return 'Pending Review'
+      return contentConfig.deprecation.titles.pending
     default:
       return ''
   }
@@ -96,11 +103,11 @@ const noticeTitle = computed(() => {
 const noticeMessage = computed(() => {
   switch (props.status) {
     case 'deprecated':
-      return 'This resource is deprecated and no longer recommended. Consider using alternatives.'
+      return contentConfig.deprecation.messages.deprecated
     case 'discontinued':
-      return 'This resource has been discontinued and is no longer maintained.'
+      return contentConfig.deprecation.messages.discontinued
     case 'pending':
-      return 'This resource is pending review and not yet available to all users.'
+      return contentConfig.deprecation.messages.pending
     default:
       return ''
   }

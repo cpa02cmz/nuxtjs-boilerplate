@@ -1217,6 +1217,60 @@ export const contentConfig = {
     },
   },
 
+  // Resource Lifecycle Timeline - Flexy hates hardcoded timeline text!
+  lifecycle: {
+    title: process.env.CONTENT_LIFECYCLE_TITLE || 'Resource Lifecycle',
+    emptyState:
+      process.env.CONTENT_LIFECYCLE_EMPTY ||
+      'No status history available for this resource.',
+    updateHistoryTitle:
+      process.env.CONTENT_LIFECYCLE_UPDATE_TITLE || 'Update History',
+    labels: {
+      reason: process.env.CONTENT_LIFECYCLE_LABEL_REASON || 'Reason:',
+      notes: process.env.CONTENT_LIFECYCLE_LABEL_NOTES || 'Notes:',
+      changedBy:
+        process.env.CONTENT_LIFECYCLE_LABEL_CHANGED_BY || 'Changed by:',
+    },
+    versionPrefix: process.env.CONTENT_LIFECYCLE_VERSION_PREFIX || 'v',
+  },
+
+  // Deprecation Notice - Flexy hates hardcoded deprecation strings!
+  deprecation: {
+    icons: {
+      deprecated: process.env.CONTENT_DEPRECATION_ICON_DEPRECATED || '⚠️',
+      discontinued: process.env.CONTENT_DEPRECATION_ICON_DISCONTINUED || '🚫',
+      pending: process.env.CONTENT_DEPRECATION_ICON_PENDING || '⏳',
+    },
+    titles: {
+      deprecated:
+        process.env.CONTENT_DEPRECATION_TITLE_DEPRECATED ||
+        'Deprecated Resource',
+      discontinued:
+        process.env.CONTENT_DEPRECATION_TITLE_DISCONTINUED ||
+        'Discontinued Resource',
+      pending:
+        process.env.CONTENT_DEPRECATION_TITLE_PENDING || 'Pending Review',
+    },
+    messages: {
+      deprecated:
+        process.env.CONTENT_DEPRECATION_MSG_DEPRECATED ||
+        'This resource is deprecated and no longer recommended. Consider using alternatives.',
+      discontinued:
+        process.env.CONTENT_DEPRECATION_MSG_DISCONTINUED ||
+        'This resource has been discontinued and is no longer maintained.',
+      pending:
+        process.env.CONTENT_DEPRECATION_MSG_PENDING ||
+        'This resource is pending review and not yet available to all users.',
+    },
+    actions: {
+      migrationPath:
+        process.env.CONTENT_DEPRECATION_ACTION_MIGRATION || 'Migration Path',
+      viewAlternatives:
+        process.env.CONTENT_DEPRECATION_ACTION_ALTERNATIVES ||
+        'View Alternatives',
+    },
+  },
+
   // Toast Messages - Flexy hates hardcoded toast messages!
   toast: {
     draft: {

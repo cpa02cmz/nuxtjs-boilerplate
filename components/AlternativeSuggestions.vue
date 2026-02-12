@@ -176,6 +176,7 @@ import { useResourceData } from '~/composables/useResourceData'
 import type { Resource, AlternativeSuggestion } from '~/types/resource'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { getButtonLabel } from '~/utils/resourceHelper'
 
 interface Props {
   resource?: Resource
@@ -237,23 +238,6 @@ const handleEnter = (el: Element, done: () => void) => {
   }, delay)
 }
 
-// Get button label based on category
-const getButtonLabel = (category: string) => {
-  const categoryLabels: Record<string, string> = {
-    'AI Tools': 'Try AI Tool',
-    Hosting: 'Get Hosting',
-    Databases: 'Connect Database',
-    CDN: 'Use CDN',
-    VPS: 'Get VPS',
-    Analytics: 'Use Analytics',
-    APIs: 'Use API',
-    'Developer Tools': 'Use Tool',
-    Design: 'Use Design Tool',
-    Productivity: 'Boost Productivity',
-  }
-  return categoryLabels[category] || 'Try Alternative'
-}
-
 // Initialize alternatives with loading state
 const initAlternatives = async () => {
   if (!props.resource || !props.resource.id) {
@@ -267,7 +251,9 @@ const initAlternatives = async () => {
 
   // Small delay to show loading state for better UX
   await nextTick()
-  await new Promise(resolve => setTimeout(resolve, 300))
+  await new Promise(resolve =>
+    setTimeout(resolve, animationConfig.alternativeSuggestions.loadingDelayMs)
+  )
 
   try {
     alternatives.value = getAlternativesForResource(props.resource)

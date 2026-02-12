@@ -716,6 +716,10 @@ export const animationConfig = {
     loadingPulseDurationSec: parseFloat(
       process.env.ALTERNATIVES_LOADING_PULSE || '1.5'
     ),
+    // Initial loading delay to show loading state for better UX (ms)
+    loadingDelayMs: parseInt(
+      process.env.ALTERNATIVES_LOADING_DELAY_MS || '300'
+    ),
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.ALTERNATIVES_RESPECT_REDUCED_MOTION !== 'false',
