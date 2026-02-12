@@ -41,6 +41,12 @@
         key="search"
         tabindex="0"
         class="filter-chip filter-chip-blue group"
+        :class="{
+          'spring-physics': !prefersReducedMotion,
+          'is-pressed': pressedChips.has(`search-${searchQuery}`),
+          'is-exiting': exitingChips.has(`search-${searchQuery}`),
+        }"
+        :style="getChipSpringStyle('search', searchQuery)"
         :aria-label="
           contentConfig.filters.chipAriaLabels.removeSearch.replace(
             '{{value}}',
@@ -49,6 +55,11 @@
         "
         @click="handleRemove('search', searchQuery, $event)"
         @keydown="e => handleChipKeydown(e, 'search', searchQuery)"
+        @mousedown="handleChipPressStart('search', searchQuery)"
+        @mouseup="handleChipPressEnd('search', searchQuery)"
+        @mouseleave="handleChipPressEnd('search', searchQuery)"
+        @touchstart="handleChipPressStart('search', searchQuery)"
+        @touchend="handleChipPressEnd('search', searchQuery)"
       >
         <span class="truncate max-w-[200px]">{{ searchQuery }}</span>
         <span
@@ -86,6 +97,12 @@
         ref="chipRefs"
         tabindex="0"
         class="filter-chip filter-chip-gray group"
+        :class="{
+          'spring-physics': !prefersReducedMotion,
+          'is-pressed': pressedChips.has(`category-${category}`),
+          'is-exiting': exitingChips.has(`category-${category}`),
+        }"
+        :style="getChipSpringStyle('category', category)"
         :aria-label="
           contentConfig.filters.chipAriaLabels.removeCategory.replace(
             '{{value}}',
@@ -94,6 +111,11 @@
         "
         @click="handleRemove('category', category, $event)"
         @keydown="e => handleChipKeydown(e, 'category', category)"
+        @mousedown="handleChipPressStart('category', category)"
+        @mouseup="handleChipPressEnd('category', category)"
+        @mouseleave="handleChipPressEnd('category', category)"
+        @touchstart="handleChipPressStart('category', category)"
+        @touchend="handleChipPressEnd('category', category)"
       >
         <span class="text-gray-500 mr-1.5">{{
           contentConfig.filters.labels.category
@@ -133,6 +155,12 @@
         ref="chipRefs"
         tabindex="0"
         class="filter-chip filter-chip-green group"
+        :class="{
+          'spring-physics': !prefersReducedMotion,
+          'is-pressed': pressedChips.has(`pricing-${pricing}`),
+          'is-exiting': exitingChips.has(`pricing-${pricing}`),
+        }"
+        :style="getChipSpringStyle('pricing', pricing)"
         :aria-label="
           contentConfig.filters.chipAriaLabels.removePricing.replace(
             '{{value}}',
@@ -141,6 +169,11 @@
         "
         @click="handleRemove('pricing', pricing, $event)"
         @keydown="e => handleChipKeydown(e, 'pricing', pricing)"
+        @mousedown="handleChipPressStart('pricing', pricing)"
+        @mouseup="handleChipPressEnd('pricing', pricing)"
+        @mouseleave="handleChipPressEnd('pricing', pricing)"
+        @touchstart="handleChipPressStart('pricing', pricing)"
+        @touchend="handleChipPressEnd('pricing', pricing)"
       >
         <span class="text-green-600 mr-1.5">{{
           contentConfig.filters.labels.pricing
@@ -180,6 +213,12 @@
         ref="chipRefs"
         tabindex="0"
         class="filter-chip filter-chip-purple group"
+        :class="{
+          'spring-physics': !prefersReducedMotion,
+          'is-pressed': pressedChips.has(`difficulty-${difficulty}`),
+          'is-exiting': exitingChips.has(`difficulty-${difficulty}`),
+        }"
+        :style="getChipSpringStyle('difficulty', difficulty)"
         :aria-label="
           contentConfig.filters.chipAriaLabels.removeDifficulty.replace(
             '{{value}}',
@@ -188,6 +227,11 @@
         "
         @click="handleRemove('difficulty', difficulty, $event)"
         @keydown="e => handleChipKeydown(e, 'difficulty', difficulty)"
+        @mousedown="handleChipPressStart('difficulty', difficulty)"
+        @mouseup="handleChipPressEnd('difficulty', difficulty)"
+        @mouseleave="handleChipPressEnd('difficulty', difficulty)"
+        @touchstart="handleChipPressStart('difficulty', difficulty)"
+        @touchend="handleChipPressEnd('difficulty', difficulty)"
       >
         <span class="text-purple-600 mr-1.5">{{
           contentConfig.filters.labels.difficulty
@@ -227,6 +271,12 @@
         ref="chipRefs"
         tabindex="0"
         class="filter-chip filter-chip-orange group"
+        :class="{
+          'spring-physics': !prefersReducedMotion,
+          'is-pressed': pressedChips.has(`technology-${tech}`),
+          'is-exiting': exitingChips.has(`technology-${tech}`),
+        }"
+        :style="getChipSpringStyle('technology', tech)"
         :aria-label="
           contentConfig.filters.chipAriaLabels.removeTechnology.replace(
             '{{value}}',
@@ -235,6 +285,11 @@
         "
         @click="handleRemove('technology', tech, $event)"
         @keydown="e => handleChipKeydown(e, 'technology', tech)"
+        @mousedown="handleChipPressStart('technology', tech)"
+        @mouseup="handleChipPressEnd('technology', tech)"
+        @mouseleave="handleChipPressEnd('technology', tech)"
+        @touchstart="handleChipPressStart('technology', tech)"
+        @touchend="handleChipPressEnd('technology', tech)"
       >
         <span class="text-orange-600 mr-1.5">{{
           contentConfig.filters.labels.tech
@@ -274,6 +329,12 @@
         ref="chipRefs"
         tabindex="0"
         class="filter-chip filter-chip-pink group"
+        :class="{
+          'spring-physics': !prefersReducedMotion,
+          'is-pressed': pressedChips.has(`tag-${tag}`),
+          'is-exiting': exitingChips.has(`tag-${tag}`),
+        }"
+        :style="getChipSpringStyle('tag', tag)"
         :aria-label="
           contentConfig.filters.chipAriaLabels.removeTag.replace(
             '{{value}}',
@@ -282,6 +343,11 @@
         "
         @click="handleRemove('tag', tag, $event)"
         @keydown="e => handleChipKeydown(e, 'tag', tag)"
+        @mousedown="handleChipPressStart('tag', tag)"
+        @mouseup="handleChipPressEnd('tag', tag)"
+        @mouseleave="handleChipPressEnd('tag', tag)"
+        @touchstart="handleChipPressStart('tag', tag)"
+        @touchend="handleChipPressEnd('tag', tag)"
       >
         <span class="text-pink-600 mr-1.5">{{
           contentConfig.filters.labels.tag
@@ -321,6 +387,12 @@
         ref="chipRefs"
         tabindex="0"
         class="filter-chip filter-chip-teal group"
+        :class="{
+          'spring-physics': !prefersReducedMotion,
+          'is-pressed': pressedChips.has(`benefit-${benefit}`),
+          'is-exiting': exitingChips.has(`benefit-${benefit}`),
+        }"
+        :style="getChipSpringStyle('benefit', benefit)"
         :aria-label="
           contentConfig.filters.chipAriaLabels.removeBenefit.replace(
             '{{value}}',
@@ -329,6 +401,11 @@
         "
         @click="handleRemove('benefit', benefit, $event)"
         @keydown="e => handleChipKeydown(e, 'benefit', benefit)"
+        @mousedown="handleChipPressStart('benefit', benefit)"
+        @mouseup="handleChipPressEnd('benefit', benefit)"
+        @mouseleave="handleChipPressEnd('benefit', benefit)"
+        @touchstart="handleChipPressStart('benefit', benefit)"
+        @touchend="handleChipPressEnd('benefit', benefit)"
       >
         <span class="text-teal-600 mr-1.5">{{
           contentConfig.filters.labels.benefit
@@ -368,6 +445,12 @@
         key="date"
         tabindex="0"
         class="filter-chip filter-chip-indigo group"
+        :class="{
+          'spring-physics': !prefersReducedMotion,
+          'is-pressed': pressedChips.has(`date-${selectedDateRange}`),
+          'is-exiting': exitingChips.has(`date-${selectedDateRange}`),
+        }"
+        :style="getChipSpringStyle('date', selectedDateRange)"
         :aria-label="
           contentConfig.filters.chipAriaLabels.removeDate.replace(
             '{{value}}',
@@ -376,6 +459,11 @@
         "
         @click="handleRemove('date', selectedDateRange, $event)"
         @keydown="e => handleChipKeydown(e, 'date', selectedDateRange)"
+        @mousedown="handleChipPressStart('date', selectedDateRange)"
+        @mouseup="handleChipPressEnd('date', selectedDateRange)"
+        @mouseleave="handleChipPressEnd('date', selectedDateRange)"
+        @touchstart="handleChipPressStart('date', selectedDateRange)"
+        @touchend="handleChipPressEnd('date', selectedDateRange)"
       >
         <span class="text-indigo-600 mr-1.5">{{
           contentConfig.filters.labels.date
@@ -470,6 +558,7 @@
 import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { uiConfig } from '../configs/ui.config'
 import { contentConfig } from '../configs/content.config'
+import { animationConfig } from '../configs/animation.config'
 import { PROGRESS } from '~/server/utils/constants'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 
@@ -533,6 +622,19 @@ const CHIP_ICON_SIZE = uiConfig.filterChip.iconSize
 // Track removing chips for animation (used in future undo feature)
 const _removingChips = ref<Set<string>>(new Set())
 
+// Spring Physics Micro-UX - Palette's delightful touch!
+// Track which chips are being pressed for spring animation
+const pressedChips = ref<Set<string>>(new Set())
+// Track which chips are being removed for exit animation
+const exitingChips = ref<Set<string>>(new Set())
+
+// Check for reduced motion preference
+const prefersReducedMotion = ref(false)
+const checkReducedMotion = () => {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
 // Computed property for progress bar color - transitions from amber to red as time runs out
 const undoProgressColorClass = computed(() => {
   const thresholds = uiConfig.filterChip.progressThresholds
@@ -583,8 +685,16 @@ const formatDateRange = (range: string): string => {
 }
 
 const handleRemove = (type: string, value: string, _event: Event) => {
-  // Add haptic feedback - Flexy hates hardcoded values!
-  triggerHaptic('light')
+  // Spring Physics Micro-UX - Palette's delightful touch!
+  // Add chip to exiting set for spring physics exit animation
+  const chipKey = `${type}-${value}`
+  exitingChips.value.add(chipKey)
+
+  // Trigger haptic feedback with configurable pattern
+  const hapticPattern = animationConfig.filterChipSpring.hapticPattern
+    .split(',')
+    .map((n: string) => parseInt(n.trim()))
+  triggerHaptic(hapticPattern)
 
   // Store the removed filter for potential undo
   lastRemovedFilter.value = {
@@ -860,9 +970,61 @@ const handleBeforeLeave = (el: Element) => {
   htmlEl.style.height = `${height}px`
 }
 
+// Spring Physics Micro-UX - Palette's delightful touch!
+// Handle chip press start for spring animation
+const handleChipPressStart = (type: string, value: string) => {
+  if (prefersReducedMotion.value) return
+  pressedChips.value.add(`${type}-${value}`)
+}
+
+// Handle chip press end for spring animation
+const handleChipPressEnd = (type: string, value: string) => {
+  pressedChips.value.delete(`${type}-${value}`)
+}
+
+// Get spring physics style for a chip
+const getChipSpringStyle = (type: string, value: string) => {
+  const chipKey = `${type}-${value}`
+  const isPressed = pressedChips.value.has(chipKey)
+  const isExiting = exitingChips.value.has(chipKey)
+
+  if (prefersReducedMotion.value) {
+    return {}
+  }
+
+  const config = animationConfig.filterChipSpring
+
+  if (isExiting) {
+    return {
+      transform: `translateX(${config.removeTranslateXPx}px) rotate(${config.removeRotationDeg}deg) scale(0.8)`,
+      opacity: '0',
+      transition: `all ${config.durationSec} cubic-bezier(0.4, 0, 0.2, 1)`,
+    }
+  }
+
+  if (isPressed) {
+    return {
+      transform: `scale(${config.pressScale})`,
+      transition: `transform 0.1s ease-out`,
+    }
+  }
+
+  return {
+    transition: `all ${config.durationSec} cubic-bezier(0.175, 0.885, 0.32, 1.275)`,
+  }
+}
+
 // Setup and cleanup keyboard event listeners
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
+  // Check reduced motion preference
+  prefersReducedMotion.value = checkReducedMotion()
+  // Listen for changes
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const handleMotionChange = (e: MediaQueryListEvent) => {
+    prefersReducedMotion.value = e.matches
+  }
+  mediaQuery.addEventListener('change', handleMotionChange)
 })
 
 onUnmounted(() => {
@@ -961,6 +1123,80 @@ onUnmounted(() => {
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
+  }
+}
+
+/* Spring Physics Micro-UX - Palette's delightful touch!
+   Adds tactile spring physics animations for satisfying interactions */
+
+/* Base spring physics chip styles */
+.filter-chip.spring-physics {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Pressed state - immediate scale down */
+.filter-chip.spring-physics.is-pressed {
+  transform: scale(v-bind('animationConfig.filterChipSpring.pressScale'));
+  transition: transform 0.1s ease-out;
+}
+
+/* Exiting state - spring physics exit animation */
+.filter-chip.spring-physics.is-exiting {
+  transform: translateX(
+      v-bind('animationConfig.filterChipSpring.removeTranslateXPx + "px"')
+    )
+    rotate(v-bind('animationConfig.filterChipSpring.removeRotationDeg + "deg"'))
+    scale(0.8);
+  opacity: 0;
+  transition: all v-bind('animationConfig.filterChipSpring.durationSec')
+    cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Entrance animation with spring physics */
+@keyframes chip-spring-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(-20px);
+  }
+  60% {
+    transform: scale(v-bind('animationConfig.filterChipSpring.enterScale'))
+      translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Apply spring entrance to filter chips */
+.filter-chip.spring-physics:not(.is-exiting):not(.is-pressed) {
+  animation: chip-spring-enter
+    v-bind('animationConfig.filterChipSpring.durationSec')
+    cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Hover enhancement with subtle lift */
+.filter-chip.spring-physics:hover:not(.is-pressed):not(.is-exiting) {
+  transform: translateY(-2px);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Focus state enhancement */
+.filter-chip.spring-physics:focus-visible {
+  transform: translateY(-1px) scale(1.02);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Reduced motion support - disable spring physics */
+@media (prefers-reduced-motion: reduce) {
+  .filter-chip.spring-physics,
+  .filter-chip.spring-physics.is-pressed,
+  .filter-chip.spring-physics.is-exiting {
+    animation: none;
+    transition: opacity 0.2s ease-out;
+    transform: none;
   }
 }
 

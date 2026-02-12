@@ -530,6 +530,42 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.SCROLL_PROGRESS_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Spring Physics Micro-Interaction - Palette's delightful micro-UX touch!
+  // Adds tactile spring physics animations to filter chips for satisfying interactions
+  filterChipSpring: {
+    // Spring stiffness (higher = stiffer, faster bounce)
+    stiffness: parseFloat(process.env.FILTER_CHIP_STIFFNESS || '300'),
+    // Spring damping (higher = less bounce)
+    damping: parseFloat(process.env.FILTER_CHIP_DAMPING || '25'),
+    // Spring mass (higher = more inertia)
+    mass: parseFloat(process.env.FILTER_CHIP_MASS || '1'),
+    // Duration of the spring animation (ms)
+    durationMs: parseInt(process.env.FILTER_CHIP_SPRING_DURATION_MS || '600'),
+    // CSS duration string for transitions
+    durationSec: `${parseInt(process.env.FILTER_CHIP_SPRING_DURATION_MS || '600') / 1000}s`,
+    // Scale factor when chip is pressed
+    pressScale: parseFloat(process.env.FILTER_CHIP_PRESS_SCALE || '0.92'),
+    // Scale factor when chip enters (bouncy entrance)
+    enterScale: parseFloat(process.env.FILTER_CHIP_ENTER_SCALE || '1.1'),
+    // Rotation angle when chip is removed (degrees)
+    removeRotationDeg: parseInt(
+      process.env.FILTER_CHIP_REMOVE_ROTATION || '15'
+    ),
+    // Translation distance when chip is removed (px)
+    removeTranslateXPx: parseInt(
+      process.env.FILTER_CHIP_REMOVE_TRANSLATE_X || '50'
+    ),
+    // Haptic feedback pattern when chip is removed
+    hapticPattern: process.env.FILTER_CHIP_HAPTIC_PATTERN || '20, 30, 20',
+    // Whether to play sound effect on removal (using Web Audio API)
+    playSoundOnRemove: process.env.FILTER_CHIP_PLAY_SOUND === 'true',
+    // Sound frequency for removal (Hz)
+    soundFrequency: parseInt(process.env.FILTER_CHIP_SOUND_FREQ || '800'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.FILTER_CHIP_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
