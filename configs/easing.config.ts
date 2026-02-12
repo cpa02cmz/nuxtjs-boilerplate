@@ -173,4 +173,25 @@ export const easingConfig = {
   },
 } as const
 
+// Convenience export for individual easing values - Flexy loves easy imports!
+export const EASING = {
+  // Material easings
+  MATERIAL_STANDARD: easingConfig.cubicBezier.standard,
+  MATERIAL_DECELERATE: easingConfig.cubicBezier.decelerate,
+  MATERIAL_ACCELERATE: easingConfig.cubicBezier.accelerate,
+  MATERIAL_SHARP: easingConfig.cubicBezier.sharp,
+
+  // Spring easings
+  SPRING_STANDARD: easingConfig.cubicBezier.spring,
+  SPRING_SNAPPY: easingConfig.cubicBezier.bouncy,
+  SPRING_SOFT: easingConfig.cubicBezier.spring,
+
+  // Standard easings
+  EASE_OUT: easingConfig.standard.easeOut,
+  EASE_IN: easingConfig.standard.easeIn,
+  EASE: easingConfig.standard.default,
+  LINEAR: easingConfig.standard.linear,
+} as const
+
 export type EasingConfig = typeof easingConfig
+export type EasingType = typeof EASING

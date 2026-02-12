@@ -98,6 +98,7 @@
 
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue'
+import { EASING } from '~/configs/easing.config'
 
 // Skeleton loading component for ResourceCard
 // Enhanced with wave shimmer animation for better perceived performance
@@ -202,14 +203,21 @@ onUnmounted(() => {
     cancelAnimationFrame(hoverAnimationFrame)
   }
 })
+
+// CSS easing values for animations - Flexy hates hardcoded cubic-bezier values!
+const hoverTransitionEasing = EASING.MATERIAL_STANDARD
+const iconTransformEasing = EASING.SPRING_SNAPPY
+const pulseAnimationEasing = EASING.MATERIAL_SHARP
+const cardEnterEasing = EASING.SPRING_SNAPPY
+const waveTransformEasing = EASING.MATERIAL_STANDARD
 </script>
 
 <style scoped>
 /* 🎨 Palette: Interactive skeleton card with hover response */
 .skeleton-interactive {
   transition:
-    transform var(--hover-transition) cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow var(--hover-transition) cubic-bezier(0.4, 0, 0.2, 1);
+    transform var(--hover-transition) v-bind('hoverTransitionEasing'),
+    box-shadow var(--hover-transition) v-bind('hoverTransitionEasing');
   cursor: progress;
   --hover-transition: 0.3s;
 }
@@ -268,7 +276,7 @@ onUnmounted(() => {
     shimmer v-bind('shimmerDurationSec') ease-in-out infinite,
     breathe 3s ease-in-out infinite,
     icon-pulse 4s ease-in-out infinite;
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.4s v-bind('iconTransformEasing');
 }
 
 /* 🎨 Palette: Icon hover interaction */
@@ -300,7 +308,7 @@ onUnmounted(() => {
 
 /* Pulse animation for reduced motion fallback */
 .skeleton-pulse {
-  animation: pulse v-bind('pulseDurationSec') cubic-bezier(0.4, 0, 0.6, 1)
+  animation: pulse v-bind('pulseDurationSec') v-bind('pulseAnimationEasing')
     infinite;
 }
 
@@ -317,7 +325,7 @@ onUnmounted(() => {
 /* 🎨 Palette: Enhanced card entrance with spring physics */
 .skeleton-card {
   animation: springFadeIn v-bind('cardEnterDurationSec')
-    cubic-bezier(0.34, 1.56, 0.64, 1);
+    v-bind('cardEnterEasing');
 }
 
 @keyframes springFadeIn {
@@ -350,7 +358,7 @@ onUnmounted(() => {
     calc(var(--wave-index) * var(--wave-stagger)),
     calc(var(--wave-index) * 0.1s);
   transition:
-    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s v-bind('waveTransformEasing'),
     opacity 0.3s ease;
 }
 
