@@ -1,6 +1,7 @@
 <template>
   <article
-    class="bg-white p-6 rounded-lg shadow skeleton-card"
+    ref="skeletonRef"
+    class="bg-white p-6 rounded-lg shadow skeleton-card skeleton-interactive"
     aria-busy="true"
     aria-label="Loading resource card"
     :style="{
@@ -14,7 +15,10 @@
       '--skeleton-reduced-icon': skeletonColors.reducedMotion.icon,
       '--wave-duration': waveDuration,
       '--wave-stagger': waveStagger,
+      '--hover-intensity': hoverIntensity,
     }"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
   >
     <div class="flex items-start">
       <!-- Icon placeholder -->
@@ -93,9 +97,12 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onUnmounted } from 'vue'
+
 // Skeleton loading component for ResourceCard
 // Enhanced with wave shimmer animation for better perceived performance
 // BroCula fixed SSR issues! 🦇 All values are now SSR-safe.
+// Palette enhanced with interactive hover states! 🎨
 
 // SSR-safe animation configuration with defaults
 // During SSR, we use these defaults; on client, we could enhance
@@ -108,6 +115,7 @@ const SKELETON_CONFIG = {
   pulseDurationSec: '2s',
   cardEnterDurationSec: '0.3s',
   reducedMotionEnterDurationSec: '0.2s',
+  hoverTransitionSec: '0.3s',
 }
 
 // SSR-safe color configuration with defaults
@@ -150,10 +158,70 @@ const pulseDurationSec = SKELETON_CONFIG.pulseDurationSec
 const cardEnterDurationSec = SKELETON_CONFIG.cardEnterDurationSec
 const reducedMotionEnterDurationSec =
   SKELETON_CONFIG.reducedMotionEnterDurationSec
+
+// 🎨 Palette: Interactive hover state for delightful micro-UX
+const skeletonRef = ref<HTMLElement | null>(null)
+const hoverIntensity = ref(0)
+const isHovering = ref(false)
+let hoverAnimationFrame: number | null = null
+
+const handleMouseEnter = (): void => {
+  isHovering.value = true
+  animateHoverIntensity(1)
+}
+
+const handleMouseLeave = (): void => {
+  isHovering.value = false
+  animateHoverIntensity(0)
+}
+
+const animateHoverIntensity = (target: number): void => {
+  if (hoverAnimationFrame !== null) {
+    cancelAnimationFrame(hoverAnimationFrame)
+  }
+
+  const animate = (): void => {
+    const current = hoverIntensity.value
+    const diff = target - current
+
+    if (Math.abs(diff) < 0.01) {
+      hoverIntensity.value = target
+      return
+    }
+
+    // Smooth easing towards target
+    hoverIntensity.value = current + diff * 0.15
+    hoverAnimationFrame = requestAnimationFrame(animate)
+  }
+
+  hoverAnimationFrame = requestAnimationFrame(animate)
+}
+
+onUnmounted(() => {
+  if (hoverAnimationFrame !== null) {
+    cancelAnimationFrame(hoverAnimationFrame)
+  }
+})
 </script>
 
 <style scoped>
-/* Skeleton shimmer effect with gradient */
+/* 🎨 Palette: Interactive skeleton card with hover response */
+.skeleton-interactive {
+  transition:
+    transform var(--hover-transition) cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow var(--hover-transition) cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: progress;
+  --hover-transition: 0.3s;
+}
+
+.skeleton-interactive:hover {
+  transform: translateY(-2px) scale(1.005);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Skeleton shimmer effect with gradient - enhanced with organic morphing */
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
@@ -164,7 +232,26 @@ const reducedMotionEnterDurationSec =
     var(--skeleton-light-start) 100%
   );
   background-size: 200% 100%;
-  animation: shimmer v-bind('shimmerDurationSec') ease-in-out infinite;
+  animation:
+    shimmer v-bind('shimmerDurationSec') ease-in-out infinite,
+    breathe 3s ease-in-out infinite;
+  transition: filter 0.3s ease;
+}
+
+/* 🎨 Palette: Hover glow effect on shimmer elements */
+.skeleton-interactive:hover .skeleton-shimmer {
+  filter: brightness(1.05) saturate(1.1);
+}
+
+/* Organic breathing animation for more natural feel */
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .skeleton-icon {
@@ -177,7 +264,27 @@ const reducedMotionEnterDurationSec =
     var(--skeleton-icon-start) 100%
   );
   background-size: 200% 100%;
-  animation: shimmer v-bind('shimmerDurationSec') ease-in-out infinite;
+  animation:
+    shimmer v-bind('shimmerDurationSec') ease-in-out infinite,
+    breathe 3s ease-in-out infinite,
+    icon-pulse 4s ease-in-out infinite;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 🎨 Palette: Icon hover interaction */
+.skeleton-interactive:hover .skeleton-icon {
+  transform: scale(1.08);
+}
+
+/* Icon-specific subtle pulse */
+@keyframes icon-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(209, 213, 219, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(209, 213, 219, 0);
+  }
 }
 
 /* Staggered animation delays are now set via inline styles */
@@ -207,19 +314,27 @@ const reducedMotionEnterDurationSec =
   }
 }
 
-/* Card entrance animation */
+/* 🎨 Palette: Enhanced card entrance with spring physics */
 .skeleton-card {
-  animation: fadeIn v-bind('cardEnterDurationSec') ease-out;
+  animation: springFadeIn v-bind('cardEnterDurationSec')
+    cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@keyframes fadeIn {
-  from {
+@keyframes springFadeIn {
+  0% {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(20px) scale(0.96);
+    filter: blur(2px);
   }
-  to {
+  60% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(-4px) scale(1.01);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
@@ -228,10 +343,37 @@ const reducedMotionEnterDurationSec =
 .skeleton-wave {
   animation:
     shimmer v-bind('shimmerDurationSec') ease-in-out infinite,
-    wave-pulse var(--wave-duration) ease-in-out infinite;
+    wave-pulse var(--wave-duration) ease-in-out infinite,
+    breathe 3s ease-in-out infinite;
   animation-delay:
     calc(var(--wave-index) * var(--wave-stagger)),
-    calc(var(--wave-index) * var(--wave-stagger));
+    calc(var(--wave-index) * var(--wave-stagger)),
+    calc(var(--wave-index) * 0.1s);
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease;
+}
+
+/* 🎨 Palette: Staggered hover effect for wave items */
+.skeleton-interactive:hover .skeleton-wave {
+  animation-duration:
+    calc(v-bind('shimmerDurationSec') * 0.8), calc(var(--wave-duration) * 0.8);
+}
+
+.skeleton-interactive:hover .skeleton-wave:nth-child(1) {
+  transform: translateX(1px);
+}
+.skeleton-interactive:hover .skeleton-wave:nth-child(2) {
+  transform: translateX(2px);
+}
+.skeleton-interactive:hover .skeleton-wave:nth-child(3) {
+  transform: translateX(3px);
+}
+.skeleton-interactive:hover .skeleton-wave:nth-child(4) {
+  transform: translateX(4px);
+}
+.skeleton-interactive:hover .skeleton-wave:nth-child(5) {
+  transform: translateX(5px);
 }
 
 /* Wave pulse animation - subtle opacity and scale variation */
@@ -247,33 +389,61 @@ const reducedMotionEnterDurationSec =
   }
 }
 
-/* Reduced motion support */
+/* Reduced motion support - accessibility first */
 @media (prefers-reduced-motion: reduce) {
   .skeleton-shimmer,
-  .skeleton-icon {
+  .skeleton-icon,
+  .skeleton-wave {
     animation: none;
     background: var(--skeleton-reduced-light);
+    transition: none;
   }
 
   .skeleton-icon {
     background: var(--skeleton-reduced-icon);
   }
 
-  .skeleton-wave {
-    animation: none;
-    background: var(--skeleton-reduced-light);
-  }
-
   .skeleton-card {
-    animation: fadeIn v-bind('reducedMotionEnterDurationSec') ease-out;
+    animation: simpleFadeIn v-bind('reducedMotionEnterDurationSec') ease-out;
+    transform: none !important;
+    box-shadow: none !important;
   }
 
-  @keyframes fadeIn {
+  .skeleton-interactive:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  @keyframes simpleFadeIn {
     from {
       opacity: 0;
     }
     to {
       opacity: 1;
+    }
+  }
+}
+
+/* 🎨 Palette: High contrast mode support */
+@media (prefers-contrast: high) {
+  .skeleton-shimmer,
+  .skeleton-wave {
+    background: #767676;
+    animation: highContrastPulse 2s ease-in-out infinite;
+  }
+
+  .skeleton-icon {
+    background: #595959;
+    animation: highContrastPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes highContrastPulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
     }
   }
 }
