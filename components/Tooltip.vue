@@ -9,10 +9,10 @@
   >
     <slot />
     <Transition
-      enter-active-class="transition duration-200 ease-out"
+      :enter-active-class="`transition ${animationConfig.transition.normal.class} ${animationConfig.transition.easeOut}`"
       enter-from-class="opacity-0 translate-y-1"
       enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition duration-150 ease-in"
+      :leave-active-class="`transition ${animationConfig.transition.fast.class} ${animationConfig.transition.easeIn}`"
       leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 translate-y-1"
     >
@@ -22,8 +22,10 @@
         ref="tooltipRef"
         role="tooltip"
         :class="[
-          'absolute z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-lg',
+          'absolute z-50 px-3 py-2 text-sm font-medium rounded-lg shadow-lg',
           'pointer-events-none whitespace-nowrap',
+          componentColorsConfig.tooltip.text,
+          componentColorsConfig.tooltip.bg,
           positionClasses[adjustedPosition],
         ]"
         @keydown.esc="hideTooltip"
@@ -31,7 +33,8 @@
         {{ content }}
         <div
           :class="[
-            'absolute w-2 h-2 bg-gray-900 transform rotate-45',
+            'absolute w-2 h-2 transform rotate-45',
+            componentColorsConfig.tooltip.arrowBg,
             arrowClasses[adjustedPosition],
           ]"
         />
@@ -53,6 +56,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import { uiConfig } from '~/configs/ui.config'
 import { generateId } from '~/utils/generateId'
 
