@@ -1,10 +1,16 @@
 <template>
-  <fieldset class="mb-6" @keydown="handleKeydown">
+  <fieldset
+    class="mb-6"
+    @keydown="handleKeydown"
+  >
     <div class="flex items-center justify-between mb-3">
       <legend class="text-sm font-medium text-gray-900">
         {{ label }}
       </legend>
-      <div v-if="options.length > 1" class="flex items-center gap-2">
+      <div
+        v-if="options.length > 1"
+        class="flex items-center gap-2"
+      >
         <span
           class="text-xs text-gray-500 transition-all duration-200"
           :class="{ 'text-blue-600 font-medium': selectedOptions.length > 0 }"
@@ -69,7 +75,7 @@
               }"
               @change="toggleOption(option)"
               @click.stop
-            />
+            >
           </div>
           <label
             :for="`${id}-${option}`"

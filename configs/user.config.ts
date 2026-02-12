@@ -1,6 +1,11 @@
 // User Configuration - Default User IDs and User-related Constants
 // Flexy hates hardcoded values! All user identifiers are now configurable.
 
+export interface SkillLevel {
+  value: 'beginner' | 'intermediate' | 'advanced' | 'expert'
+  label: string
+}
+
 export const userConfig = {
   // Default user identifiers
   defaults: {
@@ -21,6 +26,41 @@ export const userConfig = {
     user: 'user',
     anonymous: 'anonymous',
   },
+
+  // Skill levels for user preferences
+  skillLevels: [
+    { value: 'beginner', label: 'Beginner' },
+    { value: 'intermediate', label: 'Intermediate' },
+    { value: 'advanced', label: 'Advanced' },
+    { value: 'expert', label: 'Expert' },
+  ] as SkillLevel[],
+
+  // Available categories for user interests
+  availableCategories: [
+    'javascript',
+    'typescript',
+    'vue',
+    'react',
+    'angular',
+    'svelte',
+    'nuxt',
+    'next',
+    'nodejs',
+    'python',
+    'java',
+    'csharp',
+    'php',
+    'mobile',
+    'web-development',
+    'backend',
+    'frontend',
+    'devops',
+    'database',
+    'testing',
+    'design',
+    'ai',
+    'security',
+  ] as string[],
 
   // User preferences defaults
   preferences: {

@@ -629,6 +629,30 @@ export const animationConfig = {
       process.env.FILTER_CHIP_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // Loading Spinner Glow Effect - Palette's micro-UX delight!
+  // Adds a subtle pulsing glow around the loading spinner for visual engagement
+  spinnerGlow: {
+    // Duration of the glow pulse animation (ms)
+    durationMs: parseInt(process.env.SPINNER_GLOW_DURATION_MS || '2000'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.SPINNER_GLOW_DURATION_MS || '2000') / 1000}s`,
+    // Primary glow color (blue-500 with opacity)
+    primaryColor:
+      process.env.SPINNER_GLOW_PRIMARY_COLOR || 'rgba(59, 130, 246, 0.4)',
+    // Secondary glow color for pulse effect (blue-400 with lower opacity)
+    secondaryColor:
+      process.env.SPINNER_GLOW_SECONDARY_COLOR || 'rgba(96, 165, 250, 0.2)',
+    // Box shadow spread at minimum (px)
+    spreadMin: parseInt(process.env.SPINNER_GLOW_SPREAD_MIN || '4'),
+    // Box shadow spread at maximum (px)
+    spreadMax: parseInt(process.env.SPINNER_GLOW_SPREAD_MAX || '16'),
+    // Scale factor for the glow ring
+    scale: parseFloat(process.env.SPINNER_GLOW_SCALE || '1.2'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SPINNER_GLOW_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // Alternative Suggestions Animations - Palette's micro-UX delight!
   // Staggered card entrance with subtle hover effects
   alternativeSuggestions: {
