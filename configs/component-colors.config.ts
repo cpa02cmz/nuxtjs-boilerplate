@@ -133,19 +133,24 @@ export const componentColorsConfig = {
     backdrop: process.env.TOAST_BACKDROP_COLOR || '0, 0, 0, 0.2',
   },
 
-  // Submission Review Colors - Flexy hates hardcoded submission colors!
+  // Submission Review Colors - Flexy hates hardcoded review badge colors!
   submissionReview: {
-    warning: {
-      bg: process.env.SUBMISSION_WARNING_BG || '#fff3cd',
-      text: process.env.SUBMISSION_WARNING_TEXT || '#856404',
-    },
-    success: {
-      bg: process.env.SUBMISSION_SUCCESS_BG || '#d4edda',
-      text: process.env.SUBMISSION_SUCCESS_TEXT || '#155724',
-    },
-    error: {
-      bg: process.env.SUBMISSION_ERROR_BG || '#f8d7da',
-      text: process.env.SUBMISSION_ERROR_TEXT || '#721c24',
+    badge: {
+      padding: process.env.SUBMISSION_BADGE_PADDING || '0.25rem 0.5rem',
+      borderRadius: process.env.SUBMISSION_BADGE_RADIUS || '12px',
+      fontSize: process.env.SUBMISSION_BADGE_FONT_SIZE || '0.8rem',
+      pending: {
+        bg: process.env.SUBMISSION_PENDING_BG || '#fff3cd',
+        text: process.env.SUBMISSION_PENDING_TEXT || '#856404',
+      },
+      approved: {
+        bg: process.env.SUBMISSION_APPROVED_BG || '#d4edda',
+        text: process.env.SUBMISSION_APPROVED_TEXT || '#155724',
+      },
+      rejected: {
+        bg: process.env.SUBMISSION_REJECTED_BG || '#f8d7da',
+        text: process.env.SUBMISSION_REJECTED_TEXT || '#721c24',
+      },
     },
   },
 
@@ -346,6 +351,102 @@ export const componentColorsConfig = {
       track: process.env.FILTER_SCROLLBAR_TRACK || 'transparent',
       thumb: process.env.FILTER_SCROLLBAR_THUMB || '#d1d5db',
       thumbHover: process.env.FILTER_SCROLLBAR_THUMB_HOVER || '#9ca3af',
+    },
+  },
+
+  // Lifecycle Timeline Colors - Flexy hates hardcoded timeline colors!
+  lifecycleTimeline: {
+    border: process.env.LIFECYCLE_BORDER || '#e5e7eb',
+    background: process.env.LIFECYCLE_BG || '#fafafa',
+    title: process.env.LIFECYCLE_TITLE || '#1f2937',
+    markers: {
+      active: process.env.LIFECYCLE_MARKER_ACTIVE || '#22c55e',
+      deprecated: process.env.LIFECYCLE_MARKER_DEPRECATED || '#f59e0b',
+      discontinued: process.env.LIFECYCLE_MARKER_DISCONTINUED || '#ef4444',
+      updated: process.env.LIFECYCLE_MARKER_UPDATED || '#3b82f6',
+      pending: process.env.LIFECYCLE_MARKER_PENDING || '#6b7280',
+      unknown: process.env.LIFECYCLE_MARKER_UNKNOWN || '#9ca3af',
+    },
+    connector: process.env.LIFECYCLE_CONNECTOR || '#d1d5db',
+    statusChange: process.env.LIFECYCLE_STATUS_CHANGE || '#1f2937',
+    date: process.env.LIFECYCLE_DATE || '#6b7280',
+    details: process.env.LIFECYCLE_DETAILS || '#4b5563',
+    reason: process.env.LIFECYCLE_REASON || '#374151',
+    noHistory: process.env.LIFECYCLE_NO_HISTORY || '#6b7280',
+    updateHeader: process.env.LIFECYCLE_UPDATE_HEADER || '#1f2937',
+    version: process.env.LIFECYCLE_VERSION || '#1f2937',
+    changelog: process.env.LIFECYCLE_CHANGELOG || '#4b5563',
+  },
+
+  // Alternative Suggestions Colors - Flexy hates hardcoded alternative colors!
+  alternativeSuggestions: {
+    icon: {
+      gradientStart: process.env.ALTERNATIVES_ICON_GRADIENT_START || '#fbbf24',
+      gradientEnd: process.env.ALTERNATIVES_ICON_GRADIENT_END || '#f59e0b',
+      shadow: process.env.ALTERNATIVES_ICON_SHADOW || 'rgba(251, 191, 36, 0.3)',
+      shadowHover:
+        process.env.ALTERNATIVES_ICON_SHADOW_HOVER || 'rgba(251, 191, 36, 0.4)',
+    },
+    title: process.env.ALTERNATIVES_TITLE || '#111827',
+    subtitle: process.env.ALTERNATIVES_SUBTITLE || '#6b7280',
+    link: {
+      default: process.env.ALTERNATIVES_LINK_DEFAULT || '#2563eb',
+      hover: process.env.ALTERNATIVES_LINK_HOVER || '#1d4ed8',
+    },
+    skeleton: {
+      gradientStart: process.env.ALTERNATIVES_SKELETON_START || '#f3f4f6',
+      gradientMiddle: process.env.ALTERNATIVES_SKELETON_MIDDLE || '#e5e7eb',
+      gradientEnd: process.env.ALTERNATIVES_SKELETON_END || '#f3f4f6',
+    },
+    emptyState: {
+      backgroundStart: process.env.ALTERNATIVES_EMPTY_BG_START || '#f9fafb',
+      backgroundEnd: process.env.ALTERNATIVES_EMPTY_BG_END || '#f3f4f6',
+      border: process.env.ALTERNATIVES_EMPTY_BORDER || '#e5e7eb',
+      icon: process.env.ALTERNATIVES_EMPTY_ICON || '#9ca3af',
+      title: process.env.ALTERNATIVES_EMPTY_TITLE || '#374151',
+      message: process.env.ALTERNATIVES_EMPTY_MESSAGE || '#6b7280',
+      ctaBg: process.env.ALTERNATIVES_EMPTY_CTA_BG || '#2563eb',
+      ctaHover: process.env.ALTERNATIVES_EMPTY_CTA_HOVER || '#1d4ed8',
+    },
+    card: {
+      background: process.env.ALTERNATIVES_CARD_BG || 'white',
+      border: process.env.ALTERNATIVES_CARD_BORDER || '#e5e7eb',
+      shadow: process.env.ALTERNATIVES_CARD_SHADOW || '0, 0, 0, 0.1',
+    },
+  },
+
+  // Common UI Colors - Flexy hates hardcoded common colors!
+  common: {
+    white: process.env.COMMON_WHITE || '#ffffff',
+    black: process.env.COMMON_BLACK || '#000000',
+    gray: {
+      50: process.env.GRAY_50 || '#f9fafb',
+      100: process.env.GRAY_100 || '#f3f4f6',
+      200: process.env.GRAY_200 || '#e5e7eb',
+      300: process.env.GRAY_300 || '#d1d5db',
+      400: process.env.GRAY_400 || '#9ca3af',
+      500: process.env.GRAY_500 || '#6b7280',
+      600: process.env.GRAY_600 || '#4b5563',
+      700: process.env.GRAY_700 || '#374151',
+      800: process.env.GRAY_800 || '#1f2937',
+      900: process.env.GRAY_900 || '#111827',
+    },
+    blue: {
+      400: process.env.BLUE_400 || '#60a5fa',
+      500: process.env.BLUE_500 || '#3b82f6',
+      600: process.env.BLUE_600 || '#2563eb',
+      700: process.env.BLUE_700 || '#1d4ed8',
+    },
+    amber: {
+      400: process.env.AMBER_400 || '#fbbf24',
+      500: process.env.AMBER_500 || '#f59e0b',
+      600: process.env.AMBER_600 || '#d97706',
+    },
+    green: {
+      500: process.env.GREEN_500 || '#22c55e',
+    },
+    red: {
+      500: process.env.RED_500 || '#ef4444',
     },
   },
 } as const

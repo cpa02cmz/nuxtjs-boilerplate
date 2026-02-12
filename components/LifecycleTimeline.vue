@@ -99,6 +99,7 @@
 <script setup lang="ts">
 import type { StatusChange, ResourceUpdate } from '~/types/resource'
 import { contentConfig } from '~/configs/content.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   statusHistory?: StatusChange[]
@@ -156,16 +157,18 @@ const formatDate = (dateString: string) => {
 <style scoped>
 .lifecycle-timeline {
   padding: 1rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid v-bind('componentColorsConfig.lifecycleTimeline.border');
   border-radius: 0.5rem;
-  background-color: #fafafa;
+  background-color: v-bind(
+    'componentColorsConfig.lifecycleTimeline.background'
+  );
 }
 
 .timeline-title {
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  color: #1f2937;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.title');
 }
 
 .timeline {
@@ -199,33 +202,45 @@ const formatDate = (dateString: string) => {
 }
 
 .marker-active {
-  background-color: #22c55e;
+  background-color: v-bind(
+    'componentColorsConfig.lifecycleTimeline.markers.active'
+  );
 }
 
 .marker-deprecated {
-  background-color: #f59e0b;
+  background-color: v-bind(
+    'componentColorsConfig.lifecycleTimeline.markers.deprecated'
+  );
 }
 
 .marker-discontinued {
-  background-color: #ef4444;
+  background-color: v-bind(
+    'componentColorsConfig.lifecycleTimeline.markers.discontinued'
+  );
 }
 
 .marker-updated {
-  background-color: #3b82f6;
+  background-color: v-bind(
+    'componentColorsConfig.lifecycleTimeline.markers.updated'
+  );
 }
 
 .marker-pending {
-  background-color: #6b7280;
+  background-color: v-bind(
+    'componentColorsConfig.lifecycleTimeline.markers.pending'
+  );
 }
 
 .marker-unknown {
-  background-color: #9ca3af;
+  background-color: v-bind(
+    'componentColorsConfig.lifecycleTimeline.markers.unknown'
+  );
 }
 
 .timeline-connector {
   width: 2px;
   height: 100%;
-  background-color: #d1d5db;
+  background-color: v-bind('componentColorsConfig.lifecycleTimeline.connector');
   margin-top: 0.5rem;
 }
 
@@ -243,17 +258,17 @@ const formatDate = (dateString: string) => {
 
 .status-change {
   font-weight: 600;
-  color: #1f2937;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.statusChange');
 }
 
 .change-date {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.date');
 }
 
 .change-details {
   font-size: 0.875rem;
-  color: #4b5563;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.details');
 }
 
 .reason,
@@ -264,35 +279,35 @@ const formatDate = (dateString: string) => {
 
 .reason {
   font-weight: 500;
-  color: #374151;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.reason');
 }
 
 .no-history {
   padding: 1rem;
   text-align: center;
-  color: #6b7280;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.noHistory');
   font-style: italic;
 }
 
 .update-history {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid v-bind('componentColorsConfig.lifecycleTimeline.border');
 }
 
 .update-history h4 {
   font-size: 1rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
-  color: #1f2937;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.updateHeader');
 }
 
 .update-item {
   margin-bottom: 1rem;
   padding: 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid v-bind('componentColorsConfig.lifecycleTimeline.border');
   border-radius: 0.375rem;
-  background-color: white;
+  background-color: v-bind('componentColorsConfig.common.white');
 }
 
 .update-header {
@@ -304,23 +319,23 @@ const formatDate = (dateString: string) => {
 
 .version {
   font-weight: 600;
-  color: #1f2937;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.version');
 }
 
 .update-date {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.date');
 }
 
 .changelog {
   margin-bottom: 0.5rem;
-  color: #4b5563;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.changelog');
 }
 
 .changes-list {
   list-style-type: disc;
   padding-left: 1.25rem;
-  color: #4b5563;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.changelog');
 }
 
 .changes-list li {

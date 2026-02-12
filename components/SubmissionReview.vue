@@ -225,6 +225,7 @@
 import { onMounted } from 'vue'
 import { useSubmissionReview } from '~/composables/useSubmissionReview'
 import { contentConfig } from '~/configs/content.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   submissionId?: string
@@ -295,25 +296,31 @@ onMounted(() => {
 }
 
 .status-badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
+  padding: v-bind('componentColorsConfig.submissionReview.badge.padding');
+  border-radius: v-bind(
+    'componentColorsConfig.submissionReview.badge.borderRadius'
+  );
+  font-size: v-bind('componentColorsConfig.submissionReview.badge.fontSize');
   font-weight: bold;
 }
 
 .status-pending {
-  background: #fff3cd;
-  color: #856404;
+  background: v-bind('componentColorsConfig.submissionReview.badge.pending.bg');
+  color: v-bind('componentColorsConfig.submissionReview.badge.pending.text');
 }
 
 .status-approved {
-  background: #d4edda;
-  color: #155724;
+  background: v-bind(
+    'componentColorsConfig.submissionReview.badge.approved.bg'
+  );
+  color: v-bind('componentColorsConfig.submissionReview.badge.approved.text');
 }
 
 .status-rejected {
-  background: #f8d7da;
-  color: #721c24;
+  background: v-bind(
+    'componentColorsConfig.submissionReview.badge.rejected.bg'
+  );
+  color: v-bind('componentColorsConfig.submissionReview.badge.rejected.text');
 }
 
 .review-details {
