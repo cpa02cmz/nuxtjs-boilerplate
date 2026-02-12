@@ -1,4 +1,4 @@
-import { computed, ref, readonly } from 'vue'
+import { computed, ref, readonly, watch } from 'vue'
 import type { SortOption } from '~/types/resource'
 import { useResourceData } from './useResourceData'
 import { useAdvancedResourceSearch } from './useAdvancedResourceSearch'
@@ -31,21 +31,25 @@ export const useSearchPage = () => {
     technologies,
   } = useResourceData()
 
-  const allTags = computed(() => {
-    const tagsSet = new Set<string>()
-    resources.value.forEach(resource => {
-      resource.tags?.forEach(tag => tagsSet.add(tag))
-    })
-    return Array.from(tagsSet).sort()
-  })
+  const allTags = ref<string[]>([])
+  const allBenefits = ref<string[]>([])
 
-  const allBenefits = computed(() => {
-    const benefitsSet = new Set<string>()
-    resources.value.forEach(resource => {
-      resource.benefits?.forEach(benefit => benefitsSet.add(benefit))
-    })
-    return Array.from(benefitsSet).sort()
-  })
+  watch(
+    () => resources.value,
+    newResources => {
+      const tagsSet = new Set<string>()
+      const benefitsSet = new Set<string>()
+
+      newResources.forEach(resource => {
+        resource.tags?.forEach(tag => tagsSet.add(tag))
+        resource.benefits?.forEach(benefit => benefitsSet.add(benefit))
+      })
+
+      allTags.value = Array.from(tagsSet).sort()
+      allBenefits.value = Array.from(benefitsSet).sort()
+    },
+    { immediate: true }
+  )
 
   const filterOptions = ref<SearchPageFilterOptions>({
     searchQuery: '',
