@@ -2,6 +2,7 @@
 import { defineEventHandler, readBody } from 'h3'
 import { randomUUID } from 'crypto'
 import { logger } from '~/utils/logger'
+import { prisma } from '~/server/utils/db'
 import type { Submission } from '~/types/submission'
 import {
   sendSuccessResponse,
@@ -53,8 +54,18 @@ export default defineEventHandler(async event => {
       submittedBy: 'anonymous',
     }
 
-    // For now, we'll log the submission (in a real app, this would go to a database)
-    logger.info(`Resource submitted: ${submission.id}`, { submission })
+    // Persist submission to database
+    await prisma.submission.create({
+      data: {
+        id: submission.id,
+        resourceData: JSON.stringify(submission.resourceData),
+        status: submission.status,
+        submittedBy: submission.submittedBy,
+      },
+    })
+    logger.info(`Resource submitted and saved: ${submission.id}`, {
+      submission,
+    })
 
     return sendSuccessResponse(event, {
       message: 'Resource submitted successfully',
