@@ -133,7 +133,7 @@ git checkout -b feature/your-feature-name
 ```bash
 npm run lint
 npm run format
-npm run test  # When tests are implemented
+npm run test
 ```
 
 ### 4. Commit Changes
