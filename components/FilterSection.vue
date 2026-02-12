@@ -106,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onUnmounted } from 'vue'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
 
@@ -240,6 +240,13 @@ const handleKeydown = (event: KeyboardEvent) => {
     }
   }
 }
+
+// Cleanup timeout on unmount to prevent memory leaks
+onUnmounted(() => {
+  if (animationTimeout.value) {
+    clearTimeout(animationTimeout.value)
+  }
+})
 </script>
 
 <style scoped>
