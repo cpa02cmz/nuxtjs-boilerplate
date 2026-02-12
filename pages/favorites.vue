@@ -338,6 +338,7 @@ import { ref, computed, onUnmounted } from 'vue'
 import { useNuxtApp } from '#app'
 import { useBookmarks } from '~/composables/useBookmarks'
 import { animationConfig } from '~/configs/animation.config'
+import { easingConfig } from '~/configs/easing.config'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import type { Bookmark } from '~/composables/useBookmarks'
 import { bookmarksConfig } from '~/configs/bookmarks.config'
@@ -584,81 +585,125 @@ const handleConfirmClear = () => {
 
 <style scoped>
 /* Gentle floating animation for bookmark icon */
+/* Flexy hates hardcoded values! Using modular easing config */
 @keyframes float-gentle {
   0%,
   100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-6px);
+    transform: translateY(
+      -v-bind('easingConfig.animations.emptyState.float.distancePx + "px"')
+    );
   }
 }
 
+/* Flexy hates hardcoded values! Using modular easing config */
 .animate-float-gentle {
-  animation: float-gentle 3s ease-in-out infinite;
+  animation: float-gentle
+    v-bind('easingConfig.animations.emptyState.float.durationSec + "s"')
+    v-bind('easingConfig.animations.emptyState.float.easing') infinite;
 }
 
 /* Heartbeat animation for the bookmark icon */
+/* Flexy hates hardcoded values! Using modular easing config */
 @keyframes heartbeat {
   0%,
   100% {
     transform: scale(1);
   }
   14% {
-    transform: scale(1.05);
+    transform: scale(
+      v-bind('easingConfig.animations.emptyState.heartbeat.scaleFactor')
+    );
   }
   28% {
     transform: scale(1);
   }
   42% {
-    transform: scale(1.05);
+    transform: scale(
+      v-bind('easingConfig.animations.emptyState.heartbeat.scaleFactor')
+    );
   }
   70% {
     transform: scale(1);
   }
 }
 
+/* Flexy hates hardcoded values! Using modular easing config */
 .animate-heartbeat {
-  animation: heartbeat 2s ease-in-out infinite;
+  animation: heartbeat
+    v-bind('easingConfig.animations.emptyState.heartbeat.durationSec + "s"')
+    v-bind('easingConfig.animations.emptyState.heartbeat.easing') infinite;
 }
 
 /* Slow pulse for background circle */
+/* Flexy hates hardcoded values! Using modular easing config */
 @keyframes pulse-slow {
   0%,
   100% {
-    opacity: 0.6;
-    transform: scale(1);
+    opacity: v-bind(
+      'easingConfig.animations.emptyState.pulseSlow.opacityStart'
+    );
+    transform: scale(
+      v-bind('easingConfig.animations.emptyState.pulseSlow.scaleStart')
+    );
   }
   50% {
-    opacity: 0.8;
-    transform: scale(1.02);
+    opacity: v-bind('easingConfig.animations.emptyState.pulseSlow.opacityEnd');
+    transform: scale(
+      v-bind('easingConfig.animations.emptyState.pulseSlow.scaleEnd')
+    );
   }
 }
 
+/* Flexy hates hardcoded values! Using modular easing config */
 .animate-pulse-slow {
-  animation: pulse-slow 4s ease-in-out infinite;
+  animation: pulse-slow
+    v-bind('easingConfig.animations.emptyState.pulseSlow.durationSec + "s"')
+    v-bind('easingConfig.animations.emptyState.pulseSlow.easing') infinite;
 }
 
 /* Sparkle animation for decorative elements */
+/* Flexy hates hardcoded values! Using modular easing config */
 @keyframes sparkle {
   0%,
   100% {
-    opacity: 0.4;
-    transform: scale(0.8) rotate(0deg);
+    opacity: v-bind('easingConfig.animations.emptyState.sparkle.opacityStart');
+    transform: scale(
+        v-bind('easingConfig.animations.emptyState.sparkle.scaleStart')
+      )
+      rotate(
+        v-bind(
+          'easingConfig.animations.emptyState.sparkle.rotationStart + "deg"'
+        )
+      );
   }
   50% {
-    opacity: 1;
-    transform: scale(1.2) rotate(180deg);
+    opacity: v-bind('easingConfig.animations.emptyState.sparkle.opacityEnd');
+    transform: scale(
+        v-bind('easingConfig.animations.emptyState.sparkle.scaleEnd')
+      )
+      rotate(
+        v-bind('easingConfig.animations.emptyState.sparkle.rotationEnd + "deg"')
+      );
   }
 }
 
+/* Flexy hates hardcoded values! Using modular easing config */
 .animate-sparkle {
-  animation: sparkle 3s ease-in-out infinite;
+  animation: sparkle
+    v-bind('easingConfig.animations.emptyState.sparkle.durationSec + "s"')
+    v-bind('easingConfig.animations.emptyState.sparkle.easing') infinite;
 }
 
 .animate-sparkle-delayed {
-  animation: sparkle 3s ease-in-out infinite;
-  animation-delay: 1.5s;
+  animation: sparkle
+    v-bind('easingConfig.animations.emptyState.sparkle.durationSec + "s"')
+    v-bind('easingConfig.animations.emptyState.sparkle.easing') infinite;
+  animation-delay: v-bind(
+    'easingConfig.animations.emptyState.sparkle.delaySec + "s"'
+  );
 }
 
 /* Respect reduced motion preferences */

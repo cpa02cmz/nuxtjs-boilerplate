@@ -254,7 +254,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
-import { EASING } from '~/configs/easing.config'
+import { easingConfig } from '~/configs/easing.config'
 
 // Reactive state
 const isOffline = ref(false)
@@ -553,8 +553,9 @@ onUnmounted(() => {
   }
 }
 
+/* Flexy hates hardcoded values! Using configurable easing from easingConfig */
 .animate-check-pop {
-  animation: check-pop 0.4s v-bind('EASING.SPRING_STANDARD');
+  animation: check-pop 0.4s v-bind('easingConfig.cubicBezier.spring');
 }
 
 /* Spinner animation */
@@ -663,6 +664,7 @@ onUnmounted(() => {
     linear infinite;
 }
 
+/* Flexy hates hardcoded values! Using configurable easing from easingConfig */
 .retry-success-icon {
   width: 0.875rem;
   height: 0.875rem;
@@ -670,7 +672,7 @@ onUnmounted(() => {
   stroke-dashoffset: 20;
   animation: draw-check
     v-bind('`${animationConfig.offlineRetry.successDurationMs}ms`')
-    v-bind('EASING.MATERIAL_STANDARD') forwards;
+    v-bind('easingConfig.cubicBezier.standard') forwards;
 }
 
 @keyframes draw-check {

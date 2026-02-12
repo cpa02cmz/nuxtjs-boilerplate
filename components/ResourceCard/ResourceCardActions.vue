@@ -238,7 +238,7 @@
 import { computed } from 'vue'
 import { useResourceCardActions } from '~/composables/useResourceCardActions'
 import { animationConfig } from '~/configs/animation.config'
-import { EASING } from '~/configs/easing.config'
+import { easingConfig } from '~/configs/easing.config'
 
 interface Props {
   id?: string
@@ -334,9 +334,9 @@ const transitionLeaveFast = computed(
 </script>
 
 <style scoped>
-/* Icon pop animation when clicking button */
+/* Icon pop animation when clicking button - Flexy hates hardcoded values! */
 .animate-icon-pop {
-  animation: icon-pop 0.3s v-bind('EASING.SPRING_STANDARD');
+  animation: icon-pop 0.3s v-bind('easingConfig.cubicBezier.spring');
 }
 
 @keyframes icon-pop {
@@ -351,9 +351,9 @@ const transitionLeaveFast = computed(
   }
 }
 
-/* Checkmark pop animation when action completes */
+/* Checkmark pop animation when action completes - Flexy hates hardcoded values! */
 .animate-check-pop {
-  animation: check-pop 0.4s v-bind('EASING.SPRING_STANDARD');
+  animation: check-pop 0.4s v-bind('easingConfig.cubicBezier.spring');
 }
 
 @keyframes check-pop {
@@ -371,9 +371,9 @@ const transitionLeaveFast = computed(
   }
 }
 
-/* Shake animation for error states */
+/* Shake animation for error states - Flexy hates hardcoded values! */
 .animate-shake {
-  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  animation: shake 0.5s v-bind('easingConfig.animations.formShake.easing') both;
 }
 
 @keyframes shake {

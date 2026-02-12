@@ -495,7 +495,7 @@ import { useResources } from '~/composables/useResources'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import { useTheme } from '~/composables/useTheme'
 import { contentConfig } from '~/configs/content.config'
-import { EASING } from '~/configs/easing.config'
+import { easingConfig } from '~/configs/easing.config'
 // NodeListOf is a global DOM type, no need to import
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
 import KeyboardShortcutsHelp from '~/components/KeyboardShortcutsHelp.vue'
@@ -623,8 +623,11 @@ onUnmounted(() => {
 
 <style scoped>
 /* Bounce scale animation for comparison button */
+/* Flexy hates hardcoded values! Using modular easing config */
 .animate-bounce-scale {
-  animation: bounce-scale 0.4s v-bind('EASING.SPRING_STANDARD');
+  animation: bounce-scale
+    v-bind('easingConfig.animations.bounceScale.durationMs + "ms"')
+    v-bind('easingConfig.animations.bounceScale.easing');
 }
 
 @keyframes bounce-scale {
@@ -643,8 +646,10 @@ onUnmounted(() => {
 }
 
 /* Pop animation for counter badge */
+/* Flexy hates hardcoded values! Using modular easing config */
 .animate-pop {
-  animation: pop 0.4s v-bind('EASING.SPRING_STANDARD');
+  animation: pop v-bind('easingConfig.animations.pop.durationMs + "ms"')
+    v-bind('easingConfig.animations.pop.easing');
 }
 
 @keyframes pop {
