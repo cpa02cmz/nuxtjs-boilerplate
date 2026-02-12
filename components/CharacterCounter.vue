@@ -1,0 +1,328 @@
+<template>
+  <div
+    class="character-counter-wrapper"
+    :class="{
+      'character-counter--focused': isFocused,
+      'character-counter--error': isOverLimit,
+      'character-counter--warning': isNearLimit && !isOverLimit,
+    }"
+  >
+    <!-- Input Slot - allows flexible input integration -->
+    <div class="character-counter-input-wrapper">
+      <slot
+        :character-count="characterCount"
+        :is-near-limit="isNearLimit"
+        :is-over-limit="isOverLimit"
+      />
+    </div>
+
+    <!-- Visual Progress Ring Counter - Palette's micro-UX delight! -->
+    <div
+      v-if="showCounter"
+      class="character-counter-ring"
+      :class="{
+        'character-counter-ring--focused': isFocused,
+        'character-counter-ring--visible': characterCount > 0 || alwaysShow,
+      }"
+      :title="counterTooltip"
+    >
+      <svg
+        class="character-counter-ring__svg"
+        :viewBox="`0 0 ${svgSize} ${svgSize}`"
+        :width="ringSize"
+        :height="ringSize"
+        aria-hidden="true"
+      >
+        <!-- Background Circle -->
+        <circle
+          class="character-counter-ring__bg"
+          :cx="centerPoint"
+          :cy="centerPoint"
+          :r="radius"
+          fill="none"
+          :stroke-width="strokeWidth"
+        />
+        <!-- Progress Circle -->
+        <circle
+          class="character-counter-ring__progress"
+          :cx="centerPoint"
+          :cy="centerPoint"
+          :r="radius"
+          fill="none"
+          :stroke-width="strokeWidth"
+          :stroke-dasharray="circumference"
+          :stroke-dashoffset="strokeDashOffset"
+          stroke-linecap="round"
+          :style="progressStyle"
+        />
+      </svg>
+      <!-- Character Count Text -->
+      <span
+        class="character-counter-ring__text"
+        :class="{
+          'character-counter-ring__text--warning': isNearLimit && !isOverLimit,
+          'character-counter-ring__text--error': isOverLimit,
+        }"
+        aria-hidden="true"
+      >
+        {{ remainingCount }}
+      </span>
+    </div>
+
+    <!-- Screen Reader Announcement -->
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {{ screenReaderAnnouncement }}
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { animationConfig } from '~/configs/animation.config'
+
+interface Props {
+  /** Current character count */
+  characterCount: number
+  /** Maximum allowed characters */
+  maxLength: number
+  /** Show the counter ring */
+  showCounter?: boolean
+  /** Always show counter even at 0 characters */
+  alwaysShow?: boolean
+  /** Threshold percentage to show warning state (0-1) */
+  warningThreshold?: number
+  /** Size of the counter ring in pixels */
+  ringSize?: number
+  /** Stroke width of the ring */
+  strokeWidth?: number
+  /** Whether the input is currently focused */
+  isFocused?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showCounter: true,
+  alwaysShow: false,
+  warningThreshold: 0.8,
+  ringSize: 28,
+  strokeWidth: 3,
+  isFocused: false,
+})
+
+// Computed values for SVG
+const svgSize = computed(() => props.ringSize)
+const centerPoint = computed(() => props.ringSize / 2)
+const radius = computed(() => (props.ringSize - props.strokeWidth) / 2)
+const circumference = computed(() => 2 * Math.PI * radius.value)
+
+// Progress calculations
+const progressPercentage = computed(() => {
+  return Math.min(props.characterCount / props.maxLength, 1)
+})
+
+const strokeDashOffset = computed(() => {
+  return circumference.value * (1 - progressPercentage.value)
+})
+
+const remainingCount = computed(() => {
+  return props.maxLength - props.characterCount
+})
+
+// State checks
+const isNearLimit = computed(() => {
+  return progressPercentage.value >= props.warningThreshold
+})
+
+const isOverLimit = computed(() => {
+  return props.characterCount > props.maxLength
+})
+
+// Progress ring color based on state
+const progressColor = computed(() => {
+  if (isOverLimit.value) {
+    return 'var(--counter-color-error, #ef4444)'
+  }
+  if (isNearLimit.value) {
+    return 'var(--counter-color-warning, #f59e0b)'
+  }
+  return 'var(--counter-color-normal, #3b82f6)'
+})
+
+// Progress ring style with dynamic color
+const progressStyle = computed(() => ({
+  '--progress-color': progressColor.value,
+  '--progress-percentage': `${progressPercentage.value * 100}%`,
+  transition: `stroke-dashoffset ${animationConfig.transition.fast.durationMs}ms ease-out`,
+}))
+
+// Tooltip text
+const counterTooltip = computed(() => {
+  if (isOverLimit.value) {
+    return `${Math.abs(remainingCount.value)} characters over limit`
+  }
+  return `${remainingCount.value} characters remaining`
+})
+
+// Screen reader announcement
+const screenReaderAnnouncement = computed(() => {
+  if (!props.showCounter) return ''
+
+  if (isOverLimit.value) {
+    return `Character limit exceeded. You are ${Math.abs(remainingCount.value)} characters over the ${props.maxLength} character limit.`
+  }
+  if (isNearLimit.value) {
+    return `${remainingCount.value} characters remaining out of ${props.maxLength}.`
+  }
+  return ''
+})
+</script>
+
+<style scoped>
+.character-counter-wrapper {
+  position: relative;
+  display: block;
+}
+
+.character-counter-input-wrapper {
+  position: relative;
+}
+
+/* Visual Progress Ring Counter */
+.character-counter-ring {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%) scale(0.8);
+  width: v-bind('ringSize + "px"');
+  height: v-bind('ringSize + "px"');
+  opacity: 0;
+  transition: all v-bind('animationConfig.transition.fast.durationMs + "ms"')
+    ease-out;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.character-counter-ring--visible,
+.character-counter-wrapper.character-counter--focused .character-counter-ring {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.character-counter-ring--focused {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.character-counter-ring__svg {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+}
+
+.character-counter-ring__bg {
+  stroke: var(--counter-bg-color, rgba(0, 0, 0, 0.1));
+  transition: stroke v-bind('animationConfig.transition.fast.durationMs + "ms"')
+    ease;
+}
+
+.character-counter-ring__progress {
+  stroke: var(--progress-color, #3b82f6);
+  transition:
+    stroke-dashoffset
+      v-bind('animationConfig.transition.fast.durationMs + "ms"') ease-out,
+    stroke v-bind('animationConfig.transition.fast.durationMs + "ms"') ease;
+}
+
+/* Character count text inside ring */
+.character-counter-ring__text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--counter-text-color, #6b7280);
+  transition: color v-bind('animationConfig.transition.fast.durationMs + "ms"')
+    ease;
+}
+
+.character-counter-ring__text--warning {
+  color: var(--counter-color-warning, #f59e0b);
+  animation: pulse-warning
+    v-bind('animationConfig.focus.pulseDurationMs + "ms"') ease-in-out infinite;
+}
+
+.character-counter-ring__text--error {
+  color: var(--counter-color-error, #ef4444);
+  animation: shake-error
+    v-bind('animationConfig.validation.shakeDurationMs + "ms"') ease-in-out;
+}
+
+/* Animations */
+@keyframes pulse-warning {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shake-error {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px);
+  }
+  75% {
+    transform: translateX(2px);
+  }
+}
+
+/* Error state styling */
+.character-counter-wrapper.character-counter--error {
+  --counter-color-error: #ef4444;
+}
+
+.character-counter-wrapper.character-counter--warning {
+  --counter-color-warning: #f59e0b;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .character-counter-ring {
+    transition: opacity 0.1s ease;
+  }
+
+  .character-counter-ring__progress {
+    transition: stroke-dashoffset 0.1s ease;
+  }
+
+  .character-counter-ring__text--warning,
+  .character-counter-ring__text--error {
+    animation: none;
+  }
+}
+
+/* Screen reader only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+</style>
