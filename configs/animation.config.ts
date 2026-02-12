@@ -593,6 +593,34 @@ export const animationConfig = {
       process.env.SCROLL_PROGRESS_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // Checkbox Micro-Interactions - Palette's delightful micro-UX touch!
+  // Adds satisfying visual feedback when selecting/deselecting filter checkboxes
+  checkbox: {
+    // Duration of the check draw animation (ms)
+    checkDrawDurationMs: parseInt(
+      process.env.CHECKBOX_DRAW_DURATION_MS || '300'
+    ),
+    // CSS duration string
+    checkDrawDurationSec: `${parseInt(process.env.CHECKBOX_DRAW_DURATION_MS || '300') / 1000}s`,
+    // Duration of the pop animation (ms)
+    popDurationMs: parseInt(process.env.CHECKBOX_POP_DURATION_MS || '250'),
+    // Scale factor at peak of pop animation
+    popScale: parseFloat(process.env.CHECKBOX_POP_SCALE || '1.25'),
+    // Duration of color bloom effect (ms)
+    bloomDurationMs: parseInt(process.env.CHECKBOX_BLOOM_DURATION_MS || '400'),
+    // Scale factor for bloom ring
+    bloomScale: parseFloat(process.env.CHECKBOX_BLOOM_SCALE || '1.8'),
+    // Bloom ring opacity
+    bloomOpacity: parseFloat(process.env.CHECKBOX_BLOOM_OPACITY || '0.3'),
+    // Duration of background highlight fade (ms)
+    highlightDurationMs: parseInt(
+      process.env.CHECKBOX_HIGHLIGHT_DURATION_MS || '300'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.CHECKBOX_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // Spring Physics Micro-Interaction - Palette's delightful micro-UX touch!
   // Adds tactile spring physics animations to filter chips for satisfying interactions
   filterChipSpring: {
@@ -687,6 +715,10 @@ export const animationConfig = {
     // Loading pulse duration (seconds)
     loadingPulseDurationSec: parseFloat(
       process.env.ALTERNATIVES_LOADING_PULSE || '1.5'
+    ),
+    // Initial loading delay to show loading state for better UX (ms)
+    loadingDelayMs: parseInt(
+      process.env.ALTERNATIVES_LOADING_DELAY_MS || '300'
     ),
     // Whether to respect reduced motion preference
     respectReducedMotion:

@@ -1,7 +1,7 @@
 <template>
   <div class="lifecycle-timeline">
     <h3 class="timeline-title">
-      Resource Lifecycle
+      {{ contentConfig.lifecycle.title }}
     </h3>
 
     <div
@@ -35,16 +35,17 @@
               v-if="change.reason"
               class="reason"
             >
-              Reason: {{ change.reason }}
+              {{ contentConfig.lifecycle.labels.reason }} {{ change.reason }}
             </div>
             <div
               v-if="change.notes"
               class="notes"
             >
-              Notes: {{ change.notes }}
+              {{ contentConfig.lifecycle.labels.notes }} {{ change.notes }}
             </div>
             <div class="changed-by">
-              Changed by: {{ change.changedBy }}
+              {{ contentConfig.lifecycle.labels.changedBy }}
+              {{ change.changedBy }}
             </div>
           </div>
         </div>
@@ -55,21 +56,22 @@
       v-else
       class="no-history"
     >
-      No status history available for this resource.
+      {{ contentConfig.lifecycle.emptyState }}
     </div>
 
     <div
       v-if="updateHistory && updateHistory.length > 0"
       class="update-history"
     >
-      <h4>Update History</h4>
+      <h4>{{ contentConfig.lifecycle.updateHistoryTitle }}</h4>
       <div
         v-for="update in updateHistory"
         :key="update.id"
         class="update-item"
       >
         <div class="update-header">
-          <span class="version">v{{ update.version }}</span>
+          <span class="version">{{ contentConfig.lifecycle.versionPrefix
+          }}{{ update.version }}</span>
           <span class="update-date">{{ formatDate(update.updatedAt) }}</span>
         </div>
         <div
@@ -96,6 +98,7 @@
 
 <script setup lang="ts">
 import type { StatusChange, ResourceUpdate } from '~/types/resource'
+import { contentConfig } from '~/configs/content.config'
 
 interface Props {
   statusHistory?: StatusChange[]
