@@ -918,6 +918,12 @@ export const contentConfig = {
     },
     empty: {
       message: process.env.CONTENT_WEBHOOKS_EMPTY || 'No webhooks configured',
+      title: process.env.CONTENT_WEBHOOKS_EMPTY_TITLE || 'No webhooks yet',
+      description:
+        process.env.CONTENT_WEBHOOKS_EMPTY_DESC ||
+        'Create your first webhook to receive real-time notifications when events occur',
+      ctaButton:
+        process.env.CONTENT_WEBHOOKS_EMPTY_CTA || 'Create Your First Webhook',
     },
     ariaLabels: {
       createButton:
