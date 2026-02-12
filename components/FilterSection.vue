@@ -1,16 +1,10 @@
 <template>
-  <fieldset
-    class="mb-6"
-    @keydown="handleKeydown"
-  >
+  <fieldset class="mb-6" @keydown="handleKeydown">
     <div class="flex items-center justify-between mb-3">
       <legend class="text-sm font-medium text-gray-900">
         {{ label }}
       </legend>
-      <div
-        v-if="options.length > 1"
-        class="flex items-center gap-2"
-      >
+      <div v-if="options.length > 1" class="flex items-center gap-2">
         <span
           class="text-xs text-gray-500 transition-all duration-200"
           :class="{ 'text-blue-600 font-medium': selectedOptions.length > 0 }"
@@ -71,7 +65,7 @@
               <span
                 v-if="
                   !prefersReducedMotion &&
-                    (recentlySelected === option || recentlyDeselected === option)
+                  (recentlySelected === option || recentlyDeselected === option)
                 "
                 class="checkbox-bloom absolute inset-0 rounded pointer-events-none"
                 :class="{
@@ -100,7 +94,7 @@
                 }"
                 @change="toggleOption(option)"
                 @click.stop
-              >
+              />
             </div>
             <label
               :for="`${id}-${option}`"
@@ -135,6 +129,7 @@
 import { computed, ref, onUnmounted, onMounted } from 'vue'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
@@ -325,7 +320,7 @@ onUnmounted(() => {
 <style scoped>
 /* Checkbox pop animation when selected */
 .animate-checkbox-pop {
-  animation: checkbox-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: checkbox-pop 0.3s v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes checkbox-pop {
@@ -342,7 +337,7 @@ onUnmounted(() => {
 
 /* Checkbox pop-out animation when deselected */
 .animate-checkbox-pop-out {
-  animation: checkbox-pop-out 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: checkbox-pop-out 0.3s v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes checkbox-pop-out {
@@ -464,12 +459,12 @@ button:hover {
 /* Enhanced checkbox pop animation */
 .animate-checkbox-pop {
   animation: checkbox-pop-enhanced var(--pop-duration, 250ms)
-    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    v-bind('EASING.SPRING_STANDARD');
 }
 
 .animate-checkbox-pop-out {
   animation: checkbox-pop-out-enhanced var(--pop-duration, 250ms)
-    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes checkbox-pop-enhanced {

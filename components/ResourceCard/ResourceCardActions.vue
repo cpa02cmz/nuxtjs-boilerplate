@@ -238,6 +238,7 @@
 import { computed } from 'vue'
 import { useResourceCardActions } from '~/composables/useResourceCardActions'
 import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 
 interface Props {
   id?: string
@@ -335,7 +336,7 @@ const transitionLeaveFast = computed(
 <style scoped>
 /* Icon pop animation when clicking button */
 .animate-icon-pop {
-  animation: icon-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: icon-pop 0.3s v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes icon-pop {
@@ -352,7 +353,7 @@ const transitionLeaveFast = computed(
 
 /* Checkmark pop animation when action completes */
 .animate-check-pop {
-  animation: check-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: check-pop 0.4s v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes check-pop {

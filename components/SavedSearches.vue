@@ -6,11 +6,7 @@
     <h4 class="text-sm font-medium text-gray-900 mb-3">
       {{ contentConfig.search.suggestions.recentTitle }}
     </h4>
-    <TransitionGroup
-      name="saved-search"
-      tag="div"
-      class="space-y-2"
-    >
+    <TransitionGroup name="saved-search" tag="div" class="space-y-2">
       <div
         v-for="search in savedSearches"
         :key="search.query"
@@ -61,6 +57,7 @@ import { ref } from 'vue'
 import { useNuxtApp } from '#app'
 import { contentConfig } from '~/configs/content.config'
 import { uiConfig } from '~/configs/ui.config'
+import { EASING } from '~/configs/easing.config'
 
 interface SavedSearch {
   name: string
@@ -166,7 +163,7 @@ const formatDate = (date: Date) => {
 /* Smooth entry and exit animations for saved search items */
 .saved-search-enter-active,
 .saved-search-leave-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s v-bind('EASING.MATERIAL_STANDARD');
 }
 
 .saved-search-enter-from {
@@ -181,7 +178,7 @@ const formatDate = (date: Date) => {
 
 /* Smooth layout transitions when items are reordered */
 .saved-search-move {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s v-bind('EASING.MATERIAL_STANDARD');
 }
 
 /* Respect reduced motion preferences for accessibility */

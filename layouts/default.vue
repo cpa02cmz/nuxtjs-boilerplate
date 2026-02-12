@@ -445,8 +445,10 @@
         <div
           class="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <span>© {{ new Date().getFullYear() }} Free Stuff on the Internet. All
-            rights reserved.</span>
+          <span
+            >© {{ new Date().getFullYear() }} Free Stuff on the Internet. All
+            rights reserved.</span
+          >
           <button
             class="inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1 transition-colors duration-200"
             :aria-label="contentConfig.layout.ariaLabels.keyboardShortcuts"
@@ -460,9 +462,7 @@
             <span>Shortcuts</span>
           </button>
         </div>
-        <p class="sr-only">
-          Footer content ends
-        </p>
+        <p class="sr-only">Footer content ends</p>
       </div>
     </footer>
 
@@ -495,6 +495,7 @@ import { useResources } from '~/composables/useResources'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import { useTheme } from '~/composables/useTheme'
 import { contentConfig } from '~/configs/content.config'
+import { EASING } from '~/configs/easing.config'
 // NodeListOf is a global DOM type, no need to import
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
 import KeyboardShortcutsHelp from '~/components/KeyboardShortcutsHelp.vue'
@@ -623,7 +624,7 @@ onUnmounted(() => {
 <style scoped>
 /* Bounce scale animation for comparison button */
 .animate-bounce-scale {
-  animation: bounce-scale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: bounce-scale 0.4s v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes bounce-scale {
@@ -643,7 +644,7 @@ onUnmounted(() => {
 
 /* Pop animation for counter badge */
 .animate-pop {
-  animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: pop 0.4s v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes pop {

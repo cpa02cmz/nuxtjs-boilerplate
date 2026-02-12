@@ -30,7 +30,7 @@
               type="text"
               :placeholder="contentConfig.apiKeys.placeholders.keyName"
               class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
+            />
             <button
               :disabled="!newKeyName.trim()"
               class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -41,10 +41,7 @@
           </div>
         </div>
 
-        <div
-          v-if="apiKeys.length > 0"
-          class="mb-8"
-        >
+        <div v-if="apiKeys.length > 0" class="mb-8">
           <h2 class="text-lg font-semibold text-gray-700 mb-4">
             {{ contentConfig.apiKeys.labels.yourKeys }}
           </h2>
@@ -66,10 +63,7 @@
                     {{ contentConfig.apiKeys.labels.created }}
                     {{ formatDate(key.createdAt) }}
                   </p>
-                  <p
-                    v-if="key.expiresAt"
-                    class="text-sm text-gray-600"
-                  >
+                  <p v-if="key.expiresAt" class="text-sm text-gray-600">
                     {{ contentConfig.apiKeys.labels.expires }}
                     {{ formatDate(key.expiresAt) }}
                   </p>
@@ -171,10 +165,7 @@
           </div>
         </div>
 
-        <div
-          v-else
-          class="text-center py-12"
-        >
+        <div v-else class="text-center py-12">
           <p class="text-gray-600">
             {{ contentConfig.apiKeys.empty.message }}
           </p>
@@ -211,6 +202,7 @@ import { useRipple } from '~/composables/useRipple'
 import { animationConfig } from '~/configs/animation.config'
 import { iconsConfig } from '~/configs/icons.config'
 import { contentConfig } from '~/configs/content.config'
+import { EASING } from '~/configs/easing.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 import Tooltip from '~/components/Tooltip.vue'
 import type { ApiKeyDisplay } from '~/composables/useApiKeysPage'
@@ -362,7 +354,7 @@ onMounted(() => {
 .checkmark-path {
   stroke-dasharray: 20;
   stroke-dashoffset: 20;
-  animation: draw-check 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: draw-check 0.4s v-bind('EASING.MATERIAL_STANDARD') forwards;
 }
 
 @keyframes draw-check {
@@ -373,7 +365,7 @@ onMounted(() => {
 
 /* Pop animation for checkmark icon */
 .animate-check-pop {
-  animation: check-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: check-pop 0.4s v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes check-pop {

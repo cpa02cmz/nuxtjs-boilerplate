@@ -1,5 +1,6 @@
 // Component Styles Configuration - Component-specific styling values
 // Flexy hates hardcoded values! All component styles are now configurable.
+import { EASING } from './easing.config'
 
 export const componentStylesConfig = {
   // Status Manager Component Styles
@@ -290,8 +291,7 @@ export const componentStylesConfig = {
     // Animation
     checkAnimationDuration: process.env.API_KEYS_CHECK_DURATION || '300ms',
     checkAnimationEasing:
-      process.env.API_KEYS_CHECK_EASING ||
-      'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      process.env.API_KEYS_CHECK_EASING || EASING.SPRING_STANDARD,
     buttonTransitionDuration:
       process.env.API_KEYS_BTN_TRANSITION_DURATION || '200ms',
     buttonActiveScale: process.env.API_KEYS_BTN_ACTIVE_SCALE || '0.95',
@@ -432,7 +432,7 @@ export const componentStylesConfig = {
     // Undo animation keyframes
     undoSlideInDuration: process.env.ERROR_MSG_UNDO_SLIDE_DURATION || '0.3s',
     undoSlideInEasing:
-      process.env.ERROR_MSG_UNDO_SLIDE_EASING || 'cubic-bezier(0.4, 0, 0.2, 1)',
+      process.env.ERROR_MSG_UNDO_SLIDE_EASING || EASING.MATERIAL_STANDARD,
     undoSlideInStartOpacity:
       process.env.ERROR_MSG_UNDO_SLIDE_OPACITY_START || '0',
     undoSlideInStartTransform:
