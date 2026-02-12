@@ -363,6 +363,129 @@ button:has(.ripple-effect) {
     0 0 0 1px rgba(59, 130, 246, 0.3);
 }
 
+/* ============================================
+   Focus Spotlight - Palette's micro-UX delight! ✨
+   Animated focus indicator for keyboard navigation
+   ============================================ */
+
+/* Enhanced keyboard focus styles with animated spotlight effect */
+body.keyboard-nav :focus-visible {
+  outline: none;
+  position: relative;
+  z-index: 100;
+}
+
+/* Animated focus spotlight ring */
+body.keyboard-nav :focus-visible::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.8) 0%,
+    rgba(99, 102, 241, 0.8) 50%,
+    rgba(139, 92, 246, 0.8) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: focus-spotlight-pulse 2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Secondary glow layer for depth */
+body.keyboard-nav :focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  background: transparent;
+  box-shadow:
+    0 0 0 2px rgba(59, 130, 246, 0.2),
+    0 0 20px 4px rgba(59, 130, 246, 0.15),
+    0 0 40px 8px rgba(99, 102, 241, 0.1);
+  animation: focus-glow-pulse 2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* Keyframes for the spotlight animation */
+@keyframes focus-spotlight-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes focus-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    box-shadow:
+      0 0 0 2px rgba(59, 130, 246, 0.15),
+      0 0 15px 2px rgba(59, 130, 246, 0.1),
+      0 0 30px 4px rgba(99, 102, 241, 0.05);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow:
+      0 0 0 2px rgba(59, 130, 246, 0.3),
+      0 0 25px 4px rgba(59, 130, 246, 0.2),
+      0 0 50px 8px rgba(99, 102, 241, 0.15);
+  }
+}
+
+/* Special handling for circular elements (buttons, avatars) */
+body.keyboard-nav button:focus-visible::before,
+body.keyboard-nav [role='button']:focus-visible::before {
+  border-radius: 50%;
+}
+
+/* Special handling for rounded elements */
+body.keyboard-nav input:focus-visible::before,
+body.keyboard-nav textarea:focus-visible::before {
+  border-radius: 8px;
+}
+
+/* High contrast mode support for focus spotlight */
+@media (prefers-contrast: high) {
+  body.keyboard-nav :focus-visible::before {
+    background: none;
+    border: 3px solid currentColor;
+    animation: none;
+  }
+
+  body.keyboard-nav :focus-visible::after {
+    display: none;
+  }
+}
+
+/* Reduced motion support - disable animations but keep visibility */
+@media (prefers-reduced-motion: reduce) {
+  body.keyboard-nav :focus-visible::before {
+    animation: none;
+    opacity: 0.9;
+  }
+
+  body.keyboard-nav :focus-visible::after {
+    animation: none;
+    opacity: 0.6;
+    box-shadow:
+      0 0 0 2px rgba(59, 130, 246, 0.25),
+      0 0 10px 2px rgba(59, 130, 246, 0.15);
+  }
+}
+
 /* Form shake animation for validation errors */
 @keyframes form-shake {
   0%,

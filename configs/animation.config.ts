@@ -51,6 +51,34 @@ export const animationConfig = {
     pulseColor: process.env.FOCUS_PULSE_COLOR || 'rgba(59, 130, 246, 0.5)',
   },
 
+  // Idle Pulse Animation - Flexy hates hardcoded values!
+  // Provides subtle animation to indicate keyboard shortcut availability
+  idlePulse: {
+    // Duration of one complete pulse cycle (ms)
+    durationMs: parseInt(process.env.IDLE_PULSE_DURATION_MS || '2000'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.IDLE_PULSE_DURATION_MS || '2000') / 1000}s`,
+    // Number of pulse iterations before stopping
+    iterationCount: parseInt(process.env.IDLE_PULSE_ITERATIONS || '3'),
+    // Scale factor at peak of pulse
+    peakScale: parseFloat(process.env.IDLE_PULSE_PEAK_SCALE || '1.1'),
+  },
+
+  // Search Complete Animation - Flexy hates hardcoded values!
+  // Provides positive feedback when search completes
+  searchComplete: {
+    // Duration of the search complete animation (ms)
+    durationMs: parseInt(process.env.SEARCH_COMPLETE_DURATION_MS || '800'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.SEARCH_COMPLETE_DURATION_MS || '800') / 1000}s`,
+    // Scale factor at peak of animation
+    peakScale: parseFloat(process.env.SEARCH_COMPLETE_PEAK_SCALE || '1.2'),
+    // Easing function for the animation
+    easing:
+      process.env.SEARCH_COMPLETE_EASING ||
+      'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+  },
+
   // Focus Glow Effect - Palette's micro-UX enhancement!
   // Adds a subtle animated glow around focused inputs for better visibility
   focusGlow: {
