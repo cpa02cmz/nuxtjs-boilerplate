@@ -6,10 +6,10 @@
   >
     <!-- Copied tooltip - appears at click position for delightful micro-UX feedback -->
     <Transition
-      enter-active-class="transition-all duration-200 ease-out"
+      :enter-active-class="transitionEnterNormal"
       enter-from-class="opacity-0 scale-75 translate-y-2"
       enter-to-class="opacity-100 scale-100 translate-y-0"
-      leave-active-class="transition-all duration-150 ease-in"
+      :leave-active-class="transitionLeaveFast"
       leave-from-class="opacity-100 scale-100 translate-y-0"
       leave-to-class="opacity-0 scale-75 -translate-y-1"
     >
@@ -69,7 +69,7 @@
       <button
         v-if="id"
         :class="[
-          'p-2 rounded-full transition-all duration-200 ease-out',
+          `p-2 rounded-full transition-all ${transitionClasses.normal} ease-out`,
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
           isCopied
             ? 'bg-green-100 text-green-600 scale-110'
@@ -111,7 +111,7 @@
           v-else
           xmlns="http://www.w3.org/2000/svg"
           :class="[
-            'h-5 w-5 transition-transform duration-200',
+            `h-5 w-5 transition-transform ${transitionClasses.normal}`,
             isCopyAnimating && 'animate-icon-pop',
           ]"
           viewBox="0 0 20 20"
@@ -126,10 +126,10 @@
 
       <!-- Inline feedback label -->
       <transition
-        enter-active-class="transition-all duration-200 ease-out"
+        :enter-active-class="transitionEnterNormal"
         enter-from-class="opacity-0 -translate-x-2"
         enter-to-class="opacity-100 translate-x-0"
-        leave-active-class="transition-all duration-150 ease-in"
+        :leave-active-class="transitionLeaveFast"
         leave-from-class="opacity-100 translate-x-0"
         leave-to-class="opacity-0 -translate-x-2"
       >
@@ -167,7 +167,7 @@
         v-if="id"
         ref="compareButtonRef"
         :class="[
-          'p-2 rounded-full transition-all duration-200 ease-out',
+          `p-2 rounded-full transition-all ${transitionClasses.normal} ease-out`,
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
           isAddingToComparison
             ? 'bg-blue-100 text-blue-600 scale-110'
@@ -182,7 +182,7 @@
           v-if="!isAddingToComparison"
           xmlns="http://www.w3.org/2000/svg"
           :class="[
-            'h-5 w-5 transition-transform duration-200',
+            `h-5 w-5 transition-transform ${transitionClasses.normal}`,
             isCompareAnimating && 'animate-icon-pop',
           ]"
           viewBox="0 0 20 20"
@@ -212,10 +212,10 @@
 
       <!-- Inline feedback label -->
       <Transition
-        enter-active-class="transition-all duration-200 ease-out"
+        :enter-active-class="transitionEnterNormal"
         enter-from-class="opacity-0 -translate-x-2"
         enter-to-class="opacity-100 translate-x-0"
-        leave-active-class="transition-all duration-150 ease-in"
+        :leave-active-class="transitionLeaveFast"
         leave-from-class="opacity-100 translate-x-0"
         leave-to-class="opacity-0 -translate-x-2"
       >
@@ -237,6 +237,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useResourceCardActions } from '~/composables/useResourceCardActions'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   id?: string
@@ -315,6 +316,20 @@ const compareButtonTitle = computed(() => {
     ? 'Added to comparison'
     : 'Add to comparison'
 })
+
+// Flexy hates hardcoded values! Config-based transition classes
+const transitionClasses = computed(() => ({
+  fast: animationConfig.transition.fast.class,
+  normal: animationConfig.transition.normal.class,
+}))
+
+// Transition class bindings for Vue Transition components
+const transitionEnterNormal = computed(
+  () => `transition-all ${transitionClasses.value.normal} ease-out`
+)
+const transitionLeaveFast = computed(
+  () => `transition-all ${transitionClasses.value.fast} ease-in`
+)
 </script>
 
 <style scoped>

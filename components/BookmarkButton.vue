@@ -12,7 +12,7 @@
         ref="buttonRef"
         :class="[
           'flex items-center justify-center w-10 h-10 rounded-full',
-          'transition-all duration-200 ease-out',
+          `transition-all ${transitionClass} ease-out`,
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500',
           'active:scale-95 relative overflow-hidden',
           isBookmarked
@@ -31,7 +31,7 @@
         <svg
           xmlns="http://www.w3.org/2000/svg"
           :class="[
-            'w-5 h-5 transition-transform duration-200',
+            `w-5 h-5 transition-transform ${transitionClass}`,
             isBookmarked ? 'fill-current' : 'stroke-current',
             isAnimating && 'animate-heart-pop',
           ]"
@@ -90,6 +90,9 @@ const { isBookmarked: checkBookmarked, toggleBookmark } = useBookmarks()
 const isBookmarked = computed(() =>
   props.resourceId ? checkBookmarked(props.resourceId) : false
 )
+
+// Flexy hates hardcoded values! Using config-based transition classes
+const transitionClass = computed(() => animationConfig.transition.normal.class)
 
 const bookmarkStatus = ref('')
 const isAnimating = ref(false)
