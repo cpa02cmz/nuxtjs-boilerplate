@@ -106,6 +106,35 @@
               >
                 {{ formData.title.length }}/{{ maxTitleLength }}
               </div>
+              <!-- Validation checkmark - Palette's micro-UX delight! -->
+              <Transition
+                enter-active-class="transition-all duration-200 ease-out"
+                enter-from-class="opacity-0 scale-50"
+                enter-to-class="opacity-100 scale-100"
+                leave-active-class="transition-all duration-150 ease-in"
+                leave-from-class="opacity-100 scale-100"
+                leave-to-class="opacity-0 scale-50"
+              >
+                <div
+                  v-if="formData.title && !errors.title"
+                  class="absolute right-[4.5rem] top-1/2 -translate-y-1/2 pointer-events-none"
+                  aria-hidden="true"
+                >
+                  <svg
+                    class="w-5 h-5 text-green-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2.5"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+              </Transition>
             </div>
             <p
               id="title-description"
@@ -176,6 +205,35 @@
               >
                 {{ formData.description.length }}/{{ maxDescriptionLength }}
               </div>
+              <!-- Validation checkmark - Palette's micro-UX delight! -->
+              <Transition
+                enter-active-class="transition-all duration-200 ease-out"
+                enter-from-class="opacity-0 scale-50"
+                enter-to-class="opacity-100 scale-100"
+                leave-active-class="transition-all duration-150 ease-in"
+                leave-from-class="opacity-100 scale-100"
+                leave-to-class="opacity-0 scale-50"
+              >
+                <div
+                  v-if="formData.description && !errors.description"
+                  class="absolute right-3 top-3 pointer-events-none"
+                  aria-hidden="true"
+                >
+                  <svg
+                    class="w-5 h-5 text-green-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2.5"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+              </Transition>
             </div>
             <p
               id="description-description"
@@ -216,33 +274,58 @@
               URL <span aria-hidden="true">*</span>
               <span class="sr-only">(required)</span>
             </label>
-            <input
-              id="url"
-              ref="urlInputRef"
-              v-model="formData.url"
-              type="url"
-              required
-              aria-required="true"
-              aria-describedby="url-description url-error"
-              :aria-invalid="errors.url ? 'true' : 'false'"
-              :class="[
-                'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
-                errors.url
-                  ? 'border-red-500 animate-form-shake'
-                  : formData.url && !errors.url
-                    ? 'border-green-500'
-                    : 'border-gray-300',
-              ]"
-              :placeholder="contentConfig.placeholders.defaultUrl"
-              @blur="handleUrlBlur"
-              @paste="handleSmartPaste"
-            >
-            <p
-              id="url-description"
-              class="mt-1 text-sm text-gray-500"
-            >
-              The official website or page for this resource
-            </p>
+            <div class="relative">
+              <input
+                id="url"
+                ref="urlInputRef"
+                v-model="formData.url"
+                type="url"
+                required
+                aria-required="true"
+                aria-describedby="url-description url-error"
+                :aria-invalid="errors.url ? 'true' : 'false'"
+                :class="[
+                  'w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
+                  errors.url
+                    ? 'border-red-500 animate-form-shake'
+                    : formData.url && !errors.url
+                      ? 'border-green-500'
+                      : 'border-gray-300',
+                ]"
+                :placeholder="contentConfig.placeholders.defaultUrl"
+                @blur="handleUrlBlur"
+                @paste="handleSmartPaste"
+              >
+              <!-- Validation checkmark - Palette's micro-UX delight! -->
+              <Transition
+                enter-active-class="transition-all duration-200 ease-out"
+                enter-from-class="opacity-0 scale-50"
+                enter-to-class="opacity-100 scale-100"
+                leave-active-class="transition-all duration-150 ease-in"
+                leave-from-class="opacity-100 scale-100"
+                leave-to-class="opacity-0 scale-50"
+              >
+                <div
+                  v-if="formData.url && !errors.url"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  aria-hidden="true"
+                >
+                  <svg
+                    class="w-5 h-5 text-green-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2.5"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+              </Transition>
+            </div>
             <div
               v-if="errors.url"
               id="url-error"
@@ -261,37 +344,87 @@
               Category <span aria-hidden="true">*</span>
               <span class="sr-only">(required)</span>
             </label>
-            <select
-              id="category"
-              v-model="formData.category"
-              required
-              aria-required="true"
-              aria-describedby="category-description category-error"
-              :aria-invalid="errors.category ? 'true' : 'false'"
-              :class="[
-                'w-full px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
-                errors.category
-                  ? 'border-red-500 animate-form-shake'
-                  : formData.category && !errors.category
-                    ? 'border-green-500'
-                    : 'border-gray-300',
-              ]"
-              @blur="handleCategoryBlur"
-            >
-              <option
-                value=""
-                disabled
+            <div class="relative">
+              <select
+                id="category"
+                v-model="formData.category"
+                required
+                aria-required="true"
+                aria-describedby="category-description category-error"
+                :aria-invalid="errors.category ? 'true' : 'false'"
+                :class="[
+                  'w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow appearance-none bg-white',
+                  errors.category
+                    ? 'border-red-500 animate-form-shake'
+                    : formData.category && !errors.category
+                      ? 'border-green-500'
+                      : 'border-gray-300',
+                ]"
+                @blur="handleCategoryBlur"
               >
-                Select a category
-              </option>
-              <option
-                v-for="category in categoryOptions"
-                :key="category.value"
-                :value="category.value"
+                <option
+                  value=""
+                  disabled
+                >
+                  Select a category
+                </option>
+                <option
+                  v-for="category in categoryOptions"
+                  :key="category.value"
+                  :value="category.value"
+                >
+                  {{ category.label }}
+                </option>
+              </select>
+              <!-- Dropdown arrow for custom-styled select -->
+              <div
+                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"
+                aria-hidden="true"
               >
-                {{ category.label }}
-              </option>
-            </select>
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+              <!-- Validation checkmark - Palette's micro-UX delight! -->
+              <Transition
+                enter-active-class="transition-all duration-200 ease-out"
+                enter-from-class="opacity-0 scale-50"
+                enter-to-class="opacity-100 scale-100"
+                leave-active-class="transition-all duration-150 ease-in"
+                leave-from-class="opacity-100 scale-100"
+                leave-to-class="opacity-0 scale-50"
+              >
+                <div
+                  v-if="formData.category && !errors.category"
+                  class="absolute right-10 top-1/2 -translate-y-1/2 pointer-events-none"
+                  aria-hidden="true"
+                >
+                  <svg
+                    class="w-5 h-5 text-green-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2.5"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+              </Transition>
+            </div>
             <p
               id="category-description"
               class="mt-1 text-sm text-gray-500"
