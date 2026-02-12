@@ -173,4 +173,25 @@ export const easingConfig = {
   },
 } as const
 
+// Export individual easings for convenience (used by components)
+export const EASING = {
+  // Spring easings - for delightful micro-interactions
+  SPRING_STANDARD: easingConfig.cubicBezier.spring,
+  SPRING_SNAPPY: easingConfig.cubicBezier.bouncy,
+  SPRING_SOFT: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+
+  // Material easings - for standard UI interactions
+  MATERIAL_STANDARD: easingConfig.cubicBezier.standard,
+  MATERIAL_DECELERATE: easingConfig.cubicBezier.decelerate,
+  MATERIAL_ACCELERATE: easingConfig.cubicBezier.accelerate,
+  MATERIAL_SHARP: easingConfig.cubicBezier.sharp,
+
+  // Standard easings
+  EASE_OUT: easingConfig.standard.easeOut,
+  EASE_IN: easingConfig.standard.easeIn,
+  EASE: easingConfig.standard.default,
+  LINEAR: easingConfig.standard.linear,
+} as const
+
 export type EasingConfig = typeof easingConfig
+export type EasingType = typeof EASING
