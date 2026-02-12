@@ -219,10 +219,25 @@
               {{ visitButtonText }}
               <span
                 v-if="newTab && !isNavigating"
-                class="ml-1 text-xs"
-              >{{
-                contentConfig.resourceCard.newTab
-              }}</span>
+                class="ml-1.5 inline-flex items-center"
+                aria-hidden="true"
+              >
+                <!-- External link indicator - Palette's micro-UX touch! -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-3.5 w-3.5 opacity-70 group-hover:opacity-100 transition-opacity duration-200"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </span>
             </a>
           </Tooltip>
 
