@@ -173,4 +173,23 @@ export const easingConfig = {
   },
 } as const
 
+// Quick reference constants for common easing patterns
+export const EASING = {
+  // Spring physics easings
+  SPRING_SNAPPY: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+  SPRING_BOUNCY: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+  SPRING_STANDARD: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+
+  // Material Design easings
+  MATERIAL_STANDARD: 'cubic-bezier(0.4, 0, 0.2, 1)',
+  MATERIAL_DECELERATE: 'cubic-bezier(0, 0, 0.2, 1)',
+  MATERIAL_ACCELERATE: 'cubic-bezier(0.4, 0, 1, 1)',
+
+  // Standard easings
+  STANDARD: 'cubic-bezier(0.4, 0, 0.2, 1)',
+  DECELERATE: 'cubic-bezier(0, 0, 0.2, 1)',
+  ACCELERATE: 'cubic-bezier(0.4, 0, 1, 1)',
+  SHARP: 'cubic-bezier(0.4, 0, 0.6, 1)',
+} as const
+
 export type EasingConfig = typeof easingConfig
