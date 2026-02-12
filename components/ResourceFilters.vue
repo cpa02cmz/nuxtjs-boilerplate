@@ -188,7 +188,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onUnmounted, ref } from 'vue'
 import SavedSearches from '~/components/SavedSearches.vue'
 import FilterSection from '~/components/FilterSection.vue'
 import { triggerHaptic } from '~/utils/hapticFeedback'
@@ -357,4 +357,11 @@ const onUndoDelete = (search: {
 }) => {
   emit('undo-delete', search)
 }
+
+// Cleanup timeout on unmount to prevent memory leaks
+onUnmounted(() => {
+  if (resetTimeout) {
+    clearTimeout(resetTimeout)
+  }
+})
 </script>

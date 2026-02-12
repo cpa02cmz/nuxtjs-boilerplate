@@ -984,23 +984,26 @@ watch(submitSuccess, success => {
   }
 })
 
+// Beforeunload handler function
+const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
+  if (hasUnsavedChanges.value) {
+    event.preventDefault()
+    event.returnValue = ''
+    return ''
+  }
+}
+
 onMounted(() => {
   titleInput.value?.focus()
   restoreDraft()
 
   // Set up beforeunload handler
   if (typeof window !== 'undefined') {
-    window.addEventListener('beforeunload', event => {
-      if (hasUnsavedChanges.value) {
-        event.preventDefault()
-        event.returnValue = ''
-        return ''
-      }
-    })
+    window.addEventListener('beforeunload', beforeUnloadHandler)
   }
 })
 
-// Cleanup timeouts on unmount - preventing memory leaks (Issues #1814, #1827)
+// Cleanup timeouts and event listener on unmount - preventing memory leaks (Issues #1814, #1827)
 onUnmounted(() => {
   if (savedIndicatorTimeout.value) {
     clearTimeout(savedIndicatorTimeout.value)
@@ -1010,6 +1013,9 @@ onUnmounted(() => {
   }
   if (confettiTimeout.value) {
     clearTimeout(confettiTimeout.value)
+  }
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('beforeunload', beforeUnloadHandler)
   }
 })
 
