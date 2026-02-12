@@ -173,4 +173,7 @@ export const easingConfig = {
   },
 } as const
 
+// Convenience export for direct access - Flexy loves clean imports!
+export const EASING = easingConfig.cubicBezier
+
 export type EasingConfig = typeof easingConfig

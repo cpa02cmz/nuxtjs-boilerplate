@@ -148,7 +148,7 @@ export const themeConfig = {
     tooltip: parseInt(process.env.Z_INDEX_TOOLTIP || '10000'),
   },
 
-  // Error Boundary Colors
+  // Error Boundary Colors - Palette's enhanced micro-UX!
   errorBoundary: {
     titleColor: process.env.ERROR_BOUNDARY_TITLE_COLOR || '#111827',
     messageColor: process.env.ERROR_BOUNDARY_MSG_COLOR || '#6b7280',
@@ -164,6 +164,10 @@ export const themeConfig = {
       process.env.ERROR_BOUNDARY_SECONDARY_BTN_BORDER || '#d1d5db',
     secondaryButtonHover:
       process.env.ERROR_BOUNDARY_SECONDARY_BTN_HOVER || '#e5e7eb',
+    // Enhanced illustration colors
+    iconColor: process.env.ERROR_BOUNDARY_ICON_COLOR || '#ef4444',
+    floatingElementColor:
+      process.env.ERROR_BOUNDARY_FLOATING_COLOR || 'rgba(239, 68, 68, 0.3)',
   },
 
   // Reading Progress Colors

@@ -461,11 +461,11 @@ export const componentStylesConfig = {
     srOnlyBorderWidth: process.env.ERROR_MSG_SR_BORDER || '0',
   },
 
-  // Error Boundary Component Styles
+  // Error Boundary Component Styles - Palette's enhanced micro-UX!
   errorBoundary: {
     minHeight: process.env.ERROR_BOUNDARY_MIN_HEIGHT || '300px',
     maxWidth: process.env.ERROR_BOUNDARY_MAX_WIDTH || '400px',
-    iconMarginBottom: process.env.ERROR_BOUNDARY_ICON_MARGIN || '1rem',
+    iconMarginBottom: process.env.ERROR_BOUNDARY_ICON_MARGIN || '1.5rem',
     titleFontSize: process.env.ERROR_BOUNDARY_TITLE_SIZE || '1.5rem',
     titleMarginBottom: process.env.ERROR_BOUNDARY_TITLE_MARGIN || '0.5rem',
     messageFontSize: process.env.ERROR_BOUNDARY_MSG_SIZE || '0.875rem',
@@ -473,6 +473,13 @@ export const componentStylesConfig = {
     buttonPadding: process.env.ERROR_BOUNDARY_BUTTON_PADDING || '0.5rem 1rem',
     buttonBorderRadius: process.env.ERROR_BOUNDARY_BUTTON_RADIUS || '0.375rem',
     buttonFontSize: process.env.ERROR_BOUNDARY_BUTTON_SIZE || '0.875rem',
+    // Enhanced illustration styles
+    illustrationSize: process.env.ERROR_BOUNDARY_ILLUSTRATION_SIZE || '8rem',
+    iconSize: process.env.ERROR_BOUNDARY_ICON_SIZE || '4rem',
+    floatingElementSizeSmall:
+      process.env.ERROR_BOUNDARY_FLOATING_SIZE_SM || '0.75rem',
+    floatingElementSizeMedium:
+      process.env.ERROR_BOUNDARY_FLOATING_SIZE_MD || '1rem',
   },
 
   // Reading Progress Component Styles

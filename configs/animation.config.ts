@@ -398,9 +398,46 @@ export const animationConfig = {
     ),
   },
 
-  // Error Boundary Animations
+  // Error Boundary Animations - Palette's enhanced micro-UX!
+  // Adds delightful animations to make error states less frustrating
   errorBoundary: {
     transitionDuration: process.env.ERROR_BOUNDARY_TRANSITION || '0.3s',
+    // Shake animation for error appearance
+    shakeDurationMs: parseInt(
+      process.env.ERROR_BOUNDARY_SHAKE_DURATION_MS || '500'
+    ),
+    shakeIntensityPx: parseInt(
+      process.env.ERROR_BOUNDARY_SHAKE_INTENSITY_PX || '10'
+    ),
+    // Background pulse animation
+    pulseDurationSec: parseFloat(
+      process.env.ERROR_BOUNDARY_PULSE_DURATION_SEC || '3'
+    ),
+    // Drawing animation durations
+    drawDurationSec: parseFloat(
+      process.env.ERROR_BOUNDARY_DRAW_DURATION_SEC || '0.6'
+    ),
+    drawDelaySec: parseFloat(
+      process.env.ERROR_BOUNDARY_DRAW_DELAY_SEC || '0.3'
+    ),
+    dotDurationSec: parseFloat(
+      process.env.ERROR_BOUNDARY_DOT_DURATION_SEC || '0.3'
+    ),
+    dotDelaySec: parseFloat(process.env.ERROR_BOUNDARY_DOT_DELAY_SEC || '0.5'),
+    // Icon pulse animation
+    iconPulseDurationSec: parseFloat(
+      process.env.ERROR_BOUNDARY_ICON_PULSE_SEC || '2'
+    ),
+    iconPulseDelaySec: parseFloat(
+      process.env.ERROR_BOUNDARY_ICON_PULSE_DELAY_SEC || '0.6'
+    ),
+    // Floating elements animation
+    floatDurationSec: parseFloat(
+      process.env.ERROR_BOUNDARY_FLOAT_DURATION_SEC || '3'
+    ),
+    floatDelaySec: parseFloat(
+      process.env.ERROR_BOUNDARY_FLOAT_DELAY_SEC || '0.5'
+    ),
   },
 
   // Card Animations
