@@ -1,5 +1,9 @@
 <template>
-  <span :class="wrapperClass" :style="wrapperStyle" v-bind="wrapperAttrs">
+  <span
+    :class="wrapperClass"
+    :style="wrapperStyle"
+    v-bind="wrapperAttrs"
+  >
     <svg
       :xmlns="SVG_NS"
       :viewBox="viewBox"
