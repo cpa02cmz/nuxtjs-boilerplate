@@ -464,6 +464,26 @@ export const contentConfig = {
       reddit: 'https://www.reddit.com/submit',
     },
   },
+
+  // Messages - User-facing feedback messages
+  messages: {
+    clipboard: {
+      copy: process.env.CONTENT_MSG_CLIPBOARD_COPY || 'Copy to clipboard',
+      copied: process.env.CONTENT_MSG_CLIPBOARD_COPIED || 'Copied!',
+      copyFailed:
+        process.env.CONTENT_MSG_CLIPBOARD_FAILED ||
+        'Failed to copy to clipboard',
+    },
+  },
+
+  // ARIA Labels - Accessibility labels
+  aria: {
+    clipboard: {
+      copy: process.env.CONTENT_ARIA_CLIPBOARD_COPY || 'Copy to clipboard',
+      copied:
+        process.env.CONTENT_ARIA_CLIPBOARD_COPIED || 'Copied to clipboard',
+    },
+  },
 } as const
 
 // Helper function to parse comma-separated suggestions
