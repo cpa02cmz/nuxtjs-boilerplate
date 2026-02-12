@@ -122,7 +122,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { TOAST_DURATION, UI_TIMING } from '~/server/utils/constants'
 import { uiConfig } from '~/configs/ui.config'
 import { iconsConfig } from '~/configs/icons.config'
@@ -199,12 +199,34 @@ const removeToast = (id: string) => {
   toasts.value = toasts.value.filter(toast => toast.id !== id)
 }
 
+// Palette's micro-UX enhancement: Dismiss all toasts at once
+const dismissAllToasts = () => {
+  toasts.value = []
+}
+
+// Handle global Escape key to dismiss all visible toasts
+const handleGlobalEscape = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && toasts.value.length > 0) {
+    dismissAllToasts()
+  }
+}
+
 // Expose methods to parent components
 defineExpose({
   addToast,
   removeToast,
   pauseToast,
   resumeToast,
+  dismissAllToasts,
+})
+
+// Set up global keyboard listener for Escape key
+onMounted(() => {
+  document.addEventListener('keydown', handleGlobalEscape)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleGlobalEscape)
 })
 </script>
 

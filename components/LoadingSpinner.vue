@@ -6,7 +6,7 @@
       'loading-spinner--large': size === 'large',
     }"
     role="status"
-    :aria-label="label || 'Loading'"
+    :aria-label="label || config.default"
   >
     <svg
       class="loading-spinner__circular"
@@ -30,7 +30,7 @@
     <span
       v-else
       class="sr-only"
-    >Loading</span>
+    >{{ config.default }}</span>
 
     <!-- Live region for status announcement to screen readers -->
     <div
@@ -50,9 +50,11 @@ import { computed, ref, watch } from 'vue'
 import { themeConfig } from '../configs/theme.config'
 import { componentStylesConfig } from '../configs/component-styles.config'
 import { limitsConfig } from '../configs/limits.config'
+import { contentConfig } from '~/configs/content.config'
 
 // Flexy hates hardcoded values! Using config instead.
 const spinnerStyles = componentStylesConfig.loadingSpinner
+const config = contentConfig.loading
 
 interface Props {
   label?: string
@@ -94,11 +96,17 @@ const statusMessage = computed(() => {
 
   switch (props.state) {
     case 'loading':
-      return props.label ? `${props.label} in progress` : 'Loading in progress'
+      return props.label
+        ? `${props.label} ${config.inProgress}`
+        : `${config.default} ${config.inProgress}`
     case 'complete':
-      return props.label ? `${props.label} complete` : 'Loading complete'
+      return props.label
+        ? `${props.label} ${config.complete}`
+        : `${config.default} ${config.complete}`
     case 'error':
-      return props.label ? `${props.label} failed` : 'Loading failed'
+      return props.label
+        ? `${props.label} ${config.failed}`
+        : `${config.default} ${config.failed}`
     default:
       return ''
   }

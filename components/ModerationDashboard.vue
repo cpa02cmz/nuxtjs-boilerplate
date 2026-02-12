@@ -1,8 +1,8 @@
 <template>
   <div class="moderation-dashboard">
     <header class="dashboard-header">
-      <h1>Content Moderation Dashboard</h1>
-      <p>Manage resource submissions and content quality</p>
+      <h1>{{ config.dashboard.title }}</h1>
+      <p>{{ config.dashboard.subtitle }}</p>
     </header>
 
     <section
@@ -10,10 +10,10 @@
       class="dashboard-stats"
     >
       <article class="stat-card">
-        <h2>Pending Reviews</h2>
+        <h2>{{ config.stats.pendingTitle }}</h2>
         <div
           class="stat-value"
-          aria-label="Number of pending reviews"
+          :aria-label="`Number of pending reviews`"
         >
           {{ pendingCount }}
         </div>
@@ -21,15 +21,15 @@
           to="/moderation/queue"
           class="stat-link"
         >
-          View Queue
+          {{ config.stats.viewQueue }}
         </NuxtLink>
       </article>
 
       <article class="stat-card">
-        <h2>Approved This Week</h2>
+        <h2>{{ config.stats.approvedTitle }}</h2>
         <div
           class="stat-value"
-          aria-label="Number of approved resources this week"
+          :aria-label="`Number of approved resources this week`"
         >
           {{ approvedCount }}
         </div>
@@ -42,10 +42,10 @@
       </article>
 
       <article class="stat-card">
-        <h2>Rejected This Week</h2>
+        <h2>{{ config.stats.rejectedTitle }}</h2>
         <div
           class="stat-value"
-          aria-label="Number of rejected resources this week"
+          :aria-label="`Number of rejected resources this week`"
         >
           {{ rejectedCount }}
         </div>
@@ -58,10 +58,10 @@
       </article>
 
       <article class="stat-card">
-        <h2>Flagged Resources</h2>
+        <h2>{{ config.stats.flaggedTitle }}</h2>
         <div
           class="stat-value"
-          aria-label="Number of flagged resources"
+          :aria-label="`Number of flagged resources`"
         >
           {{ flaggedCount }}
         </div>
@@ -69,7 +69,7 @@
           to="/moderation/flags"
           class="stat-link"
         >
-          View Flags
+          {{ config.stats.viewFlags }}
         </NuxtLink>
       </article>
     </section>
@@ -80,7 +80,7 @@
         aria-labelledby="recent-activity-heading"
       >
         <h2 id="recent-activity-heading">
-          Recent Activity
+          {{ config.dashboard.recentActivity }}
         </h2>
         <ul
           class="activity-list"
@@ -116,7 +116,7 @@
         aria-labelledby="quick-actions-heading"
       >
         <h2 id="quick-actions-heading">
-          Quick Actions
+          {{ config.dashboard.quickActions }}
         </h2>
         <nav
           class="action-buttons"
@@ -131,7 +131,7 @@
               class="action-icon"
               aria-hidden="true"
             >📋</span>
-            <span>Review Queue</span>
+            <span>{{ config.actions.reviewQueue }}</span>
           </NuxtLink>
 
           <NuxtLink
@@ -143,7 +143,7 @@
               class="action-icon"
               aria-hidden="true"
             >🚩</span>
-            <span>Flagged Content</span>
+            <span>{{ config.actions.flaggedContent }}</span>
           </NuxtLink>
 
           <NuxtLink
@@ -155,7 +155,7 @@
               class="action-icon"
               aria-hidden="true"
             >📝</span>
-            <span>Submissions</span>
+            <span>{{ config.actions.submissions }}</span>
           </NuxtLink>
 
           <NuxtLink
@@ -167,7 +167,7 @@
               class="action-icon"
               aria-hidden="true"
             >⚙️</span>
-            <span>Settings</span>
+            <span>{{ config.actions.settings }}</span>
           </NuxtLink>
         </nav>
       </section>
@@ -177,6 +177,7 @@
 
 <script setup lang="ts">
 import { useModerationDashboard } from '~/composables/useModerationDashboard'
+import { contentConfig } from '~/configs/content.config'
 
 const {
   pendingCount,
@@ -187,6 +188,8 @@ const {
   getActivityIcon,
   formatDate,
 } = useModerationDashboard()
+
+const config = contentConfig.moderation
 </script>
 
 <style scoped>
