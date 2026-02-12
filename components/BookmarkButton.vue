@@ -13,7 +13,7 @@
           'active:scale-95 relative overflow-hidden',
           isBookmarked
             ? 'text-yellow-500 bg-yellow-50 hover:bg-yellow-100 bookmarked'
-            : 'text-gray-400 hover:text-yellow-500 hover:bg-gray-100',
+            : 'text-gray-600 hover:text-yellow-500 hover:bg-gray-100',
           isAnimating && 'animate-bounce-scale',
         ]"
         :aria-label="

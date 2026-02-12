@@ -75,7 +75,7 @@
             ? 'bg-green-100 text-green-600 scale-110'
             : isCopyError
               ? 'bg-red-100 text-red-600 scale-110'
-              : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-500 dark:hover:text-gray-200 dark:hover:bg-gray-800',
+              : 'text-gray-600 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-500 dark:hover:text-gray-200 dark:hover:bg-gray-800',
         ]"
         :aria-label="copyButtonAriaLabel"
         :title="copyButtonTitle"

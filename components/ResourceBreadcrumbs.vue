@@ -13,7 +13,7 @@
         </NuxtLink>
       </li>
       <li>
-        <span class="mx-2 text-gray-400">/</span>
+        <span class="mx-2 text-gray-600">/</span>
       </li>
       <li>
         <NuxtLink
@@ -24,7 +24,7 @@
         </NuxtLink>
       </li>
       <li>
-        <span class="mx-2 text-gray-400">/</span>
+        <span class="mx-2 text-gray-600">/</span>
       </li>
       <li
         class="text-gray-500 truncate"
