@@ -37,10 +37,7 @@
           </p>
         </div>
       </div>
-      <NuxtLink
-        to="/"
-        class="alternative-suggestions__view-all"
-      >
+      <NuxtLink to="/" class="alternative-suggestions__view-all">
         <span>{{ contentConfig.similarResources.viewAll }}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -149,21 +146,13 @@
       <p class="alternative-suggestions__empty-message">
         {{ contentConfig.alternativeSuggestions.emptyState.message }}
       </p>
-      <NuxtLink
-        to="/"
-        class="alternative-suggestions__empty-cta"
-      >
+      <NuxtLink to="/" class="alternative-suggestions__empty-cta">
         {{ contentConfig.alternativeSuggestions.emptyState.browseAll }}
       </NuxtLink>
     </div>
 
     <!-- Screen reader announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -176,6 +165,7 @@ import { useResourceData } from '~/composables/useResourceData'
 import type { Resource, AlternativeSuggestion } from '~/types/resource'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { getButtonLabel } from '~/utils/resourceHelper'
 
@@ -492,7 +482,7 @@ watch(
       ease-out,
     transform
       v-bind('animationConfig.alternativeSuggestions.entranceDurationSec')
-      cubic-bezier(0.34, 1.56, 0.64, 1);
+      v-bind('EASING.SPRING_SNAPPY');
   transition-delay: var(--stagger-delay, 0ms);
 }
 
@@ -523,7 +513,7 @@ watch(
 .alternative-card-leave-active {
   transition: all
     v-bind('animationConfig.alternativeSuggestions.entranceDurationSec')
-    cubic-bezier(0.34, 1.56, 0.64, 1);
+    v-bind('EASING.SPRING_SNAPPY');
 }
 
 .alternative-card-enter-from,
@@ -538,7 +528,7 @@ watch(
 .alternative-card-move {
   transition: transform
     v-bind('animationConfig.transition.slow.durationMs + "ms"')
-    cubic-bezier(0.34, 1.56, 0.64, 1);
+    v-bind('EASING.SPRING_SNAPPY');
 }
 
 /* Empty State */

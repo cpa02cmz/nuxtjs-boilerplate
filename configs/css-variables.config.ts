@@ -1,5 +1,6 @@
 // CSS Variables Configuration - Centralized CSS values
 // Flexy hates hardcoded values! All CSS values are now configurable.
+import { EASING } from './easing.config'
 
 /**
  * CSS Custom Properties Configuration
@@ -44,7 +45,7 @@ export const cssVariablesConfig = {
   // Ripple effect animation
   ripple: {
     duration: process.env.RIPPLE_DURATION || '600ms',
-    easing: process.env.RIPPLE_EASING || 'cubic-bezier(0.4, 0, 0.2, 1)',
+    easing: process.env.RIPPLE_EASING || EASING.MATERIAL_STANDARD,
     scaleStart: parseFloat(process.env.RIPPLE_SCALE_START || '0'),
     scaleEnd: parseFloat(process.env.RIPPLE_SCALE_END || '4'),
     opacityStart: parseFloat(process.env.RIPPLE_OPACITY_START || '0.8'),
