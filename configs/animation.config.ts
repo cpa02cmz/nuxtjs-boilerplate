@@ -502,6 +502,34 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.FLOATING_LABEL_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Scroll Progress Indicator - Palette's micro-UX enhancement!
+  // Provides visual feedback of scroll position in virtual lists
+  scrollProgress: {
+    // Height of the progress bar (px)
+    barHeightPx: parseInt(process.env.SCROLL_PROGRESS_BAR_HEIGHT_PX || '3'),
+    // Background color of the progress bar
+    barColor:
+      process.env.SCROLL_PROGRESS_BAR_COLOR || 'rgba(59, 130, 246, 0.8)',
+    // Background color of the track
+    trackColor: process.env.SCROLL_PROGRESS_TRACK_COLOR || 'transparent',
+    // Glow color for the progress bar
+    glowColor:
+      process.env.SCROLL_PROGRESS_GLOW_COLOR || 'rgba(59, 130, 246, 0.4)',
+    // Glow blur radius (px)
+    glowBlurPx: parseInt(process.env.SCROLL_PROGRESS_GLOW_BLUR_PX || '6'),
+    // Whether to show the glow effect
+    showGlow: process.env.SCROLL_PROGRESS_SHOW_GLOW !== 'false',
+    // Transition duration for smooth updates (ms)
+    transitionDurationMs: parseInt(
+      process.env.SCROLL_PROGRESS_TRANSITION_MS || '100'
+    ),
+    // Minimum scroll percentage before showing the indicator (0-100)
+    minScrollPercent: parseInt(process.env.SCROLL_PROGRESS_MIN_PERCENT || '0'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SCROLL_PROGRESS_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
