@@ -512,17 +512,26 @@ if (typeof window !== 'undefined') {
 
   const savedSearchAddedHandler: CustomEventHandler = event => {
     const { name } = (event as CustomEvent).detail
-    showToast(`Saved search "${name}" successfully!`, 'success')
+    showToast(
+      contentConfig.toast.savedSearch.added.replace('{{name}}', name),
+      'success'
+    )
   }
 
   const savedSearchUpdatedHandler: CustomEventHandler = event => {
     const { name } = (event as CustomEvent).detail
-    showToast(`Updated saved search "${name}"!`, 'success')
+    showToast(
+      contentConfig.toast.savedSearch.updated.replace('{{name}}', name),
+      'success'
+    )
   }
 
   const savedSearchRemovedHandler: CustomEventHandler = event => {
     const { name } = (event as CustomEvent).detail
-    showToast(`Removed saved search "${name}".`, 'info')
+    showToast(
+      contentConfig.toast.savedSearch.removed.replace('{{name}}', name),
+      'info'
+    )
   }
 
   // Keyboard shortcut handler - Press "/" to focus search

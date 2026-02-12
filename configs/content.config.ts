@@ -1288,6 +1288,87 @@ export const contentConfig = {
           'Comparison URL copied to clipboard!',
       },
     },
+    savedSearch: {
+      added:
+        process.env.CONTENT_TOAST_SAVED_SEARCH_ADDED ||
+        'Saved search "{{name}}" successfully!',
+      updated:
+        process.env.CONTENT_TOAST_SAVED_SEARCH_UPDATED ||
+        'Updated saved search "{{name}}"!',
+      removed:
+        process.env.CONTENT_TOAST_SAVED_SEARCH_REMOVED ||
+        'Removed saved search "{{name}}".',
+    },
+    share: {
+      copied:
+        process.env.CONTENT_TOAST_SHARE_COPIED || 'Link copied to clipboard!',
+      failed: process.env.CONTENT_TOAST_SHARE_FAILED || 'Failed to copy link',
+    },
+  },
+
+  // Share Button - Flexy hates hardcoded share strings!
+  share: {
+    ariaLabels: {
+      copySuccess:
+        process.env.CONTENT_SHARE_ARIA_COPY_SUCCESS || 'Link copied!',
+      shareTitle:
+        process.env.CONTENT_SHARE_ARIA_SHARE_TITLE || 'Share {{title}}',
+    },
+  },
+
+  // Layout - Flexy hates hardcoded layout strings!
+  layout: {
+    ariaLabels: {
+      homeLink:
+        process.env.CONTENT_LAYOUT_ARIA_HOME ||
+        'Free Stuff on the Internet - Return to home page',
+      search:
+        process.env.CONTENT_LAYOUT_ARIA_SEARCH || 'Search for free resources',
+      mainNav: process.env.CONTENT_LAYOUT_ARIA_MAIN_NAV || 'Main navigation',
+      compare:
+        process.env.CONTENT_LAYOUT_ARIA_COMPARE ||
+        'Compare {{count}} resources',
+      mainContent:
+        process.env.CONTENT_LAYOUT_ARIA_MAIN_CONTENT || 'Main content',
+      keyboardShortcuts:
+        process.env.CONTENT_LAYOUT_ARIA_KEYBOARD ||
+        'View keyboard shortcuts (press ? to open)',
+    },
+  },
+
+  // Resource Pages - Flexy hates hardcoded resource strings!
+  resource: {
+    ariaLabels: {
+      readingProgress:
+        process.env.CONTENT_RESOURCE_ARIA_READING_PROGRESS ||
+        'Resource reading progress',
+      loading: process.env.CONTENT_RESOURCE_ARIA_LOADING || 'Loading resource',
+    },
+  },
+
+  // Search Page - Flexy hates hardcoded search strings!
+  searchPage: {
+    ariaLabels: {
+      loadingResults:
+        process.env.CONTENT_SEARCH_ARIA_LOADING_RESULTS ||
+        'Loading search results',
+      loadingFilters:
+        process.env.CONTENT_SEARCH_ARIA_LOADING_FILTERS ||
+        'Loading filter options',
+      resourceFilters:
+        process.env.CONTENT_SEARCH_ARIA_RESOURCE_FILTERS || 'Resource filters',
+    },
+  },
+
+  // Favorites Page - Flexy hates hardcoded favorites strings!
+  favoritesPage: {
+    ariaLabels: {
+      removeBookmark:
+        process.env.CONTENT_FAVORITES_ARIA_REMOVE ||
+        'Remove {{title}} from bookmarks',
+      bookmarkTitle:
+        process.env.CONTENT_FAVORITES_ARIA_BOOKMARK_TITLE || 'Remove bookmark',
+    },
   },
 } as const
 

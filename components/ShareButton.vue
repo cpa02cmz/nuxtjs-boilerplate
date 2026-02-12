@@ -42,7 +42,14 @@
     <!-- Share button -->
     <button
       ref="shareButtonRef"
-      :aria-label="copySuccess ? 'Link copied!' : `Share ${title}`"
+      :aria-label="
+        copySuccess
+          ? contentConfig.share.ariaLabels.copySuccess
+          : contentConfig.share.ariaLabels.shareTitle.replace(
+            '{{title}}',
+            title
+          )
+      "
       :aria-expanded="showShareMenu"
       :class="[
         'p-2 rounded-full transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 relative overflow-hidden',
@@ -472,7 +479,7 @@ const copyToClipboard = async (event: MouseEvent) => {
       showCopySuccess()
     } catch (fallbackErr) {
       logger.error('Failed to copy to clipboard:', fallbackErr)
-      showToast('Failed to copy link', 'error')
+      showToast(contentConfig.toast.share.failed, 'error')
 
       // Haptic feedback for failed copy
       hapticError()
@@ -487,7 +494,7 @@ const copyToClipboard = async (event: MouseEvent) => {
 // Show copy success feedback
 const showCopySuccess = async () => {
   copySuccess.value = true
-  showToast('Link copied to clipboard!', 'success')
+  showToast(contentConfig.toast.share.copied, 'success')
 
   // Haptic feedback for successful copy
   hapticSuccess()
