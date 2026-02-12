@@ -266,6 +266,11 @@ export const contentConfig = {
         process.env.CONTENT_FAVORITES_UNDO_HINT || 'You can undo this action',
       undoButton: process.env.CONTENT_FAVORITES_UNDO_BTN || 'Undo',
     },
+    // ARIA labels - Flexy hates hardcoded accessibility text!
+    aria: {
+      removeBookmark:
+        process.env.CONTENT_FAVORITES_ARIA_REMOVE || 'Remove bookmark',
+    },
   },
 
   // Comparison
@@ -751,6 +756,9 @@ export const contentConfig = {
   // API Keys - Flexy hates hardcoded API key strings!
   apiKeys: {
     title: process.env.CONTENT_API_KEYS_TITLE || 'API Keys',
+    description:
+      process.env.CONTENT_API_KEYS_DESCRIPTION ||
+      'Generate and manage API keys to access the API',
     form: {
       title: process.env.CONTENT_API_KEYS_FORM_TITLE || 'Create New API Key',
       keyNameLabel: process.env.CONTENT_API_KEYS_LABEL_NAME || 'Key Name',
@@ -761,6 +769,8 @@ export const contentConfig = {
       create: process.env.CONTENT_API_KEYS_BTN_CREATE || 'Create API Key',
       createSubmit:
         process.env.CONTENT_API_KEYS_BTN_CREATE_SUBMIT || 'Create API Key',
+      generate: process.env.CONTENT_API_KEYS_BTN_GENERATE || 'Generate API Key',
+      revoke: process.env.CONTENT_API_KEYS_BTN_REVOKE || 'Revoke',
     },
     permissions: {
       read: process.env.CONTENT_API_KEYS_PERM_READ || 'Read',
@@ -770,19 +780,49 @@ export const contentConfig = {
       admin: process.env.CONTENT_API_KEYS_PERM_ADMIN || 'Admin',
     },
     list: {
-      title: process.env.CONTENT_API_KEYS_LIST_TITLE || 'API Keys',
+      title: process.env.CONTENT_API_KEYS_LIST_TITLE || 'Your API Keys',
     },
     labels: {
       id: process.env.CONTENT_API_KEYS_LABEL_ID || 'ID:',
       created: process.env.CONTENT_API_KEYS_LABEL_CREATED || 'Created:',
       lastUsed: process.env.CONTENT_API_KEYS_LABEL_LAST_USED || 'Last Used:',
+      expires: process.env.CONTENT_API_KEYS_LABEL_EXPIRES || 'Expires:',
+      yourKeys: process.env.CONTENT_API_KEYS_LABEL_YOUR_KEYS || 'Your API Keys',
+      apiKeyPrefix: process.env.CONTENT_API_KEYS_LABEL_PREFIX || 'API Key:',
     },
     empty: {
-      message: process.env.CONTENT_API_KEYS_EMPTY || 'No API keys created',
+      message:
+        process.env.CONTENT_API_KEYS_EMPTY ||
+        "You don't have any API keys yet.",
+      description:
+        process.env.CONTENT_API_KEYS_EMPTY_DESC ||
+        'Generate your first API key to start using the API.',
     },
     placeholders: {
       keyName:
         process.env.CONTENT_API_KEYS_PLACEHOLDER_NAME || 'My Application Key',
+    },
+    toggle: {
+      hide: process.env.CONTENT_API_KEYS_TOGGLE_HIDE || 'Hide Key',
+      show: process.env.CONTENT_API_KEYS_TOGGLE_SHOW || 'Show Key',
+    },
+    messages: {
+      copyWarning:
+        process.env.CONTENT_API_KEYS_COPY_WARNING ||
+        "Make sure to copy this key now. You won't be able to see it again.",
+    },
+    documentation: {
+      title: process.env.CONTENT_API_KEYS_DOC_TITLE || 'API Documentation',
+      description:
+        process.env.CONTENT_API_KEYS_DOC_DESC ||
+        'For detailed information about available endpoints, request/response formats, and authentication requirements, visit our interactive API documentation.',
+      button:
+        process.env.CONTENT_API_KEYS_DOC_BUTTON || 'View API Documentation',
+    },
+    toast: {
+      copied:
+        process.env.CONTENT_API_KEYS_TOAST_COPIED ||
+        '{{ name }} API key copied to clipboard',
     },
   },
 
@@ -1287,6 +1327,87 @@ export const contentConfig = {
           process.env.CONTENT_TOAST_COMPARISON_TITLE ||
           'Comparison URL copied to clipboard!',
       },
+    },
+    savedSearch: {
+      added:
+        process.env.CONTENT_TOAST_SAVED_SEARCH_ADDED ||
+        'Saved search "{{name}}" successfully!',
+      updated:
+        process.env.CONTENT_TOAST_SAVED_SEARCH_UPDATED ||
+        'Updated saved search "{{name}}"!',
+      removed:
+        process.env.CONTENT_TOAST_SAVED_SEARCH_REMOVED ||
+        'Removed saved search "{{name}}".',
+    },
+    share: {
+      copied:
+        process.env.CONTENT_TOAST_SHARE_COPIED || 'Link copied to clipboard!',
+      failed: process.env.CONTENT_TOAST_SHARE_FAILED || 'Failed to copy link',
+    },
+  },
+
+  // Share Button - Flexy hates hardcoded share strings!
+  share: {
+    ariaLabels: {
+      copySuccess:
+        process.env.CONTENT_SHARE_ARIA_COPY_SUCCESS || 'Link copied!',
+      shareTitle:
+        process.env.CONTENT_SHARE_ARIA_SHARE_TITLE || 'Share {{title}}',
+    },
+  },
+
+  // Layout - Flexy hates hardcoded layout strings!
+  layout: {
+    ariaLabels: {
+      homeLink:
+        process.env.CONTENT_LAYOUT_ARIA_HOME ||
+        'Free Stuff on the Internet - Return to home page',
+      search:
+        process.env.CONTENT_LAYOUT_ARIA_SEARCH || 'Search for free resources',
+      mainNav: process.env.CONTENT_LAYOUT_ARIA_MAIN_NAV || 'Main navigation',
+      compare:
+        process.env.CONTENT_LAYOUT_ARIA_COMPARE ||
+        'Compare {{count}} resources',
+      mainContent:
+        process.env.CONTENT_LAYOUT_ARIA_MAIN_CONTENT || 'Main content',
+      keyboardShortcuts:
+        process.env.CONTENT_LAYOUT_ARIA_KEYBOARD ||
+        'View keyboard shortcuts (press ? to open)',
+    },
+  },
+
+  // Resource Pages - Flexy hates hardcoded resource strings!
+  resource: {
+    ariaLabels: {
+      readingProgress:
+        process.env.CONTENT_RESOURCE_ARIA_READING_PROGRESS ||
+        'Resource reading progress',
+      loading: process.env.CONTENT_RESOURCE_ARIA_LOADING || 'Loading resource',
+    },
+  },
+
+  // Search Page - Flexy hates hardcoded search strings!
+  searchPage: {
+    ariaLabels: {
+      loadingResults:
+        process.env.CONTENT_SEARCH_ARIA_LOADING_RESULTS ||
+        'Loading search results',
+      loadingFilters:
+        process.env.CONTENT_SEARCH_ARIA_LOADING_FILTERS ||
+        'Loading filter options',
+      resourceFilters:
+        process.env.CONTENT_SEARCH_ARIA_RESOURCE_FILTERS || 'Resource filters',
+    },
+  },
+
+  // Favorites Page - Flexy hates hardcoded favorites strings!
+  favoritesPage: {
+    ariaLabels: {
+      removeBookmark:
+        process.env.CONTENT_FAVORITES_ARIA_REMOVE ||
+        'Remove {{title}} from bookmarks',
+      bookmarkTitle:
+        process.env.CONTENT_FAVORITES_ARIA_BOOKMARK_TITLE || 'Remove bookmark',
     },
   },
 } as const

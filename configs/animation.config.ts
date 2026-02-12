@@ -760,6 +760,26 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.TYPING_INDICATOR_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // 3D Card Tilt Micro-UX - Palette's premium delight! 🎨
+  // Adds subtle 3D parallax tilt effect based on mouse position
+  card3dTilt: {
+    // Maximum rotation on X axis (degrees) - tilting up/down
+    maxTiltXPx: parseFloat(process.env.CARD_3D_TILT_X || '3'),
+    // Maximum rotation on Y axis (degrees) - tilting left/right
+    maxTiltYPx: parseFloat(process.env.CARD_3D_TILT_Y || '5'),
+    // CSS perspective value for 3D effect (px) - lower = more dramatic
+    perspectivePx: parseInt(process.env.CARD_3D_PERSPECTIVE || '1000'),
+    // Vertical lift when hovering (px)
+    hoverLiftPx: parseInt(process.env.CARD_3D_HOVER_LIFT || '8'),
+    // Scale factor when hovering
+    hoverScale: parseFloat(process.env.CARD_3D_HOVER_SCALE || '1.02'),
+    // Duration to reset tilt when mouse leaves (seconds)
+    resetDurationSec: parseFloat(process.env.CARD_3D_RESET_DURATION || '0.4'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.CARD_3D_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
