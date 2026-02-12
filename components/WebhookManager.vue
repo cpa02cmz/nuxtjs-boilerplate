@@ -155,7 +155,101 @@
         role="status"
         aria-live="polite"
       >
-        {{ contentConfig.webhooks.empty.message }}
+        <!-- Animated webhook illustration - Palette's micro-UX delight! -->
+        <div
+          class="relative mx-auto h-32 w-32 mb-4"
+          aria-hidden="true"
+        >
+          <!-- Background circle with pulse -->
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-full"
+            :class="{ 'animate-pulse-slow': !prefersReducedMotion }"
+          />
+
+          <!-- Floating webhook icon -->
+          <div
+            class="absolute inset-0 flex items-center justify-center"
+            :class="{ 'animate-float-gentle': !prefersReducedMotion }"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-20 w-20 text-indigo-300"
+              :class="{ 'animate-heartbeat': !prefersReducedMotion }"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+              />
+            </svg>
+          </div>
+
+          <!-- Decorative sparkles -->
+          <div
+            v-if="!prefersReducedMotion"
+            class="absolute top-2 right-4 w-3 h-3 text-indigo-400 animate-sparkle"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
+              />
+            </svg>
+          </div>
+          <div
+            v-if="!prefersReducedMotion"
+            class="absolute bottom-4 left-2 w-2 h-2 text-purple-400 animate-sparkle-delayed"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <h4 class="empty-state-heading">
+          {{ contentConfig.webhooks.empty.heading || 'No webhooks configured' }}
+        </h4>
+        <p class="empty-state-description">
+          {{
+            contentConfig.webhooks.empty.description ||
+              'Connect your external services to receive real-time notifications when events occur.'
+          }}
+        </p>
+
+        <!-- Quick action CTA button -->
+        <button
+          class="btn btn-primary empty-state-cta"
+          :aria-label="contentConfig.webhooks.ariaLabels.createButton"
+          @click="showCreateForm = true"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="btn-icon"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          {{ contentConfig.webhooks.buttons.create }}
+        </button>
       </div>
       <div
         v-else
@@ -256,11 +350,28 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { Webhook } from '~/types/webhook'
 import { useWebhooksManager } from '~/composables/useWebhooksManager'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { webhooksConfig } from '~/configs/webhooks.config'
 import { contentConfig } from '~/configs/content.config'
+
+// Check reduced motion preference for accessibility - Palette's micro-UX enhancement!
+const prefersReducedMotion = ref(false)
+
+onMounted(() => {
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.value = mediaQuery.matches
+
+    // Listen for changes in reduced motion preference
+    const handleChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.value = e.matches
+    }
+    mediaQuery.addEventListener('change', handleChange)
+  }
+})
 
 // Flexy hates hardcoded colors! Using config values for webhook UI colors
 const webhookColors = {
@@ -496,5 +607,132 @@ onMounted(() => {
   padding: 0.75rem;
   border-radius: 0.375rem;
   margin-bottom: 1rem;
+}
+
+/* Enhanced Empty State Styles - Palette's micro-UX delight! */
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 2rem;
+  color: var(--webhook-muted-text);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0)
+  );
+  border-radius: 0.75rem;
+}
+
+.empty-state-heading {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  max-width: 24rem;
+  margin: 0 auto 1.5rem;
+  line-height: 1.5;
+}
+
+.empty-state-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.empty-state-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state-cta:active {
+  transform: translateY(0);
+}
+
+.btn-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Animations - Palette's micro-UX delight! */
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+@keyframes float-gentle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float-gentle {
+  animation: float-gentle 3s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(180deg);
+  }
+}
+
+.animate-sparkle {
+  animation: sparkle 2.5s ease-in-out infinite;
+}
+
+.animate-sparkle-delayed {
+  animation: sparkle 2.5s ease-in-out infinite;
+  animation-delay: 1.25s;
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-slow,
+  .animate-float-gentle,
+  .animate-heartbeat,
+  .animate-sparkle,
+  .animate-sparkle-delayed {
+    animation: none;
+  }
 }
 </style>
