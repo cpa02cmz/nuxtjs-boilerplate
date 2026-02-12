@@ -1,6 +1,9 @@
 // Animation Configuration - All Animation Timing and Duration Settings
 // Flexy hates hardcoded values! All animation settings are now configurable.
-import { EASING } from './easing.config'
+import { easingConfig } from './easing.config'
+
+// Convenience alias for cubic-bezier easing functions
+const EASING = easingConfig.cubicBezier
 
 export const animationConfig = {
   // Tooltip Animations

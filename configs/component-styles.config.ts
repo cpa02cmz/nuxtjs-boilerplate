@@ -1,6 +1,9 @@
 // Component Styles Configuration - Component-specific styling values
 // Flexy hates hardcoded values! All component styles are now configurable.
-import { EASING } from './easing.config'
+import { easingConfig } from './easing.config'
+
+// Convenience alias for cubic-bezier easing functions
+const EASING = easingConfig.cubicBezier
 
 export const componentStylesConfig = {
   // Status Manager Component Styles
