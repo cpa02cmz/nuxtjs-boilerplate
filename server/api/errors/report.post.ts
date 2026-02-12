@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody } from 'h3'
 import { createErrorTracker } from '~/server/utils/error-tracker'
 import { logger } from '~/utils/logger'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendMethodNotAllowedError,
   sendBadRequestError,
@@ -19,6 +20,9 @@ export default defineEventHandler(async event => {
   }
 
   try {
+    // Apply rate limiting - 10 requests per minute per IP
+    await rateLimit(event, 'error-report')
+
     const body = await readBody(event)
     const errorTracker = createErrorTracker()
 
