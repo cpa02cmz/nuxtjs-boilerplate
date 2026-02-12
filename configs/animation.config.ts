@@ -652,6 +652,46 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.SPINNER_GLOW_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Alternative Suggestions Animations - Palette's micro-UX delight!
+  // Staggered card entrance with subtle hover effects
+  alternativeSuggestions: {
+    // Duration of each card's entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.ALTERNATIVES_ENTRANCE_DURATION_MS || '500'
+    ),
+    // CSS duration string
+    entranceDurationSec: `${parseInt(process.env.ALTERNATIVES_ENTRANCE_DURATION_MS || '500') / 1000}s`,
+    // Delay between each card's entrance (stagger effect) (ms)
+    staggerDelayMs: parseInt(process.env.ALTERNATIVES_STAGGER_MS || '100'),
+    // Maximum stagger delay to prevent long waits (ms)
+    maxStaggerDelayMs: parseInt(
+      process.env.ALTERNATIVES_MAX_STAGGER_MS || '600'
+    ),
+    // Distance cards travel during entrance (px)
+    entranceDistancePx: parseInt(
+      process.env.ALTERNATIVES_ENTRANCE_DISTANCE || '30'
+    ),
+    // Scale at start of entrance animation
+    entranceStartScale: parseFloat(
+      process.env.ALTERNATIVES_ENTRANCE_SCALE || '0.92'
+    ),
+    // Hover lift amount (px)
+    hoverLiftPx: parseInt(process.env.ALTERNATIVES_HOVER_LIFT || '4'),
+    // Hover scale factor
+    hoverScale: parseFloat(process.env.ALTERNATIVES_HOVER_SCALE || '1.02'),
+    // Shine effect duration on hover (seconds)
+    shineDurationSec: parseFloat(
+      process.env.ALTERNATIVES_SHINE_DURATION || '0.8'
+    ),
+    // Loading pulse duration (seconds)
+    loadingPulseDurationSec: parseFloat(
+      process.env.ALTERNATIVES_LOADING_PULSE || '1.5'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.ALTERNATIVES_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
