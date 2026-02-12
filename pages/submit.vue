@@ -1,10 +1,7 @@
 <template>
   <div class="py-12">
     <!-- Confetti celebration for successful submission -->
-    <ConfettiCelebration
-      ref="confettiRef"
-      intensity="medium"
-    />
+    <ConfettiCelebration ref="confettiRef" intensity="medium" />
 
     <!-- Smart Paste indicator - Palette's micro-UX enhancement! -->
     <ClientOnly>
@@ -97,7 +94,7 @@
                 :placeholder="contentConfig.submit.form.namePlaceholder"
                 @focus="isTitleFocused = true"
                 @blur="handleTitleBlur"
-              >
+              />
               <div
                 id="title-counter"
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium tabular-nums transition-all duration-200"
@@ -136,10 +133,7 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="title-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="title-description" class="mt-1 text-sm text-gray-500">
               The name of the resource or service
             </p>
             <!-- Character limit progress bar for visual feedback -->
@@ -235,10 +229,7 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="description-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="description-description" class="mt-1 text-sm text-gray-500">
               {{ descriptionHelperText }}
             </p>
             <!-- Character limit progress bar for visual feedback -->
@@ -295,7 +286,7 @@
                 :placeholder="contentConfig.placeholders.defaultUrl"
                 @blur="handleUrlBlur"
                 @paste="handleSmartPaste"
-              >
+              />
               <!-- Validation checkmark - Palette's micro-UX delight! -->
               <Transition
                 enter-active-class="transition-all duration-200 ease-out"
@@ -362,12 +353,7 @@
                 ]"
                 @blur="handleCategoryBlur"
               >
-                <option
-                  value=""
-                  disabled
-                >
-                  Select a category
-                </option>
+                <option value="" disabled>Select a category</option>
                 <option
                   v-for="category in categoryOptions"
                   :key="category.value"
@@ -425,10 +411,7 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="category-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="category-description" class="mt-1 text-sm text-gray-500">
               Choose the most appropriate category for this resource
             </p>
             <div
@@ -455,18 +438,15 @@
               aria-describedby="tags-description"
               class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
               :placeholder="contentConfig.submit.form.tagsPlaceholder"
-            >
-            <p
-              id="tags-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            />
+            <p id="tags-description" class="mt-1 text-sm text-gray-500">
               Add relevant tags to help categorize this resource (e.g., "api,
               free-tier, openai")
             </p>
           </div>
 
           <div class="pt-4">
-            <!-- Draft save indicator -->
+            <!-- Draft save indicator with Pulse Ring animation - Palette's micro-UX delight! -->
             <div
               class="flex items-center justify-center mb-3 min-h-[20px]"
               aria-live="polite"
@@ -481,10 +461,16 @@
               >
                 <div
                   v-if="showSavedIndicator && lastSavedTimestamp"
-                  class="flex items-center text-xs text-green-600"
+                  class="flex items-center text-xs text-green-600 relative"
                 >
+                  <!-- Pulse ring animation container -->
+                  <div
+                    v-if="showDraftPulse && !prefersReducedMotion"
+                    class="draft-save-pulse-ring"
+                    aria-hidden="true"
+                  />
                   <svg
-                    class="w-3.5 h-3.5 mr-1.5"
+                    class="w-3.5 h-3.5 mr-1.5 relative z-10"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -497,7 +483,9 @@
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <span>Draft saved {{ lastSavedText }}</span>
+                  <span class="relative z-10"
+                    >Draft saved {{ lastSavedText }}</span
+                  >
                 </div>
                 <div
                   v-else-if="hasFormContent() && !submitSuccess"
@@ -518,10 +506,7 @@
               <span v-if="!isSubmitting">{{
                 contentConfig.submit.button.submit
               }}</span>
-              <span
-                v-else
-                class="flex items-center"
-              >
+              <span v-else class="flex items-center">
                 <svg
                   class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                   xmlns="http://www.w3.org/2000/svg"
@@ -690,6 +675,15 @@ const shakeFields = ref<Record<string, boolean>>({})
 const lastSavedTimestamp = ref<number | null>(null)
 const showSavedIndicator = ref(false)
 const savedIndicatorTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+// Palette's micro-UX delight: Pulse ring animation trigger for draft save
+const showDraftPulse = ref(false)
+const draftPulseTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+
+// Check reduced motion preference for accessibility
+const prefersReducedMotion = computed(() => {
+  if (typeof window === 'undefined') return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+})
 
 // Format relative time for saved indicator
 const lastSavedText = computed(() => {
@@ -860,6 +854,25 @@ const saveDraft = debounce(() => {
     // Update save indicator
     lastSavedTimestamp.value = now
     showSavedIndicator.value = true
+
+    // Palette's micro-UX delight: Trigger pulse ring animation
+    // Only trigger if not already showing to avoid animation spam
+    if (!showDraftPulse.value && !prefersReducedMotion.value) {
+      // Small delay to let the indicator appear first
+      setTimeout(() => {
+        showDraftPulse.value = true
+
+        // Clear previous pulse timeout if exists
+        if (draftPulseTimeout.value) {
+          clearTimeout(draftPulseTimeout.value)
+        }
+
+        // Hide pulse after animation completes
+        draftPulseTimeout.value = setTimeout(() => {
+          showDraftPulse.value = false
+        }, animationConfig.draftSave.pulseDurationMs + animationConfig.draftSave.pulseDelayMs)
+      }, animationConfig.draftSave.pulseDelayMs)
+    }
 
     // Clear previous timeout if exists
     if (savedIndicatorTimeout.value) {
@@ -1071,6 +1084,60 @@ useSeoMeta({
         v-bind('animationConfig.focusGlow.secondaryColor'),
       0 0 0 v-bind('`${animationConfig.focusGlow.spreadMin * 2}px`')
         v-bind('animationConfig.focusGlow.color');
+  }
+}
+
+/* Draft Save Pulse Ring Animation - Palette's micro-UX delight!
+ * Creates a satisfying expanding ring effect when draft is saved
+ */
+.draft-save-pulse-ring {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.25rem;
+  /* w-3.5 = 0.875rem, but we need space for the ring */
+  height: 1.25rem;
+  border-radius: 50%;
+  border: v-bind('`${animationConfig.draftSave.ringWidth}px`') solid
+    v-bind('animationConfig.draftSave.pulseColor');
+  animation: draft-save-pulse
+    v-bind('animationConfig.draftSave.pulseDurationSec') ease-out forwards;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes draft-save-pulse {
+  0% {
+    transform: translateY(-50%) scale(1);
+    opacity: 0.8;
+    border-width: v-bind('`${animationConfig.draftSave.ringWidth}px`');
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-50%)
+      scale(v-bind('animationConfig.draftSave.pulseScale'));
+    opacity: 0;
+    border-width: 0;
+  }
+}
+
+/* Reduced motion: show a simple fade instead of pulse */
+@media (prefers-reduced-motion: reduce) {
+  .draft-save-pulse-ring {
+    animation: draft-save-fade
+      v-bind('animationConfig.draftSave.pulseDurationSec') ease-out forwards;
+  }
+
+  @keyframes draft-save-fade {
+    0% {
+      opacity: 0.6;
+    }
+    100% {
+      opacity: 0;
+    }
   }
 }
 </style>
