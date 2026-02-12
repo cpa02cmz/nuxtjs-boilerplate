@@ -85,15 +85,41 @@ function createPrismaClient(): PrismaClient {
 
 /**
  * Create a proxy that retries connection on first database operation
+ * Handles connection errors gracefully to prevent server crashes
  */
 function createRetryProxy(retryFn: () => PrismaClient): PrismaClient {
   let client: PrismaClient | null = null
+  let connectionError: Error | null = null
 
   return new Proxy({} as unknown as PrismaClient, {
     get(target, prop: string | symbol) {
-      if (!client) {
-        client = retryFn()
+      if (!client && !connectionError) {
+        try {
+          client = retryFn()
+        } catch (error) {
+          connectionError =
+            error instanceof Error ? error : new Error(String(error))
+          console.error(
+            '[Database] Connection failed after all retries:',
+            connectionError
+          )
+          // Return a mock that throws on database operations
+          return () => {
+            throw new Error(
+              `Database connection failed: ${connectionError?.message}`
+            )
+          }
+        }
       }
+
+      if (connectionError) {
+        return () => {
+          throw new Error(
+            `Database connection failed: ${connectionError?.message}`
+          )
+        }
+      }
+
       return (client as unknown as Record<string | symbol, unknown>)[prop]
     },
   })

@@ -3,10 +3,12 @@
     v-if="hasActiveFilters"
     class="flex flex-wrap items-center gap-2 mb-4"
     role="region"
-    aria-label="Active filters. Use left and right arrow keys to navigate between filters. Press Delete or Backspace to remove a filter."
+    :aria-label="contentConfig.filters.ariaLabels.region"
   >
     <div class="flex items-center gap-2">
-      <span class="text-sm text-gray-500 font-medium">Active filters</span>
+      <span class="text-sm text-gray-500 font-medium">{{
+        contentConfig.filters.activeFilters
+      }}</span>
       <span
         class="inline-flex items-center justify-center w-5 h-5 text-xs font-semibold bg-gray-200 text-gray-700 rounded-full"
         aria-live="polite"
@@ -39,15 +41,17 @@
         key="search"
         tabindex="0"
         class="filter-chip filter-chip-blue group"
-        :aria-label="`Remove search query filter: ${searchQuery}. Press Delete or Backspace to remove`"
+        :aria-label="
+          contentConfig.filters.chipAriaLabels.removeSearch.replace(
+            '{{value}}',
+            searchQuery
+          )
+        "
         @click="handleRemove('search', searchQuery, $event)"
         @keydown="e => handleChipKeydown(e, 'search', searchQuery)"
       >
         <span class="truncate max-w-[200px]">{{ searchQuery }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -66,10 +70,7 @@
           </svg>
         </span>
         <!-- Shimmer effect on hover -->
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Category chips -->
@@ -79,16 +80,20 @@
         ref="chipRefs"
         tabindex="0"
         class="filter-chip filter-chip-gray group"
-        :aria-label="`Remove category filter: ${category}. Press Delete or Backspace to remove`"
+        :aria-label="
+          contentConfig.filters.chipAriaLabels.removeCategory.replace(
+            '{{value}}',
+            category
+          )
+        "
         @click="handleRemove('category', category, $event)"
         @keydown="e => handleChipKeydown(e, 'category', category)"
       >
-        <span class="text-gray-500 mr-1.5">Category:</span>
+        <span class="text-gray-500 mr-1.5">{{
+          contentConfig.filters.labels.category
+        }}</span>
         <span class="truncate max-w-[150px]">{{ category }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -106,10 +111,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Pricing model chips -->
@@ -119,16 +121,20 @@
         ref="chipRefs"
         tabindex="0"
         class="filter-chip filter-chip-green group"
-        :aria-label="`Remove pricing filter: ${pricing}. Press Delete or Backspace to remove`"
+        :aria-label="
+          contentConfig.filters.chipAriaLabels.removePricing.replace(
+            '{{value}}',
+            pricing
+          )
+        "
         @click="handleRemove('pricing', pricing, $event)"
         @keydown="e => handleChipKeydown(e, 'pricing', pricing)"
       >
-        <span class="text-green-600 mr-1.5">Pricing:</span>
+        <span class="text-green-600 mr-1.5">{{
+          contentConfig.filters.labels.pricing
+        }}</span>
         <span class="truncate max-w-[150px]">{{ pricing }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -146,10 +152,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Difficulty chips -->
@@ -159,16 +162,20 @@
         ref="chipRefs"
         tabindex="0"
         class="filter-chip filter-chip-purple group"
-        :aria-label="`Remove difficulty filter: ${difficulty}. Press Delete or Backspace to remove`"
+        :aria-label="
+          contentConfig.filters.chipAriaLabels.removeDifficulty.replace(
+            '{{value}}',
+            difficulty
+          )
+        "
         @click="handleRemove('difficulty', difficulty, $event)"
         @keydown="e => handleChipKeydown(e, 'difficulty', difficulty)"
       >
-        <span class="text-purple-600 mr-1.5">Difficulty:</span>
+        <span class="text-purple-600 mr-1.5">{{
+          contentConfig.filters.labels.difficulty
+        }}</span>
         <span class="truncate max-w-[150px]">{{ difficulty }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -186,10 +193,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Technology chips -->
@@ -199,16 +203,20 @@
         ref="chipRefs"
         tabindex="0"
         class="filter-chip filter-chip-orange group"
-        :aria-label="`Remove technology filter: ${tech}. Press Delete or Backspace to remove`"
+        :aria-label="
+          contentConfig.filters.chipAriaLabels.removeTechnology.replace(
+            '{{value}}',
+            tech
+          )
+        "
         @click="handleRemove('technology', tech, $event)"
         @keydown="e => handleChipKeydown(e, 'technology', tech)"
       >
-        <span class="text-orange-600 mr-1.5">Tech:</span>
+        <span class="text-orange-600 mr-1.5">{{
+          contentConfig.filters.labels.tech
+        }}</span>
         <span class="truncate max-w-[150px]">{{ tech }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -226,10 +234,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Tag chips -->
@@ -239,16 +244,20 @@
         ref="chipRefs"
         tabindex="0"
         class="filter-chip filter-chip-pink group"
-        :aria-label="`Remove tag filter: ${tag}. Press Delete or Backspace to remove`"
+        :aria-label="
+          contentConfig.filters.chipAriaLabels.removeTag.replace(
+            '{{value}}',
+            tag
+          )
+        "
         @click="handleRemove('tag', tag, $event)"
         @keydown="e => handleChipKeydown(e, 'tag', tag)"
       >
-        <span class="text-pink-600 mr-1.5">Tag:</span>
+        <span class="text-pink-600 mr-1.5">{{
+          contentConfig.filters.labels.tag
+        }}</span>
         <span class="truncate max-w-[150px]">{{ tag }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -266,10 +275,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Benefit chips -->
@@ -279,16 +285,20 @@
         ref="chipRefs"
         tabindex="0"
         class="filter-chip filter-chip-teal group"
-        :aria-label="`Remove benefit filter: ${benefit}. Press Delete or Backspace to remove`"
+        :aria-label="
+          contentConfig.filters.chipAriaLabels.removeBenefit.replace(
+            '{{value}}',
+            benefit
+          )
+        "
         @click="handleRemove('benefit', benefit, $event)"
         @keydown="e => handleChipKeydown(e, 'benefit', benefit)"
       >
-        <span class="text-teal-600 mr-1.5">Benefit:</span>
+        <span class="text-teal-600 mr-1.5">{{
+          contentConfig.filters.labels.benefit
+        }}</span>
         <span class="truncate max-w-[150px]">{{ benefit }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -306,10 +316,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Date range chip -->
@@ -319,16 +326,20 @@
         key="date"
         tabindex="0"
         class="filter-chip filter-chip-indigo group"
-        :aria-label="`Remove date filter: ${formatDateRange(selectedDateRange)}. Press Delete or Backspace to remove`"
+        :aria-label="
+          contentConfig.filters.chipAriaLabels.removeDate.replace(
+            '{{value}}',
+            formatDateRange(selectedDateRange)
+          )
+        "
         @click="handleRemove('date', selectedDateRange, $event)"
         @keydown="e => handleChipKeydown(e, 'date', selectedDateRange)"
       >
-        <span class="text-indigo-600 mr-1.5">Date:</span>
+        <span class="text-indigo-600 mr-1.5">{{
+          contentConfig.filters.labels.date
+        }}</span>
         <span>{{ formatDateRange(selectedDateRange) }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -346,10 +357,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Undo button for recently removed filter -->
@@ -357,7 +365,12 @@
         v-if="lastRemovedFilter"
         key="undo-filter"
         class="filter-chip filter-chip-undo"
-        :aria-label="`Undo removal of ${lastRemovedFilter.displayLabel} filter. Press Control Z to undo`"
+        :aria-label="
+          contentConfig.filters.chipAriaLabels.undo.replace(
+            '{{value}}',
+            lastRemovedFilter.displayLabel
+          )
+        "
         @click="undoRemove"
       >
         <svg
@@ -374,11 +387,14 @@
             d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
           />
         </svg>
-        <span class="truncate max-w-[150px]">Undo {{ lastRemovedFilter.type }}</span>
+        <span class="truncate max-w-[150px]"
+          >{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span
+        >
         <kbd
           class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
           aria-hidden="true"
-        >Ctrl+Z</kbd>
+          >{{ contentConfig.filters.keyboard.ctrlZ }}</kbd
+        >
         <!-- Progress bar for undo window with color transition -->
         <span
           class="undo-progress-bar"
@@ -393,14 +409,15 @@
     <button
       ref="clearAllButtonRef"
       class="group ml-2 text-sm text-gray-500 hover:text-gray-700 underline focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-400 rounded px-1 transition-colors"
-      aria-label="Clear all filters (press Escape to clear all)"
+      :aria-label="contentConfig.filters.ariaLabels.clearAll"
       @click="handleClearAll"
     >
-      <span>Clear all</span>
+      <span>{{ contentConfig.filters.clearAll }}</span>
       <kbd
         class="hidden sm:inline-block ml-1.5 px-1.5 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded group-hover:bg-gray-200 transition-colors"
         aria-hidden="true"
-      >Esc</kbd>
+        >{{ contentConfig.filters.keyboard.esc }}</kbd
+      >
     </button>
   </div>
 </template>
@@ -408,6 +425,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { uiConfig } from '../configs/ui.config'
+import { contentConfig } from '../configs/content.config'
 import { PROGRESS } from '~/server/utils/constants'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 
@@ -513,9 +531,9 @@ const activeFilterCount = computed(() => {
 
 const formatDateRange = (range: string): string => {
   const dateLabels: Record<string, string> = {
-    lastWeek: 'Last week',
-    lastMonth: 'Last month',
-    lastYear: 'Last year',
+    lastWeek: contentConfig.filters.dateRanges.week,
+    lastMonth: contentConfig.filters.dateRanges.month,
+    lastYear: contentConfig.filters.dateRanges.year,
   }
   return dateLabels[range] || range
 }

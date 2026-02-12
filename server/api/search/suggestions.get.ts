@@ -71,8 +71,9 @@ export default defineEventHandler(async event => {
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
     // Import the suggestions composable
+    // SECURITY: Using relative path instead of ~ alias - Nitro doesn't resolve ~ in server context
     const { useSearchSuggestions } =
-      await import('~/composables/useSearchSuggestions')
+      await import('../../../composables/useSearchSuggestions')
 
     // Create suggestions engine
     const { getSearchSuggestions } = useSearchSuggestions(resources)

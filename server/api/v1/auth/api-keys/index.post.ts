@@ -1,6 +1,6 @@
 import type { ApiKey } from '~/types/webhook'
 import { randomUUID } from 'node:crypto'
-import { getHeader, getQuery } from 'h3'
+import { getHeader } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
@@ -14,12 +14,15 @@ import { generateApiKey } from '~/server/utils/api-key-crypto'
 
 export default defineEventHandler(async event => {
   try {
-    // Authentication check - require valid API key
-    const authApiKey =
-      getHeader(event, 'X-API-Key') || (getQuery(event).api_key as string)
+    // Authentication check - require valid API key via header only
+    // SECURITY: Query parameters are NOT accepted to prevent key exposure in logs
+    const authApiKey = getHeader(event, 'X-API-Key')
 
     if (!authApiKey) {
-      return sendUnauthorizedError(event, 'API key required')
+      return sendUnauthorizedError(
+        event,
+        'API key required. Must be provided via X-API-Key header.'
+      )
     }
 
     // Verify API key exists and is active
