@@ -221,6 +221,25 @@ export const animationConfig = {
     ),
   },
 
+  // Icon Interaction Animations - Palette's micro-UX delight!
+  // Adds delightful hover lift and press effects for interactive icons
+  iconInteraction: {
+    // Duration of the scale animation (ms)
+    durationMs: parseInt(process.env.ICON_INTERACTION_DURATION_MS || '200'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.ICON_INTERACTION_DURATION_MS || '200') / 1000}s`,
+    // Scale factor for hover state (1.15 = 115% of original size)
+    hoverScale: parseFloat(process.env.ICON_INTERACTION_HOVER_SCALE || '1.15'),
+    // Scale factor for active/pressed state (0.95 = 95% of original size)
+    activeScale: parseFloat(
+      process.env.ICON_INTERACTION_ACTIVE_SCALE || '0.95'
+    ),
+    // Cubic bezier easing for bouncy feel
+    easing:
+      process.env.ICON_INTERACTION_EASING ||
+      'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+  },
+
   // Search Tracking Delay
   analytics: {
     trackingDelayMs: parseInt(process.env.ANALYTICS_TRACKING_DELAY_MS || '500'),
