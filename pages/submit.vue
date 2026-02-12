@@ -84,35 +84,39 @@
                 Resource Title <span aria-hidden="true">*</span>
                 <span class="sr-only">(required)</span>
               </label>
-              <input
-                id="title"
-                ref="titleInput"
-                v-model="formData.title"
-                type="text"
-                required
-                :maxlength="maxTitleLength"
-                aria-required="true"
-                aria-describedby="title-description title-counter title-error"
-                :aria-invalid="errors.title ? 'true' : 'false'"
-                :class="[
-                  'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
-                  errors.title
-                    ? 'border-red-500 animate-form-shake'
-                    : formData.title && !errors.title
-                      ? 'border-green-500'
-                      : 'border-gray-300',
-                ]"
-                @focus="isTitleFocused = true"
-                @blur="handleTitleBlur"
+              <!-- Character Counter with Visual Progress Ring - Palette's micro-UX delight! -->
+              <CharacterCounter
+                :character-count="formData.title.length"
+                :max-length="maxTitleLength"
+                :is-focused="isTitleFocused"
+                :show-counter="true"
+                warning-threshold="0.8"
               >
-              <div
-                id="title-counter"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium tabular-nums transition-all duration-200"
-                :class="titleCounterClass"
-                aria-live="polite"
-              >
-                {{ formData.title.length }}/{{ maxTitleLength }}
-              </div>
+                <template #default="{ isNearLimit, isOverLimit }">
+                  <input
+                    id="title"
+                    ref="titleInput"
+                    v-model="formData.title"
+                    type="text"
+                    required
+                    :maxlength="maxTitleLength"
+                    aria-required="true"
+                    aria-describedby="title-description title-counter title-error"
+                    :aria-invalid="errors.title ? 'true' : 'false'"
+                    :class="[
+                      'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
+                      errors.title || isOverLimit
+                        ? 'border-red-500 animate-form-shake'
+                        : formData.title && !errors.title
+                          ? 'border-green-500'
+                          : 'border-gray-300',
+                      isNearLimit && !isOverLimit ? 'border-amber-400' : '',
+                    ]"
+                    @focus="isTitleFocused = true"
+                    @blur="handleTitleBlur"
+                  >
+                </template>
+              </CharacterCounter>
               <!-- Validation checkmark - Palette's micro-UX delight! -->
               <Transition
                 enter-active-class="transition-all duration-200 ease-out"
@@ -667,6 +671,7 @@ import { debounce } from '~/utils/debounce'
 import { useSmartPaste } from '~/composables/useSmartPaste'
 import { useMagneticButton } from '~/composables/useMagneticButton'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
+import CharacterCounter from '~/components/CharacterCounter.vue'
 
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
 const urlInputRef = ref<HTMLInputElement | null>(null)
@@ -840,24 +845,6 @@ const titleProgressClass = computed(() => {
     return 'bg-amber-500'
   }
   return 'bg-green-500'
-})
-
-const titleCounterClass = computed(() => {
-  const length = formData.value.title.length
-  const remaining = maxTitleLength - length
-
-  // Always visible when field has content, fade in/out based on focus
-  const baseClasses = length > 0 ? 'opacity-100' : 'opacity-0'
-
-  // Color coding based on remaining characters - using config thresholds
-  const { titleError, titleWarning } =
-    thresholdsConfig.characterCounter.remaining
-  if (remaining <= titleError) {
-    return `${baseClasses} text-red-500`
-  } else if (remaining <= titleWarning) {
-    return `${baseClasses} text-amber-500`
-  }
-  return `${baseClasses} text-gray-400`
 })
 
 // Progress bar color based on character usage percentage - using config thresholds
