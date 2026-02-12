@@ -673,6 +673,52 @@ import { useMagneticButton } from '~/composables/useMagneticButton'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import CharacterCounter from '~/components/CharacterCounter.vue'
 
+// SSR-safe animation config fallbacks - BroCula fixed these! 🦇
+// During SSR, external configs might not be available, so we provide safe defaults
+const getSafeAnimationConfig = () => {
+  try {
+    return animationConfig || {}
+  } catch {
+    return {}
+  }
+}
+
+const safeAnimConfig = getSafeAnimationConfig()
+const safeFocusGlow = safeAnimConfig.focusGlow || {}
+const safeDraftSave = safeAnimConfig.draftSave || {}
+const safeConfetti = safeAnimConfig.confetti || {}
+const safeValidation = safeAnimConfig.validation || {}
+
+// SSR-safe focus glow values with defaults
+const FOCUS_GLOW_FALLBACKS = {
+  durationSec: safeFocusGlow.durationSec ?? '2s',
+  spreadMin: safeFocusGlow.spreadMin ?? 2,
+  spreadMax: safeFocusGlow.spreadMax ?? 8,
+  color: safeFocusGlow.color ?? 'rgba(59, 130, 246, 0.5)',
+  secondaryColor: safeFocusGlow.secondaryColor ?? 'rgba(59, 130, 246, 0.3)',
+}
+
+// SSR-safe draft save values with defaults
+const DRAFT_SAVE_FALLBACKS = {
+  pulseDurationMs: safeDraftSave.pulseDurationMs ?? 800,
+  pulseDelayMs: safeDraftSave.pulseDelayMs ?? 100,
+  pulseDurationSec: safeDraftSave.pulseDurationSec ?? '0.8s',
+  pulseScale: safeDraftSave.pulseScale ?? 1.8,
+  pulseColor: safeDraftSave.pulseColor ?? 'rgba(34, 197, 94, 0.4)',
+  ringWidth: safeDraftSave.ringWidth ?? 2,
+}
+
+// SSR-safe confetti values with defaults
+const CONFETTI_FALLBACKS = {
+  submissionDelayMs: safeConfetti.submissionDelayMs ?? 100,
+}
+
+// SSR-safe validation values with defaults
+const VALIDATION_FALLBACKS = {
+  shakeDurationMs: safeValidation.shakeDurationMs ?? 500,
+  shakeIntensityPx: safeValidation.shakeIntensityPx ?? 8,
+}
+
 const confettiRef = ref<InstanceType<typeof ConfettiCelebration> | null>(null)
 const urlInputRef = ref<HTMLInputElement | null>(null)
 const { $toast } = useNuxtApp()
@@ -696,8 +742,9 @@ const DRAFT_STORAGE_KEY = STORAGE_KEYS.RESOURCE_DRAFT
 const DRAFT_TIMESTAMP_KEY = STORAGE_KEYS.RESOURCE_DRAFT_TIMESTAMP
 
 // Animation config values for CSS variables - Flexy hates hardcoded values!
-const shakeDurationMs = `${animationConfig.validation.shakeDurationMs}ms`
-const shakeIntensityPx = `${animationConfig.validation.shakeIntensityPx}px`
+// Using SSR-safe fallbacks - BroCula fixed these! 🦇
+const shakeDurationMs = `${VALIDATION_FALLBACKS.shakeDurationMs}ms`
+const shakeIntensityPx = `${VALIDATION_FALLBACKS.shakeIntensityPx}px`
 
 // Category options from config - Flexy hates hardcoded values!
 const categoryOptions = categoriesConfig.resourceFormCategories
@@ -803,7 +850,7 @@ const handleSubmitWithShake = async () => {
     if (shakeTimeout.value) clearTimeout(shakeTimeout.value)
     shakeTimeout.value = setTimeout(() => {
       shakeFields.value = {}
-    }, animationConfig.validation.shakeDurationMs)
+    }, VALIDATION_FALLBACKS.shakeDurationMs)
   }
 
   // Proceed with submission if valid
@@ -819,7 +866,7 @@ watch(submitSuccess, success => {
     if (confettiTimeout.value) clearTimeout(confettiTimeout.value)
     confettiTimeout.value = setTimeout(() => {
       confettiRef.value?.celebrate()
-    }, animationConfig.confetti.submissionDelayMs)
+    }, CONFETTI_FALLBACKS.submissionDelayMs)
   }
 })
 
@@ -917,8 +964,8 @@ const saveDraft = debounce(() => {
         // Hide pulse after animation completes
         draftPulseTimeout.value = setTimeout(() => {
           showDraftPulse.value = false
-        }, animationConfig.draftSave.pulseDurationMs + animationConfig.draftSave.pulseDelayMs)
-      }, animationConfig.draftSave.pulseDelayMs)
+        }, DRAFT_SAVE_FALLBACKS.pulseDurationMs + DRAFT_SAVE_FALLBACKS.pulseDelayMs)
+      }, DRAFT_SAVE_FALLBACKS.pulseDelayMs)
     }
 
     // Clear previous timeout if exists
@@ -1011,7 +1058,7 @@ watch(submitSuccess, success => {
     // Small delay to let the success message appear first
     setTimeout(() => {
       confettiRef.value?.celebrate()
-    }, animationConfig.confetti.submissionDelayMs)
+    }, CONFETTI_FALLBACKS.submissionDelayMs)
   }
 })
 
@@ -1112,7 +1159,7 @@ useSeoMeta({
 }
 
 .input-focus-glow:focus {
-  animation: focus-glow-pulse v-bind('animationConfig.focusGlow.durationSec')
+  animation: focus-glow-pulse v-bind('FOCUS_GLOW_FALLBACKS.durationSec')
     ease-in-out infinite;
 }
 
@@ -1120,17 +1167,17 @@ useSeoMeta({
   0%,
   100% {
     box-shadow:
-      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMin}px`')
-        v-bind('animationConfig.focusGlow.secondaryColor'),
-      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMin * 2}px`')
-        v-bind('animationConfig.focusGlow.color');
+      0 0 0 v-bind('`${FOCUS_GLOW_FALLBACKS.spreadMin}px`')
+        v-bind('FOCUS_GLOW_FALLBACKS.secondaryColor'),
+      0 0 0 v-bind('`${FOCUS_GLOW_FALLBACKS.spreadMin * 2}px`')
+        v-bind('FOCUS_GLOW_FALLBACKS.color');
   }
   50% {
     box-shadow:
-      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMax}px`')
-        v-bind('animationConfig.focusGlow.secondaryColor'),
-      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMax * 2}px`')
-        v-bind('animationConfig.focusGlow.color');
+      0 0 0 v-bind('`${FOCUS_GLOW_FALLBACKS.spreadMax}px`')
+        v-bind('FOCUS_GLOW_FALLBACKS.secondaryColor'),
+      0 0 0 v-bind('`${FOCUS_GLOW_FALLBACKS.spreadMax * 2}px`')
+        v-bind('FOCUS_GLOW_FALLBACKS.color');
   }
 }
 
@@ -1139,10 +1186,10 @@ useSeoMeta({
   .input-focus-glow:focus {
     animation: none;
     box-shadow:
-      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMin}px`')
-        v-bind('animationConfig.focusGlow.secondaryColor'),
-      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMin * 2}px`')
-        v-bind('animationConfig.focusGlow.color');
+      0 0 0 v-bind('`${FOCUS_GLOW_FALLBACKS.spreadMin}px`')
+        v-bind('FOCUS_GLOW_FALLBACKS.secondaryColor'),
+      0 0 0 v-bind('`${FOCUS_GLOW_FALLBACKS.spreadMin * 2}px`')
+        v-bind('FOCUS_GLOW_FALLBACKS.color');
   }
 }
 
@@ -1158,10 +1205,10 @@ useSeoMeta({
   /* w-3.5 = 0.875rem, but we need space for the ring */
   height: 1.25rem;
   border-radius: 50%;
-  border: v-bind('`${animationConfig.draftSave.ringWidth}px`') solid
-    v-bind('animationConfig.draftSave.pulseColor');
-  animation: draft-save-pulse
-    v-bind('animationConfig.draftSave.pulseDurationSec') ease-out forwards;
+  border: v-bind('`${DRAFT_SAVE_FALLBACKS.ringWidth}px`') solid
+    v-bind('DRAFT_SAVE_FALLBACKS.pulseColor');
+  animation: draft-save-pulse v-bind('DRAFT_SAVE_FALLBACKS.pulseDurationSec')
+    ease-out forwards;
   pointer-events: none;
   z-index: 1;
 }
@@ -1170,14 +1217,13 @@ useSeoMeta({
   0% {
     transform: translateY(-50%) scale(1);
     opacity: 0.8;
-    border-width: v-bind('`${animationConfig.draftSave.ringWidth}px`');
+    border-width: v-bind('`${DRAFT_SAVE_FALLBACKS.ringWidth}px`');
   }
   50% {
     opacity: 0.4;
   }
   100% {
-    transform: translateY(-50%)
-      scale(v-bind('animationConfig.draftSave.pulseScale'));
+    transform: translateY(-50%) scale(v-bind('DRAFT_SAVE_FALLBACKS.pulseScale'));
     opacity: 0;
     border-width: 0;
   }
@@ -1186,8 +1232,8 @@ useSeoMeta({
 /* Reduced motion: show a simple fade instead of pulse */
 @media (prefers-reduced-motion: reduce) {
   .draft-save-pulse-ring {
-    animation: draft-save-fade
-      v-bind('animationConfig.draftSave.pulseDurationSec') ease-out forwards;
+    animation: draft-save-fade v-bind('DRAFT_SAVE_FALLBACKS.pulseDurationSec')
+      ease-out forwards;
   }
 
   @keyframes draft-save-fade {
