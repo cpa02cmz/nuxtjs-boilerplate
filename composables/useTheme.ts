@@ -12,7 +12,7 @@ export function useTheme() {
   const isMounted = ref(false)
 
   const updateThemeClass = () => {
-    if (typeof document === 'undefined') return
+    if (typeof document === 'undefined' || typeof window === 'undefined') return
 
     const root = document.documentElement
 

@@ -146,6 +146,7 @@ export function getShareUrl(
  * Escape HTML special characters
  */
 function escapeHtml(text: string): string {
+  if (typeof document === 'undefined') return text
   const div = document.createElement('div')
   div.textContent = text
   return div.innerHTML
@@ -183,25 +184,27 @@ export function useSocialSharing() {
         resourceType: options.resourceType,
         url: metadata.url,
         timestamp: new Date(),
-        userAgent: navigator.userAgent,
-        referrer: document.referrer,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+        referrer: typeof document !== 'undefined' ? document.referrer : '',
       })
 
       // Open share window for web platforms
-      if (platform !== 'email') {
-        const width = socialConfig.share.windowWidth
-        const height = socialConfig.share.windowHeight
-        const left = window.screenX + (window.outerWidth - width) / 2
-        const top = window.screenY + (window.outerHeight - height) / 2
+      if (typeof window !== 'undefined') {
+        if (platform !== 'email') {
+          const width = socialConfig.share.windowWidth
+          const height = socialConfig.share.windowHeight
+          const left = window.screenX + (window.outerWidth - width) / 2
+          const top = window.screenY + (window.outerHeight - height) / 2
 
-        window.open(
-          shareUrl,
-          `share-${platform}`,
-          `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no`
-        )
-      } else {
-        // For email, just open the mailto link
-        window.location.href = shareUrl
+          window.open(
+            shareUrl,
+            `share-${platform}`,
+            `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no`
+          )
+        } else {
+          // For email, just open the mailto link
+          window.location.href = shareUrl
+        }
       }
 
       return true
@@ -234,8 +237,8 @@ export function useSocialSharing() {
         resourceType: options.resourceType,
         url,
         timestamp: new Date(),
-        userAgent: navigator.userAgent,
-        referrer: document.referrer,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+        referrer: typeof document !== 'undefined' ? document.referrer : '',
       })
 
       return true

@@ -119,6 +119,7 @@ const arrowClasses: Record<TooltipPosition, string> = {
  */
 const calculateOptimalPosition = () => {
   if (!tooltipRef.value || !triggerRef.value) return
+  if (typeof window === 'undefined') return
 
   const tooltipRect = tooltipRef.value.getBoundingClientRect()
   const viewportWidth = window.innerWidth

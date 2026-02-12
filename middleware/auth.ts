@@ -32,7 +32,6 @@ export default defineNuxtRouteMiddleware(async to => {
 
   // No API key present - redirect to login
   if (!apiKey) {
-    console.log('[Auth Middleware] No API key found, redirecting to login')
     return navigateTo(
       `${ROUTE_PATTERNS.pages.aiKeys}?redirect=${encodeURIComponent(to.fullPath)}`,
       { redirectCode: 302 }
@@ -51,7 +50,6 @@ export default defineNuxtRouteMiddleware(async to => {
 
     if (!response.ok) {
       // API key is invalid - clear cookie and redirect
-      console.log('[Auth Middleware] Invalid API key, clearing and redirecting')
       apiKeyCookie.value = null
       return navigateTo(
         `${ROUTE_PATTERNS.pages.aiKeys}?redirect=${encodeURIComponent(to.fullPath)}&error=invalid_key`,
@@ -60,14 +58,6 @@ export default defineNuxtRouteMiddleware(async to => {
     }
 
     // API key is valid - allow access
-    const data = await response.json()
-
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`[Auth Middleware] Access granted to: ${to.path}`, {
-        keysCount: data.keys?.length || 0,
-      })
-    }
-
     // Store auth state in pinia/nuxt state if needed
     // This can be used by components to show authenticated UI
     const authState = useState('auth', () => ({
@@ -81,9 +71,8 @@ export default defineNuxtRouteMiddleware(async to => {
       apiKey: apiKey,
       lastVerified: new Date().toISOString(),
     }
-  } catch (error) {
-    // Network or other error - log and redirect with error message
-    console.error('[Auth Middleware] Validation error:', error)
+  } catch {
+    // Network or other error - redirect with error message
     return navigateTo(
       `${ROUTE_PATTERNS.pages.aiKeys}?redirect=${encodeURIComponent(to.fullPath)}&error=validation_failed`,
       { redirectCode: 302 }

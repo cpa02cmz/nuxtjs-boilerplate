@@ -15,6 +15,8 @@ export function useLoadingFocus() {
    * Call this when the user triggers a loading action (e.g., form submit, button click)
    */
   const saveTriggerElement = () => {
+    if (typeof document === 'undefined') return
+
     // Only save if there's an active element and it's not the body
     const activeElement = document.activeElement as HTMLElement
     if (activeElement && activeElement.tagName !== 'BODY') {
@@ -54,6 +56,8 @@ export function useLoadingFocus() {
     }
 
     const returnFocusToElement = () => {
+      if (typeof document === 'undefined') return
+
       // Try to focus the trigger element first
       if (triggerElement.value && document.contains(triggerElement.value)) {
         // Check if element is still focusable
@@ -74,7 +78,7 @@ export function useLoadingFocus() {
             focusableChild.focus()
           }
         }
-      } else if (fallbackSelector) {
+      } else if (fallbackSelector && typeof document !== 'undefined') {
         // Try fallback selector
         const fallback = document.querySelector(fallbackSelector) as HTMLElement
         if (fallback) {

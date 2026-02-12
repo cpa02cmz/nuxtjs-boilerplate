@@ -133,7 +133,7 @@ export function useSmartPaste(
    * Announce message to screen readers
    */
   const announceToScreenReader = (message: string) => {
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined' || typeof document === 'undefined') return
 
     const announcement = document.createElement('div')
     announcement.setAttribute('role', 'status')

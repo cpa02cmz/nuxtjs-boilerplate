@@ -113,6 +113,8 @@ const progressStyle = computed(() => {
 
 // Methods
 const updateScrollProgress = () => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return
+
   const scrollTop = window.scrollY || document.documentElement.scrollTop
   const scrollHeight =
     document.documentElement.scrollHeight -
@@ -131,6 +133,8 @@ const updateScrollProgress = () => {
 }
 
 const scrollToTop = () => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return
+
   // Check for reduced motion preference
   const behavior = prefersReducedMotion.value ? 'auto' : 'smooth'
 
