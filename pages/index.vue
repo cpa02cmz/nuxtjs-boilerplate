@@ -406,6 +406,7 @@ import { contentConfig } from '~/configs/content.config'
 import { thresholdsConfig } from '~/configs/thresholds.config'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
 import { uiConfig } from '~/configs/ui.config'
+import { TIME_MS } from '~/configs/time.config'
 
 definePageMeta({
   layout: 'default',
@@ -558,10 +559,10 @@ const loadMoreWithEnhancedFeedback = async () => {
   if (displayedCount.value >= filteredResources.value.length) {
     showCompletionState.value = true
 
-    // Hide completion state after a delay
+    // Hide completion state after a delay - Flexy hates hardcoded values!
     setTimeout(() => {
       showCompletionState.value = false
-    }, 3000)
+    }, TIME_MS.SECOND * 3)
   }
 
   // Scroll to the newly loaded content smoothly

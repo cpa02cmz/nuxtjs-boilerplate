@@ -900,10 +900,10 @@ const saveDraft = debounce(() => {
       clearTimeout(savedIndicatorTimeout.value)
     }
 
-    // Hide indicator after 3 seconds
+    // Hide indicator after 3 seconds - Flexy hates hardcoded values!
     savedIndicatorTimeout.value = setTimeout(() => {
       showSavedIndicator.value = false
-    }, 3000)
+    }, TIME_MS.SECOND * 3)
   }
 }, timeConfig.debounce.draft)
 
