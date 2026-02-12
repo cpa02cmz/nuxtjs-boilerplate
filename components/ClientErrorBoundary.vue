@@ -12,9 +12,6 @@
       >
         <slot />
       </ErrorBoundary>
-      <template #fallback>
-        <slot />
-      </template>
     </ClientOnly>
   </div>
 </template>
