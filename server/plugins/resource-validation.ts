@@ -29,10 +29,14 @@ export default defineNitroPlugin(async nitroApp => {
   const validateAllResources = async () => {
     try {
       // Import resources from JSON (use relative path for server-side dynamic import)
-      const resourcesDataPath = contentConfig.paths.resourcesData.replace(
-        /^~\//,
-        '../../data/'
-      )
+      // Handle SSR/build compatibility - in Nitro/SSR context, use absolute path from project root
+      const isNitroContext =
+        import.meta.url?.includes('.nitro') ||
+        import.meta.url?.includes('nitro') ||
+        process.cwd().includes('.nuxt')
+      const resourcesDataPath = isNitroContext
+        ? '../../../../data/resources.json'
+        : contentConfig.paths.resourcesData.replace(/^~\//, './')
       const resourcesModule = await import(resourcesDataPath)
       const resources = resourcesModule.default || resourcesModule
 
