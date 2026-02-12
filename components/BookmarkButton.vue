@@ -182,7 +182,7 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
 /* Bookmarked state pulse animation - Flexy hates hardcoded values! */
 .bookmarked {
   animation: subtle-pulse
-    v-bind('`${animationConfig.bookmark.pulseDurationSec}s`') ease-in-out
+    v-bind('`${animationConfig?.bookmark?.pulseDurationSec ?? 2}s`') ease-in-out
     infinite;
 }
 
@@ -194,12 +194,12 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
         234,
         179,
         8,
-        v-bind('animationConfig.bookmark.pulseShadow.startOpacity')
+        v-bind('animationConfig?.bookmark?.pulseShadow?.startOpacity ?? 0.3')
       );
   }
   50% {
     box-shadow: 0 0 0
-      v-bind('`${animationConfig.bookmark.pulseShadow.endSpread}px`')
+      v-bind('`${animationConfig?.bookmark?.pulseShadow?.endSpread ?? 8}px`')
       rgba(234, 179, 8, 0);
   }
 }
@@ -207,8 +207,10 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
 /* Heart pop animation when bookmarking */
 .animate-heart-pop {
   animation: heart-pop
-    v-bind('`${animationConfig.bookmark.heartPopDurationMs}ms`')
-    v-bind('easingConfig.cubicBezier.spring');
+    v-bind('`${animationConfig?.bookmark?.heartPopDurationMs ?? 400}ms`')
+    v-bind(
+      'easingConfig?.cubicBezier?.spring ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+    );
 }
 
 @keyframes heart-pop {
@@ -216,7 +218,7 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
     transform: scale(1);
   }
   50% {
-    transform: scale(v-bind('animationConfig.bookmark.heartPopScale'));
+    transform: scale(v-bind('animationConfig?.bookmark?.heartPopScale ?? 1.3'));
   }
   100% {
     transform: scale(1);
@@ -226,8 +228,10 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
 /* Bounce scale animation for button */
 .animate-bounce-scale {
   animation: bounce-scale
-    v-bind('`${animationConfig.bookmark.bounceScaleDurationMs}ms`')
-    v-bind('easingConfig.cubicBezier.spring');
+    v-bind('`${animationConfig?.bookmark?.bounceScaleDurationMs ?? 400}ms`')
+    v-bind(
+      'easingConfig?.cubicBezier?.spring ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+    );
 }
 
 @keyframes bounce-scale {
@@ -235,10 +239,14 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
     transform: scale(1);
   }
   40% {
-    transform: scale(v-bind('animationConfig.bookmark.bounceScale.shrink'));
+    transform: scale(
+      v-bind('animationConfig?.bookmark?.bounceScale?.shrink ?? 0.9')
+    );
   }
   80% {
-    transform: scale(v-bind('animationConfig.bookmark.bounceScale.expand'));
+    transform: scale(
+      v-bind('animationConfig?.bookmark?.bounceScale?.expand ?? 1.1')
+    );
   }
   100% {
     transform: scale(1);
