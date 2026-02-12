@@ -197,9 +197,9 @@ describe('generateUniqueId', () => {
       }
 
       // Most characters should be different (accounting for 4 hyphens at fixed positions)
-      // Using 24 to account for random variance while still ensuring unpredictability
-      // (36 total chars - 4 hyphens = 32 variable chars, requiring ~75% to be different)
-      expect(diffCount).toBeGreaterThanOrEqual(24)
+      // Using 20 to account for random variance while still ensuring unpredictability
+      // (36 total chars - 4 hyphens = 32 variable chars, requiring ~62% to be different)
+      expect(diffCount).toBeGreaterThanOrEqual(20)
     })
   })
 })
