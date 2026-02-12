@@ -1,10 +1,11 @@
 import { defineEventHandler } from 'h3'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { cdnConfig } from '~/configs/cdn.config'
+import { componentStylesConfig } from '~/configs/component-styles.config'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
-  // Flexy hates hardcoded values! Using CDN config
+  // Flexy hates hardcoded values! Using config for all CSS values
   const swaggerHtml = `
 <!DOCTYPE html>
 <html lang="en">
@@ -20,17 +21,17 @@ export default defineEventHandler(async event => {
       padding: 0;
     }
     .swagger-ui .topbar {
-      background-color: #4f46e5;
+      background-color: ${componentStylesConfig.swaggerUi.topbar.backgroundColor};
     }
     .swagger-ui .topbar .download-url-wrapper {
       display: none;
     }
     .swagger-ui .info .title {
-      font-size: 28px;
-      margin-bottom: 10px;
+      font-size: ${componentStylesConfig.swaggerUi.info.titleFontSize};
+      margin-bottom: ${componentStylesConfig.swaggerUi.info.titleMarginBottom};
     }
     .swagger-ui .info {
-      margin: 20px 0;
+      margin: ${componentStylesConfig.swaggerUi.info.margin};
     }
   </style>
 </head>

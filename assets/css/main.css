@@ -2,6 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
+/* CSS Variables - Flexy hates hardcoded values! */
+:root {
+  /* Focus styles */
+  --focus-outline-width: 2px;
+  --focus-outline-style: solid;
+  --focus-outline-color: #1f2937;
+  --focus-outline-offset: 2px;
+  --focus-hc-outline-width: 3px;
+  --focus-hc-outline-color: #000000;
+
+  /* Accessibility */
+  --skip-link-padding: 8px;
+  --sr-only-width: 1px;
+  --sr-only-height: 1px;
+  --sr-only-margin: -1px;
+
+  /* Transitions */
+  --transition-page-enter-duration: 0.2s;
+  --transition-page-leave-duration: 0.2s;
+  --transition-layout-duration: 0.2s;
+  --transition-reduced-motion-duration: 0.1s;
+  --transition-easing: ease;
+
+  /* Transforms */
+  --transform-page-enter-y: 8px;
+  --transform-page-leave-y: -8px;
+
+  /* Ripple */
+  --ripple-duration: 600ms;
+  --ripple-easing: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* High Contrast */
+  --hc-background: #ffffff;
+  --hc-text: #000000;
+  --hc-link: #0000ee;
+  --hc-link-hover: #0000ee;
+  --hc-border-width: 2px;
+  --hc-border-color: #000000;
+
+  /* Reduced Motion */
+  --reduced-motion-animation-duration: 0.01ms;
+  --reduced-motion-transition-duration: 0.01ms;
+}
+
 /* Custom styles can be added here */
 
 /* Dark mode support - applies to entire document */
@@ -24,10 +68,11 @@ body {
     sans-serif;
 }
 
-/* Improved focus styles for keyboard navigation */
+/* Improved focus styles for keyboard navigation - Using CSS Variables */
 body.keyboard-nav :focus {
-  outline: 2px solid #1f2937 !important; /* gray-800 */
-  outline-offset: 2px;
+  outline: var(--focus-outline-width) var(--focus-outline-style)
+    var(--focus-outline-color) !important;
+  outline-offset: var(--focus-outline-offset);
 }
 
 /* Hide focus indicators when using mouse navigation */
@@ -35,37 +80,37 @@ body.mouse-nav :focus {
   outline: none;
 }
 
-/* Ensure skip link is always visible when focused */
+/* Ensure skip link is always visible when focused - Using CSS Variables */
 .sr-only.focus:not(.sr-only) {
   position: absolute !important;
   width: auto !important;
   height: auto !important;
-  padding: 8px !important;
+  padding: var(--skip-link-padding) !important;
   margin: 0 !important;
   overflow: visible !important;
   clip-path: none !important;
   white-space: nowrap !important;
 }
 
-/* Reduced motion support for users who prefer it */
+/* Reduced motion support for users who prefer it - Using CSS Variables */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
+    animation-duration: var(--reduced-motion-animation-duration) !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: var(--reduced-motion-transition-duration) !important;
     scroll-behavior: auto !important;
   }
 }
 
-/* Screen reader only content */
+/* Screen reader only content - Using CSS Variables */
 .sr-only {
   position: absolute;
-  width: 1px;
-  height: 1px;
+  width: var(--sr-only-width);
+  height: var(--sr-only-height);
   padding: 0;
-  margin: -1px;
+  margin: var(--sr-only-margin);
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
@@ -73,28 +118,28 @@ body.mouse-nav :focus {
 }
 
 /* Page Transition Animations */
-/* Smooth fade and slide effect when navigating between pages */
+/* Smooth fade and slide effect when navigating between pages - Using CSS Variables */
 .page-enter-active,
 .page-leave-active {
   transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
+    opacity var(--transition-page-enter-duration) var(--transition-easing),
+    transform var(--transition-page-enter-duration) var(--transition-easing);
 }
 
 .page-enter-from {
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(var(--transform-page-enter-y));
 }
 
 .page-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateY(var(--transform-page-leave-y));
 }
 
-/* Layout transitions */
+/* Layout transitions - Using CSS Variables */
 .layout-enter-active,
 .layout-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity var(--transition-layout-duration) var(--transition-easing);
 }
 
 .layout-enter-from,
@@ -102,11 +147,12 @@ body.mouse-nav :focus {
   opacity: 0;
 }
 
-/* Reduced motion support for page transitions */
+/* Reduced motion support for page transitions - Using CSS Variables */
 @media (prefers-reduced-motion: reduce) {
   .page-enter-active,
   .page-leave-active {
-    transition: opacity 0.1s ease;
+    transition: opacity var(--transition-reduced-motion-duration)
+      var(--transition-easing);
   }
 
   .page-enter-from,
@@ -116,63 +162,64 @@ body.mouse-nav :focus {
 
   .layout-enter-active,
   .layout-leave-active {
-    transition: opacity 0.1s ease;
+    transition: opacity var(--transition-reduced-motion-duration)
+      var(--transition-easing);
   }
 }
 
-/* High contrast mode support */
+/* High contrast mode support - Using CSS Variables */
 @media (prefers-contrast: high) {
   body {
-    background-color: #ffffff !important;
-    color: #000000 !important;
+    background-color: var(--hc-background) !important;
+    color: var(--hc-text) !important;
   }
 
   .bg-white {
-    background-color: #ffffff !important;
+    background-color: var(--hc-background) !important;
   }
   .bg-gray-50 {
-    background-color: #ffffff !important;
+    background-color: var(--hc-background) !important;
   }
   .bg-gray-100 {
-    background-color: #ffffff !important;
+    background-color: var(--hc-background) !important;
   }
   .text-gray-900 {
-    color: #000000 !important;
+    color: var(--hc-text) !important;
   }
   .text-gray-800 {
-    color: #000000 !important;
+    color: var(--hc-text) !important;
   }
   .text-gray-700 {
-    color: #000000 !important;
+    color: var(--hc-text) !important;
   }
   .text-gray-600 {
-    color: #000000 !important;
+    color: var(--hc-text) !important;
   }
   .border-gray-300 {
-    border-color: #000000 !important;
+    border-color: var(--hc-border-color) !important;
   }
 
   /* Ensure sufficient contrast for interactive elements */
   a,
   button {
-    color: #0000ee !important;
+    color: var(--hc-link) !important;
     text-decoration: underline !important;
   }
 
   a:hover,
   button:hover {
-    color: #0000ee !important;
+    color: var(--hc-link-hover) !important;
   }
 
   /* Improve contrast for resource cards in high contrast mode */
   .bg-white.p-6.rounded-lg.shadow {
-    border: 2px solid #000000 !important;
+    border: var(--hc-border-width) solid var(--hc-border-color) !important;
   }
 
   /* Ensure focus indicators are visible in high contrast */
   body.keyboard-nav :focus {
-    outline: 3px solid #000000 !important;
-    outline-offset: 2px;
+    outline: var(--focus-hc-outline-width) solid var(--focus-hc-outline-color) !important;
+    outline-offset: var(--focus-outline-offset);
   }
 }
 
@@ -201,7 +248,8 @@ body.mouse-nav :focus {
   border-radius: 50%;
   pointer-events: none;
   transform: scale(0);
-  animation: ripple-animation 600ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: ripple-animation var(--ripple-duration) var(--ripple-easing)
+    forwards;
 }
 
 /* Ensure buttons with ripples have proper positioning */
