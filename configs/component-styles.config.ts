@@ -143,9 +143,285 @@ export const componentStylesConfig = {
     },
   },
 
-  // API Keys Component Styles
+  // API Keys Component Styles - Flexy hates hardcoded CSS!
   apiKeys: {
+    // Layout
+    maxWidth: process.env.API_KEYS_MAX_WIDTH || '800px',
+    padding: process.env.API_KEYS_PADDING || '1rem',
+    headerMarginBottom: process.env.API_KEYS_HEADER_MARGIN || '1.5rem',
+
+    // Form section
+    formBackground: process.env.API_KEYS_FORM_BG || '#f8f9fa',
+    formPadding: process.env.API_KEYS_FORM_PADDING || '1.5rem',
+    formBorderRadius: process.env.API_KEYS_FORM_RADIUS || '0.5rem',
+    formMarginBottom: process.env.API_KEYS_FORM_MARGIN || '1.5rem',
+
+    // Form groups
+    formGroupMarginBottom: process.env.API_KEYS_FORM_GROUP_MARGIN || '1rem',
+    labelMarginBottom: process.env.API_KEYS_LABEL_MARGIN || '0.5rem',
+    labelFontWeight: process.env.API_KEYS_LABEL_WEIGHT || '500',
+
+    // Form controls
+    inputWidth: process.env.API_KEYS_INPUT_WIDTH || '100%',
+    inputPadding: process.env.API_KEYS_INPUT_PADDING || '0.5rem',
+    inputBorder: process.env.API_KEYS_INPUT_BORDER || '1px solid #d1d5db',
+    inputBorderRadius: process.env.API_KEYS_INPUT_RADIUS || '0.375rem',
+    inputFontSize: process.env.API_KEYS_INPUT_SIZE || '1rem',
+    inputMultipleMinHeight: process.env.API_KEYS_INPUT_MIN_HEIGHT || '100px',
+
+    // Form actions
+    actionsGap: process.env.API_KEYS_ACTIONS_GAP || '0.5rem',
+    actionsMarginTop: process.env.API_KEYS_ACTIONS_MARGIN || '1rem',
+
+    // List section
+    listTitleMarginBottom: process.env.API_KEYS_LIST_TITLE_MARGIN || '1rem',
+    emptyStatePadding: process.env.API_KEYS_EMPTY_PADDING || '2rem',
+    emptyStateColor: process.env.API_KEYS_EMPTY_COLOR || '#6b7280',
+
+    // Key items
+    itemsGap: process.env.API_KEYS_ITEMS_GAP || '1rem',
+    itemPadding: process.env.API_KEYS_ITEM_PADDING || '1rem',
+    itemBorder: process.env.API_KEYS_ITEM_BORDER || '1px solid #e5e7eb',
+    itemBorderRadius: process.env.API_KEYS_ITEM_RADIUS || '0.5rem',
+    itemBackground: process.env.API_KEYS_ITEM_BG || 'white',
+
+    // Key info
+    keyNameFontWeight: process.env.API_KEYS_NAME_WEIGHT || '500',
+    keyNameMarginBottom: process.env.API_KEYS_NAME_MARGIN || '0.25rem',
+    keyMetaColor: process.env.API_KEYS_META_COLOR || '#6b7280',
+    keyMetaFontSize: process.env.API_KEYS_META_SIZE || '0.875rem',
+    keyMetaGap: process.env.API_KEYS_META_GAP || '1rem',
+
+    // Permission tags
+    permissionTagBackground: process.env.API_KEYS_PERM_BG || '#e0e7ff',
+    permissionTagColor: process.env.API_KEYS_PERM_COLOR || '#4f46e5',
+    permissionTagPadding: process.env.API_KEYS_PERM_PADDING || '0.25rem 0.5rem',
+    permissionTagBorderRadius: process.env.API_KEYS_PERM_RADIUS || '9999px',
+    permissionTagFontSize: process.env.API_KEYS_PERM_SIZE || '0.875rem',
+
+    // Actions
+    actionsGapSmall: process.env.API_KEYS_ACTIONS_GAP_SM || '0.5rem',
+
+    // Modal
     modalOverlayBg: process.env.API_KEYS_MODAL_OVERLAY || 'rgba(0, 0, 0, 0.5)',
+    modalZIndex: process.env.API_KEYS_MODAL_Z_INDEX || '1000',
+    modalContentBackground: process.env.API_KEYS_MODAL_BG || 'white',
+    modalContentPadding: process.env.API_KEYS_MODAL_PADDING || '1.5rem',
+    modalContentBorderRadius: process.env.API_KEYS_MODAL_RADIUS || '0.5rem',
+    modalContentMaxWidth: process.env.API_KEYS_MODAL_MAX_WIDTH || '500px',
+    modalContentWidth: process.env.API_KEYS_MODAL_WIDTH || '90%',
+
+    // Warning banner
+    warningBackground: process.env.API_KEYS_WARNING_BG || '#fef3c7',
+    warningColor: process.env.API_KEYS_WARNING_COLOR || '#92400e',
+    warningPadding: process.env.API_KEYS_WARNING_PADDING || '0.75rem',
+    warningBorderRadius: process.env.API_KEYS_WARNING_RADIUS || '0.375rem',
+    warningMargin: process.env.API_KEYS_WARNING_MARGIN || '1rem 0',
+
+    // Buttons
+    buttonPadding: process.env.API_KEYS_BTN_PADDING || '0.5rem 1rem',
+    buttonBorder: process.env.API_KEYS_BTN_BORDER || '1px solid transparent',
+    buttonBorderRadius: process.env.API_KEYS_BTN_RADIUS || '0.375rem',
+    buttonFontSize: process.env.API_KEYS_BTN_SIZE || '0.875rem',
+    buttonFontWeight: process.env.API_KEYS_BTN_WEIGHT || '500',
+    buttonTransition: process.env.API_KEYS_BTN_TRANSITION || 'all 0.15s ease',
+
+    // Button variants
+    buttonPrimaryBg: process.env.API_KEYS_BTN_PRIMARY_BG || '#3b82f6',
+    buttonPrimaryColor: process.env.API_KEYS_BTN_PRIMARY_COLOR || 'white',
+    buttonPrimaryHoverBg: process.env.API_KEYS_BTN_PRIMARY_HOVER || '#2563eb',
+
+    buttonSecondaryBg: process.env.API_KEYS_BTN_SECONDARY_BG || '#6b7280',
+    buttonSecondaryColor: process.env.API_KEYS_BTN_SECONDARY_COLOR || 'white',
+    buttonSecondaryHoverBg:
+      process.env.API_KEYS_BTN_SECONDARY_HOVER || '#374151',
+
+    buttonDangerBg: process.env.API_KEYS_BTN_DANGER_BG || '#ef4444',
+    buttonDangerColor: process.env.API_KEYS_BTN_DANGER_COLOR || 'white',
+    buttonDangerHoverBg: process.env.API_KEYS_BTN_DANGER_HOVER || '#dc2626',
+
+    buttonSuccessBg: process.env.API_KEYS_BTN_SUCCESS_BG || '#22c55e',
+    buttonSuccessColor: process.env.API_KEYS_BTN_SUCCESS_COLOR || 'white',
+    buttonSuccessHoverBg: process.env.API_KEYS_BTN_SUCCESS_HOVER || '#16a34a',
+
+    // Button sizes
+    buttonSmallPadding: process.env.API_KEYS_BTN_SM_PADDING || '0.25rem 0.5rem',
+    buttonSmallFontSize: process.env.API_KEYS_BTN_SM_SIZE || '0.75rem',
+
+    // Button icons
+    buttonIconWidth: process.env.API_KEYS_BTN_ICON_WIDTH || '1rem',
+    buttonIconHeight: process.env.API_KEYS_BTN_ICON_HEIGHT || '1rem',
+    buttonIconMarginRight: process.env.API_KEYS_BTN_ICON_MARGIN || '0.5rem',
+
+    // Animation
+    checkAnimationDuration: process.env.API_KEYS_CHECK_DURATION || '300ms',
+    checkAnimationEasing:
+      process.env.API_KEYS_CHECK_EASING ||
+      'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    buttonTransitionDuration:
+      process.env.API_KEYS_BTN_TRANSITION_DURATION || '200ms',
+    buttonActiveScale: process.env.API_KEYS_BTN_ACTIVE_SCALE || '0.95',
+  },
+
+  // Error Message Component Styles - Flexy hates hardcoded CSS!
+  errorMessage: {
+    // Container
+    containerPosition: process.env.ERROR_MSG_CONTAINER_POSITION || 'relative',
+
+    // Message box
+    padding: process.env.ERROR_MSG_PADDING || '0.75rem',
+    borderRadius: process.env.ERROR_MSG_RADIUS || '0.375rem',
+    gap: process.env.ERROR_MSG_GAP || '0.5rem',
+    position: process.env.ERROR_MSG_POSITION || 'relative',
+    overflow: process.env.ERROR_MSG_OVERFLOW || 'hidden',
+
+    // Dismissible variant
+    dismissiblePaddingRight: process.env.ERROR_MSG_DISMISS_PADDING || '2.5rem',
+
+    // Icon
+    iconFlexShrink: process.env.ERROR_MSG_ICON_SHRINK || '0',
+    iconDisplay: process.env.ERROR_MSG_ICON_DISPLAY || 'flex',
+    iconAlignItems: process.env.ERROR_MSG_ICON_ALIGN || 'flex-start',
+
+    // Icon pulse animation
+    iconPulseDuration: process.env.ERROR_MSG_PULSE_DURATION || '2s',
+    iconPulseScale: process.env.ERROR_MSG_PULSE_SCALE || '1.1',
+    iconPulseOpacity: process.env.ERROR_MSG_PULSE_OPACITY || '0.8',
+
+    // Content
+    contentFlex: process.env.ERROR_MSG_CONTENT_FLEX || '1',
+    contentMinWidth: process.env.ERROR_MSG_CONTENT_MIN_WIDTH || '0',
+
+    // Text
+    textFontSize: process.env.ERROR_MSG_TEXT_SIZE || '0.875rem',
+    textLineHeight: process.env.ERROR_MSG_TEXT_LINE_HEIGHT || '1.25rem',
+
+    // Action area
+    actionMarginTop: process.env.ERROR_MSG_ACTION_MARGIN || '0.25rem',
+
+    // Action button
+    actionButtonFontSize: process.env.ERROR_MSG_ACTION_BTN_SIZE || '0.75rem',
+    actionButtonFontWeight: process.env.ERROR_MSG_ACTION_BTN_WEIGHT || '500',
+    actionButtonBackground:
+      process.env.ERROR_MSG_ACTION_BTN_BG || 'transparent',
+    actionButtonBorder: process.env.ERROR_MSG_ACTION_BTN_BORDER || 'none',
+    actionButtonPadding:
+      process.env.ERROR_MSG_ACTION_BTN_PADDING || '0.25rem 0.5rem',
+    actionButtonBorderRadius:
+      process.env.ERROR_MSG_ACTION_BTN_RADIUS || '0.25rem',
+    actionButtonTransition:
+      process.env.ERROR_MSG_ACTION_BTN_TRANSITION || 'all 0.2s ease',
+    actionButtonMargin:
+      process.env.ERROR_MSG_ACTION_BTN_MARGIN || '-0.25rem -0.5rem',
+    actionButtonHoverBg:
+      process.env.ERROR_MSG_ACTION_BTN_HOVER_BG || 'rgba(0, 0, 0, 0.05)',
+    actionButtonFocusOutline:
+      process.env.ERROR_MSG_ACTION_BTN_FOCUS || '2px solid currentColor',
+    actionButtonFocusOffset: process.env.ERROR_MSG_ACTION_BTN_OFFSET || '2px',
+
+    // Dismiss button
+    dismissPosition: process.env.ERROR_MSG_DISMISS_POSITION || 'absolute',
+    dismissTop: process.env.ERROR_MSG_DISMISS_TOP || '0.5rem',
+    dismissRight: process.env.ERROR_MSG_DISMISS_RIGHT || '0.5rem',
+    dismissPadding: process.env.ERROR_MSG_DISMISS_PADDING || '0.25rem',
+    dismissBackground: process.env.ERROR_MSG_DISMISS_BG || 'transparent',
+    dismissBorder: process.env.ERROR_MSG_DISMISS_BORDER || 'none',
+    dismissBorderRadius: process.env.ERROR_MSG_DISMISS_RADIUS || '0.25rem',
+    dismissOpacity: process.env.ERROR_MSG_DISMISS_OPACITY || '0.6',
+    dismissTransition:
+      process.env.ERROR_MSG_DISMISS_TRANSITION || 'all 0.2s ease',
+    dismissHoverOpacity: process.env.ERROR_MSG_DISMISS_HOVER_OPACITY || '1',
+    dismissHoverBg:
+      process.env.ERROR_MSG_DISMISS_HOVER_BG || 'rgba(0, 0, 0, 0.05)',
+    dismissHoverTransform:
+      process.env.ERROR_MSG_DISMISS_HOVER_TRANSFORM || 'rotate(90deg)',
+    dismissFocusOutline:
+      process.env.ERROR_MSG_DISMISS_FOCUS || '2px solid currentColor',
+    dismissFocusOffset: process.env.ERROR_MSG_DISMISS_OFFSET || '2px',
+
+    // Progress bar
+    progressPosition: process.env.ERROR_MSG_PROGRESS_POSITION || 'absolute',
+    progressBottom: process.env.ERROR_MSG_PROGRESS_BOTTOM || '0',
+    progressLeft: process.env.ERROR_MSG_PROGRESS_LEFT || '0',
+    progressRight: process.env.ERROR_MSG_PROGRESS_RIGHT || '0',
+    progressHeight: process.env.ERROR_MSG_PROGRESS_HEIGHT || '3px',
+    progressBgColor: process.env.ERROR_MSG_PROGRESS_BG || 'rgba(0, 0, 0, 0.1)',
+    progressBarHeight: process.env.ERROR_MSG_PROGRESS_BAR_HEIGHT || '100%',
+    progressBarOpacity: process.env.ERROR_MSG_PROGRESS_BAR_OPACITY || '0.3',
+    progressBarTransformOrigin: process.env.ERROR_MSG_PROGRESS_ORIGIN || 'left',
+
+    // Undo button - Palette's micro-UX enhancement
+    undoPosition: process.env.ERROR_MSG_UNDO_POSITION || 'relative',
+    undoDisplay: process.env.ERROR_MSG_UNDO_DISPLAY || 'inline-flex',
+    undoAlignItems: process.env.ERROR_MSG_UNDO_ALIGN || 'center',
+    undoPadding: process.env.ERROR_MSG_UNDO_PADDING || '0.5rem 0.75rem',
+    undoMarginBottom: process.env.ERROR_MSG_UNDO_MARGIN || '0.5rem',
+    undoFontSize: process.env.ERROR_MSG_UNDO_SIZE || '0.875rem',
+    undoFontWeight: process.env.ERROR_MSG_UNDO_WEIGHT || '500',
+    undoColor: process.env.ERROR_MSG_UNDO_COLOR || '#92400e',
+    undoBackground: process.env.ERROR_MSG_UNDO_BG || '#fffbeb',
+    undoBorder: process.env.ERROR_MSG_UNDO_BORDER || '1px solid #fcd34d',
+    undoBorderRadius: process.env.ERROR_MSG_UNDO_RADIUS || '0.375rem',
+    undoCursor: process.env.ERROR_MSG_UNDO_CURSOR || 'pointer',
+    undoTransition: process.env.ERROR_MSG_UNDO_TRANSITION || 'all 0.2s ease',
+    undoOverflow: process.env.ERROR_MSG_UNDO_OVERFLOW || 'hidden',
+    undoAnimation:
+      process.env.ERROR_MSG_UNDO_ANIMATION ||
+      'undo-slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+
+    // Undo hover
+    undoHoverBackground: process.env.ERROR_MSG_UNDO_HOVER_BG || '#fef3c7',
+    undoHoverBorderColor: process.env.ERROR_MSG_UNDO_HOVER_BORDER || '#f59e0b',
+    undoHoverTransform:
+      process.env.ERROR_MSG_UNDO_HOVER_TRANSFORM || 'translateY(-1px)',
+    undoHoverShadow:
+      process.env.ERROR_MSG_UNDO_HOVER_SHADOW || '0 2px 4px rgba(0, 0, 0, 0.1)',
+
+    // Undo focus
+    undoFocusShadow:
+      process.env.ERROR_MSG_UNDO_FOCUS_SHADOW ||
+      '0 0 0 2px #fff, 0 0 0 4px #f59e0b',
+
+    // Undo active
+    undoActiveTransform:
+      process.env.ERROR_MSG_UNDO_ACTIVE_TRANSFORM || 'translateY(0)',
+
+    // Undo progress bar
+    undoProgressPosition:
+      process.env.ERROR_MSG_UNDO_PROGRESS_POSITION || 'absolute',
+    undoProgressBottom: process.env.ERROR_MSG_UNDO_PROGRESS_BOTTOM || '0',
+    undoProgressLeft: process.env.ERROR_MSG_UNDO_PROGRESS_LEFT || '0',
+    undoProgressHeight: process.env.ERROR_MSG_UNDO_PROGRESS_HEIGHT || '2px',
+    undoProgressTransition:
+      process.env.ERROR_MSG_UNDO_PROGRESS_TRANSITION || 'width 0.05s linear',
+
+    // Undo animation keyframes
+    undoSlideInDuration: process.env.ERROR_MSG_UNDO_SLIDE_DURATION || '0.3s',
+    undoSlideInEasing:
+      process.env.ERROR_MSG_UNDO_SLIDE_EASING || 'cubic-bezier(0.4, 0, 0.2, 1)',
+    undoSlideInStartOpacity:
+      process.env.ERROR_MSG_UNDO_SLIDE_OPACITY_START || '0',
+    undoSlideInStartTransform:
+      process.env.ERROR_MSG_UNDO_SLIDE_TRANSFORM_START ||
+      'translateY(-8px) scale(0.95)',
+    undoSlideInMidTransform:
+      process.env.ERROR_MSG_UNDO_SLIDE_TRANSFORM_MID ||
+      'translateY(2px) scale(1.02)',
+    undoSlideInEndOpacity: process.env.ERROR_MSG_UNDO_SLIDE_OPACITY_END || '1',
+    undoSlideInEndTransform:
+      process.env.ERROR_MSG_UNDO_SLIDE_TRANSFORM_END ||
+      'translateY(0) scale(1)',
+
+    // Screen reader only
+    srOnlyPosition: process.env.ERROR_MSG_SR_POSITION || 'absolute',
+    srOnlyWidth: process.env.ERROR_MSG_SR_WIDTH || '1px',
+    srOnlyHeight: process.env.ERROR_MSG_SR_HEIGHT || '1px',
+    srOnlyPadding: process.env.ERROR_MSG_SR_PADDING || '0',
+    srOnlyMargin: process.env.ERROR_MSG_SR_MARGIN || '-1px',
+    srOnlyOverflow: process.env.ERROR_MSG_SR_OVERFLOW || 'hidden',
+    srOnlyClip: process.env.ERROR_MSG_SR_CLIP || 'rect(0, 0, 0, 0)',
+    srOnlyWhiteSpace: process.env.ERROR_MSG_SR_WHITE_SPACE || 'nowrap',
+    srOnlyBorderWidth: process.env.ERROR_MSG_SR_BORDER || '0',
   },
 
   // Error Boundary Component Styles

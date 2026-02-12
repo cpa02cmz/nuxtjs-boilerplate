@@ -230,6 +230,7 @@ import logger from '~/utils/logger'
 import { permissionsConfig } from '~/configs/permissions.config'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
+import { componentStylesConfig } from '~/configs/component-styles.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
 const {
@@ -366,78 +367,78 @@ onMounted(() => {
 
 <style scoped>
 .api-keys-manager {
-  max-width: 800px;
+  max-width: v-bind('componentStylesConfig.apiKeys.maxWidth');
   margin: 0 auto;
-  padding: 1rem;
+  padding: v-bind('componentStylesConfig.apiKeys.padding');
 }
 
 .api-keys-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: v-bind('componentStylesConfig.apiKeys.headerMarginBottom');
 }
 
 .api-key-form {
-  background: #f8f9fa;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
+  background: v-bind('componentStylesConfig.apiKeys.formBackground');
+  padding: v-bind('componentStylesConfig.apiKeys.formPadding');
+  border-radius: v-bind('componentStylesConfig.apiKeys.formBorderRadius');
+  margin-bottom: v-bind('componentStylesConfig.apiKeys.formMarginBottom');
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: v-bind('componentStylesConfig.apiKeys.formGroupMarginBottom');
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
+  margin-bottom: v-bind('componentStylesConfig.apiKeys.labelMarginBottom');
+  font-weight: v-bind('componentStylesConfig.apiKeys.labelFontWeight');
 }
 
 .form-control {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 1rem;
+  width: v-bind('componentStylesConfig.apiKeys.inputWidth');
+  padding: v-bind('componentStylesConfig.apiKeys.inputPadding');
+  border: v-bind('componentStylesConfig.apiKeys.inputBorder');
+  border-radius: v-bind('componentStylesConfig.apiKeys.inputBorderRadius');
+  font-size: v-bind('componentStylesConfig.apiKeys.inputFontSize');
 }
 
 .form-control[multiple] {
   height: auto;
-  min-height: 100px;
+  min-height: v-bind('componentStylesConfig.apiKeys.inputMultipleMinHeight');
 }
 
 .form-actions {
   display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: v-bind('componentStylesConfig.apiKeys.actionsGap');
+  margin-top: v-bind('componentStylesConfig.apiKeys.actionsMarginTop');
 }
 
 .api-keys-list h3 {
-  margin-bottom: 1rem;
+  margin-bottom: v-bind('componentStylesConfig.apiKeys.listTitleMarginBottom');
 }
 
 .empty-state {
   text-align: center;
-  padding: 2rem;
-  color: #6b7280;
+  padding: v-bind('componentStylesConfig.apiKeys.emptyStatePadding');
+  color: v-bind('componentStylesConfig.apiKeys.emptyStateColor');
 }
 
 .api-key-items {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: v-bind('componentStylesConfig.apiKeys.itemsGap');
 }
 
 .api-key-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  background: white;
+  padding: v-bind('componentStylesConfig.apiKeys.itemPadding');
+  border: v-bind('componentStylesConfig.apiKeys.itemBorder');
+  border-radius: v-bind('componentStylesConfig.apiKeys.itemBorderRadius');
+  background: v-bind('componentStylesConfig.apiKeys.itemBackground');
 }
 
 .api-key-info {
@@ -445,13 +446,13 @@ onMounted(() => {
 }
 
 .api-key-name {
-  font-weight: 500;
-  margin-bottom: 0.25rem;
+  font-weight: v-bind('componentStylesConfig.apiKeys.keyNameFontWeight');
+  margin-bottom: v-bind('componentStylesConfig.apiKeys.keyNameMarginBottom');
 }
 
 .api-key-id {
-  color: #6b7280;
-  font-size: 0.875rem;
+  color: v-bind('componentStylesConfig.apiKeys.keyMetaColor');
+  font-size: v-bind('componentStylesConfig.apiKeys.keyMetaFontSize');
   margin-bottom: 0.5rem;
 }
 
@@ -463,23 +464,25 @@ onMounted(() => {
 }
 
 .permission-tag {
-  background: #e0e7ff;
-  color: #4f46e5;
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
+  background: v-bind('componentStylesConfig.apiKeys.permissionTagBackground');
+  color: v-bind('componentStylesConfig.apiKeys.permissionTagColor');
+  padding: v-bind('componentStylesConfig.apiKeys.permissionTagPadding');
+  border-radius: v-bind(
+    'componentStylesConfig.apiKeys.permissionTagBorderRadius'
+  );
+  font-size: v-bind('componentStylesConfig.apiKeys.permissionTagFontSize');
 }
 
 .api-key-meta {
   display: flex;
-  gap: 1rem;
-  font-size: 0.875rem;
-  color: #6b7280;
+  gap: v-bind('componentStylesConfig.apiKeys.keyMetaGap');
+  font-size: v-bind('componentStylesConfig.apiKeys.keyMetaFontSize');
+  color: v-bind('componentStylesConfig.apiKeys.keyMetaColor');
 }
 
 .api-key-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: v-bind('componentStylesConfig.apiKeys.actionsGapSmall');
 }
 
 .modal-overlay {
@@ -488,91 +491,98 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: v-bind('componentStylesConfig.apiKeys.modalOverlayBg');
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: v-bind('componentStylesConfig.apiKeys.modalZIndex');
 }
 
 .modal-content {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  max-width: 500px;
-  width: 90%;
+  background: v-bind('componentStylesConfig.apiKeys.modalContentBackground');
+  padding: v-bind('componentStylesConfig.apiKeys.modalContentPadding');
+  border-radius: v-bind(
+    'componentStylesConfig.apiKeys.modalContentBorderRadius'
+  );
+  max-width: v-bind('componentStylesConfig.apiKeys.modalContentMaxWidth');
+  width: v-bind('componentStylesConfig.apiKeys.modalContentWidth');
 }
 
 .warning {
-  background: #fef3c7;
-  color: #92400e;
-  padding: 0.75rem;
-  border-radius: 0.375rem;
-  margin: 1rem 0;
+  background: v-bind('componentStylesConfig.apiKeys.warningBackground');
+  color: v-bind('componentStylesConfig.apiKeys.warningColor');
+  padding: v-bind('componentStylesConfig.apiKeys.warningPadding');
+  border-radius: v-bind('componentStylesConfig.apiKeys.warningBorderRadius');
+  margin: v-bind('componentStylesConfig.apiKeys.warningMargin');
 }
 
 .btn {
-  padding: 0.5rem 1rem;
-  border: 1px solid transparent;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+  padding: v-bind('componentStylesConfig.apiKeys.buttonPadding');
+  border: v-bind('componentStylesConfig.apiKeys.buttonBorder');
+  border-radius: v-bind('componentStylesConfig.apiKeys.buttonBorderRadius');
+  font-size: v-bind('componentStylesConfig.apiKeys.buttonFontSize');
+  font-weight: v-bind('componentStylesConfig.apiKeys.buttonFontWeight');
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: v-bind('componentStylesConfig.apiKeys.buttonTransition');
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary {
-  background: #3b82f6;
-  color: white;
+  background: v-bind('componentStylesConfig.apiKeys.buttonPrimaryBg');
+  color: v-bind('componentStylesConfig.apiKeys.buttonPrimaryColor');
 }
 
 .btn-primary:hover {
-  background: #2563eb;
+  background: v-bind('componentStylesConfig.apiKeys.buttonPrimaryHoverBg');
 }
 
 .btn-secondary {
-  background: #6b7280;
-  color: white;
+  background: v-bind('componentStylesConfig.apiKeys.buttonSecondaryBg');
+  color: v-bind('componentStylesConfig.apiKeys.buttonSecondaryColor');
 }
 
 .btn-secondary:hover {
-  background: #374151;
+  background: v-bind('componentStylesConfig.apiKeys.buttonSecondaryHoverBg');
 }
 
 .btn-sm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
+  padding: v-bind('componentStylesConfig.apiKeys.buttonSmallPadding');
+  font-size: v-bind('componentStylesConfig.apiKeys.buttonSmallFontSize');
 }
 
 .btn-danger {
-  background: #ef4444;
-  color: white;
+  background: v-bind('componentStylesConfig.apiKeys.buttonDangerBg');
+  color: v-bind('componentStylesConfig.apiKeys.buttonDangerColor');
 }
 
 .btn-danger:hover {
-  background: #dc2626;
+  background: v-bind('componentStylesConfig.apiKeys.buttonDangerHoverBg');
 }
 
 .btn-success {
-  background: #22c55e;
-  color: white;
+  background: v-bind('componentStylesConfig.apiKeys.buttonSuccessBg');
+  color: v-bind('componentStylesConfig.apiKeys.buttonSuccessColor');
 }
 
 .btn-success:hover {
-  background: #16a34a;
+  background: v-bind('componentStylesConfig.apiKeys.buttonSuccessHoverBg');
 }
 
 .btn-icon {
-  width: 1rem;
-  height: 1rem;
-  margin-right: 0.5rem;
+  width: v-bind('componentStylesConfig.apiKeys.buttonIconWidth');
+  height: v-bind('componentStylesConfig.apiKeys.buttonIconHeight');
+  margin-right: v-bind('componentStylesConfig.apiKeys.buttonIconMarginRight');
   display: inline-block;
   vertical-align: middle;
 }
 
 /* Checkmark scale animation for copy feedback */
 .animate-check-scale {
-  animation: check-scale 300ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: check-scale
+    v-bind('componentStylesConfig.apiKeys.checkAnimationDuration')
+    v-bind('componentStylesConfig.apiKeys.checkAnimationEasing');
 }
 
 @keyframes check-scale {
@@ -589,14 +599,12 @@ onMounted(() => {
 
 /* Button transition for smooth color change */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 200ms ease-out;
+  transition: all
+    v-bind('componentStylesConfig.apiKeys.buttonTransitionDuration') ease-out;
 }
 
 .btn:active {
-  transform: scale(0.95);
+  transform: scale(v-bind('componentStylesConfig.apiKeys.buttonActiveScale'));
 }
 
 /* Respect reduced motion preferences */

@@ -68,14 +68,22 @@
           @submit.prevent="handleSubmitWithShake"
         >
           <div>
-            <label
-              for="title"
-              class="block text-sm font-medium text-gray-700 mb-1"
+            <!-- Floating Label Container - Palette's micro-UX delight! -->
+            <div
+              class="floating-label-container relative"
+              :class="{
+                'has-value': formData.title.length > 0,
+                'has-error': errors.title,
+                'has-success': formData.title && !errors.title,
+              }"
             >
-              Resource Title <span aria-hidden="true">*</span>
-              <span class="sr-only">(required)</span>
-            </label>
-            <div class="relative">
+              <label
+                for="title"
+                class="floating-label"
+              >
+                Resource Title <span aria-hidden="true">*</span>
+                <span class="sr-only">(required)</span>
+              </label>
               <input
                 id="title"
                 ref="titleInput"
@@ -94,7 +102,6 @@
                       ? 'border-green-500'
                       : 'border-gray-300',
                 ]"
-                :placeholder="contentConfig.submit.form.namePlaceholder"
                 @focus="isTitleFocused = true"
                 @blur="handleTitleBlur"
               >
@@ -267,14 +274,22 @@
           </div>
 
           <div>
-            <label
-              for="url"
-              class="block text-sm font-medium text-gray-700 mb-1"
+            <!-- Floating Label Container - Palette's micro-UX delight! -->
+            <div
+              class="floating-label-container relative"
+              :class="{
+                'has-value': formData.url.length > 0,
+                'has-error': errors.url,
+                'has-success': formData.url && !errors.url,
+              }"
             >
-              URL <span aria-hidden="true">*</span>
-              <span class="sr-only">(required)</span>
-            </label>
-            <div class="relative">
+              <label
+                for="url"
+                class="floating-label"
+              >
+                URL <span aria-hidden="true">*</span>
+                <span class="sr-only">(required)</span>
+              </label>
               <input
                 id="url"
                 ref="urlInputRef"
@@ -292,7 +307,6 @@
                       ? 'border-green-500'
                       : 'border-gray-300',
                 ]"
-                :placeholder="contentConfig.placeholders.defaultUrl"
                 @blur="handleUrlBlur"
                 @paste="handleSmartPaste"
               >
@@ -442,20 +456,25 @@
           </div>
 
           <div>
-            <label
-              for="tags"
-              class="block text-sm font-medium text-gray-700 mb-1"
+            <!-- Floating Label Container - Palette's micro-UX delight! -->
+            <div
+              class="floating-label-container relative"
+              :class="{
+                'has-value': tagsInput.length > 0,
+              }"
             >
-              Tags (Optional)
-            </label>
-            <input
-              id="tags"
-              v-model="tagsInput"
-              type="text"
-              aria-describedby="tags-description"
-              class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
-              :placeholder="contentConfig.submit.form.tagsPlaceholder"
-            >
+              <label
+                for="tags"
+                class="floating-label"
+              > Tags (Optional) </label>
+              <input
+                id="tags"
+                v-model="tagsInput"
+                type="text"
+                aria-describedby="tags-description"
+                class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
+              >
+            </div>
             <p
               id="tags-description"
               class="mt-1 text-sm text-gray-500"
@@ -900,10 +919,10 @@ const saveDraft = debounce(() => {
       clearTimeout(savedIndicatorTimeout.value)
     }
 
-    // Hide indicator after 3 seconds
+    // Hide indicator after 3 seconds - Flexy hates hardcoded values!
     savedIndicatorTimeout.value = setTimeout(() => {
       showSavedIndicator.value = false
-    }, 3000)
+    }, TIME_MS.SECOND * 3)
   }
 }, timeConfig.debounce.draft)
 

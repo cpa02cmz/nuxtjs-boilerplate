@@ -1,5 +1,5 @@
 import { useAlternativeSuggestions } from '~/composables/useAlternativeSuggestions'
-import { useResourceData } from '~/composables/useResourceData'
+import { loadServerResources } from '~/server/utils/server-resources'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendBadRequestError,
@@ -11,8 +11,8 @@ import {
 export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
-    const { resources } = useResourceData()
-    const alternativesEngine = useAlternativeSuggestions(resources.value || [])
+    const resources = loadServerResources()
+    const alternativesEngine = useAlternativeSuggestions(resources || [])
 
     // Get the resource ID from route parameters
     const resourceId = event.context.params?.id
@@ -22,7 +22,7 @@ export default defineEventHandler(async event => {
     }
 
     // Find the target resource
-    const targetResource = resources.value?.find(r => r.id === resourceId)
+    const targetResource = resources?.find(r => r.id === resourceId)
     if (!targetResource) {
       return sendNotFoundError(event, 'Resource', resourceId)
     }

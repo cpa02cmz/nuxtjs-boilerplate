@@ -2,11 +2,17 @@ import { webhookStorage } from '~/server/utils/webhookStorage'
 import {
   sendSuccessResponse,
   sendNotFoundError,
+  sendUnauthorizedError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 
 export default defineEventHandler(async event => {
   try {
+    // Check authentication
+    if (!event.context.apiKey) {
+      return sendUnauthorizedError(event, 'Authentication required')
+    }
+
     const id = event.context.params?.id
 
     // Find webhook by ID
