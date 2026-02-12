@@ -2,25 +2,25 @@
   <div class="mt-12">
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-bold text-gray-900">
-        Comments
+        {{ contentConfig.comments.title }}
       </h2>
-      <span class="text-sm text-gray-500">{{ commentCount }} comments</span>
+      <span class="text-sm text-gray-500">{{ commentCount }} {{ contentConfig.comments.countLabel }}</span>
     </div>
 
     <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
       <textarea
         v-model="newComment"
-        placeholder="Share your thoughts about this resource..."
+        :placeholder="contentConfig.comments.placeholders.newComment"
         class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         rows="4"
-        aria-label="Add a comment"
+        :aria-label="contentConfig.comments.aria.addComment"
       />
       <div class="mt-3 flex justify-end">
         <button
           class="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors"
           @click="submitComment"
         >
-          Post Comment
+          {{ contentConfig.comments.buttons.post }}
         </button>
       </div>
     </div>
@@ -53,15 +53,17 @@
             <div class="mt-2 flex space-x-4">
               <button
                 class="text-sm text-gray-500 hover:text-gray-700"
-                aria-label="Like this comment"
+                :aria-label="contentConfig.comments.aria.likeComment"
               >
-                Like ({{ comment.displayLikes }})
+                {{ contentConfig.comments.buttons.like }} ({{
+                  comment.displayLikes
+                }})
               </button>
               <button
                 class="text-sm text-gray-500 hover:text-gray-700"
-                aria-label="Reply to this comment"
+                :aria-label="contentConfig.comments.aria.replyComment"
               >
-                Reply
+                {{ contentConfig.comments.buttons.reply }}
               </button>
             </div>
           </div>
@@ -75,6 +77,7 @@
 import { ref, computed } from 'vue'
 import type { Comment } from '~/types/community'
 import { TIME } from '~/server/utils/constants'
+import { contentConfig } from '~/configs/content.config'
 
 interface Props {
   comments: Comment[]

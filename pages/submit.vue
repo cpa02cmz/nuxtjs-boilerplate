@@ -776,8 +776,11 @@ const restoreDraft = () => {
               ? `${Math.floor(hoursSinceSaved)} hours ago`
               : `${Math.floor(hoursSinceSaved / 24)} days ago`
 
-        $toast.info('Draft restored', {
-          description: `Your previous submission draft from ${timeAgo} has been restored.`,
+        $toast.info(contentConfig.toast.draft.restored.title, {
+          description: contentConfig.toast.draft.restored.description.replace(
+            '{{ timeAgo }}',
+            timeAgo
+          ),
           // Flexy hates hardcoded durations! Using config value
           duration: uiConfig.toast.duration.info,
         })

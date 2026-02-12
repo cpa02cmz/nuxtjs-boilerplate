@@ -12,6 +12,7 @@
 
 <script setup lang="ts">
 import { uiConfig } from '~/configs/ui.config'
+import { contentConfig } from '~/configs/content.config'
 
 const route = useRoute()
 const submissionId = computed(() => route.params.id as string)
@@ -24,7 +25,10 @@ definePageMeta({
 useHead({
   title: 'Review Submission - Resource Directory',
   meta: [
-    { name: 'description', content: 'Review and moderate resource submission' },
+    {
+      name: 'description',
+      content: contentConfig.moderation.review.description,
+    },
   ],
 })
 </script>

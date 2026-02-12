@@ -3,7 +3,7 @@
     <div class="max-w-4xl mx-auto px-4">
       <div class="bg-white rounded-lg shadow-md p-6">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">
-          API Keys
+          {{ contentConfig.apiKeys.title }}
         </h1>
 
         <!-- Error display -->
@@ -18,19 +18,17 @@
 
         <div class="mb-8">
           <h2 class="text-lg font-semibold text-gray-700 mb-4">
-            Manage Your API Keys
+            {{ contentConfig.apiKeys.labels.yourKeys }}
           </h2>
           <p class="text-gray-600 mb-6">
-            Generate and manage API keys to access the Free Stuff on the
-            Internet API. Each key can have different permissions and expiration
-            dates.
+            {{ contentConfig.apiKeys.description }}
           </p>
 
           <div class="flex flex-col sm:flex-row gap-4 mb-6">
             <input
               v-model="newKeyName"
               type="text"
-              placeholder="Enter a name for your API key"
+              :placeholder="contentConfig.apiKeys.placeholders.keyName"
               class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
             <button
@@ -38,7 +36,7 @@
               class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
               @click="createApiKey"
             >
-              Generate API Key
+              {{ contentConfig.apiKeys.buttons.generate }}
             </button>
           </div>
         </div>
@@ -48,7 +46,7 @@
           class="mb-8"
         >
           <h2 class="text-lg font-semibold text-gray-700 mb-4">
-            Your API Keys
+            {{ contentConfig.apiKeys.labels.yourKeys }}
           </h2>
           <div class="space-y-4">
             <div
@@ -62,16 +60,18 @@
                     {{ key.name }}
                   </h3>
                   <p class="text-sm text-gray-600">
-                    ID: {{ key.id }}
+                    {{ contentConfig.apiKeys.labels.id }} {{ key.id }}
                   </p>
                   <p class="text-sm text-gray-600">
-                    Created: {{ formatDate(key.createdAt) }}
+                    {{ contentConfig.apiKeys.labels.created }}
+                    {{ formatDate(key.createdAt) }}
                   </p>
                   <p
                     v-if="key.expiresAt"
                     class="text-sm text-gray-600"
                   >
-                    Expires: {{ formatDate(key.expiresAt) }}
+                    {{ contentConfig.apiKeys.labels.expires }}
+                    {{ formatDate(key.expiresAt) }}
                   </p>
                 </div>
                 <div class="flex space-x-2">
@@ -79,7 +79,7 @@
                     class="px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 text-sm"
                     @click="revokeApiKey(key.id)"
                   >
-                    Revoke
+                    {{ contentConfig.apiKeys.buttons.revoke }}
                   </button>
                 </div>
               </div>

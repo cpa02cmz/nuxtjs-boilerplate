@@ -1,50 +1,56 @@
 <template>
   <div class="status-manager">
-    <h3>Manage Resource Status</h3>
+    <h3>{{ contentConfig.statusManager.title }}</h3>
 
     <div class="status-controls">
       <div class="status-selector">
-        <label for="status-select">Change Status:</label>
+        <label for="status-select">{{
+          contentConfig.statusManager.labels.changeStatus
+        }}</label>
         <select
           id="status-select"
           v-model="selectedStatus"
           class="status-dropdown"
         >
           <option value="active">
-            Active
+            {{ contentConfig.statusManager.statusOptions.active }}
           </option>
           <option value="deprecated">
-            Deprecated
+            {{ contentConfig.statusManager.statusOptions.deprecated }}
           </option>
           <option value="discontinued">
-            Discontinued
+            {{ contentConfig.statusManager.statusOptions.discontinued }}
           </option>
           <option value="updated">
-            Updated
+            {{ contentConfig.statusManager.statusOptions.updated }}
           </option>
           <option value="pending">
-            Pending
+            {{ contentConfig.statusManager.statusOptions.pending }}
           </option>
         </select>
       </div>
 
       <div class="reason-input">
-        <label for="reason-input">Reason:</label>
+        <label for="reason-input">{{
+          contentConfig.statusManager.labels.reason
+        }}</label>
         <input
           id="reason-input"
           v-model="reason"
           type="text"
-          placeholder="Enter reason for status change"
+          :placeholder="contentConfig.statusManager.placeholders.reason"
           class="reason-field"
         >
       </div>
 
       <div class="notes-input">
-        <label for="notes-input">Notes (optional):</label>
+        <label for="notes-input">{{
+          contentConfig.statusManager.labels.notes
+        }}</label>
         <textarea
           id="notes-input"
           v-model="notes"
-          placeholder="Additional notes about this change"
+          :placeholder="contentConfig.statusManager.placeholders.notes"
           class="notes-field"
         />
       </div>
@@ -54,7 +60,11 @@
         :disabled="isUpdating || !selectedStatus"
         @click="handleUpdate"
       >
-        {{ isUpdating ? 'Updating...' : 'Update Status' }}
+        {{
+          isUpdating
+            ? contentConfig.statusManager.buttons.updating
+            : contentConfig.statusManager.buttons.update
+        }}
       </button>
     </div>
 
@@ -66,13 +76,13 @@
         v-if="lastUpdate.success"
         class="success-message"
       >
-        Status updated successfully!
+        {{ contentConfig.statusManager.messages.success }}
       </div>
       <div
         v-else
         class="error-message"
       >
-        Error updating status: {{ lastUpdate.error }}
+        {{ contentConfig.statusManager.messages.error }} {{ lastUpdate.error }}
       </div>
     </div>
   </div>
@@ -81,6 +91,7 @@
 <script setup lang="ts">
 import { useResourceStatusManager } from '~/composables/useResourceStatusManager'
 import { componentStylesConfig } from '~/configs/component-styles.config'
+import { contentConfig } from '~/configs/content.config'
 
 // Flexy hates hardcoded values! Using config instead.
 const styles = componentStylesConfig.statusManager

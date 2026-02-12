@@ -37,6 +37,7 @@ import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
 import { ROUTE_PATTERNS } from '~/configs/routes.config'
+import { contentConfig } from '~/configs/content.config'
 
 // Use the comparison composable
 const { selectedResources, removeResource, clearComparison } =
@@ -92,7 +93,7 @@ const shareComparison = () => {
     .then(() => {
       // Show success notification using the toast client plugin
       const nuxtApp = useNuxtApp()
-      nuxtApp.$toast.success('Comparison URL copied to clipboard!')
+      nuxtApp.$toast.success(contentConfig.toast.comparison.copied.title)
     })
     .catch(err => {
       logger.error('Failed to copy URL: ', err)
