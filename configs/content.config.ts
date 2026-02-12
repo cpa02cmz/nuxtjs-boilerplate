@@ -891,6 +891,201 @@ export const contentConfig = {
   form: {
     required: process.env.CONTENT_FORM_REQUIRED || '(required)',
   },
+
+  // API Keys Management - Flexy hates hardcoded API key UI text!
+  apiKeys: {
+    title: process.env.CONTENT_APIKEYS_TITLE || 'API Keys',
+    description:
+      process.env.CONTENT_APIKEYS_DESC ||
+      'Manage your API keys for accessing the API',
+    placeholders: {
+      keyName:
+        process.env.CONTENT_APIKEYS_PLACEHOLDER_NAME ||
+        'Enter a name for your API key',
+      keyNameAlt:
+        process.env.CONTENT_APIKEYS_PLACEHOLDER_NAME_ALT ||
+        'My Application Key',
+    },
+    buttons: {
+      generate: process.env.CONTENT_APIKEYS_BTN_GENERATE || 'Generate API Key',
+      revoke: process.env.CONTENT_APIKEYS_BTN_REVOKE || 'Revoke',
+      create: process.env.CONTENT_APIKEYS_BTN_CREATE || 'Create API Key',
+      cancel: process.env.CONTENT_APIKEYS_BTN_CANCEL || 'Cancel',
+    },
+    labels: {
+      yourKeys: process.env.CONTENT_APIKEYS_LABEL_YOURS || 'Your API Keys',
+      keyName: process.env.CONTENT_APIKEYS_LABEL_NAME || 'Key Name',
+      permissions:
+        process.env.CONTENT_APIKEYS_LABEL_PERMISSIONS || 'Permissions',
+      id: process.env.CONTENT_APIKEYS_LABEL_ID || 'ID:',
+      created: process.env.CONTENT_APIKEYS_LABEL_CREATED || 'Created:',
+      expires: process.env.CONTENT_APIKEYS_LABEL_EXPIRES || 'Expires:',
+    },
+    emptyState: {
+      message: process.env.CONTENT_APIKEYS_EMPTY || 'No API keys created',
+    },
+    permissions: {
+      read: process.env.CONTENT_APIKEYS_PERM_READ || 'Read',
+      write: process.env.CONTENT_APIKEYS_PERM_WRITE || 'Write',
+      delete: process.env.CONTENT_APIKEYS_PERM_DELETE || 'Delete',
+      webhooks: process.env.CONTENT_APIKEYS_PERM_WEBHOOKS || 'Webhooks',
+      admin: process.env.CONTENT_APIKEYS_PERM_ADMIN || 'Admin',
+    },
+  },
+
+  // Status Management - Flexy hates hardcoded status UI text!
+  statusManager: {
+    title: process.env.CONTENT_STATUS_TITLE || 'Manage Resource Status',
+    labels: {
+      changeStatus: process.env.CONTENT_STATUS_LABEL_CHANGE || 'Change Status:',
+      reason: process.env.CONTENT_STATUS_LABEL_REASON || 'Reason:',
+      notes: process.env.CONTENT_STATUS_LABEL_NOTES || 'Notes (optional):',
+    },
+    placeholders: {
+      reason:
+        process.env.CONTENT_STATUS_PLACEHOLDER_REASON ||
+        'Enter reason for status change',
+      notes:
+        process.env.CONTENT_STATUS_PLACEHOLDER_NOTES ||
+        'Additional notes about this change',
+    },
+    buttons: {
+      update: process.env.CONTENT_STATUS_BTN_UPDATE || 'Update Status',
+      updating: process.env.CONTENT_STATUS_BTN_UPDATING || 'Updating...',
+    },
+    statusOptions: {
+      active: process.env.CONTENT_STATUS_OPT_ACTIVE || 'Active',
+      deprecated: process.env.CONTENT_STATUS_OPT_DEPRECATED || 'Deprecated',
+      discontinued:
+        process.env.CONTENT_STATUS_OPT_DISCONTINUED || 'Discontinued',
+      updated: process.env.CONTENT_STATUS_OPT_UPDATED || 'Updated',
+      pending: process.env.CONTENT_STATUS_OPT_PENDING || 'Pending',
+    },
+    messages: {
+      success:
+        process.env.CONTENT_STATUS_MSG_SUCCESS ||
+        'Status updated successfully!',
+      error: process.env.CONTENT_STATUS_MSG_ERROR || 'Error updating status:',
+    },
+  },
+
+  // Submission Review - Flexy hates hardcoded review UI text!
+  submissionReview: {
+    loading: process.env.CONTENT_REVIEW_LOADING || 'Loading submission...',
+    sections: {
+      resourceInfo:
+        process.env.CONTENT_REVIEW_SECTION_RESOURCE || 'Resource Information',
+      submissionDetails:
+        process.env.CONTENT_REVIEW_SECTION_SUBMISSION || 'Submission Details',
+    },
+    labels: {
+      description: process.env.CONTENT_REVIEW_LABEL_DESC || 'Description:',
+      url: process.env.CONTENT_REVIEW_LABEL_URL || 'URL:',
+      category: process.env.CONTENT_REVIEW_LABEL_CATEGORY || 'Category:',
+      pricingModel:
+        process.env.CONTENT_REVIEW_LABEL_PRICING || 'Pricing Model:',
+      difficulty: process.env.CONTENT_REVIEW_LABEL_DIFFICULTY || 'Difficulty:',
+      technologies: process.env.CONTENT_REVIEW_LABEL_TECH || 'Technologies:',
+      tags: process.env.CONTENT_REVIEW_LABEL_TAGS || 'Tags:',
+      benefits: process.env.CONTENT_REVIEW_LABEL_BENEFITS || 'Benefits:',
+      submittedBy:
+        process.env.CONTENT_REVIEW_LABEL_SUBMITTED_BY || 'Submitted By:',
+      submittedAt:
+        process.env.CONTENT_REVIEW_LABEL_SUBMITTED_AT || 'Submitted At:',
+      reviewedBy:
+        process.env.CONTENT_REVIEW_LABEL_REVIEWED_BY || 'Reviewed By:',
+      reviewedAt:
+        process.env.CONTENT_REVIEW_LABEL_REVIEWED_AT || 'Reviewed At:',
+      rejectionReason:
+        process.env.CONTENT_REVIEW_LABEL_REJECTION || 'Rejection Reason:',
+      notes: process.env.CONTENT_REVIEW_LABEL_NOTES || 'Notes:',
+    },
+    values: {
+      anonymous: process.env.CONTENT_REVIEW_VAL_ANON || 'Anonymous',
+      notAvailable: process.env.CONTENT_REVIEW_VAL_NA || 'N/A',
+    },
+    placeholders: {
+      rejectionReason:
+        process.env.CONTENT_REVIEW_PLACEHOLDER_REJECTION ||
+        'Enter reason for rejection...',
+    },
+    actions: {
+      approve: {
+        title:
+          process.env.CONTENT_REVIEW_ACTION_APPROVE_TITLE ||
+          'Approve Submission',
+        button: process.env.CONTENT_REVIEW_ACTION_APPROVE_BTN || 'Approve',
+      },
+      reject: {
+        title:
+          process.env.CONTENT_REVIEW_ACTION_REJECT_TITLE || 'Reject Submission',
+        button: process.env.CONTENT_REVIEW_ACTION_REJECT_BTN || 'Reject',
+      },
+    },
+    errors: {
+      approveFailed:
+        process.env.CONTENT_REVIEW_ERR_APPROVE ||
+        'Failed to approve submission',
+      rejectFailed:
+        process.env.CONTENT_REVIEW_ERR_REJECT || 'Failed to reject submission',
+    },
+  },
+
+  // Resource Comments - Flexy hates hardcoded comment UI text!
+  comments: {
+    title: process.env.CONTENT_COMMENTS_TITLE || 'Comments',
+    countLabel: process.env.CONTENT_COMMENTS_COUNT || 'comments',
+    placeholders: {
+      newComment:
+        process.env.CONTENT_COMMENTS_PLACEHOLDER ||
+        'Share your thoughts about this resource...',
+    },
+    buttons: {
+      post: process.env.CONTENT_COMMENTS_BTN_POST || 'Post Comment',
+      like: process.env.CONTENT_COMMENTS_BTN_LIKE || 'Like',
+      reply: process.env.CONTENT_COMMENTS_BTN_REPLY || 'Reply',
+    },
+    aria: {
+      addComment: process.env.CONTENT_COMMENTS_ARIA_ADD || 'Add a comment',
+      likeComment:
+        process.env.CONTENT_COMMENTS_ARIA_LIKE || 'Like this comment',
+      replyComment:
+        process.env.CONTENT_COMMENTS_ARIA_REPLY || 'Reply to this comment',
+    },
+  },
+
+  // Toast Messages - Flexy hates hardcoded toast messages!
+  toast: {
+    draft: {
+      restored: {
+        title: process.env.CONTENT_TOAST_DRAFT_TITLE || 'Draft restored',
+        description:
+          process.env.CONTENT_TOAST_DRAFT_DESC ||
+          'Your previous submission draft from {{ timeAgo }} has been restored.',
+      },
+    },
+    comparison: {
+      copied: {
+        title:
+          process.env.CONTENT_TOAST_COMPARISON_TITLE ||
+          'Comparison URL copied to clipboard!',
+      },
+    },
+  },
+
+  // Moderation Pages - Flexy hates hardcoded moderation UI text!
+  moderation: {
+    review: {
+      description:
+        process.env.CONTENT_MOD_REVIEW_DESC ||
+        'Review and moderate resource submission',
+    },
+    queue: {
+      description:
+        process.env.CONTENT_MOD_QUEUE_DESC ||
+        'Review pending resource submissions',
+    },
+  },
 } as const
 
 // Helper function to parse comma-separated suggestions

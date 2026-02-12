@@ -7,6 +7,7 @@
 
 <script setup lang="ts">
 import { uiConfig } from '~/configs/ui.config'
+import { contentConfig } from '~/configs/content.config'
 
 definePageMeta({
   layout: 'default',
@@ -16,7 +17,10 @@ definePageMeta({
 useHead({
   title: 'Moderation Queue - Resource Directory',
   meta: [
-    { name: 'description', content: 'Review pending resource submissions' },
+    {
+      name: 'description',
+      content: contentConfig.moderation.queue.description,
+    },
   ],
 })
 </script>

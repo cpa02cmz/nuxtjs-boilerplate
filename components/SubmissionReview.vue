@@ -4,7 +4,7 @@
       v-if="loading"
       class="loading"
     >
-      Loading submission...
+      {{ contentConfig.submissionReview.loading }}
     </div>
 
     <div
@@ -27,15 +27,17 @@
 
       <div class="review-details">
         <div class="detail-section">
-          <h3>Resource Information</h3>
+          <h3>{{ contentConfig.submissionReview.sections.resourceInfo }}</h3>
           <div class="info-grid">
             <div class="info-item">
-              <label>Description:</label>
+              <label>{{
+                contentConfig.submissionReview.labels.description
+              }}</label>
               <p>{{ submission.resourceData?.description }}</p>
             </div>
 
             <div class="info-item">
-              <label>URL:</label>
+              <label>{{ contentConfig.submissionReview.labels.url }}</label>
               <a
                 :href="submission.resourceData?.url"
                 target="_blank"
@@ -46,22 +48,36 @@
             </div>
 
             <div class="info-item">
-              <label>Category:</label>
+              <label>{{
+                contentConfig.submissionReview.labels.category
+              }}</label>
               <span>{{ submission.resourceData?.category }}</span>
             </div>
 
             <div class="info-item">
-              <label>Pricing Model:</label>
-              <span>{{ submission.resourceData?.pricingModel || 'N/A' }}</span>
+              <label>{{
+                contentConfig.submissionReview.labels.pricingModel
+              }}</label>
+              <span>{{
+                submission.resourceData?.pricingModel ||
+                  contentConfig.submissionReview.values.notAvailable
+              }}</span>
             </div>
 
             <div class="info-item">
-              <label>Difficulty:</label>
-              <span>{{ submission.resourceData?.difficulty || 'N/A' }}</span>
+              <label>{{
+                contentConfig.submissionReview.labels.difficulty
+              }}</label>
+              <span>{{
+                submission.resourceData?.difficulty ||
+                  contentConfig.submissionReview.values.notAvailable
+              }}</span>
             </div>
 
             <div class="info-item">
-              <label>Technologies:</label>
+              <label>{{
+                contentConfig.submissionReview.labels.technologies
+              }}</label>
               <div class="tag-list">
                 <span
                   v-for="tech in submission.resourceData?.technology || []"
@@ -74,7 +90,7 @@
             </div>
 
             <div class="info-item">
-              <label>Tags:</label>
+              <label>{{ contentConfig.submissionReview.labels.tags }}</label>
               <div class="tag-list">
                 <span
                   v-for="tag in submission.resourceData?.tags || []"
@@ -87,7 +103,9 @@
             </div>
 
             <div class="info-item">
-              <label>Benefits:</label>
+              <label>{{
+                contentConfig.submissionReview.labels.benefits
+              }}</label>
               <ul>
                 <li
                   v-for="benefit in submission.resourceData?.benefits || []"
@@ -101,15 +119,24 @@
         </div>
 
         <div class="detail-section">
-          <h3>Submission Details</h3>
+          <h3>
+            {{ contentConfig.submissionReview.sections.submissionDetails }}
+          </h3>
           <div class="info-grid">
             <div class="info-item">
-              <label>Submitted By:</label>
-              <span>{{ submission.submittedBy || 'Anonymous' }}</span>
+              <label>{{
+                contentConfig.submissionReview.labels.submittedBy
+              }}</label>
+              <span>{{
+                submission.submittedBy ||
+                  contentConfig.submissionReview.values.anonymous
+              }}</span>
             </div>
 
             <div class="info-item">
-              <label>Submitted At:</label>
+              <label>{{
+                contentConfig.submissionReview.labels.submittedAt
+              }}</label>
               <span>{{ formatDate(submission.submittedAt) }}</span>
             </div>
 
@@ -117,15 +144,22 @@
               v-if="submission.reviewedAt"
               class="info-item"
             >
-              <label>Reviewed By:</label>
-              <span>{{ submission.reviewedBy || 'N/A' }}</span>
+              <label>{{
+                contentConfig.submissionReview.labels.reviewedBy
+              }}</label>
+              <span>{{
+                submission.reviewedBy ||
+                  contentConfig.submissionReview.values.notAvailable
+              }}</span>
             </div>
 
             <div
               v-if="submission.reviewedAt"
               class="info-item"
             >
-              <label>Reviewed At:</label>
+              <label>{{
+                contentConfig.submissionReview.labels.reviewedAt
+              }}</label>
               <span>{{ formatDate(submission.reviewedAt) }}</span>
             </div>
 
@@ -133,7 +167,9 @@
               v-if="submission.rejectionReason"
               class="info-item"
             >
-              <label>Rejection Reason:</label>
+              <label>{{
+                contentConfig.submissionReview.labels.rejectionReason
+              }}</label>
               <span class="rejection-reason">{{
                 submission.rejectionReason
               }}</span>
@@ -143,7 +179,7 @@
               v-if="submission.notes"
               class="info-item"
             >
-              <label>Notes:</label>
+              <label>{{ contentConfig.submissionReview.labels.notes }}</label>
               <span>{{ submission.notes }}</span>
             </div>
           </div>
@@ -155,27 +191,29 @@
         class="review-actions"
       >
         <div class="action-group">
-          <h4>Approve Submission</h4>
+          <h4>{{ contentConfig.submissionReview.actions.approve.title }}</h4>
           <button
             class="btn btn-approve"
             @click="handleApprove"
           >
-            Approve
+            {{ contentConfig.submissionReview.actions.approve.button }}
           </button>
         </div>
 
         <div class="action-group">
-          <h4>Reject Submission</h4>
+          <h4>{{ contentConfig.submissionReview.actions.reject.title }}</h4>
           <textarea
             v-model="rejectionReason"
-            placeholder="Enter reason for rejection..."
+            :placeholder="
+              contentConfig.submissionReview.placeholders.rejectionReason
+            "
             class="rejection-textarea"
           />
           <button
             class="btn btn-reject"
             @click="handleReject"
           >
-            Reject
+            {{ contentConfig.submissionReview.actions.reject.button }}
           </button>
         </div>
       </div>
@@ -186,6 +224,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useSubmissionReview } from '~/composables/useSubmissionReview'
+import { contentConfig } from '~/configs/content.config'
 
 interface Props {
   submissionId?: string
@@ -210,23 +249,23 @@ const {
 const handleApprove = async () => {
   const success = await approveSubmission()
   if (success) {
-    alert('Submission approved successfully!')
+    alert(contentConfig.submissionReview.actions.approve.title)
   } else {
-    alert(error.value || 'Failed to approve submission')
+    alert(error.value || contentConfig.submissionReview.errors.approveFailed)
   }
 }
 
 const handleReject = async () => {
   const success = await rejectSubmission(rejectionReason.value)
   if (success) {
-    alert('Submission rejected successfully!')
+    alert(contentConfig.submissionReview.actions.reject.title)
   } else {
-    alert(error.value || 'Failed to reject submission')
+    alert(error.value || contentConfig.submissionReview.errors.rejectFailed)
   }
 }
 
 const formatDate = (dateString?: string) => {
-  if (!dateString) return 'N/A'
+  if (!dateString) return contentConfig.submissionReview.values.notAvailable
   return new Date(dateString).toLocaleString()
 }
 

@@ -1,12 +1,12 @@
 <template>
   <div class="api-keys-manager">
     <div class="api-keys-header">
-      <h2>API Keys</h2>
+      <h2>{{ contentConfig.apiKeys.title }}</h2>
       <button
         class="btn btn-primary"
         @click="showCreateForm = true"
       >
-        Create API Key
+        {{ contentConfig.apiKeys.buttons.create }}
       </button>
     </div>
 
@@ -15,22 +15,24 @@
       v-if="showCreateForm"
       class="api-key-form"
     >
-      <h3>Create New API Key</h3>
+      <h3>{{ contentConfig.apiKeys.buttons.create }}</h3>
       <form @submit.prevent="createApiKey">
         <div class="form-group">
-          <label for="name">Key Name</label>
+          <label for="name">{{ contentConfig.apiKeys.labels.keyName }}</label>
           <input
             id="name"
             v-model="newApiKey.name"
             type="text"
             required
-            placeholder="My Application Key"
+            :placeholder="contentConfig.apiKeys.placeholders.keyNameAlt"
             class="form-control"
           >
         </div>
 
         <div class="form-group">
-          <label for="permissions">Permissions</label>
+          <label for="permissions">{{
+            contentConfig.apiKeys.labels.permissions
+          }}</label>
           <select
             id="permissions"
             v-model="newApiKey.permissions"
@@ -38,19 +40,19 @@
             class="form-control"
           >
             <option value="read">
-              Read
+              {{ contentConfig.apiKeys.permissions.read }}
             </option>
             <option value="write">
-              Write
+              {{ contentConfig.apiKeys.permissions.write }}
             </option>
             <option value="delete">
-              Delete
+              {{ contentConfig.apiKeys.permissions.delete }}
             </option>
             <option value="webhooks">
-              Webhooks
+              {{ contentConfig.apiKeys.permissions.webhooks }}
             </option>
             <option value="admin">
-              Admin
+              {{ contentConfig.apiKeys.permissions.admin }}
             </option>
           </select>
         </div>
@@ -60,14 +62,14 @@
             type="submit"
             class="btn btn-primary"
           >
-            Create API Key
+            {{ contentConfig.apiKeys.buttons.create }}
           </button>
           <button
             type="button"
             class="btn btn-secondary"
             @click="showCreateForm = false"
           >
-            Cancel
+            {{ contentConfig.apiKeys.buttons.cancel }}
           </button>
         </div>
       </form>
@@ -75,12 +77,12 @@
 
     <!-- API Keys List -->
     <div class="api-keys-list">
-      <h3>API Keys</h3>
+      <h3>{{ contentConfig.apiKeys.labels.yourKeys }}</h3>
       <div
         v-if="apiKeys.length === 0"
         class="empty-state"
       >
-        No API keys created
+        {{ contentConfig.apiKeys.emptyState.message }}
       </div>
       <div
         v-else
@@ -96,7 +98,7 @@
               {{ key.name }}
             </div>
             <div class="api-key-id">
-              ID: {{ key.id }}
+              {{ contentConfig.apiKeys.labels.id }} {{ key.id }}
             </div>
             <div class="api-key-permissions">
               <span
@@ -109,10 +111,12 @@
             </div>
             <div class="api-key-meta">
               <div>
-                Created: {{ new Date(key.createdAt).toLocaleDateString() }}
+                {{ contentConfig.apiKeys.labels.created }}
+                {{ new Date(key.createdAt).toLocaleDateString() }}
               </div>
               <div v-if="key.lastUsedAt">
-                Last Used: {{ new Date(key.lastUsedAt).toLocaleDateString() }}
+                {{ contentConfig.apiKeys.labels.expires }}
+                {{ new Date(key.lastUsedAt).toLocaleDateString() }}
               </div>
             </div>
           </div>
@@ -121,7 +125,7 @@
               class="btn btn-sm btn-danger"
               @click="revokeApiKey(key.id)"
             >
-              Revoke
+              {{ contentConfig.apiKeys.buttons.revoke }}
             </button>
           </div>
         </div>
@@ -144,7 +148,7 @@
         @click.stop
       >
         <h3 id="modal-title">
-          New API Key Created
+          {{ contentConfig.apiKeys.buttons.create }}
         </h3>
         <p><strong>Key:</strong> {{ createdApiKey?.key }}</p>
         <p
@@ -191,13 +195,17 @@
                 clip-rule="evenodd"
               />
             </svg>
-            {{ copySuccess ? 'Copied!' : 'Copy Key' }}
+            {{
+              copySuccess
+                ? contentConfig.messages.clipboard.copied
+                : contentConfig.messages.clipboard.copy
+            }}
           </button>
           <button
             class="btn btn-secondary"
             @click="closeModal"
           >
-            Close
+            {{ contentConfig.apiKeys.buttons.cancel }}
           </button>
         </div>
         <!-- Screen reader announcement for copy feedback -->
@@ -221,6 +229,7 @@ import { useApiKeysManager } from '~/composables/useApiKeysManager'
 import logger from '~/utils/logger'
 import { permissionsConfig } from '~/configs/permissions.config'
 import { animationConfig } from '~/configs/animation.config'
+import { contentConfig } from '~/configs/content.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
 const {
