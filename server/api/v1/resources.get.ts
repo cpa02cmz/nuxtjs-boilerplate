@@ -11,7 +11,7 @@ import {
 import { paginationConfig } from '~/configs/pagination.config'
 import { cacheConfig } from '~/configs/cache.config'
 import { apiConfig } from '~/configs/api.config'
-import { contentConfig } from '~/configs/content.config'
+import { loadServerResources } from '~/server/utils/server-resources'
 
 /**
  * GET /api/v1/resources
@@ -47,9 +47,8 @@ export default defineEventHandler(async event => {
       return cachedResult
     }
 
-    // Import resources from JSON
-    const resourcesModule = await import(contentConfig.paths.resourcesData)
-    let resources: Resource[] = resourcesModule.default || resourcesModule
+    // Load resources using server utility
+    let resources: Resource[] = loadServerResources()
 
     // Parse query parameters with validation
     // Validate and parse limit parameter
