@@ -267,6 +267,16 @@ export const componentColorsConfig = {
     // Icon color in header
     headerIcon: process.env.KB_SHORTCUTS_HEADER_ICON || 'text-blue-500',
   },
+
+  // Tooltip Component Colors - Flexy hates hardcoded tooltip colors!
+  tooltip: {
+    // Background color (default: gray-900)
+    bg: process.env.TOOLTIP_BG || 'bg-gray-900',
+    // Text color (default: white)
+    text: process.env.TOOLTIP_TEXT || 'text-white',
+    // Arrow color (matches background)
+    arrowBg: process.env.TOOLTIP_ARROW_BG || 'bg-gray-900',
+  },
 } as const
 
 export type ComponentColorsConfig = typeof componentColorsConfig

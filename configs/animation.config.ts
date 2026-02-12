@@ -468,6 +468,29 @@ export const animationConfig = {
     ),
   },
 
+  // Transition Durations - Flexy hates hardcoded CSS duration classes!
+  // Standardized transition durations for consistent UX
+  transition: {
+    // Fast transitions (150ms) - for quick feedback like button presses
+    fast: {
+      durationMs: parseInt(process.env.TRANSITION_FAST_DURATION_MS || '150'),
+      class: 'duration-150',
+    },
+    // Normal transitions (200ms) - for most UI interactions
+    normal: {
+      durationMs: parseInt(process.env.TRANSITION_NORMAL_DURATION_MS || '200'),
+      class: 'duration-200',
+    },
+    // Slow transitions (300ms) - for more prominent animations
+    slow: {
+      durationMs: parseInt(process.env.TRANSITION_SLOW_DURATION_MS || '300'),
+      class: 'duration-300',
+    },
+    // Easing functions
+    easeOut: process.env.TRANSITION_EASE_OUT || 'ease-out',
+    easeIn: process.env.TRANSITION_EASE_IN || 'ease-in',
+  },
+
   // Floating Label Animations - Palette's micro-UX delight!
   // Creates smooth floating label transitions for form inputs
   floatingLabel: {
