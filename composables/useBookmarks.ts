@@ -149,6 +149,8 @@ export const useBookmarks = () => {
   const bookmarkCount = computed(() => bookmarks.value.length)
 
   const exportBookmarks = () => {
+    if (typeof document === 'undefined') return
+
     const bookmarksToExport = bookmarks.value.map(bookmark => ({
       ...bookmark,
       addedAt: bookmark.addedAt.toISOString(),

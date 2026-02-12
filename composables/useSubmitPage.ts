@@ -152,6 +152,8 @@ export const useSubmitPage = (options: UseSubmitPageOptions = {}) => {
   }
 
   const announceErrors = () => {
+    if (typeof document === 'undefined') return
+
     const errorList = Object.values(errors.value).join('. ')
     const announcement = document.createElement('div')
     announcement.setAttribute('role', 'alert')

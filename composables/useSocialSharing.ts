@@ -146,6 +146,7 @@ export function getShareUrl(
  * Escape HTML special characters
  */
 function escapeHtml(text: string): string {
+  if (typeof document === 'undefined') return text
   const div = document.createElement('div')
   div.textContent = text
   return div.innerHTML
@@ -170,6 +171,10 @@ export function useSocialSharing() {
     lastError.value = null
 
     try {
+      if (typeof window === 'undefined' || typeof document === 'undefined') {
+        throw new Error('Cannot share in SSR environment')
+      }
+
       const shareUrl = getShareUrl(platform, metadata)
 
       if (!shareUrl) {
