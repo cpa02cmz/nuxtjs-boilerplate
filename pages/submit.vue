@@ -891,6 +891,7 @@ const descriptionHelperText = computed(() => {
 // Draft auto-save functionality
 // Auto-save draft to localStorage with debounce
 const saveDraft = debounce(() => {
+  if (typeof window === 'undefined') return
   if (hasFormContent()) {
     const draftData = getFormData()
     const now = Date.now()

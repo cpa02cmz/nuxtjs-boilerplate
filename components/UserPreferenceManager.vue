@@ -181,51 +181,18 @@ import { ref, onMounted } from 'vue'
 import logger from '~/utils/logger'
 import { useUserPreferences } from '~/composables/useUserPreferences'
 import { uiConfig } from '~/configs/ui.config'
-
-interface SkillLevel {
-  value: 'beginner' | 'intermediate' | 'advanced' | 'expert'
-  label: string
-}
+import { userConfig, type SkillLevel } from '~/configs/user.config'
 
 const userPrefs = useUserPreferences()
 
-// Available categories from the resource data
-const availableCategories = ref<string[]>([
-  'javascript',
-  'typescript',
-  'vue',
-  'react',
-  'angular',
-  'svelte',
-  'nuxt',
-  'next',
-  'nodejs',
-  'python',
-  'java',
-  'csharp',
-  'php',
-  'mobile',
-  'web-development',
-  'backend',
-  'frontend',
-  'devops',
-  'database',
-  'testing',
-  'design',
-  'ai',
-  'security',
-])
+// Available categories from config - Flexy hates hardcoded!
+const availableCategories = ref<string[]>(userConfig.availableCategories)
 
 // Selected categories
 const selectedCategories = ref<string[]>([])
 
-// Skill levels
-const skillLevels: SkillLevel[] = [
-  { value: 'beginner', label: 'Beginner' },
-  { value: 'intermediate', label: 'Intermediate' },
-  { value: 'advanced', label: 'Advanced' },
-  { value: 'expert', label: 'Expert' },
-]
+// Skill levels from config
+const skillLevels = userConfig.skillLevels
 
 // Selected skill level
 const selectedSkillLevel = ref<SkillLevel['value']>('intermediate')
