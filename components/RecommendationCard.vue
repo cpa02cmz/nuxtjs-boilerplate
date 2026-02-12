@@ -1,6 +1,8 @@
 <template>
-  <div
-    class="recommendation-card bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-200 dark:border-gray-700"
+  <article
+    class="recommendation-card bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 transition-all duration-200 ease-out overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 focus-within:border-blue-300 dark:focus-within:border-blue-500 card-shine-container"
+    role="article"
+    tabindex="0"
   >
     <div class="p-4">
       <div class="flex justify-between items-start">
@@ -104,15 +106,36 @@
           :href="resource.url"
           target="_blank"
           rel="noopener noreferrer"
-          class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          class="flex-1 inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 hover:scale-105 active:scale-95 active:bg-indigo-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 transition-all duration-150 ease-out relative overflow-hidden"
+          :aria-label="`View ${resource.title} - opens in new tab`"
         >
           View Resource
+          <span
+            class="ml-1.5 inline-flex items-center"
+            aria-hidden="true"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-3.5 w-3.5 opacity-70 group-hover:opacity-100 transition-opacity duration-200"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              />
+            </svg>
+          </span>
         </a>
         <button
-          class="inline-flex justify-center items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
+          ref="bookmarkButtonRef"
+          class="inline-flex justify-center items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:scale-105 active:scale-95 active:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 transition-all duration-150 ease-out relative overflow-hidden"
           :aria-label="`Bookmark ${resource.title}`"
           aria-pressed="false"
-          @click="emit('bookmark', resource)"
+          @click="handleBookmarkClick"
         >
           <svg
             class="w-4 h-4"
@@ -130,14 +153,17 @@
         </button>
       </div>
     </div>
-  </div>
+  </article>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import type { Resource } from '~/types/resource'
 import { limitsConfig } from '~/configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
+import { animationConfig } from '~/configs/animation.config'
+import { useRipple } from '~/composables/useRipple'
+import { hapticLight } from '~/utils/hapticFeedback'
 import OptimizedImage from '~/components/OptimizedImage.vue'
 
 interface Props {
@@ -159,6 +185,30 @@ const emit = defineEmits<{
   bookmark: [resource: Resource]
 }>()
 
+// Bookmark button ref for ripple effect
+const bookmarkButtonRef = ref<HTMLButtonElement | null>(null)
+
+// Initialize ripple effect on bookmark button
+const { createRipple } = useRipple(
+  bookmarkButtonRef as Ref<HTMLButtonElement | null>,
+  {
+    color: animationConfig.ripple.bookmarkColor,
+    duration: animationConfig.button.feedbackDurationMs,
+  }
+)
+
+// Handle bookmark click with ripple and haptic feedback
+const handleBookmarkClick = (event: MouseEvent) => {
+  // Create ripple effect
+  createRipple(event)
+
+  // Trigger haptic feedback
+  hapticLight()
+
+  // Emit bookmark event
+  emit('bookmark', props.resource)
+}
+
 // Flexy hates hardcoded limits! Use configurable display limit
 const displayLimit = limitsConfig.display.maxTagsDisplay
 
@@ -178,5 +228,59 @@ const hasMoreTags = computed(() => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Card Shine Effect - Palette's premium micro-UX touch! */
+/* Adds a subtle moving gradient on hover for a polished, premium feel */
+.card-shine-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    v-bind('`${animationConfig.cardShine.angleDegrees}deg`'),
+    v-bind('animationConfig.cardShine.gradientStart'),
+    v-bind('animationConfig.cardShine.gradientMiddle'),
+    v-bind('animationConfig.cardShine.gradientEnd'),
+    v-bind('animationConfig.cardShine.gradientStart')
+  );
+  transform: scaleX(v-bind('animationConfig.cardShine.scaleFactor'));
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.3s ease;
+}
+
+.card-shine-container:hover::before {
+  opacity: 1;
+  animation: card-shine v-bind('`${animationConfig.cardShine.durationSec}s`')
+    ease-out;
+}
+
+@keyframes card-shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 200%;
+  }
+}
+
+/* Reduced motion support for card shine */
+@media (prefers-reduced-motion: reduce) {
+  .card-shine-container::before {
+    display: none;
+  }
+
+  .recommendation-card {
+    transition: none;
+  }
 }
 </style>
