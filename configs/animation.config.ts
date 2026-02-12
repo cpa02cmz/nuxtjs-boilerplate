@@ -780,6 +780,50 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.CARD_3D_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Popular Searches Micro-UX - Palette's delightful enhancement! ✨
+  // Staggered entrance animations and satisfying interactions for search suggestions
+  popularSearches: {
+    // Delay between each item's entrance animation (ms)
+    staggerDelayMs: parseInt(process.env.POPULAR_SEARCHES_STAGGER_MS || '50'),
+    // Duration of entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.POPULAR_SEARCHES_ENTRANCE_DURATION_MS || '500'
+    ),
+    // CSS duration string for v-bind
+    entranceDurationSec: `${parseInt(process.env.POPULAR_SEARCHES_ENTRANCE_DURATION_MS || '500') / 1000}s`,
+    // Duration of hover lift transition (ms)
+    hoverTransitionMs: parseInt(
+      process.env.POPULAR_SEARCHES_HOVER_TRANSITION_MS || '300'
+    ),
+    // Vertical lift amount on hover (px)
+    hoverLiftPx: parseInt(process.env.POPULAR_SEARCHES_HOVER_LIFT || '2'),
+    // Scale factor when clicked
+    clickScale: parseFloat(process.env.POPULAR_SEARCHES_CLICK_SCALE || '0.98'),
+    // Duration of click feedback (ms)
+    clickDurationMs: parseInt(
+      process.env.POPULAR_SEARCHES_CLICK_DURATION_MS || '150'
+    ),
+    // Ripple animation duration (ms)
+    rippleDurationMs: parseInt(
+      process.env.POPULAR_SEARCHES_RIPPLE_DURATION_MS || '600'
+    ),
+    // Trending indicator pulse duration (seconds)
+    trendingPulseDurationSec: parseFloat(
+      process.env.POPULAR_SEARCHES_TRENDING_PULSE || '2'
+    ),
+    // Arrow slide animation duration (ms)
+    arrowSlideDurationMs: parseInt(
+      process.env.POPULAR_SEARCHES_ARROW_SLIDE_MS || '300'
+    ),
+    // Count badge transition duration (ms)
+    badgeTransitionMs: parseInt(
+      process.env.POPULAR_SEARCHES_BADGE_TRANSITION_MS || '300'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.POPULAR_SEARCHES_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
