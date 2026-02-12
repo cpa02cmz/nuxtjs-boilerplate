@@ -109,9 +109,9 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
       showCompareFeedback.value = true
       hapticSuccess()
 
-      const prefersReducedMotion = window.matchMedia(
-        '(prefers-reduced-motion: reduce)'
-      ).matches
+      const prefersReducedMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
       const navigationDelay = prefersReducedMotion
         ? 0
