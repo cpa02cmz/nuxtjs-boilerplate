@@ -160,6 +160,28 @@ export const animationConfig = {
     trackingDelayMs: parseInt(process.env.ANALYTICS_TRACKING_DELAY_MS || '500'),
   },
 
+  // Draft Save Pulse Animation - Palette's micro-UX delight!
+  // Adds a satisfying pulse ring when auto-save occurs
+  draftSave: {
+    // Duration of the pulse ring animation (ms)
+    pulseDurationMs: parseInt(
+      process.env.DRAFT_SAVE_PULSE_DURATION_MS || '800'
+    ),
+    // CSS duration string for v-bind
+    pulseDurationSec: `${parseInt(process.env.DRAFT_SAVE_PULSE_DURATION_MS || '800') / 1000}s`,
+    // Scale factor for the pulse ring (1.5 = 150% of original size)
+    pulseScale: parseFloat(process.env.DRAFT_SAVE_PULSE_SCALE || '1.8'),
+    // Color of the pulse ring (green-500 with opacity)
+    pulseColor: process.env.DRAFT_SAVE_PULSE_COLOR || 'rgba(34, 197, 94, 0.4)',
+    // Secondary pulse color for fade effect
+    pulseFadeColor:
+      process.env.DRAFT_SAVE_PULSE_FADE_COLOR || 'rgba(34, 197, 94, 0)',
+    // Ring border width (px)
+    ringWidth: parseInt(process.env.DRAFT_SAVE_RING_WIDTH || '2'),
+    // Delay before pulse starts (ms) - gives a moment to notice
+    pulseDelayMs: parseInt(process.env.DRAFT_SAVE_PULSE_DELAY_MS || '100'),
+  },
+
   // Bookmark Button Animations - Flexy hates hardcoded durations!
   bookmark: {
     // Heart pop animation duration when adding bookmark (ms)
