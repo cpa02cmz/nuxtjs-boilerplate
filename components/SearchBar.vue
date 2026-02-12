@@ -237,6 +237,27 @@ import { searchConfig } from '~/configs/search.config'
 import { uiConfig } from '~/configs/ui.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 
+// SSR-safe config fallbacks - BroCula fixed these! 🦇
+// During SSR, external configs might not be available, so we provide safe defaults
+const getSafeUiConfig = () => {
+  try {
+    return uiConfig || {}
+  } catch {
+    return {}
+  }
+}
+
+const safeUiConfig = getSafeUiConfig()
+const safeTiming = safeUiConfig.timing || {}
+
+// SSR-safe timing values (ms) with defaults
+const TIMING_FALLBACKS = {
+  searchCompleteDurationMs: safeTiming.searchCompleteDurationMs ?? 800,
+  focusPulseDurationMs: safeTiming.focusPulseDurationMs ?? 600,
+  shortcutSuccessDurationMs: safeTiming.shortcutSuccessDurationMs ?? 600,
+  idlePulseDelayMs: safeTiming.idlePulseDelayMs ?? 3000,
+}
+
 interface Props {
   modelValue: string
   debounceTime?: number
@@ -320,7 +341,7 @@ const handleInput = (event: Event) => {
       }
       searchCompleteTimeout = setTimeout(() => {
         showSearchComplete.value = false
-      }, uiConfig.timing.searchCompleteDurationMs)
+      }, TIMING_FALLBACKS.searchCompleteDurationMs)
     }
   }, props.debounceTime)
 }
@@ -557,7 +578,7 @@ if (typeof window !== 'undefined') {
         if (focusPulseTimeout) clearTimeout(focusPulseTimeout)
         focusPulseTimeout = setTimeout(() => {
           showFocusPulse.value = false
-        }, uiConfig.timing.focusPulseDurationMs)
+        }, TIMING_FALLBACKS.focusPulseDurationMs)
 
         // Show shortcut success glow animation for positive reinforcement
         showShortcutSuccess.value = true
@@ -566,7 +587,7 @@ if (typeof window !== 'undefined') {
         }
         shortcutSuccessTimeout = setTimeout(() => {
           showShortcutSuccess.value = false
-        }, uiConfig.timing.shortcutSuccessDurationMs)
+        }, TIMING_FALLBACKS.shortcutSuccessDurationMs)
 
         // Trigger enhanced focus glow effect - Palette's micro-UX enhancement!
         // Tracked for cleanup - preventing memory leaks (Issue #1825)
@@ -607,7 +628,7 @@ if (typeof window !== 'undefined') {
     if (!isFocused.value && !props.modelValue && !prefersReducedMotion.value) {
       showIdlePulse.value = true
     }
-  }, uiConfig.timing.idlePulseDelayMs)
+  }, TIMING_FALLBACKS.idlePulseDelayMs)
 
   // Add event listeners
   window.addEventListener('saved-search-added', savedSearchAddedHandler)
@@ -668,8 +689,8 @@ if (typeof window !== 'undefined') {
 }
 
 .animate-focus-pulse {
-  /* Flexy hates hardcoded values! Using config from uiConfig.timing.focusPulseDurationMs */
-  animation: focus-pulse v-bind('uiConfig.timing.focusPulseDurationMs + "ms"')
+  /* Flexy hates hardcoded values! Using SSR-safe TIMING_FALLBACKS.focusPulseDurationMs */
+  animation: focus-pulse v-bind('TIMING_FALLBACKS.focusPulseDurationMs + "ms"')
     ease-out;
 }
 
