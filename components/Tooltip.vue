@@ -30,7 +30,17 @@
         ]"
         @keydown.esc="hideTooltip"
       >
-        {{ content }}
+        <div class="flex items-center gap-2">
+          <span>{{ content }}</span>
+          <!-- Keyboard shortcut badge - Palette's micro-UX enhancement! -->
+          <kbd
+            v-if="shortcut"
+            class="shortcut-badge"
+            aria-label="Keyboard shortcut: {{ shortcut }}"
+          >
+            {{ shortcut }}
+          </kbd>
+        </div>
         <div
           :class="[
             'absolute w-2 h-2 transform rotate-45',
@@ -77,6 +87,12 @@ interface Props {
    * @default true
    */
   closeOnClickOutside?: boolean
+  /**
+   * Keyboard shortcut to display in tooltip (e.g., 'Ctrl+C', '⌘+K').
+   * Shows a styled shortcut badge when provided.
+   * @default undefined
+   */
+  shortcut?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -84,6 +100,7 @@ const props = withDefaults(defineProps<Props>(), {
   delay: animationConfig.tooltip.showDelayMs,
   autoDismiss: 0,
   closeOnClickOutside: true,
+  shortcut: undefined,
 })
 
 // Generate unique ID for accessibility - Flexy hates hardcoded ID generation!
@@ -284,10 +301,42 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* Keyboard shortcut badge - Palette's micro-UX enhancement!
+   Shows keyboard shortcuts in tooltips for better discoverability */
+.shortcut-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-family:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  line-height: 1;
+  color: v-bind('componentColorsConfig.tooltip.shortcutText');
+  background-color: v-bind('componentColorsConfig.tooltip.shortcutBg');
+  border: 1px solid v-bind('componentColorsConfig.tooltip.shortcutBorder');
+  border-radius: 4px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  min-width: 1.25rem;
+}
+
+/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .tooltip-enter-active,
   .tooltip-leave-active {
     transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .shortcut-badge {
+    border-width: 2px;
   }
 }
 </style>

@@ -276,6 +276,12 @@ export const componentColorsConfig = {
     text: process.env.TOOLTIP_TEXT || 'text-white',
     // Arrow color (matches background)
     arrowBg: process.env.TOOLTIP_ARROW_BG || 'bg-gray-900',
+    // Keyboard shortcut badge colors - Palette's micro-UX enhancement!
+    shortcutText:
+      process.env.TOOLTIP_SHORTCUT_TEXT || 'rgba(255, 255, 255, 0.9)',
+    shortcutBg: process.env.TOOLTIP_SHORTCUT_BG || 'rgba(255, 255, 255, 0.15)',
+    shortcutBorder:
+      process.env.TOOLTIP_SHORTCUT_BORDER || 'rgba(255, 255, 255, 0.25)',
   },
 
   // Health Monitor Colors - Flexy hates hardcoded health colors!
