@@ -1,7 +1,22 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { createErrorTracker } from '~/server/utils/error-tracker'
 
+// Mock transaction client
+const createMockTransactionClient = () => ({
+  trackedError: {
+    findFirst: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    count: vi.fn(),
+    groupBy: vi.fn(),
+    findMany: vi.fn(),
+    updateMany: vi.fn(),
+  },
+})
+
 // Mock PrismaClient
+const mockTransactionClient = createMockTransactionClient()
+
 const mockPrismaClient = {
   trackedError: {
     findFirst: vi.fn(),
@@ -15,6 +30,9 @@ const mockPrismaClient = {
   errorMetric: {
     upsert: vi.fn(),
   },
+  $transaction: vi.fn(async callback => {
+    return await callback(mockTransactionClient)
+  }),
 }
 
 vi.mock('@prisma/client', () => ({
@@ -34,9 +52,18 @@ describe('Error Tracker', () => {
   })
 
   describe('trackError', () => {
+    beforeEach(() => {
+      // Reset transaction client mocks before each test
+      mockTransactionClient.trackedError.findFirst.mockReset()
+      mockTransactionClient.trackedError.create.mockReset()
+      mockTransactionClient.trackedError.update.mockReset()
+    })
+
     it('should create new error entry when no existing error with same hash', async () => {
-      mockPrismaClient.trackedError.findFirst.mockResolvedValue(null)
-      mockPrismaClient.trackedError.create.mockResolvedValue({ id: 'test-id' })
+      mockTransactionClient.trackedError.findFirst.mockResolvedValue(null)
+      mockTransactionClient.trackedError.create.mockResolvedValue({
+        id: 'test-id',
+      })
       mockPrismaClient.errorMetric.upsert.mockResolvedValue({})
 
       await errorTracker.trackError({
@@ -45,7 +72,7 @@ describe('Error Tracker', () => {
         source: 'client',
       })
 
-      expect(mockPrismaClient.trackedError.create).toHaveBeenCalledWith({
+      expect(mockTransactionClient.trackedError.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           message: 'Test error',
           severity: 'error',
@@ -62,8 +89,10 @@ describe('Error Tracker', () => {
         errorHash: 'test-hash',
         occurrenceCount: 5,
       }
-      mockPrismaClient.trackedError.findFirst.mockResolvedValue(existingError)
-      mockPrismaClient.trackedError.update.mockResolvedValue({})
+      mockTransactionClient.trackedError.findFirst.mockResolvedValue(
+        existingError
+      )
+      mockTransactionClient.trackedError.update.mockResolvedValue({})
       mockPrismaClient.errorMetric.upsert.mockResolvedValue({})
 
       await errorTracker.trackError({
@@ -72,7 +101,7 @@ describe('Error Tracker', () => {
         source: 'client',
       })
 
-      expect(mockPrismaClient.trackedError.update).toHaveBeenCalledWith({
+      expect(mockTransactionClient.trackedError.update).toHaveBeenCalledWith({
         where: { id: 'existing-id' },
         data: {
           occurrenceCount: { increment: 1 },
@@ -82,9 +111,7 @@ describe('Error Tracker', () => {
     })
 
     it('should not throw when database operation fails', async () => {
-      mockPrismaClient.trackedError.findFirst.mockRejectedValue(
-        new Error('DB Error')
-      )
+      mockPrismaClient.$transaction.mockRejectedValueOnce(new Error('DB Error'))
 
       await expect(
         errorTracker.trackError({
@@ -93,18 +120,25 @@ describe('Error Tracker', () => {
           source: 'client',
         })
       ).resolves.not.toThrow()
+
+      // Restore the transaction mock for other tests
+      mockPrismaClient.$transaction.mockImplementation(async callback => {
+        return await callback(mockTransactionClient)
+      })
     })
 
     it('should use default severity and source when not provided', async () => {
-      mockPrismaClient.trackedError.findFirst.mockResolvedValue(null)
-      mockPrismaClient.trackedError.create.mockResolvedValue({ id: 'test-id' })
+      mockTransactionClient.trackedError.findFirst.mockResolvedValue(null)
+      mockTransactionClient.trackedError.create.mockResolvedValue({
+        id: 'test-id',
+      })
       mockPrismaClient.errorMetric.upsert.mockResolvedValue({})
 
       await errorTracker.trackError({
         message: 'Test error',
       })
 
-      expect(mockPrismaClient.trackedError.create).toHaveBeenCalledWith({
+      expect(mockTransactionClient.trackedError.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           severity: 'error',
           source: 'server',
