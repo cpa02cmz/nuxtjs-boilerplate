@@ -3,126 +3,110 @@
     <div class="max-w-4xl mx-auto px-4">
       <div class="bg-white rounded-lg shadow-md p-6">
         <h1 class="text-3xl font-bold text-gray-800 mb-6">
-          Developer Portal
+          {{ config.developer.title }}
         </h1>
 
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-gray-700 mb-4">
-            Getting Started
+            {{ config.developer.gettingStarted.title }}
           </h2>
           <p class="text-gray-600 mb-4">
-            Welcome to the Free Stuff on the Internet API! Our API allows you to
-            access and interact with our collection of free resources
-            programmatically.
+            {{ config.developer.gettingStarted.description }}
           </p>
 
           <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
             <h3 class="font-medium text-blue-800 mb-2">
-              Base URL
+              {{ config.developer.baseUrl.title }}
             </h3>
             <p class="font-mono text-sm bg-white p-2 rounded">
-              https://yourdomain.com/api
+              {{ config.developer.baseUrl.url }}
             </p>
           </div>
         </section>
 
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-gray-700 mb-4">
-            Authentication
+            {{ config.developer.authentication.title }}
           </h2>
           <p class="text-gray-600 mb-4">
-            To use the API, you need to include your API key in the request
-            headers.
+            {{ config.developer.authentication.description }}
           </p>
 
           <div class="bg-gray-100 rounded-md p-4 mb-4">
             <h3 class="font-medium text-gray-800 mb-2">
-              Header Format
+              {{ config.developer.authentication.headerFormat }}
             </h3>
-            <pre class="font-mono text-sm bg-white p-3 rounded overflow-x-auto">
-X-API-Key: your-api-key-here</pre>
+            <pre
+              class="font-mono text-sm bg-white p-3 rounded overflow-x-auto"
+            >{{ config.developer.authentication.headerExample }}</pre>
           </div>
 
           <button
             class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
             @click="goToApiKeys"
           >
-            Manage API Keys
+            {{ config.developer.authentication.manageKeysButton }}
           </button>
         </section>
 
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-gray-700 mb-4">
-            API Examples
+            {{ config.developer.apiExamples.title }}
           </h2>
 
           <div class="mb-6">
             <h3 class="font-medium text-gray-800 mb-2">
-              Get Resources
+              {{ config.developer.apiExamples.getResources.title }}
             </h3>
             <div class="bg-gray-100 rounded-md p-4">
               <pre
                 class="font-mono text-sm bg-white p-3 rounded overflow-x-auto"
-              >
-curl -X GET \
-  -H "X-API-Key: your-api-key-here" \
-  "https://yourdomain.com/api/v1/resources?limit=10&category=tools"</pre>
+              >{{ config.developer.apiExamples.getResources.command }}</pre>
             </div>
           </div>
 
           <div class="mb-6">
             <h3 class="font-medium text-gray-800 mb-2">
-              Search Resources
+              {{ config.developer.apiExamples.searchResources.title }}
             </h3>
             <div class="bg-gray-100 rounded-md p-4">
               <pre
                 class="font-mono text-sm bg-white p-3 rounded overflow-x-auto"
-              >
-curl -X GET \
-  -H "X-API-Key: your-api-key-here" \
-  "https://yourdomain.com/api/v1/search?q=hosting&pricing=Free"</pre>
+              >{{ config.developer.apiExamples.searchResources.command }}</pre>
             </div>
           </div>
 
           <div class="mb-6">
             <h3 class="font-medium text-gray-800 mb-2">
-              Submit a Resource
+              {{ config.developer.apiExamples.submitResource.title }}
             </h3>
             <div class="bg-gray-100 rounded-md p-4">
               <pre
                 class="font-mono text-sm bg-white p-3 rounded overflow-x-auto"
-              >
-curl -X POST \
-  -H "X-API-Key: your-api-key-here" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "My Resource",
-    "description": "A brief description of my resource",
-    "url": "https://example.com",
-    "category": "Tools"
-  }' \
-  "https://yourdomain.com/api/submissions"</pre>
+              >{{ config.developer.apiExamples.submitResource.command }}</pre>
             </div>
           </div>
         </section>
 
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-gray-700 mb-4">
-            Rate Limiting
+            {{ config.developer.rateLimiting.title }}
           </h2>
           <p class="text-gray-600 mb-4">
-            Our API implements rate limiting to ensure fair usage. Each API key
-            has its own rate limits:
+            {{ config.developer.rateLimiting.description }}
           </p>
 
           <ul class="list-disc pl-6 text-gray-600 space-y-2">
-            <li><strong>General requests</strong>: 100 requests per minute</li>
             <li>
-              <strong>Search requests</strong>: 50 requests per minute (more
-              restrictive due to resource usage)
+              <strong>{{ config.developer.rateLimiting.limits.general }}</strong>: {{ config.developer.rateLimiting.limits.generalValue }}
             </li>
             <li>
-              <strong>Submission requests</strong>: 10 requests per minute
+              <strong>{{ config.developer.rateLimiting.limits.search }}</strong>: {{ config.developer.rateLimiting.limits.searchValue }}
+            </li>
+            <li>
+              <strong>{{
+                config.developer.rateLimiting.limits.submission
+              }}</strong>: {{ config.developer.rateLimiting.limits.submissionValue }}
             </li>
           </ul>
 
@@ -130,58 +114,55 @@ curl -X POST \
             class="mt-4 bg-yellow-50 border border-yellow-200 rounded-md p-4"
           >
             <h3 class="font-medium text-yellow-800 mb-2">
-              Rate Limit Headers
+              {{ config.developer.rateLimiting.headers.title }}
             </h3>
             <p class="text-sm text-gray-700">
-              Rate limit responses include headers:
-              <code class="font-mono">X-RateLimit-Limit</code>,
-              <code class="font-mono">X-RateLimit-Remaining</code>, and
-              <code class="font-mono">X-RateLimit-Reset</code>.
+              {{ config.developer.rateLimiting.headers.description }}
+              <code class="font-mono">{{
+                config.developer.rateLimiting.headers.limitHeader
+              }}</code>,
+              <code class="font-mono">{{
+                config.developer.rateLimiting.headers.remainingHeader
+              }}</code>, and
+              <code class="font-mono">{{
+                config.developer.rateLimiting.headers.resetHeader
+              }}</code>.
             </p>
           </div>
         </section>
 
         <section class="mb-8">
           <h2 class="text-xl font-semibold text-gray-700 mb-4">
-            Error Handling
+            {{ config.developer.errorHandling.title }}
           </h2>
           <p class="text-gray-600 mb-4">
-            The API returns standard HTTP status codes and error responses:
+            {{ config.developer.errorHandling.description }}
           </p>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="border border-gray-200 rounded-md p-4">
               <h3 class="font-medium text-gray-800 mb-2">
-                Success Response
+                {{ config.developer.errorHandling.success.title }}
               </h3>
               <pre
                 class="font-mono text-xs bg-white p-2 rounded overflow-x-auto"
-              >
-{
-  "success": true,
-  "data": { ... }
-}</pre>
+              >{{ config.developer.errorHandling.success.example }}</pre>
             </div>
 
             <div class="border border-gray-200 rounded-md p-4">
               <h3 class="font-medium text-gray-800 mb-2">
-                Error Response
+                {{ config.developer.errorHandling.error.title }}
               </h3>
               <pre
                 class="font-mono text-xs bg-white p-2 rounded overflow-x-auto"
-              >
-{
-  "success": false,
-  "message": "Error message",
-  "error": "Detailed error"
-}</pre>
+              >{{ config.developer.errorHandling.error.example }}</pre>
             </div>
           </div>
         </section>
 
         <section>
           <h2 class="text-xl font-semibold text-gray-700 mb-4">
-            API Documentation
+            {{ config.developer.documentation.title }}
           </h2>
           <div class="flex flex-col sm:flex-row gap-4">
             <a
@@ -189,13 +170,13 @@ curl -X POST \
               target="_blank"
               class="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-center"
             >
-              Interactive API Documentation
+              {{ config.developer.documentation.interactiveButton }}
             </a>
             <a
               href="/api-keys"
               class="px-6 py-3 bg-gray-800 text-white rounded-md hover:bg-gray-900 text-center"
             >
-              API Key Management
+              {{ config.developer.documentation.keyManagementButton }}
             </a>
           </div>
         </section>
@@ -205,17 +186,20 @@ curl -X POST \
 </template>
 
 <script setup lang="ts">
+import { contentConfig } from '~/configs/content.config'
+
+const config = contentConfig
+
 const goToApiKeys = () => {
   navigateTo('/api-keys')
 }
 
 useHead({
-  title: 'Developer Portal - Free Stuff on the Internet',
+  title: config.developer.pageTitle,
   meta: [
     {
       name: 'description',
-      content:
-        'Developer documentation and API access for Free Stuff on the Internet',
+      content: config.developer.metaDescription,
     },
   ],
 })

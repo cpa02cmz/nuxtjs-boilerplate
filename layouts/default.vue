@@ -7,7 +7,7 @@
       href="#main-content"
       class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-gray-900 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-800"
     >
-      Skip to main content
+      {{ config.navigation.skipToMain }}
     </a>
 
     <header
@@ -20,9 +20,9 @@
             <NuxtLink
               to="/"
               class="text-xl font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 focus:rounded transition-colors duration-200"
-              :aria-label="'Free Stuff on the Internet - Return to home page'"
+              :aria-label="config.navigation.appName + ' - Return to home page'"
             >
-              Free Stuff on the Internet
+              {{ config.navigation.appName }}
             </NuxtLink>
           </div>
 
@@ -30,7 +30,7 @@
           <div class="hidden lg:flex items-center flex-1 max-w-lg mx-8">
             <LazySearchBar
               v-model="searchQuery"
-              :aria-label="'Search for free resources'"
+              :aria-label="config.navigation.searchAriaLabel"
               @search="handleSearch"
             />
           </div>
@@ -38,7 +38,7 @@
           <nav
             class="hidden lg:flex items-center space-x-4"
             role="navigation"
-            aria-label="Main navigation"
+            :aria-label="config.aria.mainNavigation"
           >
             <!-- Theme Toggle Button -->
             <ClientOnly>
@@ -109,58 +109,58 @@
             <NuxtLink
               to="/"
               class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
-              :aria-label="'Free Stuff on the Internet - Return to home page'"
+              :aria-label="config.navigation.appName + ' - Return to home page'"
             >
-              Home
+              {{ config.navigation.items.home }}
             </NuxtLink>
             <NuxtLink
               to="/search"
               class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
               active-class="bg-gray-100 dark:bg-gray-800"
             >
-              Search
+              {{ config.navigation.items.search }}
             </NuxtLink>
             <NuxtLink
               to="/ai-keys"
               class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
               active-class="bg-gray-100 dark:bg-gray-800"
             >
-              AI Keys
+              {{ config.navigation.items.aiKeys }}
             </NuxtLink>
             <NuxtLink
               to="/favorites"
               class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
               active-class="bg-gray-100 dark:bg-gray-800"
             >
-              Favorites
+              {{ config.navigation.items.favorites }}
             </NuxtLink>
             <NuxtLink
               to="/about"
               class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
               active-class="bg-gray-100 dark:bg-gray-800"
             >
-              About
+              {{ config.navigation.items.about }}
             </NuxtLink>
             <NuxtLink
               to="/submit"
               class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium font-medium bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
               active-class="bg-gray-200 dark:bg-gray-700"
             >
-              Submit
+              {{ config.navigation.items.submit }}
             </NuxtLink>
             <NuxtLink
               to="/developer"
               class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
               active-class="bg-gray-100 dark:bg-gray-800"
             >
-              Developer
+              {{ config.navigation.items.developer }}
             </NuxtLink>
             <NuxtLink
               to="/api-analytics"
               class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
               active-class="bg-gray-100 dark:bg-gray-800"
             >
-              API Analytics
+              {{ config.navigation.items.apiAnalytics }}
             </NuxtLink>
             <NuxtLink
               v-if="comparisonCount > 0"
@@ -184,7 +184,7 @@
                   d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                 />
               </svg>
-              Compare
+              {{ config.comparison.title }}
               <span
                 class="ml-1.5 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 text-xs font-bold bg-white text-blue-600 rounded-full"
                 :class="{ 'animate-pop': isCountAnimating }"
@@ -322,7 +322,7 @@
             class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
             @click="closeMobileMenu"
           >
-            Home
+            {{ config.navigation.items.home }}
           </NuxtLink>
           <NuxtLink
             to="/search"
@@ -330,7 +330,7 @@
             active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
-            Search
+            {{ config.navigation.items.search }}
           </NuxtLink>
           <NuxtLink
             to="/ai-keys"
@@ -338,7 +338,7 @@
             active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
-            AI Keys
+            {{ config.navigation.items.aiKeys }}
           </NuxtLink>
           <NuxtLink
             to="/favorites"
@@ -346,7 +346,7 @@
             active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
-            Favorites
+            {{ config.navigation.items.favorites }}
           </NuxtLink>
           <NuxtLink
             to="/about"
@@ -354,7 +354,7 @@
             active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
-            About
+            {{ config.navigation.items.about }}
           </NuxtLink>
           <NuxtLink
             to="/submit"
@@ -362,7 +362,7 @@
             active-class="bg-gray-200 dark:bg-gray-600"
             @click="closeMobileMenu"
           >
-            Submit
+            {{ config.navigation.items.submit }}
           </NuxtLink>
           <NuxtLink
             to="/developer"
@@ -370,7 +370,7 @@
             active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
-            Developer
+            {{ config.navigation.items.developer }}
           </NuxtLink>
           <NuxtLink
             to="/api-analytics"
@@ -378,7 +378,7 @@
             active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
-            API Analytics
+            {{ config.navigation.items.apiAnalytics }}
           </NuxtLink>
           <NuxtLink
             v-if="comparisonCount > 0"
@@ -403,7 +403,7 @@
                   d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                 />
               </svg>
-              Compare Resources
+              {{ config.comparison.title }}
             </span>
             <span
               class="inline-flex items-center justify-center min-w-[1.5rem] h-6 px-1.5 text-sm font-bold bg-blue-600 text-white rounded-full"
@@ -415,7 +415,7 @@
           <div class="px-2 pt-2 sm:px-3">
             <LazySearchBar
               v-model="searchQuery"
-              :aria-label="'Search for free resources'"
+              :aria-label="config.navigation.searchAriaLabel"
               @search="handleMobileSearch"
             />
           </div>
@@ -426,7 +426,7 @@
       id="main-content"
       role="main"
       tabindex="-1"
-      aria-label="Main content"
+      :aria-label="config.aria.mainContent"
     >
       <slot />
     </main>
@@ -440,11 +440,11 @@
         <div
           class="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <span>© {{ new Date().getFullYear() }} Free Stuff on the Internet. All
-            rights reserved.</span>
+          <span>© {{ new Date().getFullYear() }} {{ config.navigation.appName }}.
+            {{ config.footer.copyright }}</span>
           <button
             class="inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1 transition-colors duration-200"
-            aria-label="View keyboard shortcuts (press ? to open)"
+            :aria-label="config.keyboardShortcuts.trigger.aria"
             @click="openShortcutsHelp"
           >
             <kbd
@@ -452,11 +452,11 @@
             >
               ?
             </kbd>
-            <span>Shortcuts</span>
+            <span>{{ config.keyboardShortcuts.trigger.label }}</span>
           </button>
         </div>
         <p class="sr-only">
-          Footer content ends
+          {{ config.footer.contentEnd }}
         </p>
       </div>
     </footer>
@@ -489,10 +489,14 @@ import { useRoute, navigateTo } from '#app'
 import { useResources } from '~/composables/useResources'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import { useTheme } from '~/composables/useTheme'
+import { contentConfig } from '~/configs/content.config'
 // NodeListOf is a global DOM type, no need to import
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
 import KeyboardShortcutsHelp from '~/components/KeyboardShortcutsHelp.vue'
 import OfflineIndicator from '~/components/OfflineIndicator.vue'
+
+// Flexy hates hardcoded strings! Use contentConfig
+const config = contentConfig
 
 // Theme state
 const { isDark, cycleTheme } = useTheme()

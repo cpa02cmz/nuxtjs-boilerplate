@@ -981,12 +981,115 @@ export const contentConfig = {
 
   // Developer Page - Flexy hates hardcoded developer strings!
   developer: {
-    rateLimits: {
-      general: process.env.CONTENT_DEV_RATE_GENERAL || 'General requests',
-      search: process.env.CONTENT_DEV_RATE_SEARCH || 'Search requests',
-      submission:
-        process.env.CONTENT_DEV_RATE_SUBMISSION || 'Submission requests',
+    title: process.env.CONTENT_DEV_TITLE || 'Developer Portal',
+    gettingStarted: {
+      title: process.env.CONTENT_DEV_GETTING_STARTED_TITLE || 'Getting Started',
+      description:
+        process.env.CONTENT_DEV_GETTING_STARTED_DESC ||
+        'Welcome to the Free Stuff on the Internet API! Our API allows you to access and interact with our collection of free resources programmatically.',
     },
+    baseUrl: {
+      title: process.env.CONTENT_DEV_BASE_URL_TITLE || 'Base URL',
+      url: process.env.CONTENT_DEV_BASE_URL || 'https://yourdomain.com/api',
+    },
+    authentication: {
+      title: process.env.CONTENT_DEV_AUTH_TITLE || 'Authentication',
+      description:
+        process.env.CONTENT_DEV_AUTH_DESC ||
+        'To use the API, you need to include your API key in the request headers.',
+      headerFormat: process.env.CONTENT_DEV_AUTH_HEADER || 'Header Format',
+      headerExample:
+        process.env.CONTENT_DEV_AUTH_EXAMPLE || 'X-API-Key: your-api-key-here',
+      manageKeysButton:
+        process.env.CONTENT_DEV_MANAGE_KEYS_BTN || 'Manage API Keys',
+    },
+    apiExamples: {
+      title: process.env.CONTENT_DEV_API_EXAMPLES_TITLE || 'API Examples',
+      getResources: {
+        title: process.env.CONTENT_DEV_EXAMPLE_GET_TITLE || 'Get Resources',
+        command:
+          process.env.CONTENT_DEV_EXAMPLE_GET_CMD ||
+          'curl -X GET \\\n  -H "X-API-Key: your-api-key-here" \\\n  "https://yourdomain.com/api/v1/resources?limit=10&category=tools"',
+      },
+      searchResources: {
+        title:
+          process.env.CONTENT_DEV_EXAMPLE_SEARCH_TITLE || 'Search Resources',
+        command:
+          process.env.CONTENT_DEV_EXAMPLE_SEARCH_CMD ||
+          'curl -X GET \\\n  -H "X-API-Key: your-api-key-here" \\\n  "https://yourdomain.com/api/v1/search?q=hosting&pricing=Free"',
+      },
+      submitResource: {
+        title:
+          process.env.CONTENT_DEV_EXAMPLE_SUBMIT_TITLE || 'Submit a Resource',
+        command:
+          process.env.CONTENT_DEV_EXAMPLE_SUBMIT_CMD ||
+          'curl -X POST \\\n  -H "X-API-Key: your-api-key-here" \\\n  -H "Content-Type: application/json" \\\n  -d \'{\n    "title": "My Resource",\n    "description": "A brief description of my resource",\n    "url": "https://example.com",\n    "category": "Tools"\n  }\' \\\n  "https://yourdomain.com/api/submissions"',
+      },
+    },
+    rateLimiting: {
+      title: process.env.CONTENT_DEV_RATE_LIMIT_TITLE || 'Rate Limiting',
+      description:
+        process.env.CONTENT_DEV_RATE_LIMIT_DESC ||
+        'Our API implements rate limiting to ensure fair usage. Each API key has its own rate limits:',
+      limits: {
+        general: process.env.CONTENT_DEV_RATE_GENERAL || 'General requests',
+        generalValue:
+          process.env.CONTENT_DEV_RATE_GENERAL_VALUE ||
+          '100 requests per minute',
+        search: process.env.CONTENT_DEV_RATE_SEARCH || 'Search requests',
+        searchValue:
+          process.env.CONTENT_DEV_RATE_SEARCH_VALUE ||
+          '50 requests per minute (more restrictive due to resource usage)',
+        submission:
+          process.env.CONTENT_DEV_RATE_SUBMISSION || 'Submission requests',
+        submissionValue:
+          process.env.CONTENT_DEV_RATE_SUBMISSION_VALUE ||
+          '10 requests per minute',
+      },
+      headers: {
+        title:
+          process.env.CONTENT_DEV_RATE_HEADERS_TITLE || 'Rate Limit Headers',
+        description:
+          process.env.CONTENT_DEV_RATE_HEADERS_DESC ||
+          'Rate limit responses include headers:',
+        limitHeader: 'X-RateLimit-Limit',
+        remainingHeader: 'X-RateLimit-Remaining',
+        resetHeader: 'X-RateLimit-Reset',
+      },
+    },
+    errorHandling: {
+      title: process.env.CONTENT_DEV_ERROR_TITLE || 'Error Handling',
+      description:
+        process.env.CONTENT_DEV_ERROR_DESC ||
+        'The API returns standard HTTP status codes and error responses:',
+      success: {
+        title:
+          process.env.CONTENT_DEV_ERROR_SUCCESS_TITLE || 'Success Response',
+        example:
+          process.env.CONTENT_DEV_ERROR_SUCCESS_EXAMPLE ||
+          '{\n  "success": true,\n  "data": { ... }\n}',
+      },
+      error: {
+        title: process.env.CONTENT_DEV_ERROR_ERROR_TITLE || 'Error Response',
+        example:
+          process.env.CONTENT_DEV_ERROR_ERROR_EXAMPLE ||
+          '{\n  "success": false,\n  "message": "Error message",\n  "error": "Detailed error"\n}',
+      },
+    },
+    documentation: {
+      title: process.env.CONTENT_DEV_DOCS_TITLE || 'API Documentation',
+      interactiveButton:
+        process.env.CONTENT_DEV_DOCS_INTERACTIVE_BTN ||
+        'Interactive API Documentation',
+      keyManagementButton:
+        process.env.CONTENT_DEV_DOCS_KEY_BTN || 'API Key Management',
+    },
+    pageTitle:
+      process.env.CONTENT_DEV_PAGE_TITLE ||
+      'Developer Portal - Free Stuff on the Internet',
+    metaDescription:
+      process.env.CONTENT_DEV_META_DESC ||
+      'Developer documentation and API access for Free Stuff on the Internet',
   },
 
   // Analytics - Flexy hates hardcoded analytics labels!
