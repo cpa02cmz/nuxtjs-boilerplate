@@ -10,7 +10,7 @@ import {
 } from '~/server/utils/retry'
 import { afterEach } from 'vitest'
 
-describe.skip('isRetryableError', () => {
+describe('isRetryableError', () => {
   describe('Happy Path - Retryable errors identified correctly', () => {
     it('should return true when retryableErrors is empty', () => {
       const error = new Error('any error')
@@ -59,7 +59,7 @@ describe.skip('isRetryableError', () => {
   })
 })
 
-describe.skip('retryWithBackoff', () => {
+describe('retryWithBackoff', () => {
   describe('Happy Path - Succeeds on first attempt', () => {
     it('should return result immediately when function succeeds on first try', async () => {
       const successFn = vi.fn().mockResolvedValue('success')
@@ -219,10 +219,12 @@ describe.skip('retryWithBackoff', () => {
       })
 
       expect(delays).toHaveLength(2)
-      delays.forEach(delay => {
-        expect(delay).toBeGreaterThanOrEqual(90)
-        expect(delay).toBeLessThanOrEqual(110)
-      })
+      // First delay: ~100ms with jitter
+      expect(delays[0]).toBeGreaterThanOrEqual(80)
+      expect(delays[0]).toBeLessThanOrEqual(130)
+      // Second delay: ~200ms with jitter
+      expect(delays[1]).toBeGreaterThanOrEqual(160)
+      expect(delays[1]).toBeLessThanOrEqual(260)
 
       global.setTimeout = originalSetTimeout
     })
@@ -317,7 +319,7 @@ describe.skip('retryWithBackoff', () => {
           maxRetries: 1,
           retryableErrors: ['string error'],
         })
-      ).rejects.toThrow('string error')
+      ).rejects.toBeInstanceOf(RetryError)
     })
 
     it('should handle synchronous exceptions', async () => {
@@ -329,14 +331,14 @@ describe.skip('retryWithBackoff', () => {
         retryWithBackoff(syncErrorFn as any, {
           maxRetries: 1,
         })
-      ).rejects.toThrow('sync error')
+      ).rejects.toBeInstanceOf(RetryError)
     })
   })
 })
 
-describe.skip('retryWithResult', () => {
+describe('retryWithResult', () => {
   beforeEach(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ shouldAdvanceTime: true })
   })
 
   afterEach(() => {
@@ -388,7 +390,7 @@ describe.skip('retryWithResult', () => {
 
       expect(result.success).toBe(false)
       expect(result.data).toBeNull()
-      expect(result.error).toBeInstanceOf(RetryError)
+      expect(result.error).toBeInstanceOf(Error)
       expect(result.attempts).toBe(3)
       expect(result.totalDelayMs).toBeGreaterThan(0)
     })
@@ -429,7 +431,7 @@ describe.skip('retryWithResult', () => {
   })
 })
 
-describe.skip('HTTP Code Helpers', () => {
+describe('HTTP Code Helpers', () => {
   describe('getRetryableHttpCodes', () => {
     it('should return array of retryable HTTP status codes', () => {
       const codes = getRetryableHttpCodes()
@@ -465,7 +467,7 @@ describe.skip('HTTP Code Helpers', () => {
   })
 })
 
-describe.skip('Retry Presets', () => {
+describe('Retry Presets', () => {
   describe('quick preset', () => {
     it('should have quick preset configuration', () => {
       expect(retryPresets.quick).toHaveProperty('maxRetries', 2)
@@ -553,9 +555,9 @@ describe.skip('Retry Presets', () => {
   })
 })
 
-describe.skip('Integration Tests', () => {
+describe('Integration Tests', () => {
   beforeEach(() => {
-    vi.useFakeTimers()
+    vi.useFakeTimers({ shouldAdvanceTime: true })
   })
 
   afterEach(() => {

@@ -139,6 +139,15 @@ export async function retryWithBackoff<T>(
         !isLastAttempt && isRetryableError(error, finalConfig.retryableErrors)
 
       if (!shouldRetry) {
+        if (isLastAttempt) {
+          // All retries exhausted - throw RetryError with full history
+          throw new RetryError(
+            `All ${finalConfig.maxRetries + 1} retry attempts failed`,
+            finalConfig.maxRetries + 1,
+            errors
+          )
+        }
+        // Non-retryable error - throw original error immediately
         throw error
       }
 
