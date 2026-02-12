@@ -11,6 +11,7 @@
 
 import { reactive, readonly, nextTick } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 
 export interface SmartPasteOptions {
   trimWhitespace?: boolean
@@ -246,7 +247,7 @@ function generateSmartPasteStyles(): string {
     0 2px 4px -1px rgba(0, 0, 0, 0.06),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   white-space: nowrap;
-  animation: paste-indicator-pop ${styles.animationDuration}s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: paste-indicator-pop ${styles.animationDuration}s ${EASING.SPRING_STANDARD} forwards;
   transform: translate(-50%, -100%);
   margin-top: -${cfg.verticalOffset}px;
 }

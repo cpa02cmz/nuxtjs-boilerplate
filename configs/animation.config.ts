@@ -1,5 +1,6 @@
 // Animation Configuration - All Animation Timing and Duration Settings
 // Flexy hates hardcoded values! All animation settings are now configurable.
+import { EASING } from './easing.config'
 
 export const animationConfig = {
   // Tooltip Animations
@@ -74,9 +75,7 @@ export const animationConfig = {
     // Scale factor at peak of animation
     peakScale: parseFloat(process.env.SEARCH_COMPLETE_PEAK_SCALE || '1.2'),
     // Easing function for the animation
-    easing:
-      process.env.SEARCH_COMPLETE_EASING ||
-      'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    easing: process.env.SEARCH_COMPLETE_EASING || EASING.SPRING_STANDARD,
   },
 
   // Focus Glow Effect - Palette's micro-UX enhancement!
@@ -235,9 +234,7 @@ export const animationConfig = {
       process.env.ICON_INTERACTION_ACTIVE_SCALE || '0.95'
     ),
     // Cubic bezier easing for bouncy feel
-    easing:
-      process.env.ICON_INTERACTION_EASING ||
-      'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    easing: process.env.ICON_INTERACTION_EASING || EASING.SPRING_STANDARD,
   },
 
   // Search Tracking Delay
@@ -590,7 +587,7 @@ export const animationConfig = {
     // CSS duration string for transitions
     durationSec: `${parseInt(process.env.FLOATING_LABEL_DURATION_MS || '200') / 1000}s`,
     // Easing function for the animation
-    easing: process.env.FLOATING_LABEL_EASING || 'cubic-bezier(0.4, 0, 0.2, 1)',
+    easing: process.env.FLOATING_LABEL_EASING || EASING.MATERIAL_STANDARD,
     // Scale factor when label floats up (0.85 = 85% of original size)
     scale: parseFloat(process.env.FLOATING_LABEL_SCALE || '0.85'),
     // Vertical translation when floating (px) - moves up

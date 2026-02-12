@@ -171,6 +171,10 @@ export function useSocialSharing() {
     lastError.value = null
 
     try {
+      if (typeof window === 'undefined' || typeof document === 'undefined') {
+        throw new Error('Cannot share in SSR environment')
+      }
+
       const shareUrl = getShareUrl(platform, metadata)
 
       if (!shareUrl) {

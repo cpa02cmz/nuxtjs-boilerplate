@@ -106,6 +106,7 @@ export function useRipple(
     `
 
     // Ensure button has relative positioning
+    if (typeof window === 'undefined') return
     const currentPosition = window.getComputedStyle(button).position
     if (currentPosition === 'static') {
       button.style.position = 'relative'

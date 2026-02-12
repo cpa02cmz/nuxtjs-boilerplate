@@ -193,6 +193,7 @@
 import { ref, computed, watch, onUnmounted, onMounted } from 'vue'
 import { thresholdsConfig } from '~/configs/thresholds.config'
 import { contentConfig } from '~/configs/content.config'
+import { EASING } from '~/configs/easing.config'
 
 interface Props {
   selectedSortOption?: string
@@ -487,7 +488,7 @@ onUnmounted(() => {
 <style scoped>
 /* Spring physics for chevron rotation */
 .ease-spring {
-  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-timing-function: v-bind('EASING.SPRING_SNAPPY');
 }
 
 /* Checkmark animation */

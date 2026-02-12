@@ -176,6 +176,7 @@ import { useResourceData } from '~/composables/useResourceData'
 import type { Resource, AlternativeSuggestion } from '~/types/resource'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { getButtonLabel } from '~/utils/resourceHelper'
 
@@ -492,7 +493,7 @@ watch(
       ease-out,
     transform
       v-bind('animationConfig.alternativeSuggestions.entranceDurationSec')
-      cubic-bezier(0.34, 1.56, 0.64, 1);
+      v-bind('EASING.SPRING_SNAPPY');
   transition-delay: var(--stagger-delay, 0ms);
 }
 
@@ -523,7 +524,7 @@ watch(
 .alternative-card-leave-active {
   transition: all
     v-bind('animationConfig.alternativeSuggestions.entranceDurationSec')
-    cubic-bezier(0.34, 1.56, 0.64, 1);
+    v-bind('EASING.SPRING_SNAPPY');
 }
 
 .alternative-card-enter-from,
@@ -538,7 +539,7 @@ watch(
 .alternative-card-move {
   transition: transform
     v-bind('animationConfig.transition.slow.durationMs + "ms"')
-    cubic-bezier(0.34, 1.56, 0.64, 1);
+    v-bind('EASING.SPRING_SNAPPY');
 }
 
 /* Empty State */

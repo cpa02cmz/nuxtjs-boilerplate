@@ -22,6 +22,7 @@
 <script setup lang="ts">
 import { computed, useAttrs, type StyleValue } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 
 /**
  * BaseIcon Component - Flexy loves modularity!
@@ -142,7 +143,7 @@ const svgAttrs = computed(() => {
 .icon-wrapper--interactive {
   cursor: pointer;
   transition: transform var(--icon-transition-duration, 200ms)
-    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    v-bind('EASING.SPRING_STANDARD');
   will-change: transform;
   backface-visibility: hidden;
   transform: translateZ(0);

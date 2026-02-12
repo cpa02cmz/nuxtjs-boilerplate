@@ -254,6 +254,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 
 // Reactive state
 const isOffline = ref(false)
@@ -553,7 +554,7 @@ onUnmounted(() => {
 }
 
 .animate-check-pop {
-  animation: check-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: check-pop 0.4s v-bind('EASING.SPRING_STANDARD');
 }
 
 /* Spinner animation */
@@ -669,7 +670,7 @@ onUnmounted(() => {
   stroke-dashoffset: 20;
   animation: draw-check
     v-bind('`${animationConfig.offlineRetry.successDurationMs}ms`')
-    cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    v-bind('EASING.MATERIAL_STANDARD') forwards;
 }
 
 @keyframes draw-check {

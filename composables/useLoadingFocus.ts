@@ -16,7 +16,6 @@ export function useLoadingFocus() {
    */
   const saveTriggerElement = () => {
     if (typeof document === 'undefined') return
-
     // Only save if there's an active element and it's not the body
     const activeElement = document.activeElement as HTMLElement
     if (activeElement && activeElement.tagName !== 'BODY') {
@@ -57,7 +56,6 @@ export function useLoadingFocus() {
 
     const returnFocusToElement = () => {
       if (typeof document === 'undefined') return
-
       // Try to focus the trigger element first
       if (triggerElement.value && document.contains(triggerElement.value)) {
         // Check if element is still focusable

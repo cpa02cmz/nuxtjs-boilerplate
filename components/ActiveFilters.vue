@@ -559,6 +559,7 @@ import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { uiConfig } from '../configs/ui.config'
 import { contentConfig } from '../configs/content.config'
 import { animationConfig } from '../configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 import { PROGRESS } from '~/server/utils/constants'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 
@@ -998,7 +999,7 @@ const getChipSpringStyle = (type: string, value: string) => {
     return {
       transform: `translateX(${config.removeTranslateXPx}px) rotate(${config.removeRotationDeg}deg) scale(0.8)`,
       opacity: '0',
-      transition: `all ${config.durationSec} cubic-bezier(0.4, 0, 0.2, 1)`,
+      transition: `all ${config.durationSec} ${EASING.MATERIAL_STANDARD}`,
     }
   }
 
@@ -1010,7 +1011,7 @@ const getChipSpringStyle = (type: string, value: string) => {
   }
 
   return {
-    transition: `all ${config.durationSec} cubic-bezier(0.175, 0.885, 0.32, 1.275)`,
+    transition: `all ${config.durationSec} ${EASING.SPRING_STANDARD}`,
   }
 }
 
@@ -1104,7 +1105,7 @@ onUnmounted(() => {
 .filter-chip-undo {
   @apply relative bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100 focus:ring-amber-500;
   @apply overflow-hidden;
-  animation: undo-chip-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: undo-chip-in 0.3s v-bind('EASING.MATERIAL_STANDARD');
 }
 
 /* Progress bar for undo countdown */
@@ -1151,7 +1152,7 @@ onUnmounted(() => {
     scale(0.8);
   opacity: 0;
   transition: all v-bind('animationConfig.filterChipSpring.durationSec')
-    cubic-bezier(0.4, 0, 0.2, 1);
+    v-bind('EASING.MATERIAL_STANDARD');
 }
 
 /* Entrance animation with spring physics */
@@ -1174,19 +1175,19 @@ onUnmounted(() => {
 .filter-chip.spring-physics:not(.is-exiting):not(.is-pressed) {
   animation: chip-spring-enter
     v-bind('animationConfig.filterChipSpring.durationSec')
-    cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    v-bind('EASING.SPRING_SNAPPY') forwards;
 }
 
 /* Hover enhancement with subtle lift */
 .filter-chip.spring-physics:hover:not(.is-pressed):not(.is-exiting) {
   transform: translateY(-2px);
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.2s v-bind('EASING.SPRING_STANDARD');
 }
 
 /* Focus state enhancement */
 .filter-chip.spring-physics:focus-visible {
   transform: translateY(-1px) scale(1.02);
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.2s v-bind('EASING.SPRING_STANDARD');
 }
 
 /* Reduced motion support - disable spring physics */
@@ -1204,7 +1205,7 @@ onUnmounted(() => {
 
 /* Enter transition - smooth fade and scale up */
 .filter-chip-enter-active {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.3s v-bind('EASING.SPRING_SNAPPY');
 }
 
 .filter-chip-enter-from {
@@ -1215,7 +1216,7 @@ onUnmounted(() => {
 /* Leave transition - spring physics with anticipation */
 .filter-chip-leave-active {
   position: absolute;
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.35s v-bind('EASING.SPRING_SNAPPY');
 }
 
 /* Anticipation phase - brief scale up before disappearing */
@@ -1232,7 +1233,7 @@ onUnmounted(() => {
 
 /* Staggered sibling movement - create fluid feel as chips reposition */
 .filter-chip-move {
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.4s v-bind('EASING.SPRING_SNAPPY');
 }
 
 /* Reduced motion support - disable spring physics */
@@ -1305,7 +1306,7 @@ onUnmounted(() => {
   border-radius: 6px;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s v-bind('EASING.MATERIAL_STANDARD');
   pointer-events: none;
   z-index: 50;
   box-shadow:
@@ -1325,7 +1326,7 @@ onUnmounted(() => {
   border-color: rgba(17, 24, 39, 0.9) transparent transparent transparent;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s v-bind('EASING.MATERIAL_STANDARD');
   pointer-events: none;
   z-index: 50;
 }

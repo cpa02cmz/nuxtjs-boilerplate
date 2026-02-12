@@ -11,6 +11,7 @@ import {
   type ComputedRef,
 } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 
 export interface MagneticOptions {
   /** Strength of the magnetic pull (0-1, where 1 is strongest) */
@@ -145,8 +146,8 @@ export function useMagneticButton(options: MagneticOptions = {}) {
     }
 
     const transition = isHovering.value
-      ? 'transform 0.15s ease-out'
-      : `transform ${config.returnDurationMs}ms cubic-bezier(0.34, 1.56, 0.64, 1)`
+      ? `transform ${animationConfig.transition.fast.durationMs}ms ${EASING.EASE_OUT}`
+      : `transform ${config.returnDurationMs}ms ${EASING.SPRING_SNAPPY}`
 
     return {
       transform: `translate(${translateX.value}px, ${translateY.value}px)`,

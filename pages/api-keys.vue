@@ -211,6 +211,7 @@ import { useRipple } from '~/composables/useRipple'
 import { animationConfig } from '~/configs/animation.config'
 import { iconsConfig } from '~/configs/icons.config'
 import { contentConfig } from '~/configs/content.config'
+import { EASING } from '~/configs/easing.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 import Tooltip from '~/components/Tooltip.vue'
 import type { ApiKeyDisplay } from '~/composables/useApiKeysPage'
@@ -362,7 +363,7 @@ onMounted(() => {
 .checkmark-path {
   stroke-dasharray: 20;
   stroke-dashoffset: 20;
-  animation: draw-check 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: draw-check 0.4s v-bind('EASING.MATERIAL_STANDARD') forwards;
 }
 
 @keyframes draw-check {
@@ -373,7 +374,7 @@ onMounted(() => {
 
 /* Pop animation for checkmark icon */
 .animate-check-pop {
-  animation: check-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: check-pop 0.4s v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes check-pop {

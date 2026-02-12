@@ -265,6 +265,7 @@ import {
 import { generateResourceShareUrls } from '~/utils/shareUtils'
 import logger from '~/utils/logger'
 import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 import { patternsConfig } from '~/configs/patterns.config'
 import { contentConfig } from '~/configs/content.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
@@ -546,7 +547,7 @@ onUnmounted(() => {
 .checkmark-path {
   stroke-dasharray: 20;
   stroke-dashoffset: 20;
-  animation: draw-check 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: draw-check 0.4s v-bind('EASING.MATERIAL_STANDARD') forwards;
 }
 
 @keyframes draw-check {

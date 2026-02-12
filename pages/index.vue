@@ -408,6 +408,7 @@ import { DEFAULT_DEV_URL } from '~/configs/url.config'
 import { uiConfig } from '~/configs/ui.config'
 import { TIME_MS } from '~/configs/time.config'
 import { hapticConfig } from '~/configs/haptic.config'
+import { EASING } from '~/configs/easing.config'
 
 definePageMeta({
   layout: 'default',
@@ -609,7 +610,7 @@ watch(
   opacity: 0;
   /* Spring cubic-bezier: overshoots slightly for organic, playful feel */
   animation: card-enter v-bind('animationConfig.card.enterDurationMs + "ms"')
-    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    v-bind('EASING.SPRING_STANDARD') forwards;
   will-change: transform, opacity;
 }
 
@@ -652,7 +653,7 @@ watch(
 
 /* Load More Button - Completion Celebration Animation */
 .animate-celebration-pulse {
-  animation: celebration-pulse 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: celebration-pulse 0.6s v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes celebration-pulse {
@@ -671,7 +672,7 @@ watch(
 
 /* Checkmark bounce animation */
 .animate-check-bounce {
-  animation: check-bounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: check-bounce 0.5s v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes check-bounce {

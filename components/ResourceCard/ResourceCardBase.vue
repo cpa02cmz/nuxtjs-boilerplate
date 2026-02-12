@@ -342,6 +342,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { seoConfig } from '~/configs/seo.config'
 
@@ -465,7 +466,7 @@ const tiltStyle = computed(() => {
     `,
     transition: isTilting.value
       ? 'transform 0.1s ease-out'
-      : `transform ${config.resetDurationSec}s cubic-bezier(0.4, 0, 0.2, 1)`,
+      : `transform ${config.resetDurationSec}s ${EASING.MATERIAL_STANDARD}`,
     transformStyle: 'preserve-3d' as const,
   }
 })

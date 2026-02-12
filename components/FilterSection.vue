@@ -135,6 +135,7 @@
 import { computed, ref, onUnmounted, onMounted } from 'vue'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
@@ -325,7 +326,7 @@ onUnmounted(() => {
 <style scoped>
 /* Checkbox pop animation when selected */
 .animate-checkbox-pop {
-  animation: checkbox-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: checkbox-pop 0.3s v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes checkbox-pop {
@@ -342,7 +343,7 @@ onUnmounted(() => {
 
 /* Checkbox pop-out animation when deselected */
 .animate-checkbox-pop-out {
-  animation: checkbox-pop-out 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: checkbox-pop-out 0.3s v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes checkbox-pop-out {
@@ -464,12 +465,12 @@ button:hover {
 /* Enhanced checkbox pop animation */
 .animate-checkbox-pop {
   animation: checkbox-pop-enhanced var(--pop-duration, 250ms)
-    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    v-bind('EASING.SPRING_STANDARD');
 }
 
 .animate-checkbox-pop-out {
   animation: checkbox-pop-out-enhanced var(--pop-duration, 250ms)
-    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    v-bind('EASING.SPRING_STANDARD');
 }
 
 @keyframes checkbox-pop-enhanced {

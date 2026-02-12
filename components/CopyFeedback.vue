@@ -67,6 +67,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 import { generateId } from '~/utils/generateId'
 
@@ -297,7 +298,7 @@ defineExpose({
     v-bind(
       '`${animationConfig.copyFeedback?.styles?.animationDuration || 0.3}s`'
     )
-    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    v-bind('EASING.SPRING_STANDARD');
 }
 
 .copy-feedback-checkmark {
