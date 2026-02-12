@@ -890,6 +890,30 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.MAGNETIC_BUTTON_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Press and Hold Interaction - Palette's protective micro-UX enhancement! ⏱️
+  // Prevents accidental destructive actions by requiring intentional long-press
+  pressAndHold: {
+    // Duration user must hold to trigger action (ms)
+    durationMs: parseInt(process.env.PRESS_AND_HOLD_DURATION_MS || '800'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.PRESS_AND_HOLD_DURATION_MS || '800') / 1000}s`,
+    // Size of the progress ring (px)
+    ringSize: parseInt(process.env.PRESS_AND_HOLD_RING_SIZE || '24'),
+    // Stroke width of the progress ring (px)
+    strokeWidth: parseInt(process.env.PRESS_AND_HOLD_STROKE_WIDTH || '3'),
+    // Scale when button is being pressed
+    pressScale: parseFloat(process.env.PRESS_AND_HOLD_PRESS_SCALE || '0.95'),
+    // Color of the progress ring
+    ringColor: process.env.PRESS_AND_HOLD_RING_COLOR || '#ef4444',
+    // Background color of the progress ring
+    ringBgColor:
+      process.env.PRESS_AND_HOLD_RING_BG_COLOR || 'rgba(239, 68, 68, 0.2)',
+    // Whether to show progress text
+    showProgressText: process.env.PRESS_AND_HOLD_SHOW_PROGRESS !== 'false',
+    // Whether to respect reduced motion preference
+    respectReducedMotion: process.env.PRESS_AND_HOLD_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
