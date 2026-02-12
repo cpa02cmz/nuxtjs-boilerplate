@@ -109,6 +109,7 @@
 import { computed, ref, onUnmounted } from 'vue'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   label: string
@@ -284,16 +285,17 @@ onUnmounted(() => {
   }
 }
 
-/* Enhanced focus styles for keyboard navigation */
+/* Enhanced focus styles for keyboard navigation - Flexy hates hardcoded colors! */
 .filter-checkbox:focus-visible {
-  outline: 2px solid #6b7280;
+  outline: 2px solid v-bind('componentColorsConfig.filterSection.focusOutline');
   outline-offset: 2px;
 }
 
-/* Smooth scrollbar styling for the scrollable container */
+/* Smooth scrollbar styling for the scrollable container - Flexy hates hardcoded colors! */
 .max-h-40 {
   scrollbar-width: thin;
-  scrollbar-color: #d1d5db transparent;
+  scrollbar-color: v-bind('componentColorsConfig.filterSection.scrollbar.thumb')
+    v-bind('componentColorsConfig.filterSection.scrollbar.track');
 }
 
 .max-h-40::-webkit-scrollbar {
@@ -301,16 +303,20 @@ onUnmounted(() => {
 }
 
 .max-h-40::-webkit-scrollbar-track {
-  background: transparent;
+  background: v-bind('componentColorsConfig.filterSection.scrollbar.track');
 }
 
 .max-h-40::-webkit-scrollbar-thumb {
-  background-color: #d1d5db;
+  background-color: v-bind(
+    'componentColorsConfig.filterSection.scrollbar.thumb'
+  );
   border-radius: 2px;
 }
 
 .max-h-40::-webkit-scrollbar-thumb:hover {
-  background-color: #9ca3af;
+  background-color: v-bind(
+    'componentColorsConfig.filterSection.scrollbar.thumbHover'
+  );
 }
 
 /* Quick action buttons hover state */
