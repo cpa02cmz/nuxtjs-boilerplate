@@ -1,11 +1,7 @@
 <template>
   <ClientOnly>
     <Teleport to="body">
-      <div
-        v-if="isActive"
-        class="confetti-container"
-        aria-hidden="true"
-      >
+      <div v-if="isActive" class="confetti-container" aria-hidden="true">
         <div
           v-for="(particle, index) in particles"
           :key="index"
@@ -116,7 +112,8 @@ const getParticleStyle = (particle: Particle) => {
 
 // Check if reduced motion is preferred
 const shouldSkipAnimation = () => {
-  if (typeof window === 'undefined') return true
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return true
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 

@@ -58,11 +58,7 @@
             class="flex-shrink-0 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200"
             aria-hidden="true"
           >
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -73,7 +69,8 @@
           </span>
           <span
             class="text-gray-800 truncate group-hover:text-gray-900 transition-colors duration-200 font-medium"
-          >{{ search.query }}</span>
+            >{{ search.query }}</span
+          >
         </div>
 
         <!-- Attempt count with animated background -->
@@ -123,11 +120,7 @@
           class="w-12 h-12 mb-3 text-gray-300"
           :class="{ 'animate-pulse-subtle': !prefersReducedMotion }"
         >
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -146,12 +139,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -201,7 +189,8 @@ const staggerStyles = computed(() => ({
 
 // Check for reduced motion preference - Palette cares about accessibility!
 const checkReducedMotion = () => {
-  if (typeof window === 'undefined') return
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return
   const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
   prefersReducedMotion.value = mediaQuery.matches
 }

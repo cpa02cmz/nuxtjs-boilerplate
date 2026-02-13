@@ -37,10 +37,7 @@
           </p>
         </div>
       </div>
-      <NuxtLink
-        to="/"
-        class="alternative-suggestions__view-all"
-      >
+      <NuxtLink to="/" class="alternative-suggestions__view-all">
         <span>{{ contentConfig.similarResources.viewAll }}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -149,21 +146,13 @@
       <p class="alternative-suggestions__empty-message">
         {{ contentConfig.alternativeSuggestions.emptyState.message }}
       </p>
-      <NuxtLink
-        to="/"
-        class="alternative-suggestions__empty-cta"
-      >
+      <NuxtLink to="/" class="alternative-suggestions__empty-cta">
         {{ contentConfig.alternativeSuggestions.emptyState.browseAll }}
       </NuxtLink>
     </div>
 
     <!-- Screen reader announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -201,7 +190,8 @@ const { getAlternativesForResource } = useAlternativeSuggestions(
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
-  if (typeof window === 'undefined') return false
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
