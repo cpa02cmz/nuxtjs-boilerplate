@@ -82,12 +82,7 @@
     </Transition>
 
     <!-- Screen reader announcement for progress changes -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ progressAnnouncement }}
     </div>
 
@@ -116,16 +111,8 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                class="checkmark-circle"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-              <path
-                class="checkmark-path"
-                d="M7 12l3 3 7-7"
-              />
+              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
           <span class="completion-text">{{
@@ -133,10 +120,7 @@
           }}</span>
         </div>
         <!-- Confetti burst effect -->
-        <div
-          class="confetti-container"
-          aria-hidden="true"
-        >
+        <div class="confetti-container" aria-hidden="true">
           <span
             v-for="n in 8"
             :key="n"
@@ -870,7 +854,8 @@ onUnmounted(() => {
   .completion-text,
   .confetti-piece {
     animation: none !important;
-    transition: opacity 0.2s ease-out !important;
+    transition: opacity
+      v-bind('animationConfig?.cssTransitions?.normalSec ?? "0.2s"') ease-out !important;
   }
 
   .checkmark-path {

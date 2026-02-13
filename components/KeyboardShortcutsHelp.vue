@@ -1,9 +1,6 @@
 <template>
   <Teleport to="body">
-    <Transition
-      name="modal"
-      @after-enter="focusCloseButton"
-    >
+    <Transition name="modal" @after-enter="focusCloseButton">
       <div
         v-if="isOpen"
         ref="modalContainerRef"
@@ -349,7 +346,8 @@
                   isKeyPressed('?') &&
                     'scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                 ]"
-              >?</kbd>
+                >?</kbd
+              >
               anywhere to open this guide
             </p>
           </div>
@@ -365,6 +363,7 @@ import { componentStylesConfig } from '~/configs/component-styles.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { contentConfig } from '~/configs/content.config'
 import { hapticLight } from '~/utils/hapticFeedback'
+import { animationConfig } from '~/configs/animation.config'
 
 // NodeListOf is a global DOM type, no need to import
 
@@ -537,7 +536,8 @@ defineExpose({
 /* Modal transition animations */
 .modal-enter-active,
 .modal-leave-active {
-  transition: opacity 0.2s ease-out;
+  transition: opacity
+    v-bind('animationConfig?.cssTransitions?.normalSec ?? "0.2s"') ease-out;
 }
 
 .modal-enter-from,
@@ -547,7 +547,8 @@ defineExpose({
 
 .modal-enter-active .relative.w-full,
 .modal-leave-active .relative.w-full {
-  transition: transform 0.2s ease-out;
+  transition: transform
+    v-bind('animationConfig?.cssTransitions?.normalSec ?? "0.2s"') ease-out;
 }
 
 .modal-enter-from .relative.w-full,

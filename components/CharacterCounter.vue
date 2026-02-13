@@ -70,12 +70,7 @@
     </div>
 
     <!-- Screen Reader Announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ screenReaderAnnouncement }}
     </div>
   </div>
@@ -362,11 +357,13 @@ const shadowColorDefault = computed(
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .character-counter-ring {
-    transition: opacity 0.1s ease;
+    transition: opacity
+      v-bind('animationConfig?.cssTransitions?.fastSec ?? "0.1s"') ease;
   }
 
   .character-counter-ring__progress {
-    transition: stroke-dashoffset 0.1s ease;
+    transition: stroke-dashoffset
+      v-bind('animationConfig?.cssTransitions?.fastSec ?? "0.1s"') ease;
   }
 
   .character-counter-ring__text--warning,

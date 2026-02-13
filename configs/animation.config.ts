@@ -799,6 +799,12 @@ export const animationConfig = {
     ),
     mediumDurationSec: `${parseInt(process.env.CSS_ANIM_MEDIUM_DURATION_MS || '400') / 1000}s`,
 
+    // Slower animation duration (500ms) - for bounce and emphasis animations
+    slowerDurationMs: parseInt(
+      process.env.CSS_ANIM_SLOWER_DURATION_MS || '500'
+    ),
+    slowerDurationSec: `${parseInt(process.env.CSS_ANIM_SLOWER_DURATION_MS || '500') / 1000}s`,
+
     // Long animation duration (3s for breathe animations)
     longDurationMs: parseInt(process.env.CSS_ANIM_LONG_MS || '3000'),
     longDurationSec: `${parseInt(process.env.CSS_ANIM_LONG_MS || '3000') / 1000}s`,
