@@ -1,8 +1,6 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">
-      Popular Searches
-    </h3>
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Popular Searches</h3>
     <TransitionGroup
       tag="div"
       class="space-y-3"
@@ -69,11 +67,7 @@
             class="flex-shrink-0 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200"
             aria-hidden="true"
           >
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -84,7 +78,8 @@
           </span>
           <span
             class="text-gray-800 truncate group-hover:text-gray-900 transition-colors duration-200 font-medium"
-          >{{ search.query }}</span>
+            >{{ search.query }}</span
+          >
         </div>
 
         <!-- Result count with animated background -->
@@ -131,11 +126,7 @@
         class="text-center text-gray-500 py-8 flex flex-col items-center"
       >
         <div class="w-12 h-12 mb-3 text-gray-300 animate-pulse-subtle">
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -144,9 +135,7 @@
             />
           </svg>
         </div>
-        <p class="text-sm">
-          No popular searches yet
-        </p>
+        <p class="text-sm">No popular searches yet</p>
         <p class="text-xs text-gray-400 mt-1">
           Start exploring to see trending queries
         </p>
@@ -154,12 +143,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -216,7 +200,8 @@ const checkReducedMotion = () => {
 
 // Format large counts (e.g., 1200 -> 1.2k)
 const formatCount = (count: number): string => {
-  if (count >= 1000) {
+  // Flexy hates hardcoded values! Using config instead.
+  if (count >= animationConfig.popularSearchesExtended.countFormatThreshold) {
     return `${(count / 1000).toFixed(1)}k`
   }
   return count.toString()
@@ -226,7 +211,10 @@ const formatCount = (count: number): string => {
 const handleClick = (query: string, index: number, event: MouseEvent) => {
   const button = event.currentTarget as HTMLButtonElement
   const rect = button.getBoundingClientRect()
-  const size = Math.max(rect.width, rect.height) * 1.5
+  // Flexy hates hardcoded values! Using config instead.
+  const size =
+    Math.max(rect.width, rect.height) *
+    animationConfig.popularSearchesExtended.rippleSizeMultiplier
 
   ripples.value[index] = {
     x: event.clientX - rect.left,

@@ -336,7 +336,8 @@ const transitionLeaveFast = computed(
 <style scoped>
 /* Icon pop animation when clicking button - Flexy hates hardcoded values! */
 .animate-icon-pop {
-  animation: icon-pop 0.3s
+  animation: icon-pop
+    v-bind('animationConfig.resourceCardActions.iconPopDurationSec')
     v-bind(
       'easingConfig?.cubicBezier?.spring ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
     );
@@ -356,7 +357,8 @@ const transitionLeaveFast = computed(
 
 /* Checkmark pop animation when action completes - Flexy hates hardcoded values! */
 .animate-check-pop {
-  animation: check-pop 0.4s
+  animation: check-pop
+    v-bind('animationConfig.resourceCardActions.checkPopDurationSec')
     v-bind(
       'easingConfig?.cubicBezier?.spring ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
     );
@@ -379,7 +381,8 @@ const transitionLeaveFast = computed(
 
 /* Shake animation for error states - Flexy hates hardcoded values! */
 .animate-shake {
-  animation: shake 0.5s
+  animation: shake
+    v-bind('animationConfig.resourceCardActions.shakeDurationSec')
     v-bind('easingConfig?.animations?.formShake?.easing ?? "ease-in-out"') both;
 }
 

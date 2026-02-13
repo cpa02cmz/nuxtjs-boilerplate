@@ -471,6 +471,63 @@ export const animationConfig = {
     milestoneInterval: parseInt(
       process.env.READING_PROGRESS_MILESTONE_INTERVAL || '25'
     ),
+    // Completion pop-in animation duration (ms) - Flexy hates hardcoded 0.5s!
+    completionPopInDurationMs: parseInt(
+      process.env.READING_PROGRESS_POP_IN_MS || '500'
+    ),
+    // Completion pop-in animation duration (sec for CSS)
+    completionPopInDurationSec: `${parseInt(process.env.READING_PROGRESS_POP_IN_MS || '500') / 1000}s`,
+    // Icon rotate-in animation duration (ms)
+    iconRotateDurationMs: parseInt(
+      process.env.READING_PROGRESS_ICON_ROTATE_MS || '400'
+    ),
+    // Icon rotate-in animation duration (sec for CSS)
+    iconRotateDurationSec: `${parseInt(process.env.READING_PROGRESS_ICON_ROTATE_MS || '400') / 1000}s`,
+    // Circle scale animation duration (ms)
+    circleScaleDurationMs: parseInt(
+      process.env.READING_PROGRESS_CIRCLE_SCALE_MS || '300'
+    ),
+    // Circle scale animation duration (sec for CSS)
+    circleScaleDurationSec: `${parseInt(process.env.READING_PROGRESS_CIRCLE_SCALE_MS || '300') / 1000}s`,
+    // Checkmark draw animation duration (ms)
+    checkmarkDrawDurationMs: parseInt(
+      process.env.READING_PROGRESS_CHECKMARK_DRAW_MS || '300'
+    ),
+    // Checkmark draw animation duration (sec for CSS)
+    checkmarkDrawDurationSec: `${parseInt(process.env.READING_PROGRESS_CHECKMARK_DRAW_MS || '300') / 1000}s`,
+    // Text fade-in animation duration (ms)
+    textFadeDurationMs: parseInt(
+      process.env.READING_PROGRESS_TEXT_FADE_MS || '300'
+    ),
+    // Text fade-in animation duration (sec for CSS)
+    textFadeDurationSec: `${parseInt(process.env.READING_PROGRESS_TEXT_FADE_MS || '300') / 1000}s`,
+    // Confetti burst animation duration (ms)
+    confettiBurstDurationMs: parseInt(
+      process.env.READING_PROGRESS_CONFETTI_MS || '800'
+    ),
+    // Confetti burst animation duration (sec for CSS)
+    confettiBurstDurationSec: `${parseInt(process.env.READING_PROGRESS_CONFETTI_MS || '800') / 1000}s`,
+    // Reading time pop animation duration (ms)
+    readingTimePopDurationMs: parseInt(
+      process.env.READING_PROGRESS_TIME_POP_MS || '300'
+    ),
+    // Reading time pop animation duration (sec for CSS)
+    readingTimePopDurationSec: `${parseInt(process.env.READING_PROGRESS_TIME_POP_MS || '300') / 1000}s`,
+    // Clock tick animation duration (ms)
+    clockTickDurationMs: parseInt(
+      process.env.READING_PROGRESS_CLOCK_TICK_MS || '2000'
+    ),
+    // Clock tick animation duration (sec for CSS)
+    clockTickDurationSec: `${parseInt(process.env.READING_PROGRESS_CLOCK_TICK_MS || '2000') / 1000}s`,
+    // Complete pulse animation duration (ms)
+    completePulseDurationMs: parseInt(
+      process.env.READING_PROGRESS_COMPLETE_PULSE_MS || '1500'
+    ),
+    // Complete pulse animation duration (sec for CSS)
+    completePulseDurationSec: `${parseInt(process.env.READING_PROGRESS_COMPLETE_PULSE_MS || '1500') / 1000}s`,
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.READING_PROGRESS_RESPECT_REDUCED_MOTION !== 'false',
   },
 
   // Error Boundary Animations - Palette's micro-UX enhancements
@@ -937,6 +994,12 @@ export const animationConfig = {
     loadingDelayMs: parseInt(
       process.env.ALTERNATIVES_LOADING_DELAY_MS || '300'
     ),
+    // Skeleton shimmer animation duration (ms) - Flexy hates hardcoded 1.5s!
+    skeletonShimmerDurationMs: parseInt(
+      process.env.ALTERNATIVES_SKELETON_SHIMMER_MS || '1500'
+    ),
+    // Skeleton shimmer animation duration (sec for CSS)
+    skeletonShimmerDurationSec: `${parseInt(process.env.ALTERNATIVES_SKELETON_SHIMMER_MS || '1500') / 1000}s`,
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.ALTERNATIVES_RESPECT_REDUCED_MOTION !== 'false',
@@ -1404,6 +1467,190 @@ export const animationConfig = {
     drawDurationSec: `${parseInt(process.env.SVG_STROKE_DRAW_DURATION_MS || '300') / 1000}s`,
     // Animation easing for stroke draw
     drawEasing: process.env.SVG_STROKE_DRAW_EASING || 'ease-out',
+  },
+
+  // Resource Comments Component - Flexy hates hardcoded values!
+  // Micro-UX animations for comments, likes, and particle effects
+  resourceComments: {
+    // Particle burst angle increment in degrees (60 = 6 particles in circle)
+    particleAngleIncrementDeg: parseInt(
+      process.env.COMMENTS_PARTICLE_ANGLE_INCREMENT || '60'
+    ),
+    // Stagger delay between particles (ms)
+    particleStaggerDelayMs: parseInt(
+      process.env.COMMENTS_PARTICLE_STAGGER_MS || '50'
+    ),
+    // Progress threshold for "near limit" warning (0.8 = 80%)
+    progressWarningThreshold: parseFloat(
+      process.env.COMMENTS_PROGRESS_THRESHOLD || '0.8'
+    ),
+    // Textarea glow animation duration (ms)
+    textareaGlowDurationMs: parseInt(
+      process.env.COMMENTS_TEXTAREA_GLOW_MS || '600'
+    ),
+    // Textarea glow animation duration (sec for CSS)
+    textareaGlowDurationSec: `${parseInt(process.env.COMMENTS_TEXTAREA_GLOW_MS || '600') / 1000}s`,
+    // Success bounce animation duration (ms)
+    successBounceDurationMs: parseInt(
+      process.env.COMMENTS_SUCCESS_BOUNCE_MS || '500'
+    ),
+    // Success bounce animation duration (sec for CSS)
+    successBounceDurationSec: `${parseInt(process.env.COMMENTS_SUCCESS_BOUNCE_MS || '500') / 1000}s`,
+    // Heart beat animation duration (ms)
+    heartBeatDurationMs: parseInt(process.env.COMMENTS_HEART_BEAT_MS || '400'),
+    // Heart beat animation duration (sec for CSS)
+    heartBeatDurationSec: `${parseInt(process.env.COMMENTS_HEART_BEAT_MS || '400') / 1000}s`,
+    // Fade in animation duration (ms)
+    fadeInDurationMs: parseInt(process.env.COMMENTS_FADE_IN_MS || '300'),
+    // Fade in animation duration (sec for CSS)
+    fadeInDurationSec: `${parseInt(process.env.COMMENTS_FADE_IN_MS || '300') / 1000}s`,
+    // Particle burst animation duration (ms)
+    particleBurstDurationMs: parseInt(
+      process.env.COMMENTS_PARTICLE_BURST_MS || '600'
+    ),
+    // Particle burst animation duration (sec for CSS)
+    particleBurstDurationSec: `${parseInt(process.env.COMMENTS_PARTICLE_BURST_MS || '600') / 1000}s`,
+    // Heart pop animation duration (ms)
+    heartPopDurationMs: parseInt(process.env.COMMENTS_HEART_POP_MS || '500'),
+    // Heart pop animation duration (sec for CSS)
+    heartPopDurationSec: `${parseInt(process.env.COMMENTS_HEART_POP_MS || '500') / 1000}s`,
+    // Avatar pulse animation duration (ms)
+    avatarPulseDurationMs: parseInt(
+      process.env.COMMENTS_AVATAR_PULSE_MS || '2000'
+    ),
+    // Avatar pulse animation duration (sec for CSS)
+    avatarPulseDurationSec: `${parseInt(process.env.COMMENTS_AVATAR_PULSE_MS || '2000') / 1000}s`,
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.COMMENTS_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // Filter Sidebar Skeleton - Flexy hates hardcoded animation values!
+  // Loading state animations for filter sidebar
+  filterSidebar: {
+    // Shimmer animation duration (ms)
+    shimmerDurationMs: parseInt(
+      process.env.FILTER_SIDEBAR_SHIMMER_MS || '1500'
+    ),
+    // Shimmer animation duration (sec for CSS)
+    shimmerDurationSec: `${parseInt(process.env.FILTER_SIDEBAR_SHIMMER_MS || '1500') / 1000}s`,
+    // Fade in animation duration (ms)
+    fadeInDurationMs: parseInt(process.env.FILTER_SIDEBAR_FADE_IN_MS || '300'),
+    // Fade in animation duration (sec for CSS)
+    fadeInDurationSec: `${parseInt(process.env.FILTER_SIDEBAR_FADE_IN_MS || '300') / 1000}s`,
+    // Reduced fade in duration (ms) - for faster animations
+    reducedFadeInDurationMs: parseInt(
+      process.env.FILTER_SIDEBAR_REDUCED_FADE_IN_MS || '200'
+    ),
+    // Reduced fade in duration (sec for CSS)
+    reducedFadeInDurationSec: `${parseInt(process.env.FILTER_SIDEBAR_REDUCED_FADE_IN_MS || '200') / 1000}s`,
+    // Whether to respect reduced motion preference
+    respectReducedMotion: process.env.FILTER_SIDEBAR_REDUCED_MOTION !== 'false',
+  },
+
+  // Resource Card Actions - Flexy hates hardcoded animation durations!
+  // Button interaction animations for resource cards
+  resourceCardActions: {
+    // Icon pop animation duration (ms)
+    iconPopDurationMs: parseInt(process.env.CARD_ACTIONS_ICON_POP_MS || '300'),
+    // Icon pop animation duration (sec for CSS)
+    iconPopDurationSec: `${parseInt(process.env.CARD_ACTIONS_ICON_POP_MS || '300') / 1000}s`,
+    // Check pop animation duration (ms)
+    checkPopDurationMs: parseInt(
+      process.env.CARD_ACTIONS_CHECK_POP_MS || '400'
+    ),
+    // Check pop animation duration (sec for CSS)
+    checkPopDurationSec: `${parseInt(process.env.CARD_ACTIONS_CHECK_POP_MS || '400') / 1000}s`,
+    // Shake animation duration (ms) - for errors
+    shakeDurationMs: parseInt(process.env.CARD_ACTIONS_SHAKE_MS || '500'),
+    // Shake animation duration (sec for CSS)
+    shakeDurationSec: `${parseInt(process.env.CARD_ACTIONS_SHAKE_MS || '500') / 1000}s`,
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.CARD_ACTIONS_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // User Preference Manager - Flexy hates hardcoded animation values!
+  // Settings and preference animations
+  userPreferenceManager: {
+    // Checkmark draw animation duration (ms)
+    checkmarkDrawDurationMs: parseInt(
+      process.env.PREF_CHECKMARK_DRAW_MS || '300'
+    ),
+    // Checkmark draw animation duration (sec for CSS)
+    checkmarkDrawDurationSec: `${parseInt(process.env.PREF_CHECKMARK_DRAW_MS || '300') / 1000}s`,
+    // Save checkmark draw animation duration (ms)
+    saveCheckmarkDurationMs: parseInt(
+      process.env.PREF_SAVE_CHECKMARK_MS || '400'
+    ),
+    // Save checkmark draw animation duration (sec for CSS)
+    saveCheckmarkDurationSec: `${parseInt(process.env.PREF_SAVE_CHECKMARK_MS || '400') / 1000}s`,
+    // Save checkmark delay (ms)
+    saveCheckmarkDelayMs: parseInt(
+      process.env.PREF_SAVE_CHECKMARK_DELAY_MS || '100'
+    ),
+    // Save checkmark delay (sec for CSS)
+    saveCheckmarkDelaySec: `${parseInt(process.env.PREF_SAVE_CHECKMARK_DELAY_MS || '100') / 1000}s`,
+    // Success text fade animation duration (ms)
+    successFadeDurationMs: parseInt(process.env.PREF_SUCCESS_FADE_MS || '300'),
+    // Success text fade animation duration (sec for CSS)
+    successFadeDurationSec: `${parseInt(process.env.PREF_SUCCESS_FADE_MS || '300') / 1000}s`,
+    // Spin animation duration (ms)
+    spinDurationMs: parseInt(process.env.PREF_SPIN_MS || '1000'),
+    // Spin animation duration (sec for CSS)
+    spinDurationSec: `${parseInt(process.env.PREF_SPIN_MS || '1000') / 1000}s`,
+    // Whether to respect reduced motion preference
+    respectReducedMotion: process.env.PREF_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // Offline Indicator - Flexy hates hardcoded animation timings!
+  // Connection status and retry animations
+  offlineIndicator: {
+    // Subtle pulse animation duration (ms)
+    subtlePulseDurationMs: parseInt(
+      process.env.OFFLINE_SUBTLE_PULSE_MS || '2000'
+    ),
+    // Subtle pulse animation duration (sec for CSS)
+    subtlePulseDurationSec: `${parseInt(process.env.OFFLINE_SUBTLE_PULSE_MS || '2000') / 1000}s`,
+    // Icon pulse animation duration (ms)
+    iconPulseDurationMs: parseInt(process.env.OFFLINE_ICON_PULSE_MS || '2000'),
+    // Icon pulse animation duration (sec for CSS)
+    iconPulseDurationSec: `${parseInt(process.env.OFFLINE_ICON_PULSE_MS || '2000') / 1000}s`,
+    // Bounce subtle animation duration (ms)
+    bounceDurationMs: parseInt(process.env.OFFLINE_BOUNCE_MS || '500'),
+    // Bounce subtle animation duration (sec for CSS)
+    bounceDurationSec: `${parseInt(process.env.OFFLINE_BOUNCE_MS || '500') / 1000}s`,
+    // Check pop animation duration (ms)
+    checkPopDurationMs: parseInt(process.env.OFFLINE_CHECK_POP_MS || '400'),
+    // Check pop animation duration (sec for CSS)
+    checkPopDurationSec: `${parseInt(process.env.OFFLINE_CHECK_POP_MS || '400') / 1000}s`,
+    // Spin animation duration (ms)
+    spinDurationMs: parseInt(process.env.OFFLINE_SPIN_MS || '1000'),
+    // Spin animation duration (sec for CSS)
+    spinDurationSec: `${parseInt(process.env.OFFLINE_SPIN_MS || '1000') / 1000}s`,
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.OFFLINE_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // API Keys Component - Flexy hates hardcoded animation values!
+  // API key management animations
+  apiKeys: {
+    // Float animation 1 duration (ms)
+    float1DurationMs: parseInt(process.env.API_KEYS_FLOAT1_MS || '3000'),
+    // Float animation 1 duration (sec for CSS)
+    float1DurationSec: `${parseInt(process.env.API_KEYS_FLOAT1_MS || '3000') / 1000}s`,
+    // Float animation 2 duration (ms)
+    float2DurationMs: parseInt(process.env.API_KEYS_FLOAT2_MS || '3500'),
+    // Float animation 2 duration (sec for CSS)
+    float2DurationSec: `${parseInt(process.env.API_KEYS_FLOAT2_MS || '3500') / 1000}s`,
+    // Pulse slow animation duration (ms)
+    pulseSlowDurationMs: parseInt(process.env.API_KEYS_PULSE_SLOW_MS || '3000'),
+    // Pulse slow animation duration (sec for CSS)
+    pulseSlowDurationSec: `${parseInt(process.env.API_KEYS_PULSE_SLOW_MS || '3000') / 1000}s`,
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.API_KEYS_RESPECT_REDUCED_MOTION !== 'false',
   },
 } as const
 
