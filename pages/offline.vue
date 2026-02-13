@@ -208,7 +208,10 @@ const statusMessage = computed(() => {
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
-  if (typeof window !== 'undefined' && window.matchMedia) {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function'
+  ) {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     prefersReducedMotion.value = mediaQuery.matches
 

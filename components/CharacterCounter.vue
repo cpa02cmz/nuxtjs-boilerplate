@@ -85,6 +85,7 @@
 import { computed } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { validationConfig } from '~/configs/validation.config'
 
 interface Props {
   /** Current character count */
@@ -108,9 +109,9 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   showCounter: true,
   alwaysShow: false,
-  warningThreshold: 0.8,
-  ringSize: 28,
-  strokeWidth: 3,
+  warningThreshold: validationConfig.characterCounter.warningThreshold,
+  ringSize: validationConfig.characterCounter.ringSizePx,
+  strokeWidth: validationConfig.characterCounter.strokeWidthPx,
   isFocused: false,
 })
 
@@ -200,7 +201,7 @@ const shadowColorDefault = computed(
 /* Visual Progress Ring Counter */
 .character-counter-ring {
   position: absolute;
-  right: 12px;
+  right: v-bind('validationConfig.characterCounter.positionOffsetPx + "px"');
   top: 50%;
   transform: translateY(-50%) scale(0.8);
   width: v-bind('ringSize + "px"');
@@ -249,8 +250,8 @@ const shadowColorDefault = computed(
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: v-bind('validationConfig.characterCounter.fontSizePx + "px"');
+  font-weight: v-bind('validationConfig.characterCounter.fontWeight');
   color: var(--counter-text-color, #6b7280);
   transition: color v-bind('animationConfig.transition.fast.durationMs + "ms"')
     ease;

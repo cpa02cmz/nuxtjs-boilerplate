@@ -209,29 +209,8 @@ const emit = defineEmits<{
   (e: 'update-sort-option', option: string): void
 }>()
 
-// Sort options with icons
-const sortOptions = [
-  {
-    value: 'popularity-desc',
-    label: contentConfig.sort.options.popular,
-    icon: '🔥',
-  },
-  {
-    value: 'alphabetical-asc',
-    label: contentConfig.sort.options.az,
-    icon: '🔤',
-  },
-  {
-    value: 'alphabetical-desc',
-    label: contentConfig.sort.options.za,
-    icon: '🔠',
-  },
-  {
-    value: 'date-added-desc',
-    label: contentConfig.sort.options.newest,
-    icon: '✨',
-  },
-]
+// Sort options from config - Flexy hates hardcoded arrays!
+const sortOptions = contentConfig.sort.sortOptions
 
 // Generate unique IDs for accessibility
 const uniqueId = Math.random().toString(36).substr(2, 9)
