@@ -28,7 +28,7 @@
               isNearLimit && !isOverLimit,
             'animate-textarea-glow': showSuccessGlow && !prefersReducedMotion,
           }"
-          rows="1"
+          :rows="MIN_ROWS"
           :aria-label="contentConfig.comments.aria.addComment"
           :aria-describedby="`comment-hint-${uniqueId}`"
           :maxlength="MAX_LENGTH"
