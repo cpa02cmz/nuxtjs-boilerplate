@@ -76,7 +76,7 @@ function checkBuild() {
 function runConsoleMonitor() {
   log('\n🖥️  Step 3: Monitoring browser console...', 'blue')
   return runCommand(
-    'npx playwright test tests/brocula/console-monitor.spec.ts --reporter=list',
+    'npx playwright test tests/brocula/console-monitor.test.ts --reporter=list',
     true
   )
 }
@@ -84,7 +84,7 @@ function runConsoleMonitor() {
 function runLighthouseAudit() {
   log('\n🎯 Step 4: Running Lighthouse audit...', 'blue')
   return runCommand(
-    'npx playwright test tests/brocula/lighthouse-audit.spec.ts --reporter=list',
+    'npx playwright test tests/brocula/lighthouse-audit.test.ts --reporter=list',
     true
   )
 }
