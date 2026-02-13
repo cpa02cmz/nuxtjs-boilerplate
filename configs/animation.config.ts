@@ -1041,6 +1041,10 @@ export const animationConfig = {
     autoDismissIntervalMs: parseInt(
       process.env.PWA_AUTO_DISMISS_INTERVAL_MS || '50'
     ),
+    // Success toast dismiss delay (default: 4 seconds)
+    successDismissDelayMs: parseInt(
+      process.env.PWA_SUCCESS_DISMISS_DELAY_MS || '4000'
+    ),
     // Easing function
     easing: process.env.PWA_INSTALL_EASING || EASING_REF.SPRING_SNAPPY,
   },
