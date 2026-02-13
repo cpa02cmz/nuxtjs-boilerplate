@@ -90,6 +90,7 @@ import type { StatusChange, ResourceUpdate } from '~/types/resource'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   statusHistory?: StatusChange[]
@@ -192,8 +193,8 @@ onMounted(() => {
   opacity: 0;
   transform: translateY(10px);
   transition:
-    opacity 0.4s ease-out,
-    transform 0.4s ease-out;
+    opacity v-bind('animationConfig.card.enterDurationMs') ms ease-out,
+    transform v-bind('animationConfig.card.enterDurationMs') ms ease-out;
 }
 
 .lifecycle-timeline--loaded {
@@ -219,9 +220,13 @@ onMounted(() => {
   gap: 1rem;
   opacity: 0;
   transform: translateX(-20px);
-  animation: slide-in 0.5s ease-out forwards;
-  animation-delay: calc(var(--item-index) * 100ms);
-  transition: transform 0.2s ease-out;
+  animation: slide-in v-bind('animationConfig.suggestion.staggerDelayMs') ms
+    ease-out forwards;
+  animation-delay: calc(
+    var(--item-index) * v-bind('animationConfig.card.staggerDelayMs') ms
+  );
+  transition: transform v-bind('animationConfig.transition.normal.durationMs')
+    ms ease-out;
 }
 
 @keyframes slide-in {
@@ -252,7 +257,8 @@ onMounted(() => {
   font-size: 0.875rem;
   color: white;
   flex-shrink: 0;
-  transition: transform 0.2s ease-out;
+  transition: transform v-bind('animationConfig.transition.normal.durationMs')
+    ms ease-out;
   box-shadow: v-bind('shadowsConfig.lifecycleTimeline.default');
 }
 

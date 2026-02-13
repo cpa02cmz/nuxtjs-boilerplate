@@ -120,6 +120,7 @@ import { TOAST_DURATION, UI_TIMING } from '~/server/utils/constants'
 import { uiConfig } from '~/configs/ui.config'
 import { iconsConfig } from '~/configs/icons.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { animationConfig } from '~/configs/animation.config'
 import { generateId } from '~/utils/generateId'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
@@ -316,7 +317,8 @@ onUnmounted(() => {
   padding: v-bind('toastStyles.close.padding');
   border-radius: v-bind('toastStyles.close.borderRadius');
   opacity: v-bind('toastStyles.close.opacity');
-  transition: opacity 0.2s;
+  transition: opacity
+    v-bind('`${animationConfig.transition.fast.durationMs}ms`');
 }
 
 .toast__close:hover {
@@ -357,7 +359,8 @@ onUnmounted(() => {
   }
 
   .toast {
-    animation: fadeIn 0.2s ease-out;
+    animation: fadeIn
+      v-bind('`${animationConfig.transition.fast.durationMs}ms`') ease-out;
   }
 
   @keyframes fadeIn {
@@ -371,7 +374,8 @@ onUnmounted(() => {
 
   .toast-enter-active,
   .toast-leave-active {
-    transition: opacity 0.2s ease;
+    transition: opacity
+      v-bind('`${animationConfig.transition.fast.durationMs}ms`') ease;
   }
 
   .toast-enter-from,
@@ -394,7 +398,8 @@ onUnmounted(() => {
 
 .toast-enter-active,
 .toast-leave-active {
-  transition: all 0.3s ease;
+  transition: all v-bind('`${animationConfig.transition.slow.durationMs}ms`')
+    ease;
 }
 
 .toast-enter-from {
