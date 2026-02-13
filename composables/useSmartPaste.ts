@@ -231,21 +231,27 @@ function generateSmartPasteStyles(): string {
   const cfg = animationConfig.smartPaste
   const styles = cfg.styles
 
+  // Flexy hates hardcoded values! Using configurable gradient and color values
+  const gradients = animationConfig.gradients.emerald
+  const shadows = animationConfig.shadows
+  const pixels = animationConfig.pixels
+  const radius = animationConfig.borderRadius
+
   return `
 .paste-indicator {
   position: fixed;
   z-index: ${cfg.zIndex};
   pointer-events: none;
   padding: ${styles.paddingY}px ${styles.paddingX}px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, ${gradients.start} 0%, ${gradients.end} 100%);
   color: white;
   font-size: ${styles.fontSize}px;
   font-weight: 600;
   border-radius: ${styles.borderRadius}px;
   box-shadow:
     0 ${styles.shadow.y}px ${styles.shadow.blur}px ${styles.shadow.spread}px rgba(0, 0, 0, ${styles.shadow.opacity}),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06),
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    0 2px 4px -1px ${shadows.light.sm},
+    0 0 0 1px ${shadows.inset.light} inset;
   white-space: nowrap;
   animation: paste-indicator-pop ${styles.animationDuration}s ${EASING.SPRING_STANDARD} forwards;
   transform: translate(-50%, -100%);
@@ -255,13 +261,13 @@ function generateSmartPasteStyles(): string {
 .paste-indicator::after {
   content: '';
   position: absolute;
-  bottom: -4px;
+  bottom: -${pixels.arrowOffset}px;
   left: 50%;
   transform: translateX(-50%) rotate(45deg);
   width: ${styles.arrowSize}px;
   height: ${styles.arrowSize}px;
-  background: #059669;
-  border-radius: 1px;
+  background: ${gradients.end};
+  border-radius: ${radius.xs}px;
 }
 
 @keyframes paste-indicator-pop {
