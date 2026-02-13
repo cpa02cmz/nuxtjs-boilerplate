@@ -203,10 +203,10 @@ export const HTTP_STATUS = {
 } as const
 
 // Progress and percentage constants - Flexy hates hardcoded 100 values!
-export const PROGRESS = {
+export const PROGRESS: { MAX_PERCENT: number; MIN_PERCENT: number } = {
   MAX_PERCENT: 100,
   MIN_PERCENT: 0,
-} as const
+}
 
 // Time conversion constants - Flexy hates hardcoded millisecond calculations!
 export const TIME = {

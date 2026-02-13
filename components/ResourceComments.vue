@@ -4,7 +4,9 @@
       <h2 class="text-2xl font-bold text-gray-900">
         {{ contentConfig.comments.title }}
       </h2>
-      <span class="text-sm text-gray-500">{{ commentCount }} {{ contentConfig.comments.countLabel }}</span>
+      <span class="text-sm text-gray-500"
+        >{{ commentCount }} {{ contentConfig.comments.countLabel }}</span
+      >
     </div>
 
     <!-- Comment Form with Micro-UX Enhancements -->
@@ -31,7 +33,7 @@
           rows="1"
           :aria-label="contentConfig.comments.aria.addComment"
           :aria-describedby="`comment-hint-${uniqueId}`"
-          :maxlength="maxLength"
+          :maxlength="MAX_LENGTH"
           @focus="handleFocus"
           @blur="handleBlur"
           @input="handleInput"
@@ -51,10 +53,7 @@
             class="relative w-8 h-8"
             :title="`${remainingChars} characters remaining`"
           >
-            <svg
-              class="w-full h-full transform -rotate-90"
-              viewBox="0 0 32 32"
-            >
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 32 32">
               <!-- Background circle -->
               <circle
                 cx="16"
@@ -117,7 +116,7 @@
               </svg>
               {{
                 contentConfig.comments.validation.overLimit ||
-                  `${Math.abs(remainingChars)} characters over limit`
+                `${Math.abs(remainingChars)} characters over limit`
               }}
             </span>
           </template>
@@ -138,22 +137,22 @@
               </svg>
               {{
                 contentConfig.comments.validation.nearLimit ||
-                  'Approaching limit'
+                'Approaching limit'
               }}
             </span>
           </template>
           <template
-            v-else-if="newComment.length < minLength && newComment.length > 0"
+            v-else-if="newComment.length < MIN_LENGTH && newComment.length > 0"
           >
             {{
               contentConfig.comments.validation.tooShort ||
-                `Minimum ${minLength} characters`
+              `Minimum ${MIN_LENGTH} characters`
             }}
           </template>
           <template v-else>
             {{
               contentConfig.comments.validation.hint ||
-                `Press Enter to submit, Shift+Enter for new line`
+              `Press Enter to submit, Shift+Enter for new line`
             }}
           </template>
         </span>
@@ -373,10 +372,8 @@ const submitButtonClasses = computed(() => {
 })
 
 const submitButtonText = computed(() => {
-  if (isSubmitting.value)
-    return contentConfig.comments.buttons.posting || 'Posting...'
-  if (showSuccessCheck.value)
-    return contentConfig.comments.buttons.posted || 'Posted!'
+  if (isSubmitting.value) return 'Posting...'
+  if (showSuccessCheck.value) return 'Posted!'
   return contentConfig.comments.buttons.post
 })
 
