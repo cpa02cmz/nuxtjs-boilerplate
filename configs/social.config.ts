@@ -173,6 +173,7 @@ export const socialConfig = {
         bg: process.env.STYLE_COPY_BG || 'bg-gray-600',
         hover: process.env.STYLE_COPY_HOVER || 'hover:bg-gray-700',
         text: process.env.STYLE_COPY_TEXT || 'text-white',
+        border: process.env.STYLE_COPY_BORDER || 'rgba(0, 0, 0, 0.1)',
       },
       icon: {
         color: process.env.STYLE_COPY_ICON || 'text-gray-600',
