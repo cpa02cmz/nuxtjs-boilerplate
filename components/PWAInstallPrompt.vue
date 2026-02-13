@@ -100,16 +100,10 @@
             </svg>
           </div>
           <div>
-            <h3
-              id="pwa-install-title"
-              class="font-medium text-gray-900"
-            >
+            <h3 id="pwa-install-title" class="font-medium text-gray-900">
               Install App
             </h3>
-            <p
-              id="pwa-install-description"
-              class="text-sm text-gray-500"
-            >
+            <p id="pwa-install-description" class="text-sm text-gray-500">
               Add to your home screen
             </p>
           </div>
@@ -133,7 +127,8 @@
               <kbd
                 class="hidden sm:inline-flex items-center px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded text-gray-500"
                 aria-hidden="true"
-              >Esc</kbd>
+                >Esc</kbd
+              >
             </span>
           </button>
           <button
@@ -197,12 +192,7 @@
   </Transition>
 
   <!-- Screen reader announcement -->
-  <div
-    class="sr-only"
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-  >
+  <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
     {{ announcement }}
   </div>
 </template>
@@ -537,9 +527,10 @@ onUnmounted(() => {
     opacity: 0.5;
   }
 
-  /* Override Vue transition classes */
+  /* Override Vue transition classes - Flexy hates hardcoded values! */
   :deep(.transition-all) {
-    transition: opacity 0.2s ease-out !important;
+    transition: opacity
+      v-bind('`${animationConfig.transition.normal.durationMs}ms`') ease-out !important;
   }
 }
 
@@ -556,9 +547,11 @@ onUnmounted(() => {
   border-width: 0;
 }
 
-/* Success toast spring animation */
+/* Success toast spring animation - Flexy hates hardcoded values! */
 .animate-success-pop {
-  animation: success-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: success-pop
+    v-bind('`${animationConfig.pwaInstallPrompt.successPopDurationSec}s`')
+    v-bind('animationConfig.pwaInstallPrompt.easing') forwards;
 }
 
 @keyframes success-pop {
@@ -575,9 +568,12 @@ onUnmounted(() => {
   }
 }
 
-/* Checkmark container pop animation */
+/* Checkmark container pop animation - Flexy hates hardcoded values! */
 .animate-check-pop {
-  animation: check-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+  animation: check-pop
+    v-bind('`${animationConfig.pwaInstallPrompt.checkPopDurationSec}s`')
+    v-bind('animationConfig.pwaInstallPrompt.easing')
+    v-bind('`${animationConfig.pwaInstallPrompt.checkPopDelaySec}s`') both;
 }
 
 @keyframes check-pop {
@@ -592,11 +588,14 @@ onUnmounted(() => {
   }
 }
 
-/* Checkmark draw animation */
+/* Checkmark draw animation - Flexy hates hardcoded values! */
 .animate-check-draw {
   stroke-dasharray: 24;
   stroke-dashoffset: 24;
-  animation: check-draw 0.3s ease-out 0.4s forwards;
+  animation: check-draw
+    v-bind('`${animationConfig.pwaInstallPrompt.checkDrawDurationSec}s`')
+    ease-out v-bind('`${animationConfig.pwaInstallPrompt.checkDrawDelaySec}s`')
+    forwards;
 }
 
 @keyframes check-draw {

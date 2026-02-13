@@ -936,6 +936,147 @@ export const animationConfig = {
     respectReducedMotion: process.env.BREADCRUMBS_REDUCED_MOTION !== 'false',
   },
 
+  // Status Manager Component - Flexy hates hardcoded values!
+  statusManager: {
+    // Status badge pulse animation
+    badgePulseDurationSec: parseFloat(
+      process.env.STATUS_BADGE_PULSE_DURATION_SEC || '2'
+    ),
+    // Status change pulse animation
+    changePulseDurationSec: parseFloat(
+      process.env.STATUS_CHANGE_PULSE_DURATION_SEC || '1.5'
+    ),
+    // Button spin animation
+    buttonSpinDurationSec: parseFloat(
+      process.env.STATUS_BUTTON_SPIN_DURATION_SEC || '1'
+    ),
+    // Ready pulse animation
+    readyPulseDurationSec: parseFloat(
+      process.env.STATUS_READY_PULSE_DURATION_SEC || '2'
+    ),
+    // Success bounce animation
+    successBounceDurationSec: parseFloat(
+      process.env.STATUS_SUCCESS_BOUNCE_DURATION_SEC || '0.5'
+    ),
+    // Ripple out animation
+    rippleOutDurationSec: parseFloat(
+      process.env.STATUS_RIPPLE_OUT_DURATION_SEC || '0.6'
+    ),
+    // Transition duration
+    transitionDurationSec: `${parseInt(process.env.STATUS_TRANSITION_DURATION_MS || '200') / 1000}s`,
+    // Status badge colors - Flexy hates hardcoded hex codes!
+    colors: {
+      active: {
+        bg: process.env.STATUS_ACTIVE_BG || '#d1fae5',
+        text: process.env.STATUS_ACTIVE_TEXT || '#065f46',
+        dot: process.env.STATUS_ACTIVE_DOT || '#10b981',
+      },
+      deprecated: {
+        bg: process.env.STATUS_DEPRECATED_BG || '#fef3c7',
+        text: process.env.STATUS_DEPRECATED_TEXT || '#92400e',
+        dot: process.env.STATUS_DEPRECATED_DOT || '#f59e0b',
+      },
+      discontinued: {
+        bg: process.env.STATUS_DISCONTINUED_BG || '#fee2e2',
+        text: process.env.STATUS_DISCONTINUED_TEXT || '#991b1b',
+        dot: process.env.STATUS_DISCONTINUED_DOT || '#ef4444',
+      },
+      updated: {
+        bg: process.env.STATUS_UPDATED_BG || '#dbeafe',
+        text: process.env.STATUS_UPDATED_TEXT || '#1e40af',
+        dot: process.env.STATUS_UPDATED_DOT || '#3b82f6',
+      },
+      pending: {
+        bg: process.env.STATUS_PENDING_BG || '#f3e8ff',
+        text: process.env.STATUS_PENDING_TEXT || '#6b21a8',
+        dot: process.env.STATUS_PENDING_DOT || '#a855f7',
+      },
+    },
+    // Focus and border colors
+    focusColor: process.env.STATUS_FOCUS_COLOR || '#3b82f6',
+    changeBorderColor: process.env.STATUS_CHANGE_BORDER_COLOR || '#f59e0b',
+    changeBgColor: process.env.STATUS_CHANGE_BG_COLOR || '#fffbeb',
+  },
+
+  // PWA Install Prompt Component - Flexy hates hardcoded values!
+  pwaInstallPrompt: {
+    // Success toast animation
+    successPopDurationSec: parseFloat(
+      process.env.PWA_SUCCESS_POP_DURATION_SEC || '0.5'
+    ),
+    // Check pop animation
+    checkPopDurationSec: parseFloat(
+      process.env.PWA_CHECK_POP_DURATION_SEC || '0.4'
+    ),
+    checkPopDelaySec: parseFloat(process.env.PWA_CHECK_POP_DELAY_SEC || '0.2'),
+    // Check draw animation
+    checkDrawDurationSec: parseFloat(
+      process.env.PWA_CHECK_DRAW_DURATION_SEC || '0.3'
+    ),
+    checkDrawDelaySec: parseFloat(
+      process.env.PWA_CHECK_DRAW_DELAY_SEC || '0.4'
+    ),
+    // Icon pulse animation
+    iconPulseDurationSec: parseFloat(
+      process.env.PWA_ICON_PULSE_DURATION_SEC || '2'
+    ),
+    iconPulseDelaySec: parseFloat(
+      process.env.PWA_ICON_PULSE_DELAY_SEC || '0.5'
+    ),
+    // Auto dismiss interval
+    autoDismissIntervalMs: parseInt(
+      process.env.PWA_AUTO_DISMISS_INTERVAL_MS || '50'
+    ),
+    // Easing function
+    easing: process.env.PWA_INSTALL_EASING || EASING_REF.SPRING_SNAPPY,
+  },
+
+  // Webhook Manager Component - Flexy hates hardcoded values!
+  webhookManager: {
+    // Float animation duration
+    floatDurationSec: parseFloat(process.env.WEBHOOK_FLOAT_DURATION_SEC || '3'),
+    floatDelaySec: parseFloat(process.env.WEBHOOK_FLOAT_DELAY_SEC || '1.5'),
+    // Pulse animations
+    pulseSlowDurationSec: parseFloat(
+      process.env.WEBHOOK_PULSE_SLOW_DURATION_SEC || '4'
+    ),
+    bounceDurationSec: parseFloat(
+      process.env.WEBHOOK_BOUNCE_DURATION_SEC || '2'
+    ),
+    // Draw animation
+    drawDurationSec: parseFloat(process.env.WEBHOOK_DRAW_DURATION_SEC || '1.5'),
+    // Transition duration
+    transitionDurationSec: `${parseInt(process.env.WEBHOOK_TRANSITION_DURATION_MS || '150') / 1000}s`,
+    // Colors
+    colors: {
+      gradientStart: process.env.WEBHOOK_GRADIENT_START || '#f3f4f6',
+      gradientEnd: process.env.WEBHOOK_GRADIENT_END || '#e5e7eb',
+      iconColor: process.env.WEBHOOK_ICON_COLOR || '#111827',
+      deleteBg: process.env.WEBHOOK_DELETE_BG || '#dc2626',
+      deleteStroke: process.env.WEBHOOK_DELETE_STROKE || '#ef4444',
+      glowColor: process.env.WEBHOOK_GLOW_COLOR || 'rgba(59, 130, 246, 0.25)',
+      pulseColor: process.env.WEBHOOK_PULSE_COLOR || 'rgba(239, 68, 68, 0.2)',
+    },
+  },
+
+  // Zero Result Searches Component - Flexy hates hardcoded values!
+  zeroResultSearches: {
+    // Stagger entrance animation
+    staggerDurationSec: parseFloat(
+      process.env.ZERO_RESULT_STAGGER_DURATION_SEC || '0.4'
+    ),
+    staggerDelayMs: parseInt(process.env.ZERO_RESULT_STAGGER_DELAY_MS || '50'),
+    // Ripple animation
+    rippleDurationSec: parseFloat(
+      process.env.ZERO_RESULT_RIPPLE_DURATION_SEC || '0.6'
+    ),
+    // Subtle pulse animation
+    subtlePulseDurationSec: parseFloat(
+      process.env.ZERO_RESULT_PULSE_DURATION_SEC || '2'
+    ),
+    // Transition duration
+    transitionDurationSec: `${parseInt(process.env.ZERO_RESULT_TRANSITION_DURATION_MS || '100') / 1000}s`,
+  },
   // Convenience easing reference for component use - uses standard ease-out
   easeOutQuart: 'cubic-bezier(0.25, 1, 0.5, 1)',
 
