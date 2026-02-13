@@ -156,7 +156,9 @@ export function wrapApiHandler<T>(handler: (_event: H3Event) => Promise<T>) {
       return await handler(event)
     } catch (error) {
       handleApiRouteError(event, error)
-      throw error
+      // Error has been handled and response sent - do not re-throw
+      // to avoid double-response errors from Nitro's error handler
+      return undefined as T
     }
   }
 }
