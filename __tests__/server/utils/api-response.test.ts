@@ -585,7 +585,8 @@ describe('wrapApiHandler', () => {
       const handler = vi.fn().mockRejectedValue(new Error('Handler error'))
       const wrappedHandler = wrapApiHandler(handler)
 
-      await expect(wrappedHandler(mockEvent)).rejects.toThrow('Handler error')
+      const result = await wrappedHandler(mockEvent)
+      expect(result).toBeUndefined()
       expect(mockResponse.end).toHaveBeenCalled()
       const sentData = JSON.parse(mockResponse.end.mock.calls[0][0])
       expect(sentData.success).toBe(false)
@@ -597,7 +598,8 @@ describe('wrapApiHandler', () => {
       const handler = vi.fn().mockRejectedValue('string error')
       const wrappedHandler = wrapApiHandler(handler)
 
-      await expect(wrappedHandler(mockEvent)).rejects.toThrow('string error')
+      const result = await wrappedHandler(mockEvent)
+      expect(result).toBeUndefined()
       expect(mockResponse.end).toHaveBeenCalled()
     })
 
