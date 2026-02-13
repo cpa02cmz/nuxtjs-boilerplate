@@ -27,10 +27,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <!-- Animated offline icon with connection pulse - Palette's micro-UX enhancement! -->
-                <div
-                  class="relative flex-shrink-0 w-8 h-8"
-                  aria-hidden="true"
-                >
+                <div class="relative flex-shrink-0 w-8 h-8" aria-hidden="true">
                   <!-- Connection pulse rings (shown when reconnecting) -->
                   <template v-if="isReconnecting && !prefersReducedMotion">
                     <div
@@ -240,12 +237,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </Teleport>
@@ -257,6 +249,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 
 // Reactive state
 const isOffline = ref(false)
@@ -498,7 +491,7 @@ onUnmounted(() => {
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.4);
+    box-shadow: 0 0 0 0 v-bind('shadowsConfig.offlineIndicator.pulse');
   }
   50% {
     transform: scale(1.05);
@@ -627,7 +620,7 @@ onUnmounted(() => {
   background-color: rgb(254, 243, 199); /* amber-100 */
   border-color: rgb(245, 158, 11); /* amber-500 */
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: v-bind('shadowsConfig.offlineIndicatorComponent.default');
 }
 
 .retry-button:focus-visible {

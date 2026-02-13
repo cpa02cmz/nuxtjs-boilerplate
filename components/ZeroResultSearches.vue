@@ -58,11 +58,7 @@
             class="flex-shrink-0 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200"
             aria-hidden="true"
           >
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -73,7 +69,8 @@
           </span>
           <span
             class="text-gray-800 truncate group-hover:text-gray-900 transition-colors duration-200 font-medium"
-          >{{ search.query }}</span>
+            >{{ search.query }}</span
+          >
         </div>
 
         <!-- Attempt count with animated background -->
@@ -123,11 +120,7 @@
           class="w-12 h-12 mb-3 text-gray-300"
           :class="{ 'animate-pulse-subtle': !prefersReducedMotion }"
         >
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -146,12 +139,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -308,8 +296,10 @@ onUnmounted(() => {
 <style scoped>
 /* Staggered entrance animation - Palette's micro-UX enhancement! */
 .space-y-2 > * {
-  animation: stagger-entrance 0.4s ease-out backwards;
-  animation-delay: calc(var(--stagger-delay, 50ms) * var(--index, 0));
+  animation: stagger-entrance
+    v-bind('animationConfig.zeroResultSearches.staggerDurationSec') ease-out
+    backwards;
+  animation-delay: calc(var(--stagger-delay) * var(--index, 0));
 }
 
 .space-y-2 > *:nth-child(1) {
@@ -363,7 +353,9 @@ onUnmounted(() => {
 }
 
 .animate-ripple {
-  animation: ripple 0.6s ease-out forwards;
+  animation: ripple
+    v-bind('animationConfig.zeroResultSearches.rippleDurationSec') ease-out
+    forwards;
 }
 
 /* Subtle pulse for empty state icon */
@@ -378,7 +370,9 @@ onUnmounted(() => {
 }
 
 .animate-pulse-subtle {
-  animation: pulse-subtle 2s ease-in-out infinite;
+  animation: pulse-subtle
+    v-bind('animationConfig.zeroResultSearches.subtlePulseDurationSec')
+    ease-in-out infinite;
 }
 
 /* Scale 98 for click feedback */

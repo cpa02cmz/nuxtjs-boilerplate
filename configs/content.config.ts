@@ -262,6 +262,17 @@ export const contentConfig = {
     openingLabel: process.env.CONTENT_RESOURCE_OPENING_LABEL || 'Opening...',
   },
 
+  // Resource Details Page - Flexy hates hardcoded detail page content!
+  resourceDetails: {
+    descriptionTitle:
+      process.env.CONTENT_RESOURCE_DETAIL_DESC_TITLE || 'Description',
+    readMore: process.env.CONTENT_RESOURCE_DETAIL_READ_MORE || 'Read more',
+    readLess: process.env.CONTENT_RESOURCE_DETAIL_READ_LESS || 'Read less',
+    wordSingular: process.env.CONTENT_RESOURCE_DETAIL_WORD_SINGULAR || 'word',
+    wordPlural: process.env.CONTENT_RESOURCE_DETAIL_WORD_PLURAL || 'words',
+    minRead: process.env.CONTENT_RESOURCE_DETAIL_MIN_READ || 'min read',
+  },
+
   // Favorites Page - Flexy hates hardcoded page content!
   favorites: {
     title: process.env.CONTENT_FAVORITES_TITLE || 'My Bookmarks',
@@ -731,11 +742,20 @@ export const contentConfig = {
   },
 
   // ARIA Labels - Accessibility labels
-  aria: {
+  ariaLabels: {
     clipboard: {
       copy: process.env.CONTENT_ARIA_CLIPBOARD_COPY || 'Copy to clipboard',
       copied:
         process.env.CONTENT_ARIA_CLIPBOARD_COPIED || 'Copied to clipboard',
+      failed:
+        process.env.CONTENT_ARIA_CLIPBOARD_FAILED ||
+        'Failed to copy to clipboard',
+    },
+    description: {
+      expanded:
+        process.env.CONTENT_ARIA_DESC_EXPANDED || 'Description expanded',
+      collapsed:
+        process.env.CONTENT_ARIA_DESC_COLLAPSED || 'Description collapsed',
     },
     mainNavigation: process.env.CONTENT_ARIA_MAIN_NAV || 'Main navigation',
     mainContent: process.env.CONTENT_ARIA_MAIN_CONTENT || 'Main content',
