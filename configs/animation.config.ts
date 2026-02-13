@@ -1295,6 +1295,24 @@ export const animationConfig = {
       glowColor: process.env.WEBHOOK_GLOW_COLOR || 'rgba(59, 130, 246, 0.25)',
       pulseColor: process.env.WEBHOOK_PULSE_COLOR || 'rgba(239, 68, 68, 0.2)',
     },
+    // Dimensions - Flexy hates hardcoded pixel values!
+    dimensions: {
+      // Empty state illustration container
+      illustrationWidth: process.env.WEBHOOK_ILLUSTRATION_WIDTH || '120px',
+      illustrationHeight: process.env.WEBHOOK_ILLUSTRATION_HEIGHT || '120px',
+      // Icon size inside illustration
+      iconWidth: process.env.WEBHOOK_ICON_WIDTH || '48px',
+      iconHeight: process.env.WEBHOOK_ICON_HEIGHT || '48px',
+      // Floating dot sizes
+      dotLargeSize: process.env.WEBHOOK_DOT_LARGE_SIZE || '8px',
+      dotSmallSize: process.env.WEBHOOK_DOT_SMALL_SIZE || '6px',
+      // Text container
+      descriptionMaxWidth: process.env.WEBHOOK_DESC_MAX_WIDTH || '280px',
+      // Button
+      buttonMinWidth: process.env.WEBHOOK_BUTTON_MIN_WIDTH || '70px',
+      // Container
+      containerMaxWidth: process.env.WEBHOOK_CONTAINER_MAX_WIDTH || '800px',
+    },
   },
 
   // Zero Result Searches Component - Flexy hates hardcoded values!

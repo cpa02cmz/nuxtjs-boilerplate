@@ -44,10 +44,7 @@
     </div>
 
     <!-- Create Webhook Form -->
-    <div
-      v-if="showCreateForm"
-      class="webhook-form"
-    >
+    <div v-if="showCreateForm" class="webhook-form">
       <h3>{{ contentConfig.webhooks.form.title }}</h3>
 
       <div
@@ -59,12 +56,10 @@
         {{ errorMessage }}
       </div>
 
-      <form
-        novalidate
-        @submit.prevent="handleCreateWebhook"
-      >
+      <form novalidate @submit.prevent="handleCreateWebhook">
         <div class="form-group">
-          <label for="webhook-url">{{ contentConfig.webhooks.form.urlLabel }}
+          <label for="webhook-url"
+            >{{ contentConfig.webhooks.form.urlLabel }}
             <span aria-hidden="true">*</span>
             <span class="sr-only">{{
               contentConfig.webhooks.form.required
@@ -79,11 +74,8 @@
             aria-describedby="webhook-url-description"
             :placeholder="webhooksConfig.placeholders.url"
             class="form-control"
-          >
-          <p
-            id="webhook-url-description"
-            class="mt-1 text-sm text-gray-500"
-          >
+          />
+          <p id="webhook-url-description" class="mt-1 text-sm text-gray-500">
             {{ contentConfig.webhooks.form.urlDescription }}
           </p>
         </div>
@@ -108,7 +100,7 @@
                   type="checkbox"
                   :value="event"
                   :aria-label="`Subscribe to ${event} event`"
-                >
+                />
                 {{ event }}
               </label>
             </div>
@@ -121,7 +113,7 @@
               v-model="newWebhook.active"
               type="checkbox"
               :aria-label="contentConfig.webhooks.ariaLabels.enableWebhook"
-            >
+            />
             {{ contentConfig.webhooks.form.activeLabel }}
           </label>
         </div>
@@ -158,10 +150,7 @@
         aria-live="polite"
       >
         <!-- Animated Illustration -->
-        <div
-          class="webhook-illustration"
-          aria-hidden="true"
-        >
+        <div class="webhook-illustration" aria-hidden="true">
           <!-- Background Circle -->
           <div
             class="webhook-bg-circle"
@@ -244,10 +233,7 @@
           {{ contentConfig.webhooks.empty.ctaButton }}
         </button>
       </div>
-      <div
-        v-else
-        class="webhook-items"
-      >
+      <div v-else class="webhook-items">
         <div
           v-for="webhook in webhooks"
           :key="webhook.id"
@@ -338,7 +324,7 @@
               :style="getPressAndHold(webhook.id, webhook).progressStyle"
               :aria-label="
                 contentConfig.webhooks.ariaLabels.deleteWebhook +
-                  ' (Press and hold to confirm)'
+                ' (Press and hold to confirm)'
               "
               @mousedown="getPressAndHold(webhook.id, webhook).startPress"
               @mouseup="getPressAndHold(webhook.id, webhook).endPress"
@@ -355,7 +341,7 @@
               <span
                 v-if="
                   getPressAndHold(webhook.id, webhook).isPressing &&
-                    !reducedMotion
+                  !reducedMotion
                 "
                 class="press-hold-ring"
                 aria-hidden="true"
@@ -374,7 +360,7 @@
                     :r="
                       (animationConfig.pressAndHold.ringSize -
                         animationConfig.pressAndHold.strokeWidth) /
-                        2
+                      2
                     "
                     fill="none"
                     :stroke-width="animationConfig.pressAndHold.strokeWidth"
@@ -387,7 +373,7 @@
                     :r="
                       (animationConfig.pressAndHold.ringSize -
                         animationConfig.pressAndHold.strokeWidth) /
-                        2
+                      2
                     "
                     fill="none"
                     :stroke-width="animationConfig.pressAndHold.strokeWidth"
@@ -504,7 +490,9 @@ onMounted(() => {
 
 <style scoped>
 .webhook-manager {
-  max-width: 800px;
+  max-width: v-bind(
+    'animationConfig.webhookManager.dimensions.containerMaxWidth'
+  );
   margin: 0 auto;
   padding: 1rem;
 }
@@ -709,8 +697,10 @@ onMounted(() => {
 
 .webhook-illustration {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: v-bind('animationConfig.webhookManager.dimensions.illustrationWidth');
+  height: v-bind(
+    'animationConfig.webhookManager.dimensions.illustrationHeight'
+  );
   margin-bottom: 1.5rem;
 }
 
@@ -734,8 +724,8 @@ onMounted(() => {
 }
 
 .webhook-icon {
-  width: 48px;
-  height: 48px;
+  width: v-bind('animationConfig.webhookManager.dimensions.iconWidth');
+  height: v-bind('animationConfig.webhookManager.dimensions.iconHeight');
   color: var(--webhook-muted-text);
 }
 
@@ -746,8 +736,8 @@ onMounted(() => {
 }
 
 .webhook-float-dot-1 {
-  width: 8px;
-  height: 8px;
+  width: v-bind('animationConfig.webhookManager.dimensions.dotLargeSize');
+  height: v-bind('animationConfig.webhookManager.dimensions.dotLargeSize');
   top: 20%;
   right: 15%;
   animation: webhook-float
@@ -756,8 +746,8 @@ onMounted(() => {
 }
 
 .webhook-float-dot-2 {
-  width: 6px;
-  height: 6px;
+  width: v-bind('animationConfig.webhookManager.dimensions.dotSmallSize');
+  height: v-bind('animationConfig.webhookManager.dimensions.dotSmallSize');
   bottom: 25%;
   left: 20%;
   animation: webhook-float-delayed
@@ -776,7 +766,9 @@ onMounted(() => {
 .webhook-empty-description {
   font-size: 0.875rem;
   color: var(--webhook-muted-text);
-  max-width: 280px;
+  max-width: v-bind(
+    'animationConfig.webhookManager.dimensions.descriptionMaxWidth'
+  );
   margin-bottom: 1.5rem;
   line-height: 1.5;
 }
@@ -898,7 +890,7 @@ onMounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 70px;
+  min-width: v-bind('animationConfig.webhookManager.dimensions.buttonMinWidth');
   transition: all var(--duration, 200ms) ease-out;
   overflow: hidden;
 }
