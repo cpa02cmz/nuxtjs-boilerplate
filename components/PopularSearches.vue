@@ -208,7 +208,8 @@ const staggerStyles = computed(() => ({
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
-  if (typeof window === 'undefined') return
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return
   const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
   prefersReducedMotion.value = mediaQuery.matches
 }

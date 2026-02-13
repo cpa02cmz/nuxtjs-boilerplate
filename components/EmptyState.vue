@@ -236,7 +236,8 @@ defineEmits<{
 
 // Respect user's motion preferences
 const reducedMotion = computed(() => {
-  if (typeof window === 'undefined') return false
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 })
 </script>

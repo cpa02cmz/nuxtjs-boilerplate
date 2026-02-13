@@ -632,7 +632,8 @@ const exitingChips = ref<Set<string>>(new Set())
 // Check for reduced motion preference
 const prefersReducedMotion = ref(false)
 const checkReducedMotion = () => {
-  if (typeof window === 'undefined') return false
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
@@ -1023,11 +1024,13 @@ onMounted(() => {
   // Check reduced motion preference
   prefersReducedMotion.value = checkReducedMotion()
   // Listen for changes
-  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-  const handleMotionChange = (e: MediaQueryListEvent) => {
-    prefersReducedMotion.value = e.matches
+  if (typeof window.matchMedia === 'function') {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handleMotionChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.value = e.matches
+    }
+    mediaQuery.addEventListener('change', handleMotionChange)
   }
-  mediaQuery.addEventListener('change', handleMotionChange)
 })
 
 // 🎯 Flexy: Modular easing values for tooltip transitions

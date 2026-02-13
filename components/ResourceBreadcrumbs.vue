@@ -92,7 +92,10 @@ watch(
 const prefersReducedMotion = ref(false)
 
 onMounted(() => {
-  if (typeof window !== 'undefined') {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function'
+  ) {
     prefersReducedMotion.value = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
     ).matches

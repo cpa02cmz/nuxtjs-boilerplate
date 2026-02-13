@@ -502,7 +502,10 @@ const formatTimeAgo = (timestamp: string): string => {
 
 // Check for reduced motion preference
 onMounted(() => {
-  if (typeof window !== 'undefined') {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function'
+  ) {
     prefersReducedMotion.value = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
     ).matches

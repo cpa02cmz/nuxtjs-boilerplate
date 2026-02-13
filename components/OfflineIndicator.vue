@@ -294,7 +294,8 @@ const retryButtonText = computed(() => {
 
 // Check reduced motion preference
 const checkReducedMotion = () => {
-  if (typeof window === 'undefined') return false
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
@@ -436,6 +437,7 @@ onMounted(() => {
   }
 
   // Listen for reduced motion preference changes
+  if (typeof window.matchMedia !== 'function') return
   const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
   const handleMotionChange = (e: MediaQueryListEvent) => {
     prefersReducedMotion.value = e.matches

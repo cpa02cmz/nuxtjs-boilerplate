@@ -651,10 +651,12 @@ export const webhookStorage = {
   /**
    * Atomically create delivery and set idempotency key
    * Prevents race conditions where delivery is created but idempotency key is not set
+   * Includes TTL enforcement for automatic cleanup
    */
   async createDeliveryWithIdempotencyKey(
     delivery: WebhookDelivery,
-    idempotencyKey: string
+    idempotencyKey: string,
+    expirationHours: number = 24
   ): Promise<WebhookDelivery> {
     try {
       return await prisma.$transaction(async tx => {
@@ -676,15 +678,21 @@ export const webhookStorage = {
           },
         })
 
-        // Store idempotency key reference atomically
+        // Calculate expiration time (default 24 hours)
+        const expiresAt = new Date()
+        expiresAt.setHours(expiresAt.getHours() + expirationHours)
+
+        // Store idempotency key reference atomically with TTL
         await tx.idempotencyKey.upsert({
           where: { key: idempotencyKey },
           create: {
             key: idempotencyKey,
             deliveryId: delivery.id,
+            expiresAt,
           },
           update: {
             deliveryId: delivery.id,
+            expiresAt,
           },
         })
 
@@ -698,10 +706,14 @@ export const webhookStorage = {
   // Idempotency methods
   async getDeliveryByIdempotencyKey(key: string) {
     try {
+      const now = new Date()
+
       const idempotencyKey = await prisma.idempotencyKey.findFirst({
         where: {
           key,
           deletedAt: null,
+          // Enforce expiration: only return keys that haven't expired
+          OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
         },
       })
 
@@ -719,16 +731,26 @@ export const webhookStorage = {
     }
   },
 
-  async setDeliveryByIdempotencyKey(key: string, delivery: WebhookDelivery) {
+  async setDeliveryByIdempotencyKey(
+    key: string,
+    delivery: WebhookDelivery,
+    expirationHours: number = 24
+  ) {
     try {
+      // Calculate expiration time (default 24 hours)
+      const expiresAt = new Date()
+      expiresAt.setHours(expiresAt.getHours() + expirationHours)
+
       await prisma.idempotencyKey.upsert({
         where: { key },
         create: {
           key,
           deliveryId: delivery.id,
+          expiresAt,
         },
         update: {
           deliveryId: delivery.id,
+          expiresAt,
         },
       })
 
@@ -740,10 +762,14 @@ export const webhookStorage = {
 
   async hasDeliveryWithIdempotencyKey(key: string) {
     try {
+      const now = new Date()
+
       const idempotencyKey = await prisma.idempotencyKey.findFirst({
         where: {
           key,
           deletedAt: null,
+          // Enforce expiration: only consider keys that haven't expired
+          OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
         },
       })
 
@@ -752,6 +778,34 @@ export const webhookStorage = {
       handleStorageError('check idempotency key', error)
     }
   },
+}
+
+/**
+ * Cleanup expired idempotency keys to prevent database bloat
+ * Should be called periodically (e.g., via cron job or scheduled task)
+ * @returns Number of expired keys deleted
+ */
+export async function cleanupExpiredIdempotencyKeys(): Promise<number> {
+  try {
+    const now = new Date()
+
+    const result = await prisma.idempotencyKey.deleteMany({
+      where: {
+        expiresAt: {
+          lte: now, // Less than or equal to current time = expired
+        },
+      },
+    })
+
+    if (result.count > 0) {
+      logger.info(`Cleaned up ${result.count} expired idempotency key(s)`)
+    }
+
+    return result.count
+  } catch (error) {
+    logger.error('Failed to cleanup expired idempotency keys:', error)
+    return 0
+  }
 }
 
 export async function resetWebhookStorage() {
