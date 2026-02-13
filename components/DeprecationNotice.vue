@@ -66,7 +66,10 @@
           </button>
         </div>
         <p>{{ noticeMessage }}</p>
-        <div v-if="migrationPath || alternatives" class="notice-actions">
+        <div
+          v-if="migrationPath || alternatives"
+          class="notice-actions"
+        >
           <a
             v-if="migrationPath"
             :href="migrationPath"
@@ -130,7 +133,11 @@
       />
 
       <!-- Screen reader announcement -->
-      <div class="sr-only" role="status" aria-live="polite">
+      <div
+        class="sr-only"
+        role="status"
+        aria-live="polite"
+      >
         {{ announcementText }}
       </div>
     </div>
