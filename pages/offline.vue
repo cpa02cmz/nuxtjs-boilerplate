@@ -182,6 +182,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { tailwindClassesConfig as tailwind } from '~/configs/tailwind-classes.config'
+import { animationConfig } from '~/configs/animation.config'
 import { hapticLight, hapticError, hapticSuccess } from '~/utils/hapticFeedback'
 
 definePageMeta({
@@ -241,7 +242,9 @@ const checkConnection = async () => {
   hapticLight()
 
   // Simulate a brief delay for better UX (prevents jarring instant feedback)
-  await new Promise(resolve => setTimeout(resolve, 800))
+  await new Promise(resolve =>
+    setTimeout(resolve, animationConfig.offlineRetry.spinDurationMs)
+  )
 
   if (navigator.onLine) {
     // Connection restored!
@@ -251,7 +254,7 @@ const checkConnection = async () => {
     // Brief delay to show success state before redirect
     setTimeout(() => {
       window.location.href = window.location.origin
-    }, 500)
+    }, animationConfig.offlineRetry.redirectDelayMs)
   } else {
     // Still offline
     retryCount.value++

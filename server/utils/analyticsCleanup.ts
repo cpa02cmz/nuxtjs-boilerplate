@@ -1,10 +1,12 @@
 import db from './db'
 import { logger } from '~/utils/logger'
+import { analyticsConfig } from '~/configs/analytics.config'
 
-// Validation constants for analytics retention
-const MIN_RETENTION_DAYS = 7
-const MAX_RETENTION_DAYS = 365
-const DEFAULT_RETENTION_DAYS = 90
+// Validation constants for analytics retention - Flexy hates hardcoded values!
+// Using configurable values from analyticsConfig
+const MIN_RETENTION_DAYS = analyticsConfig.dateRange.minDays
+const MAX_RETENTION_DAYS = analyticsConfig.dateRange.maxDays
+const DEFAULT_RETENTION_DAYS = analyticsConfig.dateRange.defaultDays
 
 /**
  * Validates retention days parameter

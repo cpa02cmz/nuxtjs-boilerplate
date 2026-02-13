@@ -368,6 +368,10 @@ export const animationConfig = {
     spinDurationMs: parseInt(
       process.env.OFFLINE_RETRY_SPIN_DURATION_MS || '800'
     ),
+    // Delay before redirecting after successful connection (ms)
+    redirectDelayMs: parseInt(
+      process.env.OFFLINE_RETRY_REDIRECT_DELAY_MS || '500'
+    ),
   },
 
   // Form Validation Animations - Gentle feedback for validation errors
