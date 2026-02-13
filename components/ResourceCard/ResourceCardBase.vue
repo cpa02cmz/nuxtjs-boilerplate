@@ -145,6 +145,44 @@
           <span v-else>{{ description }}</span>
         </p>
 
+        <!-- Reading Time Indicator - Palette's micro-UX enhancement! 🎨 -->
+        <!-- Helps users understand time commitment before clicking -->
+        <div
+          class="mt-2 flex items-center text-xs text-gray-500"
+          :class="{ 'text-emerald-600': readingTime.isQuickRead }"
+          role="img"
+          :aria-label="readingTime.ariaText"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-3.5 w-3.5 mr-1"
+            :class="{ 'text-emerald-500': readingTime.isQuickRead }"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span
+            class="font-medium"
+            :class="{ 'text-emerald-600': readingTime.isQuickRead }"
+          >
+            {{ readingTime.text }}
+          </span>
+          <span
+            v-if="readingTime.isQuickRead"
+            class="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-100 text-emerald-700"
+          >
+            Quick read
+          </span>
+        </div>
+
         <!-- Free tier information -->
         <div
           class="mt-3 bg-gray-50 p-3 rounded-md"
@@ -349,6 +387,7 @@ import { EASING } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { seoConfig } from '~/configs/seo.config'
 import { zIndexConfig, zIndexScale } from '~/configs/z-index.config'
+import { calculateResourceReadingTime } from '~/utils/readingTime'
 
 interface Props {
   title: string
@@ -556,6 +595,15 @@ const { transformStyle: magneticTransformStyle } = useMagneticButton({
 
 // Compute domain tooltip
 const domainTooltip = computed(() => formatDomainTooltip(props.url))
+
+// Palette's micro-UX enhancement: Calculate estimated reading time
+// Helps users understand how long they'll spend before clicking
+const readingTime = computed(() => {
+  return calculateResourceReadingTime(props.title, props.description, {
+    wordsPerMinute: 200,
+    format: 'short',
+  })
+})
 
 // Mark resource as visited
 const markVisited = () => {
