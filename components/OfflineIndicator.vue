@@ -11,7 +11,8 @@
     >
       <div
         v-if="isOffline"
-        class="fixed top-0 left-0 right-0 z-[100]"
+        class="fixed top-0 left-0 right-0"
+        :style="{ zIndex: uiConfig.zIndex.sticky }"
         role="alert"
         aria-live="assertive"
         aria-atomic="true"
@@ -202,7 +203,8 @@
     >
       <div
         v-if="showBackOnline"
-        class="fixed top-20 left-1/2 transform -translate-x-1/2 z-[100]"
+        class="fixed top-20 left-1/2 transform -translate-x-1/2"
+        :style="{ zIndex: uiConfig.zIndex.sticky }"
         role="status"
         aria-live="polite"
         aria-atomic="true"

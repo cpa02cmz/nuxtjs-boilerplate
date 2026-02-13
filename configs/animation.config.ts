@@ -24,6 +24,8 @@ export const animationConfig = {
     positionTransitionMs: parseInt(
       process.env.TOOLTIP_POSITION_TRANSITION_MS || '200'
     ),
+    // Swipe gesture threshold for dismissing tooltip on mobile (px) - Flexy hates hardcoded 50!
+    swipeThresholdPx: parseInt(process.env.TOOLTIP_SWIPE_THRESHOLD_PX || '50'),
   },
 
   // Skeleton/Loading Animations
