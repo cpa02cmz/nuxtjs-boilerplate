@@ -1480,6 +1480,23 @@ export const animationConfig = {
     // Animation easing for stroke draw
     drawEasing: process.env.SVG_STROKE_DRAW_EASING || 'ease-out',
   },
+
+  // Comments Section Animations - Palette's micro-UX delight!
+  // Provides smooth scroll and highlight effects for newly posted comments
+  comments: {
+    // Duration for comment highlight animation (seconds)
+    highlightDurationSec: `${parseInt(process.env.COMMENT_HIGHLIGHT_DURATION_MS || '2000') / 1000}s`,
+    // Delay before scrolling to new comment (ms) - allows DOM to update
+    scrollDelayMs: parseInt(process.env.COMMENT_SCROLL_DELAY_MS || '100'),
+    // Scroll behavior: 'smooth' or 'auto'
+    scrollBehavior: process.env.COMMENT_SCROLL_BEHAVIOR || 'smooth',
+    // Highlight color RGB values (yellow-400)
+    highlightColor: process.env.COMMENT_HIGHLIGHT_COLOR || '250, 204, 21',
+    // Maximum highlight opacity (0-1)
+    highlightOpacity: parseFloat(
+      process.env.COMMENT_HIGHLIGHT_OPACITY || '0.2'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
