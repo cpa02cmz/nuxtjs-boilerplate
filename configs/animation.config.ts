@@ -28,6 +28,20 @@ export const animationConfig = {
     swipeThresholdPx: parseInt(process.env.TOOLTIP_SWIPE_THRESHOLD_PX || '50'),
   },
 
+  // Live Indicator Animations - Palette's micro-UX delight! 🎨
+  // Used by RelativeTimeBadge for pulsing indicator dot
+  liveIndicator: {
+    // Pulse animation duration in seconds
+    pulseDurationSec:
+      parseInt(process.env.LIVE_INDICATOR_PULSE_DURATION_MS || '2000') / 1000,
+    // Scale multiplier for pulse effect
+    pulseScale: parseFloat(process.env.LIVE_INDICATOR_PULSE_SCALE || '1.2'),
+    // Ring spread scale for pulse ripple
+    ringSpreadScale: parseFloat(
+      process.env.LIVE_INDICATOR_RING_SPREAD || '2.0'
+    ),
+  },
+
   // Skeleton/Loading Animations
   skeleton: {
     shimmerDurationMs: parseInt(

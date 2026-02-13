@@ -283,6 +283,17 @@ export const componentColorsConfig = {
     arrowBg: process.env.TOOLTIP_ARROW_BG || 'bg-gray-900',
   },
 
+  // Live Indicator Colors - Palette's micro-UX delight! 🎨
+  // Used by RelativeTimeBadge to show live/recent status
+  liveIndicator: {
+    // Default indicator color (gray for normal state)
+    default: process.env.LIVE_INDICATOR_DEFAULT || '#9ca3af',
+    // Recent/Active indicator color (blue for recent items)
+    recent: process.env.LIVE_INDICATOR_RECENT || '#3b82f6',
+    // Live indicator color (green for live items)
+    live: process.env.LIVE_INDICATOR_LIVE || '#10b981',
+  },
+
   // Health Monitor Colors - Flexy hates hardcoded health colors!
   healthMonitor: {
     container: {
