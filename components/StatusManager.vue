@@ -305,6 +305,7 @@ import { useResourceStatusManager } from '~/composables/useResourceStatusManager
 import { componentStylesConfig } from '~/configs/component-styles.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
 // Flexy hates hardcoded values! Using config instead.
@@ -687,7 +688,7 @@ onUnmounted(() => {
   justify-content: center;
   gap: 0.5rem;
   position: relative;
-  z-index: 1;
+  z-index: v-bind('zIndexConfig.floatingLabel');
 }
 
 .update-button__icon {

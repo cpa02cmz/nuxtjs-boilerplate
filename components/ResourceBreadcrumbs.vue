@@ -62,6 +62,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 
 const props = defineProps<{
   title: string
@@ -135,7 +136,7 @@ onMounted(() => {
 /* Breadcrumb text */
 .breadcrumb-text {
   position: relative;
-  z-index: 1;
+  z-index: v-bind('zIndexConfig.floatingLabel');
 }
 
 /* Slide-in underline effect - Palette's micro-UX delight! */
