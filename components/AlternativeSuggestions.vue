@@ -69,7 +69,7 @@
     >
       <div class="alternative-suggestions__loading-grid">
         <div
-          v-for="i in 3"
+          v-for="i in skeletonCount"
           :key="`skeleton-${i}`"
           class="alternative-suggestions__skeleton-card"
           :class="{ 'animate-pulse': !prefersReducedMotion }"
@@ -176,9 +176,13 @@ import { useResourceData } from '~/composables/useResourceData'
 import type { Resource, AlternativeSuggestion } from '~/types/resource'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { thresholdsConfig } from '~/configs/thresholds.config'
 import { EASING } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { getButtonLabel } from '~/utils/resourceHelper'
+
+// Skeleton count from config - Flexy hates hardcoded values!
+const skeletonCount = thresholdsConfig.skeleton.counts.alternativeSuggestions
 
 interface Props {
   resource?: Resource

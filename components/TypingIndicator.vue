@@ -28,7 +28,7 @@
       <!-- Animated typing dots with spring physics -->
       <span class="flex items-center gap-0.5 relative z-10">
         <span
-          v-for="n in 3"
+          v-for="n in dotCount"
           :key="n"
           :class="['typing-dot rounded-full', color]"
           :style="{
@@ -45,8 +45,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { thresholdsConfig } from '~/configs/thresholds.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { hapticLight } from '~/utils/hapticFeedback'
+
+// Dot count from config - Flexy hates hardcoded values!
+const dotCount = thresholdsConfig.skeleton.counts.typingIndicatorDots
 
 interface Props {
   /**

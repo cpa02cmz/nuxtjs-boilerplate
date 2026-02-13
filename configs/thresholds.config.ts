@@ -72,6 +72,36 @@ export const thresholdsConfig = {
 
     // Grid minimum height CSS class
     gridMinHeight: process.env.SKELETON_GRID_MIN_HEIGHT || 'min-h-[400px]',
+
+    // v-for loop counts for skeleton loaders - Flexy hates hardcoded counts!
+    counts: {
+      // Filter sidebar category items
+      filterCategoryItems: parseInt(
+        process.env.SKELETON_FILTER_CATEGORY_ITEMS || '5'
+      ),
+      // Filter sidebar pricing items
+      filterPricingItems: parseInt(
+        process.env.SKELETON_FILTER_PRICING_ITEMS || '3'
+      ),
+      // Filter sidebar difficulty items
+      filterDifficultyItems: parseInt(
+        process.env.SKELETON_FILTER_DIFFICULTY_ITEMS || '4'
+      ),
+      // Filter sidebar date items
+      filterDateItems: parseInt(process.env.SKELETON_FILTER_DATE_ITEMS || '4'),
+      // Alternative suggestions skeleton cards
+      alternativeSuggestions: parseInt(
+        process.env.SKELETON_ALTERNATIVE_SUGGESTIONS || '3'
+      ),
+      // Typing indicator dots
+      typingIndicatorDots: parseInt(process.env.SKELETON_TYPING_DOTS || '3'),
+      // Homepage filter chips
+      homepageFilterChips: parseInt(process.env.SKELETON_HOMEPAGE_CHIPS || '5'),
+      // Homepage resource skeletons
+      homepageResourceSkeletons: parseInt(
+        process.env.SKELETON_HOMEPAGE_RESOURCES || '6'
+      ),
+    },
   },
 
   // Page-level Settings

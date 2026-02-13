@@ -545,6 +545,14 @@ export const componentStylesConfig = {
     modalWidth: process.env.KB_SHORTCUTS_MODAL_WIDTH || 'max-w-lg',
   },
 
+  // Character Counter Component - Flexy hates hardcoded radius values!
+  characterCounter: {
+    // Progress circle radius (px) - used for circumference calculation
+    progressRadiusPx: parseInt(process.env.CHAR_COUNTER_RADIUS_PX || '12'),
+    // Progress ring stroke width (px)
+    strokeWidthPx: parseInt(process.env.CHAR_COUNTER_STROKE_WIDTH || '3'),
+  },
+
   // SearchBar Component
   searchBar: {
     // Input transition duration
@@ -576,6 +584,52 @@ export const componentStylesConfig = {
       titleFontSize: process.env.SWAGGER_TITLE_SIZE || '28px',
       titleMarginBottom: process.env.SWAGGER_TITLE_MARGIN || '10px',
       margin: process.env.SWAGGER_INFO_MARGIN || '20px 0',
+    },
+  },
+
+  // Component Dimensions - Flexy hates hardcoded px values!
+  dimensions: {
+    // Webhook Manager
+    webhookManager: {
+      containerMaxWidth: process.env.WEBHOOK_MAX_WIDTH || '800px',
+      emptyStateSizePx: parseInt(process.env.WEBHOOK_EMPTY_SIZE_PX || '120'),
+      emptyStateIconSizePx: parseInt(process.env.WEBHOOK_EMPTY_ICON_PX || '48'),
+      statusIndicatorSizePx: parseInt(process.env.WEBHOOK_STATUS_DOT_PX || '8'),
+      statusDotSizePx: parseInt(process.env.WEBHOOK_DOT_SIZE_PX || '6'),
+      tooltipMaxWidth: process.env.WEBHOOK_TOOLTIP_MAX_WIDTH || '280px',
+      buttonMinWidth: process.env.WEBHOOK_BUTTON_MIN_WIDTH || '70px',
+    },
+    // Resource Breadcrumbs
+    breadcrumbs: {
+      separatorHeightPx: parseInt(
+        process.env.BREADCRUMB_SEPARATOR_HEIGHT_PX || '2'
+      ),
+      breadcrumbMaxWidth: process.env.BREADCRUMB_MAX_WIDTH || '200px',
+      separatorSizePx: parseInt(
+        process.env.BREADCRUMB_SEPARATOR_SIZE_PX || '6'
+      ),
+    },
+    // Moderation Dashboard
+    moderationDashboard: {
+      iconSizePx: parseInt(process.env.MODERATION_ICON_SIZE_PX || '40'),
+    },
+    // Status Manager
+    statusManager: {
+      dropdownMinWidth: process.env.STATUS_DROPDOWN_MIN_WIDTH || '140px',
+      progressBarHeightPx: parseInt(
+        process.env.STATUS_PROGRESS_HEIGHT_PX || '2'
+      ),
+    },
+    // Api Keys
+    apiKeys: {
+      emptyStateSizePx: parseInt(process.env.API_KEYS_EMPTY_SIZE_PX || '120'),
+      containerMaxWidth: process.env.API_KEYS_CONTAINER_MAX_WIDTH || '300px',
+    },
+    // Submission Review
+    submissionReview: {
+      textareaMinHeightPx: parseInt(
+        process.env.SUBMISSION_TEXTAREA_MIN_HEIGHT_PX || '100'
+      ),
     },
   },
 } as const

@@ -33,7 +33,7 @@
       />
       <div class="space-y-2">
         <div
-          v-for="i in 5"
+          v-for="i in skeletonCounts.filterCategoryItems"
           :key="`category-${i}`"
           class="flex items-center"
         >
@@ -63,7 +63,7 @@
       />
       <div class="space-y-2">
         <div
-          v-for="i in 3"
+          v-for="i in skeletonCounts.filterPricingItems"
           :key="`pricing-${i}`"
           class="flex items-center"
         >
@@ -93,7 +93,7 @@
       />
       <div class="space-y-2">
         <div
-          v-for="i in 4"
+          v-for="i in skeletonCounts.filterDifficultyItems"
           :key="`difficulty-${i}`"
           class="flex items-center"
         >
@@ -123,7 +123,7 @@
       />
       <div class="space-y-2">
         <div
-          v-for="i in 4"
+          v-for="i in skeletonCounts.filterDateItems"
           :key="`date-${i}`"
           class="flex items-center"
         >
@@ -151,10 +151,14 @@
 // Provides visual placeholder while filter categories and options load
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { thresholdsConfig } from '~/configs/thresholds.config'
 
 // Animation timing configuration - Flexy hates hardcoded values!
 const staggerBaseDelay = animationConfig.skeleton.staggerDelayMs
 const staggerIncrement = animationConfig.skeleton.staggerIncrementMs
+
+// Skeleton counts from config - Flexy hates hardcoded v-for counts!
+const skeletonCounts = thresholdsConfig.skeleton.counts
 
 // Calculate stagger delays for each item
 const getStaggerDelay = (index: number): string => {

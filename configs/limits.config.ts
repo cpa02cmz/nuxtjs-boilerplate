@@ -142,6 +142,12 @@ export const limitsConfig = {
     maxListItemsDisplay: parseInt(process.env.DISPLAY_MAX_LIST_ITEMS || '3'),
   },
 
+  // Initials display for avatars/usernames - Flexy hates hardcoded slice values!
+  initials: {
+    // Maximum number of characters to display for user initials
+    maxLength: parseInt(process.env.INITIALS_MAX_LENGTH || '2'),
+  },
+
   // Alternative suggestions limits
   suggestions: {
     // Maximum number of alternative suggestions

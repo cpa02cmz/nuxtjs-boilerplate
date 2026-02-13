@@ -288,6 +288,8 @@ import { TIME } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { validationConfig } from '~/configs/validation.config'
+import { limitsConfig } from '~/configs/limits.config'
+import { componentStylesConfig } from '~/configs/component-styles.config'
 import { generateId } from '~/utils/generateId'
 
 interface Props {
@@ -319,8 +321,9 @@ const likedComments = ref<Set<string>>(new Set())
 const prefersReducedMotion = ref(false)
 const uniqueId = generateId({ prefix: 'comment' })
 
-// Computed values for character counter ring
-const circumference = 2 * Math.PI * 12 // r=12
+// Computed values for character counter ring - Flexy hates hardcoded radius!
+const circumference =
+  2 * Math.PI * componentStylesConfig.characterCounter.progressRadiusPx
 const charCount = computed(() => newComment.value.length)
 const remainingChars = computed(() => MAX_LENGTH - charCount.value)
 const progressPercentage = computed(() =>
@@ -469,7 +472,7 @@ const getInitials = (name: string) => {
     .map(n => n[0])
     .join('')
     .toUpperCase()
-    .slice(0, 2)
+    .slice(0, limitsConfig.initials.maxLength)
 }
 
 // Format comments with initials

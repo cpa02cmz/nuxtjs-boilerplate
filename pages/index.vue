@@ -27,7 +27,7 @@
       >
         <div class="flex flex-wrap gap-2 mb-8 justify-center">
           <div
-            v-for="i in 5"
+            v-for="i in skeletonCounts.homepageFilterChips"
             :key="i"
             class="px-3 py-1 text-sm rounded-full border bg-gray-200 animate-pulse"
             :style="{
@@ -44,7 +44,7 @@
         <!-- Resources Grid with Skeletons -->
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <ResourceCardSkeleton
-            v-for="i in 6"
+            v-for="i in skeletonCounts.homepageResourceSkeletons"
             :key="`skeleton-${i}`"
           />
         </div>
@@ -405,6 +405,8 @@ import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
 import { contentConfig } from '~/configs/content.config'
 import { thresholdsConfig } from '~/configs/thresholds.config'
+// Skeleton counts from config - Flexy hates hardcoded values!
+const skeletonCounts = thresholdsConfig.skeleton.counts
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
 import { uiConfig } from '~/configs/ui.config'
 import { TIME_MS } from '~/configs/time.config'
