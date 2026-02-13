@@ -15,6 +15,7 @@ import type { Submission } from '~/types/submission'
 import { apiConfig } from '~/configs/api.config'
 import { userConfig } from '~/configs/user.config'
 import { moderationConfig } from '~/configs/moderation.config'
+import { messagesConfig } from '~/configs/messages.config'
 
 export interface SubmissionReviewOptions {
   submissionId: string
@@ -58,10 +59,11 @@ export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
       if (response.success && response.data) {
         submission.value = response.data.submission || null
       } else {
-        error.value = response.error?.message || 'Failed to load submission'
+        error.value =
+          response.error?.message || messagesConfig.errors.submission.loadFailed
       }
     } catch (err) {
-      error.value = 'An error occurred while fetching submission'
+      error.value = messagesConfig.errors.submission.fetchError
       logError(
         'Error fetching submission in useSubmissionReview:',
         err as Error,
@@ -89,7 +91,9 @@ export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
         submission.value.reviewedAt = new Date().toISOString()
         return true
       } else {
-        error.value = response.error?.message || 'Failed to approve submission'
+        error.value =
+          response.error?.message ||
+          messagesConfig.errors.submission.approveFailed
         return false
       }
     } catch (err) {
@@ -98,7 +102,7 @@ export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
         err as Error,
         'useSubmissionReview'
       )
-      error.value = 'An error occurred while approving submission'
+      error.value = messagesConfig.errors.submission.approveError
       return false
     }
   }
@@ -107,7 +111,7 @@ export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
     if (!submission.value) return false
 
     if (!reason.trim()) {
-      error.value = 'Please provide a reason for rejection'
+      error.value = messagesConfig.errors.submission.rejectionReasonRequired
       return false
     }
 
@@ -129,7 +133,7 @@ export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
       } else {
         error.value =
           (response.error as { message?: string } | undefined)?.message ||
-          'Failed to reject submission'
+          messagesConfig.errors.submission.rejectFailed
         return false
       }
     } catch (err) {
@@ -138,7 +142,7 @@ export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
         err as Error,
         'useSubmissionReview'
       )
-      error.value = 'An error occurred while rejecting submission'
+      error.value = messagesConfig.errors.submission.rejectError
       return false
     }
   }

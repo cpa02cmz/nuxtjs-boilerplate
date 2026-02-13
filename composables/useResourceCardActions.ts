@@ -12,6 +12,7 @@ import {
 import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
 import { TIME_MS } from '~/configs/time.config'
+import { messagesConfig } from '~/configs/messages.config'
 import type { Resource } from '~/types/resource'
 
 export interface ResourceActionState {
@@ -189,10 +190,10 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
       copyStatus.value = `Failed to copy link to "${title}". Please try again.`
 
       const { $toast } = useNuxtApp()
-      $toast.error('Failed to copy link. Please try again.')
+      $toast.error(messagesConfig.errors.clipboard.copyFailed)
       hapticError()
       logError(
-        'Failed to copy resource URL to clipboard',
+        messagesConfig.errors.clipboard.copyError,
         new Error(result.error),
         'ResourceCardActions',
         { resourceId: id, resourceTitle: title }
