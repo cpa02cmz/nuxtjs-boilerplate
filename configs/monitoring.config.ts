@@ -98,6 +98,18 @@ export const monitoringConfig = {
     ),
   },
 
+  // Thresholds for performance analysis
+  thresholds: {
+    // Render-blocking resource duration threshold (ms)
+    renderBlockingMs: parseInt(
+      process.env.MONITOR_THRESHOLD_RENDER_BLOCKING_MS || '100'
+    ),
+    // Large resource threshold (bytes)
+    largeResourceBytes: parseInt(
+      process.env.MONITOR_THRESHOLD_LARGE_RESOURCE_BYTES || '100000'
+    ),
+  },
+
   // Exit codes
   exitCodes: {
     success: 0,

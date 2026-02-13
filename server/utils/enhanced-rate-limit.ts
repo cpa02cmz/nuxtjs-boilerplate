@@ -353,11 +353,11 @@ export const rateLimitConfigs = {
     message: rateLimitConfig.api.message,
   }),
   errorReport: new RateLimiter({
-    windowMs: 60 * 1000, // 1 minute
-    maxRequests: 10,
-    tokensPerInterval: 10,
-    intervalMs: 60 * 1000,
-    message: 'Too many error reports. Please try again later.',
+    windowMs: rateLimitConfig.errorReport.windowMs,
+    maxRequests: rateLimitConfig.errorReport.maxRequests,
+    tokensPerInterval: rateLimitConfig.errorReport.tokensPerInterval,
+    intervalMs: rateLimitConfig.errorReport.intervalMs,
+    message: rateLimitConfig.errorReport.message,
   }),
 }
 

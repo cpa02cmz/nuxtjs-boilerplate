@@ -156,6 +156,22 @@ export const cacheConfig = {
       immutable: true,
     },
   },
+
+  // Redis Configuration - Flexy hates hardcoded Redis settings!
+  redis: {
+    // Maximum retry attempts per request
+    maxRetriesPerRequest: parseInt(
+      process.env.REDIS_MAX_RETRIES_PER_REQUEST || '3'
+    ),
+    // Connection timeout in milliseconds
+    connectTimeoutMs: parseInt(process.env.REDIS_CONNECT_TIMEOUT_MS || '10000'),
+    // Enable lazy connection
+    lazyConnect: process.env.REDIS_LAZY_CONNECT !== 'false',
+    // Enable ready check
+    enableReadyCheck: process.env.REDIS_ENABLE_READY_CHECK !== 'false',
+    // Keep alive interval in milliseconds
+    keepAliveMs: parseInt(process.env.REDIS_KEEP_ALIVE_MS || '30000'),
+  },
 } as const
 
 // Helper function to parse glob patterns

@@ -1,16 +1,8 @@
 import { chromium } from 'playwright'
+import { monitoringConfig } from '../configs/monitoring.config.js'
 
-const BASE_URL = 'http://localhost:3000'
-const PAGES = [
-  '/',
-  '/search',
-  '/submit',
-  '/about',
-  '/compare',
-  '/favorites',
-  '/api-keys',
-  '/resources/chatgpt',
-]
+const BASE_URL = monitoringConfig.baseUrl
+const PAGES = monitoringConfig.pages.full.map(page => page.path)
 
 async function auditPage(page, url) {
   const consoleLogs = []
@@ -47,9 +39,9 @@ async function auditPage(page, url) {
   try {
     await page.goto(`${BASE_URL}${url}`, {
       waitUntil: 'networkidle',
-      timeout: 30000,
+      timeout: monitoringConfig.timeouts.navigationMs,
     })
-    await page.waitForTimeout(2000) // Wait for any async operations
+    await page.waitForTimeout(monitoringConfig.delays.consoleWaitMs)
 
     return { url, consoleLogs, errors, warnings }
   } catch (e) {
@@ -65,7 +57,9 @@ async function auditPage(page, url) {
 async function runAudit() {
   console.log('🦇 BroCula Browser Console Audit Starting...\n')
 
-  const browser = await chromium.launch({ headless: true })
+  const browser = await chromium.launch({
+    headless: monitoringConfig.browser.headless,
+  })
   const context = await browser.newContext()
 
   const allResults = []
@@ -116,7 +110,7 @@ async function runAudit() {
     console.log('⚠️  No errors, but warnings found.')
   } else {
     console.log('❌ FATAL: Console errors detected!')
-    process.exit(1)
+    process.exit(monitoringConfig.exitCodes.issuesFound)
   }
 
   return allResults
@@ -124,5 +118,5 @@ async function runAudit() {
 
 runAudit().catch(err => {
   console.error('Audit failed:', err)
-  process.exit(1)
+  process.exit(monitoringConfig.exitCodes.fatalError)
 })
