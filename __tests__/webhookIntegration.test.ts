@@ -1,9 +1,13 @@
 import { describe, it, expect, beforeAll } from 'vitest'
-import { $fetch } from '@nuxt/test-utils'
+import { ofetch } from 'ofetch'
 
 interface WebhookListResponse {
   success: boolean
   data: unknown[]
+}
+
+interface HealthCheckResponse {
+  status: string
 }
 
 /**
@@ -24,6 +28,9 @@ describe('Webhook Integration', () => {
   const isIntegrationEnv =
     process.env.CI === 'true' || process.env.INTEGRATION_TEST === 'true'
 
+  // Base URL for integration tests
+  const baseURL = process.env.INTEGRATION_TEST_URL || 'http://localhost:3000'
+
   beforeAll(() => {
     if (!isIntegrationEnv) {
       console.log(
@@ -38,9 +45,12 @@ describe('Webhook Integration', () => {
       return
     }
 
-    const response = await $fetch<WebhookListResponse>('/api/v1/webhooks', {
-      method: 'GET',
-    }).catch(err => err.data || { success: false, data: [] })
+    const response = await ofetch<WebhookListResponse>(
+      `${baseURL}/api/v1/webhooks`,
+      {
+        method: 'GET',
+      }
+    ).catch(() => ({ success: false, data: [] }))
 
     expect(response).toHaveProperty('success')
     expect(Array.isArray(response.data)).toBe(true)
@@ -51,12 +61,12 @@ describe('Webhook Integration', () => {
       return
     }
 
-    const response = await $fetch<WebhookListResponse>(
-      '/api/v1/auth/api-keys',
+    const response = await ofetch<WebhookListResponse>(
+      `${baseURL}/api/v1/auth/api-keys`,
       {
         method: 'GET',
       }
-    ).catch(err => err.data || { success: false, data: [] })
+    ).catch(() => ({ success: false, data: [] }))
 
     expect(response).toHaveProperty('success')
     expect(Array.isArray(response.data)).toBe(true)
@@ -67,7 +77,9 @@ describe('Webhook Integration', () => {
       return
     }
 
-    const response = await $fetch('/api/health').catch(() => ({
+    const response = await ofetch<HealthCheckResponse>(
+      `${baseURL}/api/health`
+    ).catch(() => ({
       status: 'error',
     }))
     expect(response).toHaveProperty('status')
