@@ -3,9 +3,9 @@
     <DeprecationNotice
       v-if="
         status &&
-          (status === 'deprecated' ||
-            status === 'discontinued' ||
-            status === 'pending')
+        (status === 'deprecated' ||
+          status === 'discontinued' ||
+          status === 'pending')
       "
       :status="status"
       :migration-path="migrationPath"
@@ -51,11 +51,11 @@ import LimitationsSection from '~/components/ResourceDetails/LimitationsSection.
 interface Props {
   title: string
   description: string
-  benefits: string[]
-  screenshots?: string[]
+  benefits: readonly string[]
+  screenshots?: readonly string[]
   specifications?: Record<string, string>
-  features?: string[]
-  limitations?: string[]
+  features?: readonly string[]
+  limitations?: readonly string[]
   status?: string
   migrationPath?: string
   deprecationDate?: string

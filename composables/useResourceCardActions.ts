@@ -30,7 +30,7 @@ export interface UseResourceCardActionsOptions {
   id?: string
   title: string
   description: string
-  benefits: string[]
+  benefits: readonly string[]
   url: string
   category?: string
   dateAdded?: string

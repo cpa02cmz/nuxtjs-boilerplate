@@ -1,8 +1,6 @@
 <template>
   <div class="mb-8">
-    <h2 class="text-xl font-semibold text-gray-900 mb-4">
-      Free Tier Benefits
-    </h2>
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Free Tier Benefits</h2>
     <ul class="space-y-2">
       <li
         v-for="(benefit, index) in benefits"
@@ -20,7 +18,8 @@
             fill-rule="evenodd"
             d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
             clip-rule="evenodd"
-          /></svg>
+          />
+        </svg>
         <span class="text-gray-700">{{ benefit }}</span>
       </li>
     </ul>
@@ -29,7 +28,7 @@
 
 <script setup lang="ts">
 interface Props {
-  benefits: string[]
+  benefits: readonly string[]
 }
 
 defineProps<Props>()

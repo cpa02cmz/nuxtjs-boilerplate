@@ -80,14 +80,14 @@ export interface UpdateWebhookRequest {
 }
 
 export interface ApiKey {
-  id: string
-  name: string
-  key: string
-  userId?: string
-  permissions: string[]
-  active: boolean
-  expiresAt?: string
-  createdAt: string
-  updatedAt: string
-  lastUsedAt?: string
+  readonly id: string
+  readonly name: string
+  readonly key: string
+  readonly userId?: string
+  readonly permissions: readonly string[]
+  readonly active: boolean
+  readonly expiresAt?: string
+  readonly createdAt: string
+  readonly updatedAt: string
+  readonly lastUsedAt?: string
 }

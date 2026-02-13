@@ -16,7 +16,7 @@ import {
   useHead,
 } from '#app'
 import logger from '~/utils/logger'
-import type { Resource } from '~/types/resource'
+import type { Resource, StatusChange, ResourceUpdate } from '~/types/resource'
 import { useResources } from '~/composables/useResources'
 import { useRecommendationEngine } from '~/composables/useRecommendationEngine'
 import { useErrorHandler } from '~/composables/useErrorHandler'
@@ -55,7 +55,11 @@ export const useResourceDetailPage = (
   const loading = ref(true)
   const resource = ref<Resource | null>(null)
   const relatedResources = ref<Resource[]>([])
-  const analyticsData = ref<Record<string, unknown> | null>(null)
+  const analyticsData = ref<{
+    viewCount: number
+    uniqueVisitors: number
+    lastViewed: string
+  } | null>(null)
 
   const resourceId = computed(() => {
     return typeof route.params.id === 'string' ? route.params.id : ''
@@ -67,7 +71,15 @@ export const useResourceDetailPage = (
   })
 
   const shareUrls = computed(() => {
-    if (!resource.value) return {}
+    if (!resource.value) {
+      return {
+        twitter: '',
+        facebook: '',
+        linkedin: '',
+        reddit: '',
+        email: '',
+      }
+    }
     return generateResourceShareUrls(
       currentUrl.value,
       resource.value.title,
@@ -78,7 +90,10 @@ export const useResourceDetailPage = (
   const getEnhancedRelatedResources = (currentResource: Resource | null) => {
     if (!currentResource) return []
 
-    const engine = useRecommendationEngine(resources.value, {})
+    const engine = useRecommendationEngine(
+      resources.value as readonly Resource[],
+      {}
+    )
     return engine.getDiverseRecommendations(
       currentResource,
       currentResource.category
@@ -96,16 +111,16 @@ export const useResourceDetailPage = (
       if (response.success && response.data && resource.value) {
         ;(
           resource.value as Resource & {
-            statusHistory: unknown[]
-            updateHistory: unknown[]
+            statusHistory: StatusChange[]
+            updateHistory: ResourceUpdate[]
           }
-        ).statusHistory = response.data.statusHistory
+        ).statusHistory = response.data.statusHistory as StatusChange[]
         ;(
           resource.value as Resource & {
-            statusHistory: unknown[]
-            updateHistory: unknown[]
+            statusHistory: StatusChange[]
+            updateHistory: ResourceUpdate[]
           }
-        ).updateHistory = response.data.updateHistory
+        ).updateHistory = response.data.updateHistory as ResourceUpdate[]
       }
     } catch (err) {
       logger.error('Error fetching resource history:', err)
@@ -120,16 +135,18 @@ export const useResourceDetailPage = (
       )
 
       if (response.success && response.data) {
-        analyticsData.value = response.data
+        const data = response.data as {
+          viewCount: number
+          uniqueVisitors: number
+          lastViewed: string
+        }
+        analyticsData.value = data
       }
     } catch (err) {
       logger.error('Error fetching resource analytics:', err)
       analyticsData.value = {
-        resourceId: id,
         viewCount: resource.value?.viewCount || 0,
         uniqueVisitors: 0,
-        avgTimeOnPage: 0,
-        bounceRate: 0,
         lastViewed: new Date().toISOString(),
       }
     }
@@ -169,9 +186,13 @@ export const useResourceDetailPage = (
     }
   }
 
-  const handleImageError = (event: Event) => {
-    const target = event.target as HTMLImageElement
-    target.src = '/placeholder-image.jpg'
+  const handleImageError = (event: Event | string) => {
+    if (typeof event === 'object' && event !== null && 'target' in event) {
+      const target = (event as Event).target as HTMLImageElement
+      if (target) {
+        target.src = '/placeholder-image.jpg'
+      }
+    }
   }
 
   const handleCommentSubmit = (comment: string) => {
@@ -214,7 +235,7 @@ export const useResourceDetailPage = (
         throw new Error('Resource not found')
       }
 
-      resource.value = foundResource
+      resource.value = foundResource as Resource
       const recommendations = getEnhancedRelatedResources(resource.value)
       relatedResources.value = recommendations.map(r => r.resource)
       await fetchResourceAnalytics(resourceId.value)

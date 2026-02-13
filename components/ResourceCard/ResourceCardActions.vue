@@ -246,7 +246,7 @@ interface Props {
   description: string
   url: string
   category?: string
-  benefits: string[]
+  benefits: readonly string[]
   dateAdded?: string
 }
 

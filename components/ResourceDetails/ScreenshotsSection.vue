@@ -1,8 +1,6 @@
 <template>
   <div class="mb-8">
-    <h2 class="text-xl font-semibold text-gray-900 mb-4">
-      Screenshots
-    </h2>
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Screenshots</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
         v-for="(screenshot, index) in screenshots"
@@ -25,7 +23,7 @@
 
 <script setup lang="ts">
 interface Props {
-  screenshots: string[]
+  screenshots: readonly string[]
   title: string
 }
 

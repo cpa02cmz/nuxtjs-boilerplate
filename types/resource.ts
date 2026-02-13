@@ -36,6 +36,12 @@ export interface Resource {
   rejectionReason?: string
   qualityScore?: number
   flags?: Flag[] | readonly Flag[]
+  // Extended fields (added dynamically by server)
+  healthScore?: number
+  migrationPath?: string
+  deprecationDate?: string
+  statusHistory?: readonly StatusChange[]
+  updateHistory?: readonly ResourceUpdate[]
 }
 
 export interface Flag {
@@ -48,21 +54,21 @@ export interface Flag {
 }
 
 export interface StatusChange {
-  id: string
-  fromStatus: string
-  toStatus: string
-  changedAt: string
-  changedBy: string
-  reason?: string
-  notes?: string
+  readonly id: string
+  readonly fromStatus: string
+  readonly toStatus: string
+  readonly changedAt: string
+  readonly changedBy: string
+  readonly reason?: string
+  readonly notes?: string
 }
 
 export interface ResourceUpdate {
-  id: string
-  version: string
-  updatedAt: string
-  changelog?: string
-  changes?: string[]
+  readonly id: string
+  readonly version: string
+  readonly updatedAt: string
+  readonly changelog?: string
+  readonly changes?: readonly string[]
 }
 
 export interface User {
