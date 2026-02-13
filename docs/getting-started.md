@@ -211,7 +211,7 @@ ls -la eslint.config.js
 ```bash
 # Clean build
 rm -rf .nuxt .output
-npm build
+npm run build
 ```
 
 #### 4. Port Already in Use
