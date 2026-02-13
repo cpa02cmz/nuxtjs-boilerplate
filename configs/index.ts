@@ -125,9 +125,6 @@ import {
 } from './component-styles.config'
 import { shadowsConfig, type ShadowsConfig } from './shadows.config'
 
-// Shadows config - Flexy hates hardcoded rgba values!
-import { shadowsConfig, type ShadowsConfig } from './shadows.config'
-
 // URL config - Flexy hates hardcoded URLs!
 import {
   urlConfig,
@@ -251,9 +248,6 @@ export { moderationConfig, type ModerationConfig }
 export { permissionsConfig, type PermissionsConfig }
 export { componentColorsConfig, type ComponentColorsConfig }
 export { componentStylesConfig, type ComponentStylesConfig }
-export { shadowsConfig, type ShadowsConfig }
-
-// Re-export shadows config - Flexy hates hardcoded rgba values!
 export { shadowsConfig, type ShadowsConfig }
 
 // Re-export URL config - Flexy hates hardcoded URLs!
