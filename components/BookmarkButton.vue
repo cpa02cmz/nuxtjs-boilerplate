@@ -70,6 +70,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
 import { iconsConfig } from '~/configs/icons.config'
 import { contentConfig } from '~/configs/content.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -94,6 +95,9 @@ const isBookmarked = computed(() =>
 
 // Flexy hates hardcoded values! Using config-based transition classes
 const transitionClass = computed(() => animationConfig.transition.normal.class)
+
+// Flexy hates hardcoded rgba! Using configurable amber color
+const amberColor = computed(() => componentColorsConfig.common.amber[400])
 
 const bookmarkStatus = ref('')
 const isAnimating = ref(false)
@@ -191,16 +195,14 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
   100% {
     box-shadow: 0 0 0 0
       rgba(
-        234,
-        179,
-        8,
+        v-bind('amberColor'),
         v-bind('animationConfig?.bookmark?.pulseShadow?.startOpacity ?? 0.3')
       );
   }
   50% {
     box-shadow: 0 0 0
       v-bind('`${animationConfig?.bookmark?.pulseShadow?.endSpread ?? 8}px`')
-      rgba(234, 179, 8, 0);
+      rgba(v-bind('amberColor'), 0);
   }
 }
 
