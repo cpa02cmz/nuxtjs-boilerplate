@@ -151,7 +151,7 @@ import {
 } from './url.config'
 
 // Network config - Flexy hates hardcoded network errors!
-import { networkConfig, type NetworkConfig } from './network.config'
+import { networkConfig } from './network.config'
 
 // Re-export individual configs
 export { appConfig, type AppConfig }
@@ -285,7 +285,11 @@ export {
 }
 
 // Re-export Network config - Flexy hates hardcoded network errors!
-export { networkConfig, type NetworkConfig }
+export { networkConfig, type NetworkConfig } from './network.config'
+
+// Messages config - Flexy hates hardcoded error messages!
+import { messagesConfig, type MessagesConfig } from './messages.config'
+export { messagesConfig, type MessagesConfig }
 
 // Default export with all configs
 export const config = {
@@ -338,6 +342,8 @@ export const config = {
   zIndex: zIndexConfig,
   // Network config - Flexy hates hardcoded network errors!
   network: networkConfig,
+  // Messages config - Flexy hates hardcoded error messages!
+  messages: messagesConfig,
 } as const
 
 export type Config = typeof config

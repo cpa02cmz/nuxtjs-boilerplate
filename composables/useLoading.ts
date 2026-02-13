@@ -1,5 +1,6 @@
 import { reactive, readonly } from 'vue'
 import { UI_FEEDBACK_DURATION } from '~/server/utils/constants'
+import { messagesConfig } from '~/configs/messages.config'
 
 // Define loading state interface
 export interface LoadingState {
@@ -43,7 +44,9 @@ export const useLoading = () => {
     } catch (err) {
       const errorMessage =
         options?.errorMessage ||
-        (err instanceof Error ? err.message : 'An error occurred')
+        (err instanceof Error
+          ? err.message
+          : messagesConfig.errors.generic.default)
       loadingState.error = errorMessage
       loadingState.message = errorMessage
 

@@ -35,9 +35,7 @@
     </div>
 
     <!-- Custom Animated Dropdown -->
-    <div
-      class="flex items-center space-x-2"
-    >
+    <div class="flex items-center space-x-2">
       <label
         :for="selectId"
         class="text-sm text-gray-800"
@@ -522,7 +520,9 @@ onUnmounted(() => {
 @media (prefers-reduced-motion: reduce) {
   .ease-spring {
     transition-timing-function: ease-out;
-    transition-duration: 0.1s;
+    transition-duration: v-bind(
+      'animationConfig.cssTransitions.reducedMotionSec'
+    );
   }
 
   .checkmark-path {
