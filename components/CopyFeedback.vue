@@ -68,6 +68,7 @@
 import { ref, computed, nextTick } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
+import { uiConfig } from '~/configs/ui.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 import { generateId } from '~/utils/generateId'
 
@@ -260,7 +261,7 @@ defineExpose({
 
 .copy-feedback-tooltip {
   position: fixed;
-  z-index: 9999;
+  z-index: v-bind('uiConfig.zIndex.toast');
   pointer-events: none;
 }
 
