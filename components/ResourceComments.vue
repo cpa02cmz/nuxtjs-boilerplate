@@ -4,7 +4,9 @@
       <h2 class="text-2xl font-bold text-gray-900">
         {{ contentConfig.comments.title }}
       </h2>
-      <span class="text-sm text-gray-500">{{ commentCount }} {{ contentConfig.comments.countLabel }}</span>
+      <span class="text-sm text-gray-500"
+        >{{ commentCount }} {{ contentConfig.comments.countLabel }}</span
+      >
     </div>
 
     <!-- Comment Form with Micro-UX Enhancements -->
@@ -51,10 +53,7 @@
             class="relative w-8 h-8"
             :title="`${remainingChars} characters remaining`"
           >
-            <svg
-              class="w-full h-full transform -rotate-90"
-              viewBox="0 0 32 32"
-            >
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 32 32">
               <!-- Background circle -->
               <circle
                 cx="16"
@@ -117,7 +116,7 @@
               </svg>
               {{
                 contentConfig.comments.validation.overLimit ||
-                  `${Math.abs(remainingChars)} characters over limit`
+                `${Math.abs(remainingChars)} characters over limit`
               }}
             </span>
           </template>
@@ -138,7 +137,7 @@
               </svg>
               {{
                 contentConfig.comments.validation.nearLimit ||
-                  'Approaching limit'
+                'Approaching limit'
               }}
             </span>
           </template>
@@ -147,13 +146,13 @@
           >
             {{
               contentConfig.comments.validation.tooShort ||
-                `Minimum ${minLength} characters`
+              `Minimum ${minLength} characters`
             }}
           </template>
           <template v-else>
             {{
               contentConfig.comments.validation.hint ||
-                `Press Enter to submit, Shift+Enter for new line`
+              `Press Enter to submit, Shift+Enter for new line`
             }}
           </template>
         </span>
@@ -287,6 +286,7 @@ import type { Comment } from '~/types/community'
 import { TIME } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { validationConfig } from '~/configs/validation.config'
 import { generateId } from '~/utils/generateId'
 
 interface Props {
@@ -301,11 +301,11 @@ const emit = defineEmits<{
   like: [commentId: string]
 }>()
 
-// Constants - Flexy hates hardcoded values!
-const MIN_LENGTH = 3
-const MAX_LENGTH = 500
-const MIN_ROWS = 1
-const MAX_ROWS = 6
+// Constants - Now using config values! Flexy approves!
+const MIN_LENGTH = validationConfig.comments.minLength
+const MAX_LENGTH = validationConfig.comments.maxLength
+const MIN_ROWS = validationConfig.comments.minRows
+const MAX_ROWS = validationConfig.comments.maxRows
 
 // Reactive state
 const newComment = ref('')
