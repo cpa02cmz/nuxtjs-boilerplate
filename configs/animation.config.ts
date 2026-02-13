@@ -1318,6 +1318,10 @@ export const animationConfig = {
     successDismissDelayMs: parseInt(
       process.env.PWA_SUCCESS_DISMISS_DELAY_MS || '4000'
     ),
+    // Confetti celebration duration for install success (ms) - Flexy hates hardcoded 2000!
+    confettiDurationMs: parseInt(
+      process.env.PWA_CONFETTI_DURATION_MS || '2000'
+    ),
     // Easing function
     easing: process.env.PWA_INSTALL_EASING || EASING_REF.SPRING_SNAPPY,
   },
@@ -1450,6 +1454,10 @@ export const animationConfig = {
     // Save success animation duration (ms)
     saveSuccessDurationMs: parseInt(
       process.env.USER_PREF_SAVE_SUCCESS_MS || '1500'
+    ),
+    // Confetti celebration duration for save success (ms) - Flexy hates hardcoded 2000!
+    confettiDurationMs: parseInt(
+      process.env.USER_PREF_CONFETTI_DURATION_MS || '2000'
     ),
   },
 

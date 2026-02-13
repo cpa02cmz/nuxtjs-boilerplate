@@ -278,7 +278,7 @@
         <ConfettiCelebration
           :trigger="showConfetti"
           intensity="light"
-          :duration="2000"
+          :duration="animationConfig.userPreference.confettiDurationMs"
         />
 
         <div
