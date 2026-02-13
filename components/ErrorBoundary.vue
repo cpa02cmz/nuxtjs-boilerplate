@@ -1,9 +1,6 @@
 <template>
   <div class="error-boundary-wrapper">
-    <Transition
-      name="error-fade"
-      @after-enter="onErrorEntered"
-    >
+    <Transition name="error-fade" @after-enter="onErrorEntered">
       <div
         v-if="hasError"
         ref="errorContainer"
@@ -43,20 +40,12 @@
           >
             Something went wrong
           </h2>
-          <p
-            id="error-message"
-            class="error-message"
-          >
+          <p id="error-message" class="error-message">
             {{ errorMessage }}
           </p>
-          <div
-            v-if="showDetails"
-            class="error-details"
-          >
+          <div v-if="showDetails" class="error-details">
             <details class="error-details-container">
-              <summary class="error-details-summary">
-                Error Details
-              </summary>
+              <summary class="error-details-summary">Error Details</summary>
               <pre class="error-stack">{{ errorStack }}</pre>
             </details>
           </div>
@@ -645,12 +634,15 @@ onUnmounted(() => {
 
 .countdown-ring__progress {
   stroke: #3b82f6;
-  transition: stroke-dashoffset 1s linear;
+  transition: stroke-dashoffset
+    v-bind('animationConfig.cssAnimations.extendedDurationSec') linear;
 }
 
 .countdown-ring.is-paused .countdown-ring__progress {
   stroke: #f59e0b;
-  animation: pulse-paused 1.5s ease-in-out infinite;
+  animation: pulse-paused
+    v-bind('animationConfig.cssAnimations.extraExtendedDurationSec') ease-in-out
+    infinite;
 }
 
 @keyframes pulse-paused {

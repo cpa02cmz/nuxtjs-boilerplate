@@ -812,7 +812,7 @@ if (typeof useHead === 'function') {
   opacity: 0;
   pointer-events: none;
   z-index: v-bind('zIndexConfig.floatingLabel');
-  transition: opacity 0.3s ease;
+  transition: opacity v-bind('animationConfig.cssTransitions.standardSec') ease;
 }
 
 .card-shine-container:hover::before {
@@ -860,7 +860,7 @@ if (typeof useHead === 'function') {
     transparent 60%
   );
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity v-bind('animationConfig.cssTransitions.standardSec') ease;
   z-index: v-bind('zIndexScale.low[5]');
 }
 
