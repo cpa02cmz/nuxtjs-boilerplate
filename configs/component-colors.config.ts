@@ -376,6 +376,10 @@ export const componentColorsConfig = {
     updateHeader: process.env.LIFECYCLE_UPDATE_HEADER || '#1f2937',
     version: process.env.LIFECYCLE_VERSION || '#1f2937',
     changelog: process.env.LIFECYCLE_CHANGELOG || '#4b5563',
+    // Palette's micro-UX enhancements - hover, focus, and ripple colors
+    hoverBg: process.env.LIFECYCLE_HOVER_BG || 'rgba(243, 244, 246, 0.5)',
+    focusBg: process.env.LIFECYCLE_FOCUS_BG || 'rgba(229, 231, 235, 0.5)',
+    rippleColor: process.env.LIFECYCLE_RIPPLE || '#9ca3af',
   },
 
   // Alternative Suggestions Colors - Flexy hates hardcoded alternative colors!
