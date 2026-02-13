@@ -52,6 +52,9 @@ const ACCEPTABLE_ERRORS = [
   /Failed to load resource: the server responded with a status of 400/,
   /Failed to load resource: the server responded with a status of 429/,
   /Failed to load resource: the server responded with a status of 500/,
+  // Browser security policy - haptic feedback requires user gesture
+  // This is a progressive enhancement that should silently fail
+  /Blocked call to navigator\.vibrate because user hasn't tapped on the frame/,
 ]
 
 /**
