@@ -23,7 +23,9 @@
               'rounded-md p-4 mb-4',
             ]"
           >
-            <h3 class="font-medium text-blue-800 mb-2">Base URL</h3>
+            <h3 class="font-medium text-blue-800 mb-2">
+              Base URL
+            </h3>
             <p class="font-mono text-sm bg-white p-2 rounded">
               https://yourdomain.com/api
             </p>
@@ -40,10 +42,11 @@
           </p>
 
           <div class="bg-gray-100 rounded-md p-4 mb-4">
-            <h3 class="font-medium text-gray-800 mb-2">Header Format</h3>
+            <h3 class="font-medium text-gray-800 mb-2">
+              Header Format
+            </h3>
             <pre class="font-mono text-sm bg-white p-3 rounded overflow-x-auto">
-X-API-Key: your-api-key-here</pre
-            >
+X-API-Key: your-api-key-here</pre>
           </div>
 
           <button
@@ -60,33 +63,37 @@ X-API-Key: your-api-key-here</pre
           </h2>
 
           <div class="mb-6">
-            <h3 class="font-medium text-gray-800 mb-2">Get Resources</h3>
+            <h3 class="font-medium text-gray-800 mb-2">
+              Get Resources
+            </h3>
             <div class="bg-gray-100 rounded-md p-4">
               <pre
                 class="font-mono text-sm bg-white p-3 rounded overflow-x-auto"
               >
 curl -X GET \
   -H "X-API-Key: your-api-key-here" \
-  "https://yourdomain.com/api/v1/resources?limit=10&category=tools"</pre
-              >
+  "https://yourdomain.com/api/v1/resources?limit=10&category=tools"</pre>
             </div>
           </div>
 
           <div class="mb-6">
-            <h3 class="font-medium text-gray-800 mb-2">Search Resources</h3>
+            <h3 class="font-medium text-gray-800 mb-2">
+              Search Resources
+            </h3>
             <div class="bg-gray-100 rounded-md p-4">
               <pre
                 class="font-mono text-sm bg-white p-3 rounded overflow-x-auto"
               >
 curl -X GET \
   -H "X-API-Key: your-api-key-here" \
-  "https://yourdomain.com/api/v1/search?q=hosting&pricing=Free"</pre
-              >
+  "https://yourdomain.com/api/v1/search?q=hosting&pricing=Free"</pre>
             </div>
           </div>
 
           <div class="mb-6">
-            <h3 class="font-medium text-gray-800 mb-2">Submit a Resource</h3>
+            <h3 class="font-medium text-gray-800 mb-2">
+              Submit a Resource
+            </h3>
             <div class="bg-gray-100 rounded-md p-4">
               <pre
                 class="font-mono text-sm bg-white p-3 rounded overflow-x-auto"
@@ -100,8 +107,7 @@ curl -X POST \
     "url": "https://example.com",
     "category": "Tools"
   }' \
-  "https://yourdomain.com/api/submissions"</pre
-              >
+  "https://yourdomain.com/api/submissions"</pre>
             </div>
           </div>
         </section>
@@ -133,7 +139,9 @@ curl -X POST \
               'rounded-md p-4 mt-4',
             ]"
           >
-            <h3 class="font-medium text-yellow-800 mb-2">Rate Limit Headers</h3>
+            <h3 class="font-medium text-yellow-800 mb-2">
+              Rate Limit Headers
+            </h3>
             <p class="text-sm text-gray-700">
               Rate limit responses include headers:
               <code class="font-mono">X-RateLimit-Limit</code>,
@@ -162,8 +170,7 @@ curl -X POST \
 {
   "success": true,
   "data": { ... }
-}</pre
-              >
+}</pre>
             </div>
 
             <div :class="[tailwind.cards.bordered, 'p-4']">
@@ -177,8 +184,7 @@ curl -X POST \
   "success": false,
   "message": "Error message",
   "error": "Detailed error"
-}</pre
-              >
+}</pre>
             </div>
           </div>
         </section>
