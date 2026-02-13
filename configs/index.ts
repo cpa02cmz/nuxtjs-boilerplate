@@ -125,6 +125,15 @@ import {
 } from './component-styles.config'
 import { shadowsConfig, type ShadowsConfig } from './shadows.config'
 
+// Z-Index config - Flexy hates hardcoded z-index values!
+import {
+  zIndexConfig,
+  zIndexScale,
+  generateZIndexCSSVariables,
+  type ZIndexConfig,
+  type ZIndexScale,
+} from './z-index.config'
+
 // URL config - Flexy hates hardcoded URLs!
 import {
   urlConfig,
@@ -250,6 +259,15 @@ export { componentColorsConfig, type ComponentColorsConfig }
 export { componentStylesConfig, type ComponentStylesConfig }
 export { shadowsConfig, type ShadowsConfig }
 
+// Re-export Z-Index config - Flexy hates hardcoded z-index values!
+export {
+  zIndexConfig,
+  zIndexScale,
+  generateZIndexCSSVariables,
+  type ZIndexConfig,
+  type ZIndexScale,
+}
+
 // Re-export URL config - Flexy hates hardcoded URLs!
 export {
   urlConfig,
@@ -316,6 +334,8 @@ export const config = {
   componentColors: componentColorsConfig,
   // Shadows config - Flexy hates hardcoded rgba values!
   shadows: shadowsConfig,
+  // Z-Index config - Flexy hates hardcoded z-index values!
+  zIndex: zIndexConfig,
   // Network config - Flexy hates hardcoded network errors!
   network: networkConfig,
 } as const
