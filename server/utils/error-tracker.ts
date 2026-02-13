@@ -178,13 +178,59 @@ export function createErrorTracker() {
 }
 
 /**
+ * Validates error metric parameters to prevent constraint violations
+ * Ensures all required fields are present and valid before database operation
+ */
+function validateErrorMetricParams(
+  severity: string,
+  source: string
+): { isValid: boolean; error?: string } {
+  // Validate severity - must be one of the allowed values
+  const validSeverities = ['info', 'warning', 'error', 'critical']
+  if (!validSeverities.includes(severity)) {
+    return {
+      isValid: false,
+      error: `Invalid severity: ${severity}. Must be one of: ${validSeverities.join(', ')}`,
+    }
+  }
+
+  // Validate source - must be non-empty string
+  if (!source || typeof source !== 'string' || source.trim().length === 0) {
+    return {
+      isValid: false,
+      error: `Invalid source: ${source}. Must be a non-empty string.`,
+    }
+  }
+
+  // Validate source length - prevent database constraint issues
+  if (source.length > 50) {
+    return {
+      isValid: false,
+      error: `Source too long: ${source.length} characters (max 50).`,
+    }
+  }
+
+  return { isValid: true }
+}
+
+/**
  * Update hourly error metrics
+ * Includes application-level validation to prevent unique constraint violations
  */
 async function updateErrorMetrics(
   severity: string,
   source: string
 ): Promise<void> {
   try {
+    // Application-level validation before database operation
+    const validation = validateErrorMetricParams(severity, source)
+    if (!validation.isValid) {
+      logger.warn(
+        `[ErrorTracker] Metric validation failed: ${validation.error}`
+      )
+      return
+    }
+
     const now = new Date()
     const date = new Date(now.getFullYear(), now.getMonth(), now.getDate())
     const hour = now.getHours()
@@ -210,6 +256,17 @@ async function updateErrorMetrics(
       },
     })
   } catch (err) {
-    logger.error('[ErrorTracker] Failed to update metrics:', err)
+    // Handle specific Prisma errors for better debugging
+    if (err instanceof Error) {
+      if (err.message.includes('Unique constraint failed')) {
+        logger.warn(
+          `[ErrorTracker] Unique constraint violation on ErrorMetric (race condition). This is typically harmless.`
+        )
+      } else {
+        logger.error('[ErrorTracker] Failed to update metrics:', err.message)
+      }
+    } else {
+      logger.error('[ErrorTracker] Failed to update metrics:', err)
+    }
   }
 }
