@@ -104,42 +104,44 @@
 import { ref, onUnmounted, computed } from 'vue'
 import { EASING } from '~/configs/easing.config'
 import { animationConfig } from '~/configs/animation.config'
+import { skeletonConfig } from '~/configs/skeleton.config'
 
 // Skeleton loading component for ResourceCard
 // Enhanced with wave shimmer animation for better perceived performance
 // BroCula fixed SSR issues! 🦇 All values are now SSR-safe.
 // Palette enhanced with interactive hover states! 🎨
 // Flexy: All cubic-bezier values now use modular EASING config! 🎯
+// Flexy: All skeleton colors now use modular skeleton.config! 🎯
 
 // SSR-safe animation configuration with defaults
 // During SSR, we use these defaults; on client, we could enhance
 const SKELETON_CONFIG = {
-  staggerDelayMs: 0,
-  staggerIncrementMs: 75,
-  waveDurationSec: 2,
-  waveStaggerSec: 0.08,
-  shimmerDurationSec: '1.5s',
-  pulseDurationSec: '2s',
-  cardEnterDurationSec: '0.3s',
-  reducedMotionEnterDurationSec: '0.2s',
-  hoverTransitionSec: '0.3s',
+  staggerDelayMs: skeletonConfig.timing.staggerDelayMs,
+  staggerIncrementMs: skeletonConfig.timing.staggerIncrementMs,
+  waveDurationSec: skeletonConfig.timing.waveDurationSec,
+  waveStaggerSec: skeletonConfig.timing.waveStaggerSec,
+  shimmerDurationSec: `${skeletonConfig.timing.shimmerDurationSec}s`,
+  pulseDurationSec: `${skeletonConfig.timing.pulseDurationSec}s`,
+  cardEnterDurationSec: `${skeletonConfig.timing.cardEnterDurationSec}s`,
+  reducedMotionEnterDurationSec: `${skeletonConfig.timing.reducedMotionEnterDurationSec}s`,
+  hoverTransitionSec: `${skeletonConfig.timing.hoverTransitionSec}s`,
 }
 
-// SSR-safe color configuration with defaults
+// 🎯 Flexy: Skeleton colors now use modular skeleton.config - no more hardcoded hex codes!
 const SKELETON_COLORS = {
   light: {
-    start: '#e5e7eb',
-    middle: '#f3f4f6',
-    end: '#e5e7eb',
+    start: skeletonConfig.light.main.start,
+    middle: skeletonConfig.light.main.middle,
+    end: skeletonConfig.light.main.end,
   },
   icon: {
-    start: '#d1d5db',
-    middle: '#e5e7eb',
-    end: '#d1d5db',
+    start: skeletonConfig.light.icon.start,
+    middle: skeletonConfig.light.icon.middle,
+    end: skeletonConfig.light.icon.end,
   },
   reducedMotion: {
-    light: '#e5e7eb',
-    icon: '#d1d5db',
+    light: skeletonConfig.light.reducedMotion.main,
+    icon: skeletonConfig.light.reducedMotion.icon,
   },
 }
 
@@ -231,8 +233,10 @@ onUnmounted(() => {
 .skeleton-interactive:hover {
   transform: translateY(-2px) scale(1.005);
   box-shadow:
-    0 10px 25px -5px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    0 10px 25px -5px
+      rgba(0, 0, 0, v-bind('skeletonConfig.effects.shadowOpacity')),
+    0 4px 6px -2px
+      rgba(0, 0, 0, v-bind('skeletonConfig.effects.shadowOpacitySm'));
 }
 
 /* Skeleton shimmer effect with gradient - enhanced with organic morphing */
@@ -253,8 +257,10 @@ onUnmounted(() => {
 }
 
 /* 🎨 Palette: Hover glow effect on shimmer elements */
+/* 🎯 Flexy: Using modular config values for brightness and saturate */
 .skeleton-interactive:hover .skeleton-shimmer {
-  filter: brightness(1.05) saturate(1.1);
+  filter: brightness(v-bind('skeletonConfig.effects.hoverBrightness'))
+    saturate(v-bind('skeletonConfig.effects.hoverSaturate'));
 }
 
 /* Organic breathing animation for more natural feel */
@@ -286,18 +292,26 @@ onUnmounted(() => {
 }
 
 /* 🎨 Palette: Icon hover interaction */
+/* 🎯 Flexy: Using modular config value for icon hover scale */
 .skeleton-interactive:hover .skeleton-icon {
-  transform: scale(1.08);
+  transform: scale(v-bind('skeletonConfig.effects.iconHoverScale'));
 }
 
 /* Icon-specific subtle pulse */
+/* 🎯 Flexy: Using modular config values for icon pulse effect */
 @keyframes icon-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(209, 213, 219, 0.4);
+    box-shadow: 0 0 0 0
+      rgba(
+        v-bind('skeletonConfig.iconPulse.boxShadowColor'),
+        v-bind('skeletonConfig.iconPulse.boxShadowStartOpacity')
+      );
   }
   50% {
-    box-shadow: 0 0 0 4px rgba(209, 213, 219, 0);
+    box-shadow: 0 0 0
+      v-bind('skeletonConfig.iconPulse.boxShadowEndSpread + "px"')
+      rgba(v-bind('skeletonConfig.iconPulse.boxShadowColor'), 0);
   }
 }
 
@@ -441,15 +455,16 @@ onUnmounted(() => {
 }
 
 /* 🎨 Palette: High contrast mode support */
+/* 🎯 Flexy: Using modular config values for high contrast colors */
 @media (prefers-contrast: high) {
   .skeleton-shimmer,
   .skeleton-wave {
-    background: #767676;
+    background: v-bind('skeletonConfig.highContrast.main');
     animation: highContrastPulse 2s ease-in-out infinite;
   }
 
   .skeleton-icon {
-    background: #595959;
+    background: v-bind('skeletonConfig.highContrast.icon');
     animation: highContrastPulse 2s ease-in-out infinite;
   }
 

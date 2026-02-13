@@ -82,12 +82,7 @@
     </Transition>
 
     <!-- Screen reader announcement for progress changes -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ progressAnnouncement }}
     </div>
 
@@ -116,16 +111,8 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                class="checkmark-circle"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-              <path
-                class="checkmark-path"
-                d="M7 12l3 3 7-7"
-              />
+              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
           <span class="completion-text">{{
@@ -133,10 +120,7 @@
           }}</span>
         </div>
         <!-- Confetti burst effect -->
-        <div
-          class="confetti-container"
-          aria-hidden="true"
-        >
+        <div class="confetti-container" aria-hidden="true">
           <span
             v-for="n in 8"
             :key="n"
@@ -157,6 +141,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { celebrationColorsConfig } from '~/configs/celebration-colors.config'
 
 interface Props {
   /**
@@ -709,37 +694,38 @@ onUnmounted(() => {
   --angle: calc(var(--confetti-index) * 45deg);
 }
 
+/* 🎯 Flexy: Using modular celebration colors config - no more hardcoded hex codes! */
 .confetti-piece:nth-child(1) {
   --confetti-index: 1;
-  background: #ff6b6b;
+  background: v-bind('celebrationColorsConfig.readingProgress.colors[0]');
 }
 .confetti-piece:nth-child(2) {
   --confetti-index: 2;
-  background: #4ecdc4;
+  background: v-bind('celebrationColorsConfig.readingProgress.colors[1]');
 }
 .confetti-piece:nth-child(3) {
   --confetti-index: 3;
-  background: #45b7d1;
+  background: v-bind('celebrationColorsConfig.readingProgress.colors[2]');
 }
 .confetti-piece:nth-child(4) {
   --confetti-index: 4;
-  background: #96ceb4;
+  background: v-bind('celebrationColorsConfig.readingProgress.colors[3]');
 }
 .confetti-piece:nth-child(5) {
   --confetti-index: 5;
-  background: #ffeaa7;
+  background: v-bind('celebrationColorsConfig.readingProgress.colors[4]');
 }
 .confetti-piece:nth-child(6) {
   --confetti-index: 6;
-  background: #dda0dd;
+  background: v-bind('celebrationColorsConfig.readingProgress.colors[5]');
 }
 .confetti-piece:nth-child(7) {
   --confetti-index: 7;
-  background: #98d8c8;
+  background: v-bind('celebrationColorsConfig.readingProgress.colors[6]');
 }
 .confetti-piece:nth-child(8) {
   --confetti-index: 8;
-  background: #f7dc6f;
+  background: v-bind('celebrationColorsConfig.readingProgress.colors[7]');
 }
 
 @keyframes confetti-burst {

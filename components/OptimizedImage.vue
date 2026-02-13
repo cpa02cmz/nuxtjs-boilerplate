@@ -33,6 +33,7 @@
 <script setup lang="ts">
 import { ref, useTemplateRef } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { skeletonConfig } from '~/configs/skeleton.config'
 
 interface Props {
   src: string
@@ -80,7 +81,12 @@ const handleLoad = () => {
 .skeleton-placeholder {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(
+    90deg,
+    v-bind('skeletonConfig.light.main.start') 25%,
+    v-bind('skeletonConfig.light.main.middle') 50%,
+    v-bind('skeletonConfig.light.main.end') 75%
+  );
   background-size: 200% 100%;
   animation: shimmer v-bind('animationConfig.skeleton.imageShimmerDurationSec')
     infinite;
@@ -88,7 +94,12 @@ const handleLoad = () => {
 
 /* Dark mode support for skeleton placeholder */
 :global(.dark) .skeleton-placeholder {
-  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background: linear-gradient(
+    90deg,
+    v-bind('skeletonConfig.dark.main.start') 25%,
+    v-bind('skeletonConfig.dark.main.middle') 50%,
+    v-bind('skeletonConfig.dark.main.end') 75%
+  );
 }
 
 @keyframes shimmer {
@@ -110,14 +121,15 @@ const handleLoad = () => {
   opacity: 1;
 }
 
+/* 🎯 Flexy: Using modular skeleton config for reduced motion backgrounds */
 @media (prefers-reduced-motion: reduce) {
   .skeleton-placeholder {
     animation: none;
-    background: #f0f0f0;
+    background: v-bind('skeletonConfig.light.reducedMotion.main');
   }
 
   :global(.dark) .skeleton-placeholder {
-    background: #374151;
+    background: v-bind('skeletonConfig.dark.reducedMotion.main');
   }
 
   .optimized-image {
