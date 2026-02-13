@@ -151,29 +151,23 @@
       </div>
 
       <!-- Auto-retry hint -->
-      <p
-        v-if="!isChecking"
-        class="mt-4 text-xs text-gray-400"
-      >
+      <p v-if="!isChecking" class="mt-4 text-xs text-gray-400">
         Tip: Press
         <kbd
           class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs"
-        >Space</kbd>
+          >Space</kbd
+        >
         or
         <kbd
           class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs"
-        >Enter</kbd>
+          >Enter</kbd
+        >
         to retry
       </p>
     </div>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -274,7 +268,11 @@ const goHome = () => {
   if (!process.client) return
 
   hapticLight()
-  window.location.href = window.location.origin
+
+  // Additional guard for SSR safety
+  if (typeof window !== 'undefined') {
+    window.location.href = window.location.origin
+  }
 }
 
 // Keyboard shortcut: Space or Enter to retry
