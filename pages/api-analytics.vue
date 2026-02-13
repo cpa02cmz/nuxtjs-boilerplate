@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="bg-white rounded-lg shadow-md p-6">
+  <div :class="[tailwind.layout.screenHeight, 'bg-gray-50 py-8']">
+    <div :class="[tailwind.containers.wide, 'mx-auto px-4']">
+      <div :class="[tailwind.cards.padded]">
         <div class="flex justify-between items-center mb-6">
           <h1 class="text-2xl font-bold text-gray-800">
             API Analytics
@@ -163,6 +163,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { tailwindClassesConfig as tailwind } from '~/configs/tailwind-classes.config'
 import { analyticsDemoData } from '~/configs/analytics-demo.config'
 
 useHead({

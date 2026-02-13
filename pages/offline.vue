@@ -1,8 +1,18 @@
 <template>
   <div
-    class="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4"
+    :class="[
+      tailwind.layout.screenHeight,
+      'bg-gray-50 flex flex-col items-center justify-center p-4',
+    ]"
   >
-    <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8 text-center">
+    <div
+      :class="[
+        tailwind.containers.small,
+        'w-full bg-white rounded-lg',
+        tailwind.shadows.md,
+        'p-8 text-center',
+      ]"
+    >
       <div class="mb-6">
         <svg
           class="mx-auto h-16 w-16 text-gray-400"
@@ -27,13 +37,21 @@
       </p>
       <div class="space-y-3">
         <button
-          class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          :class="[
+            tailwind.buttons.primaryBlue,
+            tailwind.focus.ringIndigo,
+            'w-full',
+          ]"
           @click="checkConnection"
         >
           Check Connection
         </button>
         <button
-          class="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          :class="[
+            tailwind.buttons.secondary,
+            tailwind.focus.ringSecondaryWithOffset,
+            'w-full',
+          ]"
           @click="goHome"
         >
           Go Home
@@ -44,6 +62,8 @@
 </template>
 
 <script setup>
+import { tailwindClassesConfig as tailwind } from '~/configs/tailwind-classes.config'
+
 definePageMeta({
   layout: 'default',
 })

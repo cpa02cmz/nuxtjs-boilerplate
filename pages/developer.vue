@@ -1,22 +1,28 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-4xl mx-auto px-4">
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">
+  <div :class="[tailwind.layout.screenHeight, 'bg-gray-50 py-8']">
+    <div :class="[tailwind.containers.medium, 'mx-auto px-4']">
+      <div :class="[tailwind.cards.padded]">
+        <h1 :class="[tailwind.typography.pageTitle, 'mb-6']">
           Developer Portal
         </h1>
 
-        <section class="mb-8">
-          <h2 class="text-xl font-semibold text-gray-700 mb-4">
+        <section :class="[tailwind.spacing.section]">
+          <h2 :class="[tailwind.typography.sectionTitle, 'mb-4']">
             Getting Started
           </h2>
-          <p class="text-gray-600 mb-4">
+          <p :class="[tailwind.typography.body, 'mb-4']">
             Welcome to the Free Stuff on the Internet API! Our API allows you to
             access and interact with our collection of free resources
             programmatically.
           </p>
 
-          <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
+          <div
+            :class="[
+              tailwind.status.info.bg,
+              tailwind.status.info.border,
+              'rounded-md p-4 mb-4',
+            ]"
+          >
             <h3 class="font-medium text-blue-800 mb-2">
               Base URL
             </h3>
@@ -26,11 +32,11 @@
           </div>
         </section>
 
-        <section class="mb-8">
-          <h2 class="text-xl font-semibold text-gray-700 mb-4">
+        <section :class="[tailwind.spacing.section]">
+          <h2 :class="[tailwind.typography.sectionTitle, 'mb-4']">
             Authentication
           </h2>
-          <p class="text-gray-600 mb-4">
+          <p :class="[tailwind.typography.body, 'mb-4']">
             To use the API, you need to include your API key in the request
             headers.
           </p>
@@ -44,15 +50,15 @@ X-API-Key: your-api-key-here</pre>
           </div>
 
           <button
-            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+            :class="[tailwind.buttons.primaryBlue, 'focus:outline-none']"
             @click="goToApiKeys"
           >
             Manage API Keys
           </button>
         </section>
 
-        <section class="mb-8">
-          <h2 class="text-xl font-semibold text-gray-700 mb-4">
+        <section :class="[tailwind.spacing.section]">
+          <h2 :class="[tailwind.typography.sectionTitle, 'mb-4']">
             API Examples
           </h2>
 
@@ -106,11 +112,11 @@ curl -X POST \
           </div>
         </section>
 
-        <section class="mb-8">
-          <h2 class="text-xl font-semibold text-gray-700 mb-4">
+        <section :class="[tailwind.spacing.section]">
+          <h2 :class="[tailwind.typography.sectionTitle, 'mb-4']">
             Rate Limiting
           </h2>
-          <p class="text-gray-600 mb-4">
+          <p :class="[tailwind.typography.body, 'mb-4']">
             Our API implements rate limiting to ensure fair usage. Each API key
             has its own rate limits:
           </p>
@@ -127,7 +133,11 @@ curl -X POST \
           </ul>
 
           <div
-            class="mt-4 bg-yellow-50 border border-yellow-200 rounded-md p-4"
+            :class="[
+              tailwind.status.warning.bg,
+              tailwind.status.warning.border,
+              'rounded-md p-4 mt-4',
+            ]"
           >
             <h3 class="font-medium text-yellow-800 mb-2">
               Rate Limit Headers
@@ -141,17 +151,17 @@ curl -X POST \
           </div>
         </section>
 
-        <section class="mb-8">
-          <h2 class="text-xl font-semibold text-gray-700 mb-4">
+        <section :class="[tailwind.spacing.section]">
+          <h2 :class="[tailwind.typography.sectionTitle, 'mb-4']">
             Error Handling
           </h2>
-          <p class="text-gray-600 mb-4">
+          <p :class="[tailwind.typography.body, 'mb-4']">
             The API returns standard HTTP status codes and error responses:
           </p>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="border border-gray-200 rounded-md p-4">
-              <h3 class="font-medium text-gray-800 mb-2">
+            <div :class="[tailwind.cards.bordered, 'p-4']">
+              <h3 :class="[tailwind.typography.cardTitle, 'mb-2']">
                 Success Response
               </h3>
               <pre
@@ -163,8 +173,8 @@ curl -X POST \
 }</pre>
             </div>
 
-            <div class="border border-gray-200 rounded-md p-4">
-              <h3 class="font-medium text-gray-800 mb-2">
+            <div :class="[tailwind.cards.bordered, 'p-4']">
+              <h3 :class="[tailwind.typography.cardTitle, 'mb-2']">
                 Error Response
               </h3>
               <pre
@@ -180,20 +190,28 @@ curl -X POST \
         </section>
 
         <section>
-          <h2 class="text-xl font-semibold text-gray-700 mb-4">
+          <h2 :class="[tailwind.typography.sectionTitle, 'mb-4']">
             API Documentation
           </h2>
           <div class="flex flex-col sm:flex-row gap-4">
             <a
               href="/api-docs"
               target="_blank"
-              class="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-center"
+              :class="[
+                tailwind.buttons.primaryBlue,
+                'text-center',
+                tailwind.focus.ringWithOffset,
+              ]"
             >
               Interactive API Documentation
             </a>
             <a
               href="/api-keys"
-              class="px-6 py-3 bg-gray-800 text-white rounded-md hover:bg-gray-900 text-center"
+              :class="[
+                tailwind.buttons.primary,
+                'text-center',
+                tailwind.focus.ringWithOffset,
+              ]"
             >
               API Key Management
             </a>
@@ -205,6 +223,8 @@ curl -X POST \
 </template>
 
 <script setup lang="ts">
+import { tailwindClassesConfig as tailwind } from '~/configs/tailwind-classes.config'
+
 const goToApiKeys = () => {
   navigateTo('/api-keys')
 }
