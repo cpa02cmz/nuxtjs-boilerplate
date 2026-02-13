@@ -52,7 +52,10 @@
           transform: `translateY(${virtualRow.start}px)`,
         }"
       >
-        <slot :item="items[virtualRow.index]" :index="virtualRow.index" />
+        <slot
+          :item="items[virtualRow.index]"
+          :index="virtualRow.index"
+        />
       </div>
     </div>
   </div>

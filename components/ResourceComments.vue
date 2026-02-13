@@ -4,9 +4,7 @@
       <h2 class="text-2xl font-bold text-gray-900">
         {{ contentConfig.comments.title }}
       </h2>
-      <span class="text-sm text-gray-500"
-        >{{ commentCount }} {{ contentConfig.comments.countLabel }}</span
-      >
+      <span class="text-sm text-gray-500">{{ commentCount }} {{ contentConfig.comments.countLabel }}</span>
     </div>
 
     <!-- Comment Form with Micro-UX Enhancements -->
@@ -53,7 +51,10 @@
             class="relative w-8 h-8"
             :title="`${remainingChars} characters remaining`"
           >
-            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 32 32">
+            <svg
+              class="w-full h-full transform -rotate-90"
+              viewBox="0 0 32 32"
+            >
               <!-- Background circle -->
               <circle
                 cx="16"
@@ -116,7 +117,7 @@
               </svg>
               {{
                 contentConfig.comments.validation.overLimit ||
-                `${Math.abs(remainingChars)} characters over limit`
+                  `${Math.abs(remainingChars)} characters over limit`
               }}
             </span>
           </template>
@@ -137,7 +138,7 @@
               </svg>
               {{
                 contentConfig.comments.validation.nearLimit ||
-                'Approaching limit'
+                  'Approaching limit'
               }}
             </span>
           </template>
@@ -146,13 +147,13 @@
           >
             {{
               contentConfig.comments.validation.tooShort ||
-              `Minimum ${MIN_LENGTH} characters`
+                `Minimum ${MIN_LENGTH} characters`
             }}
           </template>
           <template v-else>
             {{
               contentConfig.comments.validation.hint ||
-              `Press Enter to submit, Shift+Enter for new line`
+                `Press Enter to submit, Shift+Enter for new line`
             }}
           </template>
         </span>
@@ -216,7 +217,11 @@
     </div>
 
     <!-- Comments List with Palette's Spring Animation -->
-    <TransitionGroup name="comment-list" tag="div" class="space-y-4">
+    <TransitionGroup
+      name="comment-list"
+      tag="div"
+      class="space-y-4"
+    >
       <div
         v-for="comment in formattedComments"
         :key="comment.id"
@@ -247,9 +252,21 @@
                 <span class="font-medium text-gray-900">{{
                   comment.displayName
                 }}</span>
-                <span class="ml-2 text-sm text-gray-500">{{
-                  comment.displayTime
-                }}</span>
+                <!-- Palette's micro-UX: Live timestamp with tooltip and indicator -->
+                <time
+                  class="ml-2 text-sm text-gray-500 flex items-center gap-1.5"
+                  :datetime="comment.timestamp"
+                  :title="new Date(comment.timestamp).toLocaleString()"
+                >
+                  {{ comment.displayTime }}
+                  <!-- Live indicator for recent comments -->
+                  <span
+                    v-if="comment.isRecent"
+                    class="live-indicator"
+                    aria-hidden="true"
+                    :class="{ 'animate-pulse': !prefersReducedMotion }"
+                  />
+                </time>
               </div>
               <!-- Like Button with Particle Burst - Palette's Micro-UX Delight! -->
               <button
@@ -306,7 +323,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import type { Comment } from '~/types/community'
-import { TIME } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { validationConfig } from '~/configs/validation.config'
@@ -314,6 +330,7 @@ import { limitsConfig } from '~/configs/limits.config'
 import { uiConfig } from '~/configs/ui.config'
 import { generateId } from '~/utils/generateId'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
+import { formatTimeAgoOnce } from '~/composables/useTimeAgo'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
@@ -551,33 +568,26 @@ const getInitials = (name: string) => {
 }
 
 // Format comments with initials
+// Palette's micro-UX enhancement: Using live-updating time display!
 const formattedComments = computed(() => {
-  return props.comments.map(comment => ({
-    ...comment,
-    displayName: comment.userName || comment.userId,
-    displayContent: comment.content,
-    displayTime: formatTimeAgo(comment.timestamp),
-    displayLikes: comment.votes + (likedComments.value.has(comment.id) ? 1 : 0),
-    initials: getInitials(comment.userName || comment.userId),
-  }))
+  return props.comments.map(comment => {
+    const timeAgoResult = formatTimeAgoOnce(comment.timestamp)
+    const isRecent = timeAgoResult === 'just now'
+
+    return {
+      ...comment,
+      displayName: comment.userName || comment.userId,
+      displayContent: comment.content,
+      displayTime: timeAgoResult,
+      displayLikes:
+        comment.votes + (likedComments.value.has(comment.id) ? 1 : 0),
+      initials: getInitials(comment.userName || comment.userId),
+      // Palette's micro-UX: Track if comment is recent for live indicator
+      isRecent,
+      timestamp: comment.timestamp,
+    }
+  })
 })
-
-const formatTimeAgo = (timestamp: string): string => {
-  const date = new Date(timestamp)
-  const now = new Date()
-  const seconds = Math.floor(
-    (now.getTime() - date.getTime()) / TIME.MS_PER_SECOND
-  )
-
-  if (seconds < TIME.SECONDS_PER_MINUTE) return 'just now'
-  if (seconds < TIME.SECONDS_PER_HOUR)
-    return `${Math.floor(seconds / TIME.SECONDS_PER_MINUTE)} minutes ago`
-  if (seconds < TIME.SECONDS_PER_DAY)
-    return `${Math.floor(seconds / TIME.SECONDS_PER_HOUR)} hours ago`
-  if (seconds < TIME.SECONDS_PER_WEEK)
-    return `${Math.floor(seconds / TIME.SECONDS_PER_DAY)} days ago`
-  return date.toLocaleDateString()
-}
 
 // Check for reduced motion preference
 onMounted(() => {
@@ -826,5 +836,40 @@ textarea {
     height 0.2s ease-out,
     box-shadow 0.2s ease-out,
     border-color 0.2s ease-out;
+}
+
+/* Palette's Micro-UX: Live indicator for recent comments */
+.live-indicator {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+.live-indicator.animate-pulse {
+  animation: live-pulse 2s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  }
+}
+
+/* Reduced motion support for live indicator */
+@media (prefers-reduced-motion: reduce) {
+  .live-indicator.animate-pulse {
+    animation: none;
+  }
 }
 </style>
