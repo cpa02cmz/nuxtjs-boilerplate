@@ -287,6 +287,7 @@ import type { Comment } from '~/types/community'
 import { TIME } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { validationConfig } from '~/configs/validation.config'
 import { generateId } from '~/utils/generateId'
 
 interface Props {
@@ -301,11 +302,11 @@ const emit = defineEmits<{
   like: [commentId: string]
 }>()
 
-// Constants - Flexy hates hardcoded values!
-const MIN_LENGTH = 3
-const MAX_LENGTH = 500
-const MIN_ROWS = 1
-const MAX_ROWS = 6
+// Constants - Now using config values! Flexy approves!
+const MIN_LENGTH = validationConfig.comments.minLength
+const MAX_LENGTH = validationConfig.comments.maxLength
+const MIN_ROWS = validationConfig.comments.minRows
+const MAX_ROWS = validationConfig.comments.maxRows
 
 // Reactive state
 const newComment = ref('')

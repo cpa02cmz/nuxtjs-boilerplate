@@ -383,10 +383,10 @@ const installPWA = async (): Promise<void> => {
     triggerHaptic([50, 100, 50]) // Celebration pattern
     announce(contentConfig.pwa.installSuccess)
 
-    // Auto-dismiss success toast after 4 seconds
+    // Auto-dismiss success toast after configured delay
     successDismissTimeout = setTimeout(() => {
       showSuccess.value = false
-    }, 4000)
+    }, animationConfig.pwaInstallPrompt.successDismissDelayMs)
   } catch {
     announce('Installation cancelled or failed')
   } finally {

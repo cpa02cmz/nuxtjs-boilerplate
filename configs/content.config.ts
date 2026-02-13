@@ -837,6 +837,7 @@ export const contentConfig = {
         process.env.CONTENT_API_KEYS_BTN_CREATE_SUBMIT || 'Create API Key',
       generate: process.env.CONTENT_API_KEYS_BTN_GENERATE || 'Generate API Key',
       revoke: process.env.CONTENT_API_KEYS_BTN_REVOKE || 'Revoke',
+      cancel: process.env.CONTENT_API_KEYS_BTN_CANCEL || 'Cancel',
     },
     permissions: {
       read: process.env.CONTENT_API_KEYS_PERM_READ || 'Read',
@@ -855,6 +856,9 @@ export const contentConfig = {
       expires: process.env.CONTENT_API_KEYS_LABEL_EXPIRES || 'Expires:',
       yourKeys: process.env.CONTENT_API_KEYS_LABEL_YOUR_KEYS || 'Your API Keys',
       apiKeyPrefix: process.env.CONTENT_API_KEYS_LABEL_PREFIX || 'API Key:',
+      keyName: process.env.CONTENT_API_KEYS_LABEL_KEY_NAME || 'Key Name',
+      permissions:
+        process.env.CONTENT_API_KEYS_LABEL_PERMISSIONS || 'Permissions',
     },
     empty: {
       message:
@@ -870,6 +874,9 @@ export const contentConfig = {
     placeholders: {
       keyName:
         process.env.CONTENT_API_KEYS_PLACEHOLDER_NAME || 'My Application Key',
+      keyNameAlt:
+        process.env.CONTENT_API_KEYS_PLACEHOLDER_NAME_ALT ||
+        'e.g., My Application Key',
     },
     toggle: {
       hide: process.env.CONTENT_API_KEYS_TOGGLE_HIDE || 'Hide Key',
@@ -892,6 +899,37 @@ export const contentConfig = {
       copied:
         process.env.CONTENT_API_KEYS_TOAST_COPIED ||
         '{{ name }} API key copied to clipboard',
+    },
+  },
+
+  // Comments - Flexy hates hardcoded comment strings!
+  comments: {
+    title: process.env.CONTENT_COMMENTS_TITLE || 'Comments',
+    countLabel: process.env.CONTENT_COMMENTS_COUNT_LABEL || 'comments',
+    placeholders: {
+      newComment:
+        process.env.CONTENT_COMMENTS_PLACEHOLDER ||
+        'Write a comment... (Markdown supported)',
+    },
+    aria: {
+      addComment: process.env.CONTENT_COMMENTS_ARIA_ADD || 'Add a comment',
+      submitting:
+        process.env.CONTENT_COMMENTS_ARIA_SUBMITTING || 'Submitting comment...',
+      postComment: process.env.CONTENT_COMMENTS_ARIA_POST || 'Post comment',
+      likeComment: process.env.CONTENT_COMMENTS_ARIA_LIKE || 'Like comment',
+    },
+    validation: {
+      minLength: parseInt(process.env.CONTENT_COMMENTS_MIN_LENGTH || '3'),
+      maxLength: parseInt(process.env.CONTENT_COMMENTS_MAX_LENGTH || '1000'),
+      overLimit: process.env.CONTENT_COMMENTS_OVER_LIMIT || 'Over limit',
+      nearLimit: process.env.CONTENT_COMMENTS_NEAR_LIMIT || 'Near limit',
+      tooShort: process.env.CONTENT_COMMENTS_TOO_SHORT || 'Too short',
+      hint: process.env.CONTENT_COMMENTS_HINT || 'Hint',
+    },
+    buttons: {
+      post: process.env.CONTENT_COMMENTS_BTN_POST || 'Post Comment',
+      cancel: process.env.CONTENT_COMMENTS_BTN_CANCEL || 'Cancel',
+      reply: process.env.CONTENT_COMMENTS_BTN_REPLY || 'Reply',
     },
   },
 
@@ -1430,6 +1468,12 @@ export const contentConfig = {
         process.env.CONTENT_SHARE_ARIA_COPY_SUCCESS || 'Link copied!',
       shareTitle:
         process.env.CONTENT_SHARE_ARIA_SHARE_TITLE || 'Share {{title}}',
+      close: process.env.CONTENT_SHARE_ARIA_CLOSE || 'Close share menu',
+      share: process.env.CONTENT_SHARE_ARIA_SHARE || 'Share this resource',
+      menuOpened:
+        process.env.CONTENT_SHARE_ARIA_MENU_OPENED || 'Share menu opened',
+      menuClosed:
+        process.env.CONTENT_SHARE_ARIA_MENU_CLOSED || 'Share menu closed',
     },
   },
 

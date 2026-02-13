@@ -42,7 +42,7 @@
     >
       <div
         v-for="virtualRow in virtualizer.getVirtualItems()"
-        :key="virtualRow.key"
+        :key="String(virtualRow.key)"
         :data-index="virtualRow.index"
         :style="{
           position: 'absolute',

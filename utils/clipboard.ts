@@ -46,6 +46,11 @@ async function copyWithClipboardApi(text: string): Promise<ClipboardResult> {
  * @returns ClipboardResult
  */
 function copyWithExecCommand(text: string): ClipboardResult {
+  // Guard against SSR - document is not available on server
+  if (typeof document === 'undefined') {
+    return { success: false, error: 'Clipboard not available during SSR' }
+  }
+
   try {
     const textArea = document.createElement('textarea')
     textArea.value = text

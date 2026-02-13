@@ -136,6 +136,14 @@ export const validationConfig = {
     },
   },
 
+  // Comments Validation - Flexy hates hardcoded values!
+  comments: {
+    minLength: parseInt(process.env.COMMENT_MIN_LENGTH || '3'),
+    maxLength: parseInt(process.env.COMMENT_MAX_LENGTH || '500'),
+    minRows: parseInt(process.env.COMMENT_MIN_ROWS || '1'),
+    maxRows: parseInt(process.env.COMMENT_MAX_ROWS || '6'),
+  },
+
   // Quality Check Settings
   quality: {
     descriptionMinLength: parseInt(
