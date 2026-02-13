@@ -26,10 +26,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <!-- Animated offline icon with connection pulse - Palette's micro-UX enhancement! -->
-                <div
-                  class="relative flex-shrink-0 w-8 h-8"
-                  aria-hidden="true"
-                >
+                <div class="relative flex-shrink-0 w-8 h-8" aria-hidden="true">
                   <!-- Connection pulse rings (shown when reconnecting) -->
                   <template v-if="isReconnecting && !prefersReducedMotion">
                     <div
@@ -238,12 +235,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </Teleport>
@@ -255,6 +247,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 // Reactive state
 const isOffline = ref(false)
@@ -487,16 +480,22 @@ onUnmounted(() => {
   animation: pulse-subtle 2s ease-in-out infinite;
 }
 
-/* Icon pulse animation */
+/* Icon pulse animation - Flexy hates hardcoded values! */
 @keyframes icon-pulse {
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.4);
+    box-shadow: 0 0 0 0
+      v-bind(
+        '`rgba(217, 119, 6, ${componentColorsConfig.focusRing.opacityStart})`'
+      );
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 0 0 8px rgba(217, 119, 6, 0);
+    box-shadow: 0 0 0 8px
+      v-bind(
+        '`rgba(217, 119, 6, ${componentColorsConfig.focusRing.opacityEnd})`'
+      );
   }
 }
 
@@ -598,7 +597,7 @@ onUnmounted(() => {
   }
 }
 
-/* Retry Button Styles - Palette's micro-UX enhancement! */
+/* Retry Button Styles - Palette's micro-UX enhancement! - Flexy hates hardcoded values! */
 .retry-button {
   display: inline-flex;
   align-items: center;
@@ -606,9 +605,9 @@ onUnmounted(() => {
   padding: 0.375rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 500;
-  color: rgb(146, 64, 14); /* amber-800 */
-  background-color: rgb(255, 251, 235); /* amber-50 */
-  border: 1px solid rgb(251, 191, 36); /* amber-400 */
+  color: v-bind('componentColorsConfig.common.amber[700]');
+  background-color: v-bind('componentColorsConfig.common.amber[50]');
+  border: 1px solid v-bind('componentColorsConfig.common.amber[400]');
   border-radius: 9999px;
   cursor: pointer;
   transition: all 0.2s ease-out;
@@ -618,15 +617,16 @@ onUnmounted(() => {
 }
 
 .retry-button:hover:not(:disabled) {
-  background-color: rgb(254, 243, 199); /* amber-100 */
-  border-color: rgb(245, 158, 11); /* amber-500 */
+  background-color: v-bind('componentColorsConfig.common.amber[100]');
+  border-color: v-bind('componentColorsConfig.common.amber[500]');
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px
+    rgba(v-bind('componentColorsConfig.shadows.light.default'));
 }
 
 .retry-button:focus-visible {
   ring: 2px;
-  ring-color: rgb(245, 158, 11); /* amber-500 */
+  ring-color: v-bind('componentColorsConfig.common.amber[500]');
   ring-offset: 1px;
 }
 
@@ -643,11 +643,11 @@ onUnmounted(() => {
   opacity: 0.8;
 }
 
-/* Success state */
+/* Success state - Flexy hates hardcoded values! */
 .retry-button.is-success {
-  background-color: rgb(220, 252, 231); /* green-100 */
-  border-color: rgb(74, 222, 128); /* green-400 */
-  color: rgb(22, 101, 52); /* green-800 */
+  background-color: v-bind('componentColorsConfig.common.green[100]');
+  border-color: v-bind('componentColorsConfig.common.green[400]');
+  color: v-bind('componentColorsConfig.common.green[800]');
 }
 
 /* Retry button icons */

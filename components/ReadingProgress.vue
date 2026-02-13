@@ -38,12 +38,7 @@
     </Transition>
 
     <!-- Screen reader announcement for progress changes -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ progressAnnouncement }}
     </div>
   </div>
@@ -55,6 +50,7 @@ import { componentStylesConfig } from '~/configs/component-styles.config'
 import { themeConfig } from '~/configs/theme.config'
 import { animationConfig } from '~/configs/animation.config'
 import { uiConfig } from '~/configs/ui.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   /**
@@ -304,7 +300,7 @@ onUnmounted(() => {
   height: 0;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-bottom: 5px solid #374151;
+  border-bottom: 5px solid v-bind('componentColorsConfig.common.gray[700]');
   margin-top: -1px;
 }
 

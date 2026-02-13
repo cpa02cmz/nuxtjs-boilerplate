@@ -436,14 +436,21 @@ export const componentColorsConfig = {
       500: process.env.BLUE_500 || '#3b82f6',
       600: process.env.BLUE_600 || '#2563eb',
       700: process.env.BLUE_700 || '#1d4ed8',
+      800: process.env.BLUE_800 || '#1e40af',
     },
     amber: {
+      50: process.env.AMBER_50 || '#fffbeb',
+      100: process.env.AMBER_100 || '#fef3c7',
       400: process.env.AMBER_400 || '#fbbf24',
       500: process.env.AMBER_500 || '#f59e0b',
       600: process.env.AMBER_600 || '#d97706',
+      700: process.env.AMBER_700 || '#b45309',
     },
     green: {
+      100: process.env.GREEN_100 || '#dcfce7',
+      400: process.env.GREEN_400 || '#4ade80',
       500: process.env.GREEN_500 || '#22c55e',
+      800: process.env.GREEN_800 || '#166534',
     },
     red: {
       500: process.env.RED_500 || '#ef4444',

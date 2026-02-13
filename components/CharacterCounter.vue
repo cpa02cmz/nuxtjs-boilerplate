@@ -70,12 +70,7 @@
     </div>
 
     <!-- Screen Reader Announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ screenReaderAnnouncement }}
     </div>
   </div>
@@ -142,15 +137,15 @@ const isOverLimit = computed(() => {
   return props.characterCount > props.maxLength
 })
 
-// Progress ring color based on state
+// Progress ring color based state - Flexy hates hardcoded values!
 const progressColor = computed(() => {
   if (isOverLimit.value) {
-    return 'var(--counter-color-error, #ef4444)'
+    return `var(--counter-color-error, ${componentColorsConfig.common.red[500]})`
   }
   if (isNearLimit.value) {
-    return 'var(--counter-color-warning, #f59e0b)'
+    return `var(--counter-color-warning, ${componentColorsConfig.common.amber[500]})`
   }
-  return 'var(--counter-color-normal, #3b82f6)'
+  return `var(--counter-color-normal, ${componentColorsConfig.common.blue[500]})`
 })
 
 // Progress ring style with dynamic color
@@ -235,7 +230,10 @@ const shadowColorDefault = computed(
 }
 
 .character-counter-ring__progress {
-  stroke: var(--progress-color, #3b82f6);
+  stroke: var(
+    --progress-color,
+    v-bind('componentColorsConfig.common.blue[500]')
+  );
   transition:
     stroke-dashoffset
       v-bind('animationConfig.transition.fast.durationMs + "ms"') ease-out,
@@ -251,19 +249,28 @@ const shadowColorDefault = computed(
   justify-content: center;
   font-size: 10px;
   font-weight: 600;
-  color: var(--counter-text-color, #6b7280);
+  color: var(
+    --counter-text-color,
+    v-bind('componentColorsConfig.common.gray[500]')
+  );
   transition: color v-bind('animationConfig.transition.fast.durationMs + "ms"')
     ease;
 }
 
 .character-counter-ring__text--warning {
-  color: var(--counter-color-warning, #f59e0b);
+  color: var(
+    --counter-color-warning,
+    v-bind('componentColorsConfig.common.amber[500]')
+  );
   animation: pulse-warning
     v-bind('animationConfig.focus.pulseDurationMs + "ms"') ease-in-out infinite;
 }
 
 .character-counter-ring__text--error {
-  color: var(--counter-color-error, #ef4444);
+  color: var(
+    --counter-color-error,
+    v-bind('componentColorsConfig.common.red[500]')
+  );
   animation: shake-error
     v-bind('animationConfig.validation.shakeDurationMs + "ms"') ease-in-out;
 }
@@ -293,14 +300,25 @@ const shadowColorDefault = computed(
     transform: translateX(2px);
   }
 }
+  25% {
+    transform: translateX(
+      v-bind('`-${animationConfig.validation.shakeIntensityPx}px`')
+    );
+  }
+  75% {
+    transform: translateX(
+      v-bind('`${animationConfig.validation.shakeIntensityPx}px`')
+    );
+  }
+}
 
-/* Error state styling */
+/* Error state styling - Flexy hates hardcoded values! */
 .character-counter-wrapper.character-counter--error {
-  --counter-color-error: #ef4444;
+  --counter-color-error: v-bind('componentColorsConfig.common.red[500]');
 }
 
 .character-counter-wrapper.character-counter--warning {
-  --counter-color-warning: #f59e0b;
+  --counter-color-warning: v-bind('componentColorsConfig.common.amber[500]');
 }
 
 /* Reduced motion support */
