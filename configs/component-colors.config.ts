@@ -380,6 +380,12 @@ export const componentColorsConfig = {
     hoverBg: process.env.LIFECYCLE_HOVER_BG || 'rgba(243, 244, 246, 0.5)',
     focusBg: process.env.LIFECYCLE_FOCUS_BG || 'rgba(229, 231, 235, 0.5)',
     rippleColor: process.env.LIFECYCLE_RIPPLE || '#9ca3af',
+    // Keyboard hint colors - discoverability for power users
+    hintText: process.env.LIFECYCLE_HINT_TEXT || '#6b7280',
+    hintKeyText: process.env.LIFECYCLE_HINT_KEY_TEXT || '#374151',
+    hintKeyBg: process.env.LIFECYCLE_HINT_KEY_BG || '#f3f4f6',
+    hintKeyBorder: process.env.LIFECYCLE_HINT_KEY_BORDER || '#d1d5db',
+    hintDivider: process.env.LIFECYCLE_HINT_DIVIDER || '#9ca3af',
   },
 
   // Alternative Suggestions Colors - Flexy hates hardcoded alternative colors!

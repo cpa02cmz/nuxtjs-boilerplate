@@ -1330,6 +1330,14 @@ export const animationConfig = {
     ),
     // Skill level selection animation duration (ms) - Palette's micro-UX enhancement!
     skillSelectDurationMs: parseInt(process.env.MICRO_SKILL_SELECT_MS || '250'),
+    // Click feedback animation duration (ms) - Palette's micro-UX delight!
+    clickFeedbackDurationMs: parseInt(
+      process.env.MICRO_CLICK_FEEDBACK_MS || '300'
+    ),
+    // Click feedback shrink scale - how much element shrinks when clicked
+    clickShrinkScale: parseFloat(
+      process.env.MICRO_CLICK_SHRINK_SCALE || '0.97'
+    ),
   },
 
   // User Preference Settings - Palette's micro-UX enhancement!
