@@ -248,7 +248,7 @@ const getSafeUiConfig = () => {
 }
 
 const safeUiConfig = getSafeUiConfig()
-const safeTiming = safeUiConfig.timing || {}
+const safeTiming = (safeUiConfig as typeof uiConfig).timing || {}
 
 // SSR-safe timing values (ms) with defaults
 const TIMING_FALLBACKS = {

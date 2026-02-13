@@ -332,12 +332,10 @@
             <button
               class="btn btn-sm btn-danger press-hold-button"
               :class="{
-                'is-pressing': getPressAndHold(webhook.id, webhook).isPressing
-                  .value,
-                'is-complete': getPressAndHold(webhook.id, webhook).isComplete
-                  .value,
+                'is-pressing': getPressAndHold(webhook.id, webhook).isPressing,
+                'is-complete': getPressAndHold(webhook.id, webhook).isComplete,
               }"
-              :style="getPressAndHold(webhook.id, webhook).progressStyle.value"
+              :style="getPressAndHold(webhook.id, webhook).progressStyle"
               :aria-label="
                 contentConfig.webhooks.ariaLabels.deleteWebhook +
                   ' (Press and hold to confirm)'
@@ -356,7 +354,7 @@
               <!-- Progress Ring SVG -->
               <span
                 v-if="
-                  getPressAndHold(webhook.id, webhook).isPressing.value &&
+                  getPressAndHold(webhook.id, webhook).isPressing &&
                     !reducedMotion
                 "
                 class="press-hold-ring"
@@ -406,12 +404,10 @@
               <!-- Button text changes during press -->
               <span class="button-text">
                 <template
-                  v-if="getPressAndHold(webhook.id, webhook).isPressing.value"
+                  v-if="getPressAndHold(webhook.id, webhook).isPressing"
                 >
                   {{
-                    Math.round(
-                      getPressAndHold(webhook.id, webhook).progress.value
-                    )
+                    Math.round(getPressAndHold(webhook.id, webhook).progress)
                   }}%
                 </template>
                 <template v-else>

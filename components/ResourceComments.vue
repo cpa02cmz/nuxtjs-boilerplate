@@ -31,7 +31,7 @@
           rows="1"
           :aria-label="contentConfig.comments.aria.addComment"
           :aria-describedby="`comment-hint-${uniqueId}`"
-          :maxlength="maxLength"
+          :maxlength="MAX_LENGTH"
           @focus="handleFocus"
           @blur="handleBlur"
           @input="handleInput"
@@ -143,11 +143,11 @@
             </span>
           </template>
           <template
-            v-else-if="newComment.length < minLength && newComment.length > 0"
+            v-else-if="newComment.length < MIN_LENGTH && newComment.length > 0"
           >
             {{
               contentConfig.comments.validation.tooShort ||
-                `Minimum ${minLength} characters`
+                `Minimum ${MIN_LENGTH} characters`
             }}
           </template>
           <template v-else>
@@ -374,10 +374,8 @@ const submitButtonClasses = computed(() => {
 })
 
 const submitButtonText = computed(() => {
-  if (isSubmitting.value)
-    return contentConfig.comments.buttons.posting || 'Posting...'
-  if (showSuccessCheck.value)
-    return contentConfig.comments.buttons.posted || 'Posted!'
+  if (isSubmitting.value) return 'Posting...'
+  if (showSuccessCheck.value) return 'Posted!'
   return contentConfig.comments.buttons.post
 })
 

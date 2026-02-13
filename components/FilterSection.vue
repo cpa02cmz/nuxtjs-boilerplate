@@ -141,8 +141,8 @@ import { componentColorsConfig } from '~/configs/component-colors.config'
 interface Props {
   label: string
   ariaLabel?: string
-  options: string[]
-  selectedOptions: string[]
+  options: readonly string[]
+  selectedOptions: readonly string[]
   id: string
   showCount?: boolean
   scrollable?: boolean
@@ -191,10 +191,10 @@ const getCheckboxBloomStyle = (option: string) => {
   const config = animationConfig.checkbox
 
   return {
-    '--bloom-scale': config.bloomScale,
-    '--bloom-opacity': config.bloomOpacity,
+    '--bloom-scale': String(config.bloomScale),
+    '--bloom-opacity': String(config.bloomOpacity),
     '--bloom-duration': `${config.bloomDurationMs}ms`,
-    '--pop-scale': config.popScale,
+    '--pop-scale': String(config.popScale),
     '--pop-duration': `${config.popDurationMs}ms`,
   } as Record<string, string>
 }
