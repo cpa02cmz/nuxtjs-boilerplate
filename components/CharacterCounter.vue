@@ -70,12 +70,7 @@
     </div>
 
     <!-- Screen Reader Announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ screenReaderAnnouncement }}
     </div>
   </div>
@@ -84,6 +79,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   /** Current character count */
@@ -179,6 +175,11 @@ const screenReaderAnnouncement = computed(() => {
   }
   return ''
 })
+
+// Flexy hates hardcoded rgba! Using configurable shadow color
+const shadowColorDefault = computed(
+  () => componentColorsConfig.shadows.light.default
+)
 </script>
 
 <style scoped>
@@ -213,7 +214,7 @@ const screenReaderAnnouncement = computed(() => {
 }
 
 .character-counter-ring--focused {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 2px 4px rgba(v-bind('shadowColorDefault'), 0.1));
 }
 
 .character-counter-ring__svg {
@@ -223,7 +224,7 @@ const screenReaderAnnouncement = computed(() => {
 }
 
 .character-counter-ring__bg {
-  stroke: var(--counter-bg-color, rgba(0, 0, 0, 0.1));
+  stroke: var(--counter-bg-color, rgba(v-bind('shadowColorDefault'), 0.1));
   transition: stroke v-bind('animationConfig.transition.fast.durationMs + "ms"')
     ease;
 }

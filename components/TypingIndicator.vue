@@ -45,6 +45,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -99,6 +100,15 @@ const dotSize = computed(() => props.dotSize)
 // Calculate glow ring size based on dot size
 const glowRingSize = computed(() => props.dotSize * 5)
 
+// Flexy hates hardcoded rgba! Using configurable color values
+const shadowColorDefault = computed(
+  () => componentColorsConfig.shadows.light.default
+)
+const blueColor = computed(() => componentColorsConfig.common.blue[500])
+const greenColor = computed(() => componentColorsConfig.common.green[500])
+const amberColor = computed(() => componentColorsConfig.common.amber[500])
+const redColor = computed(() => componentColorsConfig.common.red[500])
+
 // Trigger haptic feedback when typing starts
 watch(
   () => props.isVisible,
@@ -138,14 +148,15 @@ onUnmounted(() => {
 
 <style scoped>
 /* Palette's micro-UX enhancement: Glow Ring Effect
-   Creates a subtle pulsing glow around the typing indicator */
+   Creates a subtle pulsing glow around the typing indicator
+   Flexy hates hardcoded rgba - now using configurable colors! */
 .typing-glow-ring {
   position: absolute;
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(59, 130, 246, 0.15) 0%,
-    rgba(59, 130, 246, 0.05) 40%,
+    rgba(v-bind('blueColor'), 0.15) 0%,
+    rgba(v-bind('blueColor'), 0.05) 40%,
     transparent 70%
   );
   animation: glow-pulse 2s ease-in-out infinite;
@@ -164,11 +175,11 @@ onUnmounted(() => {
   }
 }
 
-/* Enhanced typing dots with spring physics animation */
+/* Enhanced typing dots with spring physics animation - Flexy hates hardcoded rgba! */
 .typing-dot {
   animation: typing-bounce 1.4s ease-in-out infinite;
   will-change: transform;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(v-bind('shadowColorDefault'), 0.1);
 }
 
 @keyframes typing-bounce {
@@ -182,39 +193,43 @@ onUnmounted(() => {
   }
 }
 
-/* Color variations for the glow effect */
+/* Color variations for the glow effect - Flexy hates hardcoded rgba values! */
+/* Blue glow - using configurable RGB values */
 .bg-blue-500 ~ .typing-glow-ring {
   background: radial-gradient(
     circle,
-    rgba(59, 130, 246, 0.15) 0%,
-    rgba(59, 130, 246, 0.05) 40%,
+    rgba(v-bind('blueColor'), 0.15) 0%,
+    rgba(v-bind('blueColor'), 0.05) 40%,
     transparent 70%
   );
 }
 
+/* Green glow - using configurable RGB values */
 .bg-green-500 ~ .typing-glow-ring {
   background: radial-gradient(
     circle,
-    rgba(34, 197, 94, 0.15) 0%,
-    rgba(34, 197, 94, 0.05) 40%,
+    rgba(v-bind('greenColor'), 0.15) 0%,
+    rgba(v-bind('greenColor'), 0.05) 40%,
     transparent 70%
   );
 }
 
+/* Amber glow - using configurable RGB values */
 .bg-amber-500 ~ .typing-glow-ring {
   background: radial-gradient(
     circle,
-    rgba(245, 158, 11, 0.15) 0%,
-    rgba(245, 158, 11, 0.05) 40%,
+    rgba(v-bind('amberColor'), 0.15) 0%,
+    rgba(v-bind('amberColor'), 0.05) 40%,
     transparent 70%
   );
 }
 
+/* Red glow - using configurable RGB values */
 .bg-red-500 ~ .typing-glow-ring {
   background: radial-gradient(
     circle,
-    rgba(239, 68, 68, 0.15) 0%,
-    rgba(239, 68, 68, 0.05) 40%,
+    rgba(v-bind('redColor'), 0.15) 0%,
+    rgba(v-bind('redColor'), 0.05) 40%,
     transparent 70%
   );
 }
