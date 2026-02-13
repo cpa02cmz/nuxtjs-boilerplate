@@ -29,8 +29,7 @@ export default defineEventHandler(async event => {
       const errorMessages = validationResult.error.issues
         .map(e => e.message)
         .join(', ')
-      sendBadRequestError(event, errorMessages)
-      return
+      return sendBadRequestError(event, errorMessages)
     }
 
     const validatedBody = validationResult.data
@@ -38,15 +37,13 @@ export default defineEventHandler(async event => {
     // Find webhook by ID
     const existingWebhook = await webhookStorage.getWebhookById(id)
     if (!existingWebhook) {
-      sendNotFoundError(event, 'Webhook', id)
-      return
+      return sendNotFoundError(event, 'Webhook', id)
     }
 
     // Update webhook
     const updatedWebhook = await webhookStorage.updateWebhook(id, validatedBody)
     if (!updatedWebhook) {
-      sendNotFoundError(event, 'Webhook', id)
-      return
+      return sendNotFoundError(event, 'Webhook', id)
     }
 
     // Return without secret for security
@@ -55,6 +52,6 @@ export default defineEventHandler(async event => {
 
     return sendSuccessResponse(event, webhookWithoutSecret)
   } catch (error) {
-    handleApiRouteError(event, error)
+    return handleApiRouteError(event, error)
   }
 })
