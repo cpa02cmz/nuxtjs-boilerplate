@@ -100,16 +100,10 @@
             </svg>
           </div>
           <div>
-            <h3
-              id="pwa-install-title"
-              class="font-medium text-gray-900"
-            >
+            <h3 id="pwa-install-title" class="font-medium text-gray-900">
               Install App
             </h3>
-            <p
-              id="pwa-install-description"
-              class="text-sm text-gray-500"
-            >
+            <p id="pwa-install-description" class="text-sm text-gray-500">
               Add to your home screen
             </p>
           </div>
@@ -133,7 +127,8 @@
               <kbd
                 class="hidden sm:inline-flex items-center px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded text-gray-500"
                 aria-hidden="true"
-              >Esc</kbd>
+                >Esc</kbd
+              >
             </span>
           </button>
           <button
@@ -197,12 +192,7 @@
   </Transition>
 
   <!-- Screen reader announcement -->
-  <div
-    class="sr-only"
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-  >
+  <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
     {{ announcement }}
   </div>
 </template>
@@ -215,6 +205,7 @@ import { animationConfig } from '../configs/animation.config'
 import { uiConfig } from '~/configs/ui.config'
 import { thresholdsConfig } from '~/configs/thresholds.config'
 import { EASING } from '~/configs/easing.config'
+import { hapticConfig } from '~/configs/haptic.config'
 
 // Storage key constants
 const STORAGE_KEYS = {
@@ -375,14 +366,14 @@ const installPWA = async (): Promise<void> => {
   if (isInstalling.value) return
 
   isInstalling.value = true
-  triggerHaptic([20, 30, 20]) // Success pattern
+  triggerHaptic(hapticConfig.patterns.pwaInstall)
   announce('Installing app...')
 
   try {
     await pwa?.installPWA()
     // Show success celebration
     showSuccess.value = true
-    triggerHaptic([50, 100, 50]) // Celebration pattern
+    triggerHaptic(hapticConfig.patterns.pwaCelebration)
     announce(contentConfig.pwa.installSuccess)
 
     // Auto-dismiss success toast after configured delay
@@ -401,7 +392,7 @@ const cancelInstall = (): void => {
   if (isDismissing.value) return
 
   // Trigger haptic feedback
-  triggerHaptic(10) // Light tap
+  triggerHaptic(hapticConfig.patterns.pwaDismiss)
 
   // Start dismissal animation
   isDismissing.value = true

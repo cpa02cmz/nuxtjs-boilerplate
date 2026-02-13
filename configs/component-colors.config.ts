@@ -453,6 +453,20 @@ export const componentColorsConfig = {
       500: process.env.RED_500 || '#ef4444',
     },
   },
+
+  // Character Counter Colors - Flexy hates hardcoded CSS colors!
+  characterCounter: {
+    // Error state color (red-500)
+    error: process.env.CHAR_COUNTER_ERROR_COLOR || '#ef4444',
+    // Warning state color (amber-500)
+    warning: process.env.CHAR_COUNTER_WARNING_COLOR || '#f59e0b',
+    // Normal state color (blue-500)
+    normal: process.env.CHAR_COUNTER_NORMAL_COLOR || '#3b82f6',
+    // Text color for counter
+    text: process.env.CHAR_COUNTER_TEXT_COLOR || '#6b7280',
+    // Background opacity for ring
+    bgOpacity: parseFloat(process.env.CHAR_COUNTER_BG_OPACITY || '0.1'),
+  },
 } as const
 
 export type ComponentColorsConfig = typeof componentColorsConfig

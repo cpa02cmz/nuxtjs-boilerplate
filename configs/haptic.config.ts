@@ -30,6 +30,9 @@ interface HapticConfigType {
     errorEmphasis: HapticPatternArray
     buttonPress: HapticPatternArray
     toggle: HapticPatternArray
+    pwaInstall: HapticPatternArray
+    pwaCelebration: HapticPatternArray
+    pwaDismiss: HapticPatternArray
   }
   features: {
     loadMore: HapticFeatureConfig
@@ -80,6 +83,10 @@ export const hapticConfig: HapticConfigType = {
     buttonPress: [10],
     // Toggle switch feedback
     toggle: [5, 25, 5],
+    // PWA Install patterns - Flexy hates hardcoded values!
+    pwaInstall: [20, 30, 20],
+    pwaCelebration: [50, 100, 50],
+    pwaDismiss: [10],
   },
 
   // Feature-specific haptic settings
