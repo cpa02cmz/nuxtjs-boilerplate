@@ -10,6 +10,8 @@ export const animationConfig = {
   tooltip: {
     showDelayMs: parseInt(process.env.TOOLTIP_SHOW_DELAY_MS || '300'),
     hideDelayMs: parseInt(process.env.TOOLTIP_HIDE_DELAY_MS || '100'),
+    // Instant delay for immediate tooltip display (no delay)
+    instantDelayMs: 0,
     // Touch device long-press duration (ms) - Flexy hates hardcoded 500!
     longPressDurationMs: parseInt(
       process.env.TOOLTIP_LONG_PRESS_DURATION_MS || '500'
@@ -697,6 +699,8 @@ export const animationConfig = {
     ),
     // Duration of confetti animation in milliseconds
     durationMs: parseInt(process.env.CONFETTI_DURATION_MS || '3000'),
+    // Duration for light celebration confetti (ms)
+    lightDurationMs: parseInt(process.env.CONFETTI_LIGHT_DURATION_MS || '2000'),
     // Number of particles for light celebration
     particleCountLight: parseInt(process.env.CONFETTI_PARTICLE_LIGHT || '30'),
     // Number of particles for medium celebration
