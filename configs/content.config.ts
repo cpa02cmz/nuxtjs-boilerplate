@@ -17,6 +17,13 @@ function parsePlaceholders(value: string): string[] {
   return value.split(',').map(s => s.trim())
 }
 
+// Sort option type definition
+export interface SortOption {
+  value: string
+  label: string
+  icon: string
+}
+
 export const contentConfig = {
   // Data File Paths - Flexy hates hardcoded file paths!
   paths: {
@@ -221,6 +228,29 @@ export const contentConfig = {
       za: process.env.CONTENT_SORT_ZA || 'Z-A',
       newest: process.env.CONTENT_SORT_NEWEST || 'Newest First',
     },
+    // Sort options configuration with icons - Flexy hates hardcoded arrays!
+    sortOptions: [
+      {
+        value: 'popularity-desc',
+        label: process.env.CONTENT_SORT_POPULAR || 'Most Popular',
+        icon: '🔥',
+      },
+      {
+        value: 'alphabetical-asc',
+        label: process.env.CONTENT_SORT_AZ || 'A-Z',
+        icon: '🔤',
+      },
+      {
+        value: 'alphabetical-desc',
+        label: process.env.CONTENT_SORT_ZA || 'Z-A',
+        icon: '🔠',
+      },
+      {
+        value: 'date-added-desc',
+        label: process.env.CONTENT_SORT_NEWEST || 'Newest First',
+        icon: '✨',
+      },
+    ] as SortOption[],
   },
 
   // Resource Card
