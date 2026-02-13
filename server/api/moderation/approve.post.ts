@@ -47,30 +47,49 @@ export default defineEventHandler(async event => {
     }
 
     const { submissionId, reviewedBy, notes } = result.data
-
-    // Fetch submission from database
-    const submission = await prisma.submission.findUnique({
-      where: { id: submissionId },
-    })
-
-    if (!submission) {
-      return sendNotFoundError(event, 'Submission', submissionId)
-    }
-
-    // Parse resource data from JSON safely
-    const resourceData = safeJsonParse<Partial<Resource>>(
-      submission.resourceData,
-      {}
-    )
-
-    // Run quality checks on the resource
-    const qualityChecks = runQualityChecks(resourceData as Resource)
-    const qualityScore = calculateQualityScore(qualityChecks)
-
-    // Create the resource and update submission in a transaction
     const reviewedAt = new Date()
-    const [resource] = await prisma.$transaction([
-      prisma.resource.create({
+
+    // Use interactive transaction for atomic approval process
+    // Prevents race conditions where submission is modified between fetch and update
+    const approvalResult = await prisma.$transaction(async tx => {
+      // Fetch submission with implicit lock (SQLite doesn't support explicit row locks,
+      // but the transaction ensures atomicity)
+      const submission = await tx.submission.findUnique({
+        where: { id: submissionId },
+      })
+
+      if (!submission) {
+        return { error: 'not_found', message: 'Submission not found' }
+      }
+
+      // Check if already approved (idempotency check)
+      if (submission.status === 'approved') {
+        return {
+          error: 'already_approved',
+          message: 'Submission has already been approved',
+        }
+      }
+
+      // Check if submission is in a valid state for approval
+      if (submission.status !== 'pending') {
+        return {
+          error: 'invalid_state',
+          message: `Cannot approve submission with status: ${submission.status}`,
+        }
+      }
+
+      // Parse resource data from JSON safely
+      const resourceData = safeJsonParse<Partial<Resource>>(
+        submission.resourceData,
+        {}
+      )
+
+      // Run quality checks on the resource (inside transaction for consistency)
+      const qualityChecks = runQualityChecks(resourceData as Resource)
+      const qualityScore = calculateQualityScore(qualityChecks)
+
+      // Create the resource
+      const resource = await tx.resource.create({
         data: {
           title: resourceData.title || '',
           description: resourceData.description || '',
@@ -90,8 +109,10 @@ export default defineEventHandler(async event => {
             connect: { id: submissionId },
           },
         },
-      }),
-      prisma.submission.update({
+      })
+
+      // Update submission status
+      const updatedSubmission = await tx.submission.update({
         where: { id: submissionId },
         data: {
           status: 'approved',
@@ -99,11 +120,36 @@ export default defineEventHandler(async event => {
           reviewedAt,
           notes: notes || '',
         },
-      }),
-    ])
+      })
+
+      return {
+        error: null,
+        resource,
+        submission: updatedSubmission,
+        qualityChecks,
+        qualityScore,
+      }
+    })
+
+    // Handle transaction errors
+    if (approvalResult.error === 'not_found') {
+      return sendNotFoundError(event, 'Submission', submissionId)
+    }
+
+    if (approvalResult.error === 'already_approved') {
+      return sendBadRequestError(event, approvalResult.message)
+    }
+
+    if (approvalResult.error === 'invalid_state') {
+      return sendBadRequestError(event, approvalResult.message)
+    }
+
+    if (approvalResult.error) {
+      throw new Error(approvalResult.message)
+    }
 
     logInfo(
-      `Submission ${submission.id} approved for user ${submission.submittedBy}`,
+      `Submission ${submissionId} approved for user ${approvalResult.submission?.submittedBy}`,
       undefined,
       'moderation/approve.post'
     )
@@ -111,13 +157,22 @@ export default defineEventHandler(async event => {
     return sendSuccessResponse(event, {
       message: 'Submission approved successfully',
       resource: {
-        ...resource,
-        benefits: safeJsonParse<string[]>(resource.benefits, []),
-        tags: safeJsonParse<string[]>(resource.tags, []),
-        technology: safeJsonParse<string[]>(resource.technology, []),
+        ...approvalResult.resource,
+        benefits: safeJsonParse<string[]>(
+          approvalResult.resource?.benefits || '[]',
+          []
+        ),
+        tags: safeJsonParse<string[]>(
+          approvalResult.resource?.tags || '[]',
+          []
+        ),
+        technology: safeJsonParse<string[]>(
+          approvalResult.resource?.technology || '[]',
+          []
+        ),
       },
-      qualityChecks,
-      qualityScore,
+      qualityChecks: approvalResult.qualityChecks,
+      qualityScore: approvalResult.qualityScore,
     })
   } catch (error) {
     logError(
