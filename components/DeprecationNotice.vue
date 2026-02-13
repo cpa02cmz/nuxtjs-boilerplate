@@ -66,37 +66,108 @@
           </button>
         </div>
         <p>{{ noticeMessage }}</p>
-        <div
-          v-if="migrationPath || alternatives"
-          class="notice-actions"
-        >
-          <a
-            v-if="migrationPath"
-            :href="migrationPath"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="migration-link"
-            :class="{ 'animate-pulse-subtle': !prefersReducedMotion }"
-          >
-            <span class="link-text">{{
-              contentConfig.deprecation.actions.migrationPath
-            }}</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-3 w-3 ml-1 inline-block"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
+        <div v-if="migrationPath || alternatives" class="notice-actions">
+          <!-- Migration Link with Copy Button - Palette's micro-UX delight! -->
+          <div v-if="migrationPath" class="migration-link-wrapper">
+            <a
+              :href="migrationPath"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="migration-link"
+              :class="{
+                'animate-pulse-subtle': !prefersReducedMotion && !isCopied,
+              }"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
-          </a>
+              <span class="link-text">{{
+                contentConfig.deprecation.actions.migrationPath
+              }}</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-3 w-3 ml-1 inline-block"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
+              </svg>
+            </a>
+
+            <!-- Copy Link Button with tooltip feedback -->
+            <Tooltip
+              :content="isCopied ? 'Copied!' : 'Copy link'"
+              position="top"
+              :delay="0"
+            >
+              <button
+                type="button"
+                class="copy-link-btn"
+                :class="{ 'copy-link-btn--success': isCopied }"
+                :aria-label="
+                  isCopied
+                    ? 'Link copied to clipboard'
+                    : 'Copy migration link to clipboard'
+                "
+                @click="copyMigrationLink"
+                @mouseenter="isHoveringCopy = true"
+                @mouseleave="isHoveringCopy = false"
+              >
+                <Transition
+                  enter-active-class="transition-all duration-200 ease-out"
+                  enter-from-class="opacity-0 scale-50"
+                  enter-to-class="opacity-100 scale-100"
+                  leave-active-class="transition-all duration-150 ease-in"
+                  leave-from-class="opacity-100 scale-100"
+                  leave-to-class="opacity-0 scale-50"
+                  mode="out-in"
+                >
+                  <!-- Checkmark icon when copied -->
+                  <svg
+                    v-if="isCopied"
+                    key="checkmark"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-3.5 w-3.5 copy-icon copy-icon--check"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  <!-- Copy icon when not copied -->
+                  <svg
+                    v-else
+                    key="copy"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-3.5 w-3.5 copy-icon"
+                    :class="{
+                      'copy-icon--hover':
+                        isHoveringCopy && !prefersReducedMotion,
+                    }"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    />
+                  </svg>
+                </Transition>
+              </button>
+            </Tooltip>
+          </div>
           <a
             v-if="alternatives && alternatives.length > 0"
             href="/search"
@@ -133,11 +204,7 @@
       />
 
       <!-- Screen reader announcement -->
-      <div
-        class="sr-only"
-        role="status"
-        aria-live="polite"
-      >
+      <div class="sr-only" role="status" aria-live="polite">
         {{ announcementText }}
       </div>
     </div>
@@ -151,6 +218,8 @@ import { componentColorsConfig } from '~/configs/component-colors.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import Tooltip from '~/components/Tooltip.vue'
+import { hapticSuccess } from '~/utils/hapticFeedback'
 
 interface Props {
   status?:
@@ -191,9 +260,14 @@ const emit = defineEmits<{
 // Reactive state
 const isDismissed = ref(false)
 const isHoveringDismiss = ref(false)
+const isHoveringCopy = ref(false)
 const isPaused = ref(false)
 const prefersReducedMotion = ref(false)
 const announcementText = ref('')
+
+// Palette's micro-UX enhancement: Copy link state
+const isCopied = ref(false)
+let copyTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
@@ -253,6 +327,45 @@ const noticeMessage = computed(() => {
   }
 })
 
+// Palette's micro-UX enhancement: Copy migration link to clipboard
+const copyMigrationLink = async () => {
+  if (!props.migrationPath) return
+
+  try {
+    await navigator.clipboard.writeText(props.migrationPath)
+
+    // Show success state
+    isCopied.value = true
+
+    // Haptic feedback for mobile users
+    if (!prefersReducedMotion.value) {
+      hapticSuccess()
+    }
+
+    // Announce to screen readers
+    announcementText.value = 'Migration link copied to clipboard'
+    setTimeout(() => {
+      announcementText.value = ''
+    }, uiTimingConfig.deprecation.dismissClearDelay)
+
+    // Clear any existing timeout
+    if (copyTimeout) {
+      clearTimeout(copyTimeout)
+    }
+
+    // Reset after delay
+    copyTimeout = setTimeout(() => {
+      isCopied.value = false
+    }, animationConfig.copyFeedback?.durationMs || 2000)
+  } catch {
+    // Silently fail if clipboard API not available
+    announcementText.value = 'Failed to copy link'
+    setTimeout(() => {
+      announcementText.value = ''
+    }, uiTimingConfig.deprecation.dismissClearDelay)
+  }
+}
+
 // Handle dismiss action
 const handleDismiss = () => {
   isDismissed.value = true
@@ -306,6 +419,9 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyDown)
   if (autoDismissTimeout) {
     clearTimeout(autoDismissTimeout)
+  }
+  if (copyTimeout) {
+    clearTimeout(copyTimeout)
   }
 })
 </script>
@@ -503,6 +619,80 @@ onUnmounted(() => {
   box-shadow: v-bind('shadowsConfig.deprecationNotice.warning');
 }
 
+/* Palette's micro-UX enhancement: Migration link wrapper with copy button */
+.migration-link-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Copy link button - Palette's micro-UX delight! */
+.copy-link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem;
+  background: transparent;
+  border: 1px solid
+    v-bind('componentColorsConfig.deprecationNotice.warning.border');
+  border-radius: 0.375rem;
+  color: v-bind('componentColorsConfig.deprecationNotice.warning.border');
+  cursor: pointer;
+  transition: all v-bind('animationConfig.cssTransitions.fastSec') ease-out;
+  outline: none;
+}
+
+.copy-link-btn:hover {
+  background: v-bind('componentColorsConfig.deprecationNotice.warning.bg');
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.copy-link-btn:focus-visible {
+  outline: 2px solid
+    v-bind('componentColorsConfig.deprecationNotice.warning.border');
+  outline-offset: 2px;
+}
+
+.copy-link-btn--success {
+  background: v-bind('componentColorsConfig.deprecationNotice.success.bg');
+  border-color: v-bind(
+    'componentColorsConfig.deprecationNotice.success.border'
+  );
+  color: v-bind('componentColorsConfig.deprecationNotice.success.text');
+}
+
+.copy-link-btn--success:hover {
+  background: v-bind('componentColorsConfig.deprecationNotice.success.bgHover');
+}
+
+.copy-icon {
+  transition: transform v-bind('animationConfig.cssTransitions.fastSec')
+    ease-out;
+}
+
+.copy-icon--hover {
+  transform: scale(1.1);
+}
+
+.copy-icon--check {
+  animation: check-pop v-bind('animationConfig.cssTransitions.fastSec') ease-out;
+}
+
+@keyframes check-pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* Subtle pulse animation for migration link */
 .animate-pulse-subtle {
   animation: pulse-subtle 2s ease-in-out infinite;
@@ -592,6 +782,18 @@ onUnmounted(() => {
   .migration-link:hover,
   .alternatives-link:hover {
     transform: none;
+  }
+
+  .copy-link-btn:hover {
+    transform: none;
+  }
+
+  .copy-icon {
+    transition: none;
+  }
+
+  .copy-icon--check {
+    animation: none;
   }
 }
 
