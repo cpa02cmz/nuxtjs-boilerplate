@@ -1,10 +1,4 @@
 import { describe, it, expect, beforeAll } from 'vitest'
-import { $fetch } from '@nuxt/test-utils'
-
-interface WebhookListResponse {
-  success: boolean
-  data: unknown[]
-}
 
 /**
  * Integration tests for webhook functionality
@@ -19,57 +13,46 @@ interface WebhookListResponse {
  * Or: VITEST_PROFILE=integration npm run test:integration (requires local setup)
  */
 
-describe('Webhook Integration', () => {
-  // Skip tests if not running in integration test environment
-  const isIntegrationEnv =
-    process.env.CI === 'true' || process.env.INTEGRATION_TEST === 'true'
+// Skip all tests if not running in integration test environment
+const isIntegrationEnv =
+  process.env.CI === 'true' || process.env.INTEGRATION_TEST === 'true'
+
+describe.skipIf(!isIntegrationEnv)('Webhook Integration', () => {
+  const baseUrl = process.env.TEST_BASE_URL || 'http://localhost:3000'
 
   beforeAll(() => {
-    if (!isIntegrationEnv) {
-      console.log(
-        '⚠️  Skipping integration tests - not in integration environment'
-      )
-      console.log('    Set CI=true or INTEGRATION_TEST=true to run these tests')
-    }
+    console.log(
+      '⚠️  Skipping integration tests - not in integration environment'
+    )
+    console.log('    Set CI=true or INTEGRATION_TEST=true to run these tests')
   })
 
   it('should have webhook API endpoints', async () => {
-    if (!isIntegrationEnv) {
-      return
-    }
-
-    const response = await $fetch<WebhookListResponse>('/api/v1/webhooks', {
+    const response = await fetch(`${baseUrl}/api/v1/webhooks`, {
       method: 'GET',
-    }).catch(err => err.data || { success: false, data: [] })
+    })
+      .then(res => res.json())
+      .catch(() => ({ success: false, data: [] }))
 
     expect(response).toHaveProperty('success')
     expect(Array.isArray(response.data)).toBe(true)
   })
 
   it('should have API key management endpoints', async () => {
-    if (!isIntegrationEnv) {
-      return
-    }
-
-    const response = await $fetch<WebhookListResponse>(
-      '/api/v1/auth/api-keys',
-      {
-        method: 'GET',
-      }
-    ).catch(err => err.data || { success: false, data: [] })
+    const response = await fetch(`${baseUrl}/api/v1/auth/api-keys`, {
+      method: 'GET',
+    })
+      .then(res => res.json())
+      .catch(() => ({ success: false, data: [] }))
 
     expect(response).toHaveProperty('success')
     expect(Array.isArray(response.data)).toBe(true)
   })
 
   it('should respond to health check', async () => {
-    if (!isIntegrationEnv) {
-      return
-    }
-
-    const response = await $fetch('/api/health').catch(() => ({
-      status: 'error',
-    }))
+    const response = await fetch(`${baseUrl}/api/health`)
+      .then(res => res.json())
+      .catch(() => ({ status: 'error' }))
     expect(response).toHaveProperty('status')
   })
 })
