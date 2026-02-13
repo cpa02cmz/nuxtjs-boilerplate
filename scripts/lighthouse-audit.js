@@ -57,8 +57,8 @@ async function runPerformanceAudit(page, url, name) {
           })
         }
 
-        // Timeout after configured delay
-        setTimeout(() => resolve({}), monitoringConfig.delays.vueMountMs)
+        // Timeout after 2 seconds
+        setTimeout(() => resolve({}), 2000)
       })
     })
 
