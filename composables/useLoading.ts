@@ -1,4 +1,4 @@
-import { reactive, readonly } from 'vue'
+import { reactive, readonly, onUnmounted, ref } from 'vue'
 import { UI_FEEDBACK_DURATION } from '~/server/utils/constants'
 import { messagesConfig } from '~/configs/messages.config'
 
@@ -18,6 +18,9 @@ export const useLoading = () => {
     success: false,
     message: null,
   })
+
+  // Track all timeout IDs for cleanup
+  const timeoutIds = ref<ReturnType<typeof setTimeout>[]>([])
 
   // Wrapper function to execute async operations with loading states
   const withLoading = async <T>(
@@ -55,12 +58,13 @@ export const useLoading = () => {
       loadingState.loading = false
       // Clear success message after a delay to allow user to see it
       if (loadingState.success) {
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           if (loadingState.success) {
             loadingState.success = false
             loadingState.message = null
           }
         }, UI_FEEDBACK_DURATION.SUCCESS_MESSAGE_CLEAR)
+        timeoutIds.value.push(timeoutId)
       }
     }
   }
@@ -92,6 +96,12 @@ export const useLoading = () => {
     loadingState.success = false
     loadingState.message = null
   }
+
+  // Cleanup all timeouts on component unmount
+  onUnmounted(() => {
+    timeoutIds.value.forEach(id => clearTimeout(id))
+    timeoutIds.value = []
+  })
 
   return {
     loadingState: readonly(loadingState),
