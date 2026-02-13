@@ -129,6 +129,12 @@ export const shadowsConfig = {
     '2xl': process.env.SHADOW_2XL || '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
     inner: process.env.SHADOW_INNER || 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
   },
+
+  // Review Queue Shadows
+  reviewQueue: {
+    cardShadow:
+      process.env.REVIEW_QUEUE_CARD_SHADOW || '0 2px 8px rgba(0, 0, 0, 0.1)',
+  },
 } as const
 
 export type ShadowsConfig = typeof shadowsConfig

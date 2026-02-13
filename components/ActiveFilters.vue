@@ -693,10 +693,7 @@ const handleRemove = (type: string, value: string, _event: Event) => {
   exitingChips.value.add(chipKey)
 
   // Trigger haptic feedback with configurable pattern
-  const hapticPattern = animationConfig.filterChipSpring.hapticPattern
-    .split(',')
-    .map((n: string) => parseInt(n.trim()))
-  triggerHaptic(hapticPattern)
+  triggerHaptic('light')
 
   // Store the removed filter for potential undo
   lastRemovedFilter.value = {

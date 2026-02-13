@@ -182,6 +182,8 @@ export const EASING = {
   MATERIAL_DECELERATE: 'cubic-bezier(0, 0, 0.2, 1)',
   // Material Design acceleration - elements entering at full velocity
   MATERIAL_ACCELERATE: 'cubic-bezier(0.4, 0, 1, 1)',
+  // Material Design sharp - quick response
+  MATERIAL_SHARP: 'cubic-bezier(0.4, 0, 0.6, 1)',
   // Spring standard - bouncy but controlled
   SPRING_STANDARD: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
   // Spring snappy - quicker bounce
