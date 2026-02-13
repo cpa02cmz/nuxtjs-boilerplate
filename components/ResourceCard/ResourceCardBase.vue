@@ -468,7 +468,7 @@ const tiltStyle = computed(() => {
       scale(${isTilting.value ? config.hoverScale : 1})
     `,
     transition: isTilting.value
-      ? 'transform 0.1s ease-out'
+      ? `transform ${animationConfig.cssTransitions.fastSec} ease-out`
       : `transform ${config.resetDurationSec}s ${EASING.MATERIAL_STANDARD}`,
     transformStyle: 'preserve-3d' as const,
   }
@@ -856,8 +856,8 @@ if (typeof useHead === 'function') {
   .card-3d-tilt.is-tilting {
     transform: none !important;
     transition:
-      box-shadow 0.2s ease,
-      border-color 0.2s ease !important;
+      box-shadow v-bind('animationConfig.cssTransitions.normalSec') ease,
+      border-color v-bind('animationConfig.cssTransitions.normalSec') ease !important;
   }
 
   .card-3d-tilt::after {

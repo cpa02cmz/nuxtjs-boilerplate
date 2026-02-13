@@ -185,7 +185,8 @@ const skeletonColors = {
     var(--skeleton-light-start) 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer v-bind('animationConfig.skeleton.shimmerDurationSec')
+    ease-in-out infinite;
 }
 
 /* Staggered animation delays are set via inline styles using animationConfig */
@@ -202,7 +203,8 @@ const skeletonColors = {
 
 /* Card entrance animation */
 .skeleton-filter-sidebar {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn v-bind('animationConfig.skeleton.cardEnterDurationSec')
+    ease-out;
 }
 
 @keyframes fadeIn {
@@ -224,7 +226,8 @@ const skeletonColors = {
   }
 
   .skeleton-filter-sidebar {
-    animation: fadeIn 0.2s ease-out;
+    animation: fadeIn
+      v-bind('animationConfig.skeleton.reducedMotionEnterDurationSec') ease-out;
   }
 
   @keyframes fadeIn {

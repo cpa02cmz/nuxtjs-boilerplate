@@ -944,9 +944,9 @@ defineExpose({
 /* Smooth textarea transition */
 textarea {
   transition:
-    height 0.2s ease-out,
-    box-shadow 0.2s ease-out,
-    border-color 0.2s ease-out;
+    height v-bind('animationConfig.cssTransitions.normalSec') ease-out,
+    box-shadow v-bind('animationConfig.cssTransitions.normalSec') ease-out,
+    border-color v-bind('animationConfig.cssTransitions.normalSec') ease-out;
 }
 
 /* Palette's Micro-UX: Live indicator for recent comments */
