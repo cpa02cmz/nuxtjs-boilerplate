@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { createErrorTracker } from '~/server/utils/error-tracker'
+import {
+  createErrorTracker,
+  validateErrorMetricParams,
+} from '~/server/utils/error-tracker'
 
 // Mock transaction client
 const createMockTransactionClient = () => ({
@@ -217,6 +220,69 @@ describe('Error Tracker', () => {
 
       await expect(errorTracker.resolveErrors(['error-1'])).rejects.toThrow(
         'DB Error'
+      )
+    })
+  })
+
+  describe('validateErrorMetricParams', () => {
+    it('should validate correct parameters', () => {
+      const result = validateErrorMetricParams('error', 'server', 12)
+      expect(result.isValid).toBe(true)
+      expect(result.error).toBeUndefined()
+    })
+
+    it('should reject invalid severity', () => {
+      const result = validateErrorMetricParams('invalid', 'server', 12)
+      expect(result.isValid).toBe(false)
+      expect(result.error).toContain('Invalid severity')
+      expect(result.error).toContain('info, warning, error, critical')
+    })
+
+    it('should reject invalid source', () => {
+      const result = validateErrorMetricParams('error', 'invalid', 12)
+      expect(result.isValid).toBe(false)
+      expect(result.error).toContain('Invalid source')
+      expect(result.error).toContain('client, server, api')
+    })
+
+    it('should reject invalid hour (negative)', () => {
+      const result = validateErrorMetricParams('error', 'server', -1)
+      expect(result.isValid).toBe(false)
+      expect(result.error).toContain('Invalid hour')
+    })
+
+    it('should reject invalid hour (too high)', () => {
+      const result = validateErrorMetricParams('error', 'server', 24)
+      expect(result.isValid).toBe(false)
+      expect(result.error).toContain('Invalid hour')
+    })
+
+    it('should reject non-integer hour', () => {
+      const result = validateErrorMetricParams('error', 'server', 12.5)
+      expect(result.isValid).toBe(false)
+      expect(result.error).toContain('Invalid hour')
+    })
+
+    it('should accept all valid severities', () => {
+      const severities = ['info', 'warning', 'error', 'critical']
+      severities.forEach(severity => {
+        const result = validateErrorMetricParams(severity, 'server', 0)
+        expect(result.isValid).toBe(true)
+      })
+    })
+
+    it('should accept all valid sources', () => {
+      const sources = ['client', 'server', 'api']
+      sources.forEach(source => {
+        const result = validateErrorMetricParams('error', source, 23)
+        expect(result.isValid).toBe(true)
+      })
+    })
+
+    it('should accept boundary hour values', () => {
+      expect(validateErrorMetricParams('error', 'server', 0).isValid).toBe(true)
+      expect(validateErrorMetricParams('error', 'server', 23).isValid).toBe(
+        true
       )
     })
   })

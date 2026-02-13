@@ -14,6 +14,7 @@ export const databaseConfig = {
   },
 
   // Connection Timeouts (ms) - Different values per environment
+  // These control how long to wait for database file access (busy timeout)
   timeouts: {
     development: parseInt(process.env.DB_TIMEOUT_DEV_MS || '5000'),
     production: parseInt(process.env.DB_TIMEOUT_PROD_MS || '10000'),
@@ -27,6 +28,11 @@ export const databaseConfig = {
   },
 
   // Connection Pool Settings
+  // NOTE: SQLite is file-based and doesn't use traditional connection pooling
+  // like PostgreSQL or MySQL. These settings are reserved for future use if
+  // the database is migrated to a client-server model. The better-sqlite3
+  // adapter manages connections synchronously with a single connection per
+  // database file. See: https://github.com/WiseLibs/better-sqlite3/issues/637
   pool: {
     min: parseInt(process.env.DB_POOL_MIN || '2'),
     max: parseInt(process.env.DB_POOL_MAX || '10'),

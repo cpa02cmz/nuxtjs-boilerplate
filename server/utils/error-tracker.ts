@@ -178,7 +178,46 @@ export function createErrorTracker() {
 }
 
 /**
+ * Validates error metric parameters before database operations
+ * Ensures data integrity at the application level
+ */
+export function validateErrorMetricParams(
+  severity: string,
+  source: string,
+  hour: number
+): { isValid: boolean; error?: string } {
+  // Validate severity - must be one of the allowed values
+  const validSeverities = ['info', 'warning', 'error', 'critical']
+  if (!validSeverities.includes(severity)) {
+    return {
+      isValid: false,
+      error: `Invalid severity: ${severity}. Must be one of: ${validSeverities.join(', ')}`,
+    }
+  }
+
+  // Validate source - must be one of the allowed values
+  const validSources = ['client', 'server', 'api']
+  if (!validSources.includes(source)) {
+    return {
+      isValid: false,
+      error: `Invalid source: ${source}. Must be one of: ${validSources.join(', ')}`,
+    }
+  }
+
+  // Validate hour - must be between 0 and 23
+  if (hour < 0 || hour > 23 || !Number.isInteger(hour)) {
+    return {
+      isValid: false,
+      error: `Invalid hour: ${hour}. Must be an integer between 0 and 23`,
+    }
+  }
+
+  return { isValid: true }
+}
+
+/**
  * Update hourly error metrics
+ * Includes application-level validation before database operations
  */
 async function updateErrorMetrics(
   severity: string,
@@ -188,6 +227,16 @@ async function updateErrorMetrics(
     const now = new Date()
     const date = new Date(now.getFullYear(), now.getMonth(), now.getDate())
     const hour = now.getHours()
+
+    // Application-level validation before attempting database operations
+    const validation = validateErrorMetricParams(severity, source, hour)
+    if (!validation.isValid) {
+      logger.error(
+        '[ErrorTracker] Validation failed for error metrics:',
+        validation.error
+      )
+      return
+    }
 
     await prisma.errorMetric.upsert({
       where: {

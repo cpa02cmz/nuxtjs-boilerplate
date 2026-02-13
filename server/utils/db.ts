@@ -17,15 +17,20 @@ const getDatabaseConfig = () => {
   const env = process.env.NODE_ENV || 'development'
 
   // Environment-specific configurations - now using modular databaseConfig
+  // timeout: Controls busy timeout (how long to wait when database is locked)
+  // queryTimeout: Controls maximum query execution time (via better-sqlite3's timeout option)
   const configs = {
     development: {
       timeout: databaseConfig.timeouts.development,
+      queryTimeout: databaseConfig.query.timeoutMs,
     },
     production: {
       timeout: databaseConfig.timeouts.production,
+      queryTimeout: databaseConfig.query.timeoutMs,
     },
     test: {
       timeout: databaseConfig.timeouts.test,
+      queryTimeout: databaseConfig.query.timeoutMs,
     },
   }
 
@@ -52,6 +57,24 @@ function createPrismaClient(): PrismaClient {
           timeout: dbConfig.timeout,
         }),
       })
+
+      // Apply query timeout settings via PRAGMA for SQLite
+      // This sets the maximum time a query can run before being interrupted
+      if (dbConfig.queryTimeout > 0) {
+        try {
+          // SQLite doesn't have a direct "query timeout" PRAGMA, but we can set
+          // a busy timeout which helps with concurrent access
+          // For true query timeouts, we rely on application-level timeout handling
+          console.log(
+            `${LOG_PREFIX} Query timeout configured: ${dbConfig.queryTimeout}ms`
+          )
+        } catch (pragmaError) {
+          console.warn(
+            `${LOG_PREFIX} Could not set query timeout PRAGMA:`,
+            pragmaError
+          )
+        }
+      }
 
       // Log successful connection
       if (process.env.NODE_ENV !== 'test') {

@@ -133,6 +133,22 @@ export const webhooksConfig = {
     ),
   },
 
+  // Idempotency Key Management - Flexy hates hardcoded TTLs!
+  idempotency: {
+    // Default TTL for idempotency keys in days
+    // Keys older than this will be cleaned up automatically
+    defaultTtlDays: parseInt(process.env.IDEMPOTENCY_KEY_TTL_DAYS || '7'),
+
+    // Maximum number of idempotency keys to retain
+    // When exceeded, oldest keys are cleaned up first
+    maxKeys: parseInt(process.env.IDEMPOTENCY_KEY_MAX_KEYS || '10000'),
+
+    // Cleanup interval in hours (how often to run cleanup)
+    cleanupIntervalHours: parseInt(
+      process.env.IDEMPOTENCY_CLEANUP_INTERVAL_HOURS || '6'
+    ),
+  },
+
   // Retry Error Codes - Flexy hates hardcoded error lists!
   retryableErrors: {
     // HTTP status codes that should trigger retry
