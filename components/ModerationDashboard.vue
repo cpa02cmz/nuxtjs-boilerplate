@@ -5,13 +5,22 @@
       <p>{{ config.dashboard.subtitle }}</p>
     </header>
 
-    <section aria-label="Dashboard statistics" class="dashboard-stats">
+    <section
+      aria-label="Dashboard statistics"
+      class="dashboard-stats"
+    >
       <article class="stat-card">
         <h2>{{ config.stats.pendingTitle }}</h2>
-        <div class="stat-value" :aria-label="`Number of pending reviews`">
+        <div
+          class="stat-value"
+          :aria-label="`Number of pending reviews`"
+        >
           {{ pendingCount }}
         </div>
-        <NuxtLink to="/moderation/queue" class="stat-link">
+        <NuxtLink
+          to="/moderation/queue"
+          class="stat-link"
+        >
           {{ config.stats.viewQueue }}
         </NuxtLink>
       </article>
@@ -24,7 +33,12 @@
         >
           {{ approvedCount }}
         </div>
-        <div class="stat-trend up" aria-label="12 percent increase">+12%</div>
+        <div
+          class="stat-trend up"
+          aria-label="12 percent increase"
+        >
+          +12%
+        </div>
       </article>
 
       <article class="stat-card">
@@ -35,15 +49,26 @@
         >
           {{ rejectedCount }}
         </div>
-        <div class="stat-trend down" aria-label="5 percent decrease">-5%</div>
+        <div
+          class="stat-trend down"
+          aria-label="5 percent decrease"
+        >
+          -5%
+        </div>
       </article>
 
       <article class="stat-card">
         <h2>{{ config.stats.flaggedTitle }}</h2>
-        <div class="stat-value" :aria-label="`Number of flagged resources`">
+        <div
+          class="stat-value"
+          :aria-label="`Number of flagged resources`"
+        >
           {{ flaggedCount }}
         </div>
-        <NuxtLink to="/moderation/flags" class="stat-link">
+        <NuxtLink
+          to="/moderation/flags"
+          class="stat-link"
+        >
           {{ config.stats.viewFlags }}
         </NuxtLink>
       </article>
@@ -57,7 +82,10 @@
         <h2 id="recent-activity-heading">
           {{ config.dashboard.recentActivity }}
         </h2>
-        <ul class="activity-list" role="list">
+        <ul
+          class="activity-list"
+          role="list"
+        >
           <li
             v-for="activity in recentActivity"
             :key="activity.id"
@@ -72,7 +100,10 @@
             </div>
             <div class="activity-content">
               <p>{{ activity.message }}</p>
-              <time class="activity-time" :datetime="activity.timestamp">{{
+              <time
+                class="activity-time"
+                :datetime="activity.timestamp"
+              >{{
                 formatDate(activity.timestamp)
               }}</time>
             </div>
@@ -80,17 +111,26 @@
         </ul>
       </section>
 
-      <section class="quick-actions" aria-labelledby="quick-actions-heading">
+      <section
+        class="quick-actions"
+        aria-labelledby="quick-actions-heading"
+      >
         <h2 id="quick-actions-heading">
           {{ config.dashboard.quickActions }}
         </h2>
-        <nav class="action-buttons" aria-label="Quick actions navigation">
+        <nav
+          class="action-buttons"
+          aria-label="Quick actions navigation"
+        >
           <NuxtLink
             to="/moderation/queue"
             class="action-btn"
             aria-label="Go to review queue"
           >
-            <span class="action-icon" aria-hidden="true">📋</span>
+            <span
+              class="action-icon"
+              aria-hidden="true"
+            >📋</span>
             <span>{{ config.actions.reviewQueue }}</span>
           </NuxtLink>
 
@@ -99,7 +139,10 @@
             class="action-btn"
             aria-label="View flagged content"
           >
-            <span class="action-icon" aria-hidden="true">🚩</span>
+            <span
+              class="action-icon"
+              aria-hidden="true"
+            >🚩</span>
             <span>{{ config.actions.flaggedContent }}</span>
           </NuxtLink>
 
@@ -108,7 +151,10 @@
             class="action-btn"
             aria-label="View submissions"
           >
-            <span class="action-icon" aria-hidden="true">📝</span>
+            <span
+              class="action-icon"
+              aria-hidden="true"
+            >📝</span>
             <span>{{ config.actions.submissions }}</span>
           </NuxtLink>
 
@@ -117,7 +163,10 @@
             class="action-btn"
             aria-label="Go to settings"
           >
-            <span class="action-icon" aria-hidden="true">⚙️</span>
+            <span
+              class="action-icon"
+              aria-hidden="true"
+            >⚙️</span>
             <span>{{ config.actions.settings }}</span>
           </NuxtLink>
         </nav>
