@@ -120,7 +120,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint with idle pulse animation -->
       <div
         v-if="!modelValue && !isFocused"
@@ -149,7 +149,8 @@
         aria-hidden="true"
       />
 
-      <transition
+      <!-- Enhanced Clear Button with Magnetic Effect & Particle Burst - Palette's micro-UX delight! -->
+      <Transition
         enter-active-class="transition-all duration-200 ease-out"
         enter-from-class="opacity-0 scale-75"
         enter-to-class="opacity-100 scale-100"
@@ -163,34 +164,62 @@
           position="bottom"
           :delay="animationConfig.tooltip.showDelayMs"
         >
-          <button
-            ref="clearButtonRef"
-            type="button"
-            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none transition-all duration-200 ease-out rounded-full p-0.5 hover:bg-gray-100 hover:rotate-90 focus:ring-2 focus:ring-blue-500 active:scale-90"
-            :aria-label="contentConfig.search.clearAriaLabel"
-            :aria-keyshortcuts="'Escape'"
-            @click="clearSearch"
-            @keydown.enter.prevent="clearSearch"
-            @keydown.space.prevent="clearSearch"
-          >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+          <div class="absolute inset-y-0 right-0 flex items-center">
+            <!-- Particle Burst Container - Palette's micro-UX delight! ✨ -->
+            <TransitionGroup
+              v-if="showParticles && !prefersReducedMotion"
+              tag="div"
+              class="particle-container"
               aria-hidden="true"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
+              <span
+                v-for="particle in particles"
+                :key="particle.id"
+                class="particle"
+                :style="{
+                  '--particle-x': `${particle.x}px`,
+                  '--particle-y': `${particle.y}px`,
+                  '--particle-color': particle.color,
+                  '--particle-size': `${particle.size}px`,
+                  '--particle-duration': `${animationConfig.bookmark.particleBurst.durationSec}s`,
+                  '--particle-fade-delay': `${animationConfig.bookmark.particleBurst.fadeDelaySec}s`,
+                  '--particle-rotation': `${particle.rotation}deg`,
+                }"
               />
-            </svg>
-          </button>
+            </TransitionGroup>
+
+            <!-- Magnetic Clear Button -->
+            <button
+              ref="clearButtonRef"
+              type="button"
+              class="clear-button magnetic-button"
+              :class="{ 'magnetic-active': !prefersReducedMotion }"
+              :style="!prefersReducedMotion ? magneticTransformStyle : {}"
+              :aria-label="contentConfig.search.clearAriaLabel"
+              :aria-keyshortcuts="'Escape'"
+              @click="clearSearch"
+              @keydown.enter.prevent="clearSearch"
+              @keydown.space.prevent="clearSearch"
+            >
+              <svg
+                class="w-5 h-5 clear-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
         </Tooltip>
-      </transition>
+      </Transition>
     </div>
 
     <!-- Search Suggestions Dropdown -->
@@ -230,12 +259,14 @@ import { ref, computed, onUnmounted, nextTick } from 'vue'
 import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
+import { useMagneticButton } from '~/composables/useMagneticButton'
 import Tooltip from '~/components/Tooltip.vue'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
 import { searchConfig } from '~/configs/search.config'
 import { uiConfig } from '~/configs/ui.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { hapticSuccess } from '~/utils/hapticFeedback'
 
 // SSR-safe config fallbacks - BroCula fixed these! 🦇
 // During SSR, external configs might not be available, so we provide safe defaults
@@ -300,6 +331,27 @@ let shortcutSuccessTimeout: ReturnType<typeof setTimeout> | null = null
 let focusPulseTimeout: ReturnType<typeof setTimeout> | null = null
 let focusGlowTimeout: ReturnType<typeof setTimeout> | null = null
 let searchCompleteTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Palette's micro-UX enhancement: Magnetic clear button with particle burst! ✨
+// Adds delightful magnetic pull effect and celebratory particles when clearing search
+const showParticles = ref(false)
+const particles = ref<
+  Array<{
+    id: number
+    x: number
+    y: number
+    color: string
+    size: number
+    rotation: number
+  }>
+>([])
+
+// Initialize magnetic button effect for clear button
+const { transformStyle: magneticTransformStyle } = useMagneticButton({
+  strength: animationConfig.magneticButton.strength,
+  maxDistancePx: animationConfig.magneticButton.maxDistancePx,
+  returnDurationMs: animationConfig.magneticButton.returnDurationMs,
+})
 
 // Use the resources composable
 const { resources } = useResourceData()
@@ -374,6 +426,14 @@ const updateSuggestions = (query: string) => {
 }
 
 const clearSearch = () => {
+  // Trigger particle burst for delightful feedback - Palette's micro-UX enhancement!
+  if (!prefersReducedMotion.value) {
+    triggerParticleBurst()
+  }
+
+  // Haptic feedback for successful clear action
+  hapticSuccess()
+
   emit('update:modelValue', '')
   emit('search', '')
   suggestions.value = []
@@ -385,6 +445,49 @@ const clearSearch = () => {
   nextTick(() => {
     searchInputRef.value?.focus()
   })
+}
+
+// Palette's micro-UX delight: Generate particle burst for clear button! ✨
+const triggerParticleBurst = () => {
+  if (prefersReducedMotion.value) return
+
+  const particleConfig = animationConfig.bookmark.particleBurst
+  const count = particleConfig.enabled ? particleConfig.particleCount : 0
+  const newParticles = []
+
+  for (let i = 0; i < count; i++) {
+    const angle = (360 / count) * i + Math.random() * 30
+    const radians = (angle * Math.PI) / 180
+    const distance = particleConfig.spreadPx * (0.7 + Math.random() * 0.6)
+    const x = Math.cos(radians) * distance
+    const y = Math.sin(radians) * distance
+
+    newParticles.push({
+      id: Date.now() + i,
+      x,
+      y,
+      color:
+        particleConfig.colors[
+          Math.floor(Math.random() * particleConfig.colors.length)
+        ],
+      size:
+        particleConfig.minSizePx +
+        Math.random() * (particleConfig.maxSizePx - particleConfig.minSizePx),
+      rotation: Math.random() * 360,
+    })
+  }
+
+  particles.value = newParticles
+  showParticles.value = true
+
+  // Hide particles after animation
+  setTimeout(
+    () => {
+      showParticles.value = false
+      particles.value = []
+    },
+    (particleConfig.durationSec + particleConfig.fadeDelaySec) * 1000
+  )
 }
 
 const handleFocus = () => {
@@ -836,6 +939,141 @@ if (typeof window !== 'undefined') {
   .animate-focus-glow {
     animation: none !important;
     display: none !important;
+  }
+}
+
+/* Palette's micro-UX enhancement: Magnetic Clear Button Styles 🧲 */
+.clear-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-right: 0.75rem;
+  color: rgb(156, 163, 175); /* gray-400 */
+  background-color: transparent;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all v-bind('animationConfig.cssTransitions.fastSec') ease-out;
+  position: relative;
+  outline: none;
+}
+
+.clear-button:hover {
+  color: rgb(75, 85, 99); /* gray-600 */
+  background-color: rgb(243, 244, 246); /* gray-100 */
+}
+
+.clear-button:focus-visible {
+  box-shadow: 0 0 0 2px rgb(59, 130, 246); /* blue-500 */
+  color: rgb(75, 85, 99);
+}
+
+.clear-button:active {
+  transform: scale(0.9);
+}
+
+/* Magnetic button active state */
+.magnetic-button.magnetic-active {
+  will-change: transform;
+  transition: transform
+    v-bind('animationConfig.magneticButton.returnDurationMs + "ms"') ease-out;
+}
+
+/* Clear icon rotation on hover */
+.clear-button:hover .clear-icon {
+  transform: rotate(90deg);
+  transition: transform v-bind('animationConfig.cssTransitions.normalSec')
+    ease-out;
+}
+
+/* Particle Burst Styles - Palette's micro-UX delight! ✨ */
+.particle-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  background: var(--particle-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(var(--particle-rotation));
+  animation: search-clear-particle-burst var(--particle-duration) ease-out
+    forwards;
+  animation-delay: 0s;
+  opacity: 0;
+}
+
+@keyframes search-clear-particle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(
+        calc(-50% + var(--particle-x) * 0.5),
+        calc(-50% + var(--particle-y) * 0.5)
+      )
+      scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+        calc(-50% + var(--particle-x)),
+        calc(-50% + var(--particle-y))
+      )
+      scale(0.2);
+  }
+}
+
+/* Alternative star-shaped particle variant */
+.particle:nth-child(3n) {
+  border-radius: 0;
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+/* Alternative diamond-shaped particle variant */
+.particle:nth-child(5n) {
+  border-radius: 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* Reduced motion support for magnetic button and particles */
+@media (prefers-reduced-motion: reduce) {
+  .magnetic-button.magnetic-active {
+    transition: none;
+    transform: none !important;
+  }
+
+  .clear-button:hover .clear-icon {
+    transition: none;
+    transform: none;
+  }
+
+  .particle-container {
+    display: none;
   }
 }
 </style>
