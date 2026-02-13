@@ -129,16 +129,60 @@
         </ul>
       </div>
     </div>
+
+    <!-- Keyboard navigation hint - Palette's micro-UX enhancement!
+         Subtle hint that appears when timeline is focused via keyboard -->
+    <div
+      v-if="statusHistory && statusHistory.length > 1"
+      class="keyboard-hint"
+      :class="{ 'keyboard-hint--visible': isKeyboardFocused }"
+      role="note"
+      aria-label="Keyboard navigation shortcuts"
+    >
+      <div class="keyboard-hint__content">
+        <span class="keyboard-hint__item">
+          <kbd class="keyboard-hint__key">↑</kbd>
+          <kbd class="keyboard-hint__key">↓</kbd>
+          <span class="keyboard-hint__text">Navigate</span>
+        </span>
+        <span
+          class="keyboard-hint__divider"
+          aria-hidden="true"
+        >•</span>
+        <span class="keyboard-hint__item">
+          <kbd class="keyboard-hint__key">j</kbd>
+          <kbd class="keyboard-hint__key">k</kbd>
+          <span class="keyboard-hint__text">Vim style</span>
+        </span>
+        <span
+          class="keyboard-hint__divider"
+          aria-hidden="true"
+        >•</span>
+        <span class="keyboard-hint__item">
+          <kbd class="keyboard-hint__key">Home</kbd>
+          <span class="keyboard-hint__text">First</span>
+        </span>
+        <span
+          class="keyboard-hint__divider"
+          aria-hidden="true"
+        >•</span>
+        <span class="keyboard-hint__item">
+          <kbd class="keyboard-hint__key">End</kbd>
+          <span class="keyboard-hint__text">Last</span>
+        </span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import type { StatusChange, ResourceUpdate } from '~/types/resource'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
+import { easingConfig } from '~/configs/easing.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -156,6 +200,8 @@ const ripples = ref<{ [key: number]: { x: number; y: number; size: number } }>(
 )
 const clickedIndex = ref<number | null>(null)
 const announcement = ref('')
+const isKeyboardFocused = ref(false)
+let keyboardFocusTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
@@ -268,6 +314,12 @@ const handleItemClick = (
 const handleKeydown = (event: KeyboardEvent, index: number) => {
   const items = document.querySelectorAll('.timeline-item')
 
+  // Show keyboard hint when using keyboard navigation
+  isKeyboardFocused.value = true
+  if (keyboardFocusTimeout) {
+    clearTimeout(keyboardFocusTimeout)
+  }
+
   switch (event.key) {
     case 'ArrowDown':
     case 'j':
@@ -294,6 +346,21 @@ const handleKeydown = (event: KeyboardEvent, index: number) => {
   }
 }
 
+// Handle focus to show keyboard hint
+const handleFocus = () => {
+  isKeyboardFocused.value = true
+  if (keyboardFocusTimeout) {
+    clearTimeout(keyboardFocusTimeout)
+  }
+}
+
+// Handle blur to hide keyboard hint after delay
+const handleBlur = () => {
+  keyboardFocusTimeout = setTimeout(() => {
+    isKeyboardFocused.value = false
+  }, animationConfig.tooltip.hideDelayMs)
+}
+
 // Setup on mount
 onMounted(() => {
   // Check reduced motion preference
@@ -303,6 +370,19 @@ onMounted(() => {
   setTimeout(() => {
     isLoaded.value = true
   }, 100)
+
+  // Add global focus tracking for keyboard hint
+  document.addEventListener('focusin', handleFocus)
+  document.addEventListener('focusout', handleBlur)
+})
+
+// Cleanup on unmount
+onUnmounted(() => {
+  document.removeEventListener('focusin', handleFocus)
+  document.removeEventListener('focusout', handleBlur)
+  if (keyboardFocusTimeout) {
+    clearTimeout(keyboardFocusTimeout)
+  }
 })
 </script>
 
@@ -376,9 +456,28 @@ onMounted(() => {
   background-color: v-bind('componentColorsConfig.lifecycleTimeline.focusBg');
 }
 
-/* Click/tap feedback animation - Palette's micro-UX delight! */
+/* Click/tap feedback animation - Palette's micro-UX delight!
+   Enhanced with spring easing for more tactile, delightful feel */
 .timeline-item--clicked {
-  transform: scale(0.98);
+  animation: timeline-item-press
+    v-bind('animationConfig.microInteractions.clickFeedbackDurationMs + "ms"')
+    v-bind(
+      'easingConfig?.cubicBezier?.spring ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+    );
+}
+
+@keyframes timeline-item-press {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(
+      v-bind('animationConfig.microInteractions.clickShrinkScale')
+    );
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* Ripple effect styles */
@@ -642,5 +741,85 @@ onMounted(() => {
 .timeline-item:focus {
   outline: 2px solid v-bind('componentColorsConfig.focusRing.color');
   outline-offset: 2px;
+}
+
+/* Keyboard navigation hint - Palette's micro-UX enhancement!
+   Shows keyboard shortcuts when user navigates via keyboard */
+.keyboard-hint {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid v-bind('componentColorsConfig.lifecycleTimeline.border');
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all v-bind('animationConfig.transition.normal.durationMs + "ms"')
+    ease-out;
+  pointer-events: none;
+}
+
+.keyboard-hint--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.keyboard-hint__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.hintText');
+}
+
+.keyboard-hint__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.keyboard-hint__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  padding: 0.125rem 0.375rem;
+  font-family: monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.hintKeyText');
+  background-color: v-bind('componentColorsConfig.lifecycleTimeline.hintKeyBg');
+  border: 1px solid
+    v-bind('componentColorsConfig.lifecycleTimeline.hintKeyBorder');
+  border-radius: 0.25rem;
+  box-shadow: 0 1px 0
+    v-bind('componentColorsConfig.lifecycleTimeline.hintKeyBorder');
+}
+
+.keyboard-hint__text {
+  margin-left: 0.25rem;
+}
+
+.keyboard-hint__divider {
+  color: v-bind('componentColorsConfig.lifecycleTimeline.hintDivider');
+  opacity: 0.5;
+}
+
+/* Reduced motion support for keyboard hint */
+@media (prefers-reduced-motion: reduce) {
+  .keyboard-hint {
+    transition: opacity 0.1s ease;
+    transform: none;
+  }
+
+  .keyboard-hint--visible {
+    transform: none;
+  }
+}
+
+/* Hide keyboard hint on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .keyboard-hint {
+    display: none;
+  }
 }
 </style>
