@@ -211,8 +211,8 @@ onMounted(() => {
   opacity: 0;
   transform: translateY(10px);
   transition:
-    opacity v-bind('animationConfig.card.enterDurationMs') ms ease-out,
-    transform v-bind('animationConfig.card.enterDurationMs') ms ease-out;
+    opacity v-bind('animationConfig.card.enterDurationMs + "ms"') ease-out,
+    transform v-bind('animationConfig.card.enterDurationMs + "ms"') ease-out;
 }
 
 .lifecycle-timeline--loaded {
@@ -238,13 +238,13 @@ onMounted(() => {
   gap: 1rem;
   opacity: 0;
   transform: translateX(-20px);
-  animation: slide-in v-bind('animationConfig.suggestion.staggerDelayMs') ms
+  animation: slide-in v-bind('animationConfig.suggestion.staggerDelayMs + "ms"')
     ease-out forwards;
   animation-delay: calc(
-    var(--item-index) * v-bind('animationConfig.card.staggerDelayMs') ms
+    var(--item-index) * v-bind('animationConfig.card.staggerDelayMs + "ms"')
   );
-  transition: transform v-bind('animationConfig.transition.normal.durationMs')
-    ms ease-out;
+  transition: transform
+    v-bind('animationConfig.transition.normal.durationMs + "ms"') ease-out;
 }
 
 @keyframes slide-in {
