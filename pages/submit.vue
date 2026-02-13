@@ -90,7 +90,9 @@
                 :max-length="maxTitleLength"
                 :is-focused="isTitleFocused"
                 :show-counter="true"
-                :warning-threshold="0.8"
+                :warning-threshold="
+                  validationConfig.characterCounter.warningThreshold
+                "
               >
                 <template #default="{ isNearLimit, isOverLimit }">
                   <input

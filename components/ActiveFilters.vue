@@ -61,7 +61,9 @@
         @touchstart="handleChipPressStart('search', searchQuery)"
         @touchend="handleChipPressEnd('search', searchQuery)"
       >
-        <span class="truncate max-w-[200px]">{{ searchQuery }}</span>
+        <span :class="['truncate', uiConfig.chips.queryMaxWidth]">{{
+          searchQuery
+        }}</span>
         <span
           class="remove-icon"
           aria-hidden="true"
@@ -120,7 +122,9 @@
         <span class="text-gray-500 mr-1.5">{{
           contentConfig.filters.labels.category
         }}</span>
-        <span class="truncate max-w-[150px]">{{ category }}</span>
+        <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
+          category
+        }}</span>
         <span
           class="remove-icon"
           aria-hidden="true"
@@ -178,7 +182,9 @@
         <span class="text-green-600 mr-1.5">{{
           contentConfig.filters.labels.pricing
         }}</span>
-        <span class="truncate max-w-[150px]">{{ pricing }}</span>
+        <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
+          pricing
+        }}</span>
         <span
           class="remove-icon"
           aria-hidden="true"
@@ -236,7 +242,9 @@
         <span class="text-purple-600 mr-1.5">{{
           contentConfig.filters.labels.difficulty
         }}</span>
-        <span class="truncate max-w-[150px]">{{ difficulty }}</span>
+        <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
+          difficulty
+        }}</span>
         <span
           class="remove-icon"
           aria-hidden="true"
@@ -294,7 +302,9 @@
         <span class="text-orange-600 mr-1.5">{{
           contentConfig.filters.labels.tech
         }}</span>
-        <span class="truncate max-w-[150px]">{{ tech }}</span>
+        <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
+          tech
+        }}</span>
         <span
           class="remove-icon"
           aria-hidden="true"
@@ -352,7 +362,9 @@
         <span class="text-pink-600 mr-1.5">{{
           contentConfig.filters.labels.tag
         }}</span>
-        <span class="truncate max-w-[150px]">{{ tag }}</span>
+        <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
+          tag
+        }}</span>
         <span
           class="remove-icon"
           aria-hidden="true"
@@ -410,7 +422,9 @@
         <span class="text-teal-600 mr-1.5">{{
           contentConfig.filters.labels.benefit
         }}</span>
-        <span class="truncate max-w-[150px]">{{ benefit }}</span>
+        <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
+          benefit
+        }}</span>
         <span
           class="remove-icon"
           aria-hidden="true"
@@ -523,7 +537,7 @@
             d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
           />
         </svg>
-        <span class="truncate max-w-[150px]">{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span>
+        <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span>
         <kbd
           class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
           aria-hidden="true"

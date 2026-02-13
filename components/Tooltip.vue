@@ -142,8 +142,8 @@ const isMouseOverTooltip = ref(false)
 const touchStartY = ref(0)
 const touchCurrentY = ref(0)
 const isSwiping = ref(false)
-// Minimum swipe distance to dismiss (px) - Flexy hates hardcoded values!
-const SWIPE_THRESHOLD = 50
+// Minimum swipe distance to dismiss (px) - Flexy hates hardcoded values! Using config now.
+const SWIPE_THRESHOLD = animationConfig.tooltip.swipeThresholdPx
 
 const positionClasses: Record<TooltipPosition, string> = {
   top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
