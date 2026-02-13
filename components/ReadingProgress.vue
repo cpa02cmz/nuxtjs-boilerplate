@@ -82,7 +82,12 @@
     </Transition>
 
     <!-- Screen reader announcement for progress changes -->
-    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >
       {{ progressAnnouncement }}
     </div>
 
@@ -111,8 +116,16 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
-              <path class="checkmark-path" d="M7 12l3 3 7-7" />
+              <circle
+                class="checkmark-circle"
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                class="checkmark-path"
+                d="M7 12l3 3 7-7"
+              />
             </svg>
           </div>
           <span class="completion-text">{{
@@ -120,7 +133,10 @@
           }}</span>
         </div>
         <!-- Confetti burst effect -->
-        <div class="confetti-container" aria-hidden="true">
+        <div
+          class="confetti-container"
+          aria-hidden="true"
+        >
           <span
             v-for="n in 8"
             :key="n"
@@ -640,7 +656,11 @@ onUnmounted(() => {
   stroke-linejoin: round;
   stroke-dasharray: 20;
   stroke-dashoffset: 20;
-  animation: checkmark-draw 0.3s ease-out 0.3s forwards;
+  animation: checkmark-draw
+    v-bind('`${animationConfig.readingProgress.checkmarkDrawDurationMs}ms`')
+    ease-out
+    v-bind('`${animationConfig.readingProgress.checkmarkDrawDelayMs}ms`')
+    forwards;
 }
 
 @keyframes checkmark-draw {
@@ -656,7 +676,10 @@ onUnmounted(() => {
   );
   color: v-bind('themeConfig.readingProgress.completionTextColor');
   white-space: nowrap;
-  animation: text-fade-in 0.3s ease-out 0.4s both;
+  animation: text-fade-in
+    v-bind('`${animationConfig.readingProgress.textFadeInDurationMs}ms`')
+    ease-out v-bind('`${animationConfig.readingProgress.textFadeInDelayMs}ms`')
+    both;
 }
 
 @keyframes text-fade-in {
@@ -689,7 +712,11 @@ onUnmounted(() => {
   );
   border-radius: 50%;
   opacity: 0;
-  animation: confetti-burst 0.8s ease-out 0.2s forwards;
+  animation: confetti-burst
+    v-bind('`${animationConfig.readingProgress.confettiBurstDurationMs}ms`')
+    ease-out
+    v-bind('`${animationConfig.readingProgress.confettiBurstDelayMs}ms`')
+    forwards;
   --angle: calc(var(--confetti-index) * 45deg);
 }
 

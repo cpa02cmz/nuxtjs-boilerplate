@@ -323,10 +323,18 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Staggered entrance animation */
+/* Staggered entrance animation - Flexy hates hardcoded values! Using config now. */
 .space-y-3 > * {
-  animation: stagger-entrance 0.5s ease-out backwards;
-  animation-delay: calc(var(--stagger-delay, 50ms) * var(--index, 0));
+  animation: stagger-entrance
+    v-bind('animationConfig.popularSearches.entranceDurationSec') ease-out
+    backwards;
+  animation-delay: calc(
+    var(
+        --stagger-delay,
+        v-bind('`${animationConfig.popularSearches.staggerDelayMs}ms`')
+      ) *
+      var(--index, 0)
+  );
 }
 
 .space-y-3 > *:nth-child(1) {
@@ -380,7 +388,9 @@ onUnmounted(() => {
 }
 
 .animate-ripple {
-  animation: ripple 0.6s ease-out forwards;
+  animation: ripple
+    v-bind('`${animationConfig.popularSearches.rippleDurationMs}ms`') ease-out
+    forwards;
 }
 
 /* Subtle pulse for trending indicator */
@@ -395,7 +405,9 @@ onUnmounted(() => {
 }
 
 .animate-pulse-subtle {
-  animation: pulse-subtle 2s ease-in-out infinite;
+  animation: pulse-subtle
+    v-bind('`${animationConfig.popularSearches.trendingPulseDurationSec}s`')
+    ease-in-out infinite;
 }
 
 /* Scale 98 for click feedback */
