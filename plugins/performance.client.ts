@@ -4,6 +4,7 @@ import { onCLS, onFCP, onLCP, onTTFB, onINP } from 'web-vitals'
 import { createStorage } from '~/utils/storage'
 import { logger } from '~/utils/logger'
 import { limitsConfig } from '~/configs/limits.config'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 // Storage key constants
 const STORAGE_KEYS = {
@@ -105,7 +106,7 @@ export default defineNuxtPlugin(() => {
                 )
               }
             }
-          }, 1000)
+          }, uiTimingConfig.performance.observerTimeout)
         })
       }
     }

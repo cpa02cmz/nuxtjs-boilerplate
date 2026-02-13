@@ -43,6 +43,6 @@ export default defineEventHandler(async event => {
     return sendSuccessResponse(event, { validationResult: urlValidationResult })
   } catch (error) {
     logger.error('Error validating URL:', error)
-    handleApiRouteError(event, error)
+    return handleApiRouteError(event, error)
   }
 })
