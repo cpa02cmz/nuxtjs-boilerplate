@@ -5,10 +5,7 @@
     aria-live="polite"
   >
     <!-- Animated Illustration -->
-    <div
-      class="relative w-48 h-48 mb-8"
-      aria-hidden="true"
-    >
+    <div class="relative w-48 h-48 mb-8" aria-hidden="true">
       <!-- Background Circle -->
       <div
         class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full animate-pulse-slow"
@@ -83,10 +80,7 @@
     </p>
 
     <!-- Suggestions Section -->
-    <div
-      v-if="suggestions.length"
-      class="w-full max-w-lg mb-8"
-    >
+    <div v-if="suggestions.length" class="w-full max-w-lg mb-8">
       <p
         class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4"
       >
@@ -102,7 +96,7 @@
             animationDelay: `${index * animationConfig.emptyStateStagger.baseDelayMs}ms`,
           }"
           :class="{ 'animate-fade-in-up': !reducedMotion }"
-          @click="$emit('suggestion-click', suggestion)"
+          @click="handleSuggestionClick(suggestion)"
         >
           <svg
             class="w-4 h-4 mr-2 text-gray-400"
@@ -127,7 +121,7 @@
       <button
         v-if="showReset"
         class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
-        @click="$emit('reset')"
+        @click="handleReset"
       >
         <svg
           class="w-5 h-5 mr-2"
@@ -148,7 +142,7 @@
       <button
         v-if="showBrowseAll"
         class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-transparent hover:bg-gray-50 hover:border-gray-400 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
-        @click="$emit('browse-all')"
+        @click="handleBrowseAll"
       >
         <svg
           class="w-5 h-5 mr-2"
@@ -168,10 +162,7 @@
     </div>
 
     <!-- Tips Section -->
-    <div
-      v-if="showTips"
-      class="mt-10 p-4 bg-gray-50 rounded-xl max-w-lg"
-    >
+    <div v-if="showTips" class="mt-10 p-4 bg-gray-50 rounded-xl max-w-lg">
       <div class="flex items-start">
         <svg
           class="w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0"
@@ -206,6 +197,7 @@ import { computed } from 'vue'
 import { animationConfig } from '../configs/animation.config'
 import { contentConfig } from '../configs/content.config'
 import { componentStylesConfig } from '../configs/component-styles.config'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 // Flexy hates hardcoded values! Using config for SVG coordinates
 const emptyStateStyles = componentStylesConfig.emptyState
@@ -228,11 +220,27 @@ withDefaults(defineProps<Props>(), {
   showTips: true,
 })
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'reset'): void
   (e: 'browse-all'): void
   (e: 'suggestion-click', suggestion: string): void
 }>()
+
+// Haptic feedback wrapper functions for better mobile UX
+const handleSuggestionClick = (suggestion: string) => {
+  hapticLight()
+  emit('suggestion-click', suggestion)
+}
+
+const handleReset = () => {
+  hapticLight()
+  emit('reset')
+}
+
+const handleBrowseAll = () => {
+  hapticLight()
+  emit('browse-all')
+}
 
 // Respect user's motion preferences
 const reducedMotion = computed(() => {
