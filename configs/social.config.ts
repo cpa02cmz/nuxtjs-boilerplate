@@ -183,6 +183,7 @@ export const socialConfig = {
       bg: process.env.STYLE_SHARE_BG || 'hover:bg-gray-100',
       text: process.env.STYLE_SHARE_TEXT || 'text-gray-600',
       ring: process.env.STYLE_SHARE_RING || 'focus:ring-blue-500',
+      activeBg: process.env.STYLE_SHARE_ACTIVE_BG || '#e5e7eb',
     },
   },
 

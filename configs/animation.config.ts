@@ -1131,6 +1131,12 @@ export const animationConfig = {
     ),
     // Draft pulse timeout (ms)
     draftPulseTimeoutMs: parseInt(process.env.MICRO_DRAFT_PULSE_MS || '500'),
+    // Feedback duration for micro-interactions (ms)
+    feedbackDurationMs: parseInt(
+      process.env.MICRO_FEEDBACK_DURATION_MS || '300'
+    ),
+    // Glow animation duration (ms)
+    glowDurationMs: parseInt(process.env.MICRO_GLOW_DURATION_MS || '400'),
   },
 
   // Gradient Colors - Flexy hates hardcoded hex codes!
