@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="relative">
     <Tooltip
       :content="
         isBookmarked
@@ -48,6 +48,29 @@
         </svg>
       </button>
     </Tooltip>
+
+    <!-- Particle Burst Effect - Palette's delightful micro-UX touch! -->
+    <TransitionGroup
+      v-if="showParticles && !prefersReducedMotion"
+      tag="div"
+      class="particle-container"
+      aria-hidden="true"
+    >
+      <span
+        v-for="particle in particles"
+        :key="particle.id"
+        class="particle"
+        :style="{
+          '--particle-x': `${particle.x}px`,
+          '--particle-y': `${particle.y}px`,
+          '--particle-color': particle.color,
+          '--particle-size': `${particle.size}px`,
+          '--particle-duration': `${particleConfig.durationSec}s`,
+          '--particle-fade-delay': `${particleConfig.fadeDelaySec}s`,
+          '--particle-rotation': `${particle.rotation}deg`,
+        }"
+      />
+    </TransitionGroup>
 
     <div
       :id="`bookmark-announcement-${resourceId}`"
@@ -103,9 +126,38 @@ const bookmarkStatus = ref('')
 const isAnimating = ref(false)
 const buttonRef = ref<HTMLButtonElement | null>(null)
 
+// Particle burst state - Palette's delightful micro-UX touch!
+const showParticles = ref(false)
+const particles = ref<
+  Array<{
+    id: number
+    x: number
+    y: number
+    color: string
+    size: number
+    rotation: number
+  }>
+>([])
+
+// Check for reduced motion preference
+const prefersReducedMotion = ref(false)
+const checkReducedMotion = () => {
+  if (
+    typeof window === 'undefined' ||
+    typeof window.matchMedia !== 'function'
+  ) {
+    return false
+  }
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// Particle configuration from animation config
+const particleConfig = computed(() => animationConfig.bookmark.particleBurst)
+
 // Timeout refs for cleanup - preventing memory leaks (Issue #1826)
 let animationTimeout: ReturnType<typeof setTimeout> | null = null
 let statusTimeout: ReturnType<typeof setTimeout> | null = null
+let particleTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Initialize ripple effect for tactile feedback
 // Flexy loves modularity! Using configurable animation duration from animationConfig
@@ -120,6 +172,64 @@ const { heartPopDurationMs, statusClearDelayMs } = animationConfig.bookmark
 // Get toast notification system
 const { $toast } = useNuxtApp()
 
+// Generate random particles for burst effect - Palette's delightful micro-UX touch!
+const generateParticles = () => {
+  const config = particleConfig.value
+  const count = config.enabled ? config.particleCount : 0
+  const newParticles = []
+
+  for (let i = 0; i < count; i++) {
+    const angle = (360 / count) * i + Math.random() * 30 // Distribute evenly with some randomness
+    const radians = (angle * Math.PI) / 180
+    const distance = config.spreadPx * (0.7 + Math.random() * 0.6) // Vary distance
+    const x = Math.cos(radians) * distance
+    const y = Math.sin(radians) * distance
+
+    newParticles.push({
+      id: Date.now() + i,
+      x,
+      y,
+      color: config.colors[Math.floor(Math.random() * config.colors.length)],
+      size:
+        config.minSizePx +
+        Math.random() * (config.maxSizePx - config.minSizePx),
+      rotation: Math.random() * 360,
+    })
+  }
+
+  return newParticles
+}
+
+// Trigger particle burst animation
+const triggerParticleBurst = () => {
+  // Check reduced motion preference
+  if (checkReducedMotion()) {
+    prefersReducedMotion.value = true
+    return
+  }
+
+  prefersReducedMotion.value = false
+
+  // Don't show particles if disabled
+  if (!particleConfig.value.enabled) return
+
+  // Generate and show particles
+  particles.value = generateParticles()
+  showParticles.value = true
+
+  // Clear any existing timeout
+  if (particleTimeout) clearTimeout(particleTimeout)
+
+  // Hide particles after animation completes
+  const totalDuration =
+    (particleConfig.value.durationSec + particleConfig.value.fadeDelaySec) *
+    1000
+  particleTimeout = setTimeout(() => {
+    showParticles.value = false
+    particles.value = []
+  }, totalDuration)
+}
+
 const handleBookmarkToggle = () => {
   const wasBookmarked = isBookmarked.value
 
@@ -132,6 +242,8 @@ const handleBookmarkToggle = () => {
     }, heartPopDurationMs)
     // Haptic feedback for adding bookmark
     hapticSuccess()
+    // Trigger particle burst for delightful feedback - Palette's micro-UX touch!
+    triggerParticleBurst()
     // Show toast notification for better UX
     $toast.success(
       contentConfig.bookmarkButton.toast.added.replace('{{title}}', props.title)
@@ -170,6 +282,7 @@ const handleBookmarkToggle = () => {
 onUnmounted(() => {
   if (animationTimeout) clearTimeout(animationTimeout)
   if (statusTimeout) clearTimeout(statusTimeout)
+  if (particleTimeout) clearTimeout(particleTimeout)
 })
 
 // Handle click with ripple effect - Palette's micro-UX touch!
@@ -255,6 +368,77 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
   }
 }
 
+/* Particle Burst Animation - Palette's delightful micro-UX touch! */
+.particle-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  background: var(--particle-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(var(--particle-rotation));
+  animation: particle-burst var(--particle-duration) ease-out forwards;
+  animation-delay: 0s;
+  opacity: 0;
+}
+
+@keyframes particle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(
+        calc(-50% + var(--particle-x) * 0.5),
+        calc(-50% + var(--particle-y) * 0.5)
+      )
+      scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+        calc(-50% + var(--particle-x)),
+        calc(-50% + var(--particle-y))
+      )
+      scale(0.2);
+  }
+}
+
+/* Alternative star-shaped particle variant */
+.particle:nth-child(3n) {
+  border-radius: 0;
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+/* Alternative diamond-shaped particle variant */
+.particle:nth-child(5n) {
+  border-radius: 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .bookmarked {
@@ -264,6 +448,17 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
   .animate-heart-pop,
   .animate-bounce-scale {
     animation: none;
+  }
+
+  .particle-container {
+    display: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .particle {
+    background: currentColor;
   }
 }
 </style>
