@@ -6,6 +6,7 @@ import type { Resource } from '~/types/resource'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import { apiConfig } from '~/configs/api.config'
 import { limitsConfig } from '~/configs/limits.config'
+import { messagesConfig } from '~/configs/messages.config'
 
 interface UseComparisonPageOptions {
   autoFetch?: boolean
@@ -50,15 +51,16 @@ export const useComparisonPage = (options?: UseComparisonPageOptions) => {
       if (response.success && response.data) {
         resources.value = response.data.resources || []
       } else {
-        error.value = response.error?.message || 'Failed to load comparison'
+        error.value =
+          response.error?.message || messagesConfig.errors.comparison.loadFailed
       }
     } catch (err) {
-      logger.error('Error fetching comparison:', err)
+      logger.error(messagesConfig.logs.comparison, err)
       const errorData = err as Error & { data?: { statusMessage?: string } }
       error.value =
         errorData.data?.statusMessage ||
         errorData.message ||
-        'Failed to load comparison'
+        messagesConfig.errors.comparison.loadFailed
     } finally {
       loading.value = false
     }

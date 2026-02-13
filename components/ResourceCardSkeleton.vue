@@ -225,7 +225,7 @@ onUnmounted(() => {
     transform var(--hover-transition) v-bind('easingValues.materialStandard'),
     box-shadow var(--hover-transition) v-bind('easingValues.materialStandard');
   cursor: progress;
-  --hover-transition: 0.3s;
+  --hover-transition: v-bind('animationConfig.cssTransitions.hoverSec');
 }
 
 .skeleton-interactive:hover {

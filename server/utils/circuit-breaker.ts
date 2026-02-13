@@ -1,5 +1,6 @@
 import { webhooksConfig } from '~/configs/webhooks.config'
 import { limitsConfig } from '~/configs/limits.config'
+import { Mutex } from 'async-mutex'
 
 interface CircuitBreakerState {
   isOpen: boolean
@@ -29,6 +30,7 @@ export class CircuitBreaker {
   private config: CircuitBreakerConfig
   private state: CircuitBreakerState
   private lastSuccessTime: number | null
+  private mutex: Mutex
 
   constructor(config: CircuitBreakerConfig) {
     this.config = config
@@ -40,38 +42,45 @@ export class CircuitBreaker {
       successCount: 0,
     }
     this.lastSuccessTime = null
+    this.mutex = new Mutex()
   }
 
   async execute<T>(
     fn: () => Promise<T>,
     fallback?: () => Promise<T> | T
   ): Promise<T> {
-    if (this.state.isOpen) {
-      if (this.shouldAttemptReset()) {
-        this.state.isOpen = false
-        this.state.isHalfOpen = true
-        this.state.successCount = 0
-        this.state.failureCount = 0
-      } else {
+    const release = await this.mutex.acquire()
+
+    try {
+      if (this.state.isOpen) {
+        if (this.shouldAttemptReset()) {
+          this.state.isOpen = false
+          this.state.isHalfOpen = true
+          this.state.successCount = 0
+          this.state.failureCount = 0
+        } else {
+          if (fallback) {
+            return fallback()
+          }
+          throw new Error(
+            `Circuit breaker is OPEN. Last failure at ${new Date(this.state.lastFailureTime || 0).toISOString()}`
+          )
+        }
+      }
+
+      try {
+        const result = await fn()
+        this.onSuccess()
+        return result
+      } catch (error) {
+        this.onFailure()
         if (fallback) {
           return fallback()
         }
-        throw new Error(
-          `Circuit breaker is OPEN. Last failure at ${new Date(this.state.lastFailureTime || 0).toISOString()}`
-        )
+        throw error
       }
-    }
-
-    try {
-      const result = await fn()
-      this.onSuccess()
-      return result
-    } catch (error) {
-      this.onFailure()
-      if (fallback) {
-        return fallback()
-      }
-      throw error
+    } finally {
+      release()
     }
   }
 

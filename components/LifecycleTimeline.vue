@@ -7,10 +7,7 @@
       {{ contentConfig.lifecycle.title }}
     </h3>
 
-    <div
-      v-if="statusHistory && statusHistory.length > 0"
-      class="timeline"
-    >
+    <div v-if="statusHistory && statusHistory.length > 0" class="timeline">
       <div
         v-for="(change, index) in statusHistory"
         :key="change.id"
@@ -53,20 +50,16 @@
         </div>
         <div class="timeline-content">
           <div class="change-info">
-            <span class="status-change">{{ change.fromStatus }} → {{ change.toStatus }}</span>
+            <span class="status-change"
+              >{{ change.fromStatus }} → {{ change.toStatus }}</span
+            >
             <span class="change-date">{{ formatDate(change.changedAt) }}</span>
           </div>
           <div class="change-details">
-            <div
-              v-if="change.reason"
-              class="reason"
-            >
+            <div v-if="change.reason" class="reason">
               {{ contentConfig.lifecycle.labels.reason }} {{ change.reason }}
             </div>
-            <div
-              v-if="change.notes"
-              class="notes"
-            >
+            <div v-if="change.notes" class="notes">
               {{ contentConfig.lifecycle.labels.notes }} {{ change.notes }}
             </div>
             <div class="changed-by">
@@ -78,10 +71,7 @@
       </div>
     </div>
 
-    <div
-      v-else
-      class="no-history"
-    >
+    <div v-else class="no-history">
       {{ contentConfig.lifecycle.emptyState }}
     </div>
 
@@ -95,30 +85,22 @@
       class="update-history"
     >
       <h4>{{ contentConfig.lifecycle.updateHistoryTitle }}</h4>
-      <div
-        v-for="update in updateHistory"
-        :key="update.id"
-        class="update-item"
-      >
+      <div v-for="update in updateHistory" :key="update.id" class="update-item">
         <div class="update-header">
-          <span class="version">{{ contentConfig.lifecycle.versionPrefix
-          }}{{ update.version }}</span>
+          <span class="version"
+            >{{ contentConfig.lifecycle.versionPrefix
+            }}{{ update.version }}</span
+          >
           <span class="update-date">{{ formatDate(update.updatedAt) }}</span>
         </div>
-        <div
-          v-if="update.changelog"
-          class="changelog"
-        >
+        <div v-if="update.changelog" class="changelog">
           {{ update.changelog }}
         </div>
         <ul
           v-if="update.changes && update.changes.length > 0"
           class="changes-list"
         >
-          <li
-            v-for="(change, idx) in update.changes"
-            :key="idx"
-          >
+          <li v-for="(change, idx) in update.changes" :key="idx">
             {{ change }}
           </li>
         </ul>
@@ -312,8 +294,8 @@ onMounted(() => {
   opacity: 0;
   transform: translateY(10px);
   transition:
-    opacity v-bind('animationConfig.card.enterDurationMs') ms ease-out,
-    transform v-bind('animationConfig.card.enterDurationMs') ms ease-out;
+    opacity v-bind('animationConfig.card.enterDurationMs + "ms"') ease-out,
+    transform v-bind('animationConfig.card.enterDurationMs + "ms"') ease-out;
 }
 
 .lifecycle-timeline--loaded {
@@ -339,11 +321,12 @@ onMounted(() => {
   gap: 1rem;
   opacity: 0;
   transform: translateX(-20px);
-  animation: slide-in v-bind('animationConfig.suggestion.staggerDelayMs') ms
+  animation: slide-in v-bind('animationConfig.suggestion.staggerDelayMs + "ms"')
     ease-out forwards;
   animation-delay: calc(
-    var(--item-index) * v-bind('animationConfig.card.staggerDelayMs') ms
+    var(--item-index) * v-bind('animationConfig.card.staggerDelayMs + "ms"')
   );
+<<<<<<< HEAD
   transition: transform v-bind('animationConfig.transition.normal.durationMs')
     ms ease-out;
   position: relative;

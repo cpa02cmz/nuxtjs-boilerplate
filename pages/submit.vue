@@ -1,10 +1,7 @@
 <template>
   <div class="py-12">
     <!-- Confetti celebration for successful submission -->
-    <ConfettiCelebration
-      ref="confettiRef"
-      intensity="medium"
-    />
+    <ConfettiCelebration ref="confettiRef" intensity="medium" />
 
     <!-- Smart Paste indicator - Palette's micro-UX enhancement! -->
     <ClientOnly>
@@ -77,10 +74,7 @@
                 'has-success': formData.title && !errors.title,
               }"
             >
-              <label
-                for="title"
-                class="floating-label"
-              >
+              <label for="title" class="floating-label">
                 Resource Title <span aria-hidden="true">*</span>
                 <span class="sr-only">(required)</span>
               </label>
@@ -116,7 +110,7 @@
                     ]"
                     @focus="isTitleFocused = true"
                     @blur="handleTitleBlur"
-                  >
+                  />
                 </template>
               </CharacterCounter>
               <!-- Validation checkmark - Palette's micro-UX delight! -->
@@ -152,10 +146,7 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="title-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="title-description" class="mt-1 text-sm text-gray-500">
               The name of the resource or service
             </p>
             <!-- Character limit progress bar for visual feedback -->
@@ -254,10 +245,7 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="description-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="description-description" class="mt-1 text-sm text-gray-500">
               {{ descriptionHelperText }}
             </p>
             <!-- Character limit progress bar for visual feedback -->
@@ -295,10 +283,7 @@
                 'has-success': formData.url && !errors.url,
               }"
             >
-              <label
-                for="url"
-                class="floating-label"
-              >
+              <label for="url" class="floating-label">
                 URL <span aria-hidden="true">*</span>
                 <span class="sr-only">(required)</span>
               </label>
@@ -321,7 +306,7 @@
                 ]"
                 @blur="handleUrlBlur"
                 @paste="handleSmartPaste"
-              >
+              />
               <!-- Validation checkmark - Palette's micro-UX delight! -->
               <Transition
                 enter-active-class="transition-all duration-200 ease-out"
@@ -391,12 +376,7 @@
                 ]"
                 @blur="handleCategoryBlur"
               >
-                <option
-                  value=""
-                  disabled
-                >
-                  Select a category
-                </option>
+                <option value="" disabled>Select a category</option>
                 <option
                   v-for="category in categoryOptions"
                   :key="category.value"
@@ -454,10 +434,7 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="category-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="category-description" class="mt-1 text-sm text-gray-500">
               Choose the most appropriate category for this resource
             </p>
             <div
@@ -478,22 +455,16 @@
                 'has-value': tagsInput.length > 0,
               }"
             >
-              <label
-                for="tags"
-                class="floating-label"
-              > Tags (Optional) </label>
+              <label for="tags" class="floating-label"> Tags (Optional) </label>
               <input
                 id="tags"
                 v-model="tagsInput"
                 type="text"
                 aria-describedby="tags-description"
                 class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
-              >
+              />
             </div>
-            <p
-              id="tags-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="tags-description" class="mt-1 text-sm text-gray-500">
               Add relevant tags to help categorize this resource (e.g., "api,
               free-tier, openai")
             </p>
@@ -537,9 +508,9 @@
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <span
-                    class="relative z-10"
-                  >Draft saved {{ lastSavedText }}</span>
+                  <span class="relative z-10"
+                    >Draft saved {{ lastSavedText }}</span
+                  >
                   >
                 </div>
                 <div
@@ -563,10 +534,7 @@
               <span v-if="!isSubmitting">{{
                 contentConfig.submit.button.submit
               }}</span>
-              <span
-                v-else
-                class="flex items-center"
-              >
+              <span v-else class="flex items-center">
                 <svg
                   class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                   xmlns="http://www.w3.org/2000/svg"
@@ -987,14 +955,13 @@ const restoreDraft = () => {
               ? `${Math.floor(hoursSinceSaved)} hours ago`
               : `${Math.floor(hoursSinceSaved / 24)} days ago`
 
-        $toast.info(contentConfig.toast.draft.restored.title, {
-          description: contentConfig.toast.draft.restored.description.replace(
+        $toast.info(
+          contentConfig.toast.draft.restored.title,
+          contentConfig.toast.draft.restored.description.replace(
             '{{ timeAgo }}',
             timeAgo
-          ),
-          // Flexy hates hardcoded durations! Using config value
-          duration: uiConfig.toast.duration.info,
-        })
+          )
+        )
       } else {
         // Clear old draft
         localStorage.removeItem(DRAFT_STORAGE_KEY)
