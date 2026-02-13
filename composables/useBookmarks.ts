@@ -11,7 +11,7 @@ export interface Bookmark {
   title: string
   description: string
   url: string
-  addedAt: Date
+  dateAdded: Date
   notes?: string
   category?: string
 }
@@ -86,7 +86,7 @@ export const useBookmarks = () => {
 
     const newBookmark: Bookmark = {
       ...resource,
-      addedAt: new Date(),
+      dateAdded: new Date(),
     }
 
     bookmarks.value.push(newBookmark)
@@ -138,7 +138,7 @@ export const useBookmarks = () => {
 
   const getAllBookmarks = computed(() => {
     return [...bookmarks.value].sort(
-      (a, b) => b.addedAt.getTime() - a.addedAt.getTime()
+      (a, b) => b.dateAdded.getTime() - a.dateAdded.getTime()
     )
   })
 
@@ -153,7 +153,7 @@ export const useBookmarks = () => {
 
     const bookmarksToExport = bookmarks.value.map(bookmark => ({
       ...bookmark,
-      addedAt: bookmark.addedAt.toISOString(),
+      dateAdded: bookmark.dateAdded.toISOString(),
     }))
 
     // Flexy hates hardcoded values! Use configurable JSON indent
@@ -194,7 +194,7 @@ export const useBookmarks = () => {
 
       const processedBookmarks = validBookmarks.map(bookmark => ({
         ...bookmark,
-        addedAt: new Date(bookmark.addedAt),
+        dateAdded: new Date(bookmark.dateAdded),
       }))
 
       const uniqueBookmarks = [...bookmarks.value]
