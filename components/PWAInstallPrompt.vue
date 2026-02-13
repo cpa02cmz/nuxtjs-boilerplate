@@ -100,16 +100,10 @@
             </svg>
           </div>
           <div>
-            <h3
-              id="pwa-install-title"
-              class="font-medium text-gray-900"
-            >
+            <h3 id="pwa-install-title" class="font-medium text-gray-900">
               Install App
             </h3>
-            <p
-              id="pwa-install-description"
-              class="text-sm text-gray-500"
-            >
+            <p id="pwa-install-description" class="text-sm text-gray-500">
               Add to your home screen
             </p>
           </div>
@@ -133,20 +127,26 @@
               <kbd
                 class="hidden sm:inline-flex items-center px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded text-gray-500"
                 aria-hidden="true"
-              >Esc</kbd>
+                >Esc</kbd
+              >
             </span>
           </button>
           <button
+            ref="installButtonRef"
             :class="[
               'px-3 py-1 bg-blue-600 text-white text-sm rounded-md',
               'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-              'transition-all duration-200 ease-out',
-              'hover:shadow-md hover:-translate-y-0.5 active:translate-y-0',
+              'transition-all ease-out',
+              'hover:shadow-md',
               isInstalling && 'opacity-75 cursor-wait',
             ]"
+            :style="magneticStyle"
             :aria-label="contentConfig.pwa.aria.installButton"
             :disabled="isInstalling"
             @click="installPWA"
+            @mouseenter="handleMouseEnter"
+            @mouseleave="handleMouseLeave"
+            @mousemove="handleMouseMove"
           >
             <span class="flex items-center gap-1">
               <svg
@@ -192,12 +192,7 @@
   </Transition>
 
   <!-- Screen reader announcement -->
-  <div
-    class="sr-only"
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-  >
+  <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
     {{ announcement }}
   </div>
 </template>
@@ -209,6 +204,7 @@ import { contentConfig } from '../configs/content.config'
 import { animationConfig } from '../configs/animation.config'
 import { uiConfig } from '~/configs/ui.config'
 import { thresholdsConfig } from '~/configs/thresholds.config'
+import { EASING } from '~/configs/easing.config'
 
 // Storage key constants
 const STORAGE_KEYS = {
@@ -231,7 +227,96 @@ const showSuccess = ref(false)
 const announcement = ref('')
 const promptRef = ref<HTMLDivElement | null>(null)
 const dismissButtonRef = ref<HTMLButtonElement | null>(null)
+const installButtonRef = ref<HTMLButtonElement | null>(null)
 let successDismissTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Magnetic button state
+const magneticX = ref(0)
+const magneticY = ref(0)
+const isHovering = ref(false)
+let magneticAnimationFrame: number | null = null
+
+// Magnetic button configuration
+const magneticConfig = animationConfig.magneticButton
+
+// Computed style for magnetic effect
+const magneticStyle = computed(() => {
+  // Skip magnetic effect if reduced motion is preferred or button is disabled
+  if (prefersReducedMotion() || isInstalling.value) {
+    return {}
+  }
+
+  const duration = isHovering.value
+    ? '0.1s'
+    : `${magneticConfig.returnDurationMs}ms`
+
+  return {
+    transform: `translate(${magneticX.value}px, ${magneticY.value}px)`,
+    transition: `transform ${duration} ${EASING.SPRING_STANDARD}`,
+  }
+})
+
+// Handle mouse enter
+const handleMouseEnter = (): void => {
+  if (prefersReducedMotion() || isInstalling.value) return
+  isHovering.value = true
+}
+
+// Handle mouse leave - smoothly return to center
+const handleMouseLeave = (): void => {
+  isHovering.value = false
+  magneticX.value = 0
+  magneticY.value = 0
+}
+
+// Handle mouse move for magnetic effect
+const handleMouseMove = (event: MouseEvent): void => {
+  if (prefersReducedMotion() || isInstalling.value || !installButtonRef.value)
+    return
+
+  const button = installButtonRef.value
+  const rect = button.getBoundingClientRect()
+
+  // Calculate button center
+  const buttonCenterX = rect.left + rect.width / 2
+  const buttonCenterY = rect.top + rect.height / 2
+
+  // Calculate distance from mouse to button center
+  const distanceX = event.clientX - buttonCenterX
+  const distanceY = event.clientY - buttonCenterY
+  const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
+
+  // Maximum distance for magnetic effect (button diagonal + buffer)
+  const maxDistance =
+    Math.sqrt(rect.width * rect.width + rect.height * rect.height) * 0.8
+
+  // Only apply magnetic effect when cursor is within range
+  if (distance < maxDistance && distance > 0) {
+    // Calculate magnetic pull strength (stronger when closer)
+    const strength = (1 - distance / maxDistance) * magneticConfig.strength
+
+    // Apply magnetic pull toward cursor
+    const pullX =
+      (distanceX / distance) * magneticConfig.maxDistancePx * strength
+    const pullY =
+      (distanceY / distance) * magneticConfig.maxDistancePx * strength
+
+    // Cancel any existing animation frame
+    if (magneticAnimationFrame) {
+      cancelAnimationFrame(magneticAnimationFrame)
+    }
+
+    // Smooth update using requestAnimationFrame
+    magneticAnimationFrame = requestAnimationFrame(() => {
+      magneticX.value = pullX
+      magneticY.value = pullY
+    })
+  } else {
+    // Reset when out of range
+    magneticX.value = 0
+    magneticY.value = 0
+  }
+}
 
 // Auto-dismiss feature (disabled by default, can be enabled with prop)
 const autoDismissDuration = ref(0) // milliseconds, 0 = disabled
@@ -390,6 +475,9 @@ onUnmounted(() => {
   clearAutoDismiss()
   if (successDismissTimeout) {
     clearTimeout(successDismissTimeout)
+  }
+  if (magneticAnimationFrame) {
+    cancelAnimationFrame(magneticAnimationFrame)
   }
 })
 </script>
