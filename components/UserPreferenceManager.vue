@@ -7,12 +7,7 @@
     </h2>
 
     <!-- ARIA Live Region for Announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcementText }}
     </div>
 
@@ -106,7 +101,7 @@
               v-model="notificationSettings.resourceUpdates"
               type="checkbox"
               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600"
-            >
+            />
             <span class="ml-2 text-gray-700 dark:text-gray-300">
               Updates to resources you've bookmarked
             </span>
@@ -117,7 +112,7 @@
               v-model="notificationSettings.newContent"
               type="checkbox"
               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600"
-            >
+            />
             <span class="ml-2 text-gray-700 dark:text-gray-300">
               New content in your areas of interest
             </span>
@@ -128,7 +123,7 @@
               v-model="notificationSettings.weeklyDigest"
               type="checkbox"
               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600"
-            >
+            />
             <span class="ml-2 text-gray-700 dark:text-gray-300">
               Weekly digest of popular resources
             </span>
@@ -151,7 +146,7 @@
               v-model="privacySettings.allowPersonalization"
               type="checkbox"
               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600"
-            >
+            />
             <span class="ml-2 text-gray-700 dark:text-gray-300">
               Allow personalized recommendations
             </span>
@@ -162,7 +157,7 @@
               v-model="privacySettings.allowDataCollection"
               type="checkbox"
               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600"
-            >
+            />
             <span class="ml-2 text-gray-700 dark:text-gray-300">
               Allow usage data collection for improvements
             </span>
@@ -173,7 +168,7 @@
               v-model="privacySettings.allowRecommendationExplanations"
               type="checkbox"
               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600"
-            >
+            />
             <span class="ml-2 text-gray-700 dark:text-gray-300">
               Show explanations for why resources are recommended
             </span>
@@ -203,10 +198,7 @@
           @touchend="isSavePressed = false"
         >
           <!-- Loading State -->
-          <span
-            v-if="saving"
-            class="flex items-center justify-center gap-2"
-          >
+          <span v-if="saving" class="flex items-center justify-center gap-2">
             <svg
               class="animate-spin h-4 w-4"
               xmlns="http://www.w3.org/2000/svg"
@@ -252,10 +244,7 @@
             Saved!
           </span>
           <!-- Default State -->
-          <span
-            v-else
-            class="flex items-center justify-center gap-2"
-          >
+          <span v-else class="flex items-center justify-center gap-2">
             <svg
               class="w-4 h-4"
               fill="none"
@@ -543,7 +532,8 @@ const savePreferences = async () => {
 .category-checkmark {
   stroke-dasharray: 20;
   stroke-dashoffset: 20;
-  animation: checkmark-draw 0.3s ease-out forwards;
+  animation: checkmark-draw v-bind('animationConfig.cssTransitions.standardSec')
+    ease-out forwards;
 }
 
 @keyframes checkmark-draw {
@@ -597,7 +587,8 @@ const savePreferences = async () => {
 
 .save-button--pressed {
   transform: scale(0.97) !important;
-  transition: transform 0.1s ease-out !important;
+  transition: transform v-bind('animationConfig.cssTransitions.fastSec')
+    ease-out !important;
 }
 
 .save-button--success {
@@ -626,7 +617,9 @@ const savePreferences = async () => {
 .save-checkmark {
   stroke-dasharray: 24;
   stroke-dashoffset: 24;
-  animation: save-checkmark-draw 0.4s ease-out 0.1s forwards;
+  animation: save-checkmark-draw
+    v-bind('animationConfig.cssTransitions.slowSec') ease-out
+    v-bind('animationConfig.cssAnimations.smallDelaySec') forwards;
 }
 
 @keyframes save-checkmark-draw {
@@ -637,7 +630,8 @@ const savePreferences = async () => {
 
 /* Success Text Animation */
 .save-success-text {
-  animation: success-text-fade 0.3s ease-out;
+  animation: success-text-fade
+    v-bind('animationConfig.cssTransitions.standardSec') ease-out;
 }
 
 @keyframes success-text-fade {
@@ -718,7 +712,8 @@ const savePreferences = async () => {
   .save-checkmark,
   .save-success-text {
     animation: none !important;
-    transition: opacity 0.15s ease-out !important;
+    transition: opacity v-bind('animationConfig.cssTransitions.quickSec')
+      ease-out !important;
   }
 
   .category-chip--animating,
