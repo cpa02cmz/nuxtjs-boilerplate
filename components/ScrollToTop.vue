@@ -14,10 +14,35 @@
       :class="{ 'scroll-to-top--reduced-motion': prefersReducedMotion }"
       :style="progressStyle"
       :aria-label="config.aria.scrollToTop"
-      :title="config.buttons.scrollToTop"
       @click="scrollToTop"
       @keydown="handleKeyDown"
+      @mouseenter="showTooltip = true"
+      @mouseleave="showTooltip = false"
+      @focus="showTooltip = true"
+      @blur="showTooltip = false"
     >
+      <!-- Hover Tooltip - Palette's micro-UX enhancement! -->
+      <Transition
+        enter-active-class="transition-all duration-200 ease-out"
+        enter-from-class="opacity-0 scale-75 translate-y-2"
+        enter-to-class="opacity-100 scale-100 translate-y-0"
+        leave-active-class="transition-all duration-150 ease-in"
+        leave-from-class="opacity-100 scale-100 translate-y-0"
+        leave-to-class="opacity-0 scale-75 translate-y-2"
+      >
+        <div
+          v-if="showTooltip && !prefersReducedMotion"
+          class="scroll-tooltip"
+          role="tooltip"
+          aria-hidden="true"
+        >
+          <div class="scroll-tooltip__content">
+            <span class="scroll-tooltip__text">{{ scrollProgress }}%</span>
+            <span class="scroll-tooltip__label">scrolled</span>
+          </div>
+          <div class="scroll-tooltip__arrow" />
+        </div>
+      </Transition>
       <!-- Progress Ring Background -->
       <svg
         class="scroll-to-top__progress-ring"
@@ -99,6 +124,8 @@ const scrollProgress = ref(0)
 const prefersReducedMotion = ref(false)
 const announcementText = ref('')
 const scrollButtonRef = ref<HTMLButtonElement | null>(null)
+// Palette's micro-UX enhancement: Show tooltip on hover/focus
+const showTooltip = ref(false)
 
 // Computed
 const circumference = computed(() => CIRCUMFERENCE)
@@ -398,6 +425,69 @@ onMounted(() => {
 
   .scroll-to-top__progress-ring-bg {
     stroke: v-bind('themeConfig.scrollToTop.darkProgressBg');
+  }
+}
+
+/* Palette's micro-UX enhancement: Hover tooltip showing scroll progress */
+.scroll-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: v-bind('zIndexConfig.tooltip');
+  pointer-events: none;
+}
+
+.scroll-tooltip__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 10px;
+  background: v-bind('themeConfig.scrollToTop.tooltipBg');
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+
+.scroll-tooltip__text {
+  font-size: 14px;
+  font-weight: 700;
+  color: v-bind('themeConfig.scrollToTop.tooltipText');
+  line-height: 1;
+}
+
+.scroll-tooltip__label {
+  font-size: 10px;
+  font-weight: 500;
+  color: v-bind('themeConfig.scrollToTop.tooltipLabel');
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.scroll-tooltip__arrow {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid v-bind('themeConfig.scrollToTop.tooltipBg');
+}
+
+/* Reduced motion support for tooltip */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-tooltip {
+    display: none;
+  }
+}
+
+/* High contrast mode support for tooltip */
+@media (prefers-contrast: high) {
+  .scroll-tooltip__content {
+    border: 2px solid currentColor;
   }
 }
 </style>
