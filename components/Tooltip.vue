@@ -66,12 +66,7 @@
     </Transition>
 
     <!-- Screen reader announcement - announces tooltip content when visible -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ isVisible ? content : '' }}
     </div>
   </div>
@@ -142,7 +137,7 @@ const isMouseOverTooltip = ref(false)
 const touchStartY = ref(0)
 const touchCurrentY = ref(0)
 const isSwiping = ref(false)
-// Minimum swipe distance to dismiss (px) - Using config for modularity
+// Minimum swipe distance to dismiss (px) - Flexy hates hardcoded values! Using config now.
 const SWIPE_THRESHOLD = animationConfig.tooltip.swipeThresholdPx
 
 const positionClasses: Record<TooltipPosition, string> = {
