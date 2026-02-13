@@ -1,6 +1,9 @@
 <template>
   <Teleport to="body">
-    <Transition name="modal" @after-enter="focusCloseButton">
+    <Transition
+      name="modal"
+      @after-enter="focusCloseButton"
+    >
       <div
         v-if="isOpen"
         :class="[
@@ -273,8 +276,7 @@
               Tip: Press
               <kbd
                 class="px-1 py-0.5 text-xs bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 rounded"
-                >?</kbd
-              >
+              >?</kbd>
               anywhere to open this guide
             </p>
           </div>
