@@ -82,10 +82,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch, ref } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { validationConfig } from '~/configs/validation.config'
+import { hapticLight, hapticError } from '~/utils/hapticFeedback'
 
 interface Props {
   /** Current character count */
@@ -180,6 +181,59 @@ const screenReaderAnnouncement = computed(() => {
     return `${remainingCount.value} characters remaining out of ${props.maxLength}.`
   }
   return ''
+})
+
+// Palette's micro-UX enhancement: Haptic feedback on state transitions
+// Track previous state to trigger feedback only on transitions, not continuously
+const previousState = ref<'normal' | 'warning' | 'error'>('normal')
+const hasTriggeredWarning = ref(false)
+const hasTriggeredError = ref(false)
+
+// Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (
+    typeof window === 'undefined' ||
+    typeof window.matchMedia !== 'function'
+  ) {
+    return false
+  }
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// Watch for state changes and trigger haptic feedback
+watch([isNearLimit, isOverLimit], ([newIsNearLimit, newIsOverLimit]) => {
+  // Skip haptic feedback if user prefers reduced motion
+  if (checkReducedMotion()) return
+
+  const currentState = newIsOverLimit
+    ? 'error'
+    : newIsNearLimit
+      ? 'warning'
+      : 'normal'
+
+  // Trigger haptic feedback on state transitions
+  if (currentState === 'error' && !hasTriggeredError.value) {
+    // Strong feedback when exceeding limit
+    hapticError()
+    hasTriggeredError.value = true
+    hasTriggeredWarning.value = true // Error includes warning state
+  } else if (
+    currentState === 'warning' &&
+    !hasTriggeredWarning.value &&
+    !newIsOverLimit
+  ) {
+    // Light feedback when approaching limit
+    hapticLight()
+    hasTriggeredWarning.value = true
+  }
+
+  // Reset flags when returning to normal state
+  if (currentState === 'normal') {
+    hasTriggeredWarning.value = false
+    hasTriggeredError.value = false
+  }
+
+  previousState.value = currentState
 })
 
 // Flexy hates hardcoded rgba! Using configurable shadow color
