@@ -15,7 +15,7 @@ Create `Dockerfile` in project root:
 
 ```dockerfile
 # Stage 1: Build
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -33,7 +33,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Production
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 
 # Set working directory
 WORKDIR /app
@@ -593,7 +593,7 @@ RUN npm run build
 
 ```dockerfile
 # Use alpine images
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Clean up after install
 RUN npm ci --only=production && npm cache clean --force
