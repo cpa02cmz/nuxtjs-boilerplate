@@ -291,6 +291,7 @@ import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { componentStylesConfig } from '~/configs/component-styles.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { contentConfig } from '~/configs/content.config'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 // NodeListOf is a global DOM type, no need to import
 
@@ -305,11 +306,15 @@ const open = () => {
   lastFocusedElement.value = document.activeElement as HTMLElement
   isOpen.value = true
   document.body.style.overflow = 'hidden'
+  // Palette's micro-UX touch: Haptic feedback when opening modal
+  hapticLight()
 }
 
 const close = () => {
   isOpen.value = false
   document.body.style.overflow = ''
+  // Palette's micro-UX touch: Haptic feedback when closing modal
+  hapticLight()
   // Return focus to the element that had focus before opening
   nextTick(() => {
     lastFocusedElement.value?.focus()
