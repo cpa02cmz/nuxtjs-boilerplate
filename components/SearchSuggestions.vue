@@ -509,7 +509,8 @@ const handleKeyDown = (event: KeyboardEvent) => {
 /* Reduced motion support - disable animations for accessibility */
 @media (prefers-reduced-motion: reduce) {
   .suggestion-item {
-    transition: background-color 0.1s ease-out;
+    transition: background-color
+      v-bind('animationConfig.cssTransitions.reducedMotionSec') ease-out;
     will-change: auto;
   }
 

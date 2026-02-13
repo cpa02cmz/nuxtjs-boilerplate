@@ -3,10 +3,7 @@
     <div class="queue-header">
       <h2>{{ contentConfig.reviewQueue.title }}</h2>
       <div class="queue-filters">
-        <select
-          v-model="statusFilter"
-          class="filter-select"
-        >
+        <select v-model="statusFilter" class="filter-select">
           <option value="">
             {{ contentConfig.reviewQueue.filters.allStatuses }}
           </option>
@@ -25,21 +22,15 @@
           type="text"
           :placeholder="moderationConfig.ui.categoryFilterPlaceholder"
           class="filter-input"
-        >
+        />
       </div>
     </div>
 
-    <div
-      v-if="loading"
-      class="loading"
-    >
+    <div v-if="loading" class="loading">
       {{ contentConfig.reviewQueue.loading }}
     </div>
 
-    <div
-      v-else-if="filteredSubmissions.length > 0"
-      class="submissions-list"
-    >
+    <div v-else-if="filteredSubmissions.length > 0" class="submissions-list">
       <div
         v-for="submission in filteredSubmissions"
         :key="submission.id"
@@ -57,12 +48,18 @@
             {{ submission.resourceData?.description }}
           </p>
           <div class="meta-info">
-            <span class="category">{{ contentConfig.reviewQueue.labels.category }}
-              {{ submission.resourceData?.category }}</span>
-            <span class="submitted-by">{{ contentConfig.reviewQueue.labels.submittedBy }}
-              {{ submission.submittedBy }}</span>
-            <span class="submitted-at">{{ contentConfig.reviewQueue.labels.submittedAt }}
-              {{ formatDate(submission.submittedAt) }}</span>
+            <span class="category"
+              >{{ contentConfig.reviewQueue.labels.category }}
+              {{ submission.resourceData?.category }}</span
+            >
+            <span class="submitted-by"
+              >{{ contentConfig.reviewQueue.labels.submittedBy }}
+              {{ submission.submittedBy }}</span
+            >
+            <span class="submitted-at"
+              >{{ contentConfig.reviewQueue.labels.submittedAt }}
+              {{ formatDate(submission.submittedAt) }}</span
+            >
           </div>
 
           <div class="tags">
@@ -87,10 +84,7 @@
       </div>
     </div>
 
-    <div
-      v-else
-      class="empty-state"
-    >
+    <div v-else class="empty-state">
       {{ contentConfig.reviewQueue.emptyState }}
     </div>
   </div>
@@ -102,6 +96,7 @@ import type { Submission } from '~/types/submission'
 import { moderationConfig } from '~/configs/moderation.config'
 import { contentConfig } from '~/configs/content.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   initialSubmissions?: Submission[]
@@ -150,14 +145,14 @@ const {
 .filter-input {
   padding: 0.5rem;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.xs}px`');
   background: var(--color-background);
   color: var(--color-text);
 }
 
 .submission-card {
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.md}px`');
   padding: 1rem;
   margin-bottom: 1rem;
   background: var(--color-card-background);
@@ -179,7 +174,7 @@ const {
 
 .status-badge {
   padding: 0.25rem 0.5rem;
-  border-radius: 12px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.lg}px`');
   font-size: 0.8rem;
   font-weight: bold;
 }
@@ -233,7 +228,7 @@ const {
   background: var(--color-tag-background);
   color: var(--color-text);
   padding: 0.25rem 0.5rem;
-  border-radius: 12px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.lg}px`');
   font-size: 0.8rem;
 }
 
@@ -245,7 +240,7 @@ const {
 .btn {
   padding: 0.5rem 1rem;
   border: none;
-  border-radius: 4px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.xs}px`');
   cursor: pointer;
   text-decoration: none;
   display: inline-block;

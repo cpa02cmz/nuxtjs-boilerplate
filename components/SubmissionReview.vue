@@ -1,23 +1,14 @@
 <template>
   <div class="submission-review">
-    <div
-      v-if="loading"
-      class="loading"
-    >
+    <div v-if="loading" class="loading">
       {{ contentConfig.submissionReview.loading }}
     </div>
 
-    <div
-      v-else-if="error"
-      class="error"
-    >
+    <div v-else-if="error" class="error">
       {{ error }}
     </div>
 
-    <div
-      v-else-if="submission"
-      class="review-content"
-    >
+    <div v-else-if="submission" class="review-content">
       <div class="review-header">
         <h1>{{ submission.resourceData?.title }}</h1>
         <span :class="['status-badge', `status-${submission.status}`]">
@@ -60,7 +51,7 @@
               }}</label>
               <span>{{
                 submission.resourceData?.pricingModel ||
-                  contentConfig.submissionReview.values.notAvailable
+                contentConfig.submissionReview.values.notAvailable
               }}</span>
             </div>
 
@@ -70,7 +61,7 @@
               }}</label>
               <span>{{
                 submission.resourceData?.difficulty ||
-                  contentConfig.submissionReview.values.notAvailable
+                contentConfig.submissionReview.values.notAvailable
               }}</span>
             </div>
 
@@ -129,7 +120,7 @@
               }}</label>
               <span>{{
                 submission.submittedBy ||
-                  contentConfig.submissionReview.values.anonymous
+                contentConfig.submissionReview.values.anonymous
               }}</span>
             </div>
 
@@ -140,33 +131,24 @@
               <span>{{ formatDate(submission.submittedAt) }}</span>
             </div>
 
-            <div
-              v-if="submission.reviewedAt"
-              class="info-item"
-            >
+            <div v-if="submission.reviewedAt" class="info-item">
               <label>{{
                 contentConfig.submissionReview.labels.reviewedBy
               }}</label>
               <span>{{
                 submission.reviewedBy ||
-                  contentConfig.submissionReview.values.notAvailable
+                contentConfig.submissionReview.values.notAvailable
               }}</span>
             </div>
 
-            <div
-              v-if="submission.reviewedAt"
-              class="info-item"
-            >
+            <div v-if="submission.reviewedAt" class="info-item">
               <label>{{
                 contentConfig.submissionReview.labels.reviewedAt
               }}</label>
               <span>{{ formatDate(submission.reviewedAt) }}</span>
             </div>
 
-            <div
-              v-if="submission.rejectionReason"
-              class="info-item"
-            >
+            <div v-if="submission.rejectionReason" class="info-item">
               <label>{{
                 contentConfig.submissionReview.labels.rejectionReason
               }}</label>
@@ -175,10 +157,7 @@
               }}</span>
             </div>
 
-            <div
-              v-if="submission.notes"
-              class="info-item"
-            >
+            <div v-if="submission.notes" class="info-item">
               <label>{{ contentConfig.submissionReview.labels.notes }}</label>
               <span>{{ submission.notes }}</span>
             </div>
@@ -186,16 +165,10 @@
         </div>
       </div>
 
-      <div
-        v-if="submission.status === 'pending'"
-        class="review-actions"
-      >
+      <div v-if="submission.status === 'pending'" class="review-actions">
         <div class="action-group">
           <h4>{{ contentConfig.submissionReview.actions.approve.title }}</h4>
-          <button
-            class="btn btn-approve"
-            @click="handleApprove"
-          >
+          <button class="btn btn-approve" @click="handleApprove">
             {{ contentConfig.submissionReview.actions.approve.button }}
           </button>
         </div>
@@ -209,10 +182,7 @@
             "
             class="rejection-textarea"
           />
-          <button
-            class="btn btn-reject"
-            @click="handleReject"
-          >
+          <button class="btn btn-reject" @click="handleReject">
             {{ contentConfig.submissionReview.actions.reject.button }}
           </button>
         </div>
@@ -226,6 +196,7 @@ import { onMounted } from 'vue'
 import { useSubmissionReview } from '~/composables/useSubmissionReview'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   submissionId?: string
@@ -333,7 +304,7 @@ onMounted(() => {
 .detail-section {
   background: var(--color-card-background);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.md}px`');
   padding: 1.5rem;
 }
 
@@ -392,7 +363,7 @@ onMounted(() => {
   background: var(--color-tag-background);
   color: var(--color-text);
   padding: 0.25rem 0.5rem;
-  border-radius: 12px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.lg}px`');
   font-size: 0.8rem;
 }
 
@@ -412,7 +383,7 @@ onMounted(() => {
   flex: 1;
   background: var(--color-card-background);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.md}px`');
   padding: 1.5rem;
 }
 
@@ -426,7 +397,7 @@ onMounted(() => {
   min-height: 100px;
   padding: 0.75rem;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.xs}px`');
   margin-bottom: 1rem;
   resize: vertical;
   background: var(--color-background);
@@ -436,7 +407,7 @@ onMounted(() => {
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 4px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.xs}px`');
   cursor: pointer;
   font-weight: 500;
   text-align: center;
