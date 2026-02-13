@@ -1,8 +1,6 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">
-      Popular Searches
-    </h3>
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Popular Searches</h3>
     <TransitionGroup
       tag="div"
       class="space-y-3"
@@ -69,11 +67,7 @@
             class="flex-shrink-0 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200"
             aria-hidden="true"
           >
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -84,7 +78,8 @@
           </span>
           <span
             class="text-gray-800 truncate group-hover:text-gray-900 transition-colors duration-200 font-medium"
-          >{{ search.query }}</span>
+            >{{ search.query }}</span
+          >
         </div>
 
         <!-- Result count with animated background -->
@@ -131,11 +126,7 @@
         class="text-center text-gray-500 py-8 flex flex-col items-center"
       >
         <div class="w-12 h-12 mb-3 text-gray-300 animate-pulse-subtle">
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -144,9 +135,7 @@
             />
           </svg>
         </div>
-        <p class="text-sm">
-          No popular searches yet
-        </p>
+        <p class="text-sm">No popular searches yet</p>
         <p class="text-xs text-gray-400 mt-1">
           Start exploring to see trending queries
         </p>
@@ -154,12 +143,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -323,10 +307,18 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Staggered entrance animation */
+/* Staggered entrance animation - Flexy hates hardcoded values! Using config now. */
 .space-y-3 > * {
-  animation: stagger-entrance 0.5s ease-out backwards;
-  animation-delay: calc(var(--stagger-delay, 50ms) * var(--index, 0));
+  animation: stagger-entrance
+    v-bind('animationConfig.popularSearches.entranceDurationSec') ease-out
+    backwards;
+  animation-delay: calc(
+    var(
+        --stagger-delay,
+        v-bind('`${animationConfig.popularSearches.staggerDelayMs}ms`')
+      ) *
+      var(--index, 0)
+  );
 }
 
 .space-y-3 > *:nth-child(1) {
@@ -380,7 +372,9 @@ onUnmounted(() => {
 }
 
 .animate-ripple {
-  animation: ripple 0.6s ease-out forwards;
+  animation: ripple
+    v-bind('`${animationConfig.popularSearches.rippleDurationMs}ms`') ease-out
+    forwards;
 }
 
 /* Subtle pulse for trending indicator */
@@ -395,7 +389,9 @@ onUnmounted(() => {
 }
 
 .animate-pulse-subtle {
-  animation: pulse-subtle 2s ease-in-out infinite;
+  animation: pulse-subtle
+    v-bind('`${animationConfig.popularSearches.trendingPulseDurationSec}s`')
+    ease-in-out infinite;
 }
 
 /* Scale 98 for click feedback */

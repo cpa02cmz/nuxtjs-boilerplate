@@ -780,15 +780,20 @@ onMounted(() => {
 }
 
 .animate-pulse-slow {
-  animation: pulse-slow 3s ease-in-out infinite;
+  animation: pulse-slow
+    v-bind('`${animationConfig.apiKeys.pulseSlowDurationSec}s`') ease-in-out
+    infinite;
 }
 
 .animate-bounce-subtle {
-  animation: bounce-subtle 2s ease-in-out infinite;
+  animation: bounce-subtle
+    v-bind('`${animationConfig.apiKeys.bounceSubtleDurationSec}s`') ease-in-out
+    infinite;
 }
 
 .animate-draw {
-  animation: draw 1.5s ease-out forwards;
+  animation: draw v-bind('animationConfig.apiKeys.drawDurationSec') ease-out
+    forwards;
 }
 
 @keyframes pulse-slow {

@@ -522,6 +522,30 @@ export const animationConfig = {
     scrollTimeoutMs: parseInt(
       process.env.READING_PROGRESS_SCROLL_TIMEOUT || '100'
     ),
+    // Checkmark draw animation duration (ms) - Flexy hates hardcoded 0.3s!
+    checkmarkDrawDurationMs: parseInt(
+      process.env.READING_PROGRESS_CHECKMARK_DRAW_MS || '300'
+    ),
+    // Checkmark draw animation delay (ms)
+    checkmarkDrawDelayMs: parseInt(
+      process.env.READING_PROGRESS_CHECKMARK_DRAW_DELAY_MS || '300'
+    ),
+    // Text fade-in animation duration (ms)
+    textFadeInDurationMs: parseInt(
+      process.env.READING_PROGRESS_TEXT_FADE_MS || '300'
+    ),
+    // Text fade-in animation delay (ms)
+    textFadeInDelayMs: parseInt(
+      process.env.READING_PROGRESS_TEXT_FADE_DELAY_MS || '400'
+    ),
+    // Confetti burst animation duration (ms)
+    confettiBurstDurationMs: parseInt(
+      process.env.READING_PROGRESS_CONFETTI_BURST_MS || '800'
+    ),
+    // Confetti burst animation delay (ms)
+    confettiBurstDelayMs: parseInt(
+      process.env.READING_PROGRESS_CONFETTI_BURST_DELAY_MS || '200'
+    ),
   },
 
   // Error Boundary Animations - Palette's micro-UX enhancements
@@ -535,6 +559,25 @@ export const animationConfig = {
     successPulseDurationMs: parseInt(
       process.env.ERROR_BOUNDARY_SUCCESS_PULSE_DURATION_MS || '400'
     ),
+  },
+
+  // API Keys Animations - Flexy hates hardcoded draw animation!
+  // SVG draw animation for key generation visual feedback
+  apiKeys: {
+    // SVG draw animation duration (ms)
+    drawDurationMs: parseInt(process.env.API_KEYS_DRAW_DURATION_MS || '1500'),
+    // CSS duration string for v-bind
+    drawDurationSec: `${parseInt(process.env.API_KEYS_DRAW_DURATION_MS || '1500') / 1000}s`,
+    // Pulse slow animation duration (seconds)
+    pulseSlowDurationSec: parseFloat(
+      process.env.API_KEYS_PULSE_SLOW_SEC || '3'
+    ),
+    // Bounce subtle animation duration (seconds)
+    bounceSubtleDurationSec: parseFloat(
+      process.env.API_KEYS_BOUNCE_SUBTLE_SEC || '2'
+    ),
+    // Float animation duration for decorative keys (seconds)
+    floatDurationSec: parseFloat(process.env.API_KEYS_FLOAT_SEC || '3.5'),
   },
 
   // Card Animations

@@ -640,7 +640,11 @@ onUnmounted(() => {
   stroke-linejoin: round;
   stroke-dasharray: 20;
   stroke-dashoffset: 20;
-  animation: checkmark-draw 0.3s ease-out 0.3s forwards;
+  animation: checkmark-draw
+    v-bind('`${animationConfig.readingProgress.checkmarkDrawDurationMs}ms`')
+    ease-out
+    v-bind('`${animationConfig.readingProgress.checkmarkDrawDelayMs}ms`')
+    forwards;
 }
 
 @keyframes checkmark-draw {
@@ -656,7 +660,10 @@ onUnmounted(() => {
   );
   color: v-bind('themeConfig.readingProgress.completionTextColor');
   white-space: nowrap;
-  animation: text-fade-in 0.3s ease-out 0.4s both;
+  animation: text-fade-in
+    v-bind('`${animationConfig.readingProgress.textFadeInDurationMs}ms`')
+    ease-out v-bind('`${animationConfig.readingProgress.textFadeInDelayMs}ms`')
+    both;
 }
 
 @keyframes text-fade-in {
@@ -689,7 +696,11 @@ onUnmounted(() => {
   );
   border-radius: 50%;
   opacity: 0;
-  animation: confetti-burst 0.8s ease-out 0.2s forwards;
+  animation: confetti-burst
+    v-bind('`${animationConfig.readingProgress.confettiBurstDurationMs}ms`')
+    ease-out
+    v-bind('`${animationConfig.readingProgress.confettiBurstDelayMs}ms`')
+    forwards;
   --angle: calc(var(--confetti-index) * 45deg);
 }
 
