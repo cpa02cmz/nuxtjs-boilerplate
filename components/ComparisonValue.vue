@@ -16,10 +16,7 @@
         @keydown.space.prevent="handleCopy(value as string, 'text')"
       >
         <span class="comparison-value__text">{{ value }}</span>
-        <span
-          class="comparison-value__icon"
-          aria-hidden="true"
-        >
+        <span class="comparison-value__icon" aria-hidden="true">
           <Transition
             mode="out-in"
             enter-active-class="transition-all duration-200 ease-out"
@@ -62,10 +59,7 @@
           </Transition>
         </span>
       </button>
-      <span
-        v-else
-        class="comparison-value comparison-value--empty"
-      >-</span>
+      <span v-else class="comparison-value comparison-value--empty">-</span>
     </template>
 
     <!-- Number Type with Copy Functionality -->
@@ -84,10 +78,7 @@
         @keydown.space.prevent="handleCopy(String(value), 'number')"
       >
         <span class="comparison-value__text">{{ value }}</span>
-        <span
-          class="comparison-value__icon"
-          aria-hidden="true"
-        >
+        <span class="comparison-value__icon" aria-hidden="true">
           <Transition
             mode="out-in"
             enter-active-class="transition-all duration-200 ease-out"
@@ -130,10 +121,7 @@
           </Transition>
         </span>
       </button>
-      <span
-        v-else
-        class="comparison-value comparison-value--empty"
-      >-</span>
+      <span v-else class="comparison-value comparison-value--empty">-</span>
     </template>
 
     <!-- Boolean Type with Enhanced Visuals -->
@@ -143,15 +131,8 @@
         class="comparison-value comparison-value--boolean comparison-value--true"
         :class="{ 'comparison-value--reduced-motion': prefersReducedMotion }"
       >
-        <span
-          class="comparison-value__boolean-icon"
-          aria-hidden="true"
-        >
-          <svg
-            class="w-3.5 h-3.5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+        <span class="comparison-value__boolean-icon" aria-hidden="true">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
             <path
               fill-rule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -166,15 +147,8 @@
         class="comparison-value comparison-value--boolean comparison-value--false"
         :class="{ 'comparison-value--reduced-motion': prefersReducedMotion }"
       >
-        <span
-          class="comparison-value__boolean-icon"
-          aria-hidden="true"
-        >
-          <svg
-            class="w-3.5 h-3.5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+        <span class="comparison-value__boolean-icon" aria-hidden="true">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
             <path
               fill-rule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -184,10 +158,7 @@
         </span>
         <span class="comparison-value__boolean-text">No</span>
       </span>
-      <span
-        v-else
-        class="comparison-value comparison-value--empty"
-      >-</span>
+      <span v-else class="comparison-value comparison-value--empty">-</span>
     </template>
 
     <!-- List Type with Copy All Functionality -->
@@ -217,8 +188,10 @@
             @keydown.enter.prevent="handleCopyList"
             @keydown.space.prevent="handleCopyList"
           >
-            <span>+{{ value.length - displayLimit }}
-              {{ contentConfig.similarResources.moreItemsText }}</span>
+            <span
+              >+{{ value.length - displayLimit }}
+              {{ contentConfig.similarResources.moreItemsText }}</span
+            >
             <Transition
               mode="out-in"
               enter-active-class="transition-all duration-200 ease-out"
@@ -262,19 +235,11 @@
           </button>
         </div>
       </div>
-      <span
-        v-else
-        class="comparison-value comparison-value--empty"
-      >-</span>
+      <span v-else class="comparison-value comparison-value--empty">-</span>
     </template>
 
     <!-- Screen Reader Announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </div>
@@ -285,6 +250,7 @@ import { computed, ref, onMounted } from 'vue'
 import { limitsConfig } from '~/configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { themeConfig } from '~/configs/theme.config'
 import { hapticSuccess } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -358,7 +324,7 @@ const copyTooltip = computed(() => {
 })
 
 // Handle copy action with haptic feedback and visual confirmation
-const handleCopy = async (text: string, type: 'text' | 'number') => {
+const handleCopy = async (text: string, type: 'text' | 'number' | 'list') => {
   if (!props.enableCopy) return
 
   try {

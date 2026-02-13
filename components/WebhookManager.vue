@@ -478,6 +478,7 @@ const getPressAndHold = (webhookId: string, webhook: Webhook) => {
         // Optional: Add haptic feedback or visual cancellation cue
       },
     })
+    // @ts-expect-error - Type mismatch between ReturnType and Map value type
     pressAndHoldStates.value.set(webhookId, pressAndHold)
   }
   return pressAndHoldStates.value.get(webhookId)!

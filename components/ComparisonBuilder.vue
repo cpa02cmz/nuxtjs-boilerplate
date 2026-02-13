@@ -129,10 +129,7 @@
     />
 
     <!-- Empty State -->
-    <div
-      v-else
-      class="text-center py-12"
-    >
+    <div v-else class="text-center py-12">
       <svg
         class="mx-auto h-12 w-12 text-gray-400"
         fill="none"
@@ -172,7 +169,7 @@ import { limitsConfig } from '~/configs/limits.config'
 import { comparisonConfig } from '~/configs/comparison.config'
 
 interface Props {
-  selectedResources: Resource[]
+  selectedResources: readonly Resource[]
   maxResources?: number
 }
 

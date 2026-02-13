@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="resources && resources.length >= 2"
-    class="overflow-x-auto"
-  >
+  <div v-if="resources && resources.length >= 2" class="overflow-x-auto">
     <table
       class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
       :aria-label="`Comparison of ${resources.length} resources`"
@@ -121,10 +118,7 @@
       </tbody>
     </table>
   </div>
-  <div
-    v-else
-    class="text-center py-8 text-gray-500 dark:text-gray-400"
-  >
+  <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
     <svg
       class="mx-auto h-12 w-12 text-gray-400"
       fill="none"
@@ -155,8 +149,8 @@ import type { ComparisonCriteria } from '~/types/comparison'
 import { contentConfig } from '~/configs/content.config'
 
 interface Props {
-  resources?: Resource[]
-  criteria?: ComparisonCriteria[]
+  resources?: readonly Resource[]
+  criteria?: readonly ComparisonCriteria[]
 }
 
 defineProps<Props>()

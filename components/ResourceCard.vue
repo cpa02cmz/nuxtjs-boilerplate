@@ -43,7 +43,7 @@ import { uiConfig } from '~/configs/ui.config'
 interface Props {
   title: string
   description: string
-  benefits: string[]
+  benefits: readonly string[]
   url: string
   id?: string
   category?: string

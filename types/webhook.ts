@@ -84,7 +84,7 @@ export interface ApiKey {
   name: string
   key: string
   userId?: string
-  permissions: string[]
+  permissions: readonly string[]
   active: boolean
   expiresAt?: string
   createdAt: string

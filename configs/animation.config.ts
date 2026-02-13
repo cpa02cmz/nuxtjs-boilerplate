@@ -494,6 +494,8 @@ export const animationConfig = {
     shakeDurationMs: parseInt(
       process.env.VALIDATION_SHAKE_DURATION_MS || '500'
     ),
+    // Duration of shake animation when validation fails (sec) - for CSS v-bind()
+    shakeDurationSec: `${parseInt(process.env.VALIDATION_SHAKE_DURATION_MS || '500') / 1000}s`,
     // Shake intensity in pixels (how far the element moves)
     shakeIntensityPx: parseInt(
       process.env.VALIDATION_SHAKE_INTENSITY_PX || '8'
