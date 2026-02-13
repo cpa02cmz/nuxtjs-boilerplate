@@ -140,6 +140,8 @@ export const limitsConfig = {
     maxTagsDisplay: parseInt(process.env.DISPLAY_MAX_TAGS || '3'),
     // Maximum list items to display before showing "+N more"
     maxListItemsDisplay: parseInt(process.env.DISPLAY_MAX_LIST_ITEMS || '3'),
+    // Maximum initials to display in avatars (e.g., "JD" for John Doe)
+    maxInitialsDisplay: parseInt(process.env.DISPLAY_MAX_INITIALS || '2'),
   },
 
   // Alternative suggestions limits
