@@ -95,6 +95,7 @@ import { iconsConfig } from '~/configs/icons.config'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
+import { zIndexScale } from '~/configs/z-index.config'
 
 interface Props {
   resourceId?: string
@@ -376,7 +377,7 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
   width: 0;
   height: 0;
   pointer-events: none;
-  z-index: 10;
+  z-index: v-bind('zIndexScale.low[10]');
 }
 
 .particle {

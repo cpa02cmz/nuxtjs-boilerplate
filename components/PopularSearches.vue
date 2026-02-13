@@ -171,6 +171,8 @@ import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSear
 import { useResourceData } from '~/composables/useResourceData'
 import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
+import { hapticConfig } from '~/configs/haptic.config'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
   limit?: number
@@ -238,7 +240,7 @@ const handleClick = (query: string, index: number, event: MouseEvent) => {
   clickedIndex.value = index
   setTimeout(() => {
     clickedIndex.value = null
-  }, 150)
+  }, uiTimingConfig.clickFeedback.resetDelay)
 
   // Haptic feedback
   if (
@@ -246,19 +248,19 @@ const handleClick = (query: string, index: number, event: MouseEvent) => {
     navigator.vibrate &&
     !prefersReducedMotion.value
   ) {
-    navigator.vibrate(10)
+    navigator.vibrate(hapticConfig.duration.light)
   }
 
   // Announce for screen readers
   announcement.value = `Searching for ${query}`
   setTimeout(() => {
     announcement.value = ''
-  }, 1000)
+  }, uiTimingConfig.accessibility.announcementDuration)
 
   // Remove ripple after animation
   setTimeout(() => {
     delete ripples.value[index]
-  }, 600)
+  }, uiTimingConfig.ripple.removalDelay)
 
   emit('search-select', query)
 }

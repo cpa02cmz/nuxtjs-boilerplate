@@ -789,9 +789,15 @@ export const animationConfig = {
     ),
     iconAttentionDurationSec: `${parseInt(process.env.CSS_ANIM_ICON_DURATION_MS || '2000') / 1000}s`,
 
-    // Standard animation duration
+    // Standard animation duration (300ms)
     standardDurationMs: parseInt(process.env.CSS_ANIM_STANDARD_MS || '300'),
     standardDurationSec: `${parseInt(process.env.CSS_ANIM_STANDARD_MS || '300') / 1000}s`,
+
+    // Medium animation duration (400ms) - for check-pop and success animations
+    mediumDurationMs: parseInt(
+      process.env.CSS_ANIM_MEDIUM_DURATION_MS || '400'
+    ),
+    mediumDurationSec: `${parseInt(process.env.CSS_ANIM_MEDIUM_DURATION_MS || '400') / 1000}s`,
 
     // Long animation duration (3s for breathe animations)
     longDurationMs: parseInt(process.env.CSS_ANIM_LONG_MS || '3000'),
@@ -859,6 +865,8 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.SCROLL_PROGRESS_RESPECT_REDUCED_MOTION !== 'false',
+    // Flexy hates hardcoded border-radius values!
+    borderRadius: process.env.SCROLL_PROGRESS_BORDER_RADIUS || '0 2px 2px 0',
   },
 
   // Checkbox Micro-Interactions - Palette's delightful micro-UX touch!
@@ -1287,6 +1295,24 @@ export const animationConfig = {
       glowColor: process.env.WEBHOOK_GLOW_COLOR || 'rgba(59, 130, 246, 0.25)',
       pulseColor: process.env.WEBHOOK_PULSE_COLOR || 'rgba(239, 68, 68, 0.2)',
     },
+    // Dimensions - Flexy hates hardcoded pixel values!
+    dimensions: {
+      // Empty state illustration container
+      illustrationWidth: process.env.WEBHOOK_ILLUSTRATION_WIDTH || '120px',
+      illustrationHeight: process.env.WEBHOOK_ILLUSTRATION_HEIGHT || '120px',
+      // Icon size inside illustration
+      iconWidth: process.env.WEBHOOK_ICON_WIDTH || '48px',
+      iconHeight: process.env.WEBHOOK_ICON_HEIGHT || '48px',
+      // Floating dot sizes
+      dotLargeSize: process.env.WEBHOOK_DOT_LARGE_SIZE || '8px',
+      dotSmallSize: process.env.WEBHOOK_DOT_SMALL_SIZE || '6px',
+      // Text container
+      descriptionMaxWidth: process.env.WEBHOOK_DESC_MAX_WIDTH || '280px',
+      // Button
+      buttonMinWidth: process.env.WEBHOOK_BUTTON_MIN_WIDTH || '70px',
+      // Container
+      containerMaxWidth: process.env.WEBHOOK_CONTAINER_MAX_WIDTH || '800px',
+    },
   },
 
   // Zero Result Searches Component - Flexy hates hardcoded values!
@@ -1509,6 +1535,57 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.VIEWED_BADGE_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // Comparison Value Animations - Palette's micro-UX enhancement!
+  // Delightful copy-to-clipboard interactions with visual feedback
+  comparisonValue: {
+    // Duration for copy feedback state (ms)
+    copyFeedbackDurationMs: parseInt(
+      process.env.COMPARISON_VALUE_COPY_FEEDBACK_MS || '2000'
+    ),
+    // Copy success animation duration (ms)
+    copySuccessAnimationMs: parseInt(
+      process.env.COMPARISON_VALUE_COPY_SUCCESS_MS || '400'
+    ),
+    // Boolean value pop animation duration (ms)
+    booleanPopDurationMs: parseInt(
+      process.env.COMPARISON_VALUE_BOOL_POP_MS || '300'
+    ),
+  },
+
+  // Comments Section Animations - Palette's micro-UX delight!
+  // Provides smooth scroll and highlight effects for newly posted comments
+  comments: {
+    // Duration for comment highlight animation (seconds)
+    highlightDurationSec: `${parseInt(process.env.COMMENT_HIGHLIGHT_DURATION_MS || '2000') / 1000}s`,
+    // Delay before scrolling to new comment (ms) - allows DOM to update
+    scrollDelayMs: parseInt(process.env.COMMENT_SCROLL_DELAY_MS || '100'),
+    // Scroll behavior: 'smooth' or 'auto'
+    scrollBehavior: process.env.COMMENT_SCROLL_BEHAVIOR || 'smooth',
+    // Highlight color RGB values (yellow-400)
+    highlightColor: process.env.COMMENT_HIGHLIGHT_COLOR || '250, 204, 21',
+    // Maximum highlight opacity (0-1)
+    highlightOpacity: parseFloat(
+      process.env.COMMENT_HIGHLIGHT_OPACITY || '0.2'
+    ),
+  },
+
+  // Error Page Animations - Palette's micro-UX enhancement!
+  // Subtle entrance animations and visual feedback for error states
+  errorPage: {
+    // Duration for content entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.ERROR_PAGE_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Icon pulse animation duration (seconds)
+    iconPulseDurationSec: parseFloat(
+      process.env.ERROR_PAGE_ICON_PULSE_SEC || '2'
+    ),
+    // Pulse ring animation duration (seconds)
+    pulseRingDurationSec: parseFloat(
+      process.env.ERROR_PAGE_PULSE_RING_SEC || '1.5'
+    ),
   },
 } as const
 

@@ -63,6 +63,7 @@ import { onMounted, ref, watch } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
 import { zIndexConfig } from '~/configs/z-index.config'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 const props = defineProps<{
   title: string
@@ -83,7 +84,7 @@ watch(
       // Clear announcement after screen reader has time to process
       setTimeout(() => {
         announcement.value = ''
-      }, 1000)
+      }, uiTimingConfig.breadcrumbs.announcementClearDelay)
     }
   },
   { immediate: true }

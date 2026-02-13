@@ -69,6 +69,6 @@ export default defineEventHandler(async event => {
       flag: newFlag,
     })
   } catch (error) {
-    handleApiRouteError(event, error)
+    return handleApiRouteError(event, error)
   }
 })

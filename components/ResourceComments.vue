@@ -225,9 +225,12 @@
       <div
         v-for="comment in formattedComments"
         :key="comment.id"
+        :ref="el => setCommentRef(el, comment.id)"
         class="flex space-x-4"
         :class="{
           'is-new': isNewComment(comment.id) && !prefersReducedMotion,
+          'comment-highlighted':
+            highlightedCommentId === comment.id && !prefersReducedMotion,
         }"
       >
         <div class="flex-shrink-0">
@@ -252,9 +255,21 @@
                 <span class="font-medium text-gray-900">{{
                   comment.displayName
                 }}</span>
-                <span class="ml-2 text-sm text-gray-500">{{
-                  comment.displayTime
-                }}</span>
+                <!-- Palette's micro-UX: Live timestamp with tooltip and indicator -->
+                <time
+                  class="ml-2 text-sm text-gray-500 flex items-center gap-1.5"
+                  :datetime="comment.timestamp"
+                  :title="new Date(comment.timestamp).toLocaleString()"
+                >
+                  {{ comment.displayTime }}
+                  <!-- Live indicator for recent comments -->
+                  <span
+                    v-if="comment.isRecent"
+                    class="live-indicator"
+                    aria-hidden="true"
+                    :class="{ 'animate-pulse': !prefersReducedMotion }"
+                  />
+                </time>
               </div>
               <!-- Like Button with Particle Burst - Palette's Micro-UX Delight! -->
               <button
@@ -311,7 +326,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import type { Comment } from '~/types/community'
-import { TIME } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { validationConfig } from '~/configs/validation.config'
@@ -319,6 +333,8 @@ import { limitsConfig } from '~/configs/limits.config'
 import { uiConfig } from '~/configs/ui.config'
 import { generateId } from '~/utils/generateId'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
+import { formatTimeAgoOnce } from '~/composables/useTimeAgo'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
   comments: Comment[]
@@ -353,6 +369,10 @@ const uniqueId = generateId({ prefix: 'comment' })
 const newComments = ref<Set<string>>(new Set())
 const burstingComments = ref<Set<string>>(new Set())
 const likeButtonRefs = ref<Map<string, HTMLElement>>(new Map())
+
+// Palette's Micro-UX: Track highlighted comment for smooth scroll and highlight effect
+const highlightedCommentId = ref<string | null>(null)
+const commentRefs = ref<Map<string, HTMLElement>>(new Map())
 
 // Computed values for character counter ring - Now using config, Flexy loves modularity!
 const circumference = 2 * Math.PI * uiConfig.characterCounter.ringRadiusPx
@@ -484,9 +504,13 @@ const submitComment = async () => {
         // Remove from new comments after animation completes
         setTimeout(() => {
           newComments.value.delete(latestComment.id)
-        }, 2000)
+        }, uiTimingConfig.comments.highlightDuration)
+
+        // Palette's Micro-UX: Smooth scroll to and highlight the new comment
+        // This provides immediate visual feedback showing where the comment appeared
+        highlightAndScrollToComment(latestComment.id)
       }
-    }, 100)
+    }, uiTimingConfig.comments.animationDelay)
 
     // Reset success states after animation
     setTimeout(() => {
@@ -508,10 +532,48 @@ const setLikeButtonRef = (el: unknown, commentId: string) => {
   }
 }
 
+// Palette's Micro-UX: Set comment ref for smooth scroll to new comments
+const setCommentRef = (el: unknown, commentId: string) => {
+  if (el && typeof el === 'object' && el !== null) {
+    commentRefs.value.set(commentId, el as HTMLElement)
+  }
+}
+
+// Palette's Micro-UX: Smooth scroll to and highlight a comment
+const highlightAndScrollToComment = (commentId: string) => {
+  if (prefersReducedMotion.value) {
+    // Skip animations for users who prefer reduced motion
+    highlightedCommentId.value = commentId
+    setTimeout(() => {
+      highlightedCommentId.value = null
+    }, uiTimingConfig.comments.highlightDuration)
+    return
+  }
+
+  // Set highlighted comment for CSS animation
+  highlightedCommentId.value = commentId
+
+  // Smooth scroll to the comment
+  nextTick(() => {
+    const commentEl = commentRefs.value.get(commentId)
+    if (commentEl) {
+      commentEl.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      })
+    }
+  })
+
+  // Clear highlight after animation completes
+  setTimeout(() => {
+    highlightedCommentId.value = null
+  }, uiTimingConfig.comments.highlightDuration)
+}
+
 // Palette's Micro-UX: Generate particle styles for burst animation
 const getParticleStyle = (index: number) => {
   const angle = (index - 1) * 60 // 60-degree increments for 6 particles
-  const delay = (index - 1) * 50 // Staggered delay
+  const delay = (index - 1) * uiTimingConfig.comments.particleStaggerDelay // Staggered delay
   return {
     '--angle': `${angle}deg`,
     '--delay': `${delay}ms`,
@@ -555,33 +617,26 @@ const getInitials = (name: string) => {
 }
 
 // Format comments with initials
+// Palette's micro-UX enhancement: Using live-updating time display!
 const formattedComments = computed(() => {
-  return props.comments.map(comment => ({
-    ...comment,
-    displayName: comment.userName || comment.userId,
-    displayContent: comment.content,
-    displayTime: formatTimeAgo(comment.timestamp),
-    displayLikes: comment.votes + (likedComments.value.has(comment.id) ? 1 : 0),
-    initials: getInitials(comment.userName || comment.userId),
-  }))
+  return props.comments.map(comment => {
+    const timeAgoResult = formatTimeAgoOnce(comment.timestamp)
+    const isRecent = timeAgoResult === 'just now'
+
+    return {
+      ...comment,
+      displayName: comment.userName || comment.userId,
+      displayContent: comment.content,
+      displayTime: timeAgoResult,
+      displayLikes:
+        comment.votes + (likedComments.value.has(comment.id) ? 1 : 0),
+      initials: getInitials(comment.userName || comment.userId),
+      // Palette's micro-UX: Track if comment is recent for live indicator
+      isRecent,
+      timestamp: comment.timestamp,
+    }
+  })
 })
-
-const formatTimeAgo = (timestamp: string): string => {
-  const date = new Date(timestamp)
-  const now = new Date()
-  const seconds = Math.floor(
-    (now.getTime() - date.getTime()) / TIME.MS_PER_SECOND
-  )
-
-  if (seconds < TIME.SECONDS_PER_MINUTE) return 'just now'
-  if (seconds < TIME.SECONDS_PER_HOUR)
-    return `${Math.floor(seconds / TIME.SECONDS_PER_MINUTE)} minutes ago`
-  if (seconds < TIME.SECONDS_PER_DAY)
-    return `${Math.floor(seconds / TIME.SECONDS_PER_HOUR)} hours ago`
-  if (seconds < TIME.SECONDS_PER_WEEK)
-    return `${Math.floor(seconds / TIME.SECONDS_PER_DAY)} days ago`
-  return date.toLocaleDateString()
-}
 
 // Check for reduced motion preference
 onMounted(() => {
@@ -605,7 +660,8 @@ defineExpose({
 <style scoped>
 /* Textarea glow animation on successful post */
 .animate-textarea-glow {
-  animation: textarea-glow 0.6s ease-out;
+  animation: textarea-glow
+    v-bind('animationConfig?.cssTransitions?.longSec ?? "0.6s"') ease-out;
 }
 
 @keyframes textarea-glow {
@@ -622,7 +678,9 @@ defineExpose({
 
 /* Success bounce animation for checkmark */
 .animate-success-bounce {
-  animation: success-bounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: success-bounce
+    v-bind('animationConfig?.validation?.shakeDurationSec ?? "0.5s"')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes success-bounce {
@@ -642,7 +700,9 @@ defineExpose({
 
 /* Heart beat animation for likes */
 .animate-heart-beat {
-  animation: heart-beat 0.4s ease-in-out;
+  animation: heart-beat
+    v-bind('animationConfig?.cssAnimations?.mediumDurationSec ?? "0.4s"')
+    ease-in-out;
 }
 
 @keyframes heart-beat {
@@ -663,7 +723,9 @@ defineExpose({
 
 /* Fade in animation for comments */
 .animate-fade-in {
-  animation: fade-in 0.3s ease-out;
+  animation: fade-in
+    v-bind('animationConfig?.cssAnimations?.standardDurationSec ?? "0.3s"')
+    ease-out;
 }
 
 @keyframes fade-in {
@@ -691,7 +753,9 @@ defineExpose({
   height: 6px;
   background: linear-gradient(135deg, #ef4444 0%, #f87171 50%, #fca5a5 100%);
   border-radius: 50%;
-  animation: particle-burst 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: particle-burst
+    v-bind('animationConfig?.cssTransitions?.longSec ?? "0.6s"')
+    cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: var(--delay);
   opacity: 0;
 }
@@ -712,7 +776,9 @@ defineExpose({
 
 /* Palette's Micro-UX: Heart Pop Animation (Enhanced) */
 .animate-heart-pop {
-  animation: heart-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: heart-pop
+    v-bind('animationConfig?.validation?.shakeDurationSec ?? "0.5s"')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes heart-pop {
@@ -738,6 +804,68 @@ defineExpose({
   animation: avatar-pulse 2s ease-in-out;
 }
 
+/* Palette's Micro-UX: Highlight Animation for Newly Posted Comments
+   Smooth yellow-to-transparent gradient that draws attention without being jarring */
+.comment-highlighted {
+  animation: comment-highlight
+    v-bind('animationConfig?.comments?.highlightDurationSec ?? "2s"') ease-out
+    forwards;
+  border-radius: 8px;
+  position: relative;
+}
+
+.comment-highlighted::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: linear-gradient(
+    135deg,
+    rgba(250, 204, 21, 0.3) 0%,
+    rgba(250, 204, 21, 0.1) 50%,
+    transparent 100%
+  );
+  border-radius: 12px;
+  z-index: -1;
+  animation: highlight-glow
+    v-bind('animationConfig?.comments?.highlightDurationSec ?? "2s"') ease-out
+    forwards;
+  pointer-events: none;
+}
+
+@keyframes comment-highlight {
+  0% {
+    background-color: rgba(250, 204, 21, 0.2);
+    transform: scale(1.02);
+  }
+  50% {
+    background-color: rgba(250, 204, 21, 0.05);
+    transform: scale(1.01);
+  }
+  100% {
+    background-color: transparent;
+    transform: scale(1);
+  }
+}
+
+@keyframes highlight-glow {
+  0% {
+    opacity: 1;
+    box-shadow:
+      0 0 0 2px rgba(250, 204, 21, 0.4),
+      0 4px 12px rgba(250, 204, 21, 0.2);
+  }
+  50% {
+    opacity: 0.5;
+    box-shadow:
+      0 0 0 1px rgba(250, 204, 21, 0.2),
+      0 2px 6px rgba(250, 204, 21, 0.1);
+  }
+  100% {
+    opacity: 0;
+    box-shadow: none;
+  }
+}
+
 @keyframes avatar-pulse {
   0%,
   100% {
@@ -760,11 +888,15 @@ defineExpose({
 
 /* Palette's Micro-UX: TransitionGroup Animations for Comments List */
 .comment-list-enter-active {
-  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all
+    v-bind('animationConfig?.validation?.shakeDurationSec ?? "0.5s"')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .comment-list-leave-active {
-  transition: all 0.3s ease-out;
+  transition: all
+    v-bind('animationConfig?.cssAnimations?.standardDurationSec ?? "0.3s"')
+    ease-out;
   position: absolute;
 }
 
@@ -779,7 +911,9 @@ defineExpose({
 }
 
 .comment-list-move {
-  transition: transform 0.4s ease-out;
+  transition: transform
+    v-bind('animationConfig?.cssAnimations?.mediumDurationSec ?? "0.4s"')
+    ease-out;
 }
 
 /* Reduced motion support */
@@ -810,8 +944,43 @@ defineExpose({
 /* Smooth textarea transition */
 textarea {
   transition:
-    height 0.2s ease-out,
-    box-shadow 0.2s ease-out,
-    border-color 0.2s ease-out;
+    height v-bind('animationConfig.cssTransitions.normalSec') ease-out,
+    box-shadow v-bind('animationConfig.cssTransitions.normalSec') ease-out,
+    border-color v-bind('animationConfig.cssTransitions.normalSec') ease-out;
+}
+
+/* Palette's Micro-UX: Live indicator for recent comments */
+.live-indicator {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+.live-indicator.animate-pulse {
+  animation: live-pulse 2s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  }
+}
+
+/* Reduced motion support for live indicator */
+@media (prefers-reduced-motion: reduce) {
+  .live-indicator.animate-pulse {
+    animation: none;
+  }
 }
 </style>

@@ -196,6 +196,11 @@ export const uiConfig = {
     trackColor: process.env.SCROLLBAR_TRACK_COLOR || '#f1f5f9',
     thumbColor: process.env.SCROLLBAR_THUMB_COLOR || '#cbd5e1',
     thumbHoverColor: process.env.SCROLLBAR_THUMB_HOVER_COLOR || '#94a3b8',
+    // Flexy hates hardcoded border-radius values!
+    borderRadius: {
+      track: process.env.SCROLLBAR_TRACK_RADIUS || '4px',
+      thumb: process.env.SCROLLBAR_THUMB_RADIUS || '4px',
+    },
   },
 
   // Timing Values (ms)

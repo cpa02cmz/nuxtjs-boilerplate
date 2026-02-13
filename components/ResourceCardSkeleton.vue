@@ -367,10 +367,13 @@ onUnmounted(() => {
   animation-delay:
     calc(var(--wave-index) * var(--wave-stagger)),
     calc(var(--wave-index) * var(--wave-stagger)),
-    calc(var(--wave-index) * 0.1s);
+    calc(
+      var(--wave-index) * v-bind('animationConfig.cssAnimations.smallDelaySec')
+    );
   transition:
-    transform 0.3s v-bind('easingValues.materialStandard'),
-    opacity 0.3s ease;
+    transform v-bind('animationConfig.cssTransitions.standardSec')
+      v-bind('easingValues.materialStandard'),
+    opacity v-bind('animationConfig.cssTransitions.standardSec') ease;
 }
 
 /* 🎨 Palette: Staggered hover effect for wave items */

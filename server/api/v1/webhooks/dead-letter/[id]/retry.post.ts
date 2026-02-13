@@ -36,6 +36,6 @@ export default defineEventHandler(async event => {
       id,
     })
   } catch (error) {
-    handleApiRouteError(event, error)
+    return handleApiRouteError(event, error)
   }
 })

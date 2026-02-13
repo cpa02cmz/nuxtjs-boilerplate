@@ -605,7 +605,8 @@ onUnmounted(() => {
   }
 
   .copied-tooltip {
-    transition: opacity 0.15s ease-out !important;
+    transition: opacity v-bind('animationConfig.cssTransitions.quickSec')
+      ease-out !important;
     transform: translateX(-50%) !important;
   }
 }

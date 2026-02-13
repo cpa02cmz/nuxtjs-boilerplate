@@ -83,6 +83,6 @@ export default defineEventHandler(async event => {
         'This key is stored as a secure bcrypt hash in the database. Never share this key or commit it to version control.',
     })
   } catch (error) {
-    handleApiRouteError(event, error)
+    return handleApiRouteError(event, error)
   }
 })

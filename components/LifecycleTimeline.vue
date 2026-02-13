@@ -184,6 +184,7 @@ import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
 import { hapticLight } from '~/utils/hapticFeedback'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
   statusHistory?: StatusChange[]
@@ -291,7 +292,7 @@ const handleItemClick = (
   clickedIndex.value = index
   setTimeout(() => {
     clickedIndex.value = null
-  }, 150)
+  }, uiTimingConfig.clickFeedback.resetDelay)
 
   // Haptic feedback for mobile users - Palette's micro-UX touch!
   if (!prefersReducedMotion.value) {
@@ -302,12 +303,12 @@ const handleItemClick = (
   announcement.value = `Status changed from ${change.fromStatus} to ${change.toStatus} on ${formatDate(change.changedAt)}`
   setTimeout(() => {
     announcement.value = ''
-  }, 3000)
+  }, uiTimingConfig.timeline.announcementClearDelay)
 
   // Remove ripple after animation
   setTimeout(() => {
     delete ripples.value[index]
-  }, 600)
+  }, uiTimingConfig.ripple.removalDelay)
 }
 
 // Handle keyboard navigation with enhanced feedback
@@ -369,7 +370,7 @@ onMounted(() => {
   // Trigger entrance animation after a short delay
   setTimeout(() => {
     isLoaded.value = true
-  }, 100)
+  }, uiTimingConfig.keyboard.hintTimeout)
 
   // Add global focus tracking for keyboard hint
   document.addEventListener('focusin', handleFocus)

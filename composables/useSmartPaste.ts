@@ -9,7 +9,7 @@
  * - Respects reduced motion preferences
  */
 
-import { reactive, readonly, nextTick } from 'vue'
+import { reactive, readonly, nextTick, onUnmounted } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { EASING } from '~/configs/easing.config'
 
@@ -86,6 +86,7 @@ export function useSmartPaste(
   })
 
   let indicatorTimeout: ReturnType<typeof setTimeout> | null = null
+  let announcementTimeout: ReturnType<typeof setTimeout> | null = null
 
   /**
    * Dismiss the paste indicator
@@ -97,6 +98,25 @@ export function useSmartPaste(
       indicatorTimeout = null
     }
   }
+
+  /**
+   * Cleanup function to clear all timeouts
+   */
+  const cleanup = () => {
+    if (indicatorTimeout) {
+      clearTimeout(indicatorTimeout)
+      indicatorTimeout = null
+    }
+    if (announcementTimeout) {
+      clearTimeout(announcementTimeout)
+      announcementTimeout = null
+    }
+  }
+
+  // Cleanup on component unmount
+  onUnmounted(() => {
+    cleanup()
+  })
 
   /**
    * Show the paste indicator at the specified position
@@ -146,8 +166,10 @@ export function useSmartPaste(
     document.body.appendChild(announcement)
 
     // Remove after announcement - Flexy hates hardcoded 1000! Using config value
-    setTimeout(() => {
-      document.body.removeChild(announcement)
+    announcementTimeout = setTimeout(() => {
+      if (announcement && announcement.parentNode) {
+        document.body.removeChild(announcement)
+      }
     }, animationConfig.smartPaste.announcementTimeoutMs)
   }
 

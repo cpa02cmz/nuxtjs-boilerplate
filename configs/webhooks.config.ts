@@ -17,6 +17,11 @@ export const webhooksConfig = {
 
     // Default priority for queue items
     defaultPriority: parseInt(process.env.WEBHOOK_DEFAULT_PRIORITY || '0'),
+
+    // Timeout for processing individual queue items (ms) - Issue #2206
+    processTimeoutMs: parseInt(
+      process.env.WEBHOOK_QUEUE_PROCESS_TIMEOUT_MS || '30000'
+    ),
   },
 
   // Retry Settings
@@ -242,6 +247,9 @@ export const webhooksConfig = {
       ),
     },
   },
+
+  // Overall delivery timeout (ms) - Issue #2207
+  overallTimeoutMs: parseInt(process.env.WEBHOOK_OVERALL_TIMEOUT_MS || '60000'),
 } as const
 
 // Helper function to parse status codes

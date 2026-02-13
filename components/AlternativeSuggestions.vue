@@ -179,6 +179,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { EASING } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { getButtonLabel } from '~/utils/resourceHelper'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
   resource?: Resource
@@ -267,7 +268,7 @@ const initAlternatives = async () => {
       announcementText.value = `${alternatives.value.length} alternative suggestions loaded`
       setTimeout(() => {
         announcementText.value = ''
-      }, 1000)
+      }, uiTimingConfig.alternatives.announcementClearDelay)
     }
   } catch {
     alternatives.value = []
@@ -380,7 +381,7 @@ watch(
   font-weight: 500;
   color: v-bind('componentColorsConfig.alternativeSuggestions.link.default');
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color v-bind('animationConfig.cssTransitions.normalSec') ease;
 }
 
 .alternative-suggestions__view-all:hover {

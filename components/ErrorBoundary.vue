@@ -167,6 +167,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { ROUTE_PATTERNS } from '~/configs/routes.config'
 import { hapticError, hapticSuccess } from '~/utils/hapticFeedback'
 import { contentConfig } from '~/configs/content.config'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface ErrorInfo {
   componentStack: string
@@ -297,7 +298,7 @@ const startAutoRetry = () => {
         performAutoRetry()
       }
     }
-  }, 1000)
+  }, uiTimingConfig.countdown.updateInterval)
 }
 
 /**
@@ -698,7 +699,7 @@ onUnmounted(() => {
   padding: 0;
   cursor: pointer;
   text-decoration: underline;
-  transition: color 0.2s ease;
+  transition: color v-bind('animationConfig.cssTransitions.normalSec') ease;
 }
 
 .cancel-retry-button:hover {

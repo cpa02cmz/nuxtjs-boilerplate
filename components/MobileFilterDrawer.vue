@@ -160,6 +160,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
 import ResourceFilters from '~/components/ResourceFilters.vue'
+import { hapticConfig } from '~/configs/haptic.config'
 
 interface FacetCounts {
   [key: string]: number
@@ -303,7 +304,7 @@ watch(isOpen, newValue => {
       }
     ).vibrate
     if (haptic) {
-      haptic(10)
+      haptic(hapticConfig.duration.light)
     }
   }
 })

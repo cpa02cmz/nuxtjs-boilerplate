@@ -189,17 +189,16 @@ export async function executeWithTimeout<T>(
   timeoutMs: number = QUERY_TIMEOUT_MS,
   operationName: string = 'database query'
 ): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined
+
   const timeoutPromise = new Promise<never>((_, reject) => {
-    const timeoutId = setTimeout(() => {
+    timeoutId = setTimeout(() => {
       reject(
         new Error(
           `Query timeout: ${operationName} exceeded ${timeoutMs}ms limit`
         )
       )
     }, timeoutMs)
-
-    // Clean up timeout if query completes first
-    return () => clearTimeout(timeoutId)
   })
 
   const startTime = Date.now()
@@ -207,6 +206,10 @@ export async function executeWithTimeout<T>(
   try {
     // Race between query and timeout
     const result = await Promise.race([queryFn(), timeoutPromise])
+    // Clear timeout if query completed first to prevent memory leak
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
 
     const duration = Date.now() - startTime
 
@@ -219,6 +222,11 @@ export async function executeWithTimeout<T>(
 
     return result
   } catch (error) {
+    // Clear timeout on error to prevent memory leak
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+
     const duration = Date.now() - startTime
 
     if (error instanceof Error && error.message.includes('Query timeout')) {

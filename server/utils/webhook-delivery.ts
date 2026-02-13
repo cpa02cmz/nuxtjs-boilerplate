@@ -13,6 +13,101 @@ export interface WebhookDeliveryOptions {
 
 const DEFAULT_TIMEOUT_MS = webhooksConfig.request.timeoutMs
 
+/**
+ * Validates webhook URL to prevent SSRF attacks
+ * Blocks private IP ranges, cloud metadata endpoints, and non-HTTPS in production
+ */
+function validateWebhookUrl(url: string): void {
+  try {
+    const parsedUrl = new URL(url)
+
+    // Enforce HTTPS in production
+    if (
+      process.env.NODE_ENV === 'production' &&
+      parsedUrl.protocol !== 'https:'
+    ) {
+      throw new Error('Webhook URL must use HTTPS in production')
+    }
+
+    const hostname = parsedUrl.hostname.toLowerCase()
+
+    // Block localhost and loopback addresses
+    if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '::1'
+    ) {
+      throw new Error(
+        'Webhook URL cannot target localhost or loopback addresses'
+      )
+    }
+
+    // Block cloud metadata endpoints
+    if (hostname === '169.254.169.254' || hostname === '169.254.170.2') {
+      throw new Error('Webhook URL cannot target cloud metadata endpoints')
+    }
+
+    // Block private IP ranges
+    const ipMatch = hostname.match(
+      /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/
+    )
+    if (ipMatch) {
+      const octets = ipMatch.slice(1, 5).map(Number)
+      const [a, b, c, d] = octets
+
+      // Check if it's a valid IP
+      if (
+        a &&
+        (a > 255 || (b && (b > 255 || (c && (c > 255 || (d && d > 255))))))
+      ) {
+        throw new Error('Invalid IP address in webhook URL')
+      }
+
+      // Block private ranges: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16
+      if (a === 10) {
+        throw new Error(
+          'Webhook URL cannot target private IP ranges (10.0.0.0/8)'
+        )
+      }
+      if (a === 172 && b !== undefined && b >= 16 && b <= 31) {
+        throw new Error(
+          'Webhook URL cannot target private IP ranges (172.16.0.0/12)'
+        )
+      }
+      if (a === 192 && b === 168) {
+        throw new Error(
+          'Webhook URL cannot target private IP ranges (192.168.0.0/16)'
+        )
+      }
+      if (a === 169 && b === 254) {
+        throw new Error(
+          'Webhook URL cannot target link-local addresses (169.254.0.0/16)'
+        )
+      }
+      // Block 127.0.0.0/8 loopback range
+      if (a === 127) {
+        throw new Error(
+          'Webhook URL cannot target loopback addresses (127.0.0.0/8)'
+        )
+      }
+    }
+
+    // Block IPv6 loopback and link-local
+    if (
+      hostname.startsWith('fe80:') ||
+      hostname.startsWith('fc') ||
+      hostname.startsWith('fd')
+    ) {
+      throw new Error('Webhook URL cannot target private IPv6 ranges')
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('Webhook URL')) {
+      throw error
+    }
+    throw new Error('Invalid webhook URL format')
+  }
+}
+
 export class WebhookDeliveryService {
   private circuitBreakerKeys: Map<string, string> = new Map()
   // Flexy hates hardcoded limits! Using config instead
@@ -23,6 +118,27 @@ export class WebhookDeliveryService {
     webhook: Webhook,
     payload: WebhookPayload
   ): Promise<WebhookDelivery> {
+    // Overall timeout wrapper for entire delivery process (Issue #2207)
+    const OVERALL_TIMEOUT_MS = webhooksConfig.overallTimeoutMs
+
+    return Promise.race([
+      this.executeDelivery(webhook, payload),
+      new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error('Overall delivery timeout')),
+          OVERALL_TIMEOUT_MS
+        )
+      ),
+    ])
+  }
+
+  private async executeDelivery(
+    webhook: Webhook,
+    payload: WebhookPayload
+  ): Promise<WebhookDelivery> {
+    // Validate webhook URL to prevent SSRF attacks
+    validateWebhookUrl(webhook.url)
+
     const signature = webhookSigner.generateSignature(
       payload,
       webhook.secret || ''
