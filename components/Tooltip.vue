@@ -51,12 +51,7 @@
     </Transition>
 
     <!-- Screen reader announcement - announces tooltip content when visible -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ isVisible ? content : '' }}
     </div>
   </div>
@@ -100,8 +95,8 @@ const touchStartTime = ref(0)
 const touchStartPosition = ref({ x: 0, y: 0 })
 const isTouchDevice = ref(false)
 let touchTimeout: ReturnType<typeof setTimeout> | null = null
-// Long press duration for touch devices (ms)
-const LONG_PRESS_DURATION = 500
+// Long press duration for touch devices (ms) - Flexy hates hardcoded values!
+const LONG_PRESS_DURATION = animationConfig.tooltip.longPressDurationMs
 
 // Generate unique ID for accessibility - Flexy hates hardcoded ID generation!
 const uniqueId = generateId({ prefix: 'tooltip' })
@@ -319,7 +314,7 @@ const handleTouchEnd = () => {
   // Reset touch device flag after a delay to re-enable mouse events
   setTimeout(() => {
     isTouchDevice.value = false
-  }, 100)
+  }, animationConfig.tooltip.touchResetDelayMs)
 }
 
 /**

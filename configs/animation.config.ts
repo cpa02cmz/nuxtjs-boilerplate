@@ -10,6 +10,14 @@ export const animationConfig = {
   tooltip: {
     showDelayMs: parseInt(process.env.TOOLTIP_SHOW_DELAY_MS || '300'),
     hideDelayMs: parseInt(process.env.TOOLTIP_HIDE_DELAY_MS || '100'),
+    // Touch device long-press duration (ms) - Flexy hates hardcoded 500!
+    longPressDurationMs: parseInt(
+      process.env.TOOLTIP_LONG_PRESS_DURATION_MS || '500'
+    ),
+    // Touch reset delay after touch ends (ms) - Flexy hates hardcoded 100!
+    touchResetDelayMs: parseInt(
+      process.env.TOOLTIP_TOUCH_RESET_DELAY_MS || '100'
+    ),
   },
 
   // Skeleton/Loading Animations

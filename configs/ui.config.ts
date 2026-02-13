@@ -468,6 +468,17 @@ export const uiConfig = {
   form: {
     // Default textarea rows
     textareaRows: parseInt(process.env.FORM_TEXTAREA_ROWS || '4'),
+    // Input positioning values - Flexy hates hardcoded positioning!
+    inputPositioning: {
+      // Character counter right position (rem)
+      counterRightRem: parseFloat(process.env.FORM_COUNTER_RIGHT_REM || '0.75'),
+      // Validation checkmark right position (rem)
+      checkmarkRightRem: parseFloat(
+        process.env.FORM_CHECKMARK_RIGHT_REM || '4.5'
+      ),
+      // Validation checkmark top offset for textarea
+      checkmarkTopRem: parseFloat(process.env.FORM_CHECKMARK_TOP_REM || '0.75'),
+    },
   },
 
   // Load More Button Settings - Palette's micro-UX enhancement!
