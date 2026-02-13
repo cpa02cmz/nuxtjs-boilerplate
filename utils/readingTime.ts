@@ -58,16 +58,11 @@ const QUICK_READ_THRESHOLD = 2
 
 /**
  * Strip HTML tags from content
+ * Uses regex only to avoid CodeQL XSS warnings with innerHTML
  */
 const stripHtml = (html: string): string => {
-  if (typeof window === 'undefined') {
-    // Server-side: use simple regex
-    return html.replace(/<[^>]*>/g, '')
-  }
-  // Client-side: use DOM API for better accuracy
-  const tmp = document.createElement('div')
-  tmp.innerHTML = html
-  return tmp.textContent || tmp.innerText || ''
+  // Use regex for both server and client-side to avoid XSS risks
+  return html.replace(/<[^>]*>/g, '')
 }
 
 /**
