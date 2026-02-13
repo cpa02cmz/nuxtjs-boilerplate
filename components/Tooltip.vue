@@ -6,8 +6,17 @@
     @mouseleave="handleMouseLeave"
     @focusin="handleFocusIn"
     @focusout="handleFocusOut"
+    @touchstart="handleTouchStart"
+    @touchend="handleTouchEnd"
+    @touchcancel="handleTouchCancel"
   >
-    <slot />
+    <!-- Wrapper slot with aria-describedby for accessibility -->
+    <div
+      :aria-describedby="isVisible ? tooltipId : undefined"
+      class="tooltip-trigger-wrapper"
+    >
+      <slot />
+    </div>
     <Transition
       :enter-active-class="`transition ${animationConfig.transition.normal.class} ${animationConfig.transition.easeOut}`"
       enter-from-class="opacity-0 translate-y-1"
@@ -86,6 +95,14 @@ const props = withDefaults(defineProps<Props>(), {
   closeOnClickOutside: true,
 })
 
+// Touch handling state - Palette's micro-UX enhancement for mobile!
+const touchStartTime = ref(0)
+const touchStartPosition = ref({ x: 0, y: 0 })
+const isTouchDevice = ref(false)
+let touchTimeout: ReturnType<typeof setTimeout> | null = null
+// Long press duration for touch devices (ms)
+const LONG_PRESS_DURATION = 500
+
 // Generate unique ID for accessibility - Flexy hates hardcoded ID generation!
 const uniqueId = generateId({ prefix: 'tooltip' })
 const tooltipId = computed(() => uniqueId)
@@ -116,7 +133,10 @@ const arrowClasses: Record<TooltipPosition, string> = {
  * Calculates the optimal tooltip position based on viewport boundaries.
  * Prevents tooltips from being cut off at viewport edges by flipping position
  * when collision is detected.
+ * Now with position memory - remembers successful positions for better UX!
  */
+const lastSuccessfulPosition = ref<TooltipPosition | null>(null)
+
 const calculateOptimalPosition = () => {
   if (!tooltipRef.value || !triggerRef.value) return
   if (typeof window === 'undefined') return
@@ -142,12 +162,15 @@ const calculateOptimalPosition = () => {
     right: 'left',
   }
 
-  // Check if preferred position causes collision
-  const preferredPosition = props.position
+  // Use last successful position if available for consistency
+  const preferredPosition = lastSuccessfulPosition.value || props.position
+
   if (collisionChecks[preferredPosition]()) {
     // Try fallback position
     const fallback = fallbackPositions[preferredPosition]
     adjustedPosition.value = fallback
+    // Remember this successful position
+    lastSuccessfulPosition.value = fallback
 
     // Force DOM update to recalculate tooltip position
     nextTick(() => {
@@ -172,6 +195,8 @@ const calculateOptimalPosition = () => {
         for (const pos of allPositions) {
           if (pos !== preferredPosition && pos !== fallback) {
             adjustedPosition.value = pos
+            // Remember this successful position
+            lastSuccessfulPosition.value = pos
             break
           }
         }
@@ -179,6 +204,8 @@ const calculateOptimalPosition = () => {
     })
   } else {
     adjustedPosition.value = preferredPosition
+    // Remember this successful position
+    lastSuccessfulPosition.value = preferredPosition
   }
 }
 
@@ -237,6 +264,8 @@ const clearAllTimeouts = () => {
 }
 
 const handleMouseEnter = () => {
+  // Don't show on mouse enter if touch was recently used
+  if (isTouchDevice.value) return
   showTooltip()
 }
 
@@ -250,6 +279,55 @@ const handleFocusIn = () => {
 
 const handleFocusOut = () => {
   hideTooltip()
+}
+
+/**
+ * Handle touch start for mobile tooltip support
+ * Implements long-press to show tooltip on touch devices
+ */
+const handleTouchStart = (event: TouchEvent) => {
+  isTouchDevice.value = true
+  touchStartTime.value = Date.now()
+  const touch = event.touches[0]
+  touchStartPosition.value = { x: touch.clientX, y: touch.clientY }
+
+  // Clear any existing timeout
+  if (touchTimeout) {
+    clearTimeout(touchTimeout)
+  }
+
+  // Set timeout to show tooltip after long press
+  setTimeout(() => {
+    const touchDuration = Date.now() - touchStartTime.value
+    if (touchDuration >= LONG_PRESS_DURATION) {
+      showTooltip()
+    }
+  }, LONG_PRESS_DURATION)
+}
+
+/**
+ * Handle touch end - hide tooltip and reset touch state
+ */
+const handleTouchEnd = () => {
+  const touchDuration = Date.now() - touchStartTime.value
+
+  // Only hide if tooltip was shown via long press
+  if (touchDuration >= LONG_PRESS_DURATION) {
+    hideTooltip()
+  }
+
+  // Reset touch device flag after a delay to re-enable mouse events
+  setTimeout(() => {
+    isTouchDevice.value = false
+  }, 100)
+}
+
+/**
+ * Handle touch cancel - clean up state
+ */
+const handleTouchCancel = () => {
+  hideTooltip()
+  isTouchDevice.value = false
 }
 
 const handleKeyDown = (e: KeyboardEvent) => {
@@ -285,6 +363,20 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* Tooltip trigger wrapper - ensures proper display for aria-describedby */
+.tooltip-trigger-wrapper {
+  display: contents;
+}
+
+/* Prevent text selection during long press on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .tooltip-trigger-wrapper {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tooltip-enter-active,
   .tooltip-leave-active {
