@@ -11,8 +11,9 @@ import { securityConfig } from '~/configs/security.config'
 const ENCRYPTION_KEY = process.env.WEBHOOK_SECRET_ENCRYPTION_KEY
 
 if (!ENCRYPTION_KEY && process.env.NODE_ENV === 'production') {
-  logger.warn(
-    'Warning: WEBHOOK_SECRET_ENCRYPTION_KEY not set. Webhook secrets will not be encrypted.'
+  throw new Error(
+    'FATAL: WEBHOOK_SECRET_ENCRYPTION_KEY must be set in production. ' +
+      'Webhook secrets must be encrypted. Set the environment variable to a secure random key.'
   )
 }
 

@@ -87,7 +87,17 @@ export class WebhookQueueManager {
     // Only process if the item is due
     if (scheduledFor <= now) {
       try {
-        await this.processCallback(item)
+        // Wrap processCallback in timeout to prevent queue blocking (Issue #2206)
+        const WEBHOOK_QUEUE_TIMEOUT_MS = webhooksConfig.queue.processTimeoutMs
+        await Promise.race([
+          this.processCallback(item),
+          new Promise<void>((_, reject) =>
+            setTimeout(
+              () => reject(new Error('Webhook queue item processing timeout')),
+              WEBHOOK_QUEUE_TIMEOUT_MS
+            )
+          ),
+        ])
       } catch (error) {
         logger.error(`Error processing queue item ${item.id}:`, error)
       }
