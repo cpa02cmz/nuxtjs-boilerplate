@@ -52,10 +52,7 @@
           transform: `translateY(${virtualRow.start}px)`,
         }"
       >
-        <slot
-          :item="items[virtualRow.index]"
-          :index="virtualRow.index"
-        />
+        <slot :item="items[virtualRow.index]" :index="virtualRow.index" />
       </div>
     </div>
   </div>
@@ -114,7 +111,8 @@ const scrollProgressConfig = computed(() => animationConfig.scrollProgress)
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
-  if (typeof window === 'undefined') return false
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 

@@ -176,7 +176,10 @@ const handleKeyDown = (event: KeyboardEvent) => {
 }
 
 const checkReducedMotion = () => {
-  if (typeof window !== 'undefined') {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function'
+  ) {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     prefersReducedMotion.value = mediaQuery.matches
 

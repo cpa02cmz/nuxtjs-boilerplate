@@ -1,16 +1,10 @@
 <template>
-  <fieldset
-    class="mb-6"
-    @keydown="handleKeydown"
-  >
+  <fieldset class="mb-6" @keydown="handleKeydown">
     <div class="flex items-center justify-between mb-3">
       <legend class="text-sm font-medium text-gray-900">
         {{ label }}
       </legend>
-      <div
-        v-if="options.length > 1"
-        class="flex items-center gap-2"
-      >
+      <div v-if="options.length > 1" class="flex items-center gap-2">
         <span
           class="text-xs text-gray-500 transition-all duration-200"
           :class="{ 'text-blue-600 font-medium': selectedOptions.length > 0 }"
@@ -71,7 +65,7 @@
               <span
                 v-if="
                   !prefersReducedMotion &&
-                    (recentlySelected === option || recentlyDeselected === option)
+                  (recentlySelected === option || recentlyDeselected === option)
                 "
                 class="checkbox-bloom absolute inset-0 rounded pointer-events-none"
                 :class="{
@@ -100,7 +94,7 @@
                 }"
                 @change="toggleOption(option)"
                 @click.stop
-              >
+              />
             </div>
             <label
               :for="`${id}-${option}`"
@@ -152,7 +146,8 @@ interface Props {
 // Check for reduced motion preference
 const prefersReducedMotion = ref(false)
 const checkReducedMotion = () => {
-  if (typeof window === 'undefined') return false
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 

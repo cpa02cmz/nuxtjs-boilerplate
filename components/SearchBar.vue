@@ -120,7 +120,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint with idle pulse animation -->
       <div
         v-if="!modelValue && !isFocused"
@@ -567,9 +567,10 @@ if (typeof window !== 'undefined') {
       searchInputRef.value?.focus()
 
       // Check for reduced motion preference
-      const userPrefersReducedMotion = window.matchMedia(
-        '(prefers-reduced-motion: reduce)'
-      ).matches
+      const userPrefersReducedMotion =
+        typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
       // Trigger focus pulse animation for visual feedback (skip if reduced motion)
       if (!userPrefersReducedMotion) {

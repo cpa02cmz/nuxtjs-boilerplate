@@ -277,12 +277,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcementText }}
     </div>
   </div>
@@ -398,7 +393,8 @@ const menuItems = computed(() => {
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
-  if (typeof window === 'undefined') return false
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
