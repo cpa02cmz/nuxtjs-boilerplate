@@ -1,5 +1,8 @@
 <template>
-  <div class="lifecycle-timeline">
+  <div
+    class="lifecycle-timeline"
+    :class="{ 'lifecycle-timeline--loaded': isLoaded }"
+  >
     <h3 class="timeline-title">
       {{ contentConfig.lifecycle.title }}
     </h3>
@@ -11,7 +14,10 @@
       <div
         v-for="(change, index) in statusHistory"
         :key="change.id"
+        :aria-label="getItemAriaLabel(change, index)"
+        :style="{ '--item-index': index }"
         class="timeline-item"
+        role="listitem"
       >
         <div class="timeline-marker">
           <div
@@ -97,6 +103,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import type { StatusChange, ResourceUpdate } from '~/types/resource'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
@@ -106,7 +113,33 @@ interface Props {
   updateHistory?: ResourceUpdate[]
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+// Reactive state
+const isLoaded = ref(false)
+const prefersReducedMotion = ref(false)
+
+// Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (
+    typeof window === 'undefined' ||
+    typeof window.matchMedia !== 'function'
+  ) {
+    return false
+  }
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// Get ARIA label for timeline item
+const getItemAriaLabel = (change: StatusChange, index: number): string => {
+  const position =
+    index === 0
+      ? 'Most recent change'
+      : `Change ${index + 1} of ${props.statusHistory?.length || 0}`
+  const statusChange = `${change.fromStatus} changed to ${change.toStatus}`
+  const date = formatDate(change.changedAt)
+  return `${position}: ${statusChange} on ${date}`
+}
 
 const getMarkerClass = (status: string) => {
   switch (status) {
@@ -152,6 +185,17 @@ const formatDate = (dateString: string) => {
     minute: '2-digit',
   })
 }
+
+// Setup on mount
+onMounted(() => {
+  // Check reduced motion preference
+  prefersReducedMotion.value = checkReducedMotion()
+
+  // Trigger entrance animation after a short delay
+  setTimeout(() => {
+    isLoaded.value = true
+  }, 100)
+})
 </script>
 
 <style scoped>
@@ -162,6 +206,16 @@ const formatDate = (dateString: string) => {
   background-color: v-bind(
     'componentColorsConfig.lifecycleTimeline.background'
   );
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.4s ease-out,
+    transform 0.4s ease-out;
+}
+
+.lifecycle-timeline--loaded {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .timeline-title {
@@ -180,6 +234,22 @@ const formatDate = (dateString: string) => {
 .timeline-item {
   display: flex;
   gap: 1rem;
+  opacity: 0;
+  transform: translateX(-20px);
+  animation: slide-in 0.5s ease-out forwards;
+  animation-delay: calc(var(--item-index) * 100ms);
+  transition: transform 0.2s ease-out;
+}
+
+@keyframes slide-in {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.timeline-item:hover {
+  transform: translateX(4px);
 }
 
 .timeline-marker {
@@ -199,6 +269,12 @@ const formatDate = (dateString: string) => {
   font-size: 0.875rem;
   color: white;
   flex-shrink: 0;
+  transition: transform 0.2s ease-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-item:hover .marker {
+  transform: scale(1.1);
 }
 
 .marker-active {
@@ -340,5 +416,38 @@ const formatDate = (dateString: string) => {
 
 .changes-list li {
   margin-bottom: 0.25rem;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .lifecycle-timeline {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .timeline-item {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .timeline-item:hover {
+    transform: none;
+  }
+
+  .timeline-item:hover .marker {
+    transform: none;
+  }
+
+  .marker {
+    transition: none;
+  }
+}
+
+/* Focus visible support */
+.timeline-item:focus {
+  outline: 2px solid v-bind('componentColorsConfig.focusRing.color');
+  outline-offset: 2px;
 }
 </style>
