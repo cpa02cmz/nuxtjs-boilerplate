@@ -51,7 +51,12 @@
     </Transition>
 
     <!-- Screen reader announcement - announces tooltip content when visible -->
-    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >
       {{ isVisible ? content : '' }}
     </div>
   </div>
