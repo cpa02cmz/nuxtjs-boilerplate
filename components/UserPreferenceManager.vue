@@ -543,7 +543,9 @@ const savePreferences = async () => {
 .category-checkmark {
   stroke-dasharray: 20;
   stroke-dashoffset: 20;
-  animation: checkmark-draw 0.3s ease-out forwards;
+  animation: checkmark-draw
+    v-bind('animationConfig.cssAnimations.standardDurationSec') ease-out
+    forwards;
 }
 
 @keyframes checkmark-draw {
@@ -597,7 +599,8 @@ const savePreferences = async () => {
 
 .save-button--pressed {
   transform: scale(0.97) !important;
-  transition: transform 0.1s ease-out !important;
+  transition: transform v-bind('animationConfig.cssTransitions.fastSec')
+    ease-out !important;
 }
 
 .save-button--success {
@@ -626,7 +629,9 @@ const savePreferences = async () => {
 .save-checkmark {
   stroke-dasharray: 24;
   stroke-dashoffset: 24;
-  animation: save-checkmark-draw 0.4s ease-out 0.1s forwards;
+  animation: save-checkmark-draw
+    v-bind('animationConfig.cssAnimations.mediumDurationSec') ease-out
+    v-bind('animationConfig.cssAnimations.smallDelaySec') forwards;
 }
 
 @keyframes save-checkmark-draw {
@@ -637,7 +642,8 @@ const savePreferences = async () => {
 
 /* Success Text Animation */
 .save-success-text {
-  animation: success-text-fade 0.3s ease-out;
+  animation: success-text-fade
+    v-bind('animationConfig.cssAnimations.standardDurationSec') ease-out;
 }
 
 @keyframes success-text-fade {

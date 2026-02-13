@@ -262,7 +262,7 @@ const hasMoreTags = computed(() => {
   opacity: 0;
   pointer-events: none;
   z-index: v-bind('zIndexConfig.floatingLabel');
-  transition: opacity 0.3s ease;
+  transition: opacity v-bind('animationConfig.cssTransitions.standardSec') ease;
 }
 
 .card-shine-container:hover::before {
