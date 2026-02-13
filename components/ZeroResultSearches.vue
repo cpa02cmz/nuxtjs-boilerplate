@@ -58,11 +58,7 @@
             class="flex-shrink-0 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200"
             aria-hidden="true"
           >
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -73,7 +69,8 @@
           </span>
           <span
             class="text-gray-800 truncate group-hover:text-gray-900 transition-colors duration-200 font-medium"
-          >{{ search.query }}</span>
+            >{{ search.query }}</span
+          >
         </div>
 
         <!-- Attempt count with animated background -->
@@ -123,11 +120,7 @@
           class="w-12 h-12 mb-3 text-gray-300"
           :class="{ 'animate-pulse-subtle': !prefersReducedMotion }"
         >
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -146,12 +139,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -164,6 +152,8 @@ import { useResourceData } from '~/composables/useResourceData'
 import { contentConfig } from '~/configs/content.config'
 import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
+import { hapticConfig } from '~/configs/haptic.config'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
   limit?: number
@@ -223,7 +213,7 @@ const handleClick = (query: string, index: number, event: MouseEvent) => {
   clickedIndex.value = index
   setTimeout(() => {
     clickedIndex.value = null
-  }, 150)
+  }, uiTimingConfig.clickFeedback.resetDelay)
 
   // Haptic feedback - Palette loves tactile feedback!
   if (
@@ -231,19 +221,19 @@ const handleClick = (query: string, index: number, event: MouseEvent) => {
     navigator.vibrate &&
     !prefersReducedMotion.value
   ) {
-    navigator.vibrate(10)
+    navigator.vibrate(hapticConfig.duration.light)
   }
 
   // Announce for screen readers
   announcement.value = `Trying search: ${query}`
   setTimeout(() => {
     announcement.value = ''
-  }, 1000)
+  }, uiTimingConfig.accessibility.announcementDuration)
 
   // Remove ripple after animation
   setTimeout(() => {
     delete ripples.value[index]
-  }, 600)
+  }, uiTimingConfig.ripple.removalDelay)
 
   emit('search-select', query)
 }

@@ -66,10 +66,7 @@
           </button>
         </div>
         <p>{{ noticeMessage }}</p>
-        <div
-          v-if="migrationPath || alternatives"
-          class="notice-actions"
-        >
+        <div v-if="migrationPath || alternatives" class="notice-actions">
           <a
             v-if="migrationPath"
             :href="migrationPath"
@@ -133,11 +130,7 @@
       />
 
       <!-- Screen reader announcement -->
-      <div
-        class="sr-only"
-        role="status"
-        aria-live="polite"
-      >
+      <div class="sr-only" role="status" aria-live="polite">
         {{ announcementText }}
       </div>
     </div>
@@ -150,6 +143,7 @@ import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
   status?:
@@ -261,7 +255,7 @@ const handleDismiss = () => {
   // Clear announcement after screen reader has had time to read it
   setTimeout(() => {
     announcementText.value = ''
-  }, 1000)
+  }, uiTimingConfig.deprecation.dismissClearDelay)
 }
 
 // Handle keyboard events (Escape to dismiss)
@@ -294,7 +288,7 @@ onMounted(() => {
     announcementText.value = `${noticeTitle.value}: ${noticeMessage.value}`
     setTimeout(() => {
       announcementText.value = ''
-    }, 1000)
+    }, uiTimingConfig.deprecation.noticeClearDelay)
   }
 
   // Start auto-dismiss if enabled

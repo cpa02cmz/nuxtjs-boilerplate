@@ -291,6 +291,10 @@ export { networkConfig, type NetworkConfig } from './network.config'
 import { messagesConfig, type MessagesConfig } from './messages.config'
 export { messagesConfig, type MessagesConfig }
 
+// UI Timing config - Flexy hates hardcoded timeout values!
+import { uiTimingConfig, type UITimingConfig } from './ui-timing.config'
+export { uiTimingConfig, type UITimingConfig }
+
 // Default export with all configs
 export const config = {
   app: appConfig,
@@ -344,6 +348,8 @@ export const config = {
   network: networkConfig,
   // Messages config - Flexy hates hardcoded error messages!
   messages: messagesConfig,
+  // UI Timing config - Flexy hates hardcoded timeout values!
+  uiTiming: uiTimingConfig,
 } as const
 
 export type Config = typeof config

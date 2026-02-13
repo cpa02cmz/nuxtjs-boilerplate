@@ -1328,7 +1328,7 @@ onUnmounted(() => {
   visibility: hidden;
   transition: all 0.2s v-bind('tooltipEasing');
   pointer-events: none;
-  z-index: 50;
+  z-index: v-bind('zIndexConfig.tooltip');
   box-shadow: v-bind('shadowsConfig.activeFilters.default');
 }
 

@@ -314,6 +314,7 @@ import { limitsConfig } from '~/configs/limits.config'
 import { uiConfig } from '~/configs/ui.config'
 import { generateId } from '~/utils/generateId'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
   comments: Comment[]
@@ -479,9 +480,9 @@ const submitComment = async () => {
         // Remove from new comments after animation completes
         setTimeout(() => {
           newComments.value.delete(latestComment.id)
-        }, 2000)
+        }, uiTimingConfig.comments.highlightDuration)
       }
-    }, 100)
+    }, uiTimingConfig.comments.animationDelay)
 
     // Reset success states after animation
     setTimeout(() => {
@@ -506,7 +507,7 @@ const setLikeButtonRef = (el: unknown, commentId: string) => {
 // Palette's Micro-UX: Generate particle styles for burst animation
 const getParticleStyle = (index: number) => {
   const angle = (index - 1) * 60 // 60-degree increments for 6 particles
-  const delay = (index - 1) * 50 // Staggered delay
+  const delay = (index - 1) * uiTimingConfig.comments.particleStaggerDelay // Staggered delay
   return {
     '--angle': `${angle}deg`,
     '--delay': `${delay}ms`,
