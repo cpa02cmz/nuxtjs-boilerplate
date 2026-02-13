@@ -429,6 +429,7 @@ onMounted(() => {
   }
 
   // Listen for reduced motion preference changes
+  if (typeof window.matchMedia !== 'function') return
   const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
   const handleMotionChange = (e: MediaQueryListEvent) => {
     prefersReducedMotion.value = e.matches

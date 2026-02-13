@@ -12,7 +12,12 @@ export function useTheme() {
   const isMounted = ref(false)
 
   const updateThemeClass = () => {
-    if (typeof document === 'undefined' || typeof window === 'undefined') return
+    if (
+      typeof document === 'undefined' ||
+      typeof window === 'undefined' ||
+      typeof window.matchMedia !== 'function'
+    )
+      return
 
     const root = document.documentElement
 
@@ -73,6 +78,7 @@ export function useTheme() {
     updateThemeClass()
 
     // Listen for system preference changes
+    if (typeof window.matchMedia !== 'function') return
     const mediaQuery = window.matchMedia(
       patternsConfig.mediaQueries.prefersDark
     )
