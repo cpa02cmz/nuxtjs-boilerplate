@@ -1,6 +1,7 @@
 // server/plugins/database-health.ts
 import { defineNitroPlugin } from 'nitropack/runtime'
 import { databaseConfig } from '~/configs/database.config'
+import { timeConfig } from '~/configs/time.config'
 import logger from '~/utils/logger'
 
 /**
@@ -11,8 +12,8 @@ import logger from '~/utils/logger'
 export default defineNitroPlugin(async () => {
   const LOG_PREFIX = databaseConfig.logging.prefix
   const MAX_RETRIES = databaseConfig.retries.maxAttempts
-  const INITIAL_RETRY_DELAY_MS = 1000 // Start with 1 second
-  const MAX_RETRY_DELAY_MS = 30000 // Cap at 30 seconds
+  const INITIAL_RETRY_DELAY_MS = timeConfig.retry.baseDelayMs
+  const MAX_RETRY_DELAY_MS = timeConfig.retry.maxDelayMs
 
   /**
    * Sleep for specified milliseconds

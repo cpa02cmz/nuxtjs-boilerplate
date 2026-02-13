@@ -61,7 +61,12 @@ export function useRipple(
     if (!button) return
 
     // Check for reduced motion preference and SSR
-    if (typeof window === 'undefined' || typeof document === 'undefined') return
+    if (
+      typeof window === 'undefined' ||
+      typeof document === 'undefined' ||
+      typeof window.matchMedia !== 'function'
+    )
+      return
 
     const prefersReducedMotion = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
