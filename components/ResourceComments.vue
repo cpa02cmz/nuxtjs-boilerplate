@@ -288,6 +288,7 @@ import { TIME } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { validationConfig } from '~/configs/validation.config'
+import { limitsConfig } from '~/configs/limits.config'
 import { generateId } from '~/utils/generateId'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
 
@@ -471,13 +472,14 @@ const toggleLike = (commentId: string) => {
 
 const isLiked = (commentId: string) => likedComments.value.has(commentId)
 
+// Flexy hates hardcoded limits! Use configurable display limit for initials
 const getInitials = (name: string) => {
   return name
     .split(' ')
     .map(n => n[0])
     .join('')
     .toUpperCase()
-    .slice(0, 2)
+    .slice(0, limitsConfig.display.maxInitialsDisplay)
 }
 
 // Format comments with initials
