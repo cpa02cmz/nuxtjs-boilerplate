@@ -310,6 +310,19 @@ export const componentStylesConfig = {
     emptyStateDotColor: process.env.API_KEYS_EMPTY_DOT_COLOR || '#38bdf8',
     emptyStateTitleColor: process.env.API_KEYS_EMPTY_TITLE_COLOR || '#0c4a6e',
     emptyStateDescColor: process.env.API_KEYS_EMPTY_DESC_COLOR || '#0369a1',
+    // Empty State Dimensions - Flexy hates hardcoded pixel values!
+    emptyStateIllustrationWidth:
+      process.env.API_KEYS_EMPTY_ILLUSTRATION_WIDTH || '120px',
+    emptyStateIllustrationHeight:
+      process.env.API_KEYS_EMPTY_ILLUSTRATION_HEIGHT || '120px',
+    emptyStateIconWidth: process.env.API_KEYS_EMPTY_ICON_WIDTH || '48px',
+    emptyStateIconHeight: process.env.API_KEYS_EMPTY_ICON_HEIGHT || '48px',
+    emptyStateDotSize: process.env.API_KEYS_EMPTY_DOT_SIZE || '8px',
+    emptyStateDescMaxWidth:
+      process.env.API_KEYS_EMPTY_DESC_MAX_WIDTH || '300px',
+    emptyStateCtaIconWidth: process.env.API_KEYS_EMPTY_CTA_ICON_WIDTH || '20px',
+    emptyStateCtaIconHeight:
+      process.env.API_KEYS_EMPTY_CTA_ICON_HEIGHT || '20px',
   },
 
   // Error Message Component Styles - Flexy hates hardcoded CSS!
