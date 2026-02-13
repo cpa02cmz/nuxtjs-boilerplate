@@ -289,6 +289,7 @@ import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { validationConfig } from '~/configs/validation.config'
 import { generateId } from '~/utils/generateId'
+import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
   comments: Comment[]
@@ -431,6 +432,9 @@ const submitComment = async () => {
     showSuccessCheck.value = true
     showSuccessGlow.value = true
 
+    // Haptic feedback for successful post - Palette's micro-UX touch!
+    hapticSuccess()
+
     // Clear textarea
     newComment.value = ''
 
@@ -455,9 +459,13 @@ const submitComment = async () => {
 const toggleLike = (commentId: string) => {
   if (likedComments.value.has(commentId)) {
     likedComments.value.delete(commentId)
+    // Light haptic for removing like
+    hapticLight()
   } else {
     likedComments.value.add(commentId)
     emit('like', commentId)
+    // Success haptic for adding like - Palette's micro-UX touch!
+    hapticSuccess()
   }
 }
 
