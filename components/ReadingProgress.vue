@@ -37,6 +37,50 @@
       </div>
     </Transition>
 
+    <!-- Reading Time Estimate - Palette's micro-UX delight! -->
+    <Transition
+      enter-active-class="transition-all duration-200 ease-out"
+      enter-from-class="opacity-0 translate-y-1"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition-all duration-150 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 translate-y-1"
+    >
+      <div
+        v-if="showTimeEstimate && readingTime.totalMinutes > 1"
+        class="reading-time-estimate"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <div class="reading-time-content">
+          <svg
+            class="reading-time-icon"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span class="reading-time-text">
+            <template v-if="readingTime.remainingMinutes > 0">
+              {{ readingTime.remainingMinutes }} min
+              <span class="reading-time-suffix">left</span>
+            </template>
+            <template v-else>
+              <span class="reading-time-complete">Almost done!</span>
+            </template>
+          </span>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Screen reader announcement for progress changes -->
     <div
       role="status"
@@ -151,6 +195,12 @@ const lastAnnouncedProgress = ref(0)
 const showCompletionCelebration = ref(false)
 const hasCelebratedCompletion = ref(false)
 const prefersReducedMotion = ref(false)
+const showTimeEstimate = ref(false)
+const readingTime = ref({
+  totalMinutes: 0,
+  remainingMinutes: 0,
+  wordsPerMinute: 200, // Average reading speed
+})
 
 // Track if component is mounted (to avoid SSR issues)
 let isMounted = false
@@ -165,6 +215,31 @@ const tooltipStyle = computed(() => ({
 
 // Progress announcement state
 const progressAnnouncement = ref('')
+
+// Calculate reading time based on content word count
+const calculateReadingTime = () => {
+  if (typeof window === 'undefined' || !isMounted) return
+
+  const target = document.querySelector(props.targetSelector)
+  if (!target) return
+
+  // Get text content from the target element
+  const text = target.textContent || ''
+  const wordCount = text.trim().split(/\s+/).length
+
+  // Calculate total reading time in minutes
+  const totalMinutes = Math.ceil(wordCount / readingTime.value.wordsPerMinute)
+
+  // Calculate remaining time based on current progress
+  const remainingProgress = Math.max(0, 100 - progress.value)
+  const remainingMinutes = Math.ceil((totalMinutes * remainingProgress) / 100)
+
+  readingTime.value = {
+    ...readingTime.value,
+    totalMinutes,
+    remainingMinutes,
+  }
+}
 
 // Watch for milestone announcements (configurable intervals)
 watch(progress, newProgress => {
@@ -230,6 +305,7 @@ const calculateProgress = () => {
     const scrollHeight =
       document.documentElement.scrollHeight - window.innerHeight
     progress.value = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0
+    calculateReadingTime()
     return
   }
 
@@ -250,6 +326,9 @@ const calculateProgress = () => {
   } else {
     progress.value = 0
   }
+
+  // Update reading time estimate
+  calculateReadingTime()
 }
 
 // Tooltip event handlers
@@ -281,13 +360,38 @@ const handleScroll = () => {
   }
 }
 
+// Show reading time estimate when user scrolls
+let scrollTimeout: ReturnType<typeof setTimeout> | null = null
+const SCROLL_TIMEOUT_MS = 1500 // Show time estimate for 1.5s after scroll stops
+
+const handleScrollWithTimeEstimate = () => {
+  handleScroll()
+
+  // Show time estimate when actively scrolling
+  if (progress.value > 5 && progress.value < 95) {
+    showTimeEstimate.value = true
+
+    // Clear existing timeout
+    if (scrollTimeout) {
+      clearTimeout(scrollTimeout)
+    }
+
+    // Hide time estimate after scroll stops
+    scrollTimeout = setTimeout(() => {
+      showTimeEstimate.value = false
+    }, SCROLL_TIMEOUT_MS)
+  }
+}
+
 // Lifecycle hooks
 onMounted(() => {
   isMounted = true
   // Initial calculation
   calculateProgress()
   // Add scroll listener with passive option for performance
-  window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('scroll', handleScrollWithTimeEstimate, {
+    passive: true,
+  })
 
   // Check for reduced motion preference
   if (
@@ -307,11 +411,16 @@ onMounted(() => {
 
 onUnmounted(() => {
   isMounted = false
-  window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('scroll', handleScrollWithTimeEstimate)
 
   // Clean up celebration timeout
   if (celebrationTimeout) {
     clearTimeout(celebrationTimeout)
+  }
+
+  // Clean up scroll timeout
+  if (scrollTimeout) {
+    clearTimeout(scrollTimeout)
   }
 })
 </script>
@@ -641,6 +750,112 @@ onUnmounted(() => {
     opacity: 0;
     transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-60px)
       scale(0);
+  }
+}
+
+/* Reading Time Estimate - Palette's micro-UX enhancement! */
+.reading-time-estimate {
+  position: fixed;
+  top: v-bind('componentStylesConfig.readingProgress.height');
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: v-bind('themeConfig.zIndex.tooltip');
+  pointer-events: none;
+  margin-top: 8px;
+}
+
+.reading-time-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.9) 0%,
+    rgba(37, 99, 235, 0.9) 100%
+  );
+  color: white;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  backdrop-filter: blur(8px);
+  animation: reading-time-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes reading-time-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.reading-time-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  animation: clock-tick 2s ease-in-out infinite;
+}
+
+@keyframes clock-tick {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+}
+
+.reading-time-text {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.reading-time-suffix {
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+.reading-time-complete {
+  font-weight: 600;
+  animation: complete-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes complete-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Reduced motion support for reading time */
+@media (prefers-reduced-motion: reduce) {
+  .reading-time-content {
+    animation: none;
+  }
+
+  .reading-time-icon {
+    animation: none;
+  }
+
+  .reading-time-complete {
+    animation: none;
   }
 }
 
