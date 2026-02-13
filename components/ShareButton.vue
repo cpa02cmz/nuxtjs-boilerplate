@@ -2,10 +2,10 @@
   <div class="relative">
     <!-- Copied tooltip - appears at click position -->
     <Transition
-      enter-active-class="transition-all duration-200 ease-out"
+      :enter-active-class="`transition-all ${tailwindClassesConfig.duration.normal} ease-out`"
       enter-from-class="opacity-0 scale-75 translate-y-2"
       enter-to-class="opacity-100 scale-100 translate-y-0"
-      leave-active-class="transition-all duration-150 ease-in"
+      :leave-active-class="`transition-all ${tailwindClassesConfig.duration.fast} ease-in`"
       leave-from-class="opacity-100 scale-100 translate-y-0"
       leave-to-class="opacity-0 scale-75 -translate-y-1"
     >
@@ -46,13 +46,14 @@
         copySuccess
           ? contentConfig.share.ariaLabels.copySuccess
           : contentConfig.share.ariaLabels.shareTitle.replace(
-            '{{title}}',
-            title
-          )
+              '{{title}}',
+              title
+            )
       "
       :aria-expanded="showShareMenu"
       :class="[
-        'p-2 rounded-full transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 relative overflow-hidden',
+        'p-2 rounded-full transition-all ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 relative overflow-hidden',
+        tailwindClassesConfig.duration.normal,
         copySuccess
           ? 'bg-green-100 text-green-600 hover:bg-green-200'
           : 'bg-gray-200 text-gray-700 hover:bg-gray-300',
@@ -64,7 +65,8 @@
         v-if="!copySuccess"
         xmlns="http://www.w3.org/2000/svg"
         :class="[
-          'h-5 w-5 transition-transform duration-200 ease-out',
+          'h-5 w-5 transition-transform ease-out',
+          tailwindClassesConfig.duration.normal,
           showShareMenu && 'rotate-90',
         ]"
         viewBox="0 0 20 20"
@@ -92,10 +94,10 @@
 
     <!-- Share menu dropdown with entrance animation -->
     <Transition
-      enter-active-class="transition ease-out duration-200"
+      :enter-active-class="`transition ease-out ${tailwindClassesConfig.duration.normal}`"
       enter-from-class="opacity-0 translate-y-1 scale-95"
       enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition ease-in duration-150"
+      :leave-active-class="`transition ease-in ${tailwindClassesConfig.duration.fast}`"
       leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 translate-y-1 scale-95"
     >
@@ -109,10 +111,7 @@
         aria-labelledby="share-menu"
         @keydown="handleMenuKeydown"
       >
-        <div
-          class="py-1"
-          role="none"
-        >
+        <div class="py-1" role="none">
           <!-- Twitter -->
           <a
             :href="twitterUrl"
@@ -200,11 +199,14 @@
           <!-- Copy Link -->
           <button
             ref="copyButtonRef"
-            class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ease-out relative overflow-hidden"
-            :class="{
-              'bg-green-50 text-green-700': copySuccess,
-              'scale-[1.02]': copySuccess,
-            }"
+            :class="[
+              'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ease-out relative overflow-hidden',
+              tailwindClassesConfig.duration.normal,
+              {
+                'bg-green-50 text-green-700': copySuccess,
+                'scale-[1.02]': copySuccess,
+              },
+            ]"
             role="menuitem"
             :aria-label="
               copySuccess ? 'Link copied!' : 'Copy link to clipboard'
@@ -235,10 +237,7 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path
-                class="checkmark-path"
-                d="M4 10l4 4 8-8"
-              />
+              <path class="checkmark-path" d="M4 10l4 4 8-8" />
             </svg>
             {{
               copySuccess
@@ -270,6 +269,7 @@ import { patternsConfig } from '~/configs/patterns.config'
 import { contentConfig } from '~/configs/content.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 import { useRipple } from '~/composables/useRipple'
+import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 
 interface Props {
   title?: string
@@ -557,11 +557,16 @@ onUnmounted(() => {
 
 <style scoped>
 /* Animated checkmark path for copy feedback */
-/* Flexy hates hardcoded values! Using configurable easing from easingConfig */
+/* Flexy hates hardcoded values! Using configurable values from animationConfig */
 .checkmark-path {
-  stroke-dasharray: 20;
-  stroke-dashoffset: 20;
-  animation: draw-check 0.4s
+  stroke-dasharray: v-bind(
+    'animationConfig.svgStroke.smallCheckmark.dashArray'
+  );
+  stroke-dashoffset: v-bind(
+    'animationConfig.svgStroke.smallCheckmark.dashOffset'
+  );
+  animation: draw-check
+    v-bind('(animationConfig.svgStroke.drawDurationMs * 1.33) + "ms"')
     v-bind(
       'easingConfig?.cubicBezier?.standard ?? "cubic-bezier(0.4, 0, 0.2, 1)"'
     )

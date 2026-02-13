@@ -91,6 +91,35 @@ export const tailwindClassesConfig = {
       'transition-transform duration-200',
   },
 
+  // Duration Classes - Flexy hates hardcoded duration-xxx values!
+  duration: {
+    // Instant (75ms) - for micro-interactions
+    instant: process.env.DURATION_INSTANT || 'duration-75',
+    // Fast (150ms) - for hover states, quick feedback
+    fast: process.env.DURATION_FAST || 'duration-150',
+    // Normal (200ms) - for standard transitions
+    normal: process.env.DURATION_NORMAL || 'duration-200',
+    // Medium (300ms) - for modal/dialog transitions
+    medium: process.env.DURATION_MEDIUM || 'duration-300',
+    // Slow (500ms) - for emphasis animations
+    slow: process.env.DURATION_SLOW || 'duration-500',
+    // Very slow (700ms) - for complex animations
+    verySlow: process.env.DURATION_VERY_SLOW || 'duration-700',
+    // Ultra slow (1000ms) - for special effects
+    ultraSlow: process.env.DURATION_ULTRA_SLOW || 'duration-1000',
+  },
+
+  // Duration values in milliseconds - for JavaScript timers
+  durationMs: {
+    instant: parseInt(process.env.DURATION_INSTANT_MS || '75'),
+    fast: parseInt(process.env.DURATION_FAST_MS || '150'),
+    normal: parseInt(process.env.DURATION_NORMAL_MS || '200'),
+    medium: parseInt(process.env.DURATION_MEDIUM_MS || '300'),
+    slow: parseInt(process.env.DURATION_SLOW_MS || '500'),
+    verySlow: parseInt(process.env.DURATION_VERY_SLOW_MS || '700'),
+    ultraSlow: parseInt(process.env.DURATION_ULTRA_SLOW_MS || '1000'),
+  },
+
   // Easing - Flexy hates hardcoded easing classes!
   easing: {
     // Ease out
