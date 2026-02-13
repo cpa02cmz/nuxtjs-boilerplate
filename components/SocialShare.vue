@@ -277,12 +277,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcementText }}
     </div>
   </div>
@@ -630,7 +625,8 @@ button.is-open {
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .copied-tooltip {
-    transition: opacity 0.15s ease-out !important;
+    transition: opacity v-bind('animationConfig.cssTransitions.quickSec')
+      ease-out !important;
     transform: translateX(-50%) !important;
   }
 }

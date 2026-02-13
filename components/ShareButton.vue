@@ -46,9 +46,9 @@
         copySuccess
           ? contentConfig.share.ariaLabels.copySuccess
           : contentConfig.share.ariaLabels.shareTitle.replace(
-            '{{title}}',
-            title
-          )
+              '{{title}}',
+              title
+            )
       "
       :aria-expanded="showShareMenu"
       :class="[
@@ -111,10 +111,7 @@
         aria-labelledby="share-menu"
         @keydown="handleMenuKeydown"
       >
-        <div
-          class="py-1"
-          role="none"
-        >
+        <div class="py-1" role="none">
           <!-- Twitter -->
           <a
             :href="twitterUrl"
@@ -240,10 +237,7 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path
-                class="checkmark-path"
-                d="M4 10l4 4 8-8"
-              />
+              <path class="checkmark-path" d="M4 10l4 4 8-8" />
             </svg>
             {{
               copySuccess
@@ -605,7 +599,8 @@ onUnmounted(() => {
   }
 
   .copied-tooltip {
-    transition: opacity 0.15s ease-out !important;
+    transition: opacity v-bind('animationConfig.cssTransitions.quickSec')
+      ease-out !important;
     transform: translateX(-50%) !important;
   }
 }
