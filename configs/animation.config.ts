@@ -859,6 +859,8 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.SCROLL_PROGRESS_RESPECT_REDUCED_MOTION !== 'false',
+    // Flexy hates hardcoded border-radius values!
+    borderRadius: process.env.SCROLL_PROGRESS_BORDER_RADIUS || '0 2px 2px 0',
   },
 
   // Checkbox Micro-Interactions - Palette's delightful micro-UX touch!

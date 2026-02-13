@@ -52,10 +52,7 @@
           transform: `translateY(${virtualRow.start}px)`,
         }"
       >
-        <slot
-          :item="items[virtualRow.index]"
-          :index="virtualRow.index"
-        />
+        <slot :item="items[virtualRow.index]" :index="virtualRow.index" />
       </div>
     </div>
   </div>
@@ -173,17 +170,17 @@ onUnmounted(() => {
 }
 
 .virtual-scroll-container::-webkit-scrollbar {
-  width: 8px;
+  width: v-bind('uiConfig.scrollbar.width');
 }
 
 .virtual-scroll-container::-webkit-scrollbar-track {
   background: var(--scrollbar-track);
-  border-radius: 4px;
+  border-radius: v-bind('uiConfig.scrollbar.borderRadius.track');
 }
 
 .virtual-scroll-container::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
-  border-radius: 4px;
+  border-radius: v-bind('uiConfig.scrollbar.borderRadius.thumb');
 }
 
 .virtual-scroll-container::-webkit-scrollbar-thumb:hover {
@@ -208,7 +205,7 @@ onUnmounted(() => {
   background: v-bind('scrollProgressConfig.barColor');
   transition: width v-bind('`${scrollProgressConfig.transitionDurationMs}ms`')
     ease-out;
-  border-radius: 0 2px 2px 0;
+  border-radius: v-bind('scrollProgressConfig.borderRadius');
 }
 
 /* Glow effect for the progress bar - adds delightful visual feedback */
