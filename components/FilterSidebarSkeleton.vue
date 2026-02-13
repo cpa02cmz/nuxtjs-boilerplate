@@ -32,11 +32,7 @@
         aria-hidden="true"
       />
       <div class="space-y-2">
-        <div
-          v-for="i in 5"
-          :key="`category-${i}`"
-          class="flex items-center"
-        >
+        <div v-for="i in 5" :key="`category-${i}`" class="flex items-center">
           <div
             class="skeleton-shimmer h-4 w-4 rounded skeleton-item mr-2 flex-shrink-0"
             :style="{ animationDelay: getStaggerDelay(3 + i) }"
@@ -62,11 +58,7 @@
         aria-hidden="true"
       />
       <div class="space-y-2">
-        <div
-          v-for="i in 3"
-          :key="`pricing-${i}`"
-          class="flex items-center"
-        >
+        <div v-for="i in 3" :key="`pricing-${i}`" class="flex items-center">
           <div
             class="skeleton-shimmer h-4 w-4 rounded skeleton-item mr-2 flex-shrink-0"
             :style="{ animationDelay: getStaggerDelay(10 + i) }"
@@ -92,11 +84,7 @@
         aria-hidden="true"
       />
       <div class="space-y-2">
-        <div
-          v-for="i in 4"
-          :key="`difficulty-${i}`"
-          class="flex items-center"
-        >
+        <div v-for="i in 4" :key="`difficulty-${i}`" class="flex items-center">
           <div
             class="skeleton-shimmer h-4 w-4 rounded skeleton-item mr-2 flex-shrink-0"
             :style="{ animationDelay: getStaggerDelay(15 + i) }"
@@ -122,11 +110,7 @@
         aria-hidden="true"
       />
       <div class="space-y-2">
-        <div
-          v-for="i in 4"
-          :key="`date-${i}`"
-          class="flex items-center"
-        >
+        <div v-for="i in 4" :key="`date-${i}`" class="flex items-center">
           <div
             class="skeleton-shimmer h-4 w-4 rounded-full skeleton-item mr-2 flex-shrink-0"
             :style="{ animationDelay: getStaggerDelay(21 + i) }"
@@ -185,7 +169,8 @@ const skeletonColors = {
     var(--skeleton-light-start) 100%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer v-bind('animationConfig.skeleton.shimmerDurationSec')
+    ease-in-out infinite;
 }
 
 /* Staggered animation delays are set via inline styles using animationConfig */
@@ -202,7 +187,8 @@ const skeletonColors = {
 
 /* Card entrance animation */
 .skeleton-filter-sidebar {
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn v-bind('animationConfig.skeleton.cardEnterDurationSec')
+    ease-out;
 }
 
 @keyframes fadeIn {
@@ -224,7 +210,8 @@ const skeletonColors = {
   }
 
   .skeleton-filter-sidebar {
-    animation: fadeIn 0.2s ease-out;
+    animation: fadeIn
+      v-bind('animationConfig.skeleton.reducedMotionEnterDurationSec') ease-out;
   }
 
   @keyframes fadeIn {
