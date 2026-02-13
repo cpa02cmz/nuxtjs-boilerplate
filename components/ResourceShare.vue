@@ -110,12 +110,7 @@
     </div>
 
     <!-- Screen Reader Announcement for Copy Success -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ screenReaderAnnouncement }}
     </div>
   </div>
@@ -127,6 +122,7 @@ import { socialConfig } from '~/configs/social.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { zIndexScale } from '~/configs/z-index.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
 
 interface ShareUrls {
@@ -306,7 +302,7 @@ const handleCopyClick = async (event: MouseEvent) => {
 /* Button Hover Effects */
 .share-button:hover {
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: v-bind('shadowsConfig.resourceShare.default');
 }
 
 .share-button:active {

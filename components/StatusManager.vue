@@ -95,7 +95,7 @@
           :placeholder="contentConfig.statusManager.placeholders.reason"
           class="reason-field"
           @keydown="handleKeydown"
-        >
+        />
       </div>
 
       <div class="notes-input">
@@ -155,11 +155,7 @@
               key="loading"
               class="update-button__icon update-button__icon--spin"
             >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle
                   class="opacity-25"
                   cx="12"
@@ -175,11 +171,7 @@
                 />
               </svg>
             </span>
-            <span
-              v-else
-              key="default"
-              class="update-button__icon"
-            >
+            <span v-else key="default" class="update-button__icon">
               <svg
                 class="w-4 h-4"
                 fill="none"
@@ -288,12 +280,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -306,6 +293,7 @@ import { componentStylesConfig } from '~/configs/component-styles.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { zIndexConfig } from '~/configs/z-index.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
 // Flexy hates hardcoded values! Using config instead.
@@ -598,7 +586,7 @@ onUnmounted(() => {
 .status-dropdown:focus {
   outline: none;
   border-color: v-bind('animConfig.focusColor');
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: v-bind('shadowsConfig.statusManager.focusRing.default');
 }
 
 /* Change indicator animation - Flexy hates hardcoded values! */
@@ -646,7 +634,7 @@ onUnmounted(() => {
 .reason-field:focus {
   outline: none;
   border-color: v-bind('animConfig.focusColor');
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: v-bind('shadowsConfig.statusManager.focusRing.default');
 }
 
 .notes-field {
@@ -663,7 +651,7 @@ onUnmounted(() => {
 .notes-field:focus {
   outline: none;
   border-color: v-bind('animConfig.focusColor');
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: v-bind('shadowsConfig.statusManager.focusRing.default');
 }
 
 .update-button {
@@ -733,16 +721,18 @@ onUnmounted(() => {
 .update-button--ready {
   animation: ready-pulse v-bind('`${animConfig.readyPulseDurationSec}s`')
     ease-in-out infinite;
-  box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 0 0 v-bind('shadowsConfig.statusManager.focusRing.pulseStart');
 }
 
 @keyframes ready-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 0 0
+      v-bind('shadowsConfig.statusManager.focusRing.pulseStart');
   }
   50% {
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 4px
+      v-bind('shadowsConfig.statusManager.focusRing.pulseEnd');
   }
 }
 

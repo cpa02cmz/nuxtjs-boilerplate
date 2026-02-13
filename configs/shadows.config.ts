@@ -64,9 +64,12 @@ export const shadowsConfig = {
     shimmer: process.env.FILTER_CHIP_SHIMMER || 'rgba(255, 255, 255, 0.4)',
   },
 
-  // Reading Progress Shimmer
+  // Reading Progress Shimmer & Text Shadow
   readingProgress: {
     shimmer: process.env.READING_PROGRESS_SHIMMER || 'rgba(255, 255, 255, 0.4)',
+    textShadow:
+      process.env.READING_PROGRESS_TEXT_SHADOW ||
+      '0 1px 2px rgba(0, 0, 0, 0.1)',
   },
 
   // Moderation Dashboard Shadows
@@ -134,6 +137,162 @@ export const shadowsConfig = {
   reviewQueue: {
     cardShadow:
       process.env.REVIEW_QUEUE_CARD_SHADOW || '0 2px 8px rgba(0, 0, 0, 0.1)',
+  },
+
+  // Toast Component Shadows (multi-layer)
+  toastComponent: {
+    default:
+      process.env.TOAST_COMPONENT_SHADOW ||
+      '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+  },
+
+  // Resource Card Shadows (multi-layer)
+  resourceCardComponent: {
+    card:
+      process.env.RESOURCE_CARD_COMPONENT_SHADOW ||
+      '0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(59, 130, 246, 0.1)',
+    actions:
+      process.env.RESOURCE_CARD_ACTIONS_SHADOW ||
+      '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.05)',
+  },
+
+  // Share Button Shadows (multi-layer)
+  shareButton: {
+    default:
+      process.env.SHARE_BUTTON_SHADOW ||
+      '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.05)',
+  },
+
+  // Social Share Shadows (multi-layer)
+  socialShare: {
+    default:
+      process.env.SOCIAL_SHARE_SHADOW ||
+      '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.05)',
+  },
+
+  // Active Filters Shadows
+  activeFilters: {
+    default:
+      process.env.ACTIVE_FILTERS_SHADOW ||
+      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    focusPrimary:
+      process.env.ACTIVE_FILTERS_FOCUS_PRIMARY || 'rgba(59, 130, 246, 0.3)',
+    focusRing: {
+      default:
+        process.env.ACTIVE_FILTERS_FOCUS_RING ||
+        '0 0 0 3px rgba(59, 130, 246, 0.3)',
+      pulse:
+        process.env.ACTIVE_FILTERS_FOCUS_PULSE ||
+        '0 0 0 5px rgba(59, 130, 246, 0.2)',
+    },
+  },
+
+  // Status Manager Shadows
+  statusManager: {
+    default:
+      process.env.STATUS_MANAGER_SHADOW ||
+      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    focusRing: {
+      default:
+        process.env.STATUS_MANAGER_FOCUS_RING ||
+        '0 0 0 3px rgba(59, 130, 246, 0.1)',
+      pulseStart:
+        process.env.STATUS_MANAGER_PULSE_START || 'rgba(59, 130, 246, 0.4)',
+      pulseEnd: process.env.STATUS_MANAGER_PULSE_END || 'rgba(59, 130, 246, 0)',
+    },
+  },
+
+  // Lifecycle Timeline Shadows
+  lifecycleTimeline: {
+    default:
+      process.env.LIFECYCLE_TIMELINE_SHADOW || '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+
+  // Resource Share Shadows
+  resourceShare: {
+    default:
+      process.env.RESOURCE_SHARE_SHADOW || '0 4px 12px rgba(0, 0, 0, 0.15)',
+  },
+
+  // Resource Card Skeleton Shadows
+  resourceCardSkeleton: {
+    pulseStart: process.env.SKELETON_PULSE_START || 'rgba(209, 213, 219, 0.4)',
+    pulseEnd: process.env.SKELETON_PULSE_END || 'rgba(209, 213, 219, 0)',
+  },
+
+  // Resource Comments Shadows
+  resourceComments: {
+    pulseStart: process.env.COMMENTS_PULSE_START || 'rgba(34, 197, 94, 0.4)',
+    pulseMid: process.env.COMMENTS_PULSE_MID || 'rgba(34, 197, 94, 0.2)',
+    pulseEnd: process.env.COMMENTS_PULSE_END || 'rgba(34, 197, 94, 0)',
+  },
+
+  // PWA Install Prompt Shadows
+  pwaInstallPrompt: {
+    pulseStart: process.env.PWA_PULSE_START || 'rgba(59, 130, 246, 0.4)',
+    pulseEnd: process.env.PWA_PULSE_END || 'rgba(59, 130, 246, 0)',
+  },
+
+  // Error Boundary Shadows
+  errorBoundary: {
+    successPulseStart:
+      process.env.ERROR_SUCCESS_PULSE_START || 'rgba(34, 197, 94, 0.7)',
+    successPulseMid:
+      process.env.ERROR_SUCCESS_PULSE_MID || 'rgba(34, 197, 94, 0)',
+    focusRing: {
+      default:
+        process.env.ERROR_FOCUS_RING || '0 0 0 3px rgba(59, 130, 246, 0.4)',
+      pulse:
+        process.env.ERROR_FOCUS_PULSE || '0 0 0 5px rgba(59, 130, 246, 0.2)',
+    },
+  },
+
+  // Deprecation Notice Shadows
+  deprecationNotice: {
+    default: process.env.DEPRECATION_SHADOW || '0 2px 4px rgba(0, 0, 0, 0.1)',
+    warning:
+      process.env.DEPRECATION_WARNING_SHADOW || '0 2px 4px rgba(0, 0, 0, 0.1)',
+    pulseStart:
+      process.env.DEPRECATION_PULSE_START || 'rgba(245, 158, 11, 0.4)',
+    pulseEnd: process.env.DEPRECATION_PULSE_END || 'rgba(245, 158, 11, 0)',
+  },
+
+  // Resource Breadcrumbs Shadows
+  breadcrumbs: {
+    pulseStart: process.env.BREADCRUMBS_PULSE_START || 'rgba(37, 99, 235, 0.4)',
+    pulseEnd: process.env.BREADCRUMBS_PULSE_END || 'rgba(37, 99, 235, 0)',
+  },
+
+  // Offline Indicator Component Shadows
+  offlineIndicatorComponent: {
+    default:
+      process.env.OFFLINE_COMPONENT_SHADOW || '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+
+  // Additional Color Opacity Variants
+  colorsExtended: {
+    green: {
+      opacity40: process.env.COLOR_GREEN_OPACITY40 || 'rgba(34, 197, 94, 0.4)',
+      opacity70: process.env.COLOR_GREEN_OPACITY70 || 'rgba(34, 197, 94, 0.7)',
+    },
+    blueAlt: {
+      opacity30:
+        process.env.COLOR_BLUE_ALT_OPACITY30 || 'rgba(37, 99, 235, 0.3)',
+      opacity40:
+        process.env.COLOR_BLUE_ALT_OPACITY40 || 'rgba(37, 99, 235, 0.4)',
+    },
+    gray: {
+      opacity40: process.env.COLOR_GRAY_OPACITY40 || 'rgba(209, 213, 219, 0.4)',
+    },
+    amberAlt: {
+      opacity40:
+        process.env.COLOR_AMBER_ALT_OPACITY40 || 'rgba(245, 158, 11, 0.4)',
+    },
+  },
+
+  // Text Shadows
+  textShadow: {
+    sm: process.env.TEXT_SHADOW_SM || '0 1px 2px rgba(0, 0, 0, 0.1)',
   },
 } as const
 
