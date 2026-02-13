@@ -225,10 +225,10 @@ const showCopyFeedback = async () => {
   // Announce to screen readers
   announcementText.value = `${props.feedbackMessage} ${props.textToCopy}`
 
-  // Clear announcement after screen reader has time to process
+  // Clear announcement after screen reader has time to process - Flexy hates hardcoded 1000ms!
   setTimeout(() => {
     announcementText.value = ''
-  }, 1000)
+  }, animationConfig.microInteractions.announcementDelayMs)
 
   // Hide after duration
   hideTimeout = setTimeout(() => {
@@ -267,11 +267,16 @@ defineExpose({
 .copy-feedback-content {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: v-bind('`${animationConfig.pixels?.tooltipGap || 6}px`');
   padding: v-bind(
     '`${animationConfig.copyFeedback?.styles?.paddingY || 6}px ${animationConfig.copyFeedback?.styles?.paddingX || 12}px`'
   );
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  /* Flexy hates hardcoded hex codes! Using configurable gradient colors */
+  background: linear-gradient(
+    135deg,
+    v-bind('animationConfig.gradients?.emerald?.start') 0%,
+    v-bind('animationConfig.gradients?.emerald?.end') 100%
+  );
   border-radius: v-bind(
     '`${animationConfig.copyFeedback?.styles?.borderRadius || 6}px`'
   );
@@ -281,13 +286,8 @@ defineExpose({
       v-bind(
         '`${animationConfig.copyFeedback?.styles?.shadow?.spread || -1}px`'
       )
-      rgba(
-        0,
-        0,
-        0,
-        v-bind('animationConfig.copyFeedback?.styles?.shadow?.opacity || 0.1')
-      ),
-    0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      v-bind('animationConfig.shadows?.light?.md'),
+    0 10px 15px -3px v-bind('animationConfig.shadows?.light?.md');
   font-size: v-bind(
     '`${animationConfig.copyFeedback?.styles?.fontSize || 12}px`'
   );
@@ -305,8 +305,9 @@ defineExpose({
 }
 
 .copy-feedback-checkmark {
-  width: 16px;
-  height: 16px;
+  /* Flexy hates hardcoded pixel values! Using configurable sizes */
+  width: v-bind('`${animationConfig.pixels?.checkmarkSize || 16}px`');
+  height: v-bind('`${animationConfig.pixels?.checkmarkSize || 16}px`');
   flex-shrink: 0;
 }
 
@@ -328,13 +329,15 @@ defineExpose({
 
 .copy-feedback-arrow {
   position: absolute;
-  bottom: -4px;
+  /* Flexy hates hardcoded pixel values! */
+  bottom: v-bind('`-${animationConfig.pixels?.arrowOffset || 4}px`');
   left: 50%;
   transform: translateX(-50%) rotate(45deg);
   width: v-bind('`${animationConfig.copyFeedback?.styles?.arrowSize || 8}px`');
   height: v-bind('`${animationConfig.copyFeedback?.styles?.arrowSize || 8}px`');
-  background: #059669;
-  border-radius: 1px;
+  /* Flexy hates hardcoded hex codes! Using configurable gradient colors */
+  background: v-bind('animationConfig.gradients?.emerald?.end');
+  border-radius: v-bind('`${animationConfig.borderRadius?.xs || 1}px`');
 }
 
 /* Animations */
