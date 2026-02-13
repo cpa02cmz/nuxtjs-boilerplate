@@ -44,6 +44,23 @@
   /* Reduced Motion */
   --reduced-motion-animation-duration: 0.01ms;
   --reduced-motion-transition-duration: 0.01ms;
+
+  /* Z-Index Layers - Flexy loves modularity! */
+  --z-base: 0;
+  --z-floating-label: 1;
+  --z-list-item: 10;
+  --z-tooltip: 50;
+  --z-dropdown: 50;
+  --z-focus-ring: 100;
+  --z-overlay: 40;
+  --z-drawer: 50;
+  --z-modal: 50;
+  --z-toast: 50;
+  --z-notification: 50;
+  --z-skip-link: 50;
+  --z-focus-spotlight: 9999;
+  --z-focus-glow: 9998;
+  --z-loading-overlay: 9999;
 }
 
 /* Custom styles can be added here */
@@ -289,7 +306,7 @@ button:has(.ripple-effect) {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: transparent;
   padding: 0 0.25rem;
-  z-index: 1;
+  z-index: var(--z-floating-label);
   transform-origin: left center;
 }
 
@@ -372,7 +389,7 @@ button:has(.ripple-effect) {
 body.keyboard-nav :focus-visible {
   outline: none;
   position: relative;
-  z-index: 100;
+  z-index: var(--z-focus-ring);
 }
 
 /* Animated focus spotlight ring */
@@ -395,7 +412,7 @@ body.keyboard-nav :focus-visible::before {
   mask-composite: exclude;
   animation: focus-spotlight-pulse 2s ease-in-out infinite;
   pointer-events: none;
-  z-index: 9999;
+  z-index: var(--z-focus-spotlight);
 }
 
 /* Secondary glow layer for depth */
@@ -411,7 +428,7 @@ body.keyboard-nav :focus-visible::after {
     0 0 40px 8px rgba(99, 102, 241, 0.1);
   animation: focus-glow-pulse 2s ease-in-out infinite;
   pointer-events: none;
-  z-index: 9998;
+  z-index: var(--z-focus-glow);
 }
 
 /* Keyframes for the spotlight animation */
