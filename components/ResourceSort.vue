@@ -118,9 +118,11 @@
                     highlightedIndex === index &&
                     selectedSortOption !== option.value,
                 }"
-                @click="selectOption(option.value)"
+                @click="selectOption(option.value as SortOption)"
                 @mouseenter="highlightedIndex = index"
-                @keydown.enter.prevent="selectOption(option.value)"
+                @keydown.enter.prevent="
+                  selectOption(option.value as SortOption)
+                "
               >
                 <div class="flex items-center gap-2.5">
                   <span
@@ -194,9 +196,10 @@ import { ref, computed, watch, onUnmounted, onMounted } from 'vue'
 import { thresholdsConfig } from '~/configs/thresholds.config'
 import { contentConfig } from '~/configs/content.config'
 import { EASING } from '~/configs/easing.config'
+import type { SortOption } from '~/types/resource'
 
 interface Props {
-  selectedSortOption?: string
+  selectedSortOption?: SortOption
   totalResources?: number
 }
 
@@ -206,7 +209,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'update-sort-option', option: string): void
+  (e: 'update-sort-option', option: SortOption): void
 }>()
 
 // Sort options from config - Flexy hates hardcoded arrays!
@@ -296,7 +299,7 @@ const toggleDropdown = () => {
   }
 }
 
-const selectOption = (value: string) => {
+const selectOption = (value: SortOption) => {
   emit('update-sort-option', value)
   isOpen.value = false
   highlightedIndex.value = -1
@@ -335,7 +338,7 @@ const handleTriggerKeydown = (event: KeyboardEvent) => {
     case ' ':
       event.preventDefault()
       if (isOpen.value && highlightedIndex.value >= 0) {
-        selectOption(sortOptions[highlightedIndex.value].value)
+        selectOption(sortOptions[highlightedIndex.value].value as SortOption)
       } else {
         toggleDropdown()
       }

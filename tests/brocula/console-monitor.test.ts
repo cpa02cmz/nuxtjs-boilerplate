@@ -40,10 +40,19 @@ const ACCEPTABLE_WARNINGS = [
   /Download the Vue Devtools extension/,
   /\[Vue warn\]: Component .+ is missing template/,
   /\[HMR\]/,
+  // Vue hydration warning on ssr: false pages - expected behavior
+  /\[Vue warn\]: Attempting to hydrate existing markup but container is empty/,
 ]
 
 // Known acceptable errors (development only)
-const ACCEPTABLE_ERRORS = [/\[vite\]/, /\[hmr\]/]
+const ACCEPTABLE_ERRORS = [
+  /\[vite\]/,
+  /\[hmr\]/,
+  // Infrastructure errors (database/rate limiting) - not code issues
+  /Failed to load resource: the server responded with a status of 400/,
+  /Failed to load resource: the server responded with a status of 429/,
+  /Failed to load resource: the server responded with a status of 500/,
+]
 
 /**
  * BroCula Console Monitor

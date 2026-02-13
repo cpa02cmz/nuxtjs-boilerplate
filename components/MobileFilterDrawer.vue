@@ -172,18 +172,18 @@ interface SavedSearch {
 }
 
 interface Props {
-  categories: string[]
-  pricingModels: string[]
-  difficultyLevels: string[]
-  technologies: string[]
-  tags: string[]
-  benefits?: string[]
-  selectedCategories: string[]
-  selectedPricingModels: string[]
-  selectedDifficultyLevels: string[]
-  selectedTechnologies: string[]
-  selectedTags: string[]
-  selectedBenefits?: string[]
+  categories: readonly string[]
+  pricingModels: readonly string[]
+  difficultyLevels: readonly string[]
+  technologies: readonly string[]
+  tags: readonly string[]
+  benefits?: readonly string[]
+  selectedCategories: readonly string[]
+  selectedPricingModels: readonly string[]
+  selectedDifficultyLevels: readonly string[]
+  selectedTechnologies: readonly string[]
+  selectedTags: readonly string[]
+  selectedBenefits?: readonly string[]
   selectedDateRange?: string
   resultsCount: number
   facetCounts?: FacetCounts

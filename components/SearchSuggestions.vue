@@ -240,6 +240,7 @@
 import { ref, watch, computed, nextTick } from 'vue'
 import { contentConfig } from '~/configs/content.config'
 import { uiConfig } from '~/configs/ui.config'
+import { limitsConfig } from '~/configs/limits.config'
 import { NuxtLink } from '#components'
 
 interface SuggestionItem {
@@ -327,9 +328,12 @@ const handleClearSearch = () => {
   emit('clear-search')
 }
 
-// Default suggestions for empty state
+// Default suggestions for empty state - Flexy hates hardcoded limits!
 const defaultSuggestions = computed(() => {
-  return contentConfig.search.suggestions.defaultSuggestions.slice(0, 5)
+  return contentConfig.search.suggestions.defaultSuggestions.slice(
+    0,
+    limitsConfig.search.defaultSuggestionsLimit
+  )
 })
 
 const selectDefaultSuggestion = (suggestion: string) => {

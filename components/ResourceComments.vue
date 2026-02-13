@@ -31,7 +31,7 @@
           rows="1"
           :aria-label="contentConfig.comments.aria.addComment"
           :aria-describedby="`comment-hint-${uniqueId}`"
-          :maxlength="maxLength"
+          :maxlength="MAX_LENGTH"
           @focus="handleFocus"
           @blur="handleBlur"
           @input="handleInput"
@@ -143,11 +143,11 @@
             </span>
           </template>
           <template
-            v-else-if="newComment.length < minLength && newComment.length > 0"
+            v-else-if="newComment.length < MIN_LENGTH && newComment.length > 0"
           >
             {{
               contentConfig.comments.validation.tooShort ||
-                `Minimum ${minLength} characters`
+                `Minimum ${MIN_LENGTH} characters`
             }}
           </template>
           <template v-else>
@@ -288,6 +288,7 @@ import { TIME } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { validationConfig } from '~/configs/validation.config'
+import { limitsConfig } from '~/configs/limits.config'
 import { generateId } from '~/utils/generateId'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
 
@@ -373,10 +374,8 @@ const submitButtonClasses = computed(() => {
 })
 
 const submitButtonText = computed(() => {
-  if (isSubmitting.value)
-    return contentConfig.comments.buttons.posting || 'Posting...'
-  if (showSuccessCheck.value)
-    return contentConfig.comments.buttons.posted || 'Posted!'
+  if (isSubmitting.value) return 'Posting...'
+  if (showSuccessCheck.value) return 'Posted!'
   return contentConfig.comments.buttons.post
 })
 
@@ -471,13 +470,14 @@ const toggleLike = (commentId: string) => {
 
 const isLiked = (commentId: string) => likedComments.value.has(commentId)
 
+// Flexy hates hardcoded limits! Use configurable display limit for initials
 const getInitials = (name: string) => {
   return name
     .split(' ')
     .map(n => n[0])
     .join('')
     .toUpperCase()
-    .slice(0, 2)
+    .slice(0, limitsConfig.display.maxInitialsDisplay)
 }
 
 // Format comments with initials
