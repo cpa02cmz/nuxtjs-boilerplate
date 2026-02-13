@@ -226,6 +226,7 @@ import { onMounted } from 'vue'
 import { useSubmissionReview } from '~/composables/useSubmissionReview'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   submissionId?: string
@@ -333,7 +334,7 @@ onMounted(() => {
 .detail-section {
   background: var(--color-card-background);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.md}px`');
   padding: 1.5rem;
 }
 
@@ -392,7 +393,7 @@ onMounted(() => {
   background: var(--color-tag-background);
   color: var(--color-text);
   padding: 0.25rem 0.5rem;
-  border-radius: 12px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.lg}px`');
   font-size: 0.8rem;
 }
 
@@ -412,7 +413,7 @@ onMounted(() => {
   flex: 1;
   background: var(--color-card-background);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.md}px`');
   padding: 1.5rem;
 }
 
@@ -426,7 +427,7 @@ onMounted(() => {
   min-height: 100px;
   padding: 0.75rem;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.xs}px`');
   margin-bottom: 1rem;
   resize: vertical;
   background: var(--color-background);
@@ -436,7 +437,7 @@ onMounted(() => {
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 4px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.xs}px`');
   cursor: pointer;
   font-weight: 500;
   text-align: center;

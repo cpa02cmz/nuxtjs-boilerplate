@@ -180,6 +180,7 @@ import { useModerationDashboard } from '~/composables/useModerationDashboard'
 import { contentConfig } from '~/configs/content.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
+import { uiConfig } from '~/configs/ui.config'
 
 const {
   pendingCount,
@@ -288,7 +289,7 @@ const config = contentConfig.moderation
   padding: 1rem;
   background: var(--color-card-background);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.md}px`');
 }
 
 .activity-icon {
@@ -349,7 +350,7 @@ const config = contentConfig.moderation
   padding: 1rem;
   background: var(--color-card-background);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.md}px`');
   text-decoration: none;
   color: var(--color-text);
   transition: all v-bind('animationConfig.cssTransitions.standardSec');

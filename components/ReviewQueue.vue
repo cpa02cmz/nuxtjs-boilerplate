@@ -102,6 +102,7 @@ import type { Submission } from '~/types/submission'
 import { moderationConfig } from '~/configs/moderation.config'
 import { contentConfig } from '~/configs/content.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   initialSubmissions?: Submission[]
@@ -150,14 +151,14 @@ const {
 .filter-input {
   padding: 0.5rem;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.xs}px`');
   background: var(--color-background);
   color: var(--color-text);
 }
 
 .submission-card {
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.md}px`');
   padding: 1rem;
   margin-bottom: 1rem;
   background: var(--color-card-background);
@@ -179,7 +180,7 @@ const {
 
 .status-badge {
   padding: 0.25rem 0.5rem;
-  border-radius: 12px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.lg}px`');
   font-size: 0.8rem;
   font-weight: bold;
 }
@@ -233,7 +234,7 @@ const {
   background: var(--color-tag-background);
   color: var(--color-text);
   padding: 0.25rem 0.5rem;
-  border-radius: 12px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.lg}px`');
   font-size: 0.8rem;
 }
 
@@ -245,7 +246,7 @@ const {
 .btn {
   padding: 0.5rem 1rem;
   border: none;
-  border-radius: 4px;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.xs}px`');
   cursor: pointer;
   text-decoration: none;
   display: inline-block;

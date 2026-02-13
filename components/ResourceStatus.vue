@@ -82,6 +82,7 @@ import { uiConfig } from '../configs/ui.config'
 import { limitsConfig } from '../configs/limits.config'
 import { themeConfig } from '../configs/theme.config'
 import { shadowsConfig } from '../configs/shadows.config'
+import { animationConfig } from '../configs/animation.config'
 
 interface Props {
   status?:
@@ -190,7 +191,7 @@ const healthLabel = computed(() => {
   text-transform: uppercase;
   letter-spacing: 0.025em;
   cursor: help;
-  transition: all 0.2s ease;
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease;
   display: inline-block;
 }
 

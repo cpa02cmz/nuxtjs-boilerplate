@@ -340,9 +340,23 @@ export const uiConfig = {
 
     // Border radius (in rem)
     borderRadius: {
-      sm: parseFloat(process.env.LAYOUT_BORDER_RADIUS_SM || '0.25'),
-      md: parseFloat(process.env.LAYOUT_BORDER_RADIUS_MD || '0.5'),
-      lg: parseFloat(process.env.LAYOUT_BORDER_RADIUS_LG || '0.75'),
+      xs: parseFloat(process.env.LAYOUT_BORDER_RADIUS_XS || '0.25'), // 4px
+      sm: parseFloat(process.env.LAYOUT_BORDER_RADIUS_SM || '0.375'), // 6px
+      md: parseFloat(process.env.LAYOUT_BORDER_RADIUS_MD || '0.5'), // 8px
+      lg: parseFloat(process.env.LAYOUT_BORDER_RADIUS_LG || '0.75'), // 12px
+      xl: parseFloat(process.env.LAYOUT_BORDER_RADIUS_XL || '1'), // 16px
+      full: parseFloat(process.env.LAYOUT_BORDER_RADIUS_FULL || '9999'), // 9999px
+    },
+
+    // Border radius in pixels (for direct CSS usage)
+    borderRadiusPx: {
+      xs: parseInt(process.env.LAYOUT_BORDER_RADIUS_XS_PX || '4'), // 4px
+      sm: parseInt(process.env.LAYOUT_BORDER_RADIUS_SM_PX || '6'), // 6px
+      md: parseInt(process.env.LAYOUT_BORDER_RADIUS_MD_PX || '8'), // 8px
+      lg: parseInt(process.env.LAYOUT_BORDER_RADIUS_LG_PX || '12'), // 12px
+      xl: parseInt(process.env.LAYOUT_BORDER_RADIUS_XL_PX || '16'), // 16px
+      '2xl': parseInt(process.env.LAYOUT_BORDER_RADIUS_2XL_PX || '24'), // 24px
+      full: parseInt(process.env.LAYOUT_BORDER_RADIUS_FULL_PX || '9999'), // 9999px
     },
 
     // Font sizes (in rem)
