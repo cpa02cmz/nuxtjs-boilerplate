@@ -5,6 +5,7 @@ import type { ApiKey } from '~/types/webhook'
 import { dateConfig } from '~/configs/date.config'
 import { permissionsConfig } from '~/configs/permissions.config'
 import { messagesConfig } from '~/configs/messages.config'
+import { apiConfig } from '~/configs/api.config'
 
 export interface ApiKeyDisplay extends ApiKey {
   showFullKey?: boolean
@@ -23,7 +24,7 @@ export const useApiKeysPage = () => {
 
       const { $apiClient } = useNuxtApp()
       const response = await $apiClient.get<{ data: ApiKey[] }>(
-        '/api/v1/auth/api-keys'
+        apiConfig.auth.apiKeys
       )
 
       if (response.success && response.data?.data) {
@@ -58,7 +59,7 @@ export const useApiKeysPage = () => {
       const { $apiClient } = useNuxtApp()
       const response = await $apiClient.post<
         { data: ApiKey } & { key?: string }
-      >('/api/v1/auth/api-keys', {
+      >(apiConfig.auth.apiKeys, {
         name: newKeyName.value.trim(),
         permissions: permissionsConfig.apiKey.defaultPermissions,
       })
@@ -101,7 +102,7 @@ export const useApiKeysPage = () => {
       error.value = null
 
       const { $apiClient } = useNuxtApp()
-      const response = await $apiClient.delete(`/api/v1/auth/api-keys/${keyId}`)
+      const response = await $apiClient.delete(apiConfig.auth.apiKeyById(keyId))
 
       if (response.success) {
         apiKeys.value = apiKeys.value.filter(key => key.id !== keyId)

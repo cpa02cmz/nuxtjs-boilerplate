@@ -85,6 +85,14 @@ export const apiConfig = {
     approve: '/api/moderation/approve',
     reject: '/api/moderation/reject',
     base: '/api/moderation',
+    queue: '/api/moderation/queue',
+  },
+
+  // Resource Health endpoints - Flexy hates hardcoded paths!
+  resourceHealth: {
+    byId: (id: string) => `/api/resource-health/${id}`,
+    healthById: (id: string) => `/api/resources/${id}/health`,
+    statusById: (id: string) => `/api/resources/${id}/status`,
   },
 
   // Comparison endpoints
@@ -96,6 +104,8 @@ export const apiConfig = {
   analytics: {
     resource: (id: string) => `/api/analytics/resource/${id}`,
     events: '/api/analytics/events',
+    search: '/api/analytics/search',
+    data: '/api/analytics/data',
   },
 } as const
 

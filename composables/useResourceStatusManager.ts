@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { useNuxtApp } from '#app'
+import { apiConfig } from '~/configs/api.config'
 import type { ApiClient } from '~/utils/api-client'
 
 export interface UpdateStatusResponse {
@@ -57,7 +58,7 @@ export function useResourceStatusManager(
     try {
       const client = getClient()
       const response = await client.put<UpdateStatusResponse>(
-        `/api/resources/${resourceId}/status`,
+        apiConfig.resourceHealth.statusById(resourceId),
         {
           status: selectedStatus.value,
           reason: reason.value,

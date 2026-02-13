@@ -1351,6 +1351,55 @@ export const animationConfig = {
     // Animation easing for stroke draw
     drawEasing: process.env.SVG_STROKE_DRAW_EASING || 'ease-out',
   },
+
+  // Comment Particles Animation - Flexy hates hardcoded values!
+  // Used for particle burst effects in comment interactions
+  commentParticles: {
+    // Delay between each particle's animation start (ms) - Flexy hates hardcoded 50!
+    staggerDelayMs: parseInt(
+      process.env.COMMENT_PARTICLE_STAGGER_DELAY_MS || '50'
+    ),
+    // Angle increment between particles (degrees)
+    angleIncrementDeg: parseInt(
+      process.env.COMMENT_PARTICLE_ANGLE_INCREMENT || '60'
+    ),
+    // Number of particles in a burst
+    particleCount: parseInt(process.env.COMMENT_PARTICLE_COUNT || '6'),
+    // Particle burst duration (ms)
+    burstDurationMs: parseInt(
+      process.env.COMMENT_PARTICLE_BURST_DURATION_MS || '600'
+    ),
+    // CSS duration string for v-bind
+    burstDurationSec: `${
+      parseInt(process.env.COMMENT_PARTICLE_BURST_DURATION_MS || '600') / 1000
+    }s`,
+    // Particle spread distance (px)
+    spreadDistancePx: parseInt(process.env.COMMENT_PARTICLE_SPREAD_PX || '30'),
+    // Particle size (px)
+    particleSizePx: parseInt(process.env.COMMENT_PARTICLE_SIZE_PX || '6'),
+    // Particle color
+    particleColor: process.env.COMMENT_PARTICLE_COLOR || '#3b82f6',
+    // Easing function for particle animation
+    easing: process.env.COMMENT_PARTICLE_EASING || 'ease-out',
+  },
+
+  // Celebration Confetti - Component-specific durations - Flexy hates hardcoded values!
+  celebration: {
+    // Default duration for light celebration (ms) - Flexy hates hardcoded 2000!
+    lightDurationMs: parseInt(
+      process.env.CELEBRATION_LIGHT_DURATION_MS || '2000'
+    ),
+    // Default duration for medium celebration (ms)
+    mediumDurationMs: parseInt(
+      process.env.CELEBRATION_MEDIUM_DURATION_MS || '3000'
+    ),
+    // Default duration for heavy celebration (ms)
+    heavyDurationMs: parseInt(
+      process.env.CELEBRATION_HEAVY_DURATION_MS || '4000'
+    ),
+    // Delay before triggering celebration (ms)
+    triggerDelayMs: parseInt(process.env.CELEBRATION_TRIGGER_DELAY_MS || '100'),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
