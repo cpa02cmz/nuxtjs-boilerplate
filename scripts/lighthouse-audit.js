@@ -1,11 +1,8 @@
 import { chromium } from 'playwright'
+import { monitoringConfig } from '../configs/monitoring.config.js'
 
-const BASE_URL = 'http://localhost:3000'
-const PAGES = [
-  { path: '/', name: 'Home' },
-  { path: '/search', name: 'Search' },
-  { path: '/about', name: 'About' },
-]
+const BASE_URL = monitoringConfig.baseUrl
+const PAGES = monitoringConfig.pages.essential
 
 async function runPerformanceAudit(page, url, name) {
   console.log(`\n📄 Auditing ${name}...`)
@@ -22,7 +19,7 @@ async function runPerformanceAudit(page, url, name) {
     const startTime = Date.now()
     await page.goto(`${BASE_URL}${url}`, {
       waitUntil: 'networkidle',
-      timeout: 30000,
+      timeout: monitoringConfig.timeouts.navigationMs,
     })
     const loadTime = Date.now() - startTime
 
@@ -60,8 +57,8 @@ async function runPerformanceAudit(page, url, name) {
           })
         }
 
-        // Timeout after 2 seconds
-        setTimeout(() => resolve({}), 2000)
+        // Timeout after configured delay
+        setTimeout(() => resolve({}), monitoringConfig.delays.vueMountMs)
       })
     })
 
@@ -82,7 +79,9 @@ async function runPerformanceAudit(page, url, name) {
 
     const renderBlocking = resources.filter(
       r =>
-        (r.name.endsWith('.css') || r.name.endsWith('.js')) && r.duration > 100
+        ((r.name.endsWith('.css') || r.name.endsWith('.js')) &&
+          r.duration > monitoringConfig.thresholds?.renderBlockingMs) ||
+        100
     )
 
     console.log(`   ⏱️  Page Load Time: ${loadTime}ms`)
@@ -106,9 +105,15 @@ async function runPerformanceAudit(page, url, name) {
     }
 
     // Check for large resources
-    const largeResources = resources.filter(r => r.transferSize > 100000)
+    const largeResourceThreshold =
+      monitoringConfig.thresholds?.largeResourceBytes || 100000
+    const largeResources = resources.filter(
+      r => r.transferSize > largeResourceThreshold
+    )
     if (largeResources.length > 0) {
-      console.log(`   📊 Large Resources (>100KB): ${largeResources.length}`)
+      console.log(
+        `   📊 Large Resources (>${largeResourceThreshold / 1000}KB): ${largeResources.length}`
+      )
     }
 
     return { loadTime, resourceCount, metrics: perfMetrics }
@@ -121,7 +126,9 @@ async function runPerformanceAudit(page, url, name) {
 async function runAudit() {
   console.log('🦇 BroCula Performance Audit Starting...\n')
 
-  const browser = await chromium.launch({ headless: true })
+  const browser = await chromium.launch({
+    headless: monitoringConfig.browser.headless,
+  })
   const context = await browser.newContext()
 
   for (const { path, name } of PAGES) {
@@ -145,5 +152,5 @@ async function runAudit() {
 
 runAudit().catch(err => {
   console.error('Audit failed:', err)
-  process.exit(1)
+  process.exit(monitoringConfig.exitCodes.fatalError)
 })

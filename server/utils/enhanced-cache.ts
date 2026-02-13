@@ -48,9 +48,11 @@ class CacheManager {
     if (enableRedis && redisUrl) {
       try {
         this.redisClient = new Redis(redisUrl, {
-          maxRetriesPerRequest: 3,
-          lazyConnect: true,
-          enableReadyCheck: true,
+          maxRetriesPerRequest: cacheConfig.redis.maxRetriesPerRequest,
+          lazyConnect: cacheConfig.redis.lazyConnect,
+          enableReadyCheck: cacheConfig.redis.enableReadyCheck,
+          connectTimeout: cacheConfig.redis.connectTimeoutMs,
+          keepAlive: cacheConfig.redis.keepAliveMs,
         })
 
         // Set up connection listeners
