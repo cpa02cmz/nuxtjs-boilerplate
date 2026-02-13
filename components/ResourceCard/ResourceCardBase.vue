@@ -194,9 +194,10 @@
               :target="newTab ? '_blank' : '_self'"
               rel="noopener noreferrer"
               :class="[
-                `inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 hover:scale-105 active:bg-gray-950 active:scale-95 transition-all ${transitionClasses.fast} ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 relative overflow-hidden disabled:opacity-75 disabled:cursor-not-allowed`,
+                `inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 hover:scale-105 active:bg-gray-950 active:scale-95 transition-all ${transitionClasses.fast} ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 relative overflow-hidden disabled:opacity-75 disabled:cursor-not-allowed magnetic-button`,
                 { 'pointer-events-none': isNavigating },
               ]"
+              :style="magneticTransformStyle"
               :aria-label="
                 isNavigating
                   ? `Opening ${title}...`
@@ -329,6 +330,7 @@
 import { ref, computed, onMounted, type Ref } from 'vue'
 import { useHead } from '#imports'
 import { useRipple } from '~/composables/useRipple'
+import { useMagneticButton } from '~/composables/useMagneticButton'
 import { useResourceCardActions } from '~/composables/useResourceCardActions'
 import OptimizedImage from '~/components/OptimizedImage.vue'
 import ResourceStatus from '~/components/ResourceStatus.vue'
@@ -511,6 +513,15 @@ const { createRipple } = useRipple(
     duration: animationConfig.button.feedbackDurationMs,
   }
 )
+
+// Palette's Magnetic Button Micro-UX Enhancement! 🧲
+// Creates a subtle "magnetic" pull effect that draws the button toward the cursor
+// This adds a delightful tactile feel to the primary action button
+const { transformStyle: magneticTransformStyle } = useMagneticButton({
+  strength: animationConfig.magneticButton.strength,
+  maxDistancePx: animationConfig.magneticButton.maxDistancePx,
+  returnDurationMs: animationConfig.magneticButton.returnDurationMs,
+})
 
 // Compute domain tooltip
 const domainTooltip = computed(() => formatDomainTooltip(props.url))
