@@ -47,6 +47,10 @@ export async function trackEvent(event: AnalyticsEvent): Promise<boolean> {
 
     // Check if response is OK before parsing JSON
     if (!response.ok) {
+      // Handle rate limiting gracefully - don't log as error
+      if (response.status === 429) {
+        return false
+      }
       const errorText = await response.text()
       logger.error(`Analytics API error (${response.status}):`, errorText)
       return false
