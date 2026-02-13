@@ -385,6 +385,32 @@ export const animationConfig = {
       ),
       endSpread: parseInt(process.env.BOOKMARK_PULSE_END_SPREAD || '4'),
     },
+    // Particle Burst Animation - Palette's delightful micro-UX touch!
+    // Creates a celebratory particle burst when bookmarking
+    particleBurst: {
+      // Enable/disable particle burst
+      enabled: process.env.BOOKMARK_PARTICLE_ENABLED !== 'false',
+      // Number of particles in the burst
+      particleCount: parseInt(process.env.BOOKMARK_PARTICLE_COUNT || '12'),
+      // Animation duration in seconds
+      durationSec: parseFloat(process.env.BOOKMARK_PARTICLE_DURATION || '0.6'),
+      // Particle spread distance in pixels
+      spreadPx: parseInt(process.env.BOOKMARK_PARTICLE_SPREAD || '60'),
+      // Particle colors (amber/yellow theme for bookmarks)
+      colors: [
+        process.env.BOOKMARK_PARTICLE_COLOR_1 || '#fbbf24', // amber-400
+        process.env.BOOKMARK_PARTICLE_COLOR_2 || '#f59e0b', // amber-500
+        process.env.BOOKMARK_PARTICLE_COLOR_3 || '#fcd34d', // amber-300
+        process.env.BOOKMARK_PARTICLE_COLOR_4 || '#fbbf24', // amber-400
+      ],
+      // Particle size range in pixels
+      minSizePx: parseInt(process.env.BOOKMARK_PARTICLE_MIN_SIZE || '4'),
+      maxSizePx: parseInt(process.env.BOOKMARK_PARTICLE_MAX_SIZE || '8'),
+      // Delay before particles start disappearing
+      fadeDelaySec: parseFloat(
+        process.env.BOOKMARK_PARTICLE_FADE_DELAY || '0.3'
+      ),
+    },
   },
 
   // Empty State Animations
