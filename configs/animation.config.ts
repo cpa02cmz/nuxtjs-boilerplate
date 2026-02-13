@@ -665,6 +665,88 @@ export const animationConfig = {
     easeIn: process.env.TRANSITION_EASE_IN || 'ease-in',
   },
 
+  // CSS Transition Durations - Flexy hates hardcoded CSS duration values!
+  // For use in <style> sections of Vue components with CSS transitions
+  cssTransitions: {
+    // Instant/Immediate transitions (1ms) - for reduced motion or instant feedback
+    instantMs: parseInt(process.env.CSS_TRANSITION_INSTANT_MS || '1'),
+    instantSec: `${parseInt(process.env.CSS_TRANSITION_INSTANT_MS || '1') / 1000}s`,
+
+    // Ultra-fast transitions (50ms) - for micro-interactions
+    ultraFastMs: parseInt(process.env.CSS_TRANSITION_ULTRA_FAST_MS || '50'),
+    ultraFastSec: `${parseInt(process.env.CSS_TRANSITION_ULTRA_FAST_MS || '50') / 1000}s`,
+
+    // Fast transitions (100ms/0.1s) - for quick feedback like opacity changes
+    fastMs: parseInt(process.env.CSS_TRANSITION_FAST_MS || '100'),
+    fastSec: `${parseInt(process.env.CSS_TRANSITION_FAST_MS || '100') / 1000}s`,
+
+    // Quick transitions (150ms) - for button presses and small UI changes
+    quickMs: parseInt(process.env.CSS_TRANSITION_QUICK_MS || '150'),
+    quickSec: `${parseInt(process.env.CSS_TRANSITION_QUICK_MS || '150') / 1000}s`,
+
+    // Normal transitions (200ms/0.2s) - for most UI interactions
+    normalMs: parseInt(process.env.CSS_TRANSITION_NORMAL_MS || '200'),
+    normalSec: `${parseInt(process.env.CSS_TRANSITION_NORMAL_MS || '200') / 1000}s`,
+
+    // Standard transitions (300ms/0.3s) - for hover states and transforms
+    standardMs: parseInt(process.env.CSS_TRANSITION_STANDARD_MS || '300'),
+    standardSec: `${parseInt(process.env.CSS_TRANSITION_STANDARD_MS || '300') / 1000}s`,
+
+    // Slow transitions (400ms) - for more noticeable animations
+    slowMs: parseInt(process.env.CSS_TRANSITION_SLOW_MS || '400'),
+    slowSec: `${parseInt(process.env.CSS_TRANSITION_SLOW_MS || '400') / 1000}s`,
+
+    // Slower transitions (500ms) - for entrance/exit animations
+    slowerMs: parseInt(process.env.CSS_TRANSITION_SLOWER_MS || '500'),
+    slowerSec: `${parseInt(process.env.CSS_TRANSITION_SLOWER_MS || '500') / 1000}s`,
+
+    // Long transitions (600ms) - for dramatic effects
+    longMs: parseInt(process.env.CSS_TRANSITION_LONG_MS || '600'),
+    longSec: `${parseInt(process.env.CSS_TRANSITION_LONG_MS || '600') / 1000}s`,
+
+    // Hover-specific transitions (commonly 200-300ms)
+    hoverMs: parseInt(process.env.CSS_TRANSITION_HOVER_MS || '200'),
+    hoverSec: `${parseInt(process.env.CSS_TRANSITION_HOVER_MS || '200') / 1000}s`,
+
+    // Reduced motion transitions (shorter duration for accessibility)
+    reducedMotionMs: parseInt(process.env.CSS_TRANSITION_REDUCED_MS || '100'),
+    reducedMotionSec: `${parseInt(process.env.CSS_TRANSITION_REDUCED_MS || '100') / 1000}s`,
+  },
+
+  // CSS Animation Timing - Flexy hates hardcoded animation delays!
+  // For CSS animations with animation-delay and animation-duration
+  cssAnimations: {
+    // Micro delays for staggered animations
+    microDelayMs: parseInt(process.env.CSS_ANIM_MICRO_DELAY_MS || '50'),
+    microDelaySec: `${parseInt(process.env.CSS_ANIM_MICRO_DELAY_MS || '50') / 1000}s`,
+
+    // Small delays (100-200ms)
+    smallDelayMs: parseInt(process.env.CSS_ANIM_SMALL_DELAY_MS || '100'),
+    smallDelaySec: `${parseInt(process.env.CSS_ANIM_SMALL_DELAY_MS || '100') / 1000}s`,
+
+    // Medium delays (300-500ms)
+    mediumDelayMs: parseInt(process.env.CSS_ANIM_MEDIUM_DELAY_MS || '300'),
+    mediumDelaySec: `${parseInt(process.env.CSS_ANIM_MEDIUM_DELAY_MS || '300') / 1000}s`,
+
+    // Large delays (800ms-1s) - for icon attention animations
+    iconAttentionDelayMs: parseInt(process.env.CSS_ANIM_ICON_DELAY_MS || '500'),
+    iconAttentionDelaySec: `${parseInt(process.env.CSS_ANIM_ICON_DELAY_MS || '500') / 1000}s`,
+
+    // Icon attention animation duration
+    iconAttentionDurationMs: parseInt(
+      process.env.CSS_ANIM_ICON_DURATION_MS || '2000'
+    ),
+    iconAttentionDurationSec: `${parseInt(process.env.CSS_ANIM_ICON_DURATION_MS || '2000') / 1000}s`,
+
+    // Standard animation duration
+    standardDurationMs: parseInt(process.env.CSS_ANIM_STANDARD_MS || '300'),
+    standardDurationSec: `${parseInt(process.env.CSS_ANIM_STANDARD_MS || '300') / 1000}s`,
+
+    // Long animation duration (3s for breathe animations)
+    longDurationMs: parseInt(process.env.CSS_ANIM_LONG_MS || '3000'),
+    longDurationSec: `${parseInt(process.env.CSS_ANIM_LONG_MS || '3000') / 1000}s`,
+  },
+
   // Floating Label Animations - Palette's micro-UX delight!
   // Creates smooth floating label transitions for form inputs
   floatingLabel: {
@@ -1175,34 +1257,6 @@ export const animationConfig = {
     transitionDurationSec: `${parseInt(process.env.ZERO_RESULT_TRANSITION_DURATION_MS || '100') / 1000}s`,
   },
 
-  // CSS Transition Durations - Flexy hates hardcoded CSS values!
-  // Used for inline styles and CSS custom properties
-  cssTransitions: {
-    // Standard transition duration (0.2s = 200ms)
-    standardSec: `${parseInt(process.env.CSS_TRANSITION_STANDARD_MS || '200') / 1000}s`,
-    standardMs: parseInt(process.env.CSS_TRANSITION_STANDARD_MS || '200'),
-    // Hover transition duration (0.3s = 300ms)
-    hoverSec: `${parseInt(process.env.CSS_TRANSITION_HOVER_MS || '300') / 1000}s`,
-    hoverMs: parseInt(process.env.CSS_TRANSITION_HOVER_MS || '300'),
-    // Reduced motion transition duration (0.1s = 100ms)
-    reducedMotionSec: `${parseInt(process.env.CSS_TRANSITION_REDUCED_MS || '100') / 1000}s`,
-    reducedMotionMs: parseInt(process.env.CSS_TRANSITION_REDUCED_MS || '100'),
-    // Minimal/Instant transition (0.01ms for reduced motion)
-    instantSec: `${parseInt(process.env.CSS_TRANSITION_INSTANT_MS || '1') / 1000}s`,
-    instantMs: parseInt(process.env.CSS_TRANSITION_INSTANT_MS || '1'),
-  },
-
-  // CSS Animation Configurations - Flexy hates hardcoded CSS values!
-  cssAnimations: {
-    // Icon attention animation delay (0.5s = 500ms)
-    iconAttentionDelaySec: `${parseInt(process.env.CSS_ANIM_ICON_DELAY_MS || '500') / 1000}s`,
-    iconAttentionDelayMs: parseInt(process.env.CSS_ANIM_ICON_DELAY_MS || '500'),
-    // Icon attention animation duration
-    iconAttentionDurationSec: `${parseInt(process.env.CSS_ANIM_ICON_DURATION_MS || '2000') / 1000}s`,
-    iconAttentionDurationMs: parseInt(
-      process.env.CSS_ANIM_ICON_DURATION_MS || '2000'
-    ),
-  },
   // Convenience easing reference for component use - uses standard ease-out
   easeOutQuart: 'cubic-bezier(0.25, 1, 0.5, 1)',
 
