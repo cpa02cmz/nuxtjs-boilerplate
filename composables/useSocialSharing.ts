@@ -38,7 +38,11 @@ export async function trackSocialShare(event: ShareEvent): Promise<void> {
     })
 
     if (!response.ok) {
-      console.warn('Failed to track social share:', response.statusText)
+      logError(
+        'Failed to track social share:',
+        new Error(response.statusText),
+        'trackSocialShare'
+      )
     }
   } catch (error) {
     logError('Error tracking social share:', error as Error, 'trackSocialShare')
@@ -144,9 +148,20 @@ export function getShareUrl(
 
 /**
  * Escape HTML special characters
+ * SSR-safe implementation using string replacement
  */
 function escapeHtml(text: string): string {
-  if (typeof document === 'undefined') return text
+  // SSR-safe: don't use document methods during server-side rendering
+  if (typeof document === 'undefined') {
+    // Use manual string replacement for SSR
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+  }
+  // Client-side: use DOM method for proper escaping
   const div = document.createElement('div')
   div.textContent = text
   return div.innerHTML
