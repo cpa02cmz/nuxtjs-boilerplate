@@ -1254,6 +1254,32 @@ export const animationConfig = {
     tooltipGap: parseInt(process.env.PIXEL_TOOLTIP_GAP || '6'),
     arrowOffset: parseInt(process.env.PIXEL_ARROW_OFFSET || '4'),
   },
+
+  // SVG Stroke Animation Values - Flexy hates hardcoded stroke-dasharray!
+  // Used for animated checkmarks, loaders, and progress indicators
+  svgStroke: {
+    // Small checkmark (20px path)
+    smallCheckmark: {
+      dashArray: parseInt(process.env.SVG_STROKE_SMALL_DASH || '20'),
+      dashOffset: parseInt(process.env.SVG_STROKE_SMALL_OFFSET || '20'),
+    },
+    // Medium checkmark (24px path)
+    mediumCheckmark: {
+      dashArray: parseInt(process.env.SVG_STROKE_MEDIUM_DASH || '24'),
+      dashOffset: parseInt(process.env.SVG_STROKE_MEDIUM_OFFSET || '24'),
+    },
+    // Large circle/progress (100px circumference)
+    largeCircle: {
+      dashArray: parseInt(process.env.SVG_STROKE_LARGE_DASH || '100'),
+      dashOffset: parseInt(process.env.SVG_STROKE_LARGE_OFFSET || '100'),
+    },
+    // Animation duration for stroke draw effect (ms)
+    drawDurationMs: parseInt(process.env.SVG_STROKE_DRAW_DURATION_MS || '300'),
+    // CSS duration string for v-bind
+    drawDurationSec: `${parseInt(process.env.SVG_STROKE_DRAW_DURATION_MS || '300') / 1000}s`,
+    // Animation easing for stroke draw
+    drawEasing: process.env.SVG_STROKE_DRAW_EASING || 'ease-out',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

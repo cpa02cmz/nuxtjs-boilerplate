@@ -4,16 +4,21 @@
     <div class="text-sm">
       <span
         ref="countRef"
-        class="font-bold text-lg tabular-nums transition-colors duration-300"
-        :class="countChangeClass"
+        :class="[
+          'font-bold text-lg tabular-nums transition-colors',
+          tailwindClassesConfig.duration.medium,
+          countChangeClass,
+        ]"
         :aria-label="`${displayCount} ${contentConfig.sort.resultsFound}`"
-      >{{ displayCount }}</span>
+      >
+        {{ displayCount }}
+      </span>
       <span class="text-gray-800"> {{ contentConfig.sort.resultsFound }}</span>
       <Transition
-        enter-active-class="transition-all duration-300 ease-out"
+        :enter-active-class="`transition-all ${tailwindClassesConfig.duration.medium} ease-out`"
         enter-from-class="opacity-0 -translate-y-2"
         enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition-all duration-200 ease-in"
+        :leave-active-class="`transition-all ${tailwindClassesConfig.duration.normal} ease-in`"
         leave-from-class="opacity-100 translate-y-0"
         leave-to-class="opacity-0 -translate-y-1"
       >
@@ -30,7 +35,9 @@
     </div>
 
     <!-- Custom Animated Dropdown -->
-    <div class="flex items-center space-x-2">
+    <div
+      class="flex items-center space-x-2"
+    >
       <label
         :for="selectId"
         class="text-sm text-gray-800"
@@ -46,11 +53,14 @@
         <button
           :id="selectId"
           type="button"
-          class="relative flex items-center justify-between w-44 pl-3 pr-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-          :class="{
-            'border-blue-500 ring-2 ring-blue-500': isOpen,
-            'hover:border-gray-400 hover:shadow-md': !isOpen,
-          }"
+          :class="[
+            'relative flex items-center justify-between w-44 pl-3 pr-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all',
+            tailwindClassesConfig.duration.normal,
+            {
+              'border-blue-500 ring-2 ring-blue-500': isOpen,
+              'hover:border-gray-400 hover:shadow-md': !isOpen,
+            },
+          ]"
           :aria-expanded="isOpen"
           :aria-haspopup="'listbox'"
           :aria-controls="listboxId"
@@ -59,8 +69,11 @@
         >
           <span class="flex items-center gap-2">
             <span
-              class="text-gray-600 transition-transform duration-200"
-              :class="{ 'scale-110': isOpen }"
+              :class="[
+                'text-gray-600 transition-transform',
+                tailwindClassesConfig.duration.normal,
+                { 'scale-110': isOpen },
+              ]"
             >
               {{ currentOption?.icon }}
             </span>
@@ -69,8 +82,11 @@
             }}</span>
           </span>
           <svg
-            class="w-4 h-4 text-gray-500 transition-transform duration-300 ease-spring"
-            :class="{ 'rotate-180': isOpen }"
+            :class="[
+              'w-4 h-4 text-gray-500 transition-transform ease-spring',
+              tailwindClassesConfig.duration.medium,
+              { 'rotate-180': isOpen },
+            ]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -87,10 +103,10 @@
 
         <!-- Animated Dropdown Menu -->
         <Transition
-          enter-active-class="transition-all duration-200 ease-out"
+          :enter-active-class="`transition-all ${tailwindClassesConfig.duration.normal} ease-out`"
           enter-from-class="opacity-0 scale-95 -translate-y-2"
           enter-to-class="opacity-100 scale-100 translate-y-0"
-          leave-active-class="transition-all duration-150 ease-in"
+          :leave-active-class="`transition-all ${tailwindClassesConfig.duration.fast} ease-in`"
           leave-from-class="opacity-100 scale-100 translate-y-0"
           leave-to-class="opacity-0 scale-95 -translate-y-2"
         >
@@ -109,15 +125,18 @@
                 :key="option.value"
                 role="option"
                 :aria-selected="selectedSortOption === option.value"
-                class="relative flex items-center justify-between px-3 py-2.5 cursor-pointer transition-all duration-150"
-                :class="{
-                  'bg-blue-50 text-blue-900':
-                    selectedSortOption === option.value,
-                  'hover:bg-gray-50': selectedSortOption !== option.value,
-                  'bg-gray-100':
-                    highlightedIndex === index &&
-                    selectedSortOption !== option.value,
-                }"
+                :class="[
+                  'relative flex items-center justify-between px-3 py-2.5 cursor-pointer transition-all',
+                  tailwindClassesConfig.duration.fast,
+                  {
+                    'bg-blue-50 text-blue-900':
+                      selectedSortOption === option.value,
+                    'hover:bg-gray-50': selectedSortOption !== option.value,
+                    'bg-gray-100':
+                      highlightedIndex === index &&
+                      selectedSortOption !== option.value,
+                  },
+                ]"
                 @click="selectOption(option.value as SortOption)"
                 @mouseenter="highlightedIndex = index"
                 @keydown.enter.prevent="
@@ -126,21 +145,27 @@
               >
                 <div class="flex items-center gap-2.5">
                   <span
-                    class="text-lg transition-transform duration-200"
-                    :class="{
-                      'scale-110': highlightedIndex === index,
-                      'text-blue-600': selectedSortOption === option.value,
-                      'text-gray-500': selectedSortOption !== option.value,
-                    }"
+                    :class="[
+                      'text-lg transition-transform',
+                      tailwindClassesConfig.duration.normal,
+                      {
+                        'scale-110': highlightedIndex === index,
+                        'text-blue-600': selectedSortOption === option.value,
+                        'text-gray-500': selectedSortOption !== option.value,
+                      },
+                    ]"
                   >
                     {{ option.icon }}
                   </span>
                   <span
-                    class="font-medium transition-colors duration-150"
-                    :class="{
-                      'text-blue-900': selectedSortOption === option.value,
-                      'text-gray-700': selectedSortOption !== option.value,
-                    }"
+                    :class="[
+                      'font-medium transition-colors',
+                      tailwindClassesConfig.duration.fast,
+                      {
+                        'text-blue-900': selectedSortOption === option.value,
+                        'text-gray-700': selectedSortOption !== option.value,
+                      },
+                    ]"
                   >
                     {{ option.label }}
                   </span>
@@ -148,10 +173,10 @@
 
                 <!-- Animated Checkmark for Selected Option -->
                 <Transition
-                  enter-active-class="transition-all duration-200 ease-out"
+                  :enter-active-class="`transition-all ${tailwindClassesConfig.duration.normal} ease-out`"
                   enter-from-class="opacity-0 scale-0"
                   enter-to-class="opacity-100 scale-100"
-                  leave-active-class="transition-all duration-150 ease-in"
+                  :leave-active-class="`transition-all ${tailwindClassesConfig.duration.fast} ease-in`"
                   leave-from-class="opacity-100 scale-100"
                   leave-to-class="opacity-0 scale-0"
                 >
@@ -196,6 +221,8 @@ import { ref, computed, watch, onUnmounted, onMounted } from 'vue'
 import { thresholdsConfig } from '~/configs/thresholds.config'
 import { contentConfig } from '~/configs/content.config'
 import { EASING } from '~/configs/easing.config'
+import { animationConfig } from '~/configs/animation.config'
+import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 import type { SortOption } from '~/types/resource'
 
 interface Props {
@@ -473,11 +500,16 @@ onUnmounted(() => {
   transition-timing-function: v-bind('EASING.SPRING_SNAPPY');
 }
 
-/* Checkmark animation */
+/* Checkmark animation - Flexy hates hardcoded values! */
 .checkmark-path {
-  stroke-dasharray: 20;
-  stroke-dashoffset: 20;
-  animation: drawCheck 0.3s ease-out forwards;
+  stroke-dasharray: v-bind(
+    'animationConfig.svgStroke.smallCheckmark.dashArray'
+  );
+  stroke-dashoffset: v-bind(
+    'animationConfig.svgStroke.smallCheckmark.dashOffset'
+  );
+  animation: drawCheck v-bind('animationConfig.svgStroke.drawDurationSec')
+    v-bind('animationConfig.svgStroke.drawEasing') forwards;
 }
 
 @keyframes drawCheck {
