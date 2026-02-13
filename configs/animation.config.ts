@@ -1497,6 +1497,23 @@ export const animationConfig = {
       process.env.COMMENT_HIGHLIGHT_OPACITY || '0.2'
     ),
   },
+
+  // Error Page Animations - Palette's micro-UX enhancement!
+  // Subtle entrance animations and visual feedback for error states
+  errorPage: {
+    // Duration for content entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.ERROR_PAGE_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Icon pulse animation duration (seconds)
+    iconPulseDurationSec: parseFloat(
+      process.env.ERROR_PAGE_ICON_PULSE_SEC || '2'
+    ),
+    // Pulse ring animation duration (seconds)
+    pulseRingDurationSec: parseFloat(
+      process.env.ERROR_PAGE_PULSE_RING_SEC || '1.5'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
