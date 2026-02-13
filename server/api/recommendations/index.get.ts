@@ -217,6 +217,6 @@ export default defineEventHandler(async event => {
       searchQuery: query.query || null,
     })
   } catch (error) {
-    handleApiRouteError(event, error)
+    return handleApiRouteError(event, error)
   }
 })
