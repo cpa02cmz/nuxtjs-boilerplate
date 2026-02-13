@@ -1481,6 +1481,23 @@ export const animationConfig = {
     drawEasing: process.env.SVG_STROKE_DRAW_EASING || 'ease-out',
   },
 
+  // Comparison Value Animations - Palette's micro-UX enhancement!
+  // Delightful copy-to-clipboard interactions with visual feedback
+  comparisonValue: {
+    // Duration for copy feedback state (ms)
+    copyFeedbackDurationMs: parseInt(
+      process.env.COMPARISON_VALUE_COPY_FEEDBACK_MS || '2000'
+    ),
+    // Copy success animation duration (ms)
+    copySuccessAnimationMs: parseInt(
+      process.env.COMPARISON_VALUE_COPY_SUCCESS_MS || '400'
+    ),
+    // Boolean value pop animation duration (ms)
+    booleanPopDurationMs: parseInt(
+      process.env.COMPARISON_VALUE_BOOL_POP_MS || '300'
+    ),
+  },
+
   // Comments Section Animations - Palette's micro-UX delight!
   // Provides smooth scroll and highlight effects for newly posted comments
   comments: {
@@ -1495,6 +1512,23 @@ export const animationConfig = {
     // Maximum highlight opacity (0-1)
     highlightOpacity: parseFloat(
       process.env.COMMENT_HIGHLIGHT_OPACITY || '0.2'
+    ),
+  },
+
+  // Error Page Animations - Palette's micro-UX enhancement!
+  // Subtle entrance animations and visual feedback for error states
+  errorPage: {
+    // Duration for content entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.ERROR_PAGE_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Icon pulse animation duration (seconds)
+    iconPulseDurationSec: parseFloat(
+      process.env.ERROR_PAGE_ICON_PULSE_SEC || '2'
+    ),
+    // Pulse ring animation duration (seconds)
+    pulseRingDurationSec: parseFloat(
+      process.env.ERROR_PAGE_PULSE_RING_SEC || '1.5'
     ),
   },
 } as const

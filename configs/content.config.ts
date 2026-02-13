@@ -1632,6 +1632,26 @@ export const contentConfig = {
     loadAnnouncement:
       process.env.CONTENT_IMAGE_LOAD_ANNOUNCEMENT || 'Image loaded',
   },
+
+  // Comparison Value Component - Palette's micro-UX enhancement!
+  // Copy-to-clipboard functionality with delightful feedback
+  comparisonValue: {
+    // Tooltip text for copy button
+    copyTooltip: process.env.CONTENT_COMPARISON_COPY_TOOLTIP || 'Click to copy',
+    // Success announcement for screen readers
+    copySuccessAnnouncement:
+      process.env.CONTENT_COMPARISON_COPY_SUCCESS ||
+      '{{value}} copied to clipboard',
+    // Aria labels
+    ariaLabels: {
+      copyButton:
+        process.env.CONTENT_COMPARISON_ARIA_COPY ||
+        'Copy {{value}} to clipboard',
+      copyAllButton:
+        process.env.CONTENT_COMPARISON_ARIA_COPY_ALL ||
+        'Copy all {{count}} items to clipboard',
+    },
+  },
 } as const
 
 // Helper function to parse comma-separated suggestions

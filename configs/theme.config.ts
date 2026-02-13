@@ -195,6 +195,50 @@ export const themeConfig = {
 
   // Focus Ring
   focusRing: process.env.FOCUS_RING_COLOR || '#3b82f6',
+
+  // Comparison Value Colors - Palette's micro-UX enhancement!
+  comparisonValue: {
+    // Interactive text/number values
+    interactiveTextColor:
+      process.env.COMPARISON_VALUE_INTERACTIVE_TEXT || '#374151',
+    hoverBgColor:
+      process.env.COMPARISON_VALUE_HOVER_BG || 'rgba(59, 130, 246, 0.1)',
+    hoverBorderColor:
+      process.env.COMPARISON_VALUE_HOVER_BORDER || 'rgba(59, 130, 246, 0.3)',
+    hoverShadowColor:
+      process.env.COMPARISON_VALUE_HOVER_SHADOW || 'rgba(0, 0, 0, 0.1)',
+    focusRingColor: process.env.COMPARISON_VALUE_FOCUS_RING || '#3b82f6',
+    // Copied state colors
+    copiedBgColor:
+      process.env.COMPARISON_VALUE_COPIED_BG || 'rgba(34, 197, 94, 0.1)',
+    copiedBorderColor:
+      process.env.COMPARISON_VALUE_COPIED_BORDER || 'rgba(34, 197, 94, 0.5)',
+    copiedTextColor: process.env.COMPARISON_VALUE_COPIED_TEXT || '#15803d',
+    // Empty state
+    emptyTextColor: process.env.COMPARISON_VALUE_EMPTY_TEXT || '#6b7280',
+    // Boolean values
+    booleanTrueBg:
+      process.env.COMPARISON_VALUE_BOOL_TRUE_BG || 'rgba(34, 197, 94, 0.1)',
+    booleanTrueColor: process.env.COMPARISON_VALUE_BOOL_TRUE_TEXT || '#15803d',
+    booleanFalseBg:
+      process.env.COMPARISON_VALUE_BOOL_FALSE_BG || 'rgba(239, 68, 68, 0.1)',
+    booleanFalseColor:
+      process.env.COMPARISON_VALUE_BOOL_FALSE_TEXT || '#b91c1c',
+    // List items
+    listItemBg:
+      process.env.COMPARISON_VALUE_LIST_ITEM_BG || 'rgba(59, 130, 246, 0.1)',
+    listItemColor: process.env.COMPARISON_VALUE_LIST_ITEM_TEXT || '#1d4ed8',
+    // More button
+    moreBtnBg:
+      process.env.COMPARISON_VALUE_MORE_BTN_BG || 'rgba(107, 114, 128, 0.1)',
+    moreBtnColor: process.env.COMPARISON_VALUE_MORE_BTN_TEXT || '#4b5563',
+    moreBtnHoverBg:
+      process.env.COMPARISON_VALUE_MORE_BTN_HOVER_BG ||
+      'rgba(107, 114, 128, 0.2)',
+    moreBtnHoverBorder:
+      process.env.COMPARISON_VALUE_MORE_BTN_HOVER_BORDER ||
+      'rgba(107, 114, 128, 0.3)',
+  },
 } as const
 
 export type ThemeConfig = typeof themeConfig
