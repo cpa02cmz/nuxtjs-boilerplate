@@ -699,7 +699,7 @@ onUnmounted(() => {
   padding: 0;
   cursor: pointer;
   text-decoration: underline;
-  transition: color 0.2s ease;
+  transition: color v-bind('animationConfig.cssTransitions.normalSec') ease;
 }
 
 .cancel-retry-button:hover {

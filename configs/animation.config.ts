@@ -1497,6 +1497,40 @@ export const animationConfig = {
       process.env.COMPARISON_VALUE_BOOL_POP_MS || '300'
     ),
   },
+
+  // Comments Section Animations - Palette's micro-UX delight!
+  // Provides smooth scroll and highlight effects for newly posted comments
+  comments: {
+    // Duration for comment highlight animation (seconds)
+    highlightDurationSec: `${parseInt(process.env.COMMENT_HIGHLIGHT_DURATION_MS || '2000') / 1000}s`,
+    // Delay before scrolling to new comment (ms) - allows DOM to update
+    scrollDelayMs: parseInt(process.env.COMMENT_SCROLL_DELAY_MS || '100'),
+    // Scroll behavior: 'smooth' or 'auto'
+    scrollBehavior: process.env.COMMENT_SCROLL_BEHAVIOR || 'smooth',
+    // Highlight color RGB values (yellow-400)
+    highlightColor: process.env.COMMENT_HIGHLIGHT_COLOR || '250, 204, 21',
+    // Maximum highlight opacity (0-1)
+    highlightOpacity: parseFloat(
+      process.env.COMMENT_HIGHLIGHT_OPACITY || '0.2'
+    ),
+  },
+
+  // Error Page Animations - Palette's micro-UX enhancement!
+  // Subtle entrance animations and visual feedback for error states
+  errorPage: {
+    // Duration for content entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.ERROR_PAGE_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Icon pulse animation duration (seconds)
+    iconPulseDurationSec: parseFloat(
+      process.env.ERROR_PAGE_ICON_PULSE_SEC || '2'
+    ),
+    // Pulse ring animation duration (seconds)
+    pulseRingDurationSec: parseFloat(
+      process.env.ERROR_PAGE_PULSE_RING_SEC || '1.5'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
