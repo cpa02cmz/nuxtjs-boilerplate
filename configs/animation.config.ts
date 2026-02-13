@@ -1640,6 +1640,50 @@ export const animationConfig = {
       process.env.ERROR_PAGE_PULSE_RING_SEC || '1.5'
     ),
   },
+
+  // Scroll To Top Completion Celebration - Palette's micro-UX delight! 🎉
+  // Adds a satisfying celebration animation when user reaches 100% scroll progress
+  scrollToTop: {
+    // Duration of the completion pulse animation (ms)
+    completionPulseDurationMs: parseInt(
+      process.env.SCROLL_COMPLETION_PULSE_DURATION_MS || '1200'
+    ),
+    // CSS duration string for v-bind
+    completionPulseDurationSec: `${parseInt(process.env.SCROLL_COMPLETION_PULSE_DURATION_MS || '1200') / 1000}s`,
+    // Duration of the ring expansion animation (ms)
+    ringExpandDurationMs: parseInt(
+      process.env.SCROLL_RING_EXPAND_DURATION_MS || '800'
+    ),
+    // Scale factor for the pulse ring at peak (1.8 = 180% of original)
+    completionPulseScale: parseFloat(
+      process.env.SCROLL_COMPLETION_PULSE_SCALE || '1.8'
+    ),
+    // Primary pulse color (blue-500 with opacity)
+    completionPulseColor:
+      process.env.SCROLL_COMPLETION_PULSE_COLOR || 'rgba(59, 130, 246, 0.5)',
+    // Secondary pulse color (fading ring)
+    completionPulseFadeColor:
+      process.env.SCROLL_COMPLETION_PULSE_FADE_COLOR || 'rgba(59, 130, 246, 0)',
+    // Delay before starting celebration after reaching 100% (ms)
+    celebrationDelayMs: parseInt(
+      process.env.SCROLL_CELEBRATION_DELAY_MS || '100'
+    ),
+    // Cooldown period before triggering celebration again (ms)
+    celebrationCooldownMs: parseInt(
+      process.env.SCROLL_CELEBRATION_COOLDOWN_MS || '5000'
+    ),
+    // Whether to show a checkmark icon during celebration
+    showCheckmark: process.env.SCROLL_SHOW_CHECKMARK !== 'false',
+    // Duration of checkmark draw animation (ms)
+    checkmarkDrawDurationMs: parseInt(
+      process.env.SCROLL_CHECKMARK_DRAW_DURATION_MS || '400'
+    ),
+    // Delay before checkmark appears (ms)
+    checkmarkDelayMs: parseInt(process.env.SCROLL_CHECKMARK_DELAY_MS || '200'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SCROLL_CELEBRATION_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

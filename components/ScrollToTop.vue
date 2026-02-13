@@ -46,6 +46,7 @@
       <!-- Progress Ring Background -->
       <svg
         class="scroll-to-top__progress-ring"
+        :class="{ 'scroll-to-top__progress-ring--celebrating': isCelebrating }"
         viewBox="0 0 48 48"
         aria-hidden="true"
       >
@@ -70,10 +71,39 @@
           :stroke-dashoffset="strokeDashOffset"
           stroke-linecap="round"
         />
+        <!-- Celebration pulse ring - Palette's micro-UX delight! -->
+        <circle
+          v-if="isCelebrating && !prefersReducedMotion"
+          class="scroll-to-top__celebration-ring"
+          cx="24"
+          cy="24"
+          r="20"
+          fill="none"
+          :stroke-width="celebrationRingWidth"
+        />
+        <!-- Success checkmark for celebration -->
+        <g
+          v-if="showCelebrationCheckmark && !prefersReducedMotion"
+          class="scroll-to-top__celebration-checkmark"
+          :class="{ 'animate-draw-checkmark': isCelebrating }"
+        >
+          <path
+            class="checkmark-path"
+            d="M14 24l6 6 10-10"
+            fill="none"
+            stroke="currentColor"
+            :stroke-width="celebrationRingWidth"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </g>
       </svg>
 
       <!-- Arrow Icon -->
-      <div class="scroll-to-top__icon">
+      <div
+        class="scroll-to-top__icon"
+        :class="{ 'scroll-to-top__icon--celebrating': isCelebrating }"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-5 w-5"
@@ -106,7 +136,8 @@ import { componentStylesConfig } from '~/configs/component-styles.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { contentConfig } from '~/configs/content.config'
-import { hapticLight } from '~/utils/hapticFeedback'
+import { animationConfig } from '~/configs/animation.config'
+import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
 
 // Constants - Flexy hates hardcoded values! Using config instead.
 const config = contentConfig
@@ -127,6 +158,14 @@ const scrollButtonRef = ref<HTMLButtonElement | null>(null)
 // Palette's micro-UX enhancement: Show tooltip on hover/focus
 const showTooltip = ref(false)
 
+// Palette's micro-UX enhancement: Scroll completion celebration state
+const isCelebrating = ref(false)
+const showCelebrationCheckmark = ref(false)
+const hasCelebratedThisSession = ref(false)
+let celebrationTimeout: ReturnType<typeof setTimeout> | null = null
+let celebrationCooldownTimeout: ReturnType<typeof setTimeout> | null = null
+let checkmarkTimeout: ReturnType<typeof setTimeout> | null = null
+
 // Computed
 const circumference = computed(() => CIRCUMFERENCE)
 
@@ -139,6 +178,12 @@ const progressStyle = computed(() => {
     '--scroll-progress': `${scrollProgress.value}%`,
   } as Record<string, string>
 })
+
+// Palette's micro-UX enhancement: Celebration configuration
+const celebrationConfig = computed(() => animationConfig.scrollToTop)
+const celebrationRingWidth = computed(() =>
+  Math.max(2, 4 - (scrollProgress.value / 100) * 2)
+)
 
 // Methods
 const updateScrollProgress = () => {
@@ -154,11 +199,63 @@ const updateScrollProgress = () => {
 
   // Calculate progress percentage
   if (scrollHeight > 0) {
-    scrollProgress.value = Math.min(
+    const newProgress = Math.min(
       100,
       Math.round((scrollTop / scrollHeight) * 100)
     )
+    scrollProgress.value = newProgress
+
+    // Palette's micro-UX enhancement: Trigger celebration at 100% scroll
+    if (
+      newProgress >= 100 &&
+      !hasCelebratedThisSession.value &&
+      !prefersReducedMotion.value
+    ) {
+      triggerScrollCompletionCelebration()
+    }
   }
+}
+
+/**
+ * Trigger celebration animation when user reaches 100% scroll progress
+ * Palette's delightful micro-UX enhancement! 🎉
+ */
+const triggerScrollCompletionCelebration = () => {
+  if (isCelebrating.value || hasCelebratedThisSession.value) return
+
+  const config = celebrationConfig.value
+
+  // Mark as celebrated to prevent re-triggering
+  hasCelebratedThisSession.value = true
+
+  // Clear any existing timeouts
+  if (celebrationTimeout) clearTimeout(celebrationTimeout)
+  if (celebrationCooldownTimeout) clearTimeout(celebrationCooldownTimeout)
+  if (checkmarkTimeout) clearTimeout(checkmarkTimeout)
+
+  // Trigger celebration with small delay
+  celebrationTimeout = setTimeout(() => {
+    isCelebrating.value = true
+
+    // Haptic feedback for celebration
+    hapticSuccess()
+
+    // Show checkmark with delay
+    checkmarkTimeout = setTimeout(() => {
+      showCelebrationCheckmark.value = true
+    }, config.checkmarkDelayMs)
+
+    // End celebration after animation completes
+    celebrationTimeout = setTimeout(() => {
+      isCelebrating.value = false
+      showCelebrationCheckmark.value = false
+    }, config.completionPulseDurationMs)
+
+    // Reset cooldown after delay (allow celebration again after scrolling back up and down)
+    celebrationCooldownTimeout = setTimeout(() => {
+      hasCelebratedThisSession.value = false
+    }, config.celebrationCooldownMs)
+  }, config.celebrationDelayMs)
 }
 
 const scrollToTop = () => {
@@ -286,6 +383,10 @@ onMounted(() => {
     if (cleanupReducedMotion) {
       cleanupReducedMotion()
     }
+    // Cleanup celebration timeouts - preventing memory leaks
+    if (celebrationTimeout) clearTimeout(celebrationTimeout)
+    if (celebrationCooldownTimeout) clearTimeout(celebrationCooldownTimeout)
+    if (checkmarkTimeout) clearTimeout(checkmarkTimeout)
   })
 })
 </script>
@@ -378,6 +479,132 @@ onMounted(() => {
 
 .scroll-to-top--reduced-motion .scroll-to-top__progress-ring-fill {
   transition: none;
+}
+
+/* Palette's micro-UX enhancement: Scroll completion celebration styles */
+.scroll-to-top__progress-ring--celebrating {
+  animation: completion-pulse
+    v-bind('celebrationConfig.completionPulseDurationSec') ease-out;
+}
+
+.scroll-to-top__celebration-ring {
+  transform-origin: center;
+  stroke: v-bind('celebrationConfig.completionPulseColor');
+  animation: celebration-ring-expand
+    v-bind('`${celebrationConfig.ringExpandDurationMs}ms`') ease-out forwards;
+}
+
+.scroll-to-top__celebration-checkmark {
+  transform-origin: center;
+  color: #10b981;
+  opacity: 0;
+}
+
+.scroll-to-top__celebration-checkmark.animate-draw-checkmark {
+  animation: checkmark-appear
+    v-bind('`${celebrationConfig.checkmarkDrawDurationMs}ms`') ease-out forwards;
+  animation-delay: v-bind('`${celebrationConfig.checkmarkDelayMs}ms`');
+}
+
+.scroll-to-top__icon--celebrating {
+  animation: icon-bounce v-bind('celebrationConfig.completionPulseDurationSec')
+    ease-out;
+}
+
+.checkmark-path {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+}
+
+.animate-draw-checkmark .checkmark-path {
+  animation: draw-checkmark-path
+    v-bind('`${celebrationConfig.checkmarkDrawDurationMs}ms`') ease-out forwards;
+}
+
+@keyframes completion-pulse {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(v-bind('celebrationConfig.completionPulseScale * 0.9'));
+  }
+  50% {
+    transform: scale(v-bind('celebrationConfig.completionPulseScale'));
+  }
+  75% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes celebration-ring-expand {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+    stroke: v-bind('celebrationConfig.completionPulseColor');
+  }
+  100% {
+    transform: scale(v-bind('celebrationConfig.completionPulseScale'));
+    opacity: 0;
+    stroke: v-bind('celebrationConfig.completionPulseFadeColor');
+  }
+}
+
+@keyframes checkmark-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes draw-checkmark-path {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes icon-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-3px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  75% {
+    transform: translateY(-2px);
+  }
+}
+
+/* Reduced motion support for celebration */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-to-top__progress-ring--celebrating,
+  .scroll-to-top__celebration-ring,
+  .scroll-to-top__celebration-checkmark,
+  .scroll-to-top__icon--celebrating {
+    animation: none !important;
+  }
+
+  .scroll-to-top__celebration-checkmark {
+    opacity: 1;
+  }
+
+  .checkmark-path {
+    stroke-dashoffset: 0;
+  }
 }
 
 /* Mobile adjustments */
