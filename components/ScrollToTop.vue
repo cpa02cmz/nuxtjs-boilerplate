@@ -168,6 +168,33 @@ const scrollToTop = () => {
   }, uiConfig.scrollToTop.announcementTimeoutMs)
 }
 
+// Keyboard shortcut handler - Press "Home" key to scroll to top
+// Palette's micro-UX enhancement for power users!
+const handleKeyboardShortcut = (event: KeyboardEvent) => {
+  // Only trigger if Home key is pressed and no input/textarea is focused
+  if (
+    event.key === 'Home' &&
+    !['INPUT', 'TEXTAREA'].includes((event.target as HTMLElement)?.tagName)
+  ) {
+    event.preventDefault()
+    scrollToTop()
+
+    // Visual feedback - briefly highlight the button even if not visible
+    if (!prefersReducedMotion.value) {
+      // Temporarily show button for visual feedback
+      const wasVisible = isVisible.value
+      if (!wasVisible) {
+        isVisible.value = true
+        setTimeout(() => {
+          if (!wasVisible && window.scrollY <= SCROLL_THRESHOLD) {
+            isVisible.value = false
+          }
+        }, uiConfig.scrollToTop.keyboardShortcutFeedbackDurationMs || 600)
+      }
+    }
+  }
+}
+
 const handleKeyDown = (event: KeyboardEvent) => {
   if (event.key === 'Enter' || event.key === ' ') {
     event.preventDefault()
@@ -218,11 +245,16 @@ onMounted(() => {
   }
 
   window.addEventListener('scroll', handleScroll, { passive: true })
+
+  // Palette's micro-UX enhancement: Add keyboard shortcut listener
+  window.addEventListener('keydown', handleKeyboardShortcut)
+
   updateScrollProgress() // Initial check
 
   // Store cleanup
   onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll)
+    window.removeEventListener('keydown', handleKeyboardShortcut)
     if (cleanupReducedMotion) {
       cleanupReducedMotion()
     }
