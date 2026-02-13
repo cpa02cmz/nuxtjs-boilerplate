@@ -6,6 +6,7 @@
     >
       <div
         v-if="isOpen"
+        ref="modalContainerRef"
         :class="[
           'fixed inset-0 flex items-center justify-center p-4',
           componentStylesConfig.keyboardShortcuts.zIndex,
@@ -114,7 +115,11 @@
                       config.shortcuts.focusSearch
                     }}</span>
                     <kbd
-                      class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
+                      :class="[
+                        'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                        isKeyPressed('/') &&
+                          'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                      ]"
                     >
                       /
                     </kbd>
@@ -126,7 +131,11 @@
                       config.shortcuts.clearSearch
                     }}</span>
                     <kbd
-                      class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
+                      :class="[
+                        'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                        isKeyPressed('Esc') &&
+                          'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                      ]"
                     >
                       Esc
                     </kbd>
@@ -139,12 +148,20 @@
                     }}</span>
                     <div class="flex items-center gap-1">
                       <kbd
-                        class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
+                        :class="[
+                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          isKeyPressed('↑') &&
+                            'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                        ]"
                       >
                         ↑
                       </kbd>
                       <kbd
-                        class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
+                        :class="[
+                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          isKeyPressed('↓') &&
+                            'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                        ]"
                       >
                         ↓
                       </kbd>
@@ -168,7 +185,11 @@
                       config.shortcuts.nextFocus
                     }}</span>
                     <kbd
-                      class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
+                      :class="[
+                        'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                        isKeyPressed('Tab') &&
+                          'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                      ]"
                     >
                       Tab
                     </kbd>
@@ -179,11 +200,27 @@
                     <span class="text-sm text-gray-700 dark:text-gray-300">{{
                       config.shortcuts.prevFocus
                     }}</span>
-                    <kbd
-                      class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
-                    >
-                      Shift + Tab
-                    </kbd>
+                    <div class="flex items-center gap-1">
+                      <kbd
+                        :class="[
+                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          isKeyPressed('Shift') &&
+                            'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                        ]"
+                      >
+                        Shift
+                      </kbd>
+                      <span class="text-gray-400">+</span>
+                      <kbd
+                        :class="[
+                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          isKeyPressed('Tab') &&
+                            'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                        ]"
+                      >
+                        Tab
+                      </kbd>
+                    </div>
                   </li>
                   <li
                     class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700/50 last:border-0"
@@ -192,7 +229,11 @@
                       config.shortcuts.closeModal
                     }}</span>
                     <kbd
-                      class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
+                      :class="[
+                        'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                        isKeyPressed('Esc') &&
+                          'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                      ]"
                     >
                       Esc
                     </kbd>
@@ -216,13 +257,21 @@
                     }}</span>
                     <div class="flex items-center gap-1">
                       <kbd
-                        class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
+                        :class="[
+                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          isKeyPressed('Ctrl') &&
+                            'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                        ]"
                       >
                         Ctrl
                       </kbd>
                       <span class="text-gray-400">+</span>
                       <kbd
-                        class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
+                        :class="[
+                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          (isKeyPressed('z') || isKeyPressed('Z')) &&
+                            'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                        ]"
                       >
                         Z
                       </kbd>
@@ -234,11 +283,27 @@
                     <span class="text-sm text-gray-700 dark:text-gray-300">{{
                       config.shortcuts.selectFilter
                     }}</span>
-                    <kbd
-                      class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
-                    >
-                      Enter / Space
-                    </kbd>
+                    <div class="flex items-center gap-1">
+                      <kbd
+                        :class="[
+                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          isKeyPressed('Enter') &&
+                            'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                        ]"
+                      >
+                        Enter
+                      </kbd>
+                      <span class="text-gray-400">/</span>
+                      <kbd
+                        :class="[
+                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          isKeyPressed('Space') &&
+                            'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                        ]"
+                      >
+                        Space
+                      </kbd>
+                    </div>
                   </li>
                 </ul>
               </div>
@@ -258,7 +323,11 @@
                       config.shortcuts.openHelp
                     }}</span>
                     <kbd
-                      class="px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded"
+                      :class="[
+                        'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                        isKeyPressed('?') &&
+                          'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                      ]"
                     >
                       ?
                     </kbd>
@@ -275,7 +344,11 @@
             <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
               Tip: Press
               <kbd
-                class="px-1 py-0.5 text-xs bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 rounded"
+                :class="[
+                  'px-1 py-0.5 text-xs bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 rounded transition-all duration-100',
+                  isKeyPressed('?') &&
+                    'scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
+                ]"
               >?</kbd>
               anywhere to open this guide
             </p>
@@ -299,13 +372,70 @@ const config = contentConfig.keyboardShortcuts
 
 const isOpen = ref(false)
 const modalRef = ref<HTMLElement | null>(null)
+const modalContainerRef = ref<HTMLElement | null>(null)
 const closeButtonRef = ref<HTMLElement | null>(null)
 const lastFocusedElement = ref<HTMLElement | null>(null)
+
+// Palette's micro-UX enhancement: Track currently pressed keys for live visual feedback
+const pressedKeys = ref<Set<string>>(new Set())
+const prefersReducedMotion = ref(false)
+
+// Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// Get normalized key identifier for matching
+const normalizeKey = (key: string): string => {
+  const keyMap: Record<string, string> = {
+    ' ': 'Space',
+    Spacebar: 'Space',
+    ArrowUp: '↑',
+    ArrowDown: '↓',
+    Escape: 'Esc',
+  }
+  return keyMap[key] || key
+}
+
+// Handle key down for visual feedback
+const handleKeyDownVisual = (event: KeyboardEvent) => {
+  if (!isOpen.value || prefersReducedMotion.value) return
+
+  const normalizedKey = normalizeKey(event.key)
+  pressedKeys.value.add(normalizedKey)
+
+  // Handle modifier keys
+  if (event.ctrlKey) pressedKeys.value.add('Ctrl')
+  if (event.shiftKey) pressedKeys.value.add('Shift')
+  if (event.metaKey) pressedKeys.value.add('Cmd')
+}
+
+// Handle key up for visual feedback
+const handleKeyUpVisual = (event: KeyboardEvent) => {
+  if (!isOpen.value) return
+
+  const normalizedKey = normalizeKey(event.key)
+  pressedKeys.value.delete(normalizedKey)
+
+  // Handle modifier keys
+  if (!event.ctrlKey) pressedKeys.value.delete('Ctrl')
+  if (!event.shiftKey) pressedKeys.value.delete('Shift')
+  if (!event.metaKey) pressedKeys.value.delete('Cmd')
+}
+
+// Check if a specific key is currently pressed (for template use)
+const isKeyPressed = (key: string): boolean => {
+  return pressedKeys.value.has(key)
+}
 
 const open = () => {
   lastFocusedElement.value = document.activeElement as HTMLElement
   isOpen.value = true
   document.body.style.overflow = 'hidden'
+  // Check reduced motion preference
+  prefersReducedMotion.value = checkReducedMotion()
   // Palette's micro-UX touch: Haptic feedback when opening modal
   hapticLight()
 }
@@ -328,6 +458,9 @@ const focusCloseButton = () => {
 }
 
 const handleKeyDown = (event: KeyboardEvent) => {
+  // Palette's micro-UX enhancement: Visual feedback for key presses
+  handleKeyDownVisual(event)
+
   // Don't trigger if user is typing in an input, textarea, or select
   const target = event.target as HTMLElement
   const isInputElement =
@@ -384,10 +517,12 @@ const handleKeyDown = (event: KeyboardEvent) => {
 
 onMounted(() => {
   document.addEventListener('keydown', handleKeyDown)
+  document.addEventListener('keyup', handleKeyUpVisual)
 })
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyDown)
+  document.removeEventListener('keyup', handleKeyUpVisual)
   document.body.style.overflow = ''
 })
 
@@ -420,6 +555,26 @@ defineExpose({
   transform: scale(0.95);
 }
 
+/* Palette's micro-UX enhancement: Key press animation for kbd elements */
+@keyframes kbd-press {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+  50% {
+    transform: scale(0.92);
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  }
+}
+
+.kbd-pressed {
+  animation: kbd-press 0.1s ease-out forwards;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .modal-enter-active,
@@ -432,6 +587,12 @@ defineExpose({
   .modal-enter-from .relative.w-full,
   .modal-leave-to .relative.w-full {
     transform: none;
+  }
+
+  /* Disable key press animations for reduced motion */
+  .kbd-pressed {
+    animation: none;
+    transform: scale(0.95);
   }
 }
 </style>
