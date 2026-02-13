@@ -70,6 +70,35 @@ export const animationConfig = {
     ),
   },
 
+  // OptimizedImage Component Animations - Palette's micro-UX enhancement!
+  // Enhanced loading states, hover effects, and error handling for images
+  optimizedImage: {
+    // Entrance animation durations based on load time
+    fastEntranceMs: parseInt(process.env.IMAGE_FAST_ENTRANCE_MS || '200'),
+    normalEntranceMs: parseInt(process.env.IMAGE_NORMAL_ENTRANCE_MS || '400'),
+    slowEntranceMs: parseInt(process.env.IMAGE_SLOW_ENTRANCE_MS || '600'),
+    // Entrance animation start scale (slightly smaller for pop effect)
+    entranceStartScale: parseFloat(
+      process.env.IMAGE_ENTRANCE_START_SCALE || '0.95'
+    ),
+    // Hover zoom scale factor
+    hoverZoomScale: parseFloat(process.env.IMAGE_HOVER_ZOOM_SCALE || '1.05'),
+    // Hover animation duration
+    hoverDurationMs: parseInt(process.env.IMAGE_HOVER_DURATION_MS || '300'),
+    // Border radius for wrapper
+    borderRadius: process.env.IMAGE_BORDER_RADIUS || '4px',
+    // Placeholder background color
+    placeholderBg: process.env.IMAGE_PLACEHOLDER_BG || '#f3f4f6',
+    // Loading spinner rotation duration
+    spinnerRotateDurationSec: `${parseInt(process.env.IMAGE_SPINNER_ROTATE_MS || '1000') / 1000}s`,
+    // Loading spinner dash animation duration
+    spinnerDashDurationSec: `${parseInt(process.env.IMAGE_SPINNER_DASH_MS || '1500') / 1000}s`,
+    // Error state pulse duration
+    errorPulseDurationSec: `${parseInt(process.env.IMAGE_ERROR_PULSE_MS || '2000') / 1000}s`,
+    // Retry button spin duration
+    retrySpinDurationSec: `${parseInt(process.env.IMAGE_RETRY_SPIN_MS || '1000') / 1000}s`,
+  },
+
   // Card Entrance Animations
   card: {
     staggerDelayMs: parseInt(process.env.CARD_STAGGER_DELAY_MS || '50'),
