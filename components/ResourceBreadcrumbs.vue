@@ -1,58 +1,32 @@
 <template>
-  <nav
-    class="mb-6"
-    aria-label="Breadcrumb"
-  >
+  <nav class="mb-6" aria-label="Breadcrumb">
     <ol class="flex items-center space-x-2 text-sm">
       <li class="breadcrumb-item">
-        <NuxtLink
-          to="/"
-          class="breadcrumb-link group"
-        >
+        <NuxtLink to="/" class="breadcrumb-link group">
           <span class="breadcrumb-text">Home</span>
-          <span
-            class="breadcrumb-underline"
-            aria-hidden="true"
-          />
+          <span class="breadcrumb-underline" aria-hidden="true" />
         </NuxtLink>
       </li>
       <li aria-hidden="true">
         <span class="breadcrumb-separator">/</span>
       </li>
       <li class="breadcrumb-item">
-        <NuxtLink
-          to="/search"
-          class="breadcrumb-link group"
-        >
+        <NuxtLink to="/search" class="breadcrumb-link group">
           <span class="breadcrumb-text">Resources</span>
-          <span
-            class="breadcrumb-underline"
-            aria-hidden="true"
-          />
+          <span class="breadcrumb-underline" aria-hidden="true" />
         </NuxtLink>
       </li>
       <li aria-hidden="true">
         <span class="breadcrumb-separator">/</span>
       </li>
-      <li
-        class="breadcrumb-current"
-        aria-current="page"
-      >
+      <li class="breadcrumb-current" aria-current="page">
         <span class="breadcrumb-current-text">{{ title }}</span>
-        <span
-          class="breadcrumb-current-indicator"
-          aria-hidden="true"
-        />
+        <span class="breadcrumb-current-indicator" aria-hidden="true" />
       </li>
     </ol>
 
     <!-- Screen reader announcement for current page -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </nav>
@@ -63,6 +37,8 @@ import { onMounted, ref, watch } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
 import { zIndexConfig } from '~/configs/z-index.config'
+import { shadowsConfig } from '~/configs/shadows.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 const props = defineProps<{
   title: string
@@ -181,8 +157,8 @@ onMounted(() => {
   margin: -0.125rem -0.5rem;
   background: linear-gradient(
     135deg,
-    rgba(243, 244, 246, 0.5),
-    rgba(229, 231, 235, 0.5)
+    v-bind('componentColorsConfig.common.gray[100] + "80"'),
+    v-bind('componentColorsConfig.common.gray[200] + "80"')
   );
   border-radius: 0.375rem;
   max-width: 200px;
@@ -211,12 +187,12 @@ onMounted(() => {
   100% {
     transform: scale(1);
     opacity: 1;
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 0 0 v-bind('shadowsConfig.breadcrumbs.pulseStart');
   }
   50% {
     transform: scale(1.2);
     opacity: 0.8;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0);
+    box-shadow: 0 0 0 4px v-bind('shadowsConfig.breadcrumbs.pulseEnd');
   }
 }
 

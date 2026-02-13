@@ -239,6 +239,7 @@ import { computed } from 'vue'
 import { useResourceCardActions } from '~/composables/useResourceCardActions'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 
 interface Props {
   id?: string
@@ -412,12 +413,9 @@ const transitionLeaveFast = computed(
   }
 }
 
-/* Copied tooltip styles - Palette's micro-UX enhancement */
+/* Copied tooltip styles - Palette's micro-UX enhancement - Flexy hates hardcoded values! */
 .copied-tooltip {
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: v-bind('shadowsConfig.resourceCardComponent.actions');
 }
 
 /* Reduced motion support for copied tooltip */

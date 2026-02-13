@@ -46,9 +46,9 @@
         copySuccess
           ? contentConfig.share.ariaLabels.copySuccess
           : contentConfig.share.ariaLabels.shareTitle.replace(
-            '{{title}}',
-            title
-          )
+              '{{title}}',
+              title
+            )
       "
       :aria-expanded="showShareMenu"
       :class="[
@@ -111,10 +111,7 @@
         aria-labelledby="share-menu"
         @keydown="handleMenuKeydown"
       >
-        <div
-          class="py-1"
-          role="none"
-        >
+        <div class="py-1" role="none">
           <!-- Twitter -->
           <a
             :href="twitterUrl"
@@ -240,10 +237,7 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path
-                class="checkmark-path"
-                d="M4 10l4 4 8-8"
-              />
+              <path class="checkmark-path" d="M4 10l4 4 8-8" />
             </svg>
             {{
               copySuccess
@@ -276,6 +270,7 @@ import { contentConfig } from '~/configs/content.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 import { useRipple } from '~/composables/useRipple'
 import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 
 interface Props {
   title?: string
@@ -585,12 +580,9 @@ onUnmounted(() => {
   }
 }
 
-/* Copied tooltip styles - Palette's micro-UX enhancement */
+/* Copied tooltip styles - Palette's micro-UX enhancement - Flexy hates hardcoded values! */
 .copied-tooltip {
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: v-bind('shadowsConfig.shareButton.default');
 }
 
 /* Reduced motion support for copied tooltip */

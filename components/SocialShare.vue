@@ -277,12 +277,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcementText }}
     </div>
   </div>
@@ -294,6 +289,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { socialConfig } from '~/configs/social.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 import { useSocialSharing } from '~/composables/useSocialSharing'
 import { useRipple } from '~/composables/useRipple'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
@@ -601,12 +597,9 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Palette's micro-UX: Copied tooltip styles */
+/* Palette's micro-UX: Copied tooltip styles - Flexy hates hardcoded values! */
 .copied-tooltip {
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-shadow: v-bind('shadowsConfig.socialShare.default');
 }
 
 /* Share button open state */
