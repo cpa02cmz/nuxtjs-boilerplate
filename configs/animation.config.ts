@@ -55,6 +55,19 @@ export const animationConfig = {
     // Wave animation for coordinated skeleton shimmer effect
     waveDurationSec: parseFloat(process.env.SKELETON_WAVE_DURATION_SEC || '2'),
     waveStaggerSec: parseFloat(process.env.SKELETON_WAVE_STAGGER_SEC || '0.08'),
+    // Card entrance animation transforms - Flexy hates hardcoded CSS!
+    cardEnterStartTranslateYPx: parseInt(
+      process.env.SKELETON_ENTER_START_TRANSLATE_Y_PX || '20'
+    ),
+    cardEnterStartScale: parseFloat(
+      process.env.SKELETON_ENTER_START_SCALE || '0.96'
+    ),
+    cardEnterMidTranslateYPx: parseInt(
+      process.env.SKELETON_ENTER_MID_TRANSLATE_Y_PX || '-4'
+    ),
+    cardEnterMidScale: parseFloat(
+      process.env.SKELETON_ENTER_MID_SCALE || '1.01'
+    ),
   },
 
   // Card Entrance Animations

@@ -16,6 +16,10 @@
       '--wave-duration': waveDuration,
       '--wave-stagger': waveStagger,
       '--hover-intensity': hoverIntensity,
+      '--card-enter-start-translate-y': `${animationConfig.skeleton.cardEnterStartTranslateYPx}px`,
+      '--card-enter-start-scale': animationConfig.skeleton.cardEnterStartScale,
+      '--card-enter-mid-translate-y': `${animationConfig.skeleton.cardEnterMidTranslateYPx}px`,
+      '--card-enter-mid-scale': animationConfig.skeleton.cardEnterMidScale,
     }"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
@@ -99,6 +103,7 @@
 <script setup lang="ts">
 import { ref, onUnmounted, computed } from 'vue'
 import { EASING } from '~/configs/easing.config'
+import { animationConfig } from '~/configs/animation.config'
 
 // Skeleton loading component for ResourceCard
 // Enhanced with wave shimmer animation for better perceived performance
@@ -332,12 +337,14 @@ onUnmounted(() => {
 @keyframes springFadeIn {
   0% {
     opacity: 0;
-    transform: translateY(20px) scale(0.96);
+    transform: translateY(var(--card-enter-start-translate-y))
+      scale(var(--card-enter-start-scale));
     filter: blur(2px);
   }
   60% {
     opacity: 1;
-    transform: translateY(-4px) scale(1.01);
+    transform: translateY(var(--card-enter-mid-translate-y))
+      scale(var(--card-enter-mid-scale));
     filter: blur(0);
   }
   100% {
