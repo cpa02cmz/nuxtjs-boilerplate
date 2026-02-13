@@ -502,6 +502,20 @@ export const componentStylesConfig = {
     minHeightBreakpoint: parseInt(
       process.env.READING_PROGRESS_MIN_HEIGHT || '600'
     ),
+    // Completion celebration styles
+    completionTop: process.env.READING_PROGRESS_COMPLETION_TOP || '80px',
+    completionRight: process.env.READING_PROGRESS_COMPLETION_RIGHT || '20px',
+    completionGap: process.env.READING_PROGRESS_COMPLETION_GAP || '8px',
+    completionPadding:
+      process.env.READING_PROGRESS_COMPLETION_PADDING || '12px 16px',
+    completionBorderRadius:
+      process.env.READING_PROGRESS_COMPLETION_RADIUS || '12px',
+    completionIconSize:
+      process.env.READING_PROGRESS_COMPLETION_ICON_SIZE || '24px',
+    completionFontSize:
+      process.env.READING_PROGRESS_COMPLETION_FONT_SIZE || '14px',
+    completionFontWeight:
+      process.env.READING_PROGRESS_COMPLETION_FONT_WEIGHT || '600',
   },
 
   // Scroll To Top Component Styles

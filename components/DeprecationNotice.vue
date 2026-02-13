@@ -319,7 +319,7 @@ onUnmounted(() => {
   border-left-width: 4px;
   position: relative;
   overflow: hidden;
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease-out;
 }
 
 /* Status-specific styles using config */
@@ -431,7 +431,7 @@ onUnmounted(() => {
   border-radius: 0.25rem;
   color: currentColor;
   opacity: 0.5;
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease-out;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -449,7 +449,8 @@ onUnmounted(() => {
 }
 
 .dismiss-btn svg {
-  transition: transform 0.2s ease-out;
+  transition: transform v-bind('animationConfig.cssTransitions.normalSec')
+    ease-out;
 }
 
 /* Action buttons */
@@ -466,7 +467,7 @@ onUnmounted(() => {
   font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease-out;
   display: inline-flex;
   align-items: center;
 }

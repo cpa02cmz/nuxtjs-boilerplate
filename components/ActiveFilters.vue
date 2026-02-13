@@ -1021,7 +1021,7 @@ const getChipSpringStyle = (type: string, value: string) => {
   if (isPressed) {
     return {
       transform: `scale(${config.pressScale})`,
-      transition: `transform 0.1s ease-out`,
+      transition: `transform ${animationConfig.cssTransitions.fastSec} ease-out`,
     }
   }
 

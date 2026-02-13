@@ -43,7 +43,7 @@
         ]"
         @mouseenter="handleTooltipMouseEnter"
         @mouseleave="handleTooltipMouseLeave"
-        @keydown.esc="hideTooltip"
+        @keydown.esc="hideTooltip(true)"
       >
         {{ content }}
         <!-- Pin indicator for keyboard users -->

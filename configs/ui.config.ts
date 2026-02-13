@@ -236,6 +236,9 @@ export const uiConfig = {
 
     // Focus restoration timing - Flexy hates hardcoded values!
     focusRestoreDelayMs: parseInt(process.env.TIMING_FOCUS_RESTORE || '100'),
+
+    // Scroll timeout for reading progress time estimate (ms)
+    scrollTimeoutMs: parseInt(process.env.TIMING_SCROLL_TIMEOUT || '1500'),
   },
 
   // Data Loading
