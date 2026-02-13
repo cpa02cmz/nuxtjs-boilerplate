@@ -400,8 +400,8 @@ const autoResizeTextarea = () => {
   // Reset height to auto to get the correct scrollHeight
   textarea.style.height = 'auto'
 
-  // Calculate new height based on content
-  const lineHeight = 24 // approx line height in pixels
+  // Calculate new height based on content - Flexy hates hardcoded values!
+  const lineHeight = uiConfig.characterCounter.lineHeightPx
   const newHeight = Math.min(
     Math.max(textarea.scrollHeight, lineHeight * MIN_ROWS),
     lineHeight * MAX_ROWS

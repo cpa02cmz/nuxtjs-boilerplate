@@ -346,8 +346,10 @@ const prefersReducedMotion = (): boolean => {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-// Trigger haptic feedback if available
-const triggerHaptic = (pattern: number | number[] = 10): void => {
+// Trigger haptic feedback if available - Flexy hates hardcoded values!
+const triggerHaptic = (
+  pattern: number | number[] = uiConfig.haptics.patterns.light
+): void => {
   if (typeof navigator !== 'undefined' && navigator.vibrate) {
     navigator.vibrate(pattern)
   }
