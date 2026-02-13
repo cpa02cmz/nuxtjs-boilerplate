@@ -1153,6 +1153,20 @@ export const animationConfig = {
     ),
     // Glow animation duration (ms)
     glowDurationMs: parseInt(process.env.MICRO_GLOW_DURATION_MS || '400'),
+    // Category selection animation duration (ms) - Palette's micro-UX enhancement!
+    categorySelectDurationMs: parseInt(
+      process.env.MICRO_CATEGORY_SELECT_MS || '300'
+    ),
+    // Skill level selection animation duration (ms) - Palette's micro-UX enhancement!
+    skillSelectDurationMs: parseInt(process.env.MICRO_SKILL_SELECT_MS || '250'),
+  },
+
+  // User Preference Settings - Palette's micro-UX enhancement!
+  userPreference: {
+    // Save success animation duration (ms)
+    saveSuccessDurationMs: parseInt(
+      process.env.USER_PREF_SAVE_SUCCESS_MS || '1500'
+    ),
   },
 
   // Gradient Colors - Flexy hates hardcoded hex codes!
