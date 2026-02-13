@@ -43,6 +43,34 @@ export const databaseConfig = {
   logging: {
     prefix: process.env.DB_LOG_PREFIX || '[Database]',
   },
+
+  // Idempotency Key Settings
+  idempotency: {
+    // Default expiration time in hours (24 hours = 1 day)
+    defaultExpirationHours: parseInt(
+      process.env.IDEMPOTENCY_KEY_EXPIRATION_HOURS || '24'
+    ),
+    // Maximum expiration time in hours (7 days)
+    maxExpirationHours: parseInt(
+      process.env.IDEMPOTENCY_KEY_MAX_EXPIRATION_HOURS || '168'
+    ),
+  },
+
+  // Connection Pool Configuration Note:
+  // SQLite is file-based and doesn't support connection pooling like PostgreSQL/MySQL.
+  // The better-sqlite3 adapter handles connections synchronously with a single
+  // connection per database file. Pool settings below are reserved for future use
+  // if migrating to a client-server database (PostgreSQL, MySQL, etc.).
+  connectionPool: {
+    // Minimum connections in pool (reserved for future use)
+    min: parseInt(process.env.DB_POOL_MIN || '2'),
+    // Maximum connections in pool (reserved for future use)
+    max: parseInt(process.env.DB_POOL_MAX || '10'),
+    // Connection acquire timeout in milliseconds (reserved for future use)
+    acquireTimeoutMs: parseInt(process.env.DB_ACQUIRE_TIMEOUT_MS || '3000'),
+    // Connection idle timeout in milliseconds (reserved for future use)
+    idleTimeoutMs: parseInt(process.env.DB_IDLE_TIMEOUT_MS || '10000'),
+  },
 } as const
 
 export type DatabaseConfig = typeof databaseConfig
