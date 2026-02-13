@@ -86,6 +86,7 @@ import { computed, watch, ref } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { validationConfig } from '~/configs/validation.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { hapticLight, hapticError } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -264,7 +265,7 @@ const shadowColorDefault = computed(
   transition: all v-bind('animationConfig.transition.fast.durationMs + "ms"')
     ease-out;
   pointer-events: none;
-  z-index: 10;
+  z-index: v-bind('zIndexScale.low[10]');
 }
 
 .character-counter-ring--visible,

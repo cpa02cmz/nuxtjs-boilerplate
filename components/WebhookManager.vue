@@ -430,6 +430,7 @@ import { componentColorsConfig } from '~/configs/component-colors.config'
 import { webhooksConfig } from '~/configs/webhooks.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 
 // Flexy hates hardcoded colors! Using config values for webhook UI colors
 const webhookColors = {
@@ -936,7 +937,7 @@ onMounted(() => {
 
 .button-text {
   position: relative;
-  z-index: 1;
+  z-index: v-bind('zIndexConfig.floatingLabel');
   font-variant-numeric: tabular-nums;
   min-width: 2ch;
   text-align: center;

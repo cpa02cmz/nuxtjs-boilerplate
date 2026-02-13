@@ -162,6 +162,7 @@ import type { Resource } from '~/types/resource'
 import { limitsConfig } from '~/configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 import { useRipple } from '~/composables/useRipple'
 import { hapticLight } from '~/utils/hapticFeedback'
 import OptimizedImage from '~/components/OptimizedImage.vue'
@@ -260,7 +261,7 @@ const hasMoreTags = computed(() => {
   transform: scaleX(v-bind('animationConfig.cardShine.scaleFactor'));
   opacity: 0;
   pointer-events: none;
-  z-index: 1;
+  z-index: v-bind('zIndexConfig.floatingLabel');
   transition: opacity 0.3s ease;
 }
 

@@ -345,6 +345,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { EASING } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { seoConfig } from '~/configs/seo.config'
+import { zIndexConfig, zIndexScale } from '~/configs/z-index.config'
 
 interface Props {
   title: string
@@ -768,7 +769,7 @@ if (typeof useHead === 'function') {
   transform: scaleX(v-bind('animationConfig.cardShine.scaleFactor'));
   opacity: 0;
   pointer-events: none;
-  z-index: 1;
+  z-index: v-bind('zIndexConfig.floatingLabel');
   transition: opacity 0.3s ease;
 }
 
@@ -818,7 +819,7 @@ if (typeof useHead === 'function') {
   );
   opacity: 0;
   transition: opacity 0.3s ease;
-  z-index: 2;
+  z-index: v-bind('zIndexScale.low[5]');
 }
 
 .card-3d-tilt.is-tilting::after {
