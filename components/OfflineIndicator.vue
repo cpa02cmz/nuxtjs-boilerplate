@@ -27,10 +27,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <!-- Animated offline icon with connection pulse - Palette's micro-UX enhancement! -->
-                <div
-                  class="relative flex-shrink-0 w-8 h-8"
-                  aria-hidden="true"
-                >
+                <div class="relative flex-shrink-0 w-8 h-8" aria-hidden="true">
                   <!-- Connection pulse rings (shown when reconnecting) -->
                   <template v-if="isReconnecting && !prefersReducedMotion">
                     <div
@@ -240,12 +237,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </Teleport>
@@ -618,7 +610,7 @@ onUnmounted(() => {
   border: 1px solid rgb(251, 191, 36); /* amber-400 */
   border-radius: 9999px;
   cursor: pointer;
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease-out;
   outline: none;
   position: relative;
   overflow: hidden;
@@ -661,7 +653,8 @@ onUnmounted(() => {
 .retry-icon {
   width: 0.875rem;
   height: 0.875rem;
-  transition: transform 0.3s ease-out;
+  transition: transform v-bind('animationConfig.cssTransitions.standardSec')
+    ease-out;
 }
 
 .retry-button:hover:not(:disabled) .retry-icon {

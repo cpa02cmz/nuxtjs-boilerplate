@@ -248,8 +248,9 @@ onUnmounted(() => {
   background-size: 200% 100%;
   animation:
     shimmer v-bind('shimmerDurationSec') ease-in-out infinite,
-    breathe 3s ease-in-out infinite;
-  transition: filter 0.3s ease;
+    breathe v-bind('animationConfig.cssAnimations.longDurationSec') ease-in-out
+      infinite;
+  transition: filter v-bind('animationConfig.cssTransitions.standardSec') ease;
 }
 
 /* 🎨 Palette: Hover glow effect on shimmer elements */
@@ -280,9 +281,11 @@ onUnmounted(() => {
   background-size: 200% 100%;
   animation:
     shimmer v-bind('shimmerDurationSec') ease-in-out infinite,
-    breathe 3s ease-in-out infinite,
+    breathe v-bind('animationConfig.cssAnimations.longDurationSec') ease-in-out
+      infinite,
     icon-pulse 4s ease-in-out infinite;
-  transition: transform 0.4s v-bind('easingValues.springSnappy');
+  transition: transform v-bind('animationConfig.cssTransitions.slowSec')
+    v-bind('easingValues.springSnappy');
 }
 
 /* 🎨 Palette: Icon hover interaction */
