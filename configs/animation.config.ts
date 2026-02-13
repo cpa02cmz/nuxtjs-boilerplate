@@ -802,6 +802,16 @@ export const animationConfig = {
     // Long animation duration (3s for breathe animations)
     longDurationMs: parseInt(process.env.CSS_ANIM_LONG_MS || '3000'),
     longDurationSec: `${parseInt(process.env.CSS_ANIM_LONG_MS || '3000') / 1000}s`,
+
+    // Extended animation duration (1s) - for countdown rings and progress indicators
+    extendedDurationMs: parseInt(process.env.CSS_ANIM_EXTENDED_MS || '1000'),
+    extendedDurationSec: `${parseInt(process.env.CSS_ANIM_EXTENDED_MS || '1000') / 1000}s`,
+
+    // Extra extended animation duration (1.5s) - for paused state pulses
+    extraExtendedDurationMs: parseInt(
+      process.env.CSS_ANIM_EXTRA_EXTENDED_MS || '1500'
+    ),
+    extraExtendedDurationSec: `${parseInt(process.env.CSS_ANIM_EXTRA_EXTENDED_MS || '1500') / 1000}s`,
   },
 
   // Floating Label Animations - Palette's micro-UX delight!
