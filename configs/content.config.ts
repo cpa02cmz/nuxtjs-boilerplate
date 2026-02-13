@@ -958,6 +958,8 @@ export const contentConfig = {
     },
     buttons: {
       post: process.env.CONTENT_COMMENTS_BTN_POST || 'Post Comment',
+      posting: process.env.CONTENT_COMMENTS_BTN_POSTING || 'Posting...',
+      posted: process.env.CONTENT_COMMENTS_BTN_POSTED || 'Posted!',
       cancel: process.env.CONTENT_COMMENTS_BTN_CANCEL || 'Cancel',
       reply: process.env.CONTENT_COMMENTS_BTN_REPLY || 'Reply',
     },

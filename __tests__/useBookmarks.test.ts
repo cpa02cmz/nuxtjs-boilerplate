@@ -63,7 +63,7 @@ describe('useBookmarks', () => {
           title: 'Test Resource',
           description: 'Test Description',
           url: 'https://example.com',
-          addedAt: new Date('2024-01-01'),
+          dateAdded: new Date('2024-01-01'),
         },
       ]
       localStorage.setItem(
@@ -112,10 +112,10 @@ describe('useBookmarks', () => {
       expect(bookmarks.value).toHaveLength(1)
       expect(bookmarks.value[0].id).toBe('add-success-1')
       expect(bookmarks.value[0].title).toBe('Test Resource')
-      expect(bookmarks.value[0].addedAt).toBeInstanceOf(Date)
+      expect(bookmarks.value[0].dateAdded).toBeInstanceOf(Date)
     })
 
-    it('should set addedAt to current time', () => {
+    it('should set dateAdded to current time', () => {
       const { addBookmark, bookmarks } = useBookmarks()
       const beforeAdd = Date.now()
 
@@ -127,10 +127,10 @@ describe('useBookmarks', () => {
       })
 
       const afterAdd = Date.now()
-      expect(bookmarks.value[0].addedAt.getTime()).toBeGreaterThanOrEqual(
+      expect(bookmarks.value[0].dateAdded.getTime()).toBeGreaterThanOrEqual(
         beforeAdd
       )
-      expect(bookmarks.value[0].addedAt.getTime()).toBeLessThanOrEqual(afterAdd)
+      expect(bookmarks.value[0].dateAdded.getTime()).toBeLessThanOrEqual(afterAdd)
     })
 
     it('should persist to localStorage', () => {
@@ -360,7 +360,7 @@ describe('useBookmarks', () => {
   })
 
   describe('getAllBookmarks', () => {
-    it('should return bookmarks sorted by addedAt (descending)', () => {
+    it('should return bookmarks sorted by dateAdded (descending)', () => {
       const { addBookmark, getAllBookmarks } = useBookmarks()
 
       addBookmark({
@@ -486,8 +486,8 @@ describe('useBookmarks', () => {
       const dataUri = href?.split('charset=utf-8,')[1]
       const exported = JSON.parse(decodeURIComponent(dataUri!))
 
-      expect(typeof exported[0].addedAt).toBe('string')
-      expect(exported[0].addedAt).toMatch(
+      expect(typeof exported[0].dateAdded).toBe('string')
+      expect(exported[0].dateAdded).toMatch(
         /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/
       )
     })
@@ -504,7 +504,7 @@ describe('useBookmarks', () => {
           title: 'Imported',
           description: 'Imported Desc',
           url: 'https://imported.com',
-          addedAt: new Date('2024-01-01'),
+          dateAdded: new Date('2024-01-01'),
         },
       ]
 
@@ -525,14 +525,14 @@ describe('useBookmarks', () => {
           title: 'Imported',
           description: 'Imported Desc',
           url: 'https://imported.com',
-          addedAt: new Date('2024-01-01T00:00:00.000Z') as any,
+          dateAdded: new Date('2024-01-01T00:00:00.000Z') as any,
         },
       ]
 
       importBookmarks(imported)
 
-      expect(bookmarks.value[0].addedAt).toBeInstanceOf(Date)
-      expect(bookmarks.value[0].addedAt.getTime()).toBe(
+      expect(bookmarks.value[0].dateAdded).toBeInstanceOf(Date)
+      expect(bookmarks.value[0].dateAdded.getTime()).toBe(
         new Date('2024-01-01T00:00:00.000Z').getTime()
       )
     })
@@ -555,14 +555,14 @@ describe('useBookmarks', () => {
           title: 'Duplicate',
           description: 'Duplicate',
           url: 'https://duplicate.com',
-          addedAt: new Date(),
+          dateAdded: new Date(),
         },
         {
           id: '2',
           title: 'New',
           description: 'New',
           url: 'https://new.com',
-          addedAt: new Date(),
+          dateAdded: new Date(),
         },
       ]
 
@@ -598,19 +598,19 @@ describe('useBookmarks', () => {
           title: 'Valid',
           description: 'Valid',
           url: 'https://valid.com',
-          addedAt: new Date(),
+          dateAdded: new Date(),
         },
         {
           id: '2',
           description: 'Missing title',
           url: 'https://invalid.com',
-          addedAt: new Date(),
+          dateAdded: new Date(),
         },
         {
           id: '3',
           title: 'Missing url',
           description: 'Invalid',
-          addedAt: new Date(),
+          dateAdded: new Date(),
         },
       ]
 

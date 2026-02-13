@@ -37,8 +37,11 @@ useSeoMeta({
   ogImageHeight: String(seoConfig.og.imageHeight),
   ogImageType: 'image/jpeg',
   ogUrl: runtimeConfig.public.canonicalUrl,
-  ogType: seoConfig.og.type,
-  twitterCard: seoConfig.twitter.card,
+  ogType: seoConfig.og.type as 'website' | 'article' | undefined,
+  twitterCard: seoConfig.twitter.card as
+    | 'summary'
+    | 'summary_large_image'
+    | undefined,
   twitterSite: seoConfig.twitter.site,
   twitterCreator: seoConfig.twitter.creator,
 })
