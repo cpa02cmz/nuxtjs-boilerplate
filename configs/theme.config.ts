@@ -66,6 +66,10 @@ export const themeConfig = {
     darkProgressBg: process.env.SCROLL_DARK_PROGRESS_BG || '#374151',
     darkIconColor: process.env.SCROLL_DARK_ICON_COLOR || '#1f2937',
     darkIconBg: process.env.SCROLL_DARK_ICON_BG || '#f3f4f6',
+    // Palette's micro-UX enhancement: Tooltip colors
+    tooltipBg: process.env.SCROLL_TOOLTIP_BG || '#1f2937',
+    tooltipText: process.env.SCROLL_TOOLTIP_TEXT || '#ffffff',
+    tooltipLabel: process.env.SCROLL_TOOLTIP_LABEL || '#9ca3af',
   },
 
   // Loading Spinner Colors
