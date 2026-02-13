@@ -431,9 +431,17 @@ export const animationConfig = {
     ),
   },
 
-  // Error Boundary Animations
+  // Error Boundary Animations - Palette's micro-UX enhancements
   errorBoundary: {
     transitionDuration: process.env.ERROR_BOUNDARY_TRANSITION || '0.3s',
+    // Shake animation duration when error appears (ms)
+    shakeDurationMs: parseInt(
+      process.env.ERROR_BOUNDARY_SHAKE_DURATION_MS || '500'
+    ),
+    // Success pulse animation duration on reset (ms)
+    successPulseDurationMs: parseInt(
+      process.env.ERROR_BOUNDARY_SUCCESS_PULSE_DURATION_MS || '400'
+    ),
   },
 
   // Card Animations

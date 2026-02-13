@@ -11,6 +11,11 @@
         aria-live="assertive"
         aria-atomic="true"
         class="error-boundary"
+        :class="{
+          'animate-error-shake': showErrorAnimation && !prefersReducedMotion,
+          'animate-success-pulse':
+            showSuccessAnimation && !prefersReducedMotion,
+        }"
       >
         <div class="error-content">
           <div class="error-icon">
@@ -80,12 +85,13 @@
 </template>
 
 <script setup lang="ts">
-import { onErrorCaptured, ref, computed, nextTick } from 'vue'
+import { onErrorCaptured, ref, computed, nextTick, onMounted } from 'vue'
 import { logError } from '~/utils/errorLogger'
 import { componentStylesConfig } from '~/configs/component-styles.config'
 import { themeConfig } from '~/configs/theme.config'
 import { animationConfig } from '~/configs/animation.config'
 import { ROUTE_PATTERNS } from '~/configs/routes.config'
+import { hapticError, hapticSuccess } from '~/utils/hapticFeedback'
 
 interface ErrorInfo {
   componentStack: string
@@ -106,6 +112,18 @@ const errorInfo = ref<ErrorInfo | null>(null)
 const errorContainer = ref<HTMLDivElement | null>(null)
 const retryButton = ref<HTMLButtonElement | null>(null)
 const previousFocus = ref<HTMLElement | null>(null)
+
+// Palette's micro-UX: Animation states for delightful feedback
+const showErrorAnimation = ref(false)
+const showSuccessAnimation = ref(false)
+const prefersReducedMotion = ref(false)
+
+// Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
 
 const emit = defineEmits<{
   error: [error: Error, info: ErrorInfo]
@@ -155,6 +173,16 @@ const throwError = (err: Error, info: ErrorInfo) => {
   saveCurrentFocus()
   error.value = err
   errorInfo.value = info
+
+  // Palette's micro-UX: Trigger haptic feedback for error
+  hapticError()
+
+  // Trigger shake animation
+  showErrorAnimation.value = true
+  setTimeout(() => {
+    showErrorAnimation.value = false
+  }, animationConfig.errorBoundary.shakeDurationMs)
+
   logError(`ErrorBoundary caught error: ${err.message}`, err, 'ErrorBoundary', {
     componentStack: info.componentStack,
   })
@@ -162,10 +190,18 @@ const throwError = (err: Error, info: ErrorInfo) => {
 }
 
 const resetError = () => {
-  error.value = null
-  errorInfo.value = null
-  restorePreviousFocus()
-  emit('reset')
+  // Palette's micro-UX: Trigger success animation and haptic feedback
+  showSuccessAnimation.value = true
+  hapticSuccess()
+
+  // Clear error after animation starts
+  setTimeout(() => {
+    error.value = null
+    errorInfo.value = null
+    showSuccessAnimation.value = false
+    restorePreviousFocus()
+    emit('reset')
+  }, animationConfig.errorBoundary.successPulseDurationMs)
 }
 
 const goHome = () => {
@@ -179,6 +215,20 @@ const goHome = () => {
 onErrorCaptured((err, instance, info) => {
   throwError(err, { componentStack: info })
   return false // Prevent the error from propagating further
+})
+
+// Check reduced motion preference on mount
+onMounted(() => {
+  prefersReducedMotion.value = checkReducedMotion()
+
+  // Listen for changes in reduced motion preference
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handleChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.value = e.matches
+    }
+    mediaQuery.addEventListener('change', handleChange)
+  }
 })
 </script>
 
@@ -279,6 +329,70 @@ onErrorCaptured((err, instance, info) => {
   transform: translateY(-10px);
 }
 
+/* Palette's micro-UX: Error shake animation - draws attention to errors */
+.animate-error-shake {
+  animation: error-shake
+    v-bind('animationConfig.errorBoundary.shakeDurationMs + "ms"') ease-in-out;
+}
+
+@keyframes error-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+/* Palette's micro-UX: Success pulse animation - positive feedback on reset */
+.animate-success-pulse {
+  animation: success-pulse
+    v-bind('animationConfig.errorBoundary.successPulseDurationMs + "ms"')
+    ease-out;
+}
+
+@keyframes success-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 20px rgba(34, 197, 94, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+/* Enhanced focus styles with animation */
+.retry-button:focus-visible,
+.home-button:focus-visible {
+  animation: focus-pulse 2s ease-in-out infinite;
+}
+
+@keyframes focus-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.2);
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .error-fade-enter-active,
@@ -294,6 +408,13 @@ onErrorCaptured((err, instance, info) => {
   .retry-button,
   .home-button {
     transition: none;
+  }
+
+  .animate-error-shake,
+  .animate-success-pulse,
+  .retry-button:focus-visible,
+  .home-button:focus-visible {
+    animation: none !important;
   }
 }
 </style>
