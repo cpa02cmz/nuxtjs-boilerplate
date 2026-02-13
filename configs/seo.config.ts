@@ -65,6 +65,6 @@ export const seoConfig = {
       process.env.SCHEMA_SOFTWARE_APPLICATION || 'SoftwareApplication',
     webSite: process.env.SCHEMA_WEBSITE_TYPE || 'WebSite',
   },
-} as const
+}
 
 export type SeoConfig = typeof seoConfig

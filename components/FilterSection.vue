@@ -1,16 +1,10 @@
 <template>
-  <fieldset
-    class="mb-6"
-    @keydown="handleKeydown"
-  >
+  <fieldset class="mb-6" @keydown="handleKeydown">
     <div class="flex items-center justify-between mb-3">
       <legend class="text-sm font-medium text-gray-900">
         {{ label }}
       </legend>
-      <div
-        v-if="options.length > 1"
-        class="flex items-center gap-2"
-      >
+      <div v-if="options.length > 1" class="flex items-center gap-2">
         <span
           class="text-xs text-gray-500 transition-all duration-200"
           :class="{ 'text-blue-600 font-medium': selectedOptions.length > 0 }"
@@ -71,7 +65,7 @@
               <span
                 v-if="
                   !prefersReducedMotion &&
-                    (recentlySelected === option || recentlyDeselected === option)
+                  (recentlySelected === option || recentlyDeselected === option)
                 "
                 class="checkbox-bloom absolute inset-0 rounded pointer-events-none"
                 :class="{
@@ -100,7 +94,7 @@
                 }"
                 @change="toggleOption(option)"
                 @click.stop
-              >
+              />
             </div>
             <label
               :for="`${id}-${option}`"
@@ -141,8 +135,8 @@ import { componentColorsConfig } from '~/configs/component-colors.config'
 interface Props {
   label: string
   ariaLabel?: string
-  options: string[]
-  selectedOptions: string[]
+  options: readonly string[]
+  selectedOptions: readonly string[]
   id: string
   showCount?: boolean
   scrollable?: boolean
@@ -191,10 +185,10 @@ const getCheckboxBloomStyle = (option: string) => {
   const config = animationConfig.checkbox
 
   return {
-    '--bloom-scale': config.bloomScale,
-    '--bloom-opacity': config.bloomOpacity,
+    '--bloom-scale': String(config.bloomScale),
+    '--bloom-opacity': String(config.bloomOpacity),
     '--bloom-duration': `${config.bloomDurationMs}ms`,
-    '--pop-scale': config.popScale,
+    '--pop-scale': String(config.popScale),
     '--pop-duration': `${config.popDurationMs}ms`,
   } as Record<string, string>
 }
