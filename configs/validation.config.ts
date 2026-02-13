@@ -165,6 +165,26 @@ export const validationConfig = {
     // Maximum quality score allowed
     maxScore: parseInt(process.env.QUALITY_MAX_SCORE || '100'),
   },
+
+  // Character Counter Configuration - Flexy hates hardcoded UI values!
+  characterCounter: {
+    // Warning threshold percentage (0-1) - when to show warning state
+    warningThreshold: parseFloat(
+      process.env.CHAR_COUNTER_WARNING_THRESHOLD || '0.8'
+    ),
+    // Ring size in pixels
+    ringSizePx: parseInt(process.env.CHAR_COUNTER_RING_SIZE_PX || '28'),
+    // Stroke width in pixels
+    strokeWidthPx: parseInt(process.env.CHAR_COUNTER_STROKE_WIDTH_PX || '3'),
+    // Position offset from right in pixels
+    positionOffsetPx: parseInt(
+      process.env.CHAR_COUNTER_POSITION_OFFSET_PX || '12'
+    ),
+    // Font size in pixels
+    fontSizePx: parseInt(process.env.CHAR_COUNTER_FONT_SIZE_PX || '10'),
+    // Font weight
+    fontWeight: parseInt(process.env.CHAR_COUNTER_FONT_WEIGHT || '600'),
+  },
 } as const
 
 // Helper function to parse spam keywords
