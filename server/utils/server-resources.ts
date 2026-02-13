@@ -3,10 +3,11 @@ import { resolve } from 'path'
 import type { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 import logger from '~/utils/logger'
+import { cacheConfig } from '~/configs/cache.config'
 
 let cachedResources: Resource[] | null = null
 let cacheTimestamp = 0
-const CACHE_TTL_MS = 60000 // 1 minute cache
+const CACHE_TTL_MS = cacheConfig.server.defaultTtlMs
 
 /**
  * Load resources from the JSON file - Server-side only
