@@ -53,7 +53,7 @@ export default defineEventHandler(async event => {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     const { secret: _secretValue, ...webhookWithoutSecret } = updatedWebhook
 
-    sendSuccessResponse(event, webhookWithoutSecret)
+    return sendSuccessResponse(event, webhookWithoutSecret)
   } catch (error) {
     handleApiRouteError(event, error)
   }
