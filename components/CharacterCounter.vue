@@ -70,7 +70,12 @@
     </div>
 
     <!-- Screen Reader Announcement -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ screenReaderAnnouncement }}
     </div>
   </div>
