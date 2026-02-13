@@ -80,6 +80,7 @@ import { shadowsConfig } from '~/configs/shadows.config'
 import { componentStylesConfig } from '~/configs/component-styles.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { contentConfig } from '~/configs/content.config'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 // Constants - Flexy hates hardcoded values! Using config instead.
 const config = contentConfig
@@ -142,6 +143,9 @@ const scrollToTop = () => {
     top: 0,
     behavior: behavior as 'auto' | 'smooth',
   })
+
+  // Haptic feedback for mobile users - Palette's micro-UX touch!
+  hapticLight()
 
   // Announce to screen readers
   announcementText.value = uiConfig.scrollToTop.announcementText
