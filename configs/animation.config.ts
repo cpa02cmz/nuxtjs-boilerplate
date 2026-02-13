@@ -1132,6 +1132,35 @@ export const animationConfig = {
     // Transition duration
     transitionDurationSec: `${parseInt(process.env.ZERO_RESULT_TRANSITION_DURATION_MS || '100') / 1000}s`,
   },
+
+  // CSS Transition Durations - Flexy hates hardcoded CSS values!
+  // Used for inline styles and CSS custom properties
+  cssTransitions: {
+    // Standard transition duration (0.2s = 200ms)
+    standardSec: `${parseInt(process.env.CSS_TRANSITION_STANDARD_MS || '200') / 1000}s`,
+    standardMs: parseInt(process.env.CSS_TRANSITION_STANDARD_MS || '200'),
+    // Hover transition duration (0.3s = 300ms)
+    hoverSec: `${parseInt(process.env.CSS_TRANSITION_HOVER_MS || '300') / 1000}s`,
+    hoverMs: parseInt(process.env.CSS_TRANSITION_HOVER_MS || '300'),
+    // Reduced motion transition duration (0.1s = 100ms)
+    reducedMotionSec: `${parseInt(process.env.CSS_TRANSITION_REDUCED_MS || '100') / 1000}s`,
+    reducedMotionMs: parseInt(process.env.CSS_TRANSITION_REDUCED_MS || '100'),
+    // Minimal/Instant transition (0.01ms for reduced motion)
+    instantSec: `${parseInt(process.env.CSS_TRANSITION_INSTANT_MS || '1') / 1000}s`,
+    instantMs: parseInt(process.env.CSS_TRANSITION_INSTANT_MS || '1'),
+  },
+
+  // CSS Animation Configurations - Flexy hates hardcoded CSS values!
+  cssAnimations: {
+    // Icon attention animation delay (0.5s = 500ms)
+    iconAttentionDelaySec: `${parseInt(process.env.CSS_ANIM_ICON_DELAY_MS || '500') / 1000}s`,
+    iconAttentionDelayMs: parseInt(process.env.CSS_ANIM_ICON_DELAY_MS || '500'),
+    // Icon attention animation duration
+    iconAttentionDurationSec: `${parseInt(process.env.CSS_ANIM_ICON_DURATION_MS || '2000') / 1000}s`,
+    iconAttentionDurationMs: parseInt(
+      process.env.CSS_ANIM_ICON_DURATION_MS || '2000'
+    ),
+  },
   // Convenience easing reference for component use - uses standard ease-out
   easeOutQuart: 'cubic-bezier(0.25, 1, 0.5, 1)',
 

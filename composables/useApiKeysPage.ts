@@ -4,6 +4,7 @@ import { logError } from '~/utils/errorLogger'
 import type { ApiKey } from '~/types/webhook'
 import { dateConfig } from '~/configs/date.config'
 import { permissionsConfig } from '~/configs/permissions.config'
+import { messagesConfig } from '~/configs/messages.config'
 
 export interface ApiKeyDisplay extends ApiKey {
   showFullKey?: boolean
@@ -34,7 +35,7 @@ export const useApiKeysPage = () => {
         apiKeys.value = []
       }
     } catch (err) {
-      error.value = 'Failed to load API keys. Please try again.'
+      error.value = messagesConfig.errors.apiKey.loadFailed
       logError('Error fetching API keys', err as Error, 'useApiKeysPage', {
         operation: 'fetchApiKeys',
       })
@@ -65,7 +66,7 @@ export const useApiKeysPage = () => {
       if (response.success) {
         const keyData = response.data?.data
         if (!keyData) {
-          error.value = 'Failed to create API key. Please try again.'
+          error.value = messagesConfig.errors.apiKey.createFailed
           return false
         }
 
@@ -80,12 +81,11 @@ export const useApiKeysPage = () => {
         return true
       } else {
         error.value =
-          response.error?.message ||
-          'Failed to create API key. Please try again.'
+          response.error?.message || messagesConfig.errors.apiKey.createFailed
         return false
       }
     } catch (err) {
-      error.value = 'Failed to create API key. Please try again.'
+      error.value = messagesConfig.errors.apiKey.createFailed
       logError('Error creating API key', err as Error, 'useApiKeysPage', {
         operation: 'createApiKey',
       })
@@ -108,12 +108,11 @@ export const useApiKeysPage = () => {
         return true
       } else {
         error.value =
-          response.error?.message ||
-          'Failed to revoke API key. Please try again.'
+          response.error?.message || messagesConfig.errors.apiKey.revokeFailed
         return false
       }
     } catch (err) {
-      error.value = 'Failed to revoke API key. Please try again.'
+      error.value = messagesConfig.errors.apiKey.revokeFailed
       logError('Error revoking API key', err as Error, 'useApiKeysPage', {
         operation: 'revokeApiKey',
         keyId,

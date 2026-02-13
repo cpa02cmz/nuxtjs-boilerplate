@@ -179,6 +179,7 @@
 import { useModerationDashboard } from '~/composables/useModerationDashboard'
 import { contentConfig } from '~/configs/content.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { animationConfig } from '~/configs/animation.config'
 
 const {
   pendingCount,
@@ -351,7 +352,7 @@ const config = contentConfig.moderation
   border-radius: 8px;
   text-decoration: none;
   color: var(--color-text);
-  transition: all 0.2s;
+  transition: all v-bind('animationConfig.cssTransitions.standardSec');
 }
 
 .action-btn:hover {

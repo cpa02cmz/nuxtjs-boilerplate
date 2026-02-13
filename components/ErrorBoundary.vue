@@ -286,7 +286,7 @@ onMounted(() => {
   font-size: v-bind('componentStylesConfig.errorBoundary.buttonFontSize');
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all v-bind('animationConfig.cssTransitions.standardSec');
 }
 
 .retry-button:focus,
@@ -397,7 +397,7 @@ onMounted(() => {
 @media (prefers-reduced-motion: reduce) {
   .error-fade-enter-active,
   .error-fade-leave-active {
-    transition: opacity 0.01ms;
+    transition: opacity v-bind('animationConfig.cssTransitions.instantSec');
   }
 
   .error-fade-enter-from,
