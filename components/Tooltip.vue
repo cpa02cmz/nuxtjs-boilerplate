@@ -43,7 +43,7 @@
         ]"
         @mouseenter="handleTooltipMouseEnter"
         @mouseleave="handleTooltipMouseLeave"
-        @keydown.esc="hideTooltip"
+        @keydown.esc="hideTooltip(true)"
       >
         {{ content }}
         <!-- Pin indicator for keyboard users -->
@@ -66,12 +66,7 @@
     </Transition>
 
     <!-- Screen reader announcement - announces tooltip content when visible -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ isVisible ? content : '' }}
     </div>
   </div>

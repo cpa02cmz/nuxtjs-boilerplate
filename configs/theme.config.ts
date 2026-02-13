@@ -177,6 +177,20 @@ export const themeConfig = {
     tooltipShadow:
       process.env.READING_PROGRESS_TOOLTIP_SHADOW ||
       '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    // Completion celebration colors
+    completionGradient:
+      process.env.READING_PROGRESS_COMPLETION_GRADIENT ||
+      'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+    completionShadow:
+      process.env.READING_PROGRESS_COMPLETION_SHADOW ||
+      '0 10px 15px -3px rgba(16, 185, 129, 0.3)',
+    completionIconBg:
+      process.env.READING_PROGRESS_COMPLETION_ICON_BG || '#10b981',
+    completionIconColor:
+      process.env.READING_PROGRESS_COMPLETION_ICON_COLOR || 'white',
+    completionTextColor:
+      process.env.READING_PROGRESS_COMPLETION_TEXT_COLOR || 'white',
+    confettiColors: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24'] as const,
   },
 
   // Focus Ring

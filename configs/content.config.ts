@@ -762,6 +762,11 @@ export const contentConfig = {
     scrollToTop: process.env.CONTENT_ARIA_SCROLL_TOP || 'Scroll to top of page',
   },
 
+  // Alias for ariaLabels - some components use config.aria
+  get aria() {
+    return this.ariaLabels
+  },
+
   // Moderation - Flexy hates hardcoded moderation strings!
   moderation: {
     dashboard: {
@@ -1555,6 +1560,18 @@ export const contentConfig = {
         'Resource reading progress',
       loading: process.env.CONTENT_RESOURCE_ARIA_LOADING || 'Loading resource',
     },
+    readingProgress: {
+      completionText:
+        process.env.CONTENT_RESOURCE_READING_COMPLETE || 'Reading complete!',
+      completionAnnouncement:
+        process.env.CONTENT_RESOURCE_READING_ANNOUNCEMENT ||
+        'Congratulations! You have finished reading this resource',
+    },
+  },
+
+  // Alias for readingProgress - some components use contentConfig.readingProgress
+  get readingProgress() {
+    return this.resource.readingProgress
   },
 
   // Search Page - Flexy hates hardcoded search strings!

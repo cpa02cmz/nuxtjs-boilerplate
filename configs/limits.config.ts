@@ -142,6 +142,10 @@ export const limitsConfig = {
     maxListItemsDisplay: parseInt(process.env.DISPLAY_MAX_LIST_ITEMS || '3'),
     // Maximum initials to display in avatars (e.g., "JD" for John Doe)
     maxInitialsDisplay: parseInt(process.env.DISPLAY_MAX_INITIALS || '2'),
+    // Maximum characters for description preview before truncating
+    descriptionPreview: parseInt(
+      process.env.DISPLAY_DESCRIPTION_PREVIEW || '300'
+    ),
   },
 
   // Alternative suggestions limits
