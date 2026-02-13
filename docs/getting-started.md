@@ -178,7 +178,7 @@ The project uses Tailwind CSS for styling. Configuration is in the `tailwind.con
 
 Configuration files:
 
-- `.eslintrc.cjs` - ESLint configuration
+- `eslint.config.js` - ESLint configuration
 - `.prettierrc` - Prettier configuration
 - `.stylelintrc` - Stylelint configuration
 
