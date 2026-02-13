@@ -67,6 +67,13 @@ export const contentConfig = {
     },
   },
 
+  // Breadcrumbs - Palette's micro-UX enhancement!
+  // Navigation breadcrumb text for screen readers and accessibility
+  breadcrumbs: {
+    currentPage:
+      process.env.CONTENT_BREADCRUMBS_CURRENT || 'Currently viewing {{title}}',
+  },
+
   // Search Components
   search: {
     placeholder:
