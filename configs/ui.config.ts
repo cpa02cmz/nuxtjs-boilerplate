@@ -496,6 +496,10 @@ export const uiConfig = {
     spinnerDuration: parseFloat(
       process.env.LOAD_MORE_SPINNER_DURATION || '0.8'
     ),
+    // Progress circle radius for SVG indicator (px) - Flexy hates hardcoded 46!
+    progressCircleRadiusPx: parseInt(
+      process.env.LOAD_MORE_PROGRESS_RADIUS_PX || '46'
+    ),
   },
 
   // Skeleton Loader Dimensions - Flexy hates hardcoded skeleton sizes!
@@ -550,6 +554,8 @@ export const uiConfig = {
     // Near limit threshold (percentage)
     nearLimitPercent:
       parseFloat(process.env.CHAR_COUNTER_NEAR_LIMIT_PERCENT || '0.8') * 100,
+    // Textarea line height for auto-resize calculations (px) - Flexy hates hardcoded 24!
+    lineHeightPx: parseInt(process.env.CHAR_COUNTER_LINE_HEIGHT_PX || '24'),
   },
 } as const
 

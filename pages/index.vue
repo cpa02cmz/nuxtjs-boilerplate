@@ -509,7 +509,9 @@ const loadMoreProgressPercentage = computed(() => {
   )
 })
 
-const loadMoreProgressCircumference = computed(() => 2 * Math.PI * 46)
+const loadMoreProgressCircumference = computed(
+  () => 2 * Math.PI * uiConfig.loadMore.progressCircleRadiusPx
+)
 
 const loadMoreProgressOffset = computed(() => {
   const circumference = loadMoreProgressCircumference.value
