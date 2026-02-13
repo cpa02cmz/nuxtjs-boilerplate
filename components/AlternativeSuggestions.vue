@@ -381,7 +381,7 @@ watch(
   font-weight: 500;
   color: v-bind('componentColorsConfig.alternativeSuggestions.link.default');
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color v-bind('animationConfig.cssTransitions.normalSec') ease;
 }
 
 .alternative-suggestions__view-all:hover {

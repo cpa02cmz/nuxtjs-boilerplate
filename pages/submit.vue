@@ -1123,7 +1123,8 @@ useSeoMeta({
 /* Input Focus Glow Effect - Palette's micro-UX enhancement! */
 /* Adds a subtle animated glow around focused inputs for better visibility */
 .input-focus-glow {
-  transition: box-shadow 0.2s ease-out;
+  transition: box-shadow v-bind('animationConfig.cssTransitions.normalSec')
+    ease-out;
 }
 
 .input-focus-glow:focus {
