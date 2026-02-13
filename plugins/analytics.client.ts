@@ -3,6 +3,7 @@
 
 import { defineNuxtPlugin } from '#app'
 import type { RouteLocationNormalized, Router } from 'vue-router'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 export default defineNuxtPlugin(nuxtApp => {
   // Track initial page view
@@ -13,7 +14,7 @@ export default defineNuxtPlugin(nuxtApp => {
         if (window && document) {
           setTimeout(() => {
             trackPageView(window.location.pathname, document.title)
-          }, 100)
+          }, uiTimingConfig.analytics.debounceDelay)
         }
 
         // Track route changes
@@ -23,7 +24,7 @@ export default defineNuxtPlugin(nuxtApp => {
             if (to.path !== from.path) {
               setTimeout(() => {
                 trackPageView(to.path, document.title)
-              }, 100)
+              }, uiTimingConfig.analytics.debounceDelay)
             }
           }
         )

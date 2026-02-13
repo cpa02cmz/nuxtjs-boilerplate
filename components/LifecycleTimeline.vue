@@ -7,10 +7,7 @@
       {{ contentConfig.lifecycle.title }}
     </h3>
 
-    <div
-      v-if="statusHistory && statusHistory.length > 0"
-      class="timeline"
-    >
+    <div v-if="statusHistory && statusHistory.length > 0" class="timeline">
       <div
         v-for="(change, index) in statusHistory"
         :key="change.id"
@@ -53,20 +50,16 @@
         </div>
         <div class="timeline-content">
           <div class="change-info">
-            <span class="status-change">{{ change.fromStatus }} → {{ change.toStatus }}</span>
+            <span class="status-change"
+              >{{ change.fromStatus }} → {{ change.toStatus }}</span
+            >
             <span class="change-date">{{ formatDate(change.changedAt) }}</span>
           </div>
           <div class="change-details">
-            <div
-              v-if="change.reason"
-              class="reason"
-            >
+            <div v-if="change.reason" class="reason">
               {{ contentConfig.lifecycle.labels.reason }} {{ change.reason }}
             </div>
-            <div
-              v-if="change.notes"
-              class="notes"
-            >
+            <div v-if="change.notes" class="notes">
               {{ contentConfig.lifecycle.labels.notes }} {{ change.notes }}
             </div>
             <div class="changed-by">
@@ -78,20 +71,12 @@
       </div>
     </div>
 
-    <div
-      v-else
-      class="no-history"
-    >
+    <div v-else class="no-history">
       {{ contentConfig.lifecycle.emptyState }}
     </div>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
 
@@ -100,30 +85,22 @@
       class="update-history"
     >
       <h4>{{ contentConfig.lifecycle.updateHistoryTitle }}</h4>
-      <div
-        v-for="update in updateHistory"
-        :key="update.id"
-        class="update-item"
-      >
+      <div v-for="update in updateHistory" :key="update.id" class="update-item">
         <div class="update-header">
-          <span class="version">{{ contentConfig.lifecycle.versionPrefix
-          }}{{ update.version }}</span>
+          <span class="version"
+            >{{ contentConfig.lifecycle.versionPrefix
+            }}{{ update.version }}</span
+          >
           <span class="update-date">{{ formatDate(update.updatedAt) }}</span>
         </div>
-        <div
-          v-if="update.changelog"
-          class="changelog"
-        >
+        <div v-if="update.changelog" class="changelog">
           {{ update.changelog }}
         </div>
         <ul
           v-if="update.changes && update.changes.length > 0"
           class="changes-list"
         >
-          <li
-            v-for="(change, idx) in update.changes"
-            :key="idx"
-          >
+          <li v-for="(change, idx) in update.changes" :key="idx">
             {{ change }}
           </li>
         </ul>
@@ -145,27 +122,18 @@
           <kbd class="keyboard-hint__key">↓</kbd>
           <span class="keyboard-hint__text">Navigate</span>
         </span>
-        <span
-          class="keyboard-hint__divider"
-          aria-hidden="true"
-        >•</span>
+        <span class="keyboard-hint__divider" aria-hidden="true">•</span>
         <span class="keyboard-hint__item">
           <kbd class="keyboard-hint__key">j</kbd>
           <kbd class="keyboard-hint__key">k</kbd>
           <span class="keyboard-hint__text">Vim style</span>
         </span>
-        <span
-          class="keyboard-hint__divider"
-          aria-hidden="true"
-        >•</span>
+        <span class="keyboard-hint__divider" aria-hidden="true">•</span>
         <span class="keyboard-hint__item">
           <kbd class="keyboard-hint__key">Home</kbd>
           <span class="keyboard-hint__text">First</span>
         </span>
-        <span
-          class="keyboard-hint__divider"
-          aria-hidden="true"
-        >•</span>
+        <span class="keyboard-hint__divider" aria-hidden="true">•</span>
         <span class="keyboard-hint__item">
           <kbd class="keyboard-hint__key">End</kbd>
           <span class="keyboard-hint__text">Last</span>
@@ -184,6 +152,7 @@ import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
 import { hapticLight } from '~/utils/hapticFeedback'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
   statusHistory?: StatusChange[]
@@ -291,7 +260,7 @@ const handleItemClick = (
   clickedIndex.value = index
   setTimeout(() => {
     clickedIndex.value = null
-  }, 150)
+  }, uiTimingConfig.clickFeedback.resetDelay)
 
   // Haptic feedback for mobile users - Palette's micro-UX touch!
   if (!prefersReducedMotion.value) {
@@ -302,12 +271,12 @@ const handleItemClick = (
   announcement.value = `Status changed from ${change.fromStatus} to ${change.toStatus} on ${formatDate(change.changedAt)}`
   setTimeout(() => {
     announcement.value = ''
-  }, 3000)
+  }, uiTimingConfig.timeline.announcementClearDelay)
 
   // Remove ripple after animation
   setTimeout(() => {
     delete ripples.value[index]
-  }, 600)
+  }, uiTimingConfig.ripple.removalDelay)
 }
 
 // Handle keyboard navigation with enhanced feedback
@@ -369,7 +338,7 @@ onMounted(() => {
   // Trigger entrance animation after a short delay
   setTimeout(() => {
     isLoaded.value = true
-  }, 100)
+  }, uiTimingConfig.keyboard.hintTimeout)
 
   // Add global focus tracking for keyboard hint
   document.addEventListener('focusin', handleFocus)

@@ -37,10 +37,7 @@
           </p>
         </div>
       </div>
-      <NuxtLink
-        to="/"
-        class="alternative-suggestions__view-all"
-      >
+      <NuxtLink to="/" class="alternative-suggestions__view-all">
         <span>{{ contentConfig.similarResources.viewAll }}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -149,21 +146,13 @@
       <p class="alternative-suggestions__empty-message">
         {{ contentConfig.alternativeSuggestions.emptyState.message }}
       </p>
-      <NuxtLink
-        to="/"
-        class="alternative-suggestions__empty-cta"
-      >
+      <NuxtLink to="/" class="alternative-suggestions__empty-cta">
         {{ contentConfig.alternativeSuggestions.emptyState.browseAll }}
       </NuxtLink>
     </div>
 
     <!-- Screen reader announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -179,6 +168,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { EASING } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { getButtonLabel } from '~/utils/resourceHelper'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
   resource?: Resource
@@ -267,7 +257,7 @@ const initAlternatives = async () => {
       announcementText.value = `${alternatives.value.length} alternative suggestions loaded`
       setTimeout(() => {
         announcementText.value = ''
-      }, 1000)
+      }, uiTimingConfig.alternatives.announcementClearDelay)
     }
   } catch {
     alternatives.value = []
