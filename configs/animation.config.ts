@@ -789,9 +789,15 @@ export const animationConfig = {
     ),
     iconAttentionDurationSec: `${parseInt(process.env.CSS_ANIM_ICON_DURATION_MS || '2000') / 1000}s`,
 
-    // Standard animation duration
+    // Standard animation duration (300ms)
     standardDurationMs: parseInt(process.env.CSS_ANIM_STANDARD_MS || '300'),
     standardDurationSec: `${parseInt(process.env.CSS_ANIM_STANDARD_MS || '300') / 1000}s`,
+
+    // Medium animation duration (400ms) - for check-pop and success animations
+    mediumDurationMs: parseInt(
+      process.env.CSS_ANIM_MEDIUM_DURATION_MS || '400'
+    ),
+    mediumDurationSec: `${parseInt(process.env.CSS_ANIM_MEDIUM_DURATION_MS || '400') / 1000}s`,
 
     // Long animation duration (3s for breathe animations)
     longDurationMs: parseInt(process.env.CSS_ANIM_LONG_MS || '3000'),
