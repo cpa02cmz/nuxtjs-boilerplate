@@ -18,6 +18,12 @@ export const animationConfig = {
     touchResetDelayMs: parseInt(
       process.env.TOOLTIP_TOUCH_RESET_DELAY_MS || '100'
     ),
+    // Grace period for hover intent - prevents flickering when moving between trigger and tooltip (ms)
+    gracePeriodMs: parseInt(process.env.TOOLTIP_GRACE_PERIOD_MS || '150'),
+    // Position transition duration when tooltip repositions due to viewport collision (ms)
+    positionTransitionMs: parseInt(
+      process.env.TOOLTIP_POSITION_TRANSITION_MS || '200'
+    ),
   },
 
   // Skeleton/Loading Animations
