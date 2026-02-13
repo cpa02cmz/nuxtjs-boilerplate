@@ -100,6 +100,6 @@ export default defineEventHandler(async event => {
       }
     )
 
-    handleApiRouteError(event, error)
+    return handleApiRouteError(event, error)
   }
 })

@@ -29,6 +29,6 @@ export default defineEventHandler(async event => {
       status: resource.status || 'active',
     })
   } catch (error) {
-    handleApiRouteError(event, error)
+    return handleApiRouteError(event, error)
   }
 })

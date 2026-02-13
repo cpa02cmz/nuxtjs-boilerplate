@@ -49,6 +49,6 @@ export default defineEventHandler(async event => {
       message: 'API key deleted successfully',
     })
   } catch (error) {
-    handleApiRouteError(event, error)
+    return handleApiRouteError(event, error)
   }
 })
