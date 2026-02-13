@@ -538,6 +538,19 @@ export const uiConfig = {
     // Easing function
     easing: process.env.RIPPLE_EASING || 'ease-out',
   },
+
+  // Character Counter Configuration - Flexy hates hardcoded values!
+  characterCounter: {
+    // SVG circle radius for progress ring (px)
+    ringRadiusPx: parseInt(process.env.CHAR_COUNTER_RING_RADIUS_PX || '12'),
+    // Ring size in pixels
+    ringSizePx: parseInt(process.env.CHAR_COUNTER_RING_SIZE_PX || '32'),
+    // Stroke width for progress ring
+    strokeWidthPx: parseInt(process.env.CHAR_COUNTER_STROKE_WIDTH_PX || '3'),
+    // Near limit threshold (percentage)
+    nearLimitPercent:
+      parseFloat(process.env.CHAR_COUNTER_NEAR_LIMIT_PERCENT || '0.8') * 100,
+  },
 } as const
 
 export type UiConfig = typeof uiConfig
