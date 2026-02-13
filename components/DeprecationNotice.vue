@@ -66,10 +66,7 @@
           </button>
         </div>
         <p>{{ noticeMessage }}</p>
-        <div
-          v-if="migrationPath || alternatives"
-          class="notice-actions"
-        >
+        <div v-if="migrationPath || alternatives" class="notice-actions">
           <a
             v-if="migrationPath"
             :href="migrationPath"
@@ -133,11 +130,7 @@
       />
 
       <!-- Screen reader announcement -->
-      <div
-        class="sr-only"
-        role="status"
-        aria-live="polite"
-      >
+      <div class="sr-only" role="status" aria-live="polite">
         {{ announcementText }}
       </div>
     </div>
@@ -148,6 +141,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 
 interface Props {
   status?:
@@ -478,7 +472,7 @@ onUnmounted(() => {
     'componentColorsConfig.deprecationNotice.warning.buttonHover'
   );
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: v-bind('shadowsConfig.deprecationNotice.default');
 }
 
 .alternatives-link {
@@ -493,7 +487,7 @@ onUnmounted(() => {
     'componentColorsConfig.deprecationNotice.info.buttonHover'
   );
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: v-bind('shadowsConfig.deprecationNotice.warning');
 }
 
 /* Subtle pulse animation for migration link */
@@ -504,10 +498,10 @@ onUnmounted(() => {
 @keyframes pulse-subtle {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 0 0 v-bind('shadowsConfig.deprecationNotice.pulseStart');
   }
   50% {
-    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0);
+    box-shadow: 0 0 0 4px v-bind('shadowsConfig.deprecationNotice.pulseEnd');
   }
 }
 

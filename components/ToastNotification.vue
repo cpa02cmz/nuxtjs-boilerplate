@@ -8,11 +8,7 @@
       maxWidth: toastPosition.maxWidth,
     }"
   >
-    <transition-group
-      name="toast"
-      tag="div"
-      class="toast-wrapper"
-    >
+    <transition-group name="toast" tag="div" class="toast-wrapper">
       <div
         v-for="toast in toasts"
         :key="toast.id"
@@ -83,10 +79,7 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p
-            v-if="toast.description"
-            class="toast__description"
-          >
+          <p v-if="toast.description" class="toast__description">
             {{ toast.description }}
           </p>
         </div>
@@ -126,6 +119,8 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { TOAST_DURATION, UI_TIMING } from '~/server/utils/constants'
 import { uiConfig } from '~/configs/ui.config'
 import { iconsConfig } from '~/configs/icons.config'
+import { shadowsConfig } from '~/configs/shadows.config'
+import { animationConfig } from '~/configs/animation.config'
 import { generateId } from '~/utils/generateId'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
@@ -252,9 +247,7 @@ onUnmounted(() => {
   align-items: flex-start;
   padding: v-bind('toastStyles.padding');
   border-radius: v-bind('toastStyles.borderRadius');
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: v-bind('shadowsConfig.toastComponent.default');
   min-width: v-bind('toastStyles.minWidth');
   max-width: 100%;
   animation: slideIn v-bind('toastStyles.animationDuration') ease-out;
@@ -324,7 +317,8 @@ onUnmounted(() => {
   padding: v-bind('toastStyles.close.padding');
   border-radius: v-bind('toastStyles.close.borderRadius');
   opacity: v-bind('toastStyles.close.opacity');
-  transition: opacity 0.2s;
+  transition: opacity
+    v-bind('`${animationConfig.transition.fast.durationMs}ms`');
 }
 
 .toast__close:hover {
@@ -365,7 +359,8 @@ onUnmounted(() => {
   }
 
   .toast {
-    animation: fadeIn 0.2s ease-out;
+    animation: fadeIn
+      v-bind('`${animationConfig.transition.fast.durationMs}ms`') ease-out;
   }
 
   @keyframes fadeIn {
@@ -379,7 +374,8 @@ onUnmounted(() => {
 
   .toast-enter-active,
   .toast-leave-active {
-    transition: opacity 0.2s ease;
+    transition: opacity
+      v-bind('`${animationConfig.transition.fast.durationMs}ms`') ease;
   }
 
   .toast-enter-from,
@@ -402,7 +398,8 @@ onUnmounted(() => {
 
 .toast-enter-active,
 .toast-leave-active {
-  transition: all 0.3s ease;
+  transition: all v-bind('`${animationConfig.transition.slow.durationMs}ms`')
+    ease;
 }
 
 .toast-enter-from {

@@ -82,12 +82,7 @@
     </Transition>
 
     <!-- Screen reader announcement for progress changes -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ progressAnnouncement }}
     </div>
 
@@ -116,16 +111,8 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                class="checkmark-circle"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-              <path
-                class="checkmark-path"
-                d="M7 12l3 3 7-7"
-              />
+              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
           <span class="completion-text">{{
@@ -133,10 +120,7 @@
           }}</span>
         </div>
         <!-- Confetti burst effect -->
-        <div
-          class="confetti-container"
-          aria-hidden="true"
-        >
+        <div class="confetti-container" aria-hidden="true">
           <span
             v-for="n in 8"
             :key="n"
@@ -156,6 +140,7 @@ import { themeConfig } from '~/configs/theme.config'
 import { animationConfig } from '~/configs/animation.config'
 import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 
 interface Props {
   /**
@@ -362,7 +347,7 @@ const handleScroll = () => {
 
 // Show reading time estimate when user scrolls
 let scrollTimeout: ReturnType<typeof setTimeout> | null = null
-const SCROLL_TIMEOUT_MS = 1500 // Show time estimate for 1.5s after scroll stops
+const SCROLL_TIMEOUT_MS = uiConfig.timing.scrollTimeoutMs || 1500 // Show time estimate for 1.5s after scroll stops
 
 const handleScrollWithTimeEstimate = () => {
   handleScroll()
@@ -520,7 +505,7 @@ onUnmounted(() => {
   );
   white-space: nowrap;
   box-shadow: v-bind('themeConfig.readingProgress.tooltipShadow');
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  text-shadow: v-bind('shadowsConfig.readingProgress.textShadow');
   animation: tooltip-appear
     v-bind('animationConfig.readingProgress.tooltipAppearDuration') ease-out;
 }
