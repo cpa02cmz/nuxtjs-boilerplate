@@ -1,32 +1,58 @@
 <template>
-  <nav class="mb-6" aria-label="Breadcrumb">
+  <nav
+    class="mb-6"
+    aria-label="Breadcrumb"
+  >
     <ol class="flex items-center space-x-2 text-sm">
       <li class="breadcrumb-item">
-        <NuxtLink to="/" class="breadcrumb-link group">
+        <NuxtLink
+          to="/"
+          class="breadcrumb-link group"
+        >
           <span class="breadcrumb-text">Home</span>
-          <span class="breadcrumb-underline" aria-hidden="true" />
+          <span
+            class="breadcrumb-underline"
+            aria-hidden="true"
+          />
         </NuxtLink>
       </li>
       <li aria-hidden="true">
         <span class="breadcrumb-separator">/</span>
       </li>
       <li class="breadcrumb-item">
-        <NuxtLink to="/search" class="breadcrumb-link group">
+        <NuxtLink
+          to="/search"
+          class="breadcrumb-link group"
+        >
           <span class="breadcrumb-text">Resources</span>
-          <span class="breadcrumb-underline" aria-hidden="true" />
+          <span
+            class="breadcrumb-underline"
+            aria-hidden="true"
+          />
         </NuxtLink>
       </li>
       <li aria-hidden="true">
         <span class="breadcrumb-separator">/</span>
       </li>
-      <li class="breadcrumb-current" aria-current="page">
+      <li
+        class="breadcrumb-current"
+        aria-current="page"
+      >
         <span class="breadcrumb-current-text">{{ title }}</span>
-        <span class="breadcrumb-current-indicator" aria-hidden="true" />
+        <span
+          class="breadcrumb-current-indicator"
+          aria-hidden="true"
+        />
       </li>
     </ol>
 
     <!-- Screen reader announcement for current page -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ announcement }}
     </div>
   </nav>
