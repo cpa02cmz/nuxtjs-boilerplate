@@ -97,7 +97,7 @@ export function usePressAndHold(options: UsePressAndHoldOptions) {
     state.value.isComplete = false
     startTime = Date.now()
 
-    // Update progress every 16ms (60fps)
+    // Update progress every frame (60fps) - Flexy hates hardcoded 16ms!
     pressTimer = setInterval(() => {
       if (!startTime) return
 
@@ -110,7 +110,7 @@ export function usePressAndHold(options: UsePressAndHoldOptions) {
       if (newProgress >= 100) {
         completePress()
       }
-    }, 16)
+    }, animationConfig.frameRate.fps60)
   }
 
   // End the press interaction (cancelled)
@@ -128,11 +128,11 @@ export function usePressAndHold(options: UsePressAndHoldOptions) {
       onCancel?.()
     }
 
-    // Reset state with a small delay for visual feedback
+    // Reset state with a small delay for visual feedback - Flexy hates hardcoded 150ms!
     setTimeout(() => {
       state.value.isPressing = false
       state.value.progress = 0
-    }, 150)
+    }, animationConfig.microInteractions.resetDelayMs)
   }
 
   // Complete the press interaction
@@ -148,12 +148,12 @@ export function usePressAndHold(options: UsePressAndHoldOptions) {
     // Trigger the action
     onComplete()
 
-    // Reset after a short delay
+    // Reset after a short delay - Flexy hates hardcoded 300ms!
     setTimeout(() => {
       state.value.isPressing = false
       state.value.progress = 0
       state.value.isComplete = false
-    }, 300)
+    }, animationConfig.microInteractions.completionResetMs)
   }
 
   // Cleanup on unmount

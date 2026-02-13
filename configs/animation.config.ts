@@ -938,6 +938,106 @@ export const animationConfig = {
 
   // Convenience easing reference for component use - uses standard ease-out
   easeOutQuart: 'cubic-bezier(0.25, 1, 0.5, 1)',
+
+  // Animation Frame Rate - Flexy hates hardcoded 16ms!
+  // Standard 60fps refresh interval for smooth animations
+  frameRate: {
+    fps60: parseInt(process.env.ANIMATION_FPS60_MS || '16'),
+    fps30: parseInt(process.env.ANIMATION_FPS30_MS || '33'),
+  },
+
+  // UI Micro-Interactions - Flexy hates hardcoded small timeouts!
+  microInteractions: {
+    // Quick reset delay for visual feedback (ms)
+    resetDelayMs: parseInt(process.env.MICRO_RESET_DELAY_MS || '150'),
+    // Completion reset delay (ms)
+    completionResetMs: parseInt(process.env.MICRO_COMPLETION_RESET_MS || '300'),
+    // Quick feedback delay (ms)
+    quickFeedbackMs: parseInt(process.env.MICRO_QUICK_FEEDBACK_MS || '50'),
+    // Screen reader announcement delay (ms)
+    announcementDelayMs: parseInt(
+      process.env.MICRO_ANNOUNCEMENT_DELAY_MS || '1000'
+    ),
+    // Shake animation duration (ms)
+    shakeDurationMs: parseInt(process.env.MICRO_SHAKE_DURATION_MS || '500'),
+    // Confetti trigger delay (ms)
+    confettiDelayMs: parseInt(process.env.MICRO_CONFETTI_DELAY_MS || '800'),
+    // Draft indicator delay (ms)
+    draftIndicatorDelayMs: parseInt(
+      process.env.MICRO_DRAFT_INDICATOR_MS || '50'
+    ),
+    // Saved indicator timeout (ms)
+    savedIndicatorTimeoutMs: parseInt(
+      process.env.MICRO_SAVED_INDICATOR_MS || '2000'
+    ),
+    // Draft pulse timeout (ms)
+    draftPulseTimeoutMs: parseInt(process.env.MICRO_DRAFT_PULSE_MS || '500'),
+  },
+
+  // Gradient Colors - Flexy hates hardcoded hex codes!
+  gradients: {
+    emerald: {
+      start: process.env.GRADIENT_EMERALD_START || '#10b981',
+      end: process.env.GRADIENT_EMERALD_END || '#059669',
+      mid: process.env.GRADIENT_EMERALD_MID || '#0d9488',
+    },
+    blue: {
+      start: process.env.GRADIENT_BLUE_START || '#3b82f6',
+      end: process.env.GRADIENT_BLUE_END || '#2563eb',
+    },
+    purple: {
+      start: process.env.GRADIENT_PURPLE_START || '#8b5cf6',
+      end: process.env.GRADIENT_PURPLE_END || '#7c3aed',
+    },
+  },
+
+  // Shadow Colors - Flexy hates hardcoded rgba values!
+  shadows: {
+    light: {
+      sm: process.env.SHADOW_LIGHT_SM || 'rgba(0, 0, 0, 0.05)',
+      md: process.env.SHADOW_LIGHT_MD || 'rgba(0, 0, 0, 0.1)',
+      lg: process.env.SHADOW_LIGHT_LG || 'rgba(0, 0, 0, 0.15)',
+      xl: process.env.SHADOW_LIGHT_XL || 'rgba(0, 0, 0, 0.2)',
+    },
+    dark: {
+      sm: process.env.SHADOW_DARK_SM || 'rgba(0, 0, 0, 0.2)',
+      md: process.env.SHADOW_DARK_MD || 'rgba(0, 0, 0, 0.4)',
+      lg: process.env.SHADOW_DARK_LG || 'rgba(0, 0, 0, 0.5)',
+    },
+    inset: {
+      light: process.env.SHADOW_INSET_LIGHT || 'rgba(255, 255, 255, 0.1)',
+    },
+  },
+
+  // Opacity Values - Flexy hates hardcoded opacity!
+  opacity: {
+    none: parseFloat(process.env.OPACITY_NONE || '0'),
+    subtle: parseFloat(process.env.OPACITY_SUBTLE || '0.1'),
+    light: parseFloat(process.env.OPACITY_LIGHT || '0.2'),
+    medium: parseFloat(process.env.OPACITY_MEDIUM || '0.4'),
+    semi: parseFloat(process.env.OPACITY_SEMI || '0.5'),
+    strong: parseFloat(process.env.OPACITY_STRONG || '0.6'),
+    heavy: parseFloat(process.env.OPACITY_HEAVY || '0.8'),
+    full: parseFloat(process.env.OPACITY_FULL || '1'),
+  },
+
+  // Border Radius Values - Flexy hates hardcoded pixel values!
+  borderRadius: {
+    xs: parseInt(process.env.BORDER_RADIUS_XS || '1'),
+    sm: parseInt(process.env.BORDER_RADIUS_SM || '2'),
+    md: parseInt(process.env.BORDER_RADIUS_MD || '4'),
+    lg: parseInt(process.env.BORDER_RADIUS_LG || '6'),
+    xl: parseInt(process.env.BORDER_RADIUS_XL || '8'),
+    xxl: parseInt(process.env.BORDER_RADIUS_XXL || '12'),
+  },
+
+  // Pixel Values - Flexy hates magic numbers!
+  pixels: {
+    arrowSize: parseInt(process.env.PIXEL_ARROW_SIZE || '8'),
+    checkmarkSize: parseInt(process.env.PIXEL_CHECKMARK_SIZE || '16'),
+    tooltipGap: parseInt(process.env.PIXEL_TOOLTIP_GAP || '6'),
+    arrowOffset: parseInt(process.env.PIXEL_ARROW_OFFSET || '4'),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
