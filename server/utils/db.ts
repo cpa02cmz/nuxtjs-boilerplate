@@ -166,7 +166,7 @@ const getQueryTimeout = (): number => {
   const timeouts = {
     development: databaseConfig.query.timeoutMs || 5000,
     production: databaseConfig.query.timeoutMs || 10000,
-    test: 1000, // Always 1s for tests to fail fast
+    test: databaseConfig.timeouts.test, // Use config value for tests to fail fast
   }
 
   return timeouts[env as keyof typeof timeouts] || timeouts.development

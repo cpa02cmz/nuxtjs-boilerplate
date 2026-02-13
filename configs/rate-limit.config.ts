@@ -81,6 +81,23 @@ export const rateLimitConfig = {
     reset: 'X-RateLimit-Reset',
     window: 'X-RateLimit-Window',
   },
+
+  // Error Report Endpoint Rate Limits
+  errorReport: {
+    windowMs: parseInt(
+      process.env.RATE_LIMIT_ERROR_REPORT_WINDOW_MS || '60000'
+    ), // 1 minute
+    maxRequests: parseInt(process.env.RATE_LIMIT_ERROR_REPORT_MAX || '10'),
+    tokensPerInterval: parseInt(
+      process.env.RATE_LIMIT_ERROR_REPORT_TOKENS || '10'
+    ),
+    intervalMs: parseInt(
+      process.env.RATE_LIMIT_ERROR_REPORT_INTERVAL_MS || '60000'
+    ),
+    message:
+      process.env.RATE_LIMIT_ERROR_REPORT_MESSAGE ||
+      'Too many error reports. Please try again later.',
+  },
 } as const
 
 export type RateLimitConfig = typeof rateLimitConfig
