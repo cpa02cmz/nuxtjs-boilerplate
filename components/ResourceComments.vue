@@ -225,9 +225,12 @@
       <div
         v-for="comment in formattedComments"
         :key="comment.id"
+        :ref="el => setCommentRef(el, comment.id)"
         class="flex space-x-4"
         :class="{
           'is-new': isNewComment(comment.id) && !prefersReducedMotion,
+          'comment-highlighted':
+            highlightedCommentId === comment.id && !prefersReducedMotion,
         }"
       >
         <div class="flex-shrink-0">
@@ -367,6 +370,10 @@ const newComments = ref<Set<string>>(new Set())
 const burstingComments = ref<Set<string>>(new Set())
 const likeButtonRefs = ref<Map<string, HTMLElement>>(new Map())
 
+// Palette's Micro-UX: Track highlighted comment for smooth scroll and highlight effect
+const highlightedCommentId = ref<string | null>(null)
+const commentRefs = ref<Map<string, HTMLElement>>(new Map())
+
 // Computed values for character counter ring - Now using config, Flexy loves modularity!
 const circumference = 2 * Math.PI * uiConfig.characterCounter.ringRadiusPx
 const charCount = computed(() => newComment.value.length)
@@ -498,6 +505,10 @@ const submitComment = async () => {
         setTimeout(() => {
           newComments.value.delete(latestComment.id)
         }, uiTimingConfig.comments.highlightDuration)
+
+        // Palette's Micro-UX: Smooth scroll to and highlight the new comment
+        // This provides immediate visual feedback showing where the comment appeared
+        highlightAndScrollToComment(latestComment.id)
       }
     }, uiTimingConfig.comments.animationDelay)
 
@@ -519,6 +530,44 @@ const setLikeButtonRef = (el: unknown, commentId: string) => {
   if (el && typeof el === 'object' && el !== null) {
     likeButtonRefs.value.set(commentId, el as HTMLElement)
   }
+}
+
+// Palette's Micro-UX: Set comment ref for smooth scroll to new comments
+const setCommentRef = (el: unknown, commentId: string) => {
+  if (el && typeof el === 'object' && el !== null) {
+    commentRefs.value.set(commentId, el as HTMLElement)
+  }
+}
+
+// Palette's Micro-UX: Smooth scroll to and highlight a comment
+const highlightAndScrollToComment = (commentId: string) => {
+  if (prefersReducedMotion.value) {
+    // Skip animations for users who prefer reduced motion
+    highlightedCommentId.value = commentId
+    setTimeout(() => {
+      highlightedCommentId.value = null
+    }, uiTimingConfig.comments.highlightDuration)
+    return
+  }
+
+  // Set highlighted comment for CSS animation
+  highlightedCommentId.value = commentId
+
+  // Smooth scroll to the comment
+  nextTick(() => {
+    const commentEl = commentRefs.value.get(commentId)
+    if (commentEl) {
+      commentEl.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      })
+    }
+  })
+
+  // Clear highlight after animation completes
+  setTimeout(() => {
+    highlightedCommentId.value = null
+  }, uiTimingConfig.comments.highlightDuration)
 }
 
 // Palette's Micro-UX: Generate particle styles for burst animation
@@ -753,6 +802,68 @@ defineExpose({
 /* Palette's Micro-UX: Avatar Pulse for New Comments */
 .animate-avatar-pulse {
   animation: avatar-pulse 2s ease-in-out;
+}
+
+/* Palette's Micro-UX: Highlight Animation for Newly Posted Comments
+   Smooth yellow-to-transparent gradient that draws attention without being jarring */
+.comment-highlighted {
+  animation: comment-highlight
+    v-bind('animationConfig?.comments?.highlightDurationSec ?? "2s"') ease-out
+    forwards;
+  border-radius: 8px;
+  position: relative;
+}
+
+.comment-highlighted::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: linear-gradient(
+    135deg,
+    rgba(250, 204, 21, 0.3) 0%,
+    rgba(250, 204, 21, 0.1) 50%,
+    transparent 100%
+  );
+  border-radius: 12px;
+  z-index: -1;
+  animation: highlight-glow
+    v-bind('animationConfig?.comments?.highlightDurationSec ?? "2s"') ease-out
+    forwards;
+  pointer-events: none;
+}
+
+@keyframes comment-highlight {
+  0% {
+    background-color: rgba(250, 204, 21, 0.2);
+    transform: scale(1.02);
+  }
+  50% {
+    background-color: rgba(250, 204, 21, 0.05);
+    transform: scale(1.01);
+  }
+  100% {
+    background-color: transparent;
+    transform: scale(1);
+  }
+}
+
+@keyframes highlight-glow {
+  0% {
+    opacity: 1;
+    box-shadow:
+      0 0 0 2px rgba(250, 204, 21, 0.4),
+      0 4px 12px rgba(250, 204, 21, 0.2);
+  }
+  50% {
+    opacity: 0.5;
+    box-shadow:
+      0 0 0 1px rgba(250, 204, 21, 0.2),
+      0 2px 6px rgba(250, 204, 21, 0.1);
+  }
+  100% {
+    opacity: 0;
+    box-shadow: none;
+  }
 }
 
 @keyframes avatar-pulse {
