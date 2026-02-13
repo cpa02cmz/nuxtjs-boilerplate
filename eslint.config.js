@@ -329,6 +329,8 @@ export default [
       'nuxt.d.ts',
       'app.config.ts',
       'scripts/**',
+      'playwright-report/**',
+      'test-results/**',
     ],
   },
 ]

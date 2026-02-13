@@ -454,6 +454,19 @@ const copyToClipboard = async (event: MouseEvent) => {
     showCopySuccess()
   } catch {
     // Fallback for older browsers that don't support Clipboard API
+    // Guard against SSR - document is not available on server
+    if (typeof document === 'undefined') {
+      logger.error(
+        'Failed to copy to clipboard: Clipboard not available during SSR'
+      )
+      showToast(contentConfig.toast.share.failed, 'error')
+      hapticError()
+      showShareMenu.value = false
+      await nextTick()
+      shareButtonRef.value?.focus()
+      return
+    }
+
     try {
       // Try to use the deprecated execCommand as a last resort
       const textArea = document.createElement('textarea')
