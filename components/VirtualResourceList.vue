@@ -52,10 +52,7 @@
           transform: `translateY(${virtualRow.start}px)`,
         }"
       >
-        <slot
-          :item="items[virtualRow.index]"
-          :index="virtualRow.index"
-        />
+        <slot :item="items[virtualRow.index]" :index="virtualRow.index" />
       </div>
     </div>
   </div>
@@ -68,6 +65,7 @@ import { uiConfig } from '../configs/ui.config'
 import { thresholdsConfig } from '../configs/thresholds.config'
 import { componentColorsConfig } from '../configs/component-colors.config'
 import { animationConfig } from '../configs/animation.config'
+import { zIndexScale } from '../configs/z-index.config'
 
 interface Props {
   items: T[]
@@ -198,7 +196,7 @@ onUnmounted(() => {
   right: 0;
   height: v-bind('`${scrollProgressConfig.barHeightPx}px`');
   background: v-bind('scrollProgressConfig.trackColor');
-  z-index: 10;
+  z-index: v-bind('zIndexScale.low[10]');
   pointer-events: none;
 }
 

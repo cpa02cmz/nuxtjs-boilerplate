@@ -16,10 +16,7 @@
             {{ resource.description }}
           </p>
         </div>
-        <div
-          v-if="resource.icon"
-          class="ml-3 flex-shrink-0"
-        >
+        <div v-if="resource.icon" class="ml-3 flex-shrink-0">
           <OptimizedImage
             :src="resource.icon"
             :alt="resource.title"
@@ -57,11 +54,7 @@
 
       <div class="mt-3 flex items-center justify-between">
         <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-          <svg
-            class="w-4 h-4 mr-1"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
             <path
               fill-rule="evenodd"
@@ -162,6 +155,7 @@ import type { Resource } from '~/types/resource'
 import { limitsConfig } from '~/configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 import { useRipple } from '~/composables/useRipple'
 import { hapticLight } from '~/utils/hapticFeedback'
 import OptimizedImage from '~/components/OptimizedImage.vue'
@@ -260,7 +254,7 @@ const hasMoreTags = computed(() => {
   transform: scaleX(v-bind('animationConfig.cardShine.scaleFactor'));
   opacity: 0;
   pointer-events: none;
-  z-index: 1;
+  z-index: v-bind('zIndexConfig.floatingLabel');
   transition: opacity 0.3s ease;
 }
 

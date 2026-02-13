@@ -34,14 +34,8 @@
       </svg>
     </div>
 
-    <span
-      v-if="label"
-      class="loading-spinner__label"
-    >{{ label }}</span>
-    <span
-      v-else
-      class="sr-only"
-    >{{ config.default }}</span>
+    <span v-if="label" class="loading-spinner__label">{{ label }}</span>
+    <span v-else class="sr-only">{{ config.default }}</span>
 
     <!-- Live region for status announcement to screen readers -->
     <div
@@ -63,6 +57,7 @@ import { componentStylesConfig } from '../configs/component-styles.config'
 import { limitsConfig } from '../configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexConfig, zIndexScale } from '../configs/z-index.config'
 
 // Flexy hates hardcoded values! Using config instead.
 const spinnerStyles = componentStylesConfig.loadingSpinner
@@ -182,7 +177,7 @@ watch(
 
 .loading-spinner__container {
   position: relative;
-  z-index: 1;
+  z-index: v-bind('zIndexConfig.floatingLabel');
 }
 
 .loading-spinner__circular {
@@ -210,7 +205,7 @@ watch(
   height: v-bind('spinnerStyles.sizes.medium.height');
   border-radius: 50%;
   pointer-events: none;
-  z-index: 0;
+  z-index: v-bind('zIndexScale.ground');
   animation: spinner-glow-pulse
     v-bind('animationConfig.spinnerGlow.durationSec') ease-in-out infinite;
 }

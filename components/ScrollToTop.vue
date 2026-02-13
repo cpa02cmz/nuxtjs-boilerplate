@@ -78,6 +78,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { themeConfig } from '~/configs/theme.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { componentStylesConfig } from '~/configs/component-styles.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { contentConfig } from '~/configs/content.config'
 import { hapticLight } from '~/utils/hapticFeedback'
@@ -329,7 +330,7 @@ onMounted(() => {
 
 .scroll-to-top__icon {
   position: relative;
-  z-index: 1;
+  z-index: v-bind('zIndexConfig.floatingLabel');
   color: v-bind('themeConfig.scrollToTop.iconColor');
   /* Flexy hates hardcoded transition values! Using config instead. */
   transition: color v-bind('uiConfig.animation.fast') s ease-out;

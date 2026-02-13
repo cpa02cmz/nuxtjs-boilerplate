@@ -95,7 +95,7 @@
           :placeholder="contentConfig.statusManager.placeholders.reason"
           class="reason-field"
           @keydown="handleKeydown"
-        >
+        />
       </div>
 
       <div class="notes-input">
@@ -155,11 +155,7 @@
               key="loading"
               class="update-button__icon update-button__icon--spin"
             >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle
                   class="opacity-25"
                   cx="12"
@@ -175,11 +171,7 @@
                 />
               </svg>
             </span>
-            <span
-              v-else
-              key="default"
-              class="update-button__icon"
-            >
+            <span v-else key="default" class="update-button__icon">
               <svg
                 class="w-4 h-4"
                 fill="none"
@@ -288,12 +280,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -305,6 +292,7 @@ import { useResourceStatusManager } from '~/composables/useResourceStatusManager
 import { componentStylesConfig } from '~/configs/component-styles.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
 // Flexy hates hardcoded values! Using config instead.
@@ -687,7 +675,7 @@ onUnmounted(() => {
   justify-content: center;
   gap: 0.5rem;
   position: relative;
-  z-index: 1;
+  z-index: v-bind('zIndexConfig.floatingLabel');
 }
 
 .update-button__icon {
