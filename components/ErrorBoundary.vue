@@ -1,9 +1,6 @@
 <template>
   <div class="error-boundary-wrapper">
-    <Transition
-      name="error-fade"
-      @after-enter="onErrorEntered"
-    >
+    <Transition name="error-fade" @after-enter="onErrorEntered">
       <div
         v-if="hasError"
         ref="errorContainer"
@@ -43,20 +40,12 @@
           >
             Something went wrong
           </h2>
-          <p
-            id="error-message"
-            class="error-message"
-          >
+          <p id="error-message" class="error-message">
             {{ errorMessage }}
           </p>
-          <div
-            v-if="showDetails"
-            class="error-details"
-          >
+          <div v-if="showDetails" class="error-details">
             <details class="error-details-container">
-              <summary class="error-details-summary">
-                Error Details
-              </summary>
+              <summary class="error-details-summary">Error Details</summary>
               <pre class="error-stack">{{ errorStack }}</pre>
             </details>
           </div>
@@ -286,7 +275,7 @@ onMounted(() => {
   font-size: v-bind('componentStylesConfig.errorBoundary.buttonFontSize');
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all v-bind('animationConfig.cssTransitions.standardSec');
 }
 
 .retry-button:focus,
@@ -397,7 +386,7 @@ onMounted(() => {
 @media (prefers-reduced-motion: reduce) {
   .error-fade-enter-active,
   .error-fade-leave-active {
-    transition: opacity 0.01ms;
+    transition: opacity v-bind('animationConfig.cssTransitions.instantSec');
   }
 
   .error-fade-enter-from,
