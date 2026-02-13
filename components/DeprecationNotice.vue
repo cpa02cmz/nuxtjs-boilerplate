@@ -149,6 +149,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   status?:
@@ -355,8 +356,11 @@ onUnmounted(() => {
 }
 
 .animate-attention {
-  animation: icon-attention 2s ease-in-out;
-  animation-delay: 0.5s;
+  animation: icon-attention
+    v-bind('animationConfig.cssAnimations.iconAttentionDurationSec') ease-in-out;
+  animation-delay: v-bind(
+    'animationConfig.cssAnimations.iconAttentionDelaySec'
+  );
 }
 
 @keyframes icon-attention {

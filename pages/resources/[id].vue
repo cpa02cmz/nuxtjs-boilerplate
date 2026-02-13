@@ -72,7 +72,7 @@
               :title="resource.title"
               :category="resource.category"
               :status="resource.status"
-              :health-score="resource.healthScore"
+              :health-score="(resource as any).healthScore"
               :url="resource.url"
             />
 
@@ -80,21 +80,29 @@
               <ResourceDetails
                 :title="resource.title"
                 :description="resource.description"
-                :benefits="resource.benefits"
-                :screenshots="resource.screenshots"
+                :benefits="[...resource.benefits]"
+                :screenshots="
+                  resource.screenshots ? [...resource.screenshots] : undefined
+                "
                 :specifications="resource.specifications"
-                :features="resource.features"
-                :limitations="resource.limitations"
+                :features="
+                  resource.features ? [...resource.features] : undefined
+                "
+                :limitations="
+                  resource.limitations ? [...resource.limitations] : undefined
+                "
                 :status="resource.status"
-                :migration-path="resource.migrationPath"
-                :deprecation-date="resource.deprecationDate"
-                @image-error="handleImageError"
+                :migration-path="(resource as any).migrationPath"
+                :deprecation-date="(resource as any).deprecationDate"
+                @image-error="handleImageError as any"
               />
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="md:col-span-2">
                   <ClientOnly>
-                    <LazyResourceAnalytics :analytics-data="analyticsData" />
+                    <LazyResourceAnalytics
+                      :analytics-data="analyticsData as any"
+                    />
                   </ClientOnly>
                 </div>
 
@@ -102,15 +110,18 @@
                 <div class="md:col-span-1">
                   <!-- Resource Status and Lifecycle -->
                   <div
-                    v-if="resource.statusHistory || resource.updateHistory"
+                    v-if="
+                      (resource as any).statusHistory ||
+                        (resource as any).updateHistory
+                    "
                     class="mb-8"
                   >
                     <h3 class="text-lg font-medium text-gray-900 mb-3">
                       Lifecycle
                     </h3>
                     <LifecycleTimeline
-                      :status-history="resource.statusHistory"
-                      :update-history="resource.updateHistory"
+                      :status-history="(resource as any).statusHistory"
+                      :update-history="(resource as any).updateHistory"
                     />
                   </div>
 
@@ -159,7 +170,7 @@
 
                   <ClientOnly>
                     <LazyResourceShare
-                      :share-urls="shareUrls"
+                      :share-urls="shareUrls as any"
                       @copy="copyToClipboard"
                     />
                   </ClientOnly>

@@ -1581,6 +1581,21 @@ export const contentConfig = {
         process.env.CONTENT_FAVORITES_ARIA_BOOKMARK_TITLE || 'Remove bookmark',
     },
   },
+
+  // OptimizedImage Component - Palette's micro-UX enhancement!
+  // Accessibility labels and user-facing text for image loading states
+  optimizedImage: {
+    error: {
+      title: process.env.CONTENT_IMAGE_ERROR_TITLE || 'Failed to load image',
+      retryButton: process.env.CONTENT_IMAGE_RETRY_BUTTON || 'Retry',
+      retryAriaLabel:
+        process.env.CONTENT_IMAGE_RETRY_ARIA || 'Retry loading image',
+      announcement:
+        process.env.CONTENT_IMAGE_ERROR_ANNOUNCEMENT || 'Image failed to load',
+    },
+    loadAnnouncement:
+      process.env.CONTENT_IMAGE_LOAD_ANNOUNCEMENT || 'Image loaded',
+  },
 } as const
 
 // Helper function to parse comma-separated suggestions

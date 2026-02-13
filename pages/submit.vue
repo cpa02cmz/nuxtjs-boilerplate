@@ -537,9 +537,7 @@
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <span
-                    class="relative z-10"
-                  >Draft saved {{ lastSavedText }}</span>
+                  <span class="relative z-10">Draft saved {{ lastSavedText }}</span>
                   >
                 </div>
                 <div
@@ -987,14 +985,13 @@ const restoreDraft = () => {
               ? `${Math.floor(hoursSinceSaved)} hours ago`
               : `${Math.floor(hoursSinceSaved / 24)} days ago`
 
-        $toast.info(contentConfig.toast.draft.restored.title, {
-          description: contentConfig.toast.draft.restored.description.replace(
+        $toast.info(
+          contentConfig.toast.draft.restored.title,
+          contentConfig.toast.draft.restored.description.replace(
             '{{ timeAgo }}',
             timeAgo
-          ),
-          // Flexy hates hardcoded durations! Using config value
-          duration: uiConfig.toast.duration.info,
-        })
+          )
+        )
       } else {
         // Clear old draft
         localStorage.removeItem(DRAFT_STORAGE_KEY)
