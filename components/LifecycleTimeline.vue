@@ -17,8 +17,28 @@
         :aria-label="getItemAriaLabel(change, index)"
         :style="{ '--item-index': index }"
         class="timeline-item"
+        :class="{ 'timeline-item--clicked': clickedIndex === index }"
         role="listitem"
+        tabindex="0"
+        @click="handleItemClick($event, index, change)"
+        @keydown="handleKeydown($event, index)"
       >
+        <!-- Ripple effect container -->
+        <span
+          v-if="ripples[index]"
+          class="timeline-item__ripple"
+          aria-hidden="true"
+        >
+          <span
+            class="timeline-item__ripple-circle"
+            :style="{
+              left: `${ripples[index].x}px`,
+              top: `${ripples[index].y}px`,
+              width: `${ripples[index].size}px`,
+              height: `${ripples[index].size}px`,
+            }"
+          />
+        </span>
         <div class="timeline-marker">
           <div
             :class="['marker', getMarkerClass(change.toStatus)]"
@@ -65,6 +85,16 @@
       {{ contentConfig.lifecycle.emptyState }}
     </div>
 
+    <!-- Screen reader announcements -->
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {{ announcement }}
+    </div>
+
     <div
       v-if="updateHistory && updateHistory.length > 0"
       class="update-history"
@@ -109,6 +139,7 @@ import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
   statusHistory?: StatusChange[]
@@ -120,6 +151,11 @@ const props = defineProps<Props>()
 // Reactive state
 const isLoaded = ref(false)
 const prefersReducedMotion = ref(false)
+const ripples = ref<{ [key: number]: { x: number; y: number; size: number } }>(
+  {}
+)
+const clickedIndex = ref<number | null>(null)
+const announcement = ref('')
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
@@ -188,6 +224,76 @@ const formatDate = (dateString: string) => {
   })
 }
 
+// Handle timeline item click with micro-UX enhancements
+const handleItemClick = (
+  event: MouseEvent,
+  index: number,
+  change: StatusChange
+) => {
+  // Create ripple effect
+  const button = event.currentTarget as HTMLElement
+  const rect = button.getBoundingClientRect()
+  const size = Math.max(rect.width, rect.height) * 1.2
+
+  ripples.value[index] = {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top,
+    size,
+  }
+
+  // Click feedback animation
+  clickedIndex.value = index
+  setTimeout(() => {
+    clickedIndex.value = null
+  }, 150)
+
+  // Haptic feedback for mobile users - Palette's micro-UX touch!
+  if (!prefersReducedMotion.value) {
+    hapticLight()
+  }
+
+  // Announce status change to screen readers
+  announcement.value = `Status changed from ${change.fromStatus} to ${change.toStatus} on ${formatDate(change.changedAt)}`
+  setTimeout(() => {
+    announcement.value = ''
+  }, 3000)
+
+  // Remove ripple after animation
+  setTimeout(() => {
+    delete ripples.value[index]
+  }, 600)
+}
+
+// Handle keyboard navigation with enhanced feedback
+const handleKeydown = (event: KeyboardEvent, index: number) => {
+  const items = document.querySelectorAll('.timeline-item')
+
+  switch (event.key) {
+    case 'ArrowDown':
+    case 'j':
+      event.preventDefault()
+      if (index < items.length - 1) {
+        ;(items[index + 1] as HTMLElement)?.focus()
+      }
+      break
+    case 'ArrowUp':
+    case 'k':
+      event.preventDefault()
+      if (index > 0) {
+        ;(items[index - 1] as HTMLElement)?.focus()
+      }
+      break
+    case 'Home':
+      event.preventDefault()
+      ;(items[0] as HTMLElement)?.focus()
+      break
+    case 'End':
+      event.preventDefault()
+      ;(items[items.length - 1] as HTMLElement)?.focus()
+      break
+  }
+}
+
 // Setup on mount
 onMounted(() => {
   // Check reduced motion preference
@@ -243,8 +349,78 @@ onMounted(() => {
   animation-delay: calc(
     var(--item-index) * v-bind('animationConfig.card.staggerDelayMs + "ms"')
   );
-  transition: transform
-    v-bind('animationConfig.transition.normal.durationMs + "ms"') ease-out;
+  transition:
+    transform v-bind('animationConfig.transition.normal.durationMs') ms ease-out,
+    background-color 150ms ease-out;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  margin: -0.5rem;
+}
+
+.timeline-item:hover {
+  transform: translateX(4px);
+  background-color: v-bind('componentColorsConfig.lifecycleTimeline.hoverBg');
+}
+
+.timeline-item:focus {
+  outline: 2px solid v-bind('componentColorsConfig.focusRing.color');
+  outline-offset: 2px;
+}
+
+.timeline-item:focus-visible {
+  outline: 2px solid v-bind('componentColorsConfig.focusRing.color');
+  outline-offset: 2px;
+  background-color: v-bind('componentColorsConfig.lifecycleTimeline.focusBg');
+}
+
+/* Click/tap feedback animation - Palette's micro-UX delight! */
+.timeline-item--clicked {
+  transform: scale(0.98);
+}
+
+/* Ripple effect styles */
+.timeline-item__ripple {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.timeline-item__ripple-circle {
+  position: absolute;
+  border-radius: 50%;
+  background-color: v-bind(
+    'componentColorsConfig.lifecycleTimeline.rippleColor'
+  );
+  opacity: 0.3;
+  transform: translate(-50%, -50%) scale(0);
+  animation: timeline-ripple
+    v-bind('animationConfig.zeroResultSearches.rippleDurationSec') ease-out
+    forwards;
+}
+
+@keyframes timeline-ripple {
+  to {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 @keyframes slide-in {
@@ -252,10 +428,6 @@ onMounted(() => {
     opacity: 1;
     transform: translateX(0);
   }
-}
-
-.timeline-item:hover {
-  transform: translateX(4px);
 }
 
 .timeline-marker {
@@ -441,6 +613,15 @@ onMounted(() => {
 
   .timeline-item:hover {
     transform: none;
+    background-color: transparent;
+  }
+
+  .timeline-item:focus-visible {
+    background-color: transparent;
+  }
+
+  .timeline-item--clicked {
+    transform: none;
   }
 
   .timeline-item:hover .marker {
@@ -449,6 +630,11 @@ onMounted(() => {
 
   .marker {
     transition: none;
+  }
+
+  .timeline-item__ripple-circle {
+    animation: none;
+    opacity: 0;
   }
 }
 

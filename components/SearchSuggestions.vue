@@ -25,11 +25,18 @@
           role="option"
           :aria-selected="focusedIndex === index"
           :class="[
+            'suggestion-item',
             'px-4 py-2 cursor-pointer hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset',
             focusedIndex === index ? 'bg-gray-100' : '',
+            getItemClass('history', index),
           ]"
-          @click="selectHistory(history)"
+          @click="selectHistoryWithFeedback(history, index)"
           @mouseenter="focusedIndex = index"
+          @mousedown="handlePressStart('history', index)"
+          @mouseup="handlePressEnd"
+          @mouseleave="handlePressEnd"
+          @touchstart="handlePressStart('history', index)"
+          @touchend="handlePressEnd"
         >
           <div class="flex items-center">
             <svg
@@ -102,11 +109,18 @@
           role="option"
           :aria-selected="focusedIndex === searchHistory.length + index"
           :class="[
+            'suggestion-item',
             'px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset',
             focusedIndex === searchHistory.length + index ? 'bg-gray-100' : '',
+            getItemClass('suggestion', index),
           ]"
-          @click="selectSuggestion(suggestion)"
+          @click="selectSuggestionWithFeedback(suggestion, index)"
           @mouseenter="focusedIndex = searchHistory.length + index"
+          @mousedown="handlePressStart('suggestion', index)"
+          @mouseup="handlePressEnd"
+          @mouseleave="handlePressEnd"
+          @touchstart="handlePressStart('suggestion', index)"
+          @touchend="handlePressEnd"
         >
           <svg
             :class="[
@@ -142,9 +156,14 @@
         class="border-t border-gray-200 mt-1"
       >
         <button
-          class="w-full px-4 py-2 text-left text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 flex items-center focus:outline-none focus:ring-2 focus:ring-gray-800"
+          class="suggestion-item w-full px-4 py-2 text-left text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 flex items-center focus:outline-none focus:ring-2 focus:ring-gray-800"
           :aria-label="contentConfig.search.suggestions.clearHistory"
-          @click="clearHistory"
+          @click="clearHistoryWithFeedback"
+          @mousedown="handlePressStart('history', -1)"
+          @mouseup="handlePressEnd"
+          @mouseleave="handlePressEnd"
+          @touchstart="handlePressStart('history', -1)"
+          @touchend="handlePressEnd"
         >
           <svg
             :class="uiConfig.iconSizes.suggestion"
@@ -241,7 +260,10 @@ import { ref, watch, computed, nextTick } from 'vue'
 import { contentConfig } from '~/configs/content.config'
 import { uiConfig } from '~/configs/ui.config'
 import { limitsConfig } from '~/configs/limits.config'
+import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 import { NuxtLink } from '#components'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 interface SuggestionItem {
   id: string
@@ -328,6 +350,66 @@ const handleClearSearch = () => {
   emit('clear-search')
 }
 
+// Palette's micro-UX delight: Track pressed items for tactile feedback animations
+const pressedItem = ref<{
+  type: 'history' | 'suggestion'
+  index: number
+} | null>(null)
+
+// Check for reduced motion preference
+const prefersReducedMotion = () => {
+  if (
+    typeof window === 'undefined' ||
+    typeof window.matchMedia !== 'function'
+  ) {
+    return false
+  }
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// Handle item press start
+const handlePressStart = (type: 'history' | 'suggestion', index: number) => {
+  if (prefersReducedMotion()) return
+  pressedItem.value = { type, index }
+}
+
+// Handle item press end
+const handlePressEnd = () => {
+  pressedItem.value = null
+}
+
+// Enhanced selection handlers with haptic feedback
+const selectHistoryWithFeedback = (history: string, _index: number) => {
+  // Trigger haptic feedback for mobile users
+  hapticLight()
+  selectHistory(history)
+}
+
+const selectSuggestionWithFeedback = (
+  suggestion: SuggestionItem,
+  _index: number
+) => {
+  // Trigger haptic feedback for mobile users
+  hapticLight()
+  selectSuggestion(suggestion)
+}
+
+const clearHistoryWithFeedback = () => {
+  // Trigger haptic feedback for destructive action
+  hapticLight()
+  clearHistory()
+}
+
+// Get item class with press animation states
+const getItemClass = (type: 'history' | 'suggestion', index: number) => {
+  const isPressed =
+    pressedItem.value?.type === type && pressedItem.value?.index === index
+  return {
+    'is-pressed': isPressed,
+    'is-released': !isPressed && pressedItem.value !== null,
+  }
+}
+
 // Default suggestions for empty state - Flexy hates hardcoded limits!
 const defaultSuggestions = computed(() => {
   return contentConfig.search.suggestions.defaultSuggestions.slice(
@@ -362,6 +444,8 @@ const handleKeyDown = (event: KeyboardEvent) => {
   } else if (event.key === 'Enter') {
     event.preventDefault()
     if (focusedIndex.value >= 0) {
+      // Trigger haptic feedback for keyboard selection
+      hapticLight()
       if (focusedIndex.value < props.searchHistory.length) {
         // It's a history item
         emit('select-history', props.searchHistory[focusedIndex.value])
@@ -378,3 +462,76 @@ const handleKeyDown = (event: KeyboardEvent) => {
   }
 }
 </script>
+
+<style scoped>
+/* Palette's micro-UX delight: Suggestion item animations for tactile feedback */
+.suggestion-item {
+  transition:
+    transform v-bind('animationConfig.suggestion.pressDurationMs') ms
+      v-bind('EASING.SPRING_STANDARD'),
+    background-color v-bind('animationConfig.suggestion.bgTransitionMs') ms
+      ease-out;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Hover state: Subtle scale up for visual delight */
+.suggestion-item:not(.is-pressed):hover {
+  transform: scale(1.01) translateX(2px);
+}
+
+/* Pressed state: Scale down for tactile feedback */
+.suggestion-item.is-pressed {
+  transform: scale(v-bind('animationConfig.suggestion.pressScale')) !important;
+  transition: transform v-bind('animationConfig.suggestion.pressDurationMs') ms
+    ease-out;
+}
+
+/* Released state: Spring back animation */
+.suggestion-item.is-released {
+  animation: spring-back
+    v-bind('animationConfig.suggestion.springBackDurationMs') ms
+    v-bind('EASING.SPRING_STANDARD');
+}
+
+@keyframes spring-back {
+  0% {
+    transform: scale(v-bind('animationConfig.suggestion.pressScale'));
+  }
+  60% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Reduced motion support - disable animations for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .suggestion-item {
+    transition: background-color 0.1s ease-out;
+    will-change: auto;
+  }
+
+  .suggestion-item:not(.is-pressed):hover {
+    transform: none;
+  }
+
+  .suggestion-item.is-pressed {
+    transform: none !important;
+    opacity: 0.8;
+  }
+
+  .suggestion-item.is-released {
+    animation: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .suggestion-item.is-pressed {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+}
+</style>

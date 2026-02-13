@@ -216,16 +216,28 @@
       </div>
     </div>
 
-    <!-- Comments List -->
-    <div class="space-y-4">
+    <!-- Comments List with Palette's Spring Animation -->
+    <TransitionGroup
+      name="comment-list"
+      tag="div"
+      class="space-y-4"
+    >
       <div
         v-for="comment in formattedComments"
         :key="comment.id"
-        class="flex space-x-4 animate-fade-in"
+        class="flex space-x-4"
+        :class="{
+          'is-new': isNewComment(comment.id) && !prefersReducedMotion,
+        }"
       >
         <div class="flex-shrink-0">
+          <!-- Avatar with Pulse Animation for New Comments -->
           <div
-            class="bg-gradient-to-br from-gray-200 to-gray-300 border-2 border-dashed border-gray-400 rounded-xl w-10 h-10 flex items-center justify-center text-gray-500 font-semibold text-sm"
+            class="bg-gradient-to-br from-gray-200 to-gray-300 border-2 border-dashed border-gray-400 rounded-xl w-10 h-10 flex items-center justify-center text-gray-500 font-semibold text-sm transition-all duration-300"
+            :class="{
+              'animate-avatar-pulse':
+                isNewComment(comment.id) && !prefersReducedMotion,
+            }"
             aria-hidden="true"
           >
             {{ comment.initials }}
@@ -244,18 +256,33 @@
                   comment.displayTime
                 }}</span>
               </div>
-              <!-- Like Button with Heart Animation -->
+              <!-- Like Button with Particle Burst - Palette's Micro-UX Delight! -->
               <button
-                class="group flex items-center gap-1 text-sm text-gray-500 hover:text-red-500 transition-all duration-200"
+                :ref="el => setLikeButtonRef(el, comment.id)"
+                class="group flex items-center gap-1 text-sm text-gray-500 hover:text-red-500 transition-all duration-200 relative"
                 :aria-label="contentConfig.comments.aria.likeComment"
-                @click="toggleLike(comment.id)"
+                @click="event => toggleLike(comment.id, event)"
               >
+                <!-- Particle Burst Container -->
+                <span
+                  v-if="
+                    burstingComments.has(comment.id) && !prefersReducedMotion
+                  "
+                  class="particle-burst-container absolute inset-0 flex items-center justify-center pointer-events-none"
+                >
+                  <span
+                    v-for="n in 6"
+                    :key="n"
+                    class="particle"
+                    :style="getParticleStyle(n)"
+                  />
+                </span>
                 <svg
-                  class="w-4 h-4 transition-transform duration-200 group-hover:scale-110"
+                  class="w-4 h-4 transition-transform duration-200 group-hover:scale-110 relative z-10"
                   :class="{
                     'text-red-500 fill-current': isLiked(comment.id),
-                    'animate-heart-beat':
-                      likedComments.has(comment.id) && !prefersReducedMotion,
+                    'animate-heart-pop':
+                      burstingComments.has(comment.id) && !prefersReducedMotion,
                   }"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -268,7 +295,7 @@
                     d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                   />
                 </svg>
-                <span>{{ comment.displayLikes }}</span>
+                <span class="relative z-10">{{ comment.displayLikes }}</span>
               </button>
             </div>
             <p class="mt-1 text-gray-700 whitespace-pre-wrap">
@@ -277,7 +304,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -321,6 +348,11 @@ const showSuccessGlow = ref(false)
 const likedComments = ref<Set<string>>(new Set())
 const prefersReducedMotion = ref(false)
 const uniqueId = generateId({ prefix: 'comment' })
+
+// Palette's Micro-UX: Track new comments for avatar pulse animation
+const newComments = ref<Set<string>>(new Set())
+const burstingComments = ref<Set<string>>(new Set())
+const likeButtonRefs = ref<Map<string, HTMLElement>>(new Map())
 
 // Computed values for character counter ring - Now using config, Flexy loves modularity!
 const circumference = 2 * Math.PI * uiConfig.characterCounter.ringRadiusPx
@@ -443,6 +475,19 @@ const submitComment = async () => {
       textareaRef.value.style.height = 'auto'
     }
 
+    // Palette's Micro-UX: Track new comment for avatar pulse animation
+    // We'll mark the most recent comment as new
+    setTimeout(() => {
+      const latestComment = formattedComments.value[0]
+      if (latestComment) {
+        newComments.value.add(latestComment.id)
+        // Remove from new comments after animation completes
+        setTimeout(() => {
+          newComments.value.delete(latestComment.id)
+        }, 2000)
+      }
+    }, 100)
+
     // Reset success states after animation
     setTimeout(() => {
       showSuccessCheck.value = false
@@ -456,7 +501,27 @@ const submitComment = async () => {
   }
 }
 
-const toggleLike = (commentId: string) => {
+// Palette's Micro-UX: Set like button ref for positioning
+const setLikeButtonRef = (el: unknown, commentId: string) => {
+  if (el && typeof el === 'object' && el !== null) {
+    likeButtonRefs.value.set(commentId, el as HTMLElement)
+  }
+}
+
+// Palette's Micro-UX: Generate particle styles for burst animation
+const getParticleStyle = (index: number) => {
+  const angle = (index - 1) * 60 // 60-degree increments for 6 particles
+  const delay = (index - 1) * 50 // Staggered delay
+  return {
+    '--angle': `${angle}deg`,
+    '--delay': `${delay}ms`,
+  }
+}
+
+// Palette's Micro-UX: Check if comment is new (for avatar pulse)
+const isNewComment = (commentId: string) => newComments.value.has(commentId)
+
+const toggleLike = (commentId: string, _event?: Event) => {
   if (likedComments.value.has(commentId)) {
     likedComments.value.delete(commentId)
     // Light haptic for removing like
@@ -466,6 +531,14 @@ const toggleLike = (commentId: string) => {
     emit('like', commentId)
     // Success haptic for adding like - Palette's micro-UX touch!
     hapticSuccess()
+
+    // Palette's Micro-UX: Trigger particle burst animation
+    if (!prefersReducedMotion.value) {
+      burstingComments.value.add(commentId)
+      setTimeout(() => {
+        burstingComments.value.delete(commentId)
+      }, 800) // Animation duration + buffer
+    }
   }
 }
 
@@ -604,16 +677,132 @@ defineExpose({
   }
 }
 
+/* Palette's Micro-UX: Particle Burst Animation */
+.particle-burst-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 50%, #fca5a5 100%);
+  border-radius: 50%;
+  animation: particle-burst 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: var(--delay);
+  opacity: 0;
+}
+
+@keyframes particle-burst {
+  0% {
+    transform: rotate(var(--angle)) translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: rotate(var(--angle)) translateY(-24px) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Palette's Micro-UX: Heart Pop Animation (Enhanced) */
+.animate-heart-pop {
+  animation: heart-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes heart-pop {
+  0% {
+    transform: scale(0.8);
+  }
+  25% {
+    transform: scale(1.3);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  75% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Palette's Micro-UX: Avatar Pulse for New Comments */
+.animate-avatar-pulse {
+  animation: avatar-pulse 2s ease-in-out;
+}
+
+@keyframes avatar-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+  25% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.2);
+  }
+  50% {
+    transform: scale(1);
+    box-shadow: 0 0 0 16px rgba(59, 130, 246, 0.1);
+  }
+  75% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.05);
+  }
+}
+
+/* Palette's Micro-UX: TransitionGroup Animations for Comments List */
+.comment-list-enter-active {
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.comment-list-leave-active {
+  transition: all 0.3s ease-out;
+  position: absolute;
+}
+
+.comment-list-enter-from {
+  opacity: 0;
+  transform: translateY(-20px) scale(0.95);
+}
+
+.comment-list-leave-to {
+  opacity: 0;
+  transform: translateX(20px) scale(0.95);
+}
+
+.comment-list-move {
+  transition: transform 0.4s ease-out;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .animate-textarea-glow,
   .animate-success-bounce,
   .animate-heart-beat,
-  .animate-fade-in {
+  .animate-fade-in,
+  .animate-heart-pop,
+  .animate-avatar-pulse {
     animation: none;
   }
 
   .transition-all {
+    transition: none;
+  }
+
+  .particle {
+    display: none;
+  }
+
+  .comment-list-enter-active,
+  .comment-list-leave-active {
     transition: none;
   }
 }
