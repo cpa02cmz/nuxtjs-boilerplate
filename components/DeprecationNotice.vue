@@ -66,10 +66,7 @@
           </button>
         </div>
         <p>{{ noticeMessage }}</p>
-        <div
-          v-if="migrationPath || alternatives"
-          class="notice-actions"
-        >
+        <div v-if="migrationPath || alternatives" class="notice-actions">
           <a
             v-if="migrationPath"
             :href="migrationPath"
@@ -133,11 +130,7 @@
       />
 
       <!-- Screen reader announcement -->
-      <div
-        class="sr-only"
-        role="status"
-        aria-live="polite"
-      >
+      <div class="sr-only" role="status" aria-live="polite">
         {{ announcementText }}
       </div>
     </div>
@@ -194,7 +187,8 @@ const announcementText = ref('')
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
-  if (typeof window === 'undefined') return false
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
