@@ -1,11 +1,9 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="bg-white rounded-lg shadow-md p-6">
+  <div :class="[tailwind.layout.screenHeight, 'bg-gray-50 py-8']">
+    <div :class="[tailwind.containers.wide, 'mx-auto px-4']">
+      <div :class="[tailwind.cards.padded]">
         <div class="flex justify-between items-center mb-6">
-          <h1 class="text-2xl font-bold text-gray-800">
-            API Analytics
-          </h1>
+          <h1 class="text-2xl font-bold text-gray-800">API Analytics</h1>
           <a
             href="/api-docs"
             class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
@@ -39,10 +37,7 @@
             Endpoint Usage
           </h2>
           <div class="space-y-4">
-            <div
-              v-for="endpoint in endpointUsage"
-              :key="endpoint.name"
-            >
+            <div v-for="endpoint in endpointUsage" :key="endpoint.name">
               <div class="flex justify-between mb-1">
                 <span class="text-gray-700">{{ endpoint.name }}</span>
                 <span class="text-gray-600">{{ endpoint.requests }}</span>
@@ -107,7 +102,8 @@
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span
                       :class="`px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-${activity.statusColor}-100 text-${activity.statusColor}-800`"
-                    >{{ activity.status }}</span>
+                      >{{ activity.status }}</span
+                    >
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ activity.time }}
@@ -163,6 +159,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { tailwindClassesConfig as tailwind } from '~/configs/tailwind-classes.config'
 import { analyticsDemoData } from '~/configs/analytics-demo.config'
 
 useHead({
