@@ -60,6 +60,73 @@
               <pre class="error-stack">{{ errorStack }}</pre>
             </details>
           </div>
+          <!-- Palette's micro-UX: Auto-retry countdown UI -->
+          <div
+            v-if="isAutoRetryActive && enableAutoRetry"
+            class="auto-retry-container"
+            @mouseenter="pauseAutoRetry"
+            @mouseleave="resumeAutoRetry"
+            @focusin="pauseAutoRetry"
+            @focusout="resumeAutoRetry"
+          >
+            <!-- Countdown ring -->
+            <div
+              class="countdown-ring"
+              :class="{ 'is-paused': isAutoRetryPaused }"
+              aria-hidden="true"
+            >
+              <svg
+                class="countdown-ring__svg"
+                viewBox="0 0 40 40"
+                width="40"
+                height="40"
+              >
+                <!-- Background circle -->
+                <circle
+                  class="countdown-ring__bg"
+                  cx="20"
+                  cy="20"
+                  r="18"
+                  fill="none"
+                  stroke-width="3"
+                />
+                <!-- Progress circle -->
+                <circle
+                  class="countdown-ring__progress"
+                  cx="20"
+                  cy="20"
+                  r="18"
+                  fill="none"
+                  stroke-width="3"
+                  :stroke-dasharray="countdownRingCircumference"
+                  :stroke-dashoffset="countdownRingOffset"
+                  stroke-linecap="round"
+                  transform="rotate(-90 20 20)"
+                />
+              </svg>
+              <!-- Countdown text -->
+              <span class="countdown-ring__text">{{ autoRetryCountdown }}</span>
+            </div>
+
+            <!-- Auto-retry status -->
+            <div class="auto-retry-status">
+              <p class="auto-retry-status__text">
+                {{
+                  isAutoRetryPaused
+                    ? contentConfig.errorBoundary.autoRetryPaused
+                    : contentConfig.errorBoundary.autoRetryMessage
+                }}
+              </p>
+              <button
+                class="cancel-retry-button"
+                :aria-label="contentConfig.errorBoundary.aria.cancelAutoRetry"
+                @click="cancelAutoRetry"
+              >
+                {{ contentConfig.errorBoundary.cancelButton }}
+              </button>
+            </div>
+          </div>
+
           <div class="error-actions">
             <button
               ref="retryButton"
@@ -85,13 +152,21 @@
 </template>
 
 <script setup lang="ts">
-import { onErrorCaptured, ref, computed, nextTick, onMounted } from 'vue'
+import {
+  onErrorCaptured,
+  ref,
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+} from 'vue'
 import { logError } from '~/utils/errorLogger'
 import { componentStylesConfig } from '~/configs/component-styles.config'
 import { themeConfig } from '~/configs/theme.config'
 import { animationConfig } from '~/configs/animation.config'
 import { ROUTE_PATTERNS } from '~/configs/routes.config'
 import { hapticError, hapticSuccess } from '~/utils/hapticFeedback'
+import { contentConfig } from '~/configs/content.config'
 
 interface ErrorInfo {
   componentStack: string
@@ -100,11 +175,23 @@ interface ErrorInfo {
 interface Props {
   componentName?: string
   showDetails?: boolean
+  /**
+   * Enable auto-retry functionality with countdown
+   * @default true
+   */
+  enableAutoRetry?: boolean
+  /**
+   * Auto-retry countdown duration in seconds
+   * @default 5
+   */
+  autoRetryDelaySec?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   componentName: undefined,
   showDetails: false,
+  enableAutoRetry: true,
+  autoRetryDelaySec: 5,
 })
 
 const error = ref<Error | null>(null)
@@ -117,6 +204,24 @@ const previousFocus = ref<HTMLElement | null>(null)
 const showErrorAnimation = ref(false)
 const showSuccessAnimation = ref(false)
 const prefersReducedMotion = ref(false)
+
+// Palette's micro-UX: Auto-retry countdown state
+const autoRetryCountdown = ref(0)
+const isAutoRetryActive = ref(false)
+const isAutoRetryPaused = ref(false)
+let autoRetryInterval: ReturnType<typeof setInterval> | null = null
+let autoRetryTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Computed properties for countdown ring
+const countdownProgress = computed(() => {
+  if (!isAutoRetryActive.value || autoRetryCountdown.value === 0) return 0
+  return (autoRetryCountdown.value / props.autoRetryDelaySec) * 100
+})
+
+const countdownRingCircumference = computed(() => 2 * Math.PI * 18) // radius = 18
+const countdownRingOffset = computed(() => {
+  return countdownRingCircumference.value * (1 - countdownProgress.value / 100)
+})
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
@@ -169,6 +274,86 @@ const onErrorEntered = () => {
   })
 }
 
+/**
+ * Start auto-retry countdown
+ * Palette's micro-UX: Automatically retry after countdown to reduce user friction
+ */
+const startAutoRetry = () => {
+  if (!props.enableAutoRetry || prefersReducedMotion.value) return
+
+  // Clear any existing auto-retry
+  stopAutoRetry()
+
+  isAutoRetryActive.value = true
+  isAutoRetryPaused.value = false
+  autoRetryCountdown.value = props.autoRetryDelaySec
+
+  // Update countdown every second
+  autoRetryInterval = setInterval(() => {
+    if (!isAutoRetryPaused.value) {
+      autoRetryCountdown.value--
+      if (autoRetryCountdown.value <= 0) {
+        stopAutoRetry()
+        performAutoRetry()
+      }
+    }
+  }, 1000)
+}
+
+/**
+ * Stop auto-retry countdown
+ */
+const stopAutoRetry = () => {
+  if (autoRetryInterval) {
+    clearInterval(autoRetryInterval)
+    autoRetryInterval = null
+  }
+  if (autoRetryTimeout) {
+    clearTimeout(autoRetryTimeout)
+    autoRetryTimeout = null
+  }
+  isAutoRetryActive.value = false
+  isAutoRetryPaused.value = false
+  autoRetryCountdown.value = 0
+}
+
+/**
+ * Pause auto-retry (on hover/focus)
+ */
+const pauseAutoRetry = () => {
+  if (isAutoRetryActive.value) {
+    isAutoRetryPaused.value = true
+  }
+}
+
+/**
+ * Resume auto-retry (on mouseleave/blur)
+ */
+const resumeAutoRetry = () => {
+  if (isAutoRetryActive.value) {
+    isAutoRetryPaused.value = false
+  }
+}
+
+/**
+ * Perform the actual auto-retry
+ */
+const performAutoRetry = () => {
+  // Only retry if still has error
+  if (hasError.value) {
+    resetError()
+  }
+}
+
+/**
+ * Cancel auto-retry and keep error state
+ */
+const cancelAutoRetry = () => {
+  stopAutoRetry()
+  // Announce cancellation to screen readers
+  announce(contentConfig.errorBoundary.autoRetryCanceled)
+}
+
 const throwError = (err: Error, info: ErrorInfo) => {
   saveCurrentFocus()
   error.value = err
@@ -183,6 +368,9 @@ const throwError = (err: Error, info: ErrorInfo) => {
     showErrorAnimation.value = false
   }, animationConfig.errorBoundary.shakeDurationMs)
 
+  // Palette's micro-UX: Start auto-retry countdown
+  startAutoRetry()
+
   logError(`ErrorBoundary caught error: ${err.message}`, err, 'ErrorBoundary', {
     componentStack: info.componentStack,
   })
@@ -190,6 +378,9 @@ const throwError = (err: Error, info: ErrorInfo) => {
 }
 
 const resetError = () => {
+  // Palette's micro-UX: Stop auto-retry if user manually retries
+  stopAutoRetry()
+
   // Palette's micro-UX: Trigger success animation and haptic feedback
   showSuccessAnimation.value = true
   hapticSuccess()
@@ -205,11 +396,30 @@ const resetError = () => {
 }
 
 const goHome = () => {
+  // Palette's micro-UX: Stop auto-retry when navigating away
+  stopAutoRetry()
   error.value = null
   errorInfo.value = null
   restorePreviousFocus()
   // Flexy hates hardcoded routes! Use ROUTE_PATTERNS
   navigateTo(ROUTE_PATTERNS.pages.home)
+}
+
+/**
+ * Announce message to screen readers
+ */
+const announce = (message: string) => {
+  // Create temporary element for announcement
+  const announcementEl = document.createElement('div')
+  announcementEl.setAttribute('role', 'status')
+  announcementEl.setAttribute('aria-live', 'polite')
+  announcementEl.setAttribute('aria-atomic', 'true')
+  announcementEl.className = 'sr-only'
+  announcementEl.textContent = message
+  document.body.appendChild(announcementEl)
+  setTimeout(() => {
+    document.body.removeChild(announcementEl)
+  }, 1000)
 }
 
 onErrorCaptured((err, instance, info) => {
@@ -229,6 +439,11 @@ onMounted(() => {
     }
     mediaQuery.addEventListener('change', handleChange)
   }
+})
+
+// Palette's micro-UX: Clean up auto-retry on unmount
+onUnmounted(() => {
+  stopAutoRetry()
 })
 </script>
 
@@ -393,6 +608,109 @@ onMounted(() => {
   }
 }
 
+/* Palette's micro-UX: Auto-retry countdown styles */
+.auto-retry-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.05) 0%,
+    rgba(147, 197, 253, 0.05) 100%
+  );
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.countdown-ring {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.countdown-ring__svg {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+}
+
+.countdown-ring__bg {
+  stroke: rgba(59, 130, 246, 0.2);
+}
+
+.countdown-ring__progress {
+  stroke: #3b82f6;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.countdown-ring.is-paused .countdown-ring__progress {
+  stroke: #f59e0b;
+  animation: pulse-paused 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-paused {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.countdown-ring__text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.countdown-ring.is-paused .countdown-ring__text {
+  color: #f59e0b;
+}
+
+.auto-retry-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.auto-retry-status__text {
+  font-size: 14px;
+  color: #4b5563;
+  margin: 0;
+}
+
+.cancel-retry-button {
+  font-size: 12px;
+  color: #6b7280;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.cancel-retry-button:hover {
+  color: #374151;
+}
+
+.cancel-retry-button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .error-fade-enter-active,
@@ -415,6 +733,11 @@ onMounted(() => {
   .retry-button:focus-visible,
   .home-button:focus-visible {
     animation: none !important;
+  }
+
+  /* Palette's micro-UX: Hide auto-retry in reduced motion mode */
+  .auto-retry-container {
+    display: none;
   }
 }
 </style>

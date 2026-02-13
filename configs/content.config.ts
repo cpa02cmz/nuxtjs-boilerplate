@@ -517,6 +517,25 @@ export const contentConfig = {
     goHome: process.env.CONTENT_ERROR_GO_HOME || 'Go Home',
   },
 
+  // Error Boundary - Palette's micro-UX: Auto-retry with countdown
+  errorBoundary: {
+    autoRetryMessage:
+      process.env.CONTENT_ERROR_BOUNDARY_AUTO_RETRY ||
+      'Auto-retrying in {{count}} seconds...',
+    autoRetryPaused:
+      process.env.CONTENT_ERROR_BOUNDARY_RETRY_PAUSED ||
+      'Auto-retry paused (hover to continue)',
+    autoRetryCanceled:
+      process.env.CONTENT_ERROR_BOUNDARY_RETRY_CANCELED ||
+      'Auto-retry canceled',
+    cancelButton: process.env.CONTENT_ERROR_BOUNDARY_CANCEL_BTN || 'Cancel',
+    aria: {
+      cancelAutoRetry:
+        process.env.CONTENT_ERROR_BOUNDARY_CANCEL_ARIA ||
+        'Cancel automatic retry',
+    },
+  },
+
   // Footer
   footer: {
     copyright: process.env.CONTENT_FOOTER_COPYRIGHT || 'All rights reserved.',
