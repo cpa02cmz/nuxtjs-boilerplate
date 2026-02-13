@@ -187,31 +187,34 @@ export const webhookStorage = {
 
   async updateWebhook(id: string, data: Partial<Webhook>) {
     try {
-      // Encrypt secret before updating if provided
-      const encryptedSecret =
-        data.secret !== undefined
-          ? data.secret
-            ? encryptSecret(data.secret)
-            : null
-          : undefined
+      // Use interactive transaction to ensure atomic update+read
+      return await prisma.$transaction(async tx => {
+        // Encrypt secret before updating if provided
+        const encryptedSecret =
+          data.secret !== undefined
+            ? data.secret
+              ? encryptSecret(data.secret)
+              : null
+            : undefined
 
-      const updated = await prisma.webhook.updateMany({
-        where: { id, deletedAt: null },
-        data: {
-          ...(data.url && { url: data.url }),
-          ...(encryptedSecret !== undefined && { secret: encryptedSecret }),
-          ...(data.active !== undefined && { active: data.active }),
-          ...(data.events && { events: JSON.stringify(data.events) }),
-        },
+        const updated = await tx.webhook.updateMany({
+          where: { id, deletedAt: null },
+          data: {
+            ...(data.url && { url: data.url }),
+            ...(encryptedSecret !== undefined && { secret: encryptedSecret }),
+            ...(data.active !== undefined && { active: data.active }),
+            ...(data.events && { events: JSON.stringify(data.events) }),
+          },
+        })
+
+        if (updated.count === 0) return null
+
+        const webhook = await tx.webhook.findUnique({
+          where: { id },
+        })
+
+        return webhook ? mapPrismaToWebhook(webhook) : null
       })
-
-      if (updated.count === 0) return null
-
-      const webhook = await prisma.webhook.findUnique({
-        where: { id },
-      })
-
-      return webhook ? mapPrismaToWebhook(webhook) : null
     } catch (error) {
       handleStorageError(`update webhook ${id}`, error)
     }
@@ -303,26 +306,29 @@ export const webhookStorage = {
 
   async updateDelivery(id: string, data: Partial<WebhookDelivery>) {
     try {
-      const updated = await prisma.webhookDelivery.updateMany({
-        where: { id, deletedAt: null },
-        data: {
-          ...(data.status && { status: data.status }),
-          ...(data.statusCode && { statusCode: data.statusCode }),
-          ...(data.responseBody && {
-            responseBody: JSON.stringify(data.responseBody),
-          }),
-          ...(data.errorMessage && { errorMessage: data.errorMessage }),
-          ...(data.attemptCount && { attemptCount: data.attemptCount }),
-        },
+      // Use interactive transaction to ensure atomic update+read
+      return await prisma.$transaction(async tx => {
+        const updated = await tx.webhookDelivery.updateMany({
+          where: { id, deletedAt: null },
+          data: {
+            ...(data.status && { status: data.status }),
+            ...(data.statusCode && { statusCode: data.statusCode }),
+            ...(data.responseBody && {
+              responseBody: JSON.stringify(data.responseBody),
+            }),
+            ...(data.errorMessage && { errorMessage: data.errorMessage }),
+            ...(data.attemptCount && { attemptCount: data.attemptCount }),
+          },
+        })
+
+        if (updated.count === 0) return null
+
+        const delivery = await tx.webhookDelivery.findUnique({
+          where: { id },
+        })
+
+        return delivery ? mapPrismaToWebhookDelivery(delivery) : null
       })
-
-      if (updated.count === 0) return null
-
-      const delivery = await prisma.webhookDelivery.findUnique({
-        where: { id },
-      })
-
-      return delivery ? mapPrismaToWebhookDelivery(delivery) : null
     } catch (error) {
       handleStorageError(`update delivery ${id}`, error)
     }
@@ -438,30 +444,33 @@ export const webhookStorage = {
 
   async updateApiKey(id: string, data: Partial<ApiKey>) {
     try {
-      const updated = await prisma.apiKey.updateMany({
-        where: { id, deletedAt: null },
-        data: {
-          ...(data.name && { name: data.name }),
-          ...(data.permissions && {
-            permissions: JSON.stringify(data.permissions),
-          }),
-          ...(data.active !== undefined && { active: data.active }),
-          ...(data.expiresAt !== undefined && {
-            expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
-          }),
-          ...(data.lastUsedAt !== undefined && {
-            lastUsedAt: data.lastUsedAt ? new Date(data.lastUsedAt) : null,
-          }),
-        },
+      // Use interactive transaction to ensure atomic update+read
+      return await prisma.$transaction(async tx => {
+        const updated = await tx.apiKey.updateMany({
+          where: { id, deletedAt: null },
+          data: {
+            ...(data.name && { name: data.name }),
+            ...(data.permissions && {
+              permissions: JSON.stringify(data.permissions),
+            }),
+            ...(data.active !== undefined && { active: data.active }),
+            ...(data.expiresAt !== undefined && {
+              expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
+            }),
+            ...(data.lastUsedAt !== undefined && {
+              lastUsedAt: data.lastUsedAt ? new Date(data.lastUsedAt) : null,
+            }),
+          },
+        })
+
+        if (updated.count === 0) return null
+
+        const apiKey = await tx.apiKey.findUnique({
+          where: { id },
+        })
+
+        return apiKey ? mapPrismaToApiKey(apiKey) : null
       })
-
-      if (updated.count === 0) return null
-
-      const apiKey = await prisma.apiKey.findUnique({
-        where: { id },
-      })
-
-      return apiKey ? mapPrismaToApiKey(apiKey) : null
     } catch (error) {
       handleStorageError(`update API key ${id}`, error)
     }
