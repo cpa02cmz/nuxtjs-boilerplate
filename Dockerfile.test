@@ -1,0 +1,33 @@
+# Test Dockerfile for Integration Tests
+FROM node:20-alpine
+
+# Install dependencies for Prisma and testing
+RUN apk add --no-cache \
+  python3 \
+  make \
+  g++ \
+  postgresql-client \
+  curl \
+  wget
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install dependencies
+RUN npm ci
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Copy the rest of the application
+COPY . .
+
+# Expose port for the application
+EXPOSE 3000
+
+# Default command
+CMD ["npm", "run", "test:integration"]

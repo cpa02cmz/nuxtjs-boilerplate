@@ -1,0 +1,123 @@
+version: '3.8'
+
+# Integration Testing Infrastructure
+# Usage: docker-compose -f docker-compose.integration.yml up --abort-on-container-exit
+
+services:
+  # Test Database - PostgreSQL for integration tests
+  test-db:
+    image: postgres:16-alpine
+    container_name: nuxtjs-integration-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: nuxtjs_test
+    ports:
+      - '5433:5432'
+    volumes:
+      - test-postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-test-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U test_user -d nuxtjs_test']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - integration-network
+
+  # Mock Webhook Receiver Service
+  webhook-mock:
+    image: mockserver/mockserver:latest
+    container_name: nuxtjs-webhook-mock
+    restart: unless-stopped
+    ports:
+      - '1080:1080'
+    environment:
+      MOCKSERVER_LOG_LEVEL: INFO
+      MOCKSERVER_SERVER_PORT: 1080
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/webhook-expectations.json
+    volumes:
+      - ./scripts/webhook-expectations.json:/config/webhook-expectations.json:ro
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://localhost:1080/mockserver/status',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - integration-network
+
+  # Redis for caching and rate limiting tests
+  test-redis:
+    image: redis:7-alpine
+    container_name: nuxtjs-integration-redis
+    restart: unless-stopped
+    ports:
+      - '6380:6379'
+    volumes:
+      - test-redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - integration-network
+
+  # Integration Test Runner
+  integration-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: nuxtjs-integration-tests
+    depends_on:
+      test-db:
+        condition: service_healthy
+      webhook-mock:
+        condition: service_healthy
+      test-redis:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=test
+      - DATABASE_URL=postgresql://test_user:test_password@test-db:5432/nuxtjs_test
+      - REDIS_URL=redis://test-redis:6379
+      - WEBHOOK_MOCK_URL=http://webhook-mock:1080
+      - NUXT_PUBLIC_API_BASE=http://app:3000
+      - CI=true
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - test-results:/app/test-results
+    working_dir: /app
+    command: >
+      sh -c "
+        echo 'Waiting for services to be ready...' &&
+        sleep 5 &&
+        npx prisma migrate deploy &&
+        npx prisma db seed &&
+        npm run test:integration
+      "
+    networks:
+      - integration-network
+
+networks:
+  integration-network:
+    driver: bridge
+
+volumes:
+  test-postgres-data:
+    driver: local
+  test-redis-data:
+    driver: local
+  test-results:
+    driver: local
