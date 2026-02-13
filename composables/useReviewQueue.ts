@@ -5,6 +5,9 @@ import { debounce } from '~/utils/debounce'
 import { timeConfig } from '~/configs/time.config'
 import type { Submission } from '~/types/submission'
 
+// Track newly added submissions for highlighting - Palette's micro-UX!
+const newSubmissionIds = ref<Set<string>>(new Set())
+
 export function useReviewQueue(initialSubmissions: Submission[] = []) {
   const submissions = ref<Submission[]>(initialSubmissions)
   const loading = ref(true)
@@ -70,6 +73,25 @@ export function useReviewQueue(initialSubmissions: Submission[] = []) {
     return new Date(dateString).toLocaleDateString()
   }
 
+  // Total submissions count for progress tracking - Palette's micro-UX!
+  const totalSubmissions = computed(() => submissions.value.length)
+
+  // Count of reviewed (non-pending) submissions for progress ring
+  const reviewedCount = computed(() => {
+    return submissions.value.filter(sub => sub.status !== 'pending').length
+  })
+
+  // Check if a submission is newly added (for highlighting animation)
+  const isNewSubmission = (submission: Submission): boolean => {
+    return newSubmissionIds.value.has(submission.id)
+  }
+
+  // Clear all filters
+  const clearFilters = () => {
+    statusFilter.value = ''
+    categoryFilter.value = ''
+  }
+
   // Debounced fetch to prevent excessive API calls when filters change rapidly
   // Flexy hates hardcoded values! Using config instead.
   const debouncedFetchSubmissions = debounce(
@@ -92,7 +114,11 @@ export function useReviewQueue(initialSubmissions: Submission[] = []) {
     statusFilter,
     categoryFilter,
     filteredSubmissions,
+    totalSubmissions,
+    reviewedCount,
     formatDate,
     fetchSubmissions,
+    isNewSubmission,
+    clearFilters,
   }
 }

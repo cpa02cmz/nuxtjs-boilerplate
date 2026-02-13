@@ -123,9 +123,23 @@ export const componentColorsConfig = {
     },
   },
 
-  // Review Queue Colors - Flexy hates hardcoded queue colors!
+  // Review Queue Colors - Palette's micro-UX enhancement! 🎨
   reviewQueue: {
-    cardShadow: process.env.REVIEW_QUEUE_CARD_SHADOW || '0, 0, 0, 0.1',
+    // Card shadows
+    cardShadow:
+      process.env.REVIEW_QUEUE_CARD_SHADOW ||
+      '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)',
+    cardHoverShadow:
+      process.env.REVIEW_QUEUE_CARD_HOVER_SHADOW ||
+      '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    // Progress ring colors
+    progressBg: process.env.REVIEW_QUEUE_PROGRESS_BG || '#e5e7eb',
+    progressFill: process.env.REVIEW_QUEUE_PROGRESS_FILL || '#3b82f6',
+    progressComplete: process.env.REVIEW_QUEUE_PROGRESS_COMPLETE || '#10b981',
+    // Empty state colors
+    emptyBg: process.env.REVIEW_QUEUE_EMPTY_BG || '#d1fae5',
+    emptyIcon: process.env.REVIEW_QUEUE_EMPTY_ICON || '#10b981',
+    particleColor: process.env.REVIEW_QUEUE_PARTICLE_COLOR || '#6ee7b7',
   },
 
   // Toast Notification Colors - Flexy hates hardcoded toast colors!

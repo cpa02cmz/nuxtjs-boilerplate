@@ -79,6 +79,22 @@ export const shadowsConfig = {
     pendingBg: process.env.MODERATION_PENDING_BG || 'rgba(0, 123, 255, 0.1)',
   },
 
+  // Review Queue Shadows - Palette's micro-UX enhancement! ✨
+  reviewQueue: {
+    // Default card shadow
+    cardShadow:
+      process.env.REVIEW_QUEUE_CARD_SHADOW ||
+      '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)',
+    // Hover card shadow with lift effect
+    cardHoverShadow:
+      process.env.REVIEW_QUEUE_CARD_HOVER_SHADOW ||
+      '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    // Focus ring shadow
+    focusShadow:
+      process.env.REVIEW_QUEUE_FOCUS_SHADOW ||
+      '0 0 0 3px rgba(59, 130, 246, 0.3)',
+  },
+
   // Search Focus Pulse Colors
   searchFocus: {
     pulseStart:

@@ -1222,6 +1222,23 @@ export const contentConfig = {
     emptyState:
       process.env.CONTENT_REVIEW_EMPTY ||
       'No submissions found matching your criteria.',
+    emptyAllTitle:
+      process.env.CONTENT_REVIEW_EMPTY_ALL_TITLE || 'All caught up!',
+    emptyAllDesc:
+      process.env.CONTENT_REVIEW_EMPTY_ALL_DESC ||
+      'There are no submissions waiting for review. Great job!',
+    emptyFilteredTitle:
+      process.env.CONTENT_REVIEW_EMPTY_FILTERED_TITLE || 'No matches found',
+    emptyFilteredDesc:
+      process.env.CONTENT_REVIEW_EMPTY_FILTERED_DESC ||
+      'Try adjusting your filters to see more submissions.',
+    clearFilters: process.env.CONTENT_REVIEW_CLEAR_FILTERS || 'Clear filters',
+    aria: {
+      filterByStatus:
+        process.env.CONTENT_REVIEW_ARIA_FILTER_STATUS || 'Filter by status',
+      filterByCategory:
+        process.env.CONTENT_REVIEW_ARIA_FILTER_CATEGORY || 'Filter by category',
+    },
     actions: {
       review: process.env.CONTENT_REVIEW_ACTION_REVIEW || 'Review',
     },
