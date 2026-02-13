@@ -1,5 +1,6 @@
 import { readonly, ref, computed, onMounted } from 'vue'
 import { useNuxtApp } from '#app'
+import { apiConfig } from '~/configs/api.config'
 
 export interface ValidationHistoryItem {
   isAccessible: boolean
@@ -34,7 +35,7 @@ export const useResourceHealth = (props: Props) => {
     try {
       const { $apiClient } = useNuxtApp()
       const response = await $apiClient.get<HealthStatus>(
-        `/api/resource-health/${props.resourceId}`
+        apiConfig.resourceHealth.byId(props.resourceId || '')
       )
       if (response.success && response.data) {
         healthStatus.value = response.data
@@ -49,7 +50,7 @@ export const useResourceHealth = (props: Props) => {
     try {
       const { $apiClient } = useNuxtApp()
       const response = await $apiClient.post<{ healthStatus: HealthStatus }>(
-        `/api/resources/${props.resourceId}/health`
+        apiConfig.resourceHealth.healthById(props.resourceId || '')
       )
       if (response.success && response.data) {
         healthStatus.value = response.data.healthStatus

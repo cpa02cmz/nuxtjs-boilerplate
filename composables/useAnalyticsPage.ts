@@ -3,6 +3,7 @@ import { logError } from '~/utils/errorLogger'
 import logger from '~/utils/logger'
 import type { ApiResponse } from '~/utils/api-client'
 import { limitsConfig } from '~/configs/limits.config'
+import { apiConfig } from '~/configs/api.config'
 
 interface EventsByType {
   page_view?: number
@@ -73,7 +74,7 @@ export const useAnalyticsPage = () => {
     try {
       const { $apiClient } = useNuxtApp()
       const response: ApiResponse<AnalyticsData> = await $apiClient.get(
-        '/api/analytics/data',
+        apiConfig.analytics.data,
         {
           params: {
             startDate: startDate.value,

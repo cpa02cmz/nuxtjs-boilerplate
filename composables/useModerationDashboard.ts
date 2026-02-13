@@ -5,6 +5,7 @@ import type { ApiClient } from '~/utils/api-client'
 import { limitsConfig } from '~/configs/limits.config'
 import { iconsConfig } from '~/configs/icons.config'
 import { dateConfig } from '~/configs/date.config'
+import { apiConfig } from '~/configs/api.config'
 
 export interface ActivityItem {
   id: string
@@ -40,7 +41,7 @@ export const useModerationDashboard = (
     try {
       const client = getClient()
       const queueResponse = await client.get<{ total?: number }>(
-        '/api/moderation/queue',
+        apiConfig.moderation.queue,
         {
           params: { status: 'pending' },
         }

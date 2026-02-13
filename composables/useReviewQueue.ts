@@ -4,6 +4,7 @@ import { logError } from '~/utils/errorLogger'
 import { debounce } from '~/utils/debounce'
 import { timeConfig } from '~/configs/time.config'
 import { messagesConfig } from '~/configs/messages.config'
+import { apiConfig } from '~/configs/api.config'
 import type { Submission } from '~/types/submission'
 
 export function useReviewQueue(initialSubmissions: Submission[] = []) {
@@ -22,7 +23,7 @@ export function useReviewQueue(initialSubmissions: Submission[] = []) {
       const response = await $apiClient.get<{
         queue?: Submission[]
         message?: string
-      }>('/api/moderation/queue', {
+      }>(apiConfig.moderation.queue, {
         params: {
           status: statusFilter.value,
           category: categoryFilter.value,

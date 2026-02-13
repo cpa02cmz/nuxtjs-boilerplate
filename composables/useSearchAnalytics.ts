@@ -4,6 +4,7 @@ import { logError } from '~/utils/errorLogger'
 import type { ApiResponse, ApiClient } from '~/utils/api-client'
 import { useNuxtApp } from '#app'
 import { limitsConfig } from '~/configs/limits.config'
+import { apiConfig } from '~/configs/api.config'
 
 interface UseSearchAnalyticsOptions {
   apiClient?: ApiClient
@@ -42,7 +43,7 @@ export function useSearchAnalytics(options: UseSearchAnalyticsOptions = {}) {
           return $apiClient
         })()
       const response: ApiResponse<SearchAnalyticsData> = await client.get(
-        '/api/analytics/search',
+        apiConfig.analytics.search,
         {
           params: {
             days: timeRange.value,
