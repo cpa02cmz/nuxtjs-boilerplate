@@ -574,6 +574,7 @@ import { uiConfig } from '../configs/ui.config'
 import { contentConfig } from '../configs/content.config'
 import { animationConfig } from '../configs/animation.config'
 import { easingConfig, EASING } from '../configs/easing.config'
+import { zIndexConfig } from '../configs/z-index.config'
 import { PROGRESS } from '~/server/utils/constants'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 
@@ -1382,7 +1383,7 @@ onUnmounted(() => {
   visibility: hidden;
   transition: all 0.2s v-bind('tooltipEasing');
   pointer-events: none;
-  z-index: 50;
+  z-index: v-bind('zIndexConfig.tooltip');
 }
 
 /* Show tooltip on focus */

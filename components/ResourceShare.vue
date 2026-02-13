@@ -126,6 +126,7 @@ import { ref, computed } from 'vue'
 import { socialConfig } from '~/configs/social.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
 
 interface ShareUrls {
@@ -328,7 +329,7 @@ const handleCopyClick = async (event: MouseEvent) => {
     v-bind('`${animationConfig.button?.rippleDurationMs || 400}ms`') ease-out
     forwards;
   pointer-events: none;
-  z-index: 5;
+  z-index: v-bind('zIndexScale.low[5]');
 }
 
 @keyframes ripple-animation {
@@ -358,7 +359,7 @@ const handleCopyClick = async (event: MouseEvent) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  z-index: v-bind('zIndexScale.low[10]');
   animation: success-pop
     v-bind('`${animationConfig.copyFeedback?.successPopDurationMs || 300}ms`')
     ease-out;
