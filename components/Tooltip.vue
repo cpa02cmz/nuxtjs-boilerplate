@@ -9,6 +9,8 @@
     @touchstart="handleTouchStart"
     @touchend="handleTouchEnd"
     @touchcancel="handleTouchCancel"
+    @touchmove="handleTouchMove"
+    @keydown="handleTriggerKeyDown"
   >
     <!-- Wrapper slot with aria-describedby for accessibility -->
     <div
@@ -32,19 +34,32 @@
         role="tooltip"
         :class="[
           'absolute z-50 px-3 py-2 text-sm font-medium rounded-lg shadow-lg',
-          'pointer-events-none whitespace-nowrap',
+          'whitespace-nowrap',
+          isPinned ? 'pointer-events-auto' : 'pointer-events-none',
           componentColorsConfig.tooltip.text,
           componentColorsConfig.tooltip.bg,
           positionClasses[adjustedPosition],
+          isPositionTransitioning ? 'position-transitioning' : '',
         ]"
+        @mouseenter="handleTooltipMouseEnter"
+        @mouseleave="handleTooltipMouseLeave"
         @keydown.esc="hideTooltip"
       >
         {{ content }}
+        <!-- Pin indicator for keyboard users -->
+        <span
+          v-if="isPinned"
+          class="ml-2 inline-flex items-center text-xs opacity-75"
+          aria-hidden="true"
+        >
+          (Esc to close)
+        </span>
         <div
           :class="[
             'absolute w-2 h-2 transform rotate-45',
             componentColorsConfig.tooltip.arrowBg,
             arrowClasses[adjustedPosition],
+            isPositionTransitioning ? 'arrow-transitioning' : '',
           ]"
         />
       </div>
@@ -108,12 +123,27 @@ const uniqueId = generateId({ prefix: 'tooltip' })
 const tooltipId = computed(() => uniqueId)
 
 const isVisible = ref(false)
+const isPinned = ref(false)
 const tooltipRef = ref<HTMLDivElement | null>(null)
 const triggerRef = ref<HTMLDivElement | null>(null)
 const adjustedPosition = ref<TooltipPosition>(props.position)
+const isPositionTransitioning = ref(false)
 let showTimeout: ReturnType<typeof setTimeout> | null = null
 let hideTimeout: ReturnType<typeof setTimeout> | null = null
 let autoDismissTimeout: ReturnType<typeof setTimeout> | null = null
+let positionTransitionTimeout: ReturnType<typeof setTimeout> | null = null
+let gracePeriodTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Hover intent tracking - prevents flickering when moving between trigger and tooltip
+const isMouseOverTrigger = ref(false)
+const isMouseOverTooltip = ref(false)
+
+// Swipe gesture tracking for mobile
+const touchStartY = ref(0)
+const touchCurrentY = ref(0)
+const isSwiping = ref(false)
+// Minimum swipe distance to dismiss (px) - Flexy hates hardcoded values!
+const SWIPE_THRESHOLD = 50
 
 const positionClasses: Record<TooltipPosition, string> = {
   top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
@@ -133,9 +163,10 @@ const arrowClasses: Record<TooltipPosition, string> = {
  * Calculates the optimal tooltip position based on viewport boundaries.
  * Prevents tooltips from being cut off at viewport edges by flipping position
  * when collision is detected.
- * Now with position memory - remembers successful positions for better UX!
+ * Now with position memory and smooth transitions!
  */
 const lastSuccessfulPosition = ref<TooltipPosition | null>(null)
+const previousPosition = ref<TooltipPosition>(props.position)
 
 const calculateOptimalPosition = () => {
   if (!tooltipRef.value || !triggerRef.value) return
@@ -166,8 +197,23 @@ const calculateOptimalPosition = () => {
   const preferredPosition = lastSuccessfulPosition.value || props.position
 
   if (collisionChecks[preferredPosition]()) {
+    // Store current position before changing
+    previousPosition.value = adjustedPosition.value
+
     // Try fallback position
     const fallback = fallbackPositions[preferredPosition]
+
+    // Trigger position transition animation
+    if (adjustedPosition.value !== fallback) {
+      isPositionTransitioning.value = true
+      if (positionTransitionTimeout) {
+        clearTimeout(positionTransitionTimeout)
+      }
+      positionTransitionTimeout = setTimeout(() => {
+        isPositionTransitioning.value = false
+      }, animationConfig.tooltip.positionTransitionMs)
+    }
+
     adjustedPosition.value = fallback
     // Remember this successful position
     lastSuccessfulPosition.value = fallback
@@ -203,27 +249,42 @@ const calculateOptimalPosition = () => {
       }
     })
   } else {
+    if (adjustedPosition.value !== preferredPosition) {
+      previousPosition.value = adjustedPosition.value
+      isPositionTransitioning.value = true
+      if (positionTransitionTimeout) {
+        clearTimeout(positionTransitionTimeout)
+      }
+      positionTransitionTimeout = setTimeout(() => {
+        isPositionTransitioning.value = false
+      }, animationConfig.tooltip.positionTransitionMs)
+    }
     adjustedPosition.value = preferredPosition
     // Remember this successful position
     lastSuccessfulPosition.value = preferredPosition
   }
 }
 
-const showTooltip = () => {
+const showTooltip = (pin = false) => {
   if (hideTimeout) {
     clearTimeout(hideTimeout)
     hideTimeout = null
   }
+  if (gracePeriodTimeout) {
+    clearTimeout(gracePeriodTimeout)
+    gracePeriodTimeout = null
+  }
   showTimeout = setTimeout(() => {
     isVisible.value = true
+    isPinned.value = pin
 
     // Calculate optimal position after tooltip is rendered
     nextTick(() => {
       calculateOptimalPosition()
     })
 
-    // Set up auto-dismiss if enabled
-    if (props.autoDismiss > 0) {
+    // Set up auto-dismiss if enabled (only when not pinned)
+    if (props.autoDismiss > 0 && !pin) {
       if (autoDismissTimeout) {
         clearTimeout(autoDismissTimeout)
       }
@@ -234,7 +295,7 @@ const showTooltip = () => {
   }, props.delay)
 }
 
-const hideTooltip = () => {
+const hideTooltip = (immediate = false) => {
   if (showTimeout) {
     clearTimeout(showTimeout)
     showTimeout = null
@@ -243,9 +304,39 @@ const hideTooltip = () => {
     clearTimeout(autoDismissTimeout)
     autoDismissTimeout = null
   }
-  hideTimeout = setTimeout(() => {
+  if (immediate) {
     isVisible.value = false
+    isPinned.value = false
+    return
+  }
+  hideTimeout = setTimeout(() => {
+    // Only hide if mouse is not over trigger or tooltip (hover intent)
+    if (
+      !isMouseOverTrigger.value &&
+      !isMouseOverTooltip.value &&
+      !isPinned.value
+    ) {
+      isVisible.value = false
+    }
   }, animationConfig.tooltip.hideDelayMs)
+}
+
+/**
+ * Hide with grace period - allows moving between trigger and tooltip without flickering
+ */
+const hideWithGracePeriod = () => {
+  if (gracePeriodTimeout) {
+    clearTimeout(gracePeriodTimeout)
+  }
+  gracePeriodTimeout = setTimeout(() => {
+    if (
+      !isMouseOverTrigger.value &&
+      !isMouseOverTooltip.value &&
+      !isPinned.value
+    ) {
+      hideTooltip(true)
+    }
+  }, animationConfig.tooltip.gracePeriodMs)
 }
 
 const clearAllTimeouts = () => {
@@ -261,16 +352,50 @@ const clearAllTimeouts = () => {
     clearTimeout(autoDismissTimeout)
     autoDismissTimeout = null
   }
+  if (positionTransitionTimeout) {
+    clearTimeout(positionTransitionTimeout)
+    positionTransitionTimeout = null
+  }
+  if (gracePeriodTimeout) {
+    clearTimeout(gracePeriodTimeout)
+    gracePeriodTimeout = null
+  }
+  if (touchTimeout) {
+    clearTimeout(touchTimeout)
+    touchTimeout = null
+  }
 }
 
 const handleMouseEnter = () => {
   // Don't show on mouse enter if touch was recently used
   if (isTouchDevice.value) return
+  isMouseOverTrigger.value = true
   showTooltip()
 }
 
 const handleMouseLeave = () => {
-  hideTooltip()
+  isMouseOverTrigger.value = false
+  hideWithGracePeriod()
+}
+
+/**
+ * Handle mouse enter on tooltip - keeps tooltip open when hovering over it
+ */
+const handleTooltipMouseEnter = () => {
+  if (isTouchDevice.value) return
+  isMouseOverTooltip.value = true
+  if (hideTimeout) {
+    clearTimeout(hideTimeout)
+    hideTimeout = null
+  }
+}
+
+/**
+ * Handle mouse leave on tooltip - starts grace period to hide
+ */
+const handleTooltipMouseLeave = () => {
+  isMouseOverTooltip.value = false
+  hideWithGracePeriod()
 }
 
 const handleFocusIn = () => {
@@ -290,6 +415,9 @@ const handleTouchStart = (event: TouchEvent) => {
   touchStartTime.value = Date.now()
   const touch = event.touches[0]
   touchStartPosition.value = { x: touch.clientX, y: touch.clientY }
+  touchStartY.value = touch.clientY
+  touchCurrentY.value = touch.clientY
+  isSwiping.value = false
 
   // Clear any existing timeout
   if (touchTimeout) {
@@ -297,12 +425,37 @@ const handleTouchStart = (event: TouchEvent) => {
   }
 
   // Set timeout to show tooltip after long press
-  setTimeout(() => {
+  touchTimeout = setTimeout(() => {
     const touchDuration = Date.now() - touchStartTime.value
-    if (touchDuration >= LONG_PRESS_DURATION) {
+    if (touchDuration >= LONG_PRESS_DURATION && !isSwiping.value) {
       showTooltip()
     }
   }, LONG_PRESS_DURATION)
+}
+
+/**
+ * Handle touch move - track swipe gesture for dismissing tooltip
+ */
+const handleTouchMove = (event: TouchEvent) => {
+  if (!isVisible.value) {
+    // Track if user is swiping to prevent long-press from triggering
+    const touch = event.touches[0]
+    const deltaY = Math.abs(touch.clientY - touchStartY.value)
+    if (deltaY > 10) {
+      isSwiping.value = true
+    }
+    return
+  }
+
+  const touch = event.touches[0]
+  touchCurrentY.value = touch.clientY
+  const deltaY = touchCurrentY.value - touchStartY.value
+
+  // Detect swipe gesture to dismiss tooltip
+  if (Math.abs(deltaY) > SWIPE_THRESHOLD) {
+    hideTooltip(true)
+    isSwiping.value = true
+  }
 }
 
 /**
@@ -311,14 +464,21 @@ const handleTouchStart = (event: TouchEvent) => {
 const handleTouchEnd = () => {
   const touchDuration = Date.now() - touchStartTime.value
 
-  // Only hide if tooltip was shown via long press
-  if (touchDuration >= LONG_PRESS_DURATION) {
+  // Clear long-press timeout
+  if (touchTimeout) {
+    clearTimeout(touchTimeout)
+    touchTimeout = null
+  }
+
+  // Only hide if tooltip was shown via long press and not swiping
+  if (touchDuration >= LONG_PRESS_DURATION && !isSwiping.value) {
     hideTooltip()
   }
 
   // Reset touch device flag after a delay to re-enable mouse events
   setTimeout(() => {
     isTouchDevice.value = false
+    isSwiping.value = false
   }, animationConfig.tooltip.touchResetDelayMs)
 }
 
@@ -326,13 +486,46 @@ const handleTouchEnd = () => {
  * Handle touch cancel - clean up state
  */
 const handleTouchCancel = () => {
-  hideTooltip()
+  if (touchTimeout) {
+    clearTimeout(touchTimeout)
+    touchTimeout = null
+  }
+  hideTooltip(true)
   isTouchDevice.value = false
+  isSwiping.value = false
 }
 
+/**
+ * Handle keyboard events on tooltip (Escape to close)
+ */
 const handleKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Escape' && isVisible.value) {
-    hideTooltip()
+    hideTooltip(true)
+  }
+}
+
+/**
+ * Handle keyboard events on trigger element
+ * Allows pinning tooltip with Enter/Space for better accessibility
+ */
+const handleTriggerKeyDown = (e: KeyboardEvent) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault()
+    if (isVisible.value && isPinned.value) {
+      // Already pinned, unpin and hide
+      hideTooltip(true)
+    } else if (isVisible.value) {
+      // Visible but not pinned, pin it
+      isPinned.value = true
+      // Clear auto-dismiss when pinned
+      if (autoDismissTimeout) {
+        clearTimeout(autoDismissTimeout)
+        autoDismissTimeout = null
+      }
+    } else {
+      // Not visible, show and pin
+      showTooltip(true)
+    }
   }
 }
 
@@ -360,6 +553,24 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
   clearAllTimeouts()
 })
+
+// Expose methods for programmatic control
+defineExpose({
+  show: () => showTooltip(),
+  hide: () => hideTooltip(true),
+  pin: () => {
+    if (!isVisible.value) showTooltip()
+    isPinned.value = true
+    if (autoDismissTimeout) {
+      clearTimeout(autoDismissTimeout)
+      autoDismissTimeout = null
+    }
+  },
+  unpin: () => {
+    isPinned.value = false
+    hideTooltip()
+  },
+})
 </script>
 
 <style scoped>
@@ -377,10 +588,34 @@ onUnmounted(() => {
   }
 }
 
+/* Position transition animation - smooth repositioning when viewport collision occurs */
+.position-transitioning {
+  transition: all v-bind('`${animationConfig.tooltip.positionTransitionMs}ms`')
+    ease-out !important;
+}
+
+.arrow-transitioning {
+  transition: all v-bind('`${animationConfig.tooltip.positionTransitionMs}ms`')
+    ease-out !important;
+}
+
+/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .tooltip-enter-active,
   .tooltip-leave-active {
     transition: none;
+  }
+
+  .position-transitioning,
+  .arrow-transitioning {
+    transition: none !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  [role='tooltip'] {
+    border: 2px solid currentColor;
   }
 }
 </style>
