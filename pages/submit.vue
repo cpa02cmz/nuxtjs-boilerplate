@@ -128,7 +128,10 @@
               >
                 <div
                   v-if="formData.title && !errors.title"
-                  class="absolute right-[4.5rem] top-1/2 -translate-y-1/2 pointer-events-none"
+                  class="absolute top-1/2 -translate-y-1/2 pointer-events-none"
+                  :style="{
+                    right: `${uiConfig.form.inputPositioning.checkmarkRightRem}rem`,
+                  }"
                   aria-hidden="true"
                 >
                   <svg
@@ -210,8 +213,11 @@
               />
               <div
                 id="description-counter"
-                class="absolute right-3 bottom-2 text-xs font-medium tabular-nums transition-all duration-200"
+                class="absolute bottom-2 text-xs font-medium tabular-nums transition-all duration-200"
                 :class="descriptionCounterClass"
+                :style="{
+                  right: `${uiConfig.form.inputPositioning.counterRightRem}rem`,
+                }"
                 aria-live="polite"
               >
                 {{ formData.description.length }}/{{ maxDescriptionLength }}
@@ -325,7 +331,10 @@
               >
                 <div
                   v-if="formData.url && !errors.url"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  class="absolute top-1/2 -translate-y-1/2 pointer-events-none"
+                  :style="{
+                    right: `${uiConfig.form.inputPositioning.counterRightRem}rem`,
+                  }"
                   aria-hidden="true"
                 >
                   <svg
