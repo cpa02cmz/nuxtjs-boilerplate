@@ -46,6 +46,62 @@
     >
       {{ progressAnnouncement }}
     </div>
+
+    <!-- Completion Celebration - Palette's micro-UX delight! -->
+    <Transition
+      enter-active-class="transition-all duration-500 ease-out"
+      enter-from-class="opacity-0 scale-50"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition-all duration-300 ease-in"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-75"
+    >
+      <div
+        v-if="showCompletionCelebration && !prefersReducedMotion"
+        class="reading-progress-completion"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <div class="completion-content">
+          <!-- Animated checkmark -->
+          <div class="completion-icon">
+            <svg
+              class="checkmark-svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle
+                class="checkmark-circle"
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                class="checkmark-path"
+                d="M7 12l3 3 7-7"
+              />
+            </svg>
+          </div>
+          <span class="completion-text">{{
+            contentConfig.readingProgress?.completionText || 'Reading complete!'
+          }}</span>
+        </div>
+        <!-- Confetti burst effect -->
+        <div
+          class="confetti-container"
+          aria-hidden="true"
+        >
+          <span
+            v-for="n in 8"
+            :key="n"
+            class="confetti-piece"
+            :style="{ '--confetti-index': n }"
+          />
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -55,6 +111,7 @@ import { componentStylesConfig } from '~/configs/component-styles.config'
 import { themeConfig } from '~/configs/theme.config'
 import { animationConfig } from '~/configs/animation.config'
 import { uiConfig } from '~/configs/ui.config'
+import { contentConfig } from '~/configs/content.config'
 
 interface Props {
   /**
@@ -91,9 +148,15 @@ const progress = ref(0)
 const showTooltip = ref(false)
 const tooltipPosition = ref(0)
 const lastAnnouncedProgress = ref(0)
+const showCompletionCelebration = ref(false)
+const hasCelebratedCompletion = ref(false)
+const prefersReducedMotion = ref(false)
 
 // Track if component is mounted (to avoid SSR issues)
 let isMounted = false
+
+// Completion celebration timeout
+let celebrationTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Computed tooltip style
 const tooltipStyle = computed(() => ({
@@ -119,6 +182,40 @@ watch(progress, newProgress => {
     setTimeout(() => {
       progressAnnouncement.value = ''
     }, uiConfig.feedback.announcementClearMs)
+  }
+
+  // Trigger completion celebration at 100% - Palette's micro-UX delight!
+  if (
+    currentProgress >= 100 &&
+    !hasCelebratedCompletion.value &&
+    !prefersReducedMotion.value
+  ) {
+    hasCelebratedCompletion.value = true
+    showCompletionCelebration.value = true
+    progressAnnouncement.value =
+      contentConfig.readingProgress?.completionAnnouncement ||
+      'Reading complete! Congratulations!'
+
+    // Clear any existing timeout
+    if (celebrationTimeout) {
+      clearTimeout(celebrationTimeout)
+    }
+
+    // Auto-hide celebration after delay
+    celebrationTimeout = setTimeout(() => {
+      showCompletionCelebration.value = false
+    }, animationConfig.readingProgress?.celebrationDurationMs || 3000)
+
+    // Clear announcement after screen reader has time to read it
+    setTimeout(() => {
+      progressAnnouncement.value = ''
+    }, uiConfig.feedback.announcementClearMs)
+  }
+
+  // Reset celebration if user scrolls back up from 100%
+  if (currentProgress < 95 && hasCelebratedCompletion.value) {
+    hasCelebratedCompletion.value = false
+    showCompletionCelebration.value = false
   }
 })
 
@@ -191,11 +288,31 @@ onMounted(() => {
   calculateProgress()
   // Add scroll listener with passive option for performance
   window.addEventListener('scroll', handleScroll, { passive: true })
+
+  // Check for reduced motion preference
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function'
+  ) {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.value = mediaQuery.matches
+
+    // Listen for changes
+    const handleMotionChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.value = e.matches
+    }
+    mediaQuery.addEventListener('change', handleMotionChange)
+  }
 })
 
 onUnmounted(() => {
   isMounted = false
   window.removeEventListener('scroll', handleScroll)
+
+  // Clean up celebration timeout
+  if (celebrationTimeout) {
+    clearTimeout(celebrationTimeout)
+  }
 })
 </script>
 
@@ -340,6 +457,212 @@ onUnmounted(() => {
 
   .tooltip-text {
     animation: none;
+  }
+}
+
+/* Completion Celebration - Palette's micro-UX delight! */
+.reading-progress-completion {
+  position: fixed;
+  top: v-bind('componentStylesConfig.readingProgress.completionTop');
+  right: v-bind('componentStylesConfig.readingProgress.completionRight');
+  z-index: v-bind('themeConfig.zIndex.tooltip');
+  pointer-events: none;
+}
+
+.completion-content {
+  display: inline-flex;
+  align-items: center;
+  gap: v-bind('componentStylesConfig.readingProgress.completionGap');
+  padding: v-bind('componentStylesConfig.readingProgress.completionPadding');
+  background: v-bind('themeConfig.readingProgress.completionGradient');
+  border-radius: v-bind(
+    'componentStylesConfig.readingProgress.completionBorderRadius'
+  );
+  box-shadow: v-bind('themeConfig.readingProgress.completionShadow');
+  animation: completion-pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+    forwards;
+}
+
+@keyframes completion-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(-20px);
+  }
+  60% {
+    transform: scale(1.05) translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.completion-icon {
+  width: v-bind('componentStylesConfig.readingProgress.completionIconSize');
+  height: v-bind('componentStylesConfig.readingProgress.completionIconSize');
+  flex-shrink: 0;
+}
+
+.checkmark-svg {
+  width: 100%;
+  height: 100%;
+  animation: icon-rotate-in 0.4s ease-out 0.2s both;
+}
+
+@keyframes icon-rotate-in {
+  0% {
+    opacity: 0;
+    transform: rotate(-45deg) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+
+.checkmark-circle {
+  fill: v-bind('themeConfig.readingProgress.completionIconBg');
+  animation: circle-scale 0.3s ease-out 0.1s both;
+}
+
+@keyframes circle-scale {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.checkmark-path {
+  stroke: v-bind('themeConfig.readingProgress.completionIconColor');
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: checkmark-draw 0.3s ease-out 0.3s forwards;
+}
+
+@keyframes checkmark-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.completion-text {
+  font-size: v-bind('componentStylesConfig.readingProgress.completionFontSize');
+  font-weight: v-bind(
+    'componentStylesConfig.readingProgress.completionFontWeight'
+  );
+  color: v-bind('themeConfig.readingProgress.completionTextColor');
+  white-space: nowrap;
+  animation: text-fade-in 0.3s ease-out 0.4s both;
+}
+
+@keyframes text-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Confetti burst animation */
+.confetti-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: v-bind(
+    'themeConfig.readingProgress.confettiColors[(parseInt(`--confetti-index`) - 1) % 4]'
+  );
+  border-radius: 50%;
+  opacity: 0;
+  animation: confetti-burst 0.8s ease-out 0.2s forwards;
+  --angle: calc(var(--confetti-index) * 45deg);
+}
+
+.confetti-piece:nth-child(1) {
+  --confetti-index: 1;
+  background: #ff6b6b;
+}
+.confetti-piece:nth-child(2) {
+  --confetti-index: 2;
+  background: #4ecdc4;
+}
+.confetti-piece:nth-child(3) {
+  --confetti-index: 3;
+  background: #45b7d1;
+}
+.confetti-piece:nth-child(4) {
+  --confetti-index: 4;
+  background: #96ceb4;
+}
+.confetti-piece:nth-child(5) {
+  --confetti-index: 5;
+  background: #ffeaa7;
+}
+.confetti-piece:nth-child(6) {
+  --confetti-index: 6;
+  background: #dda0dd;
+}
+.confetti-piece:nth-child(7) {
+  --confetti-index: 7;
+  background: #98d8c8;
+}
+.confetti-piece:nth-child(8) {
+  --confetti-index: 8;
+  background: #f7dc6f;
+}
+
+@keyframes confetti-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-60px)
+      scale(0);
+  }
+}
+
+/* Reduced motion support for completion celebration */
+@media (prefers-reduced-motion: reduce) {
+  .reading-progress-completion,
+  .completion-content,
+  .checkmark-svg,
+  .checkmark-circle,
+  .checkmark-path,
+  .completion-text,
+  .confetti-piece {
+    animation: none !important;
+    transition: opacity 0.2s ease-out !important;
+  }
+
+  .checkmark-path {
+    stroke-dashoffset: 0;
+  }
+
+  .confetti-piece {
+    display: none;
   }
 }
 </style>
