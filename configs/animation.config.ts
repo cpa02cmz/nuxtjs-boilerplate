@@ -1472,6 +1472,44 @@ export const animationConfig = {
     // Animation easing for stroke draw
     drawEasing: process.env.SVG_STROKE_DRAW_EASING || 'ease-out',
   },
+
+  // Viewed Badge Micro-UX - Palette's delightful enhancement!
+  // Celebrates when a user views a resource with satisfying entrance animation
+  viewedBadge: {
+    // Duration of the entrance pop animation (ms)
+    popDurationMs: parseInt(process.env.VIEWED_BADGE_POP_DURATION_MS || '400'),
+    // CSS duration string for v-bind
+    popDurationSec: `${parseInt(process.env.VIEWED_BADGE_POP_DURATION_MS || '400') / 1000}s`,
+    // Duration of the icon bounce animation (ms)
+    bounceDurationMs: parseInt(
+      process.env.VIEWED_BADGE_BOUNCE_DURATION_MS || '500'
+    ),
+    // CSS duration string for v-bind
+    bounceDurationSec: `${parseInt(process.env.VIEWED_BADGE_BOUNCE_DURATION_MS || '500') / 1000}s`,
+    // Duration of the glow pulse animation (ms)
+    glowDurationMs: parseInt(
+      process.env.VIEWED_BADGE_GLOW_DURATION_MS || '800'
+    ),
+    // CSS duration string for v-bind
+    glowDurationSec: `${parseInt(process.env.VIEWED_BADGE_GLOW_DURATION_MS || '800') / 1000}s`,
+    // Total animation duration including all effects (ms)
+    animationDurationMs: parseInt(
+      process.env.VIEWED_BADGE_ANIMATION_DURATION_MS || '600'
+    ),
+    // Scale factor at peak of bounce animation
+    peakScale: parseFloat(process.env.VIEWED_BADGE_PEAK_SCALE || '1.1'),
+    // Scale factor for icon at peak bounce
+    iconPeakScale: parseFloat(
+      process.env.VIEWED_BADGE_ICON_PEAK_SCALE || '1.3'
+    ),
+    // Rotation angle for icon entrance (degrees)
+    iconRotationDegrees: parseInt(
+      process.env.VIEWED_BADGE_ICON_ROTATION || '45'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.VIEWED_BADGE_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

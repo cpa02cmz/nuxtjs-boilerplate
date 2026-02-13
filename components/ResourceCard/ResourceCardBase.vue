@@ -16,10 +16,7 @@
     @mouseleave="handleMouseLeave"
   >
     <div class="flex items-start">
-      <div
-        v-if="icon"
-        class="flex-shrink-0 mr-4"
-      >
+      <div v-if="icon" class="flex-shrink-0 mr-4">
         <OptimizedImage
           :src="icon"
           :alt="title"
@@ -84,26 +81,52 @@
               New
             </span>
 
-            <span
-              v-if="isResourceVisited && id"
-              class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 mr-2"
-              role="status"
-              aria-label="You have viewed this resource"
+            <!-- Viewed Badge with Palette's micro-UX delight! -->
+            <!-- Delightful entrance animation with haptic feedback -->
+            <Transition
+              enter-active-class="transition-all duration-300 ease-out"
+              enter-from-class="opacity-0 scale-50 -translate-y-2"
+              enter-to-class="opacity-100 scale-100 translate-y-0"
+              leave-active-class="transition-all duration-200 ease-in"
+              leave-from-class="opacity-100 scale-100"
+              leave-to-class="opacity-0 scale-75"
+              @after-enter="handleViewedBadgeEntered"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-3 w-3 mr-1"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+              <span
+                v-if="isResourceVisited && id"
+                :class="[
+                  'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 mr-2',
+                  'viewed-badge',
+                  {
+                    'viewed-badge--animate':
+                      showViewedAnimation && !prefersReducedMotion,
+                  },
+                ]"
+                role="status"
+                aria-label="You have viewed this resource"
               >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              Viewed
-            </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  :class="[
+                    'h-3 w-3 mr-1',
+                    'viewed-badge__icon',
+                    {
+                      'viewed-badge__icon--bounce':
+                        showViewedAnimation && !prefersReducedMotion,
+                    },
+                  ]"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <span class="viewed-badge__text">Viewed</span>
+              </span>
+            </Transition>
 
             <ResourceStatus
               v-if="status"
@@ -114,10 +137,7 @@
         </div>
 
         <!-- Description -->
-        <p
-          id="resource-description"
-          class="mt-1 text-gray-800 text-sm"
-        >
+        <p id="resource-description" class="mt-1 text-gray-800 text-sm">
           <span
             v-if="highlightedDescription"
             v-html="sanitizedHighlightedDescription"
@@ -131,30 +151,18 @@
           role="region"
           aria-label="Free tier information"
         >
-          <p
-            id="free-tier-label"
-            class="font-medium text-gray-900 text-sm"
-          >
+          <p id="free-tier-label" class="font-medium text-gray-900 text-sm">
             {{ contentConfig.resourceCard.freeTier }}
           </p>
-          <ul
-            class="mt-1 space-y-1 text-xs text-gray-800"
-            role="list"
-          >
-            <li
-              v-for="(benefit, index) in benefits"
-              :key="index"
-            >
+          <ul class="mt-1 space-y-1 text-xs text-gray-800" role="list">
+            <li v-for="(benefit, index) in benefits" :key="index">
               {{ benefit }}
             </li>
           </ul>
         </div>
 
         <!-- Similarity information (for alternative suggestions) -->
-        <div
-          v-if="similarityScore && similarityScore > 0"
-          class="mt-3"
-        >
+        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
           <div class="flex items-center">
             <div
               class="w-full bg-gray-200 rounded-full h-2"
@@ -173,10 +181,7 @@
               {{ Math.round(similarityScore * 100) }}% match
             </span>
           </div>
-          <p
-            v-if="similarityReason"
-            class="mt-1 text-xs text-gray-600"
-          >
+          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
             {{ similarityReason }}
           </p>
         </div>
@@ -293,10 +298,7 @@
   </article>
 
   <!-- Error state -->
-  <div
-    v-else
-    class="bg-white p-6 rounded-lg shadow border border-red-200"
-  >
+  <div v-else class="bg-white p-6 rounded-lg shadow border border-red-200">
     <div class="flex items-start">
       <div class="flex-shrink-0 mr-4">
         <svg
@@ -315,9 +317,7 @@
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-red-900">
-          Resource Unavailable
-        </h3>
+        <h3 class="text-lg font-medium text-red-900">Resource Unavailable</h3>
         <p class="mt-1 text-red-700 text-sm">
           This resource could not be displayed due to an error.
         </p>
@@ -327,7 +327,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, type Ref } from 'vue'
+import { ref, computed, onMounted, watch, type Ref } from 'vue'
 import { useHead } from '#imports'
 import { useRipple } from '~/composables/useRipple'
 import { useMagneticButton } from '~/composables/useMagneticButton'
@@ -340,6 +340,7 @@ import { sanitizeAndHighlight } from '~/utils/sanitize'
 import { memoizeHighlight } from '~/utils/memoize'
 import { logError } from '~/utils/errorLogger'
 import { formatDomainTooltip } from '~/utils/resourceHelper'
+import { hapticSuccess } from '~/utils/hapticFeedback'
 import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { limitsConfig } from '~/configs/limits.config'
@@ -402,6 +403,11 @@ const tiltX = ref(0)
 const tiltY = ref(0)
 const prefersReducedMotion = ref(false)
 
+// Palette's Viewed Badge Micro-UX Enhancement!
+// Tracks when to show the entrance animation for delightful feedback
+const showViewedAnimation = ref(false)
+const hasAnimatedViewedBadge = ref(false)
+
 // Check for reduced motion preference
 const checkReducedMotion = () => {
   if (typeof window === 'undefined' || !window.matchMedia) return false
@@ -446,6 +452,24 @@ const handleMouseLeave = () => {
   isTilting.value = false
   tiltX.value = 0
   tiltY.value = 0
+}
+
+// Palette's Viewed Badge Micro-UX Enhancement!
+// Handles the entrance animation completion with haptic feedback
+const handleViewedBadgeEntered = () => {
+  // Only animate once per component instance
+  if (hasAnimatedViewedBadge.value) return
+
+  hasAnimatedViewedBadge.value = true
+  showViewedAnimation.value = true
+
+  // Trigger haptic feedback for mobile users - delightful touch!
+  hapticSuccess()
+
+  // Reset animation flag after animation completes
+  setTimeout(() => {
+    showViewedAnimation.value = false
+  }, animationConfig.viewedBadge?.animationDurationMs || 600)
 }
 
 // Computed tilt style for dynamic CSS transforms
@@ -495,6 +519,13 @@ const { isNew, isResourceVisited, markResourceVisited } =
     category: props.category,
     dateAdded: props.dateAdded,
   })
+
+// Watch for when resource becomes visited to trigger animation
+watch(isResourceVisited, newValue => {
+  if (newValue && !hasAnimatedViewedBadge.value) {
+    showViewedAnimation.value = true
+  }
+})
 
 // Flexy hates hardcoded values! Config-based transition classes
 const transitionClasses = computed(() => ({
@@ -861,6 +892,109 @@ if (typeof useHead === 'function') {
   }
 
   .card-3d-tilt::after {
+    display: none;
+  }
+}
+
+/* Palette's Viewed Badge Micro-UX Enhancement! */
+/* Delightful entrance animation with bounce and glow effects */
+
+.viewed-badge {
+  position: relative;
+  overflow: hidden;
+}
+
+.viewed-badge--animate {
+  animation: viewed-badge-pop
+    v-bind('(animationConfig.viewedBadge?.popDurationMs || 400) + "ms"')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes viewed-badge-pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.viewed-badge__icon--bounce {
+  animation: viewed-icon-bounce
+    v-bind('(animationConfig.viewedBadge?.bounceDurationMs || 500) + "ms"')
+    ease-out forwards;
+}
+
+@keyframes viewed-icon-bounce {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  40% {
+    transform: scale(1.3) rotate(10deg);
+  }
+  60% {
+    transform: scale(0.9) rotate(-5deg);
+  }
+  80% {
+    transform: scale(1.05) rotate(2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+/* Subtle glow pulse after entrance */
+.viewed-badge--animate::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle,
+    rgba(156, 163, 175, 0.4) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  animation: viewed-badge-glow
+    v-bind('(animationConfig.viewedBadge?.glowDurationMs || 800) + "ms"')
+    ease-out forwards;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@keyframes viewed-badge-glow {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+/* Reduced motion support for viewed badge */
+@media (prefers-reduced-motion: reduce) {
+  .viewed-badge--animate,
+  .viewed-badge__icon--bounce {
+    animation: none;
+  }
+
+  .viewed-badge--animate::after {
     display: none;
   }
 }
