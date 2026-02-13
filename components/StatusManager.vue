@@ -95,7 +95,7 @@
           :placeholder="contentConfig.statusManager.placeholders.reason"
           class="reason-field"
           @keydown="handleKeydown"
-        >
+        />
       </div>
 
       <div class="notes-input">
@@ -155,11 +155,7 @@
               key="loading"
               class="update-button__icon update-button__icon--spin"
             >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle
                   class="opacity-25"
                   cx="12"
@@ -175,11 +171,7 @@
                 />
               </svg>
             </span>
-            <span
-              v-else
-              key="default"
-              class="update-button__icon"
-            >
+            <span v-else key="default" class="update-button__icon">
               <svg
                 class="w-4 h-4"
                 fill="none"
@@ -288,12 +280,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -341,7 +328,9 @@ const initialStatus = ref(props.currentStatus)
 const showSuccessState = ref(false)
 const announcement = ref('')
 const successResetTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
-const messageDismissDelayMs = 4000 // Auto-dismiss message after 4 seconds
+// Flexy hates hardcoded values! Using config instead.
+const messageDismissDelayMs =
+  animationConfig.statusManager.messageDismissDelayMs
 
 // Track if status has changed from initial
 const hasStatusChanged = computed(() => {
@@ -365,12 +354,12 @@ const getStatusLabel = (status: string): string => {
   return labels[status] || status
 }
 
-// Announce to screen readers
+// Announce to screen readers - Flexy hates hardcoded timeouts!
 const announce = (message: string) => {
   announcement.value = message
   setTimeout(() => {
     announcement.value = ''
-  }, 1000)
+  }, animationConfig.statusManager.announcementTimeoutMs)
 }
 
 // Handle keyboard shortcuts - Palette's micro-UX delight!
@@ -403,13 +392,13 @@ const handleUpdate = async () => {
       // Announce to screen readers
       announce(contentConfig.statusManager.messages.success)
 
-      // Reset success state after delay
+      // Reset success state after delay - Flexy hates hardcoded timeouts!
       if (successResetTimeout.value) {
         clearTimeout(successResetTimeout.value)
       }
       successResetTimeout.value = setTimeout(() => {
         showSuccessState.value = false
-      }, 2000)
+      }, animationConfig.statusManager.successResetDelayMs)
 
       // Auto-clear lastUpdate after message dismiss delay
       setTimeout(() => {
