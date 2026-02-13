@@ -215,6 +215,17 @@ export const animationConfig = {
     resetDelayMs: parseInt(process.env.COPY_SUCCESS_RESET_MS || '2000'),
     // Duration for the copied tooltip to remain visible (ms)
     tooltipDurationMs: parseInt(process.env.COPY_SUCCESS_TOOLTIP_MS || '1500'),
+    // Checkmark animation delay for copy success (seconds)
+    checkmarkDelaySec: parseFloat(
+      process.env.COPY_SUCCESS_CHECKMARK_DELAY || '0.3'
+    ),
+  },
+
+  // Global easing functions for animations
+  easing: {
+    spring: EASING_REF.SPRING_STANDARD,
+    snappy: EASING_REF.SPRING_SNAPPY,
+    smooth: EASING_REF.MATERIAL_STANDARD,
   },
 
   // Copy Error Animation - UX feedback when clipboard fails
@@ -240,6 +251,10 @@ export const animationConfig = {
     // Delay before checkmark starts drawing (seconds)
     checkmarkDelaySec: parseFloat(
       process.env.COPY_FEEDBACK_CHECKMARK_DELAY || '0.06'
+    ),
+    // Success pop animation duration (ms) - for button feedback
+    successPopDurationMs: parseInt(
+      process.env.COPY_FEEDBACK_SUCCESS_POP_DURATION || '300'
     ),
     // Tooltip styling values - Flexy hates hardcoded CSS!
     styles: {
@@ -292,6 +307,8 @@ export const animationConfig = {
     feedbackDurationMs: parseInt(
       process.env.BUTTON_FEEDBACK_DURATION_MS || '150'
     ),
+    // Ripple animation duration for button press effects (ms)
+    rippleDurationMs: parseInt(process.env.BUTTON_RIPPLE_DURATION_MS || '600'),
   },
 
   // Icon Interaction Animations - Palette's micro-UX delight!
@@ -470,6 +487,14 @@ export const animationConfig = {
     // Milestone interval for progress announcements (percent)
     milestoneInterval: parseInt(
       process.env.READING_PROGRESS_MILESTONE_INTERVAL || '25'
+    ),
+    // Celebration animation duration when reading completes (ms)
+    celebrationDurationMs: parseInt(
+      process.env.READING_PROGRESS_CELEBRATION_DURATION || '3000'
+    ),
+    // Scroll timeout for progress updates (ms)
+    scrollTimeoutMs: parseInt(
+      process.env.READING_PROGRESS_SCROLL_TIMEOUT || '100'
     ),
   },
 
@@ -1378,6 +1403,14 @@ export const animationConfig = {
     checkmarkSize: parseInt(process.env.PIXEL_CHECKMARK_SIZE || '16'),
     tooltipGap: parseInt(process.env.PIXEL_TOOLTIP_GAP || '6'),
     arrowOffset: parseInt(process.env.PIXEL_ARROW_OFFSET || '4'),
+    // Resource share section margin (px)
+    shareSectionMargin: parseInt(
+      process.env.PIXEL_SHARE_SECTION_MARGIN || '32'
+    ),
+    // Share button padding (px)
+    shareButtonPadding: parseInt(process.env.PIXEL_SHARE_BUTTON_PADDING || '8'),
+    // Ripple effect size (px)
+    rippleSize: parseInt(process.env.PIXEL_RIPPLE_SIZE || '100'),
   },
 
   // SVG Stroke Animation Values - Flexy hates hardcoded stroke-dasharray!
