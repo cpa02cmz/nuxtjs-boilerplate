@@ -22,6 +22,9 @@ RUN npm run build
 # Stage 2: Production
 FROM node:20-alpine AS runner
 
+# Install wget for healthcheck
+RUN apk add --no-cache wget
+
 # Set working directory
 WORKDIR /app
 
