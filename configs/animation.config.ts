@@ -260,9 +260,22 @@ export const animationConfig = {
     },
   },
 
-  // Suggestion/Filter Animations
+  // Suggestion/Filter Animations - Palette's micro-UX delight!
+  // Adds tactile press feedback and spring animations for delightful interactions
   suggestion: {
     staggerDelayMs: parseInt(process.env.SUGGESTION_STAGGER_DELAY_MS || '100'),
+    // Press animation duration for tactile feedback (ms)
+    pressDurationMs: parseInt(
+      process.env.SUGGESTION_PRESS_DURATION_MS || '100'
+    ),
+    // Scale factor when item is pressed (0.98 = 98% of original size)
+    pressScale: parseFloat(process.env.SUGGESTION_PRESS_SCALE || '0.98'),
+    // Spring back animation duration after release (ms)
+    springBackDurationMs: parseInt(
+      process.env.SUGGESTION_SPRING_BACK_MS || '300'
+    ),
+    // Background color transition duration (ms)
+    bgTransitionMs: parseInt(process.env.SUGGESTION_BG_TRANSITION_MS || '150'),
   },
 
   // Navigation/Transition Animations
