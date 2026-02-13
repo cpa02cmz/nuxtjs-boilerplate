@@ -159,4 +159,78 @@ export async function disconnectDatabase(): Promise<void> {
   }
 }
 
+// Query timeout configuration per environment
+const getQueryTimeout = (): number => {
+  const env = process.env.NODE_ENV || 'development'
+
+  const timeouts = {
+    development: databaseConfig.query.timeoutMs || 5000,
+    production: databaseConfig.query.timeoutMs || 10000,
+    test: 1000, // Always 1s for tests to fail fast
+  }
+
+  return timeouts[env as keyof typeof timeouts] || timeouts.development
+}
+
+const QUERY_TIMEOUT_MS = getQueryTimeout()
+
+/**
+ * Execute a database query with timeout protection
+ * Prevents queries from hanging indefinitely during high load or lock contention
+ *
+ * @param queryFn - Function that returns a Promise (the database query)
+ * @param timeoutMs - Optional custom timeout in milliseconds
+ * @param operationName - Name of the operation for logging
+ * @returns Promise with query result
+ * @throws Error if query times out or fails
+ */
+export async function executeWithTimeout<T>(
+  queryFn: () => Promise<T>,
+  timeoutMs: number = QUERY_TIMEOUT_MS,
+  operationName: string = 'database query'
+): Promise<T> {
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(
+        new Error(
+          `Query timeout: ${operationName} exceeded ${timeoutMs}ms limit`
+        )
+      )
+    }, timeoutMs)
+
+    // Clean up timeout if query completes first
+    return () => clearTimeout(timeoutId)
+  })
+
+  const startTime = Date.now()
+
+  try {
+    // Race between query and timeout
+    const result = await Promise.race([queryFn(), timeoutPromise])
+
+    const duration = Date.now() - startTime
+
+    // Log slow queries for debugging (queries taking > 50% of timeout)
+    if (duration > timeoutMs * 0.5) {
+      console.warn(
+        `${LOG_PREFIX} Slow query detected: ${operationName} took ${duration}ms (timeout: ${timeoutMs}ms)`
+      )
+    }
+
+    return result
+  } catch (error) {
+    const duration = Date.now() - startTime
+
+    if (error instanceof Error && error.message.includes('Query timeout')) {
+      console.error(
+        `${LOG_PREFIX} Query timed out after ${duration}ms: ${operationName}`
+      )
+      throw error
+    }
+
+    // Re-throw original error
+    throw error
+  }
+}
+
 export default prisma
