@@ -1,9 +1,9 @@
 // Animation Configuration - All Animation Timing and Duration Settings
 // Flexy hates hardcoded values! All animation settings are now configurable.
-import { easingConfig } from './easing.config'
+import { EASING as EASING_CONSTANTS } from './easing.config'
 
 // Convenience alias for cubic-bezier easing functions
-const EASING = easingConfig.cubicBezier
+const EASING_REF = EASING_CONSTANTS
 
 export const animationConfig = {
   // Tooltip Animations
@@ -78,7 +78,7 @@ export const animationConfig = {
     // Scale factor at peak of animation
     peakScale: parseFloat(process.env.SEARCH_COMPLETE_PEAK_SCALE || '1.2'),
     // Easing function for the animation
-    easing: process.env.SEARCH_COMPLETE_EASING || EASING.SPRING_STANDARD,
+    easing: process.env.SEARCH_COMPLETE_EASING || EASING_REF.SPRING_STANDARD,
   },
 
   // Focus Glow Effect - Palette's micro-UX enhancement!
@@ -237,7 +237,7 @@ export const animationConfig = {
       process.env.ICON_INTERACTION_ACTIVE_SCALE || '0.95'
     ),
     // Cubic bezier easing for bouncy feel
-    easing: process.env.ICON_INTERACTION_EASING || EASING.SPRING_STANDARD,
+    easing: process.env.ICON_INTERACTION_EASING || EASING_REF.SPRING_STANDARD,
   },
 
   // Search Tracking Delay
@@ -590,7 +590,7 @@ export const animationConfig = {
     // CSS duration string for transitions
     durationSec: `${parseInt(process.env.FLOATING_LABEL_DURATION_MS || '200') / 1000}s`,
     // Easing function for the animation
-    easing: process.env.FLOATING_LABEL_EASING || EASING.MATERIAL_STANDARD,
+    easing: process.env.FLOATING_LABEL_EASING || EASING_REF.MATERIAL_STANDARD,
     // Scale factor when label floats up (0.85 = 85% of original size)
     scale: parseFloat(process.env.FLOATING_LABEL_SCALE || '0.85'),
     // Vertical translation when floating (px) - moves up
@@ -914,6 +914,30 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion: process.env.PRESS_AND_HOLD_REDUCED_MOTION !== 'false',
   },
+
+  // Breadcrumbs Micro-UX - Palette's navigational delight! 🧭
+  // Adds satisfying slide-in underline and pulsing indicator for better navigation feedback
+  breadcrumbs: {
+    // Duration of the underline slide-in animation (ms)
+    underlineDurationMs: parseInt(
+      process.env.BREADCRUMBS_UNDERLINE_DURATION_MS || '250'
+    ),
+    // CSS duration string for v-bind
+    underlineDurationSec: `${parseInt(process.env.BREADCRUMBS_UNDERLINE_DURATION_MS || '250') / 1000}s`,
+    // Duration of the current page indicator pulse (ms)
+    pulseDurationMs: parseInt(
+      process.env.BREADCRUMBS_PULSE_DURATION_MS || '2000'
+    ),
+    // CSS duration string for v-bind
+    pulseDurationSec: `${parseInt(process.env.BREADCRUMBS_PULSE_DURATION_MS || '2000') / 1000}s`,
+    // Scale factor for the pulse dot
+    pulseScale: parseFloat(process.env.BREADCRUMBS_PULSE_SCALE || '1.2'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion: process.env.BREADCRUMBS_REDUCED_MOTION !== 'false',
+  },
+
+  // Convenience easing reference for component use - uses standard ease-out
+  easeOutQuart: 'cubic-bezier(0.25, 1, 0.5, 1)',
 } as const
 
 export type AnimationConfig = typeof animationConfig
