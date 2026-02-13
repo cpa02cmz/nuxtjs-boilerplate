@@ -256,7 +256,9 @@ const checkConnection = async () => {
 
     // Brief delay to show success state before redirect
     setTimeout(() => {
-      window.location.href = window.location.origin
+      if (typeof window !== 'undefined') {
+        window.location.href = window.location.origin
+      }
     }, animationConfig.offlineRetry.redirectDelayMs)
   } else {
     // Still offline
