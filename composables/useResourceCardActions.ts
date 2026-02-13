@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { useRuntimeConfig, useNuxtApp } from '#imports'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import { useVisitedResources } from '~/composables/useVisitedResources'
@@ -64,6 +64,8 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
   const showCopiedTooltip = ref(false)
   const copiedTooltipPosition = ref({ x: 0, y: 0 })
   let copiedTooltipTimeout: ReturnType<typeof setTimeout> | null = null
+  let navigationTimeout: ReturnType<typeof setTimeout> | null = null
+  let copiedResetTimeout: ReturnType<typeof setTimeout> | null = null
 
   // Check if resource is new (added within the configured threshold days)
   const isNew = computed(() => {
@@ -119,7 +121,7 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
         ? 0
         : animationConfig.navigation.reducedMotionDelayMs
 
-      setTimeout(() => {
+      navigationTimeout = setTimeout(() => {
         navigateTo('/compare')
       }, navigationDelay)
     } else if (result.reason === 'limit_reached') {
@@ -174,7 +176,7 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
       const { $toast } = useNuxtApp()
       $toast.success(`Link to "${title}" copied to clipboard!`)
 
-      setTimeout(() => {
+      copiedResetTimeout = setTimeout(() => {
         isCopied.value = false
         isCopyAnimating.value = false
         copyStatus.value = ''
@@ -206,6 +208,26 @@ export function useResourceCardActions(options: UseResourceCardActionsOptions) {
       }, animationConfig.copyError.resetDelayMs)
     }
   }
+
+  // Cleanup function to clear all timeouts on component unmount
+  onUnmounted(() => {
+    if (copyErrorTimeout.value) {
+      clearTimeout(copyErrorTimeout.value)
+      copyErrorTimeout.value = null
+    }
+    if (copiedTooltipTimeout) {
+      clearTimeout(copiedTooltipTimeout)
+      copiedTooltipTimeout = null
+    }
+    if (navigationTimeout) {
+      clearTimeout(navigationTimeout)
+      navigationTimeout = null
+    }
+    if (copiedResetTimeout) {
+      clearTimeout(copiedResetTimeout)
+      copiedResetTimeout = null
+    }
+  })
 
   return {
     // State

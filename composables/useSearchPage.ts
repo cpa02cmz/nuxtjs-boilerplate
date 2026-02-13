@@ -1,4 +1,4 @@
-import { computed, ref, readonly, watch } from 'vue'
+import { computed, ref, readonly, watch, onUnmounted } from 'vue'
 import type { SortOption } from '~/types/resource'
 import { useResourceData } from './useResourceData'
 import { useAdvancedResourceSearch } from './useAdvancedResourceSearch'
@@ -40,6 +40,9 @@ export const useSearchPage = () => {
 
   // Cache for facet counts to avoid recalculation on every filter change
   const facetCountsCache = ref<Map<string, Record<string, number>>>(new Map())
+
+  // Track analytics timeout for cleanup
+  let analyticsTimeout: ReturnType<typeof setTimeout> | null = null
 
   watch(
     () => resources.value,
@@ -249,7 +252,12 @@ export const useSearchPage = () => {
   const handleSearch = (query: string) => {
     updateSearchQuery(query)
 
-    setTimeout(() => {
+    // Clear existing timeout to prevent accumulation during rapid searches
+    if (analyticsTimeout) {
+      clearTimeout(analyticsTimeout)
+    }
+
+    analyticsTimeout = setTimeout(() => {
       trackSearch(query, filteredResources.value.length)
     }, animationConfig.analytics.trackingDelayMs)
   }
@@ -258,6 +266,14 @@ export const useSearchPage = () => {
   const clearFacetCache = () => {
     facetCountsCache.value.clear()
   }
+
+  // Cleanup on component unmount
+  onUnmounted(() => {
+    if (analyticsTimeout) {
+      clearTimeout(analyticsTimeout)
+      analyticsTimeout = null
+    }
+  })
 
   return {
     filterOptions: readonly(filterOptions),
