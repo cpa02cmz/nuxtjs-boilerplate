@@ -95,7 +95,7 @@
           :placeholder="contentConfig.statusManager.placeholders.reason"
           class="reason-field"
           @keydown="handleKeydown"
-        >
+        />
       </div>
 
       <div class="notes-input">
@@ -155,11 +155,7 @@
               key="loading"
               class="update-button__icon update-button__icon--spin"
             >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle
                   class="opacity-25"
                   cx="12"
@@ -175,11 +171,7 @@
                 />
               </svg>
             </span>
-            <span
-              v-else
-              key="default"
-              class="update-button__icon"
-            >
+            <span v-else key="default" class="update-button__icon">
               <svg
                 class="w-4 h-4"
                 fill="none"
@@ -288,12 +280,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -304,10 +291,14 @@ import { ref, computed, watch, onUnmounted } from 'vue'
 import { useResourceStatusManager } from '~/composables/useResourceStatusManager'
 import { componentStylesConfig } from '~/configs/component-styles.config'
 import { contentConfig } from '~/configs/content.config'
+import { animationConfig } from '~/configs/animation.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
 // Flexy hates hardcoded values! Using config instead.
 const styles = componentStylesConfig.statusManager
+
+// Flexy loves modularity! Expose animation config for CSS v-bind
+const animConfig = animationConfig.statusManager
 
 interface Props {
   resourceId: string
@@ -473,60 +464,61 @@ onUnmounted(() => {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.025em;
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animConfig.transitionDurationSec') ease-out;
 }
 
 .status-badge__dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  animation: status-pulse 2s ease-in-out infinite;
+  animation: status-pulse v-bind('`${animConfig.badgePulseDurationSec}s`')
+    ease-in-out infinite;
 }
 
-/* Status badge color variants */
+/* Status badge color variants - Flexy hates hardcoded hex codes! */
 .status-badge--active {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: v-bind('animConfig.colors.active.bg');
+  color: v-bind('animConfig.colors.active.text');
 }
 
 .status-badge--active .status-badge__dot {
-  background-color: #10b981;
+  background-color: v-bind('animConfig.colors.active.dot');
 }
 
 .status-badge--deprecated {
-  background-color: #fef3c7;
-  color: #92400e;
+  background-color: v-bind('animConfig.colors.deprecated.bg');
+  color: v-bind('animConfig.colors.deprecated.text');
 }
 
 .status-badge--deprecated .status-badge__dot {
-  background-color: #f59e0b;
+  background-color: v-bind('animConfig.colors.deprecated.dot');
 }
 
 .status-badge--discontinued {
-  background-color: #fee2e2;
-  color: #991b1b;
+  background-color: v-bind('animConfig.colors.discontinued.bg');
+  color: v-bind('animConfig.colors.discontinued.text');
 }
 
 .status-badge--discontinued .status-badge__dot {
-  background-color: #ef4444;
+  background-color: v-bind('animConfig.colors.discontinued.dot');
 }
 
 .status-badge--updated {
-  background-color: #dbeafe;
-  color: #1e40af;
+  background-color: v-bind('animConfig.colors.updated.bg');
+  color: v-bind('animConfig.colors.updated.text');
 }
 
 .status-badge--updated .status-badge__dot {
-  background-color: #3b82f6;
+  background-color: v-bind('animConfig.colors.updated.dot');
 }
 
 .status-badge--pending {
-  background-color: #f3e8ff;
-  color: #6b21a8;
+  background-color: v-bind('animConfig.colors.pending.bg');
+  color: v-bind('animConfig.colors.pending.text');
 }
 
 .status-badge--pending .status-badge__dot {
-  background-color: #a855f7;
+  background-color: v-bind('animConfig.colors.pending.dot');
 }
 
 @keyframes status-pulse {
@@ -579,7 +571,7 @@ onUnmounted(() => {
   border-radius: v-bind('styles.inputBorderRadius');
   background-color: white;
   font-size: v-bind('styles.inputFontSize');
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animConfig.transitionDurationSec') ease-out;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -589,14 +581,14 @@ onUnmounted(() => {
 
 .status-dropdown:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: v-bind('animConfig.focusColor');
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Change indicator animation */
+/* Change indicator animation - Flexy hates hardcoded values! */
 .status-dropdown--changed {
-  border-color: #f59e0b;
-  background-color: #fffbeb;
+  border-color: v-bind('animConfig.changeBorderColor');
+  background-color: v-bind('animConfig.changeBgColor');
 }
 
 .change-indicator {
@@ -607,10 +599,11 @@ onUnmounted(() => {
   justify-content: center;
   width: 1.25rem;
   height: 1.25rem;
-  background-color: #f59e0b;
+  background-color: v-bind('animConfig.changeBorderColor');
   color: white;
   border-radius: 50%;
-  animation: change-pulse 1.5s ease-in-out infinite;
+  animation: change-pulse v-bind('`${animConfig.changePulseDurationSec}s`')
+    ease-in-out infinite;
 }
 
 @keyframes change-pulse {
@@ -631,12 +624,12 @@ onUnmounted(() => {
     v-bind('styles.inputBorderColor');
   border-radius: v-bind('styles.inputBorderRadius');
   font-size: v-bind('styles.inputFontSize');
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animConfig.transitionDurationSec') ease-out;
 }
 
 .reason-field:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: v-bind('animConfig.focusColor');
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -648,12 +641,12 @@ onUnmounted(() => {
   font-size: v-bind('styles.inputFontSize');
   min-height: v-bind('styles.notesMinHeight');
   resize: vertical;
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animConfig.transitionDurationSec') ease-out;
 }
 
 .notes-field:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: v-bind('animConfig.focusColor');
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -669,7 +662,7 @@ onUnmounted(() => {
   font-weight: v-bind('styles.buttonFontWeight');
   font-size: v-bind('styles.buttonFontSize');
   overflow: hidden;
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animConfig.transitionDurationSec') ease-out;
   min-width: 140px;
 }
 
@@ -689,7 +682,8 @@ onUnmounted(() => {
 }
 
 .update-button__icon--spin {
-  animation: button-spin 1s linear infinite;
+  animation: button-spin v-bind('`${animConfig.buttonSpinDurationSec}s`') linear
+    infinite;
 }
 
 @keyframes button-spin {
@@ -719,9 +713,10 @@ onUnmounted(() => {
   opacity: 0.8;
 }
 
-/* Ready state - subtle pulse to indicate actionability */
+/* Ready state - subtle pulse to indicate actionability - Flexy hates hardcoded values! */
 .update-button--ready {
-  animation: ready-pulse 2s ease-in-out infinite;
+  animation: ready-pulse v-bind('`${animConfig.readyPulseDurationSec}s`')
+    ease-in-out infinite;
   box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
 }
 
@@ -735,10 +730,11 @@ onUnmounted(() => {
   }
 }
 
-/* Success state */
+/* Success state - Flexy hates hardcoded values! */
 .update-button--success {
-  background-color: #10b981 !important;
-  animation: success-bounce 0.5s ease-out;
+  background-color: v-bind('animConfig.colors.active.dot') !important;
+  animation: success-bounce v-bind('`${animConfig.successBounceDurationSec}s`')
+    ease-out;
 }
 
 @keyframes success-bounce {
@@ -756,7 +752,7 @@ onUnmounted(() => {
   }
 }
 
-/* Success ripple effect */
+/* Success ripple effect - Flexy hates hardcoded values! */
 .update-button__ripple {
   position: absolute;
   inset: 0;
@@ -765,7 +761,8 @@ onUnmounted(() => {
     rgba(255, 255, 255, 0.3) 0%,
     transparent 70%
   );
-  animation: ripple-out 0.6s ease-out forwards;
+  animation: ripple-out v-bind('`${animConfig.rippleOutDurationSec}s`') ease-out
+    forwards;
   pointer-events: none;
 }
 
@@ -808,15 +805,15 @@ onUnmounted(() => {
 }
 
 .update-result--success {
-  background-color: #d1fae5;
+  background-color: v-bind('animConfig.colors.active.bg');
   border: 1px solid #a7f3d0;
-  color: #065f46;
+  color: v-bind('animConfig.colors.active.text');
 }
 
 .update-result--error {
-  background-color: #fee2e2;
+  background-color: v-bind('animConfig.colors.discontinued.bg');
   border: 1px solid #fecaca;
-  color: #991b1b;
+  color: v-bind('animConfig.colors.discontinued.text');
 }
 
 .update-result__content {
