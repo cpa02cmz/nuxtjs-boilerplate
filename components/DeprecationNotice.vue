@@ -149,6 +149,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   status?:
@@ -318,7 +319,7 @@ onUnmounted(() => {
   border-left-width: 4px;
   position: relative;
   overflow: hidden;
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease-out;
 }
 
 /* Status-specific styles using config */
@@ -355,8 +356,11 @@ onUnmounted(() => {
 }
 
 .animate-attention {
-  animation: icon-attention 2s ease-in-out;
-  animation-delay: 0.5s;
+  animation: icon-attention
+    v-bind('animationConfig.cssAnimations.iconAttentionDurationSec') ease-in-out;
+  animation-delay: v-bind(
+    'animationConfig.cssAnimations.iconAttentionDelaySec'
+  );
 }
 
 @keyframes icon-attention {
@@ -427,7 +431,7 @@ onUnmounted(() => {
   border-radius: 0.25rem;
   color: currentColor;
   opacity: 0.5;
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease-out;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -445,7 +449,8 @@ onUnmounted(() => {
 }
 
 .dismiss-btn svg {
-  transition: transform 0.2s ease-out;
+  transition: transform v-bind('animationConfig.cssTransitions.normalSec')
+    ease-out;
 }
 
 /* Action buttons */
@@ -462,7 +467,7 @@ onUnmounted(() => {
   font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease-out;
   display: inline-flex;
   align-items: center;
 }

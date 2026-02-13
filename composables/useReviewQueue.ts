@@ -3,6 +3,7 @@ import { useNuxtApp } from '#app'
 import { logError } from '~/utils/errorLogger'
 import { debounce } from '~/utils/debounce'
 import { timeConfig } from '~/configs/time.config'
+import { messagesConfig } from '~/configs/messages.config'
 import type { Submission } from '~/types/submission'
 
 export function useReviewQueue(initialSubmissions: Submission[] = []) {
@@ -34,10 +35,10 @@ export function useReviewQueue(initialSubmissions: Submission[] = []) {
         error.value =
           response.data?.message ||
           response.error?.message ||
-          'Failed to load submissions'
+          messagesConfig.errors.submission.loadListFailed
       }
     } catch (err) {
-      error.value = 'An error occurred while fetching submissions'
+      error.value = messagesConfig.errors.submission.fetchListError
       logError(
         'Error fetching submissions in ReviewQueue:',
         err as Error,

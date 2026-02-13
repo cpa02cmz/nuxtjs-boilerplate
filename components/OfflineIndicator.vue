@@ -618,7 +618,7 @@ onUnmounted(() => {
   border: 1px solid rgb(251, 191, 36); /* amber-400 */
   border-radius: 9999px;
   cursor: pointer;
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease-out;
   outline: none;
   position: relative;
   overflow: hidden;
@@ -661,7 +661,8 @@ onUnmounted(() => {
 .retry-icon {
   width: 0.875rem;
   height: 0.875rem;
-  transition: transform 0.3s ease-out;
+  transition: transform v-bind('animationConfig.cssTransitions.standardSec')
+    ease-out;
 }
 
 .retry-button:hover:not(:disabled) .retry-icon {

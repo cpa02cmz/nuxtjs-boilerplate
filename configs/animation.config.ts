@@ -70,6 +70,35 @@ export const animationConfig = {
     ),
   },
 
+  // OptimizedImage Component Animations - Palette's micro-UX enhancement!
+  // Enhanced loading states, hover effects, and error handling for images
+  optimizedImage: {
+    // Entrance animation durations based on load time
+    fastEntranceMs: parseInt(process.env.IMAGE_FAST_ENTRANCE_MS || '200'),
+    normalEntranceMs: parseInt(process.env.IMAGE_NORMAL_ENTRANCE_MS || '400'),
+    slowEntranceMs: parseInt(process.env.IMAGE_SLOW_ENTRANCE_MS || '600'),
+    // Entrance animation start scale (slightly smaller for pop effect)
+    entranceStartScale: parseFloat(
+      process.env.IMAGE_ENTRANCE_START_SCALE || '0.95'
+    ),
+    // Hover zoom scale factor
+    hoverZoomScale: parseFloat(process.env.IMAGE_HOVER_ZOOM_SCALE || '1.05'),
+    // Hover animation duration
+    hoverDurationMs: parseInt(process.env.IMAGE_HOVER_DURATION_MS || '300'),
+    // Border radius for wrapper
+    borderRadius: process.env.IMAGE_BORDER_RADIUS || '4px',
+    // Placeholder background color
+    placeholderBg: process.env.IMAGE_PLACEHOLDER_BG || '#f3f4f6',
+    // Loading spinner rotation duration
+    spinnerRotateDurationSec: `${parseInt(process.env.IMAGE_SPINNER_ROTATE_MS || '1000') / 1000}s`,
+    // Loading spinner dash animation duration
+    spinnerDashDurationSec: `${parseInt(process.env.IMAGE_SPINNER_DASH_MS || '1500') / 1000}s`,
+    // Error state pulse duration
+    errorPulseDurationSec: `${parseInt(process.env.IMAGE_ERROR_PULSE_MS || '2000') / 1000}s`,
+    // Retry button spin duration
+    retrySpinDurationSec: `${parseInt(process.env.IMAGE_RETRY_SPIN_MS || '1000') / 1000}s`,
+  },
+
   // Card Entrance Animations
   card: {
     staggerDelayMs: parseInt(process.env.CARD_STAGGER_DELAY_MS || '50'),
@@ -246,9 +275,22 @@ export const animationConfig = {
     },
   },
 
-  // Suggestion/Filter Animations
+  // Suggestion/Filter Animations - Palette's micro-UX delight!
+  // Adds tactile press feedback and spring animations for delightful interactions
   suggestion: {
     staggerDelayMs: parseInt(process.env.SUGGESTION_STAGGER_DELAY_MS || '100'),
+    // Press animation duration for tactile feedback (ms)
+    pressDurationMs: parseInt(
+      process.env.SUGGESTION_PRESS_DURATION_MS || '100'
+    ),
+    // Scale factor when item is pressed (0.98 = 98% of original size)
+    pressScale: parseFloat(process.env.SUGGESTION_PRESS_SCALE || '0.98'),
+    // Spring back animation duration after release (ms)
+    springBackDurationMs: parseInt(
+      process.env.SUGGESTION_SPRING_BACK_MS || '300'
+    ),
+    // Background color transition duration (ms)
+    bgTransitionMs: parseInt(process.env.SUGGESTION_BG_TRANSITION_MS || '150'),
   },
 
   // Navigation/Transition Animations
@@ -646,6 +688,88 @@ export const animationConfig = {
     // Easing functions
     easeOut: process.env.TRANSITION_EASE_OUT || 'ease-out',
     easeIn: process.env.TRANSITION_EASE_IN || 'ease-in',
+  },
+
+  // CSS Transition Durations - Flexy hates hardcoded CSS duration values!
+  // For use in <style> sections of Vue components with CSS transitions
+  cssTransitions: {
+    // Instant/Immediate transitions (1ms) - for reduced motion or instant feedback
+    instantMs: parseInt(process.env.CSS_TRANSITION_INSTANT_MS || '1'),
+    instantSec: `${parseInt(process.env.CSS_TRANSITION_INSTANT_MS || '1') / 1000}s`,
+
+    // Ultra-fast transitions (50ms) - for micro-interactions
+    ultraFastMs: parseInt(process.env.CSS_TRANSITION_ULTRA_FAST_MS || '50'),
+    ultraFastSec: `${parseInt(process.env.CSS_TRANSITION_ULTRA_FAST_MS || '50') / 1000}s`,
+
+    // Fast transitions (100ms/0.1s) - for quick feedback like opacity changes
+    fastMs: parseInt(process.env.CSS_TRANSITION_FAST_MS || '100'),
+    fastSec: `${parseInt(process.env.CSS_TRANSITION_FAST_MS || '100') / 1000}s`,
+
+    // Quick transitions (150ms) - for button presses and small UI changes
+    quickMs: parseInt(process.env.CSS_TRANSITION_QUICK_MS || '150'),
+    quickSec: `${parseInt(process.env.CSS_TRANSITION_QUICK_MS || '150') / 1000}s`,
+
+    // Normal transitions (200ms/0.2s) - for most UI interactions
+    normalMs: parseInt(process.env.CSS_TRANSITION_NORMAL_MS || '200'),
+    normalSec: `${parseInt(process.env.CSS_TRANSITION_NORMAL_MS || '200') / 1000}s`,
+
+    // Standard transitions (300ms/0.3s) - for hover states and transforms
+    standardMs: parseInt(process.env.CSS_TRANSITION_STANDARD_MS || '300'),
+    standardSec: `${parseInt(process.env.CSS_TRANSITION_STANDARD_MS || '300') / 1000}s`,
+
+    // Slow transitions (400ms) - for more noticeable animations
+    slowMs: parseInt(process.env.CSS_TRANSITION_SLOW_MS || '400'),
+    slowSec: `${parseInt(process.env.CSS_TRANSITION_SLOW_MS || '400') / 1000}s`,
+
+    // Slower transitions (500ms) - for entrance/exit animations
+    slowerMs: parseInt(process.env.CSS_TRANSITION_SLOWER_MS || '500'),
+    slowerSec: `${parseInt(process.env.CSS_TRANSITION_SLOWER_MS || '500') / 1000}s`,
+
+    // Long transitions (600ms) - for dramatic effects
+    longMs: parseInt(process.env.CSS_TRANSITION_LONG_MS || '600'),
+    longSec: `${parseInt(process.env.CSS_TRANSITION_LONG_MS || '600') / 1000}s`,
+
+    // Hover-specific transitions (commonly 200-300ms)
+    hoverMs: parseInt(process.env.CSS_TRANSITION_HOVER_MS || '200'),
+    hoverSec: `${parseInt(process.env.CSS_TRANSITION_HOVER_MS || '200') / 1000}s`,
+
+    // Reduced motion transitions (shorter duration for accessibility)
+    reducedMotionMs: parseInt(process.env.CSS_TRANSITION_REDUCED_MS || '100'),
+    reducedMotionSec: `${parseInt(process.env.CSS_TRANSITION_REDUCED_MS || '100') / 1000}s`,
+  },
+
+  // CSS Animation Timing - Flexy hates hardcoded animation delays!
+  // For CSS animations with animation-delay and animation-duration
+  cssAnimations: {
+    // Micro delays for staggered animations
+    microDelayMs: parseInt(process.env.CSS_ANIM_MICRO_DELAY_MS || '50'),
+    microDelaySec: `${parseInt(process.env.CSS_ANIM_MICRO_DELAY_MS || '50') / 1000}s`,
+
+    // Small delays (100-200ms)
+    smallDelayMs: parseInt(process.env.CSS_ANIM_SMALL_DELAY_MS || '100'),
+    smallDelaySec: `${parseInt(process.env.CSS_ANIM_SMALL_DELAY_MS || '100') / 1000}s`,
+
+    // Medium delays (300-500ms)
+    mediumDelayMs: parseInt(process.env.CSS_ANIM_MEDIUM_DELAY_MS || '300'),
+    mediumDelaySec: `${parseInt(process.env.CSS_ANIM_MEDIUM_DELAY_MS || '300') / 1000}s`,
+
+    // Large delays (800ms-1s) - for icon attention animations
+    iconAttentionDelayMs: parseInt(process.env.CSS_ANIM_ICON_DELAY_MS || '500'),
+    iconAttentionDelaySec: `${parseInt(process.env.CSS_ANIM_ICON_DELAY_MS || '500') / 1000}s`,
+
+    // Icon attention animation duration
+    iconAttentionDurationMs: parseInt(
+      process.env.CSS_ANIM_ICON_DURATION_MS || '2000'
+    ),
+    iconAttentionDurationSec: `${parseInt(process.env.CSS_ANIM_ICON_DURATION_MS || '2000') / 1000}s`,
+
+    // Standard animation duration
+    standardDurationMs: parseInt(process.env.CSS_ANIM_STANDARD_MS || '300'),
+    standardDurationSec: `${parseInt(process.env.CSS_ANIM_STANDARD_MS || '300') / 1000}s`,
+
+    // Long animation duration (3s for breathe animations)
+    longDurationMs: parseInt(process.env.CSS_ANIM_LONG_MS || '3000'),
+    longDurationSec: `${parseInt(process.env.CSS_ANIM_LONG_MS || '3000') / 1000}s`,
   },
 
   // Floating Label Animations - Palette's micro-UX delight!
@@ -1157,6 +1281,7 @@ export const animationConfig = {
     // Transition duration
     transitionDurationSec: `${parseInt(process.env.ZERO_RESULT_TRANSITION_DURATION_MS || '100') / 1000}s`,
   },
+
   // Convenience easing reference for component use - uses standard ease-out
   easeOutQuart: 'cubic-bezier(0.25, 1, 0.5, 1)',
 

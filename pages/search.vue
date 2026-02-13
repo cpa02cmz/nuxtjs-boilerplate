@@ -169,7 +169,7 @@
                     :key="resource.id"
                     :title="resource.title"
                     :description="resource.description"
-                    :benefits="resource.benefits"
+                    :benefits="[...resource.benefits]"
                     :url="resource.url"
                     :button-label="getButtonLabel(resource.category)"
                     :highlighted-title="
