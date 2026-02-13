@@ -267,6 +267,11 @@ export const uiConfig = {
     // Accessibility announcement text
     announcementText:
       process.env.SCROLL_ANNOUNCEMENT_TEXT || 'Scrolling to top of page',
+    // Keyboard shortcut feedback duration - how long to show button when triggered via keyboard
+    // Palette's micro-UX enhancement for visual feedback
+    keyboardShortcutFeedbackDurationMs: parseInt(
+      process.env.SCROLL_KEYBOARD_FEEDBACK_DURATION || '600'
+    ),
   },
 
   // Resource Status Component
