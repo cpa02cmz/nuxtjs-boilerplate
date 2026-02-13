@@ -1,7 +1,76 @@
 import db from './db'
 import { logger } from '~/utils/logger'
 
-export async function cleanupOldAnalyticsEvents(daysToKeep: number = 90) {
+// Validation constants for analytics retention
+const MIN_RETENTION_DAYS = 7
+const MAX_RETENTION_DAYS = 365
+const DEFAULT_RETENTION_DAYS = 90
+
+/**
+ * Validates retention days parameter
+ * @throws Error if validation fails
+ */
+function validateRetentionDays(days: number): void {
+  if (!Number.isInteger(days)) {
+    throw new Error(
+      `Retention days must be an integer, received: ${days} (${typeof days})`
+    )
+  }
+
+  if (days < MIN_RETENTION_DAYS) {
+    throw new Error(
+      `Retention days must be at least ${MIN_RETENTION_DAYS} days, received: ${days}`
+    )
+  }
+
+  if (days > MAX_RETENTION_DAYS) {
+    throw new Error(
+      `Retention days cannot exceed ${MAX_RETENTION_DAYS} days, received: ${days}`
+    )
+  }
+}
+
+/**
+ * Parses and validates retention days from environment variable
+ */
+function parseRetentionDaysFromEnv(): number {
+  const envValue = process.env.ANALYTICS_RETENTION_DAYS
+
+  if (!envValue) {
+    return DEFAULT_RETENTION_DAYS
+  }
+
+  const parsed = parseInt(envValue, 10)
+
+  if (isNaN(parsed)) {
+    logger.warn(
+      `Invalid ANALYTICS_RETENTION_DAYS value: "${envValue}". Using default: ${DEFAULT_RETENTION_DAYS}`
+    )
+    return DEFAULT_RETENTION_DAYS
+  }
+
+  try {
+    validateRetentionDays(parsed)
+    return parsed
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    logger.warn(`${message}. Using default: ${DEFAULT_RETENTION_DAYS}`)
+    return DEFAULT_RETENTION_DAYS
+  }
+}
+
+export async function cleanupOldAnalyticsEvents(
+  daysToKeep: number = DEFAULT_RETENTION_DAYS
+) {
+  // Validate input parameter
+  try {
+    validateRetentionDays(daysToKeep)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    logger.error(`Analytics cleanup validation failed: ${message}`)
+    throw error
+  }
+
   if (!db || !db.analyticsEvent) {
     logger.warn('Database not available - skipping analytics cleanup')
     return 0
@@ -47,9 +116,17 @@ export async function cleanupOldAnalyticsEvents(daysToKeep: number = 90) {
 }
 
 export async function runAnalyticsCleanup() {
-  const retentionDays = parseInt(process.env.ANALYTICS_RETENTION_DAYS || '90')
+  const retentionDays = parseRetentionDaysFromEnv()
 
-  if (retentionDays > 0) {
-    await cleanupOldAnalyticsEvents(retentionDays)
-  }
+  logger.info(
+    `Running analytics cleanup with retention period: ${retentionDays} days`
+  )
+
+  const deletedCount = await cleanupOldAnalyticsEvents(retentionDays)
+
+  logger.info(
+    `Analytics cleanup completed. Deleted ${deletedCount} events older than ${retentionDays} days`
+  )
+
+  return deletedCount
 }
