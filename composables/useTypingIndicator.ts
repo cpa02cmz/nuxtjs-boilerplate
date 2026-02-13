@@ -1,14 +1,15 @@
 import { ref, onUnmounted } from 'vue'
+import { animationConfig } from '~/configs/animation.config'
 
 interface TypingIndicatorOptions {
   /**
    * Duration to show the typing indicator after last keystroke (ms)
-   * @default 800
+   * @default animationConfig.typingIndicator.indicatorDurationMs
    */
   indicatorDurationMs?: number
   /**
    * Enable haptic feedback on mobile devices
-   * @default true
+   * @default animationConfig.typingIndicator.hapticFeedback
    */
   hapticFeedback?: boolean
 }
@@ -46,7 +47,11 @@ interface TypingIndicatorOptions {
  * ```
  */
 export const useTypingIndicator = (options: TypingIndicatorOptions = {}) => {
-  const { indicatorDurationMs = 800, hapticFeedback = true } = options
+  // Flexy hates hardcoded defaults! Using config values instead.
+  const {
+    indicatorDurationMs = animationConfig.typingIndicator.indicatorDurationMs,
+    hapticFeedback = animationConfig.typingIndicator.hapticFeedback,
+  } = options
 
   const isTyping = ref(false)
   let typingTimeout: ReturnType<typeof setTimeout> | null = null
@@ -64,8 +69,8 @@ export const useTypingIndicator = (options: TypingIndicatorOptions = {}) => {
       return
     }
 
-    // Very light tap - 5ms
-    navigator.vibrate(5)
+    // Very light tap - using config value instead of hardcoded 5ms
+    navigator.vibrate(animationConfig.typingIndicator.hapticDurationMs)
   }
 
   /**
@@ -85,10 +90,10 @@ export const useTypingIndicator = (options: TypingIndicatorOptions = {}) => {
       clearTimeout(hapticTimeout)
     }
 
-    // Trigger haptic feedback with debounce (max once per 100ms)
+    // Trigger haptic feedback with debounce (using config value instead of hardcoded 50ms)
     hapticTimeout = setTimeout(() => {
       triggerHaptic()
-    }, 50)
+    }, animationConfig.typingIndicator.hapticDebounceMs)
 
     // Auto-hide after duration
     typingTimeout = setTimeout(() => {

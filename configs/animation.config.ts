@@ -964,6 +964,16 @@ export const animationConfig = {
     ),
     // Transition duration
     transitionDurationSec: `${parseInt(process.env.STATUS_TRANSITION_DURATION_MS || '200') / 1000}s`,
+    // Timing values - Flexy hates hardcoded timeouts!
+    messageDismissDelayMs: parseInt(
+      process.env.STATUS_MESSAGE_DISMISS_DELAY_MS || '4000'
+    ),
+    announcementTimeoutMs: parseInt(
+      process.env.STATUS_ANNOUNCEMENT_TIMEOUT_MS || '1000'
+    ),
+    successResetDelayMs: parseInt(
+      process.env.STATUS_SUCCESS_RESET_DELAY_MS || '2000'
+    ),
     // Status badge colors - Flexy hates hardcoded hex codes!
     colors: {
       active: {
