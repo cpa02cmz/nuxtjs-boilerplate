@@ -1480,6 +1480,23 @@ export const animationConfig = {
     // Animation easing for stroke draw
     drawEasing: process.env.SVG_STROKE_DRAW_EASING || 'ease-out',
   },
+
+  // Comparison Value Animations - Palette's micro-UX enhancement!
+  // Delightful copy-to-clipboard interactions with visual feedback
+  comparisonValue: {
+    // Duration for copy feedback state (ms)
+    copyFeedbackDurationMs: parseInt(
+      process.env.COMPARISON_VALUE_COPY_FEEDBACK_MS || '2000'
+    ),
+    // Copy success animation duration (ms)
+    copySuccessAnimationMs: parseInt(
+      process.env.COMPARISON_VALUE_COPY_SUCCESS_MS || '400'
+    ),
+    // Boolean value pop animation duration (ms)
+    booleanPopDurationMs: parseInt(
+      process.env.COMPARISON_VALUE_BOOL_POP_MS || '300'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
