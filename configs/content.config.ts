@@ -1383,6 +1383,8 @@ export const contentConfig = {
       viewAlternatives:
         process.env.CONTENT_DEPRECATION_ACTION_ALTERNATIVES ||
         'View Alternatives',
+      dismiss:
+        process.env.CONTENT_DEPRECATION_ACTION_DISMISS || 'Dismiss notice',
     },
   },
 
