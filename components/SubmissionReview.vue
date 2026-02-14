@@ -367,6 +367,7 @@ import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { uiConfig } from '~/configs/ui.config'
 import { animationConfig } from '~/configs/animation.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 import { hapticSuccess, hapticError, hapticLight } from '~/utils/hapticFeedback'
 import LoadingSpinner from './LoadingSpinner.vue'
 
@@ -741,10 +742,10 @@ onMounted(() => {
 @keyframes status-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+    box-shadow: v-bind('shadowsConfig.submissionReview.warningPulseStart');
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(245, 158, 11, 0);
+    box-shadow: v-bind('shadowsConfig.submissionReview.warningPulseEnd');
   }
 }
 
@@ -903,7 +904,7 @@ onMounted(() => {
 .rejection-textarea:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: v-bind('shadowsConfig.submissionReview.editButton');
 }
 
 .rejection-textarea:disabled {
@@ -966,7 +967,7 @@ onMounted(() => {
     'componentColorsConfig.submissionReview.approveButtonHover'
   );
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  box-shadow: v-bind('shadowsConfig.submissionReview.approveGlow');
 }
 
 .btn-approve.btn--pressed {
@@ -984,7 +985,7 @@ onMounted(() => {
     'componentColorsConfig.submissionReview.rejectButtonHover'
   );
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  box-shadow: v-bind('shadowsConfig.submissionReview.rejectGlow');
 }
 
 .btn-reject.btn--pressed {
