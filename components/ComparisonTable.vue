@@ -214,7 +214,10 @@
         <p
           class="text-sm text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-6"
           :class="{ 'comparison-empty-text-reveal': !prefersReducedMotion }"
-          style="animation-delay: 100ms"
+          :style="{
+            animationDelay:
+              animationConfig.comparisonEmptyState.textRevealStaggerMs + 'ms',
+          }"
         >
           {{ contentConfig.comparison.emptyState.description }}
         </p>
@@ -222,7 +225,11 @@
         <!-- CTA Button -->
         <div
           :class="{ 'comparison-empty-text-reveal': !prefersReducedMotion }"
-          style="animation-delay: 200ms"
+          :style="{
+            animationDelay:
+              animationConfig.comparisonEmptyState.textRevealStaggerMs * 2 +
+              'ms',
+          }"
         >
           <button
             class="group relative inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-all duration-300"
@@ -254,7 +261,11 @@
           v-if="popularResources.length > 0"
           class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700"
           :class="{ 'comparison-empty-text-reveal': !prefersReducedMotion }"
-          style="animation-delay: 300ms"
+          :style="{
+            animationDelay:
+              animationConfig.comparisonEmptyState.textRevealStaggerMs * 3 +
+              'ms',
+          }"
         >
           <p
             class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4"
@@ -317,6 +328,7 @@ import { ref, computed, onMounted } from 'vue'
 import type { Resource } from '~/types/resource'
 import type { ComparisonCriteria } from '~/types/comparison'
 import { contentConfig } from '~/configs/content.config'
+import { animationConfig } from '~/configs/animation.config'
 import { hapticLight, hapticMedium } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
 
@@ -512,19 +524,25 @@ const getResourceValue = (resource: Resource, field: string) => {
 .comparison-empty-dot-1 {
   top: 0;
   right: 0;
-  animation-delay: 0s;
+  animation-delay: v-bind(
+    'animationConfig.comparisonEmptyState.dotFloatDelaysSec[0] + "s"'
+  );
 }
 
 .comparison-empty-dot-2 {
   bottom: 4px;
   left: 0;
-  animation-delay: 1s;
+  animation-delay: v-bind(
+    'animationConfig.comparisonEmptyState.dotFloatDelaysSec[1] + "s"'
+  );
 }
 
 .comparison-empty-dot-3 {
   top: 50%;
   right: -4px;
-  animation-delay: 2s;
+  animation-delay: v-bind(
+    'animationConfig.comparisonEmptyState.dotFloatDelaysSec[2] + "s"'
+  );
 }
 
 @keyframes comparisonDotFloat {
@@ -550,6 +568,9 @@ const getResourceValue = (resource: Resource, field: string) => {
   top: -20px;
   left: 20%;
   animation: comparisonCircleFloat 8s ease-in-out infinite;
+  animation-delay: v-bind(
+    'animationConfig.comparisonEmptyState.circleFloatDelaysSec[0] + "s"'
+  );
 }
 
 .comparison-empty-circle-2 {
@@ -558,7 +579,9 @@ const getResourceValue = (resource: Resource, field: string) => {
   bottom: 10%;
   right: 15%;
   animation: comparisonCircleFloat 10s ease-in-out infinite;
-  animation-delay: -3s;
+  animation-delay: v-bind(
+    'animationConfig.comparisonEmptyState.circleFloatDelaysSec[1] + "s"'
+  );
 }
 
 .comparison-empty-circle-3 {
@@ -567,7 +590,9 @@ const getResourceValue = (resource: Resource, field: string) => {
   top: 40%;
   right: 25%;
   animation: comparisonCircleFloat 12s ease-in-out infinite;
-  animation-delay: -5s;
+  animation-delay: v-bind(
+    'animationConfig.comparisonEmptyState.circleFloatDelaysSec[2] + "s"'
+  );
 }
 
 @keyframes comparisonCircleFloat {

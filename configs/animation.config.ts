@@ -2124,6 +2124,22 @@ export const animationConfig = {
     dotFloatDistancePx: parseInt(
       process.env.COMPARISON_EMPTY_DOT_FLOAT_PX || '8'
     ),
+    // Text reveal stagger delays - Flexy hates hardcoded 100ms, 200ms, 300ms!
+    textRevealStaggerMs: parseInt(
+      process.env.COMPARISON_EMPTY_TEXT_STAGGER_MS || '100'
+    ),
+    // Dot float animation delays (seconds) - Flexy hates hardcoded delays!
+    dotFloatDelaysSec: [
+      parseFloat(process.env.COMPARISON_EMPTY_DOT_DELAY_1 || '0'),
+      parseFloat(process.env.COMPARISON_EMPTY_DOT_DELAY_2 || '1'),
+      parseFloat(process.env.COMPARISON_EMPTY_DOT_DELAY_3 || '2'),
+    ],
+    // Circle float animation delays (seconds) - negative delays for offset
+    circleFloatDelaysSec: [
+      parseFloat(process.env.COMPARISON_EMPTY_CIRCLE_DELAY_1 || '0'),
+      parseFloat(process.env.COMPARISON_EMPTY_CIRCLE_DELAY_2 || '-3'),
+      parseFloat(process.env.COMPARISON_EMPTY_CIRCLE_DELAY_3 || '-5'),
+    ],
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.COMPARISON_EMPTY_RESPECT_REDUCED_MOTION !== 'false',
