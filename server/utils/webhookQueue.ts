@@ -9,6 +9,7 @@ import { webhookDeliveryService } from './webhook-delivery'
 import { deadLetterManager } from './webhook-dead-letter'
 import { webhooksConfig } from '~/configs/webhooks.config'
 import { limitsConfig } from '~/configs/limits.config'
+import { logger } from '~/utils/logger'
 
 interface WebhookDeliveryOptions {
   maxRetries?: number
@@ -123,7 +124,15 @@ export class WebhookQueueSystem {
   private async processQueueItem(item: WebhookQueueItem): Promise<void> {
     const webhook = await webhookStorage.getWebhookById(item.webhookId)
     if (!webhook || !webhook.active) {
-      webhookQueueManager.remove(item.id)
+      try {
+        await webhookQueueManager.remove(item.id)
+      } catch (error) {
+        logger.error(
+          `Failed to remove inactive webhook queue item ${item.id}:
+`,
+          error
+        )
+      }
       return
     }
 
@@ -158,7 +167,15 @@ export class WebhookQueueSystem {
     }
 
     if (success) {
-      await webhookQueueManager.remove(item.id)
+      try {
+        await webhookQueueManager.remove(item.id)
+      } catch (error) {
+        logger.error(
+          `Failed to remove successfully delivered queue item ${item.id}:
+`,
+          error
+        )
+      }
     } else {
       await this.handleFailedDelivery(item, webhook, lastError)
     }
@@ -173,7 +190,15 @@ export class WebhookQueueSystem {
 
     if (item.retryCount >= item.maxRetries && webhook) {
       deadLetterManager.addToDeadLetter(item, webhook, error)
-      webhookQueueManager.remove(item.id)
+      try {
+        await webhookQueueManager.remove(item.id)
+      } catch (removeError) {
+        logger.error(
+          `Failed to remove exhausted queue item ${item.id} after max retries:
+`,
+          removeError
+        )
+      }
     } else {
       await this.scheduleRetry(item)
     }
