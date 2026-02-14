@@ -2399,6 +2399,35 @@ export const animationConfig = {
     // Avatar pulse duration (seconds)
     avatarPulseSec: parseFloat(process.env.COMMENTS_AVATAR_PULSE_SEC || '2'),
   },
+
+  // Counter Animations - Flexy hates hardcoded values! 🎯
+  // General counter animation configuration for stat displays and analytics
+  counter: {
+    // Duration of counter animation from start to end (ms) - Flexy hates hardcoded 1500!
+    durationMs: parseInt(process.env.COUNTER_ANIMATION_DURATION_MS || '1500'),
+    // Delay before starting counter animation (ms) - Flexy hates hardcoded 100!
+    startDelayMs: parseInt(process.env.COUNTER_START_DELAY_MS || '100'),
+    // Easing function for counter animation ('linear' | 'easeOut' | 'easeInOut')
+    easing:
+      (process.env.COUNTER_EASING as 'linear' | 'easeOut' | 'easeInOut') ||
+      'easeOut',
+    // Whether to use spring physics for bouncy effect
+    useSpringPhysics: process.env.COUNTER_USE_SPRING !== 'false',
+    // Spring tension for counter animation (higher = faster)
+    springTension: parseFloat(process.env.COUNTER_SPRING_TENSION || '120'),
+    // Spring friction for counter animation (higher = less bounce)
+    springFriction: parseFloat(process.env.COUNTER_SPRING_FRICTION || '14'),
+    // Whether to format large numbers with commas during animation
+    formatNumbers: process.env.COUNTER_FORMAT_NUMBERS !== 'false',
+    // Update interval for counter animation in ms (lower = smoother but more CPU)
+    updateIntervalMs: parseInt(process.env.COUNTER_UPDATE_INTERVAL_MS || '16'),
+    // Whether to reduce precision for very large numbers (e.g., show 1.2K instead of 1234)
+    abbreviateLargeNumbers: process.env.COUNTER_ABBREViate_LARGE === 'true',
+    // Threshold for large number abbreviation
+    abbreviationThreshold: parseInt(
+      process.env.COUNTER_ABBREVIATION_THRESHOLD || '10000'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
