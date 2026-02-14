@@ -4,7 +4,9 @@
       <h2 class="text-2xl font-bold text-gray-900">
         {{ contentConfig.comments.title }}
       </h2>
-      <span class="text-sm text-gray-500">{{ commentCount }} {{ contentConfig.comments.countLabel }}</span>
+      <span class="text-sm text-gray-500"
+        >{{ commentCount }} {{ contentConfig.comments.countLabel }}</span
+      >
     </div>
 
     <!-- Comment Form with Micro-UX Enhancements -->
@@ -51,10 +53,7 @@
             class="relative w-8 h-8"
             :title="`${remainingChars} characters remaining`"
           >
-            <svg
-              class="w-full h-full transform -rotate-90"
-              viewBox="0 0 32 32"
-            >
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 32 32">
               <!-- Background circle -->
               <circle
                 cx="16"
@@ -117,7 +116,7 @@
               </svg>
               {{
                 contentConfig.comments.validation.overLimit ||
-                  `${Math.abs(remainingChars)} characters over limit`
+                `${Math.abs(remainingChars)} characters over limit`
               }}
             </span>
           </template>
@@ -138,7 +137,7 @@
               </svg>
               {{
                 contentConfig.comments.validation.nearLimit ||
-                  'Approaching limit'
+                'Approaching limit'
               }}
             </span>
           </template>
@@ -147,13 +146,13 @@
           >
             {{
               contentConfig.comments.validation.tooShort ||
-                `Minimum ${MIN_LENGTH} characters`
+              `Minimum ${MIN_LENGTH} characters`
             }}
           </template>
           <template v-else>
             {{
               contentConfig.comments.validation.hint ||
-                `Press Enter to submit, Shift+Enter for new line`
+              `Press Enter to submit, Shift+Enter for new line`
             }}
           </template>
         </span>
@@ -217,11 +216,7 @@
     </div>
 
     <!-- Comments List with Palette's Spring Animation -->
-    <TransitionGroup
-      name="comment-list"
-      tag="div"
-      class="space-y-4"
-    >
+    <TransitionGroup name="comment-list" tag="div" class="space-y-4">
       <div
         v-for="comment in formattedComments"
         :key="comment.id"
@@ -337,6 +332,7 @@ import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
 import { formatTimeAgoOnce } from '~/composables/useTimeAgo'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 
 interface Props {
   comments: Comment[]
@@ -673,13 +669,13 @@ defineExpose({
 
 @keyframes textarea-glow {
   0% {
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+    box-shadow: v-bind('shadowsConfig.resourceComments.textareaGlowStart');
   }
   50% {
-    box-shadow: 0 0 20px 4px rgba(34, 197, 94, 0.2);
+    box-shadow: v-bind('shadowsConfig.resourceComments.textareaGlowMid');
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    box-shadow: v-bind('shadowsConfig.resourceComments.textareaGlowEnd');
   }
 }
 
@@ -892,19 +888,19 @@ defineExpose({
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    box-shadow: v-bind('shadowsConfig.resourceComments.mentionPulseRing3');
   }
   25% {
     transform: scale(1.05);
-    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.2);
+    box-shadow: v-bind('shadowsConfig.resourceComments.mentionPulseRing1');
   }
   50% {
     transform: scale(1);
-    box-shadow: 0 0 0 16px rgba(59, 130, 246, 0.1);
+    box-shadow: v-bind('shadowsConfig.resourceComments.mentionPulseRing2');
   }
   75% {
     transform: scale(1.02);
-    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.05);
+    box-shadow: v-bind('shadowsConfig.resourceComments.mentionPulseRing3');
   }
 }
 
@@ -988,7 +984,7 @@ textarea {
       100%
   );
   border-radius: 50%;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+  box-shadow: v-bind('shadowsConfig.resourceComments.likeButton');
 }
 
 .live-indicator.animate-pulse {
@@ -1000,12 +996,12 @@ textarea {
   100% {
     opacity: 1;
     transform: scale(1);
-    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+    box-shadow: v-bind('shadowsConfig.resourceComments.likeButton');
   }
   50% {
     opacity: 0.7;
     transform: scale(1.1);
-    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    box-shadow: v-bind('shadowsConfig.resourceComments.likeButtonActive');
   }
 }
 

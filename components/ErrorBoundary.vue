@@ -1,9 +1,6 @@
 <template>
   <div class="error-boundary-wrapper">
-    <Transition
-      name="error-fade"
-      @after-enter="onErrorEntered"
-    >
+    <Transition name="error-fade" @after-enter="onErrorEntered">
       <div
         v-if="hasError"
         ref="errorContainer"
@@ -43,20 +40,12 @@
           >
             Something went wrong
           </h2>
-          <p
-            id="error-message"
-            class="error-message"
-          >
+          <p id="error-message" class="error-message">
             {{ errorMessage }}
           </p>
-          <div
-            v-if="showDetails"
-            class="error-details"
-          >
+          <div v-if="showDetails" class="error-details">
             <details class="error-details-container">
-              <summary class="error-details-summary">
-                Error Details
-              </summary>
+              <summary class="error-details-summary">Error Details</summary>
               <pre class="error-stack">{{ errorStack }}</pre>
             </details>
           </div>
@@ -169,6 +158,7 @@ import { hapticError, hapticSuccess } from '~/utils/hapticFeedback'
 import { contentConfig } from '~/configs/content.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 
 interface ErrorInfo {
   componentStack: string
@@ -587,15 +577,15 @@ onUnmounted(() => {
 @keyframes success-pulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    box-shadow: v-bind('shadowsConfig.errorBoundary.successPulseStart');
   }
   50% {
     transform: scale(1.02);
-    box-shadow: 0 0 0 20px rgba(34, 197, 94, 0);
+    box-shadow: v-bind('shadowsConfig.errorBoundary.successPulseMid');
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    box-shadow: v-bind('shadowsConfig.errorBoundary.successPulseEnd');
   }
 }
 
@@ -608,10 +598,10 @@ onUnmounted(() => {
 @keyframes focus-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+    box-shadow: v-bind('shadowsConfig.errorBoundary.focusThin');
   }
   50% {
-    box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.2);
+    box-shadow: v-bind('shadowsConfig.errorBoundary.focusThick');
   }
 }
 

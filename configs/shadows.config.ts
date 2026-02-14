@@ -143,6 +143,24 @@ export const shadowsConfig = {
     inner: process.env.SHADOW_INNER || 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
   },
 
+  // Submission Review Shadows
+  submissionReview: {
+    warningPulseStart:
+      process.env.SUBMISSION_WARNING_PULSE_START ||
+      '0 0 0 0 rgba(245, 158, 11, 0.4)',
+    warningPulseEnd:
+      process.env.SUBMISSION_WARNING_PULSE_END ||
+      '0 0 0 8px rgba(245, 158, 11, 0)',
+    editButton:
+      process.env.SUBMISSION_EDIT_BUTTON_SHADOW ||
+      '0 0 0 3px rgba(59, 130, 246, 0.1)',
+    approveGlow:
+      process.env.SUBMISSION_APPROVE_GLOW ||
+      '0 4px 12px rgba(34, 197, 94, 0.3)',
+    rejectGlow:
+      process.env.SUBMISSION_REJECT_GLOW || '0 4px 12px rgba(239, 68, 68, 0.3)',
+  },
+
   // Review Queue Shadows
   reviewQueue: {
     cardShadow:
@@ -235,6 +253,32 @@ export const shadowsConfig = {
     pulseStart: process.env.COMMENTS_PULSE_START || 'rgba(34, 197, 94, 0.4)',
     pulseMid: process.env.COMMENTS_PULSE_MID || 'rgba(34, 197, 94, 0.2)',
     pulseEnd: process.env.COMMENTS_PULSE_END || 'rgba(34, 197, 94, 0)',
+    // Textarea glow animation shadows
+    textareaGlowStart:
+      process.env.COMMENTS_TEXTAREA_GLOW_START ||
+      '0 0 0 0 rgba(34, 197, 94, 0.4)',
+    textareaGlowMid:
+      process.env.COMMENTS_TEXTAREA_GLOW_MID ||
+      '0 0 20px 4px rgba(34, 197, 94, 0.2)',
+    textareaGlowEnd:
+      process.env.COMMENTS_TEXTAREA_GLOW_END || '0 0 0 0 rgba(34, 197, 94, 0)',
+    // Like button shadows
+    likeButton:
+      process.env.COMMENTS_LIKE_BUTTON_SHADOW ||
+      '0 0 0 2px rgba(16, 185, 129, 0.3)',
+    likeButtonActive:
+      process.env.COMMENTS_LIKE_BUTTON_ACTIVE_SHADOW ||
+      '0 0 0 4px rgba(16, 185, 129, 0.1)',
+    // Mention avatar pulse animation shadows
+    mentionPulseRing1:
+      process.env.COMMENTS_MENTION_PULSE_1 ||
+      '0 0 0 8px rgba(59, 130, 246, 0.2)',
+    mentionPulseRing2:
+      process.env.COMMENTS_MENTION_PULSE_2 ||
+      '0 0 0 16px rgba(59, 130, 246, 0.1)',
+    mentionPulseRing3:
+      process.env.COMMENTS_MENTION_PULSE_3 ||
+      '0 0 0 8px rgba(59, 130, 246, 0.05)',
   },
 
   // PWA Install Prompt Shadows
@@ -246,9 +290,15 @@ export const shadowsConfig = {
   // Error Boundary Shadows
   errorBoundary: {
     successPulseStart:
-      process.env.ERROR_SUCCESS_PULSE_START || 'rgba(34, 197, 94, 0.7)',
+      process.env.ERROR_SUCCESS_PULSE_START || '0 0 0 0 rgba(34, 197, 94, 0.7)',
     successPulseMid:
-      process.env.ERROR_SUCCESS_PULSE_MID || 'rgba(34, 197, 94, 0)',
+      process.env.ERROR_SUCCESS_PULSE_MID || '0 0 0 20px rgba(34, 197, 94, 0)',
+    successPulseEnd:
+      process.env.ERROR_SUCCESS_PULSE_END || '0 0 0 0 rgba(34, 197, 94, 0)',
+    focusThin:
+      process.env.ERROR_FOCUS_THIN || '0 0 0 3px rgba(59, 130, 246, 0.4)',
+    focusThick:
+      process.env.ERROR_FOCUS_THICK || '0 0 0 5px rgba(59, 130, 246, 0.2)',
     focusRing: {
       default:
         process.env.ERROR_FOCUS_RING || '0 0 0 3px rgba(59, 130, 246, 0.4)',
