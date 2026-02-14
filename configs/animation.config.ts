@@ -1329,6 +1329,36 @@ export const animationConfig = {
     changeBgColor: process.env.STATUS_CHANGE_BG_COLOR || '#fffbeb',
   },
 
+  // Resource Status Component - Palette's micro-UX delight! 🎨
+  // Adds delightful animations and celebrations for resource status badges
+  resourceStatus: {
+    // Pulse animation duration for updated/pending status (seconds)
+    pulseDurationSec: parseFloat(
+      process.env.RESOURCE_STATUS_PULSE_DURATION_SEC || '2'
+    ),
+    // Celebration animation duration when health is excellent (ms)
+    celebrationDurationMs: parseInt(
+      process.env.RESOURCE_STATUS_CELEBRATION_DURATION_MS || '800'
+    ),
+    // CSS duration string for v-bind
+    celebrationDurationSec: `${parseInt(process.env.RESOURCE_STATUS_CELEBRATION_DURATION_MS || '800') / 1000}s`,
+    // Health ring pulse duration (seconds)
+    healthRingDurationSec: parseFloat(
+      process.env.RESOURCE_STATUS_HEALTH_RING_SEC || '1.5'
+    ),
+    // Celebration easing function
+    celebrationEasing:
+      process.env.RESOURCE_STATUS_CELEBRATION_EASING ||
+      EASING_CONSTANTS.SPRING_STANDARD,
+    // Scale factor for celebration animation
+    celebrationScale: parseFloat(
+      process.env.RESOURCE_STATUS_CELEBRATION_SCALE || '1.15'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.RESOURCE_STATUS_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // PWA Install Prompt Component - Flexy hates hardcoded values!
   pwaInstallPrompt: {
     // Success toast animation
