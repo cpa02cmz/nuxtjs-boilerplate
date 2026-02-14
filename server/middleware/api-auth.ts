@@ -1,4 +1,4 @@
-import { getHeader, getQuery, createError } from 'h3'
+import { getHeader, createError } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import { sendUnauthorizedError } from '~/server/utils/api-response'
 import { isProtectedApiRoute } from '~/configs/routes.config'
@@ -11,9 +11,9 @@ export default defineEventHandler(async event => {
     return
   }
 
-  // Check for API key in headers or query
-  const apiKey =
-    getHeader(event, 'X-API-Key') || (getQuery(event).api_key as string)
+  // Check for API key in headers only (security fix: removed query parameter support)
+  // Issue #2215: API keys in query parameters expose credentials in server logs
+  const apiKey = getHeader(event, 'X-API-Key')
 
   if (!apiKey) {
     // Some routes might be public, so we'll just log this for now

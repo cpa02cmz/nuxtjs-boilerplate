@@ -196,7 +196,10 @@ class CacheManager {
         );
         i++
       ) {
-        this.memoryCache.delete(keys[i])
+        const keyToDelete = keys[i]
+        if (keyToDelete !== undefined) {
+          this.memoryCache.delete(keyToDelete)
+        }
       }
     }
 
@@ -340,8 +343,23 @@ class CacheManager {
   /**
    * Simple pattern matching for cache invalidation
    * FIXED: Properly escape regex special characters to prevent regex injection
+   * FIXED: Added ReDoS protection with pattern complexity limits (Issue #2213)
    */
   private matchPattern(key: string, pattern: string): boolean {
+    // ReDoS Protection: Validate pattern complexity
+    if (pattern.length > 100) {
+      logger.warn(
+        `Cache pattern too long (>100 chars): ${pattern.substring(0, 50)}...`
+      )
+      return false
+    }
+
+    const wildcardCount = (pattern.match(/\*/g) || []).length
+    if (wildcardCount > 5) {
+      logger.warn(`Cache pattern has too many wildcards (>5): ${pattern}`)
+      return false
+    }
+
     // First escape all regex special characters, then convert glob patterns
     const escapeRegex = (str: string) =>
       str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -352,7 +370,16 @@ class CacheManager {
       .replace(/\\\?/g, '.') // Convert ? to .
 
     const regex = new RegExp(`^${regexPattern}$`)
-    return regex.test(key)
+
+    // Add timeout protection for regex execution
+    const start = Date.now()
+    const result = regex.test(key)
+    if (Date.now() - start > 100) {
+      logger.warn(`Cache pattern matching timeout for pattern: ${pattern}`)
+      return false
+    }
+
+    return result
   }
 
   /**
