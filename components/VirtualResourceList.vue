@@ -40,7 +40,11 @@
         position: 'relative',
       }"
     >
-      <TransitionGroup name="list-item" tag="div" class="w-full h-full">
+      <TransitionGroup
+        name="list-item"
+        tag="div"
+        class="w-full h-full"
+      >
         <div
           v-for="virtualRow in virtualizer.getVirtualItems()"
           :key="String(virtualRow.key)"
@@ -59,7 +63,10 @@
             '--item-index': virtualRow.index % 10,
           }"
         >
-          <slot :item="items[virtualRow.index]" :index="virtualRow.index" />
+          <slot
+            :item="items[virtualRow.index]"
+            :index="virtualRow.index"
+          />
         </div>
       </TransitionGroup>
     </div>
