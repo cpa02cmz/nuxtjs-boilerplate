@@ -496,7 +496,7 @@ onMounted(() => {
 
 .scroll-to-top__celebration-checkmark {
   transform-origin: center;
-  color: #10b981;
+  color: v-bind('componentColorsConfig.scrollToTop.celebration.checkmark');
   opacity: 0;
 }
 
