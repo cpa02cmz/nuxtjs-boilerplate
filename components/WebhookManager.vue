@@ -1212,7 +1212,10 @@ onMounted(() => {
   border-radius: 50%;
   opacity: 0;
   animation: sparkle-burst 0.8s ease-out forwards;
-  animation-delay: calc(var(--sparkle-index) * 0.1s);
+  animation-delay: calc(
+    var(--sparkle-index) *
+      v-bind('animationConfig.webhookManager.sparkleStaggerDelaySec')
+  );
   --angle: calc(var(--sparkle-index) * 60deg);
 }
 
@@ -1262,7 +1265,8 @@ onMounted(() => {
   .celebration-text,
   .sparkle {
     animation: none !important;
-    transition: opacity 0.2s ease-out !important;
+    transition: opacity
+      v-bind('animationConfig.webhookManager.reducedMotionOpacitySec') ease-out !important;
   }
 
   .checkmark-path {
