@@ -292,6 +292,12 @@ const TIMING_FALLBACKS = {
   idlePulseDelayMs: safeTiming.idlePulseDelayMs ?? 3000,
 }
 
+// SSR-safe z-index config for CSS v-bind - BroCula fixed this! 🦇
+// CSS v-bind during SSR needs a guaranteed value, not potentially undefined config
+const safeZIndexConfig = {
+  listItem: zIndexConfig?.listItem ?? 10,
+}
+
 interface Props {
   modelValue: string
   debounceTime?: number
@@ -999,7 +1005,7 @@ if (typeof window !== 'undefined') {
   width: 0;
   height: 0;
   pointer-events: none;
-  z-index: v-bind('zIndexConfig.listItem');
+  z-index: v-bind('safeZIndexConfig.listItem');
 }
 
 .particle {
