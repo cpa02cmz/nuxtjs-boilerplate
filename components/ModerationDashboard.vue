@@ -9,7 +9,10 @@
     </header>
 
     <!-- Palette's micro-UX enhancement: Stat Cards with Counter Animation -->
-    <section aria-label="Dashboard statistics" class="dashboard-stats">
+    <section
+      aria-label="Dashboard statistics"
+      class="dashboard-stats"
+    >
       <article
         v-for="(stat, index) in stats"
         :key="stat.key"
@@ -115,7 +118,10 @@
             </div>
             <div class="activity-content">
               <p>{{ activity.message }}</p>
-              <time class="activity-time" :datetime="activity.timestamp">{{
+              <time
+                class="activity-time"
+                :datetime="activity.timestamp"
+              >{{
                 formatDate(activity.timestamp)
               }}</time>
             </div>

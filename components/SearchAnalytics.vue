@@ -681,7 +681,10 @@ const onEnter = (el: Element, done: () => void) => {
     htmlEl.style.transition = `all ${animationConfig.tailwindDurations.normal} ease-out`
     htmlEl.style.opacity = '1'
     htmlEl.style.transform = 'translateY(0) scale(1)'
-    setTimeout(done, 300)
+    setTimeout(
+      done,
+      animationConfig.microInteractions?.completionResetMs || 300
+    )
   }, delay)
 }
 

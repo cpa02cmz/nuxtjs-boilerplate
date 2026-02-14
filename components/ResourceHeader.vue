@@ -4,7 +4,12 @@
     :class="{ 'animations-enabled': !prefersReducedMotion }"
   >
     <!-- ARIA Live Region for Announcements -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ announcement }}
     </div>
 
