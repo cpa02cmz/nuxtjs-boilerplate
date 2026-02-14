@@ -1,11 +1,10 @@
 // CSP Violation Reporting Endpoint
 // Receives and logs Content Security Policy violation reports
 // Issue #2212: Added input validation and sanitization
+// Flexy update: Using centralized limits config - no more hardcoded values!
 
 import { defineEventHandler, readBody } from 'h3'
-
-const MAX_URI_LENGTH = 2048
-const MAX_POLICY_LENGTH = 4096
+import { limitsConfig } from '~/configs/limits.config'
 
 interface SanitizedCspReport {
   documentUri: string
@@ -33,20 +32,38 @@ function sanitizeCspReport(report: unknown): SanitizedCspReport | null {
   const r = report as Record<string, unknown>
 
   return {
-    documentUri: String(r['document-uri'] || '').substring(0, MAX_URI_LENGTH),
-    referrer: String(r.referrer || '').substring(0, MAX_URI_LENGTH),
-    blockedUri: String(r['blocked-uri'] || '').substring(0, MAX_URI_LENGTH),
+    documentUri: String(r['document-uri'] || '').substring(
+      0,
+      limitsConfig.cspReport.maxUriLength
+    ),
+    referrer: String(r.referrer || '').substring(
+      0,
+      limitsConfig.cspReport.maxUriLength
+    ),
+    blockedUri: String(r['blocked-uri'] || '').substring(
+      0,
+      limitsConfig.cspReport.maxUriLength
+    ),
     effectiveDirective: String(r['effective-directive'] || '').substring(
       0,
-      100
+      limitsConfig.cspReport.maxDirectiveLength
     ),
-    violatedDirective: String(r['violated-directive'] || '').substring(0, 100),
+    violatedDirective: String(r['violated-directive'] || '').substring(
+      0,
+      limitsConfig.cspReport.maxDirectiveLength
+    ),
     originalPolicy: String(r['original-policy'] || '').substring(
       0,
-      MAX_POLICY_LENGTH
+      limitsConfig.cspReport.maxPolicyLength
     ),
-    disposition: String(r.disposition || '').substring(0, 20),
-    sourceFile: String(r['source-file'] || '').substring(0, MAX_URI_LENGTH),
+    disposition: String(r.disposition || '').substring(
+      0,
+      limitsConfig.cspReport.maxDispositionLength
+    ),
+    sourceFile: String(r['source-file'] || '').substring(
+      0,
+      limitsConfig.cspReport.maxUriLength
+    ),
     lineNumber:
       typeof r['line-number'] === 'number' ? r['line-number'] : undefined,
     columnNumber:
