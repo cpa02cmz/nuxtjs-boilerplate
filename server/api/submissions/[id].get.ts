@@ -17,19 +17,17 @@ export default defineEventHandler(async event => {
     const id = event.context.params?.id as string
 
     if (!id) {
-      sendBadRequestError(event, 'Submission ID is required')
-      return
+      return sendBadRequestError(event, 'Submission ID is required')
     }
 
     // Find the submission
     const submission = mockSubmissions.find(sub => sub.id === id)
 
     if (!submission) {
-      sendNotFoundError(event, 'Submission', id)
-      return
+      return sendNotFoundError(event, 'Submission', id)
     }
 
-    sendSuccessResponse(event, submission)
+    return sendSuccessResponse(event, submission)
   } catch (error) {
     return handleApiRouteError(event, error)
   }

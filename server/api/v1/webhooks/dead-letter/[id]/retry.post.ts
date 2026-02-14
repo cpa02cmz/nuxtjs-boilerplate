@@ -20,15 +20,13 @@ export default defineEventHandler(async event => {
     const id = getRouterParam(event, 'id')
 
     if (!id) {
-      sendNotFoundError(event, 'Dead Letter Webhook', id)
-      return
+      return sendNotFoundError(event, 'Dead Letter Webhook', id)
     }
 
     const success = await webhookQueueSystem.retryDeadLetterWebhook(id)
 
     if (!success) {
-      sendNotFoundError(event, 'Dead Letter Webhook', id)
-      return
+      return sendNotFoundError(event, 'Dead Letter Webhook', id)
     }
 
     return sendSuccessResponse(event, {

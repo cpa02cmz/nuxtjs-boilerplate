@@ -1,11 +1,12 @@
 import type { Resource } from '~/types/resource'
-import { getRouterParam } from 'h3'
+import { getRouterParam, readBody } from 'h3'
 import { randomUUID } from 'node:crypto'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendSuccessResponse,
   sendBadRequestError,
   sendNotFoundError,
+  sendUnauthorizedError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { userConfig } from '~/configs/user.config'
@@ -44,8 +45,13 @@ export default defineEventHandler(async event => {
       )
     }
 
+    // Authentication check - verify auth context is valid
+    if (!event.context.auth?.userId) {
+      return sendUnauthorizedError(event, 'Authentication required')
+    }
+
     // Get current user or default to system user
-    const userId = event.context.auth?.userId ?? userConfig.defaults.systemId
+    const userId = event.context.auth.userId ?? userConfig.defaults.systemId
 
     // Create status change record with cryptographically secure ID
     const statusChange = {
