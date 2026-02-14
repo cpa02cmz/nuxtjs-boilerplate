@@ -656,6 +656,66 @@ export async function cleanupSoftDeletedEvents(
   }
 }
 
+/**
+ * Store Web Vitals metric in analytics database
+ * Stores Core Web Vitals (LCP, INP, CLS, FCP, TTFB) for performance monitoring
+ */
+export async function storeWebVitalsMetric(report: {
+  metric: {
+    name: string
+    value: number
+    rating: string
+    delta?: number
+    navigationType?: string
+  }
+  timestamp: string
+  url: string
+  userAgent: string
+  connection?: string
+  server?: {
+    receivedAt: string
+    ip: string
+    country: string
+  }
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Store web vitals as analytics event with type 'web_vitals'
+    const result = await insertAnalyticsEvent({
+      type: 'web_vitals',
+      url: report.url,
+      userAgent: report.userAgent,
+      ip: report.server?.ip || null,
+      timestamp: report.timestamp,
+      properties: {
+        metricName: report.metric.name,
+        metricValue: report.metric.value,
+        metricRating: report.metric.rating,
+        metricDelta: report.metric.delta,
+        navigationType: report.metric.navigationType,
+        connection: report.connection,
+        serverReceivedAt: report.server?.receivedAt,
+        serverCountry: report.server?.country,
+      },
+    })
+
+    if (!result.success) {
+      // If table doesn't exist, log warning but don't fail
+      if (result.tableNotFound) {
+        logger.warn(
+          'Web Vitals metric dropped: AnalyticsEvent table not found. Run database migrations to enable storage.'
+        )
+        return { success: true }
+      }
+      return { success: false, error: result.error }
+    }
+
+    return { success: true }
+  } catch (error) {
+    logger.error('Error storing web vitals metric:', error)
+    return { success: false, error: String(error) }
+  }
+}
+
 export async function closeDatabase(): Promise<void> {
   await prisma.$disconnect()
 }

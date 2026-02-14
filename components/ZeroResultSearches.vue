@@ -288,21 +288,24 @@ const handleKeydown = (event: KeyboardEvent, currentIndex: number) => {
   }
 }
 
+// Store mediaQuery reference for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+
 // Lifecycle
 onMounted(() => {
   checkReducedMotion()
 
   // Listen for reduced motion preference changes
   if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    mediaQuery.addEventListener('change', checkReducedMotion)
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    mediaQueryRef.addEventListener('change', checkReducedMotion)
   }
 })
 
 onUnmounted(() => {
-  if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    mediaQuery.removeEventListener('change', checkReducedMotion)
+  if (mediaQueryRef) {
+    mediaQueryRef.removeEventListener('change', checkReducedMotion)
+    mediaQueryRef = null
   }
 })
 </script>

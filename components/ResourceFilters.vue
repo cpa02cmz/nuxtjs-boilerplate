@@ -6,7 +6,7 @@
       </h2>
       <button
         :class="[
-          'text-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded px-2 py-1 rounded',
+          `text-sm transition-all ${animationConfig.tailwindDurations.normal} ease-out focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded px-2 py-1 rounded`,
           resetConfirming
             ? 'text-green-600 bg-green-50'
             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
@@ -206,6 +206,7 @@ import FilterSection from '~/components/FilterSection.vue'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
+import { animationConfig } from '~/configs/animation.config'
 
 interface FacetCounts {
   [key: string]: number

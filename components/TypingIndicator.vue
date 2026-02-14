@@ -25,8 +25,30 @@
         }"
       />
 
+      <!-- Sound Wave Mode - Palette's micro-UX enhancement for voice input! 🎨 -->
+      <span
+        v-if="mode === 'soundwave'"
+        class="soundwave-container relative z-10"
+        :style="{ height: `${soundwaveHeight}px` }"
+      >
+        <span
+          v-for="n in soundwaveBars"
+          :key="n"
+          class="soundwave-bar rounded-full"
+          :class="color"
+          :style="{
+            width: `${soundwaveBarWidth}px`,
+            animationDelay: `${(n - 1) * soundwaveStaggerDelay}ms`,
+            '--bar-index': n,
+          }"
+        />
+      </span>
+
       <!-- Animated typing dots with spring physics -->
-      <span class="flex items-center gap-0.5 relative z-10">
+      <span
+        v-else
+        class="flex items-center gap-0.5 relative z-10"
+      >
         <span
           v-for="n in 3"
           :key="n"
@@ -73,6 +95,11 @@ interface Props {
    * @default true
    */
   hapticFeedback?: boolean
+  /**
+   * Display mode - 'dots' for typing, 'soundwave' for voice/audio input
+   * @default 'dots'
+   */
+  mode?: 'dots' | 'soundwave'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -80,6 +107,7 @@ const props = withDefaults(defineProps<Props>(), {
   color: 'bg-blue-500',
   dotSize: 6,
   hapticFeedback: true,
+  mode: 'dots',
 })
 
 // Check for reduced motion preference
@@ -100,6 +128,17 @@ const dotSize = computed(() => props.dotSize)
 
 // Calculate glow ring size based on dot size
 const glowRingSize = computed(() => props.dotSize * 5)
+
+// Palette's micro-UX enhancement: Sound wave configuration
+const soundwaveConfig = computed(
+  () => animationConfig.typingIndicator.soundwave
+)
+const soundwaveBars = computed(() => soundwaveConfig.value.barCount)
+const soundwaveBarWidth = computed(() => soundwaveConfig.value.barWidthPx)
+const soundwaveHeight = computed(() => soundwaveConfig.value.heightPx)
+const soundwaveStaggerDelay = computed(
+  () => soundwaveConfig.value.staggerDelayMs
+)
 
 // Flexy hates hardcoded rgba! Using configurable color values
 const shadowColorDefault = computed(
@@ -235,6 +274,59 @@ onUnmounted(() => {
   );
 }
 
+/* Palette's micro-UX enhancement: Sound Wave Animation 🎨
+   Animated bars for voice/audio input feedback */
+.soundwave-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: v-bind('soundwaveConfig.gapPx + "px"');
+}
+
+.soundwave-bar {
+  height: 100%;
+  animation: soundwave-pulse v-bind('soundwaveConfig.durationSec + "s"')
+    ease-in-out infinite;
+  animation-delay: calc(
+    var(--bar-index) * v-bind('soundwaveConfig.staggerDelaySec + "s"')
+  );
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+
+@keyframes soundwave-pulse {
+  0%,
+  100% {
+    transform: scaleY(v-bind('soundwaveConfig.minScale'));
+    opacity: v-bind('soundwaveConfig.minOpacity');
+  }
+  50% {
+    transform: scaleY(v-bind('soundwaveConfig.maxScale'));
+    opacity: v-bind('soundwaveConfig.maxOpacity');
+  }
+}
+
+/* Enhanced sound wave with color-specific glow effects */
+.soundwave-bar.bg-blue-500 {
+  box-shadow: 0 0 v-bind('soundwaveConfig.glowBlurPx + "px"')
+    rgba(v-bind('blueColor'), v-bind('soundwaveConfig.glowOpacity'));
+}
+
+.soundwave-bar.bg-green-500 {
+  box-shadow: 0 0 v-bind('soundwaveConfig.glowBlurPx + "px"')
+    rgba(v-bind('greenColor'), v-bind('soundwaveConfig.glowOpacity'));
+}
+
+.soundwave-bar.bg-amber-500 {
+  box-shadow: 0 0 v-bind('soundwaveConfig.glowBlurPx + "px"')
+    rgba(v-bind('amberColor'), v-bind('soundwaveConfig.glowOpacity'));
+}
+
+.soundwave-bar.bg-red-500 {
+  box-shadow: 0 0 v-bind('soundwaveConfig.glowBlurPx + "px"')
+    rgba(v-bind('redColor'), v-bind('soundwaveConfig.glowOpacity'));
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .typing-glow-ring {
@@ -246,6 +338,13 @@ onUnmounted(() => {
   .typing-dot {
     animation: none;
     opacity: 0.6;
+  }
+
+  /* Palette cares about accessibility: Disable sound wave animation for reduced motion */
+  .soundwave-bar {
+    animation: none;
+    opacity: v-bind('soundwaveConfig.reducedMotionOpacity');
+    transform: scaleY(v-bind('soundwaveConfig.reducedMotionScale'));
   }
 }
 </style>

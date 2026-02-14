@@ -31,7 +31,7 @@
             v-for="category in availableCategories"
             :key="category"
             :class="[
-              'category-chip px-3 py-1 rounded-full text-sm font-medium transition-all duration-200',
+              `category-chip px-3 py-1 rounded-full text-sm font-medium transition-all ${animationConfig.tailwindDurations.normal}`,
               selectedCategories.includes(category)
                 ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-600 dark:text-white category-chip--selected'
                 : 'bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600',
@@ -77,7 +77,7 @@
             v-for="level in skillLevels"
             :key="level.value"
             :class="[
-              'skill-level-btn py-2 px-4 rounded-md text-center text-sm font-medium transition-all duration-200 ease-out',
+              `skill-level-btn py-2 px-4 rounded-md text-center text-sm font-medium transition-all ${animationConfig.tailwindDurations.normal} ease-out`,
               selectedSkillLevel === level.value
                 ? 'bg-indigo-600 text-white skill-level-btn--selected'
                 : 'bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600',
@@ -187,7 +187,7 @@
           ref="saveButtonRef"
           :disabled="saving || showSuccessAnimation"
           :class="[
-            'save-button w-full md:w-auto px-6 py-3 font-medium rounded-md transition-all duration-300 ease-out',
+            `save-button w-full md:w-auto px-6 py-3 font-medium rounded-md transition-all ${animationConfig.tailwindDurations.standard} ease-out`,
             'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
             'disabled:opacity-50 disabled:cursor-not-allowed',
             showSuccessAnimation

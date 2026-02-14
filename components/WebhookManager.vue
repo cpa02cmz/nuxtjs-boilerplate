@@ -994,7 +994,12 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   min-width: v-bind('animationConfig.webhookManager.dimensions.buttonMinWidth');
-  transition: all var(--duration, 200ms) ease-out;
+  transition: all
+    var(
+      --duration,
+      v-bind('animationConfig.webhookManager.transitionDurationMs + "ms"')
+    )
+    ease-out;
   overflow: hidden;
 }
 
@@ -1027,7 +1032,8 @@ onMounted(() => {
 
 .progress-ring-fill {
   stroke: var(--ring-color, #ef4444);
-  transition: stroke-dashoffset 50ms linear;
+  transition: stroke-dashoffset
+    v-bind('animationConfig.webhookManager.strokeTransitionMs + "ms"') linear;
 }
 
 .button-text {

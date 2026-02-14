@@ -583,6 +583,11 @@ export const uiConfig = {
       parseFloat(process.env.CHAR_COUNTER_NEAR_LIMIT_PERCENT || '0.8') * 100,
     // Textarea line height for auto-resize calculations (px) - Flexy hates hardcoded 24!
     lineHeightPx: parseInt(process.env.CHAR_COUNTER_LINE_HEIGHT_PX || '24'),
+    // Colors for counter states - Flexy hates hardcoded colors!
+    colors: {
+      error: process.env.CHAR_COUNTER_ERROR_COLOR || '#ef4444',
+      warning: process.env.CHAR_COUNTER_WARNING_COLOR || '#f59e0b',
+    },
   },
 } as const
 

@@ -4,9 +4,7 @@
       <h2 class="text-2xl font-bold text-gray-900">
         {{ contentConfig.comments.title }}
       </h2>
-      <span class="text-sm text-gray-500"
-        >{{ commentCount }} {{ contentConfig.comments.countLabel }}</span
-      >
+      <span class="text-sm text-gray-500">{{ commentCount }} {{ contentConfig.comments.countLabel }}</span>
     </div>
 
     <!-- Comment Form with Micro-UX Enhancements -->
@@ -53,7 +51,10 @@
             class="relative w-8 h-8"
             :title="`${remainingChars} characters remaining`"
           >
-            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 32 32">
+            <svg
+              class="w-full h-full transform -rotate-90"
+              viewBox="0 0 32 32"
+            >
               <!-- Background circle -->
               <circle
                 cx="16"
@@ -116,7 +117,7 @@
               </svg>
               {{
                 contentConfig.comments.validation.overLimit ||
-                `${Math.abs(remainingChars)} characters over limit`
+                  `${Math.abs(remainingChars)} characters over limit`
               }}
             </span>
           </template>
@@ -137,7 +138,7 @@
               </svg>
               {{
                 contentConfig.comments.validation.nearLimit ||
-                'Approaching limit'
+                  'Approaching limit'
               }}
             </span>
           </template>
@@ -146,13 +147,13 @@
           >
             {{
               contentConfig.comments.validation.tooShort ||
-              `Minimum ${MIN_LENGTH} characters`
+                `Minimum ${MIN_LENGTH} characters`
             }}
           </template>
           <template v-else>
             {{
               contentConfig.comments.validation.hint ||
-              `Press Enter to submit, Shift+Enter for new line`
+                `Press Enter to submit, Shift+Enter for new line`
             }}
           </template>
         </span>
@@ -216,7 +217,11 @@
     </div>
 
     <!-- Comments List with Palette's Spring Animation -->
-    <TransitionGroup name="comment-list" tag="div" class="space-y-4">
+    <TransitionGroup
+      name="comment-list"
+      tag="div"
+      class="space-y-4"
+    >
       <div
         v-for="comment in formattedComments"
         :key="comment.id"
@@ -330,6 +335,7 @@ import { generateId } from '~/utils/generateId'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
 import { formatTimeAgoOnce } from '~/composables/useTimeAgo'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   comments: Comment[]
@@ -751,7 +757,21 @@ defineExpose({
   position: absolute;
   width: 6px;
   height: 6px;
-  background: linear-gradient(135deg, #ef4444 0%, #f87171 50%, #fca5a5 100%);
+  background: linear-gradient(
+    135deg,
+    v-bind(
+        'componentColorsConfig.resourceComments.counterGradient.error.start || "#ef4444"'
+      )
+      0%,
+    v-bind(
+        'componentColorsConfig.resourceComments.counterGradient.error.middle || "#f87171"'
+      )
+      50%,
+    v-bind(
+        'componentColorsConfig.resourceComments.counterGradient.error.end || "#fca5a5"'
+      )
+      100%
+  );
   border-radius: 50%;
   animation: particle-burst
     v-bind('animationConfig?.cssTransitions?.longSec ?? "0.6s"')
@@ -954,7 +974,17 @@ textarea {
   display: inline-block;
   width: 6px;
   height: 6px;
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  background: linear-gradient(
+    135deg,
+    v-bind(
+        'componentColorsConfig.resourceComments.counterGradient.success.start || "#10b981"'
+      )
+      0%,
+    v-bind(
+        'componentColorsConfig.resourceComments.counterGradient.success.end || "#34d399"'
+      )
+      100%
+  );
   border-radius: 50%;
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
 }

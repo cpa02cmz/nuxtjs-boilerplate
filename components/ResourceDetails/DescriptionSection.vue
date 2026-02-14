@@ -237,8 +237,8 @@ const toggleButtonRef = ref<HTMLButtonElement | null>(null)
 // Config values - Flexy hates hardcoded values!
 const config = {
   copySuccessDurationMs: animationConfig.copySuccess?.tooltipDurationMs || 1500,
-  copyResetDelayMs: 2000,
-  announcementClearMs: 1000,
+  copyResetDelayMs: animationConfig.microInteractions.savedIndicatorTimeoutMs,
+  announcementClearMs: animationConfig.microInteractions.announcementDelayMs,
 }
 
 // Check for reduced motion preference
