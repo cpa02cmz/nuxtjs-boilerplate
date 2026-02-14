@@ -45,7 +45,10 @@
       </span>
 
       <!-- Animated typing dots with spring physics -->
-      <span v-else class="flex items-center gap-0.5 relative z-10">
+      <span
+        v-else
+        class="flex items-center gap-0.5 relative z-10"
+      >
         <span
           v-for="n in 3"
           :key="n"
