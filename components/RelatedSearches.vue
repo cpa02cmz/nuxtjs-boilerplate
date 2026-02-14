@@ -15,10 +15,7 @@
     >
       <!-- Header with icon -->
       <div class="related-searches__header">
-        <span
-          class="related-searches__icon"
-          aria-hidden="true"
-        >
+        <span class="related-searches__icon" aria-hidden="true">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             :class="['h-4 w-4', isSearching ? 'animate-spin' : '']"
@@ -96,10 +93,7 @@
             </span>
 
             <!-- Search icon -->
-            <span
-              class="button-icon"
-              aria-hidden="true"
-            >
+            <span class="button-icon" aria-hidden="true">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-3 w-3"
@@ -145,12 +139,7 @@
       </div>
 
       <!-- Screen reader announcements -->
-      <div
-        class="sr-only"
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-      >
+      <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
         {{ announcement }}
       </div>
     </div>
@@ -165,6 +154,7 @@ import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { themeConfig } from '~/configs/theme.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
 
@@ -472,7 +462,8 @@ onUnmounted(() => {
 /* Button text */
 .button-text {
   position: relative;
-  z-index: 1;
+  /* Flexy hates hardcoded z-index! Using config instead. */
+  z-index: v-bind('zIndexScale.low[1]');
 }
 
 /* Button arrow - appears on hover */

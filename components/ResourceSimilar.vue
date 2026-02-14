@@ -88,12 +88,7 @@
       </TransitionGroup>
 
       <!-- Screen reader announcement -->
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        class="sr-only"
-      >
+      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
         {{ announcement }}
       </div>
     </section>
@@ -105,6 +100,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import type { Resource } from '~/composables/useResources'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { EASING } from '~/configs/easing.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
@@ -304,7 +300,8 @@ onUnmounted(() => {
       v-bind('animationConfig.similarResources.hoverLiftPx + "px"')
     )
     scale(v-bind('animationConfig.similarResources.hoverScale'));
-  z-index: 10;
+  /* Flexy hates hardcoded z-index! Using config instead. */
+  z-index: v-bind('zIndexScale.low[10]');
 }
 
 /* Pressed state: Scale down for tactile feedback */
