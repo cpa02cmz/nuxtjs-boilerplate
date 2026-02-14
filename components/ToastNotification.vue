@@ -12,12 +12,17 @@
       name="toast"
       tag="div"
       class="toast-wrapper"
+      :class="{ 'toast-wrapper--reduced-motion': prefersReducedMotion }"
     >
       <div
-        v-for="toast in toasts"
+        v-for="(toast, index) in toasts"
         :key="toast.id"
-        class="toast"
-        :class="`toast--${toast.type}`"
+        :class="[
+          'toast',
+          `toast--${toast.type}`,
+          { 'toast--entering': enteringToastIds.has(toast.id) },
+        ]"
+        :style="getToastStyle(index)"
         role="alert"
         :aria-live="toast.type === 'error' ? 'assertive' : 'polite'"
         @mouseenter="pauseToast(toast.id)"
@@ -25,7 +30,13 @@
         @focusin="pauseToast(toast.id)"
         @focusout="resumeToast(toast.id)"
       >
-        <div class="toast__icon">
+        <div
+          class="toast__icon"
+          :class="{
+            'toast__icon--pop':
+              enteringToastIds.has(toast.id) && !prefersReducedMotion,
+          }"
+        >
           <svg
             v-if="toast.type === 'success'"
             xmlns="http://www.w3.org/2000/svg"
@@ -129,6 +140,7 @@ import { iconsConfig } from '~/configs/icons.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
 import { generateId } from '~/utils/generateId'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -142,6 +154,10 @@ interface Toast {
 
 const toasts = ref<Toast[]>([])
 const pausedToastIds = ref<Set<string>>(new Set())
+// Palette's micro-UX enhancement: Track entering toasts for animation
+const enteringToastIds = ref<Set<string>>(new Set())
+// Palette's micro-UX enhancement: Respect reduced motion preference
+const prefersReducedMotion = ref(false)
 
 // Flexy hates hardcoded values! Use config for all styling
 const toastStyles = computed(() => uiConfig.toastStyles)
@@ -154,11 +170,70 @@ const toastPosition = {
   zIndex: uiConfig.zIndex.toast,
 }
 
+// Palette's micro-UX enhancement: Toast notification configuration
+const toastConfig = computed(() => animationConfig.toastNotification)
+
+// Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function'
+  ) {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.value = mediaQuery.matches
+
+    // Listen for changes
+    const handleChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.value = e.matches
+    }
+
+    mediaQuery.addEventListener('change', handleChange)
+
+    // Return cleanup function
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange)
+    }
+  }
+  return undefined
+}
+
+// Palette's micro-UX enhancement: Get staggered animation style for each toast
+const getToastStyle = (index: number) => {
+  if (prefersReducedMotion.value) return {}
+
+  const staggerDelay = index * toastConfig.value.staggerDelayMs
+  return {
+    '--toast-stagger-delay': `${staggerDelay}ms`,
+  } as Record<string, string>
+}
+
 const addToast = (toast: Omit<Toast, 'id'>) => {
   // Flexy hates hardcoded ID generation! Use centralized utility
   const id = generateId({ prefix: 'toast' })
   const newToast = { id, ...toast }
+
+  // Palette's micro-UX enhancement: Limit max visible toasts
+  if (toasts.value.length >= toastConfig.value.maxVisibleToasts) {
+    // Remove oldest toast
+    toasts.value.shift()
+  }
+
   toasts.value.push(newToast)
+
+  // Palette's micro-UX enhancement: Track entering state for animation
+  enteringToastIds.value.add(id)
+
+  // Haptic feedback for mobile users
+  hapticLight()
+
+  // Remove entering state after animation completes
+  const entranceDuration = prefersReducedMotion.value
+    ? toastConfig.value.reducedMotionDurationMs
+    : toastConfig.value.entranceDurationMs
+
+  setTimeout(() => {
+    enteringToastIds.value.delete(id)
+  }, entranceDuration)
 
   // Auto remove toast after duration (respects pause state)
   const duration =
@@ -222,13 +297,19 @@ defineExpose({
   dismissAllToasts,
 })
 
-// Set up global keyboard listener for Escape key
+// Palette's micro-UX enhancement: Set up reduced motion detection and keyboard listener
+let cleanupReducedMotion: (() => void) | undefined
+
 onMounted(() => {
   document.addEventListener('keydown', handleGlobalEscape)
+  cleanupReducedMotion = checkReducedMotion()
 })
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleGlobalEscape)
+  if (cleanupReducedMotion) {
+    cleanupReducedMotion()
+  }
 })
 </script>
 
@@ -403,20 +484,101 @@ onUnmounted(() => {
   }
 }
 
-.toast-enter-active,
+/* Palette's micro-UX enhancement: Spring physics entrance animation */
+/* Delightful bounce effect with configurable spring easing */
+.toast-enter-active {
+  transition:
+    transform v-bind('toastConfig.entranceDurationSec')
+      v-bind('toastConfig.springEasing'),
+    opacity v-bind('toastConfig.entranceDurationSec') ease-out;
+  transition-delay: var(--toast-stagger-delay, 0ms);
+}
+
 .toast-leave-active {
-  transition: all v-bind('`${animationConfig.transition.slow.durationMs}ms`')
-    ease;
+  transition:
+    transform v-bind('toastConfig.exitDurationSec')
+      v-bind('toastConfig.exitEasing'),
+    opacity v-bind('toastConfig.exitDurationSec') ease-in;
 }
 
 .toast-enter-from {
-  transform: translateX(100%);
+  transform: translateX(v-bind('`${toastConfig.initialTranslateXPx}px`'))
+    scale(v-bind('toastConfig.initialScale'));
   opacity: 0;
 }
 
 .toast-leave-to {
   transform: translateX(100%);
   opacity: 0;
+}
+
+/* Icon pop animation for extra delight */
+.toast__icon--pop svg {
+  animation: icon-pop v-bind('toastConfig.iconPopDurationMs + "ms"')
+    v-bind('toastConfig.springEasing') forwards;
+  animation-delay: v-bind('toastConfig.iconPopDelayMs + "ms"');
+}
+
+@keyframes icon-pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Reduced motion support - simpler fade transition */
+@media (prefers-reduced-motion: reduce) {
+  .toast-enter-active {
+    transition: opacity v-bind('toastConfig.reducedMotionDurationMs + "ms"')
+      ease-out;
+    transition-delay: 0ms;
+  }
+
+  .toast-leave-active {
+    transition: opacity v-bind('toastConfig.reducedMotionDurationMs + "ms"')
+      ease-in;
+  }
+
+  .toast-enter-from {
+    transform: none;
+    opacity: 0;
+  }
+
+  .toast-leave-to {
+    transform: none;
+    opacity: 0;
+  }
+
+  .toast__icon--pop svg {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .toast__progress {
+    animation: none;
+    width: 100%;
+    opacity: 0.15;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .toast {
+    border: 2px solid currentColor;
+  }
+
+  .toast__progress {
+    background: currentColor;
+    opacity: 0.3;
+  }
 }
 
 /* Flexy removed duplicate progress bar styles - already defined above using config values */

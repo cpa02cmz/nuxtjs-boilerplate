@@ -1655,6 +1655,52 @@ export const animationConfig = {
     ),
   },
 
+  // Toast Notification Micro-UX - Palette's delightful enhancement! 🎨
+  // Spring physics entrance animation for satisfying toast notifications
+  toastNotification: {
+    // Entrance animation duration (ms)
+    entranceDurationMs: parseInt(
+      process.env.TOAST_ENTRANCE_DURATION_MS || '500'
+    ),
+    // CSS duration string for v-bind
+    entranceDurationSec: `${parseInt(process.env.TOAST_ENTRANCE_DURATION_MS || '500') / 1000}s`,
+    // Exit animation duration (ms)
+    exitDurationMs: parseInt(process.env.TOAST_EXIT_DURATION_MS || '300'),
+    // CSS duration string for v-bind
+    exitDurationSec: `${parseInt(process.env.TOAST_EXIT_DURATION_MS || '300') / 1000}s`,
+    // Spring bounce scale - how much the toast "overshoots" before settling
+    bounceScale: parseFloat(process.env.TOAST_BOUNCE_SCALE || '1.05'),
+    // Initial scale when toast first appears (starts slightly smaller)
+    initialScale: parseFloat(process.env.TOAST_INITIAL_SCALE || '0.8'),
+    // Initial translation from right (px)
+    initialTranslateXPx: parseInt(
+      process.env.TOAST_INITIAL_TRANSLATE_X || '100'
+    ),
+    // Spring easing function for delightful bounce effect
+    springEasing:
+      process.env.TOAST_SPRING_EASING || 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+    // Exit easing - smooth acceleration out
+    exitEasing: process.env.TOAST_EXIT_EASING || 'cubic-bezier(0.4, 0, 0.2, 1)',
+    // Stagger delay between multiple toasts (ms)
+    staggerDelayMs: parseInt(process.env.TOAST_STAGGER_DELAY_MS || '100'),
+    // Maximum number of toasts to show simultaneously
+    maxVisibleToasts: parseInt(process.env.TOAST_MAX_VISIBLE || '5'),
+    // Icon animation duration (ms) - subtle pop when toast appears
+    iconPopDurationMs: parseInt(
+      process.env.TOAST_ICON_POP_DURATION_MS || '300'
+    ),
+    // Icon pop delay after toast entrance (ms)
+    iconPopDelayMs: parseInt(process.env.TOAST_ICON_POP_DELAY_MS || '150'),
+    // Progress bar animation easing
+    progressEasing: process.env.TOAST_PROGRESS_EASING || 'linear',
+    // Whether to respect reduced motion preference
+    respectReducedMotion: process.env.TOAST_RESPECT_REDUCED_MOTION !== 'false',
+    // Reduced motion alternative duration (ms) - faster, simpler animation
+    reducedMotionDurationMs: parseInt(
+      process.env.TOAST_REDUCED_MOTION_DURATION_MS || '200'
+    ),
+  },
+
   // Scroll To Top Completion Celebration - Palette's micro-UX delight! 🎉
   // Adds a satisfying celebration animation when user reaches 100% scroll progress
   scrollToTop: {
