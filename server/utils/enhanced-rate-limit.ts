@@ -3,6 +3,32 @@ import { getQuery } from 'h3'
 import { rateLimitConfig } from '~/configs/rate-limit.config'
 import { TIME } from '~/server/utils/constants'
 
+/**
+ * Extract and validate client IP address from request
+ * Respects TRUST_PROXY setting to prevent X-Forwarded-For spoofing
+ * @param event - H3Event containing the request
+ * @returns Validated client IP or 'unknown'
+ */
+function getClientIp(event: H3Event): string {
+  const forwarded = event.node.req.headers['x-forwarded-for']
+  const remoteAddress =
+    event.node.req.socket?.remoteAddress ||
+    event.node.req.connection?.remoteAddress
+
+  // Only trust X-Forwarded-For if behind trusted proxy
+  if (typeof forwarded === 'string' && process.env.TRUST_PROXY === 'true') {
+    // Take the first IP if behind trusted proxy (closest to client)
+    const ips = forwarded.split(',').map(ip => ip.trim())
+    const firstIp = ips[0]
+    // Basic IP validation regex
+    if (firstIp && /^[\d.:a-fA-F]+$/.test(firstIp)) {
+      return firstIp
+    }
+  }
+
+  return remoteAddress || 'unknown'
+}
+
 interface TokenBucket {
   tokens: number
   lastRefill: number
@@ -421,9 +447,8 @@ export async function rateLimit(event: H3Event, key?: string): Promise<void> {
   const bypassKey = event.node.req.headers['x-admin-bypass-key'] as string
 
   // Generate rate limit key if not provided
-  const rateLimitKey =
-    key ||
-    `${event.node.req.headers['x-forwarded-for'] || event.node.req.connection.remoteAddress || 'unknown'}:${event.path}`
+  // SECURITY FIX: Use validated client IP to prevent X-Forwarded-For spoofing
+  const rateLimitKey = key || `${getClientIp(event)}:${event.path}`
 
   // Get appropriate rate limiter
   const rateLimiter = getRateLimiterForPath(event.path)
