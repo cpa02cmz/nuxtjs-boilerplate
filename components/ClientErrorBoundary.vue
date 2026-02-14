@@ -29,11 +29,7 @@
         >
           <div class="loading-shimmer__ring" />
         </div>
-        <div
-          v-else
-          class="loading-simple"
-          aria-hidden="true"
-        >
+        <div v-else class="loading-simple" aria-hidden="true">
           <div class="loading-simple__dot" />
         </div>
         <span class="sr-only">Loading...</span>
@@ -132,10 +128,7 @@
           enter-to-class="opacity-100 translate-y-0"
           appear
         >
-          <div
-            v-show="isInitialized"
-            class="client-error-boundary__content"
-          >
+          <div v-show="isInitialized" class="client-error-boundary__content">
             <slot />
           </div>
         </Transition>
@@ -143,12 +136,7 @@
     </ClientOnly>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcementText }}
     </div>
   </div>
@@ -291,10 +279,10 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Client Error Boundary Base Styles */
+/* Client Error Boundary Base Styles - Flexy hates hardcoded values! */
 .client-error-boundary {
   position: relative;
-  transition: all 0.2s ease-out;
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease-out;
 }
 
 /* Initialized state - smooth appearance */
@@ -436,7 +424,7 @@ onUnmounted(() => {
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease-out;
+  transition: all v-bind('animationConfig.cssTransitions.quickSec') ease-out;
   outline: none;
 }
 
@@ -451,7 +439,8 @@ onUnmounted(() => {
 .error-indicator__retry:active,
 .error-indicator__retry.is-pressed {
   transform: scale(0.95);
-  transition: transform 0.05s ease-out;
+  transition: transform v-bind('animationConfig.cssTransitions.ultraFastSec')
+    ease-out;
 }
 
 .error-indicator__retry:focus-visible {
@@ -463,11 +452,13 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease-out;
+  transition: transform v-bind('animationConfig.cssTransitions.normalSec')
+    ease-out;
 }
 
 .retry-icon svg {
-  transition: transform 0.2s ease-out;
+  transition: transform v-bind('animationConfig.cssTransitions.normalSec')
+    ease-out;
 }
 
 .retry-text {
