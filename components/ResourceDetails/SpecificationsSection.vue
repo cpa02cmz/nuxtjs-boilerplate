@@ -53,11 +53,7 @@
     </div>
 
     <!-- Specifications Grid -->
-    <dl
-      v-else
-      :class="gridClass"
-      class="specifications-grid"
-    >
+    <dl v-else :class="gridClass" class="specifications-grid">
       <div
         v-for="(value, key, index) in specifications"
         :key="key"
@@ -170,12 +166,7 @@
     </div>
 
     <!-- Screen Reader Announcements -->
-    <div
-      aria-atomic="true"
-      aria-live="polite"
-      class="sr-only"
-      role="status"
-    >
+    <div aria-atomic="true" aria-live="polite" class="sr-only" role="status">
       {{ announcementText }}
     </div>
   </section>
@@ -184,6 +175,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   specifications: Record<string, string>
@@ -331,7 +323,7 @@ onUnmounted(() => {
 }
 
 .header-icon--animated {
-  animation: icon-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: icon-pop 0.5s v-bind('animationConfig.cssEasing.spring') forwards;
 }
 
 @keyframes icon-pop {

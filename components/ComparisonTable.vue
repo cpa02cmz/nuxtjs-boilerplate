@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="resources && resources.length >= 2"
-    class="overflow-x-auto"
-  >
+  <div v-if="resources && resources.length >= 2" class="overflow-x-auto">
     <table
       class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
       :aria-label="`Comparison of ${resources.length} resources`"
@@ -165,10 +162,10 @@
         prefersReducedMotion
           ? ''
           : [
-            'transition-all',
-            'ease-out',
-            animationConfig.tailwindDurations.slower,
-          ].join(' ')
+              'transition-all',
+              'ease-out',
+              animationConfig.tailwindDurations.slower,
+            ].join(' ')
       "
       :enter-from-class="prefersReducedMotion ? '' : 'opacity-0 translate-y-4'"
       :enter-to-class="prefersReducedMotion ? '' : 'opacity-100 translate-y-0'"
@@ -299,7 +296,7 @@
           >
             {{
               contentConfig.comparison.emptyState.popularLabel ||
-                'Popular resources'
+              'Popular resources'
             }}
           </p>
           <div class="flex flex-wrap justify-center gap-2">
@@ -350,11 +347,7 @@
     </Transition>
 
     <!-- Screen Reader Live Region -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-    >
+    <div class="sr-only" role="status" aria-live="polite">
       {{ announcement }}
     </div>
   </div>
@@ -678,7 +671,7 @@ const getResourceValue = (resource: Resource, field: string) => {
 .comparison-empty-text-reveal {
   animation: comparisonTextReveal
     v-bind('animationConfig.comparisonTable.textRevealSec + "s"')
-    cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    v-bind('animationConfig.cssEasing.entrance') forwards;
   opacity: 0;
   transform: translateY(10px);
 }
@@ -692,7 +685,8 @@ const getResourceValue = (resource: Resource, field: string) => {
 
 /* Suggestion button entrance animation */
 .comparison-empty-suggestion {
-  animation: comparisonSuggestionPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: comparisonSuggestionPop 0.4s
+    v-bind('animationConfig.cssEasing.entrance') forwards;
   opacity: 0;
   transform: scale(0.8);
 }

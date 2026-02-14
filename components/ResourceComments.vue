@@ -4,7 +4,9 @@
       <h2 class="text-2xl font-bold text-gray-900">
         {{ contentConfig.comments.title }}
       </h2>
-      <span class="text-sm text-gray-500">{{ commentCount }} {{ contentConfig.comments.countLabel }}</span>
+      <span class="text-sm text-gray-500"
+        >{{ commentCount }} {{ contentConfig.comments.countLabel }}</span
+      >
     </div>
 
     <!-- Comment Form with Micro-UX Enhancements -->
@@ -51,10 +53,7 @@
             class="relative w-8 h-8"
             :title="`${remainingChars} characters remaining`"
           >
-            <svg
-              class="w-full h-full transform -rotate-90"
-              viewBox="0 0 32 32"
-            >
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 32 32">
               <!-- Background circle -->
               <circle
                 cx="16"
@@ -117,7 +116,7 @@
               </svg>
               {{
                 contentConfig.comments.validation.overLimit ||
-                  `${Math.abs(remainingChars)} characters over limit`
+                `${Math.abs(remainingChars)} characters over limit`
               }}
             </span>
           </template>
@@ -138,7 +137,7 @@
               </svg>
               {{
                 contentConfig.comments.validation.nearLimit ||
-                  'Approaching limit'
+                'Approaching limit'
               }}
             </span>
           </template>
@@ -147,13 +146,13 @@
           >
             {{
               contentConfig.comments.validation.tooShort ||
-                `Minimum ${MIN_LENGTH} characters`
+              `Minimum ${MIN_LENGTH} characters`
             }}
           </template>
           <template v-else>
             {{
               contentConfig.comments.validation.hint ||
-                `Press Enter to submit, Shift+Enter for new line`
+              `Press Enter to submit, Shift+Enter for new line`
             }}
           </template>
         </span>
@@ -217,11 +216,7 @@
     </div>
 
     <!-- Comments List with Palette's Spring Animation -->
-    <TransitionGroup
-      name="comment-list"
-      tag="div"
-      class="space-y-4"
-    >
+    <TransitionGroup name="comment-list" tag="div" class="space-y-4">
       <div
         v-for="comment in formattedComments"
         :key="comment.id"
@@ -688,7 +683,7 @@ defineExpose({
 .animate-success-bounce {
   animation: success-bounce
     v-bind('animationConfig?.validation?.shakeDurationSec ?? "0.5s"')
-    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    v-bind('animationConfig.cssEasing.spring');
 }
 
 @keyframes success-bounce {
@@ -777,7 +772,7 @@ defineExpose({
   border-radius: 50%;
   animation: particle-burst
     v-bind('animationConfig?.cssTransitions?.longSec ?? "0.6s"')
-    cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    v-bind('animationConfig.cssEasing.standard') forwards;
   animation-delay: var(--delay);
   opacity: 0;
 }
@@ -800,7 +795,7 @@ defineExpose({
 .animate-heart-pop {
   animation: heart-pop
     v-bind('animationConfig?.validation?.shakeDurationSec ?? "0.5s"')
-    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    v-bind('animationConfig.cssEasing.spring');
 }
 
 @keyframes heart-pop {
@@ -913,7 +908,7 @@ defineExpose({
 .comment-list-enter-active {
   transition: all
     v-bind('animationConfig?.validation?.shakeDurationSec ?? "0.5s"')
-    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    v-bind('animationConfig.cssEasing.spring');
 }
 
 .comment-list-leave-active {

@@ -224,10 +224,7 @@
     />
 
     <!-- Enhanced Empty State - Palette's micro-UX delight! -->
-    <div
-      v-else
-      class="empty-state"
-    >
+    <div v-else class="empty-state">
       <div class="empty-state__illustration">
         <!-- Animated Background Circle -->
         <div
@@ -272,9 +269,7 @@
         />
       </div>
 
-      <h3 class="empty-state__title">
-        No resources selected
-      </h3>
+      <h3 class="empty-state__title">No resources selected</h3>
       <p class="empty-state__description">
         Add resources to compare them side-by-side and see detailed differences.
       </p>
@@ -545,7 +540,7 @@ defineExpose({
 
 .progress-dot--latest {
   animation: dot-pop v-bind('`${animationConfig.comparison.popDurationMs}ms`')
-    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    v-bind('animationConfig.cssEasing.spring') forwards;
 }
 
 @keyframes dot-pop {
