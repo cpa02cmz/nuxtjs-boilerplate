@@ -14,6 +14,22 @@ interface ExtendedNitroApp {
 }
 
 export default defineNitroPlugin(async nitroApp => {
+  // Store the validation interval in nitroApp for potential cleanup
+  const extendedApp = nitroApp as ExtendedNitroApp
+
+  // Add cleanup handlers early to ensure they're registered even on early exit
+  const cleanup = () => {
+    if (process.env.NODE_ENV !== 'production') {
+      logger.info('Shutting down resource validation...')
+    }
+    if (extendedApp._resourceValidationInterval) {
+      clearInterval(extendedApp._resourceValidationInterval)
+    }
+  }
+
+  process.on('SIGTERM', cleanup)
+  process.on('SIGINT', cleanup)
+
   // Skip resource validation during Vercel build to prevent long build times
   if (process.env.VERCEL === '1') {
     return // Skip plugin initialization on Vercel
@@ -81,25 +97,5 @@ export default defineNitroPlugin(async nitroApp => {
   }, timeConfig.validation.startupDelayMs)
 
   // Store the validation interval in nitroApp for potential cleanup
-  const extendedApp = nitroApp as ExtendedNitroApp
   extendedApp._resourceValidationInterval = validationInterval
-
-  // Add cleanup handler to clear interval on shutdown
-  process.on('SIGTERM', () => {
-    if (process.env.NODE_ENV !== 'production') {
-      logger.info('Shutting down resource validation...')
-    }
-    if (extendedApp._resourceValidationInterval) {
-      clearInterval(extendedApp._resourceValidationInterval)
-    }
-  })
-
-  process.on('SIGINT', () => {
-    if (process.env.NODE_ENV !== 'production') {
-      logger.info('Shutting down resource validation...')
-    }
-    if (extendedApp._resourceValidationInterval) {
-      clearInterval(extendedApp._resourceValidationInterval)
-    }
-  })
 })
