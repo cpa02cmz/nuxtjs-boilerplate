@@ -1129,6 +1129,52 @@ export const animationConfig = {
       process.env.ALTERNATIVES_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // Similar Resources Micro-UX - Palette's delightful enhancement! ✨
+  // Staggered card entrance with lift and press effects
+  similarResources: {
+    // Duration of each card's entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.SIMILAR_ENTRANCE_DURATION_MS || '500'
+    ),
+    // CSS duration string
+    entranceDurationSec: `${parseInt(process.env.SIMILAR_ENTRANCE_DURATION_MS || '500') / 1000}s`,
+    // Duration of leave animation (ms)
+    leaveDurationMs: parseInt(process.env.SIMILAR_LEAVE_DURATION_MS || '300'),
+    // CSS duration string for leave
+    leaveDurationSec: `${parseInt(process.env.SIMILAR_LEAVE_DURATION_MS || '300') / 1000}s`,
+    // Delay between each card's entrance (stagger effect) (ms)
+    staggerDelayMs: parseInt(process.env.SIMILAR_STAGGER_MS || '100'),
+    // Maximum stagger delay to prevent long waits (ms)
+    maxStaggerDelayMs: parseInt(process.env.SIMILAR_MAX_STAGGER_MS || '600'),
+    // Distance cards travel during entrance (px)
+    entranceDistancePx: parseInt(process.env.SIMILAR_ENTRANCE_DISTANCE || '24'),
+    // Scale at start of entrance animation
+    entranceStartScale: parseFloat(
+      process.env.SIMILAR_ENTRANCE_SCALE || '0.95'
+    ),
+    // Hover lift amount (px)
+    hoverLiftPx: parseInt(process.env.SIMILAR_HOVER_LIFT || '4'),
+    // Hover scale factor
+    hoverScale: parseFloat(process.env.SIMILAR_HOVER_SCALE || '1.02'),
+    // Hover transition duration (ms)
+    hoverTransitionMs: parseInt(
+      process.env.SIMILAR_HOVER_TRANSITION_MS || '200'
+    ),
+    // Press scale factor (tactile feedback)
+    pressScale: parseFloat(process.env.SIMILAR_PRESS_SCALE || '0.98'),
+    // Press transition duration (ms)
+    pressTransitionMs: parseInt(
+      process.env.SIMILAR_PRESS_TRANSITION_MS || '100'
+    ),
+    // Arrow bounce animation duration (seconds)
+    arrowBounceDurationSec: parseFloat(
+      process.env.SIMILAR_ARROW_BOUNCE || '0.6'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SIMILAR_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // Typing Indicator Micro-UX - Palette's delightful touch! ✨
   // Animated bouncing dots that provide visual feedback during typing
   typingIndicator: {
