@@ -2399,6 +2399,48 @@ export const animationConfig = {
     // Avatar pulse duration (seconds)
     avatarPulseSec: parseFloat(process.env.COMMENTS_AVATAR_PULSE_SEC || '2'),
   },
+
+  // Features Section Animations - Palette's micro-UX delight! 🎨
+  // Staggered entrance animations for feature lists with delightful checkmarks
+  featuresSection: {
+    // Delay between each feature item entrance (ms)
+    staggerDelayMs: parseInt(process.env.FEATURES_STAGGER_DELAY_MS || '80'),
+    // CSS-compatible stagger delay (seconds)
+    staggerDelaySec: parseFloat(
+      process.env.FEATURES_STAGGER_DELAY_SEC || '0.08'
+    ),
+    // Feature item entrance animation duration (ms)
+    entranceDurationMs: parseInt(
+      process.env.FEATURES_ENTRANCE_DURATION_MS || '500'
+    ),
+    // CSS-compatible entrance duration (seconds)
+    entranceDurationSec: parseFloat(
+      process.env.FEATURES_ENTRANCE_DURATION_SEC || '0.5'
+    ),
+    // Checkmark draw animation duration (ms)
+    checkmarkDrawMs: parseInt(process.env.FEATURES_CHECKMARK_DRAW_MS || '400'),
+    // CSS-compatible checkmark draw duration (seconds)
+    checkmarkDrawSec: parseFloat(
+      process.env.FEATURES_CHECKMARK_DRAW_SEC || '0.4'
+    ),
+    // Checkmark scale animation duration (ms)
+    checkmarkScaleMs: parseInt(
+      process.env.FEATURES_CHECKMARK_SCALE_MS || '300'
+    ),
+    // Hover lift distance (px)
+    hoverLiftPx: parseInt(process.env.FEATURES_HOVER_LIFT_PX || '2'),
+    // Hover scale factor
+    hoverScale: parseFloat(process.env.FEATURES_HOVER_SCALE || '1.01'),
+    // Icon pulse scale on entrance
+    iconPulseScale: parseFloat(process.env.FEATURES_ICON_PULSE_SCALE || '1.2'),
+    // Entrance distance from below (px)
+    entranceDistancePx: parseInt(
+      process.env.FEATURES_ENTRANCE_DISTANCE_PX || '15'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.FEATURES_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
