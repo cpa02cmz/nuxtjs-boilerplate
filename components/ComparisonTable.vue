@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="resources && resources.length >= 2"
-    class="overflow-x-auto"
-  >
+  <div v-if="resources && resources.length >= 2" class="overflow-x-auto">
     <table
       class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
       :aria-label="`Comparison of ${resources.length} resources`"
@@ -121,38 +118,206 @@
       </tbody>
     </table>
   </div>
+  <!-- Delightful Empty State - Palette's micro-UX enhancement! -->
   <div
     v-else
-    class="text-center py-8 text-gray-500 dark:text-gray-400"
+    ref="emptyStateRef"
+    class="relative overflow-hidden"
+    role="region"
+    :aria-label="contentConfig.comparison.emptyState.ariaLabel"
   >
-    <svg
-      class="mx-auto h-12 w-12 text-gray-400"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
+    <!-- Decorative Background Elements -->
+    <div
+      v-if="!prefersReducedMotion"
+      class="absolute inset-0 pointer-events-none overflow-hidden"
       aria-hidden="true"
     >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+      <!-- Floating circles -->
+      <div
+        class="comparison-empty-circle comparison-empty-circle-1 absolute rounded-full bg-blue-100/50 dark:bg-blue-900/20"
       />
-    </svg>
-    <h3 class="mt-2 text-sm font-medium">
-      {{ contentConfig.comparison.emptyState.title }}
-    </h3>
-    <p class="mt-1 text-sm">
-      {{ contentConfig.comparison.emptyState.description }}
-    </p>
+      <div
+        class="comparison-empty-circle comparison-empty-circle-2 absolute rounded-full bg-purple-100/50 dark:bg-purple-900/20"
+      />
+      <div
+        class="comparison-empty-circle comparison-empty-circle-3 absolute rounded-full bg-indigo-100/50 dark:bg-indigo-900/20"
+      />
+    </div>
+
+    <Transition
+      appear
+      :enter-active-class="
+        prefersReducedMotion ? '' : 'transition-all duration-500 ease-out'
+      "
+      :enter-from-class="prefersReducedMotion ? '' : 'opacity-0 translate-y-4'"
+      :enter-to-class="prefersReducedMotion ? '' : 'opacity-100 translate-y-0'"
+    >
+      <div class="relative z-10 text-center py-12 px-4">
+        <!-- Animated Scale/Balance Icon -->
+        <div
+          class="relative mx-auto w-24 h-24 mb-6"
+          :class="{ 'comparison-empty-icon-bounce': !prefersReducedMotion }"
+        >
+          <!-- Outer ring -->
+          <div
+            v-if="!prefersReducedMotion"
+            class="absolute inset-0 rounded-full border-2 border-dashed border-blue-200 dark:border-blue-800 comparison-empty-ring-rotate"
+            aria-hidden="true"
+          />
+
+          <!-- Main icon container -->
+          <div
+            class="absolute inset-2 rounded-full bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 flex items-center justify-center shadow-lg"
+            :class="{ 'comparison-empty-icon-pulse': !prefersReducedMotion }"
+          >
+            <svg
+              class="w-10 h-10 text-blue-500 dark:text-blue-400"
+              :class="{ 'comparison-empty-scale-icon': !prefersReducedMotion }"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <!-- Scale/Balance Icon -->
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
+              />
+            </svg>
+          </div>
+
+          <!-- Floating dots -->
+          <template v-if="!prefersReducedMotion">
+            <div
+              class="comparison-empty-dot comparison-empty-dot-1 absolute w-2 h-2 rounded-full bg-blue-400/60"
+            />
+            <div
+              class="comparison-empty-dot comparison-empty-dot-2 absolute w-1.5 h-1.5 rounded-full bg-purple-400/60"
+            />
+            <div
+              class="comparison-empty-dot comparison-empty-dot-3 absolute w-2 h-2 rounded-full bg-indigo-400/60"
+            />
+          </template>
+        </div>
+
+        <!-- Title -->
+        <h3
+          class="text-xl font-bold text-gray-900 dark:text-white mb-2"
+          :class="{ 'comparison-empty-text-reveal': !prefersReducedMotion }"
+        >
+          {{ contentConfig.comparison.emptyState.title }}
+        </h3>
+
+        <!-- Description -->
+        <p
+          class="text-sm text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-6"
+          :class="{ 'comparison-empty-text-reveal': !prefersReducedMotion }"
+          style="animation-delay: 100ms"
+        >
+          {{ contentConfig.comparison.emptyState.description }}
+        </p>
+
+        <!-- CTA Button -->
+        <div
+          :class="{ 'comparison-empty-text-reveal': !prefersReducedMotion }"
+          style="animation-delay: 200ms"
+        >
+          <button
+            class="group relative inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-all duration-300"
+            :class="{
+              'hover:scale-105 active:scale-95': !prefersReducedMotion,
+            }"
+            @click="handleBrowseClick"
+          >
+            <svg
+              class="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            {{ contentConfig.comparison.emptyState.browse }}
+          </button>
+        </div>
+
+        <!-- Popular Resources Suggestions -->
+        <div
+          v-if="popularResources.length > 0"
+          class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700"
+          :class="{ 'comparison-empty-text-reveal': !prefersReducedMotion }"
+          style="animation-delay: 300ms"
+        >
+          <p
+            class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4"
+          >
+            {{
+              contentConfig.comparison.emptyState.popularLabel ||
+              'Popular resources'
+            }}
+          </p>
+          <div class="flex flex-wrap justify-center gap-2">
+            <button
+              v-for="(resource, index) in popularResources"
+              :key="resource.id"
+              class="group inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-700 dark:hover:text-blue-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all duration-200"
+              :class="{
+                'hover:scale-105 active:scale-95': !prefersReducedMotion,
+                'comparison-empty-suggestion': !prefersReducedMotion,
+              }"
+              :style="
+                !prefersReducedMotion
+                  ? { animationDelay: `${400 + index * 100}ms` }
+                  : {}
+              "
+              @click="handleQuickAdd(resource)"
+            >
+              <span
+                class="w-2 h-2 rounded-full mr-2"
+                :class="getCategoryColor(resource.category)"
+              />
+              {{ resource.title }}
+              <svg
+                class="w-3 h-3 ml-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Screen Reader Live Region -->
+    <div class="sr-only" role="status" aria-live="polite">
+      {{ announcement }}
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import type { Resource } from '~/types/resource'
 import type { ComparisonCriteria } from '~/types/comparison'
 import { contentConfig } from '~/configs/content.config'
+import { hapticFeedback } from '~/utils/hapticFeedback'
 
 interface Props {
   resources?: Resource[]
@@ -160,10 +325,35 @@ interface Props {
 }
 
 defineProps<Props>()
-const emit = defineEmits(['remove-resource'])
+const emit = defineEmits(['remove-resource', 'add-resource', 'browse'])
 
 // Track which resource is being confirmed for removal
 const confirmingRemove = ref<string | null>(null)
+
+// Empty state refs
+const emptyStateRef = ref<HTMLElement | null>(null)
+const announcement = ref('')
+const prefersReducedMotion = ref(false)
+
+// Popular resources for quick-add suggestions
+const popularResources = computed<Resource[]>(() => {
+  // In a real implementation, these could come from analytics or config
+  // For now, return empty array to avoid errors
+  return []
+})
+
+// Check for reduced motion preference
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.value = mediaQuery.matches
+
+    // Listen for changes
+    mediaQuery.addEventListener('change', e => {
+      prefersReducedMotion.value = e.matches
+    })
+  }
+})
 
 const requestRemove = (resourceId: string) => {
   confirmingRemove.value = resourceId
@@ -176,6 +366,52 @@ const cancelRemove = () => {
 const confirmRemove = (resourceId: string) => {
   emit('remove-resource', resourceId)
   confirmingRemove.value = null
+}
+
+const handleBrowseClick = () => {
+  // Provide haptic feedback on supported devices
+  if (!prefersReducedMotion.value) {
+    hapticFeedback.light()
+  }
+
+  announcement.value = 'Opening resource browser'
+  emit('browse')
+
+  // Clear announcement after screen reader has time to read it
+  setTimeout(() => {
+    announcement.value = ''
+  }, 1000)
+}
+
+const handleQuickAdd = (resource: Resource) => {
+  // Provide haptic feedback on supported devices
+  if (!prefersReducedMotion.value) {
+    hapticFeedback.medium()
+  }
+
+  announcement.value = `${resource.title} added to comparison`
+  emit('add-resource', resource)
+
+  // Clear announcement
+  setTimeout(() => {
+    announcement.value = ''
+  }, 1000)
+}
+
+const getCategoryColor = (category?: string): string => {
+  const colorMap: Record<string, string> = {
+    Development: 'bg-blue-500',
+    Design: 'bg-purple-500',
+    Productivity: 'bg-green-500',
+    Marketing: 'bg-orange-500',
+    Analytics: 'bg-yellow-500',
+    Security: 'bg-red-500',
+    'AI/ML': 'bg-indigo-500',
+    DevOps: 'bg-cyan-500',
+    Testing: 'bg-pink-500',
+    Education: 'bg-teal-500',
+  }
+  return colorMap[category || ''] || 'bg-gray-500'
 }
 
 const getResourceValue = (resource: Resource, field: string) => {
@@ -197,3 +433,183 @@ const getResourceValue = (resource: Resource, field: string) => {
     | boolean
 }
 </script>
+
+<style scoped>
+/* Palette's Delightful Empty State Animations - Flexy hates hardcoded values! */
+
+/* Icon bounce animation */
+.comparison-empty-icon-bounce {
+  animation: comparisonIconBounce 2s ease-in-out infinite;
+}
+
+@keyframes comparisonIconBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* Icon pulse animation */
+.comparison-empty-icon-pulse {
+  animation: comparisonIconPulse 3s ease-in-out infinite;
+}
+
+@keyframes comparisonIconPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(59, 130, 246, 0);
+  }
+}
+
+/* Scale icon animation */
+.comparison-empty-scale-icon {
+  animation: comparisonScaleIcon 4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes comparisonScaleIcon {
+  0%,
+  100% {
+    transform: rotate(-2deg) scale(1);
+  }
+  25% {
+    transform: rotate(2deg) scale(1.05);
+  }
+  50% {
+    transform: rotate(-1deg) scale(1);
+  }
+  75% {
+    transform: rotate(1deg) scale(1.02);
+  }
+}
+
+/* Ring rotation animation */
+.comparison-empty-ring-rotate {
+  animation: comparisonRingRotate 20s linear infinite;
+}
+
+@keyframes comparisonRingRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Floating dots animations */
+.comparison-empty-dot {
+  animation: comparisonDotFloat 3s ease-in-out infinite;
+}
+
+.comparison-empty-dot-1 {
+  top: 0;
+  right: 0;
+  animation-delay: 0s;
+}
+
+.comparison-empty-dot-2 {
+  bottom: 4px;
+  left: 0;
+  animation-delay: 1s;
+}
+
+.comparison-empty-dot-3 {
+  top: 50%;
+  right: -4px;
+  animation-delay: 2s;
+}
+
+@keyframes comparisonDotFloat {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-8px) scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* Background circles */
+.comparison-empty-circle {
+  filter: blur(40px);
+}
+
+.comparison-empty-circle-1 {
+  width: 120px;
+  height: 120px;
+  top: -20px;
+  left: 20%;
+  animation: comparisonCircleFloat 8s ease-in-out infinite;
+}
+
+.comparison-empty-circle-2 {
+  width: 100px;
+  height: 100px;
+  bottom: 10%;
+  right: 15%;
+  animation: comparisonCircleFloat 10s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+.comparison-empty-circle-3 {
+  width: 80px;
+  height: 80px;
+  top: 40%;
+  right: 25%;
+  animation: comparisonCircleFloat 12s ease-in-out infinite;
+  animation-delay: -5s;
+}
+
+@keyframes comparisonCircleFloat {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0) scale(1);
+  }
+  33% {
+    transform: translateY(-20px) translateX(10px) scale(1.1);
+  }
+  66% {
+    transform: translateY(10px) translateX(-10px) scale(0.9);
+  }
+}
+
+/* Text reveal animation */
+.comparison-empty-text-reveal {
+  animation: comparisonTextReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+@keyframes comparisonTextReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Suggestion button entrance animation */
+.comparison-empty-suggestion {
+  animation: comparisonSuggestionPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+@keyframes comparisonSuggestionPop {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Reduced motion preferences are handled via JS class binding */
+/* All animations respect prefers-reduced-motion */
+</style>
