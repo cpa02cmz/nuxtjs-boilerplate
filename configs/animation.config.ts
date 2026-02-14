@@ -1186,6 +1186,59 @@ export const animationConfig = {
       process.env.SIMILAR_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // Resource Header Micro-UX - Palette's magnetic enhancement! 🎨
+  // Enhanced entrance animations and magnetic bookmark button
+  resourceHeader: {
+    // Title entrance animation duration (ms)
+    titleEntranceDurationMs: parseInt(
+      process.env.RESOURCE_HEADER_TITLE_DURATION_MS || '600'
+    ),
+    // CSS duration string
+    titleEntranceDurationSec: `${parseInt(process.env.RESOURCE_HEADER_TITLE_DURATION_MS || '600') / 1000}s`,
+    // Category entrance animation duration (ms)
+    categoryEntranceDurationMs: parseInt(
+      process.env.RESOURCE_HEADER_CATEGORY_DURATION_MS || '500'
+    ),
+    // CSS duration string
+    categoryEntranceDurationSec: `${parseInt(process.env.RESOURCE_HEADER_CATEGORY_DURATION_MS || '500') / 1000}s`,
+    // Delay between title and category entrance (ms)
+    entranceStaggerDelayMs: parseInt(
+      process.env.RESOURCE_HEADER_STAGGER_MS || '100'
+    ),
+    // Initial Y translation for entrance (px)
+    entranceTranslateYPx: parseInt(
+      process.env.RESOURCE_HEADER_ENTRANCE_Y || '12'
+    ),
+    // Entrance easing function
+    entranceEasing:
+      process.env.RESOURCE_HEADER_EASING || 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+    // Magnetic button strength (0-1)
+    magneticStrength: parseFloat(
+      process.env.RESOURCE_HEADER_MAGNETIC_STRENGTH || '0.4'
+    ),
+    // Maximum magnetic pull distance (px)
+    magneticMaxDistancePx: parseInt(
+      process.env.RESOURCE_HEADER_MAGNETIC_DISTANCE || '8'
+    ),
+    // Magnetic button return duration (ms)
+    magneticReturnDurationMs: parseInt(
+      process.env.RESOURCE_HEADER_MAGNETIC_RETURN_MS || '300'
+    ),
+    // Button hover lift (px)
+    buttonHoverLiftPx: parseInt(process.env.RESOURCE_HEADER_BUTTON_LIFT || '2'),
+    // Button press scale
+    buttonPressScale: parseFloat(
+      process.env.RESOURCE_HEADER_BUTTON_PRESS_SCALE || '0.97'
+    ),
+    // Icon animation duration (ms)
+    iconAnimationDurationMs: parseInt(
+      process.env.RESOURCE_HEADER_ICON_DURATION_MS || '300'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.RESOURCE_HEADER_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // Typing Indicator Micro-UX - Palette's delightful touch! ✨
   // Animated bouncing dots that provide visual feedback during typing
   typingIndicator: {
