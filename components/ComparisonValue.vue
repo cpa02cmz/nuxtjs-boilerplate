@@ -285,6 +285,7 @@ import { computed, ref, onMounted } from 'vue'
 import { limitsConfig } from '~/configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { themeConfig } from '~/configs/theme.config'
 import { hapticSuccess } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -307,7 +308,9 @@ const props = withDefaults(defineProps<Props>(), {
 const displayLimit = limitsConfig.display.maxListItemsDisplay
 
 // Copied state for visual feedback
-const copiedState = ref({
+type CopyType = 'text' | 'number' | 'list'
+
+const copiedState = ref<Record<CopyType, boolean>>({
   text: false,
   number: false,
   list: false,
@@ -317,7 +320,9 @@ const copiedState = ref({
 const announcementText = ref('')
 
 // Copy timeout refs
-const copyTimeouts = ref<Record<string, ReturnType<typeof setTimeout> | null>>({
+const copyTimeouts = ref<
+  Record<CopyType, ReturnType<typeof setTimeout> | null>
+>({
   text: null,
   number: null,
   list: null,
@@ -358,7 +363,7 @@ const copyTooltip = computed(() => {
 })
 
 // Handle copy action with haptic feedback and visual confirmation
-const handleCopy = async (text: string, type: 'text' | 'number') => {
+const handleCopy = async (text: string, type: CopyType) => {
   if (!props.enableCopy) return
 
   try {
