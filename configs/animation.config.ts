@@ -926,6 +926,10 @@ export const animationConfig = {
       process.env.CSS_ANIM_EXTRA_EXTENDED_MS || '1500'
     ),
     extraExtendedDurationSec: `${parseInt(process.env.CSS_ANIM_EXTRA_EXTENDED_MS || '1500') / 1000}s`,
+
+    // Sweep animation duration (0.8s) - for shimmer sweep effects
+    sweepDurationMs: parseInt(process.env.CSS_ANIM_SWEEP_MS || '800'),
+    sweepDurationSec: `${parseInt(process.env.CSS_ANIM_SWEEP_MS || '800') / 1000}s`,
   },
 
   // Floating Label Animations - Palette's micro-UX delight!

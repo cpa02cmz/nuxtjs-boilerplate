@@ -697,6 +697,11 @@ export const contentConfig = {
         process.env.CONTENT_SAVED_SEARCH_UNDO_HINT ||
         'Click undo to restore it',
     },
+    // Palette's micro-UX enhancement: Restore prompt messages
+    restorePrompt:
+      process.env.CONTENT_SAVED_SEARCH_RESTORE_PROMPT ||
+      '"{{name}}" has been deleted',
+    restoreButton: process.env.CONTENT_SAVED_SEARCH_RESTORE_BUTTON || 'Restore',
   },
 
   // Error Messages - Flexy hates hardcoded error messages!
