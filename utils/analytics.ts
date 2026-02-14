@@ -95,28 +95,50 @@ export async function trackPageView(
 export async function trackResourceClick(
   resourceId: string,
   title: string,
-  category: string
+  category?: string
 ): Promise<boolean> {
+  // Only include category if it's valid - invalid categories cause 400 errors
+  const validCategory =
+    category && VALID_CATEGORIES.includes(category) ? category : undefined
+
   return trackEvent({
     type: 'resource_click',
     resourceId,
-    category,
+    category: validCategory,
     properties: {
       title,
     },
   })
 }
 
+// Valid analytics categories - must match server-side validation
+const VALID_CATEGORIES = [
+  'Development',
+  'Design',
+  'Productivity',
+  'Marketing',
+  'Analytics',
+  'Security',
+  'AI/ML',
+  'DevOps',
+  'Testing',
+  'Education',
+]
+
 // Track a resource view
 export async function trackResourceView(
   resourceId: string,
   title: string,
-  category: string
+  category?: string
 ): Promise<boolean> {
+  // Only include category if it's valid - invalid categories cause 400 errors
+  const validCategory =
+    category && VALID_CATEGORIES.includes(category) ? category : undefined
+
   return trackEvent({
     type: 'resource_view',
     resourceId,
-    category,
+    category: validCategory,
     properties: {
       title,
     },

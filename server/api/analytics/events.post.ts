@@ -77,14 +77,22 @@ export default defineEventHandler(async event => {
       properties: validatedData.properties,
     }
 
-    const success = await insertAnalyticsEvent(analyticsEvent)
-    if (!success) {
-      const error = createApiError(
-        ErrorCode.INTERNAL_SERVER_ERROR,
-        'Failed to store analytics event',
-        ErrorCategory.INTERNAL
-      )
-      return sendApiError(event, error)
+    const result = await insertAnalyticsEvent(analyticsEvent)
+    if (!result.success) {
+      // Check if this is a "table not found" error - be graceful in development/CI
+      if (result.tableNotFound) {
+        logger.warn(
+          'AnalyticsEvent table not found - event dropped (run migrations to enable analytics)'
+        )
+        // Return success anyway to prevent console errors in development
+      } else {
+        const error = createApiError(
+          ErrorCode.INTERNAL_SERVER_ERROR,
+          'Failed to store analytics event',
+          ErrorCategory.INTERNAL
+        )
+        return sendApiError(event, error)
+      }
     }
 
     // Generate unique event ID using UUID
