@@ -2593,7 +2593,7 @@ export const animationConfig = {
 
   // Resource Analytics Animations - Flexy hates hardcoded stagger delays!
   // Used by ResourceAnalytics.vue for card entrance and skeleton loading
-  analytics: {
+  analyticsDashboard: {
     // Stagger delay between analytics cards (ms)
     cardStaggerDelayMs: parseInt(
       process.env.ANALYTICS_CARD_STAGGER_DELAY_MS || '100'
@@ -2620,25 +2620,25 @@ export const animationConfig = {
     }s`,
   },
 
-  // Webhook Manager Animations - Flexy hates hardcoded sparkle delays!
-  // Used by WebhookManager.vue for celebration animations
-  webhookManager: {
-    // Stagger delay between sparkle elements (ms)
-    sparkleStaggerDelayMs: parseInt(
-      process.env.WEBHOOK_SPARKLE_STAGGER_DELAY_MS || '100'
+  // Search Analytics Animations - Flexy hates hardcoded transition delays!
+  // Used by SearchAnalytics.vue for transition callback completion
+  searchAnalytics: {
+    // Delay before calling transition done callback (ms) - Flexy hates hardcoded 300!
+    transitionDoneDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_DONE_DELAY_MS || '300'
     ),
-    // CSS-compatible sparkle stagger delay (seconds)
-    sparkleStaggerDelaySec: `${
-      parseInt(process.env.WEBHOOK_SPARKLE_STAGGER_DELAY_MS || '100') / 1000
-    }s`,
-    // Reduced motion opacity transition duration (ms)
-    reducedMotionOpacityMs: parseInt(
-      process.env.WEBHOOK_REDUCED_OPACITY_MS || '200'
+    // Stagger delay between search item entrances (ms)
+    itemStaggerDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_STAGGER_MS || '100'
     ),
-    // CSS-compatible reduced motion opacity transition (seconds)
-    reducedMotionOpacitySec: `${
-      parseInt(process.env.WEBHOOK_REDUCED_OPACITY_MS || '200') / 1000
-    }s`,
+    // Initial delay before starting animations (ms)
+    animationStartDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_START_DELAY_MS || '50'
+    ),
+    // Bar chart animation stagger delay (ms)
+    barStaggerDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_BAR_STAGGER_MS || '50'
+    ),
   },
 } as const
 
