@@ -6,9 +6,7 @@
   >
     <!-- Header with live indicator -->
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-xl font-semibold text-gray-900">
-        Resource Analytics
-      </h2>
+      <h2 class="text-xl font-semibold text-gray-900">Resource Analytics</h2>
       <!-- Live indicator - Palette's micro-UX delight! -->
       <span
         v-if="!isLoading && !prefersReducedMotion"
@@ -21,10 +19,7 @@
     </div>
 
     <!-- Loading Skeleton State - Palette's micro-UX delight! -->
-    <div
-      v-if="isLoading"
-      class="grid grid-cols-1 md:grid-cols-3 gap-4"
-    >
+    <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div
         v-for="n in 3"
         :key="n"
@@ -169,11 +164,7 @@
           </span>
         </div>
         <!-- Mini chart visualization -->
-        <div
-          v-if="!prefersReducedMotion"
-          class="mini-chart"
-          aria-hidden="true"
-        >
+        <div v-if="!prefersReducedMotion" class="mini-chart" aria-hidden="true">
           <div
             v-for="n in 5"
             :key="n"
@@ -240,12 +231,7 @@
     </TransitionGroup>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcementText }}
     </div>
   </div>
@@ -255,6 +241,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useTimeAgo } from '~/composables/useTimeAgo'
 import { hapticLight } from '~/utils/hapticFeedback'
+import { animationConfig } from '~/configs/animation.config'
 
 interface AnalyticsData {
   viewCount: number
@@ -453,15 +440,31 @@ import type { Ref } from 'vue'
 
 <style scoped>
 /* Palette's micro-UX delight: Enhanced ResourceAnalytics with delightful animations! */
+/* Flexy hates hardcoded values! All animation timing is now configurable */
 
-/* Container styles */
+/* CSS Custom Properties bound to animationConfig - Flexy's modular system! */
 .analytics-container {
+  /* Transition durations */
+  --transition-standard: v-bind('animationConfig.cssTransitions.standardSec');
+  --transition-normal: v-bind('animationConfig.cssTransitions.normalSec');
+  --transition-long: v-bind('animationConfig.cssTransitions.longSec');
+  /* Animation durations */
+  --animation-slow: v-bind('animationConfig.cssAnimations.slowDurationSec');
+  --animation-slower: v-bind('animationConfig.cssAnimations.slowerDurationSec');
+  --animation-extended: v-bind(
+    'animationConfig.cssAnimations.extendedDurationSec'
+  );
+  /* Animation delays */
+  --delay-micro: v-bind('animationConfig.cssAnimations.microDelaySec');
+  --delay-small: v-bind('animationConfig.cssAnimations.smallDelaySec');
+  /* Easing functions */
+  --easing-spring: v-bind('animationConfig.easing.spring');
   position: relative;
-  transition: all 0.3s ease;
+  transition: all var(--transition-standard) ease;
 }
 
 .analytics-container--loaded {
-  animation: container-fade-in 0.4s ease-out;
+  animation: container-fade-in var(--animation-slow) ease-out;
 }
 
 @keyframes container-fade-in {
@@ -517,12 +520,12 @@ import type { Ref } from 'vue'
   padding: 1.25rem;
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all var(--transition-standard) var(--easing-spring);
   cursor: default;
   position: relative;
   overflow: hidden;
-  animation: card-entrance 0.5s ease-out backwards;
-  animation-delay: calc(var(--card-index, 0) * 0.1s);
+  animation: card-entrance var(--animation-slower) ease-out backwards;
+  animation-delay: calc(var(--card-index, 0) * var(--delay-small));
 }
 
 @keyframes card-entrance {
@@ -551,7 +554,7 @@ import type { Ref } from 'vue'
 /* Skeleton Loading State - Palette's micro-UX delight! */
 .analytics-card--skeleton {
   animation: skeleton-pulse 1.5s ease-in-out infinite;
-  animation-delay: calc(var(--skeleton-index, 0) * 0.15s);
+  animation-delay: calc(var(--skeleton-index, 0) * var(--delay-small) * 1.5);
 }
 
 @keyframes skeleton-pulse {
@@ -609,7 +612,7 @@ import type { Ref } from 'vue'
   font-weight: 700;
   color: #111827;
   display: block;
-  transition: color 0.2s ease;
+  transition: color var(--transition-normal) ease;
 }
 
 .analytics-value--counting {
@@ -630,7 +633,7 @@ import type { Ref } from 'vue'
   border-radius: 9999px;
   font-size: 12px;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: all var(--transition-normal) ease;
 }
 
 .trend-badge--up {
@@ -702,7 +705,7 @@ import type { Ref } from 'vue'
   height: 100%;
   background: linear-gradient(90deg, #3b82f6, #8b5cf6);
   border-radius: 2px;
-  transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: width var(--animation-extended) var(--easing-spring);
 }
 
 /* Mini Chart - Palette's micro-UX delight! */

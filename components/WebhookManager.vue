@@ -68,16 +68,8 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                class="checkmark-circle"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-              <path
-                class="checkmark-path"
-                d="M7 12l3 3 7-7"
-              />
+              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
           <span class="celebration-text">
@@ -85,10 +77,7 @@
           </span>
         </div>
         <!-- Sparkle effects -->
-        <div
-          class="sparkle-container"
-          aria-hidden="true"
-        >
+        <div class="sparkle-container" aria-hidden="true">
           <span
             v-for="n in 6"
             :key="n"
@@ -100,10 +89,7 @@
     </Transition>
 
     <!-- Create Webhook Form -->
-    <div
-      v-if="showCreateForm"
-      class="webhook-form"
-    >
+    <div v-if="showCreateForm" class="webhook-form">
       <h3>{{ contentConfig.webhooks.form.title }}</h3>
 
       <div
@@ -115,12 +101,10 @@
         {{ errorMessage }}
       </div>
 
-      <form
-        novalidate
-        @submit.prevent="handleCreateWebhook"
-      >
+      <form novalidate @submit.prevent="handleCreateWebhook">
         <div class="form-group">
-          <label for="webhook-url">{{ contentConfig.webhooks.form.urlLabel }}
+          <label for="webhook-url"
+            >{{ contentConfig.webhooks.form.urlLabel }}
             <span aria-hidden="true">*</span>
             <span class="sr-only">{{
               contentConfig.webhooks.form.required
@@ -135,11 +119,8 @@
             aria-describedby="webhook-url-description"
             :placeholder="webhooksConfig.placeholders.url"
             class="form-control"
-          >
-          <p
-            id="webhook-url-description"
-            class="mt-1 text-sm text-gray-500"
-          >
+          />
+          <p id="webhook-url-description" class="mt-1 text-sm text-gray-500">
             {{ contentConfig.webhooks.form.urlDescription }}
           </p>
         </div>
@@ -164,7 +145,7 @@
                   type="checkbox"
                   :value="event"
                   :aria-label="`Subscribe to ${event} event`"
-                >
+                />
                 {{ event }}
               </label>
             </div>
@@ -177,7 +158,7 @@
               v-model="newWebhook.active"
               type="checkbox"
               :aria-label="contentConfig.webhooks.ariaLabels.enableWebhook"
-            >
+            />
             {{ contentConfig.webhooks.form.activeLabel }}
           </label>
         </div>
@@ -214,10 +195,7 @@
         aria-live="polite"
       >
         <!-- Animated Illustration -->
-        <div
-          class="webhook-illustration"
-          aria-hidden="true"
-        >
+        <div class="webhook-illustration" aria-hidden="true">
           <!-- Background Circle -->
           <div
             class="webhook-bg-circle"
@@ -300,10 +278,7 @@
           {{ contentConfig.webhooks.empty.ctaButton }}
         </button>
       </div>
-      <div
-        v-else
-        class="webhook-items"
-      >
+      <div v-else class="webhook-items">
         <div
           v-for="webhook in webhooks"
           :key="webhook.id"
@@ -394,7 +369,7 @@
               :style="getPressAndHold(webhook.id, webhook).progressStyle"
               :aria-label="
                 contentConfig.webhooks.ariaLabels.deleteWebhook +
-                  ' (Press and hold to confirm)'
+                ' (Press and hold to confirm)'
               "
               @mousedown="getPressAndHold(webhook.id, webhook).startPress"
               @mouseup="getPressAndHold(webhook.id, webhook).endPress"
@@ -411,7 +386,7 @@
               <span
                 v-if="
                   getPressAndHold(webhook.id, webhook).isPressing &&
-                    !reducedMotion
+                  !reducedMotion
                 "
                 class="press-hold-ring"
                 aria-hidden="true"
@@ -430,7 +405,7 @@
                     :r="
                       (animationConfig.pressAndHold.ringSize -
                         animationConfig.pressAndHold.strokeWidth) /
-                        2
+                      2
                     "
                     fill="none"
                     :stroke-width="animationConfig.pressAndHold.strokeWidth"
@@ -443,7 +418,7 @@
                     :r="
                       (animationConfig.pressAndHold.ringSize -
                         animationConfig.pressAndHold.strokeWidth) /
-                        2
+                      2
                     "
                     fill="none"
                     :stroke-width="animationConfig.pressAndHold.strokeWidth"
@@ -1064,6 +1039,41 @@ onMounted(() => {
 }
 
 .celebration-content {
+  /* Flexy hates hardcoded values! All celebration animation timing is now configurable */
+  --celebration-pop-duration: v-bind(
+    'animationConfig.cssAnimations.slowerDurationSec'
+  );
+  --celebration-icon-rotate-duration: v-bind(
+    'animationConfig.cssAnimations.mediumDurationSec'
+  );
+  --celebration-icon-rotate-delay: v-bind(
+    'animationConfig.cssAnimations.smallDelaySec'
+  );
+  --celebration-circle-scale-duration: v-bind(
+    'animationConfig.cssTransitions.standardSec'
+  );
+  --celebration-circle-scale-delay: v-bind(
+    'animationConfig.cssAnimations.microDelaySec'
+  );
+  --celebration-checkmark-duration: v-bind(
+    'animationConfig.cssAnimations.mediumDurationSec'
+  );
+  --celebration-checkmark-delay: v-bind(
+    'animationConfig.cssAnimations.mediumDelaySec'
+  );
+  --celebration-text-duration: v-bind(
+    'animationConfig.cssTransitions.standardSec'
+  );
+  --celebration-text-delay: v-bind(
+    'animationConfig.cssAnimations.mediumDelaySec'
+  );
+  --celebration-sparkle-duration: v-bind(
+    'animationConfig.cssTransitions.slowerSec'
+  );
+  --celebration-sparkle-delay-increment: v-bind(
+    'animationConfig.cssAnimations.microDelaySec'
+  );
+  --easing-spring: v-bind('animationConfig.easing.spring');
   display: inline-flex;
   align-items: center;
   gap: v-bind('animationConfig.webhookManager?.celebrationGap || "12px"');
@@ -1088,8 +1098,8 @@ onMounted(() => {
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-  animation: celebration-pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)
-    forwards;
+  animation: celebration-pop-in var(--celebration-pop-duration)
+    var(--easing-spring) forwards;
 }
 
 @keyframes celebration-pop-in {
@@ -1119,7 +1129,8 @@ onMounted(() => {
 .checkmark-svg {
   width: 100%;
   height: 100%;
-  animation: icon-rotate-in 0.4s ease-out 0.2s both;
+  animation: icon-rotate-in var(--celebration-icon-rotate-duration) ease-out
+    var(--celebration-icon-rotate-delay) both;
 }
 
 @keyframes icon-rotate-in {
@@ -1136,7 +1147,8 @@ onMounted(() => {
 .checkmark-circle {
   fill: white;
   opacity: 0.9;
-  animation: circle-scale 0.3s ease-out 0.1s both;
+  animation: circle-scale var(--celebration-circle-scale-duration) ease-out
+    var(--celebration-circle-scale-delay) both;
 }
 
 @keyframes circle-scale {
@@ -1162,7 +1174,8 @@ onMounted(() => {
   stroke-linejoin: round;
   stroke-dasharray: 20;
   stroke-dashoffset: 20;
-  animation: checkmark-draw 0.4s ease-out 0.3s forwards;
+  animation: checkmark-draw var(--celebration-checkmark-duration) ease-out
+    var(--celebration-checkmark-delay) forwards;
 }
 
 @keyframes checkmark-draw {
@@ -1178,7 +1191,8 @@ onMounted(() => {
   font-weight: 600;
   color: white;
   white-space: nowrap;
-  animation: text-fade-in 0.3s ease-out 0.4s both;
+  animation: text-fade-in var(--celebration-text-duration) ease-out
+    var(--celebration-text-delay) both;
 }
 
 @keyframes text-fade-in {
@@ -1211,8 +1225,10 @@ onMounted(() => {
   );
   border-radius: 50%;
   opacity: 0;
-  animation: sparkle-burst 0.8s ease-out forwards;
-  animation-delay: calc(var(--sparkle-index) * 0.1s);
+  animation: sparkle-burst var(--celebration-sparkle-duration) ease-out forwards;
+  animation-delay: calc(
+    var(--sparkle-index) * var(--celebration-sparkle-delay-increment)
+  );
   --angle: calc(var(--sparkle-index) * 60deg);
 }
 
@@ -1262,7 +1278,7 @@ onMounted(() => {
   .celebration-text,
   .sparkle {
     animation: none !important;
-    transition: opacity 0.2s ease-out !important;
+    transition: opacity var(--transition-normal, 0.2s) ease-out !important;
   }
 
   .checkmark-path {
