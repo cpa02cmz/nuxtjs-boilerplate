@@ -2337,6 +2337,38 @@ export const animationConfig = {
     // Avatar pulse duration (seconds)
     avatarPulseSec: parseFloat(process.env.COMMENTS_AVATAR_PULSE_SEC || '2'),
   },
+
+  // Benefits Section Micro-UX - Palette's delightful enhancement! ✨
+  // Staggered entrance animations and satisfying interactions for benefits list
+  benefits: {
+    // Delay between each benefit item's entrance animation (ms)
+    staggerDelayMs: parseInt(process.env.BENEFITS_STAGGER_MS || '100'),
+    // Duration of entrance animation (ms)
+    entranceDurationMs: parseInt(process.env.BENEFITS_ENTRANCE_MS || '600'),
+    // Hover lift distance (px)
+    hoverLiftPx: parseInt(process.env.BENEFITS_HOVER_LIFT || '2'),
+    // Hover scale factor
+    hoverScale: parseFloat(process.env.BENEFITS_HOVER_SCALE || '1.01'),
+    // Pressed state scale factor
+    pressScale: parseFloat(process.env.BENEFITS_PRESS_SCALE || '0.98'),
+    // Pressed state duration (ms)
+    pressDurationMs: parseInt(process.env.BENEFITS_PRESS_MS || '150'),
+    // Checkmark pop animation duration (ms)
+    checkmarkDurationMs: parseInt(process.env.BENEFITS_CHECKMARK_MS || '500'),
+    // Sparkle animation duration (ms)
+    sparkleDurationMs: parseInt(process.env.BENEFITS_SPARKLE_MS || '1000'),
+    // Intersection observer threshold (0-1)
+    intersectionThreshold: parseFloat(
+      process.env.BENEFITS_INTERSECTION || '0.2'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.BENEFITS_RESPECT_REDUCED_MOTION !== 'false',
+    // Enable haptic feedback on mobile devices
+    hapticFeedback: process.env.BENEFITS_HAPTIC !== 'false',
+    // Haptic feedback duration (ms)
+    hapticDurationMs: parseInt(process.env.BENEFITS_HAPTIC_DURATION || '10'),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
