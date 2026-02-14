@@ -625,7 +625,9 @@ onMounted(() => {
 /* Ensure button doesn't overlap with other fixed elements on mobile */
 @media (max-width: 768px) {
   .scroll-to-top {
-    bottom: 5rem;
+    bottom: v-bind(
+      'animationConfig.mobilePositioning.bottomSpacingRem + "rem"'
+    );
   }
 }
 
@@ -658,7 +660,9 @@ onMounted(() => {
 /* Palette's micro-UX enhancement: Hover tooltip showing scroll progress */
 .scroll-tooltip {
   position: absolute;
-  bottom: calc(100% + 8px);
+  bottom: calc(
+    100% + v-bind('animationConfig.scrollToTopTooltip.verticalOffsetPx + "px"')
+  );
   left: 50%;
   transform: translateX(-50%);
   z-index: v-bind('zIndexConfig.tooltip');
@@ -669,27 +673,39 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 6px 10px;
+  padding: v-bind('animationConfig.scrollToTopTooltip.paddingYPx + "px"')
+    v-bind('animationConfig.scrollToTopTooltip.paddingXPx + "px"');
   background: v-bind('themeConfig.scrollToTop.tooltipBg');
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: v-bind(
+    'animationConfig.scrollToTopTooltip.borderRadiusPx + "px"'
+  );
+  box-shadow: v-bind('animationConfig.scrollToTopTooltip.shadow.x + "px"')
+    v-bind('animationConfig.scrollToTopTooltip.shadow.y + "px"')
+    v-bind('animationConfig.scrollToTopTooltip.shadow.blur + "px"')
+    rgba(0, 0, 0, v-bind('animationConfig.scrollToTopTooltip.shadow.opacity'));
   white-space: nowrap;
 }
 
 .scroll-tooltip__text {
-  font-size: 14px;
+  font-size: v-bind('animationConfig.scrollToTopTooltip.textFontSizePx + "px"');
   font-weight: 700;
   color: v-bind('themeConfig.scrollToTop.tooltipText');
   line-height: 1;
 }
 
 .scroll-tooltip__label {
-  font-size: 10px;
+  font-size: v-bind(
+    'animationConfig.scrollToTopTooltip.labelFontSizePx + "px"'
+  );
   font-weight: 500;
   color: v-bind('themeConfig.scrollToTop.tooltipLabel');
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 2px;
+  letter-spacing: v-bind(
+    'animationConfig.scrollToTopTooltip.labelLetterSpacingPx + "px"'
+  );
+  margin-top: v-bind(
+    'animationConfig.scrollToTopTooltip.labelMarginTopPx + "px"'
+  );
 }
 
 .scroll-tooltip__arrow {
@@ -699,9 +715,12 @@ onMounted(() => {
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 6px solid v-bind('themeConfig.scrollToTop.tooltipBg');
+  border-left: v-bind('animationConfig.scrollToTopTooltip.arrowSizePx + "px"')
+    solid transparent;
+  border-right: v-bind('animationConfig.scrollToTopTooltip.arrowSizePx + "px"')
+    solid transparent;
+  border-top: v-bind('animationConfig.scrollToTopTooltip.arrowSizePx + "px"')
+    solid v-bind('themeConfig.scrollToTop.tooltipBg');
 }
 
 /* Reduced motion support for tooltip */
