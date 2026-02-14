@@ -2337,6 +2337,50 @@ export const animationConfig = {
     // Avatar pulse duration (seconds)
     avatarPulseSec: parseFloat(process.env.COMMENTS_AVATAR_PULSE_SEC || '2'),
   },
+
+  // SearchAnalytics Component Animations - Palette's micro-UX delight! 🎨
+  // Staggered card entrances, number counting, and delightful hover effects
+  searchAnalytics: {
+    // Stagger delay between stat card entrances (ms)
+    cardStaggerDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_STAGGER_MS || '100'
+    ),
+    // Card entrance animation duration (ms)
+    cardEntranceDurationMs: parseInt(
+      process.env.SEARCH_ANALYTICS_ENTRANCE_DURATION_MS || '500'
+    ),
+    // Card hover transition duration (ms)
+    cardHoverTransitionMs: parseInt(
+      process.env.SEARCH_ANALYTICS_HOVER_TRANSITION_MS || '200'
+    ),
+    // Number counting animation duration (ms)
+    countUpDurationMs: parseInt(
+      process.env.SEARCH_ANALYTICS_COUNT_UP_DURATION_MS || '1000'
+    ),
+    // Skeleton shimmer animation duration (ms)
+    skeletonShimmerDurationMs: parseInt(
+      process.env.SEARCH_ANALYTICS_SKELETON_SHIMMER_MS || '1500'
+    ),
+    // Chart bar entrance stagger delay (ms)
+    chartBarStaggerMs: parseInt(
+      process.env.SEARCH_ANALYTICS_CHART_STAGGER_MS || '50'
+    ),
+    // Chart bar entrance duration (ms)
+    chartBarDurationMs: parseInt(
+      process.env.SEARCH_ANALYTICS_CHART_DURATION_MS || '400'
+    ),
+    // Icon bounce scale for stat cards
+    iconBounceScale: parseFloat(
+      process.env.SEARCH_ANALYTICS_ICON_BOUNCE_SCALE || '1.2'
+    ),
+    // Haptic feedback delay after data loads (ms)
+    hapticDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_HAPTIC_DELAY_MS || '300'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SEARCH_ANALYTICS_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
