@@ -557,6 +557,7 @@ const loadMoreWithEnhancedFeedback = async () => {
 
 // Scroll to the first newly loaded resource card
 const scrollToNewlyLoadedContent = () => {
+  if (typeof document === 'undefined') return
   // Find all resource card wrappers
   const cards = document.querySelectorAll('.resource-card-wrapper')
 
