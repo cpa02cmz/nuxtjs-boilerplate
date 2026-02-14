@@ -8,6 +8,50 @@ import {
 } from '~/configs/http.config'
 import { networkConfig } from '~/configs/network.config'
 
+/**
+ * SSRF Protection: Validates URL before making requests
+ * Issue #2214: Prevents access to internal networks and cloud metadata
+ */
+function isValidValidationUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url)
+
+    // Block non-HTTP protocols
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return false
+    }
+
+    const hostname = parsed.hostname.toLowerCase()
+
+    // Block internal addresses
+    const blockedPatterns = [
+      'localhost',
+      '127.0.0.1',
+      '0.0.0.0',
+      '169.254.169.254', // AWS metadata
+      'metadata.google.internal',
+      'metadata',
+    ]
+
+    if (
+      blockedPatterns.some(p => hostname === p || hostname.startsWith(p + '.'))
+    ) {
+      return false
+    }
+
+    // Block private IP ranges
+    const privateIpRegex =
+      /^(10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.|169\.254\.)/
+    if (privateIpRegex.test(hostname)) {
+      return false
+    }
+
+    return true
+  } catch {
+    return false
+  }
+}
+
 export interface UrlValidationResult {
   url: string
   status: number | null
@@ -51,6 +95,19 @@ export async function validateUrl(
       isAccessible: false,
       responseTime: null,
       error: 'Invalid URL format',
+      timestamp: new Date().toISOString(),
+    }
+  }
+
+  // SSRF Protection: Validate URL before making requests (Issue #2214)
+  if (!isValidValidationUrl(url)) {
+    return {
+      url,
+      status: null,
+      statusText: null,
+      isAccessible: false,
+      responseTime: null,
+      error: 'URL validation blocked for security reasons (SSRF protection)',
       timestamp: new Date().toISOString(),
     }
   }
