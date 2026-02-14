@@ -40,23 +40,28 @@
         position: 'relative',
       }"
     >
-      <div
-        v-for="virtualRow in virtualizer.getVirtualItems()"
-        :key="String(virtualRow.key)"
-        :data-index="virtualRow.index"
-        :style="{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          transform: `translateY(${virtualRow.start}px)`,
-        }"
-      >
-        <slot
-          :item="items[virtualRow.index]"
-          :index="virtualRow.index"
-        />
-      </div>
+      <TransitionGroup name="list-item" tag="div" class="w-full h-full">
+        <div
+          v-for="virtualRow in virtualizer.getVirtualItems()"
+          :key="String(virtualRow.key)"
+          :data-index="virtualRow.index"
+          class="virtual-list-item"
+          :class="{
+            'virtual-list-item--animated':
+              !prefersReducedMotion && isListLoaded,
+          }"
+          :style="{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            transform: `translateY(${virtualRow.start}px)`,
+            '--item-index': virtualRow.index % 10,
+          }"
+        >
+          <slot :item="items[virtualRow.index]" :index="virtualRow.index" />
+        </div>
+      </TransitionGroup>
     </div>
   </div>
 </template>
@@ -93,6 +98,7 @@ const props = withDefaults(defineProps<Props>(), {
 const scrollContainer = ref<HTMLElement | null>(null)
 const scrollPercentage = ref(0)
 const prefersReducedMotion = ref(false)
+const isListLoaded = ref(false)
 
 const totalHeight = computed(() => props.items.length * props.itemHeight)
 
@@ -153,6 +159,12 @@ onMounted(() => {
 
   // Initial scroll position calculation
   handleScroll()
+
+  // Palette's micro-UX delight: Trigger staggered entrance animation
+  // Small delay to ensure DOM is ready and prevent hydration mismatch
+  setTimeout(() => {
+    isListLoaded.value = true
+  }, 50)
 })
 
 onUnmounted(() => {
@@ -231,6 +243,69 @@ onUnmounted(() => {
   .scroll-progress-bar {
     background: currentColor;
     opacity: 0.8;
+  }
+}
+
+/* Palette's micro-UX enhancement: Staggered entrance animation
+   Creates a delightful cascading wave effect when list items appear */
+.virtual-list-item--animated {
+  animation: list-item-enter
+    v-bind('`${animationConfig.virtualList.entranceDurationMs}ms`')
+    v-bind('animationConfig.virtualList.entranceEasing') forwards;
+  animation-delay: calc(
+    var(--item-index) *
+      v-bind('`${animationConfig.virtualList.staggerDelayMs}ms`')
+  );
+  opacity: 0;
+}
+
+@keyframes list-item-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(calc(var(--translate-y, 0px) + 20px)) scale(0.95);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(calc(var(--translate-y, 0px) - 2px)) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(var(--translate-y, 0px)) scale(1);
+  }
+}
+
+/* Vue TransitionGroup classes for smooth item transitions */
+.list-item-enter-active,
+.list-item-leave-active {
+  transition: all
+    v-bind('`${animationConfig.virtualList.transitionDurationMs}ms`') ease-out;
+}
+
+.list-item-enter-from,
+.list-item-leave-to {
+  opacity: 0;
+  transform: translateY(var(--translate-y, 0px)) scale(0.95);
+}
+
+.list-item-move {
+  transition: transform
+    v-bind('`${animationConfig.virtualList.moveDurationMs}ms`') ease-out;
+}
+
+/* Reduced motion support - disable staggered animation */
+@media (prefers-reduced-motion: reduce) {
+  .virtual-list-item--animated {
+    animation: none;
+    opacity: 1;
+    transition: opacity
+      v-bind('`${animationConfig.virtualList.reducedMotionDurationMs}ms`')
+      ease-out;
+  }
+
+  .list-item-enter-active,
+  .list-item-leave-active,
+  .list-item-move {
+    transition: none;
   }
 }
 </style>
