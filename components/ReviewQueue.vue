@@ -292,6 +292,7 @@ import { shadowsConfig } from '~/configs/shadows.config'
 import { uiConfig } from '~/configs/ui.config'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   initialSubmissions?: Submission[]
@@ -453,8 +454,9 @@ onUnmounted(() => {
 .filter-select:focus,
 .filter-input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  border-color: v-bind('componentColorsConfig.reviewQueue.focus.border');
+  box-shadow: 0 0 0 3px
+    rgba(v-bind('componentColorsConfig.reviewQueue.focus.shadow'), 0.2);
   transform: translateY(-1px);
 }
 
@@ -743,7 +745,7 @@ onUnmounted(() => {
 
 .tag {
   background: rgba(59, 130, 246, 0.1);
-  color: #1d4ed8;
+  color: v-bind('componentColorsConfig.reviewQueue.action.approve');
   padding: 0.25rem 0.625rem;
   border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.lg}px`');
   font-size: 0.75rem;
@@ -840,7 +842,7 @@ onUnmounted(() => {
 .empty-icon {
   width: 64px;
   height: 64px;
-  color: #d1d5db;
+  color: v-bind('componentColorsConfig.reviewQueue.divider');
   z-index: 1;
 }
 
