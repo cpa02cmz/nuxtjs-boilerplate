@@ -1468,6 +1468,15 @@ export const contentConfig = {
       rejectFailed:
         process.env.CONTENT_REVIEW_ERR_REJECT || 'Failed to reject submission',
     },
+    // Palette's micro-UX delight: Celebration text for approval
+    celebration: {
+      approved:
+        process.env.CONTENT_REVIEW_CELEBRATION_APPROVED ||
+        'Submission Approved! 🎉',
+      approvedAnnouncement:
+        process.env.CONTENT_REVIEW_CELEBRATION_ANNOUNCE ||
+        'Submission approved successfully',
+    },
   },
 
   // Resource Lifecycle Timeline - Flexy hates hardcoded timeline text!
