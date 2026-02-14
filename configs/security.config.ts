@@ -132,7 +132,10 @@ export const securityConfig = {
     // Salt for scrypt key derivation - must be set explicitly, no default for security
     salt: (() => {
       const salt = process.env.CRYPTO_SALT
-      if (!salt && process.env.NODE_ENV === 'production') {
+      // Skip check during build process or when explicitly disabled
+      const skipCheck =
+        process.env.SKIP_CRYPTO_CHECK === 'true' || process.env.NUXT_BUILD
+      if (!salt && process.env.NODE_ENV === 'production' && !skipCheck) {
         throw new Error(
           'CRYPTO_SALT environment variable must be set in production for secure encryption. Generate a secure salt using crypto.randomBytes(32).toString("hex")'
         )
