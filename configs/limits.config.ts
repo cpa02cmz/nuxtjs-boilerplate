@@ -345,6 +345,48 @@ export const limitsConfig = {
     // Maximum number of web vitals entries to store
     maxEntries: parseInt(process.env.WEB_VITALS_MAX_ENTRIES || '100'),
   },
+
+  // CSP Report Validation Limits - Flexy hates hardcoded limits!
+  cspReport: {
+    // Maximum URI length (document-uri, referrer, blocked-uri, source-file)
+    maxUriLength: parseInt(process.env.CSP_REPORT_MAX_URI_LENGTH || '2048'),
+    // Maximum policy length (original-policy)
+    maxPolicyLength: parseInt(
+      process.env.CSP_REPORT_MAX_POLICY_LENGTH || '4096'
+    ),
+    // Maximum directive length (effective-directive, violated-directive)
+    maxDirectiveLength: parseInt(
+      process.env.CSP_REPORT_MAX_DIRECTIVE_LENGTH || '100'
+    ),
+    // Maximum disposition length
+    maxDispositionLength: parseInt(
+      process.env.CSP_REPORT_MAX_DISPOSITION_LENGTH || '20'
+    ),
+  },
+
+  // Error Report Validation Limits - Flexy hates hardcoded limits!
+  errorReport: {
+    // Maximum error message length
+    maxMessageLength: parseInt(
+      process.env.ERROR_REPORT_MAX_MESSAGE_LENGTH || '500'
+    ),
+    // Maximum stack trace length
+    maxStackLength: parseInt(
+      process.env.ERROR_REPORT_MAX_STACK_LENGTH || '10000'
+    ),
+    // Maximum component name length
+    maxComponentLength: parseInt(
+      process.env.ERROR_REPORT_MAX_COMPONENT_LENGTH || '100'
+    ),
+    // Maximum URL length
+    maxUrlLength: parseInt(process.env.ERROR_REPORT_MAX_URL_LENGTH || '2048'),
+    // Maximum user agent length
+    maxUserAgentLength: parseInt(
+      process.env.ERROR_REPORT_MAX_USER_AGENT_LENGTH || '500'
+    ),
+    // Maximum IP address length (IPv6 max)
+    maxIpLength: parseInt(process.env.ERROR_REPORT_MAX_IP_LENGTH || '45'),
+  },
 } as const
 
 export type LimitsConfig = typeof limitsConfig
