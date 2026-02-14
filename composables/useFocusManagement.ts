@@ -10,7 +10,7 @@ export const useFocusManagement = () => {
     if (!element) return
 
     const focusableElements = element.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled]), summary, details[open] summary, audio[controls], video[controls], [contenteditable]:not([contenteditable="false"]), iframe'
     )
 
     if (focusableElements.length === 0) return
@@ -54,7 +54,7 @@ export const useFocusManagement = () => {
     if (!container) return
 
     const firstFocusable = container.querySelector(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled]), summary, details[open] summary, audio[controls], video[controls], [contenteditable]:not([contenteditable="false"]), iframe'
     ) as HTMLElement | null
 
     if (firstFocusable) {
