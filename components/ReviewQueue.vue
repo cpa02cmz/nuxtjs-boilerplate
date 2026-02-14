@@ -97,6 +97,7 @@ import { moderationConfig } from '~/configs/moderation.config'
 import { contentConfig } from '~/configs/content.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { uiConfig } from '~/configs/ui.config'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   initialSubmissions?: Submission[]
@@ -157,12 +158,16 @@ const {
   margin-bottom: 1rem;
   background: var(--color-card-background);
   box-shadow: v-bind('shadowsConfig.reviewQueue.cardShadow');
-  transition: all 0.2s ease-out;
+  transition: v-bind(
+    '`all ${animationConfig.cssTransitions.normalSec} ease-out`'
+  );
 }
 
 .submission-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: v-bind(
+    '`translateY(-${animationConfig.cardAnimations.hoverTranslateYPx}px)`'
+  );
+  box-shadow: v-bind('shadowsConfig.reviewQueue.cardShadowHover');
 }
 
 .submission-header {
@@ -287,11 +292,15 @@ const {
 
 /* Palette's micro-UX enhancement: Button hover effect */
 .btn-primary {
-  transition: all 0.2s ease-out;
+  transition: v-bind(
+    '`all ${animationConfig.cssTransitions.normalSec} ease-out`'
+  );
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: v-bind(
+    '`translateY(-${animationConfig.cardAnimations.hoverTranslateYPx / 2}px)`'
+  );
+  box-shadow: v-bind('shadowsConfig.reviewQueue.buttonShadowHover');
 }
 </style>

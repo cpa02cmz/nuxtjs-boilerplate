@@ -137,6 +137,12 @@ export const shadowsConfig = {
   reviewQueue: {
     cardShadow:
       process.env.REVIEW_QUEUE_CARD_SHADOW || '0 2px 8px rgba(0, 0, 0, 0.1)',
+    cardShadowHover:
+      process.env.REVIEW_QUEUE_CARD_SHADOW_HOVER ||
+      '0 4px 12px rgba(0, 0, 0, 0.15)',
+    buttonShadowHover:
+      process.env.REVIEW_QUEUE_BUTTON_SHADOW_HOVER ||
+      '0 4px 8px rgba(0, 0, 0, 0.2)',
   },
 
   // Toast Component Shadows (multi-layer)

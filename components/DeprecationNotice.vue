@@ -645,7 +645,7 @@ onUnmounted(() => {
 .copy-link-btn:hover {
   background: v-bind('componentColorsConfig.deprecationNotice.warning.bg');
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: v-bind('shadowsConfig.deprecationNotice.default');
 }
 
 .copy-link-btn:focus-visible {

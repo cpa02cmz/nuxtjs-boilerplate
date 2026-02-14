@@ -25,10 +25,7 @@
       <div class="skeleton-layer skeleton-layer--pulse" />
 
       <!-- Optional loading spinner for larger images -->
-      <div
-        v-if="showLoadingIndicator"
-        class="loading-indicator"
-      >
+      <div v-if="showLoadingIndicator" class="loading-indicator">
         <svg
           class="loading-spinner"
           viewBox="0 0 24 24"
@@ -75,23 +72,9 @@
           stroke-width="2"
           aria-hidden="true"
         >
-          <circle
-            cx="12"
-            cy="12"
-            r="10"
-          />
-          <line
-            x1="12"
-            y1="8"
-            x2="12"
-            y2="12"
-          />
-          <line
-            x1="12"
-            y1="16"
-            x2="12.01"
-            y2="16"
-          />
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
         <p class="error-text">
           {{
@@ -102,7 +85,7 @@
           class="retry-button"
           :aria-label="
             contentConfig.optimizedImage?.error?.retryAriaLabel ||
-              'Retry loading image'
+            'Retry loading image'
           "
           @click="handleRetry"
         >
@@ -146,12 +129,7 @@
     />
 
     <!-- Screen reader announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -161,6 +139,7 @@
 import { ref, useTemplateRef, computed, onMounted, onUnmounted } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 import { hapticLight, hapticError, hapticSuccess } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -576,13 +555,13 @@ onUnmounted(() => {
   transition: all
     v-bind('animationConfig.transition?.fast?.durationMs + "ms" || "150ms"')
     ease;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: v-bind('shadowsConfig.boxShadow.sm');
 }
 
 .retry-button:hover {
   background: #fef2f2;
   transform: translateY(-1px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: v-bind('shadowsConfig.boxShadow.md');
 }
 
 .retry-button:active {
