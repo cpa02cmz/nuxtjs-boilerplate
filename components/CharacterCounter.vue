@@ -87,6 +87,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { validationConfig } from '~/configs/validation.config'
 import { zIndexScale } from '~/configs/z-index.config'
+import { uiConfig } from '~/configs/ui.config'
 import { hapticLight, hapticError } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -352,11 +353,15 @@ const shadowColorDefault = computed(
 
 /* Error state styling */
 .character-counter-wrapper.character-counter--error {
-  --counter-color-error: #ef4444;
+  --counter-color-error: v-bind(
+    'uiConfig.characterCounter.colors.error || "#ef4444"'
+  );
 }
 
 .character-counter-wrapper.character-counter--warning {
-  --counter-color-warning: #f59e0b;
+  --counter-color-warning: v-bind(
+    'uiConfig.characterCounter.colors.warning || "#f59e0b"'
+  );
 }
 
 /* Reduced motion support */

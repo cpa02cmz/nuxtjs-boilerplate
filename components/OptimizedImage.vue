@@ -476,7 +476,7 @@ onUnmounted(() => {
 .loading-spinner {
   width: 32px;
   height: 32px;
-  color: #6b7280;
+  color: v-bind('componentColorsConfig.optimizedImage.spinner || "#6b7280"');
   animation: spinner-rotate
     v-bind('animationConfig.optimizedImage?.spinnerRotateDurationSec || "1s"')
     linear infinite;
@@ -516,12 +516,32 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  background: linear-gradient(
+    135deg,
+    v-bind(
+        'componentColorsConfig.optimizedImage.error.bgGradientStart || "#fef2f2"'
+      )
+      0%,
+    v-bind(
+        'componentColorsConfig.optimizedImage.error.bgGradientEnd || "#fee2e2"'
+      )
+      100%
+  );
   padding: 1rem;
 }
 
 :global(.dark) .error-state {
-  background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
+  background: linear-gradient(
+    135deg,
+    v-bind(
+        'componentColorsConfig.optimizedImage.error.bgGradientDarkStart || "#450a0a"'
+      )
+      0%,
+    v-bind(
+        'componentColorsConfig.optimizedImage.error.bgGradientDarkEnd || "#7f1d1d"'
+      )
+      100%
+  );
 }
 
 .error-content {
