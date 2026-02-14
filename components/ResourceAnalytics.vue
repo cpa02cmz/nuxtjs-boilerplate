@@ -6,9 +6,7 @@
   >
     <!-- Header with live indicator -->
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-xl font-semibold text-gray-900">
-        Resource Analytics
-      </h2>
+      <h2 class="text-xl font-semibold text-gray-900">Resource Analytics</h2>
       <!-- Live indicator - Palette's micro-UX delight! -->
       <span
         v-if="!isLoading && !prefersReducedMotion"
@@ -21,10 +19,7 @@
     </div>
 
     <!-- Loading Skeleton State - Palette's micro-UX delight! -->
-    <div
-      v-if="isLoading"
-      class="grid grid-cols-1 md:grid-cols-3 gap-4"
-    >
+    <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div
         v-for="n in 3"
         :key="n"
@@ -169,11 +164,7 @@
           </span>
         </div>
         <!-- Mini chart visualization -->
-        <div
-          v-if="!prefersReducedMotion"
-          class="mini-chart"
-          aria-hidden="true"
-        >
+        <div v-if="!prefersReducedMotion" class="mini-chart" aria-hidden="true">
           <div
             v-for="n in 5"
             :key="n"
@@ -240,12 +231,7 @@
     </TransitionGroup>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcementText }}
     </div>
   </div>
@@ -351,6 +337,12 @@ const timeAgo = computed(() => {
   if (!props.analyticsData) return ''
   const { timeAgo } = useTimeAgo(props.analyticsData.lastViewed, { live: true })
   return timeAgo.value
+})
+
+// Progress bar transition style - Flexy hates hardcoded CSS!
+const progressBarTransition = computed(() => {
+  const config = animationConfig.analytics.progressBar
+  return `width ${config.widthTransitionSec} ${config.widthEasing}`
 })
 
 // Generate random bar heights for mini chart (consistent per session)
@@ -711,7 +703,7 @@ import type { Ref } from 'vue'
   height: 100%;
   background: linear-gradient(90deg, #3b82f6, #8b5cf6);
   border-radius: 2px;
-  transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: v-bind('progressBarTransition');
 }
 
 /* Mini Chart - Palette's micro-UX delight! */

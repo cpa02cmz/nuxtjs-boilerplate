@@ -1,6 +1,9 @@
 // Animation Configuration - All Animation Timing and Duration Settings
 // Flexy hates hardcoded values! All animation settings are now configurable.
-import { EASING as EASING_CONSTANTS } from './easing.config'
+import {
+  EASING as EASING_CONSTANTS,
+  easingConfig as EASING_CONFIG,
+} from './easing.config'
 
 // Convenience alias for cubic-bezier easing functions
 const EASING_REF = EASING_CONSTANTS
@@ -2693,6 +2696,21 @@ export const animationConfig = {
     valueTransitionSec: `${
       parseInt(process.env.ANALYTICS_VALUE_TRANSITION_MS || '200') / 1000
     }s`,
+    // Progress bar animation - Flexy hates hardcoded transitions!
+    progressBar: {
+      // Width transition duration (ms)
+      widthTransitionMs: parseInt(
+        process.env.ANALYTICS_PROGRESS_WIDTH_MS || '1000'
+      ),
+      // CSS-compatible width transition duration (seconds)
+      widthTransitionSec: `${
+        parseInt(process.env.ANALYTICS_PROGRESS_WIDTH_MS || '1000') / 1000
+      }s`,
+      // Easing function for width transition (spring effect)
+      widthEasing:
+        process.env.ANALYTICS_PROGRESS_EASING ||
+        EASING_CONFIG.cubicBezier.spring,
+    },
   },
 } as const
 
