@@ -66,9 +66,15 @@
           </button>
         </div>
         <p>{{ noticeMessage }}</p>
-        <div v-if="migrationPath || alternatives" class="notice-actions">
+        <div
+          v-if="migrationPath || alternatives"
+          class="notice-actions"
+        >
           <!-- Migration Link with Copy Button - Palette's micro-UX delight! -->
-          <div v-if="migrationPath" class="migration-link-wrapper">
+          <div
+            v-if="migrationPath"
+            class="migration-link-wrapper"
+          >
             <a
               :href="migrationPath"
               target="_blank"
@@ -204,7 +210,11 @@
       />
 
       <!-- Screen reader announcement -->
-      <div class="sr-only" role="status" aria-live="polite">
+      <div
+        class="sr-only"
+        role="status"
+        aria-live="polite"
+      >
         {{ announcementText }}
       </div>
     </div>
