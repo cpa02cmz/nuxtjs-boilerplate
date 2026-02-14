@@ -34,7 +34,8 @@
         <kbd
           class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
           aria-hidden="true"
-        >Ctrl+Z</kbd>
+          >Ctrl+Z</kbd
+        >
         <!-- Progress bar for undo window -->
         <span
           class="error-message__undo-progress"
@@ -46,12 +47,7 @@
     </Transition>
 
     <!-- Aria live region for announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
 
@@ -70,7 +66,9 @@
           `error-message--${variant}`,
           { 'error-message--dismissible': dismissible },
         ]"
-        role="alert"
+        :role="
+          variant === 'error' || variant === 'warning' ? 'alert' : 'status'
+        "
         :aria-live="variant === 'error' ? 'assertive' : 'polite'"
         @mouseenter="pauseDismiss"
         @mouseleave="resumeDismiss"
@@ -131,10 +129,7 @@
           <p class="error-message__text">
             {{ message }}
           </p>
-          <div
-            v-if="action"
-            class="error-message__action"
-          >
+          <div v-if="action" class="error-message__action">
             <button
               type="button"
               class="error-message__action-button"

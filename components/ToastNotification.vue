@@ -23,7 +23,7 @@
           { 'toast--entering': enteringToastIds.has(toast.id) },
         ]"
         :style="getToastStyle(index)"
-        role="alert"
+        :role="toast.type === 'error' ? 'alert' : 'status'"
         :aria-live="toast.type === 'error' ? 'assertive' : 'polite'"
         @mouseenter="pauseToast(toast.id)"
         @mouseleave="resumeToast(toast.id)"
@@ -94,10 +94,7 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p
-            v-if="toast.description"
-            class="toast__description"
-          >
+          <p v-if="toast.description" class="toast__description">
             {{ toast.description }}
           </p>
         </div>
