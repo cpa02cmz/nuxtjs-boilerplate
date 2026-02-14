@@ -2548,6 +2548,49 @@ export const animationConfig = {
       process.env.FEATURES_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // Comparison Builder Animations - Palette's micro-UX delight! 🎨
+  // Staggered resource tags, celebration effects, and delightful interactions
+  comparison: {
+    // Progress dot transition duration (ms)
+    dotTransitionMs: parseInt(
+      process.env.COMPARISON_DOT_TRANSITION_MS || '200'
+    ),
+    // Progress dot pop animation duration (ms)
+    popDurationMs: parseInt(process.env.COMPARISON_POP_DURATION_MS || '400'),
+    // Progress dot glow animation duration (ms)
+    glowDurationMs: parseInt(process.env.COMPARISON_GLOW_DURATION_MS || '2000'),
+    // Stagger delay for progress dots (ms)
+    staggerDelayMs: parseInt(process.env.COMPARISON_STAGGER_DELAY_MS || '50'),
+    // Button press transition duration (ms)
+    buttonTransitionMs: parseInt(
+      process.env.COMPARISON_BUTTON_TRANSITION_MS || '150'
+    ),
+    // Resource tag enter animation duration (ms)
+    tagEnterDurationMs: parseInt(
+      process.env.COMPARISON_TAG_ENTER_DURATION_MS || '300'
+    ),
+    // Resource tag exit animation duration (ms)
+    tagExitDurationMs: parseInt(
+      process.env.COMPARISON_TAG_EXIT_DURATION_MS || '200'
+    ),
+    // Resource tag hover transition duration (ms)
+    tagTransitionMs: parseInt(
+      process.env.COMPARISON_TAG_TRANSITION_MS || '200'
+    ),
+    // Remove button hover transition duration (ms)
+    removeTransitionMs: parseInt(
+      process.env.COMPARISON_REMOVE_TRANSITION_MS || '150'
+    ),
+    // Max reached celebration bounce duration (ms)
+    celebrationBounceMs: parseInt(
+      process.env.COMPARISON_CELEBRATION_BOUNCE_MS || '1000'
+    ),
+    // Confetti duration for max reached celebration (ms)
+    confettiDurationMs: parseInt(
+      process.env.COMPARISON_CONFETTI_DURATION_MS || '2000'
+    ),
+  },
+
   // Resource Analytics Animations - Flexy hates hardcoded stagger delays!
   // Used by ResourceAnalytics.vue for card entrance and skeleton loading
   analytics: {
