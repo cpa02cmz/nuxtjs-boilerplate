@@ -73,7 +73,9 @@
           </span>
           <span
             class="text-gray-800 truncate group-hover:text-gray-900 transition-colors duration-200 font-medium"
-          >{{ search.query }}</span>
+          >
+            {{ search.query }}
+          </span>
         </div>
 
         <!-- Attempt count with animated background -->
@@ -119,23 +121,80 @@
         v-if="zeroResultSearches.length === 0"
         class="text-center text-gray-500 py-8 flex flex-col items-center"
       >
+        <!-- Animated Illustration Container -->
         <div
-          class="w-12 h-12 mb-3 text-gray-300"
-          :class="{ 'animate-pulse-subtle': !prefersReducedMotion }"
+          class="relative w-20 h-20 mb-4"
+          aria-hidden="true"
         >
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+          <!-- Background Circle with subtle pulse -->
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full"
+            :class="{ 'animate-pulse-subtle': !prefersReducedMotion }"
+          />
+
+          <!-- Smiley Face Container -->
+          <div
+            class="absolute inset-0 flex items-center justify-center"
+            :class="{ 'animate-bounce-subtle': !prefersReducedMotion }"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="1.5"
-              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+            <svg
+              class="w-12 h-12 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <!-- Face Circle with Draw Animation -->
+              <circle
+                cx="12"
+                cy="12"
+                r="9"
+                stroke-width="1.5"
+                class="origin-center"
+                :class="{ 'animate-draw': !prefersReducedMotion }"
+                :style="drawStyles"
+              />
+              <!-- Left Eye -->
+              <circle
+                cx="9"
+                cy="10"
+                r="1"
+                fill="currentColor"
+                class="opacity-60"
+                :class="{ 'animate-fade-in-delayed': !prefersReducedMotion }"
+              />
+              <!-- Right Eye -->
+              <circle
+                cx="15"
+                cy="10"
+                r="1"
+                fill="currentColor"
+                class="opacity-60"
+                :class="{ 'animate-fade-in-delayed': !prefersReducedMotion }"
+              />
+              <!-- Smile Line with Draw Animation -->
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M9.172 15.172a4 4 0 015.656 0"
+                :class="{ 'animate-draw-delayed': !prefersReducedMotion }"
+                :style="drawStyles"
+              />
+            </svg>
+          </div>
+
+          <!-- Floating Decorative Elements - Palette's visual delight! -->
+          <div
+            v-if="!prefersReducedMotion"
+            class="absolute top-2 right-2 w-2 h-2 bg-gray-300 rounded-full animate-float"
+          />
+          <div
+            v-if="!prefersReducedMotion"
+            class="absolute bottom-4 left-3 w-1.5 h-1.5 bg-gray-300 rounded-full animate-float-delayed"
+          />
         </div>
+
         <p class="text-sm font-medium">
           {{ contentConfig.search.popular.empty }}
         </p>
@@ -199,6 +258,12 @@ const zeroResultSearches = computed(() => {
 // Staggered animation styles - Palette's micro-UX enhancement!
 const staggerStyles = computed(() => ({
   '--stagger-delay': `${animationConfig.popularSearches.staggerDelayMs}ms`,
+}))
+
+// Draw animation styles for SVG icon - Palette's delightful enhancement!
+const drawStyles = computed(() => ({
+  strokeDasharray: '60',
+  strokeDashoffset: '60',
 }))
 
 // Check for reduced motion preference - Palette cares about accessibility!
@@ -410,6 +475,94 @@ onUnmounted(() => {
   border-width: 0;
 }
 
+/* SVG Draw Animation - Palette's delightful enhancement! */
+.animate-draw {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: draw-animation
+    v-bind('animationConfig.zeroResultSearches.drawDurationSec')
+    v-bind('animationConfig.zeroResultSearches.drawEasing') forwards;
+}
+
+.animate-draw-delayed {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: draw-animation
+    v-bind('animationConfig.zeroResultSearches.drawDurationSec')
+    v-bind('animationConfig.zeroResultSearches.drawEasing') forwards;
+  animation-delay: v-bind('animationConfig.zeroResultSearches.drawDelaySec');
+}
+
+@keyframes draw-animation {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Fade In Delayed Animation */
+.animate-fade-in-delayed {
+  opacity: 0;
+  animation: fade-in-delayed 0.3s ease-out forwards;
+  animation-delay: v-bind('animationConfig.zeroResultSearches.drawDelaySec');
+}
+
+@keyframes fade-in-delayed {
+  to {
+    opacity: 0.6;
+  }
+}
+
+/* Subtle Bounce Animation */
+.animate-bounce-subtle {
+  animation: bounce-subtle
+    v-bind('animationConfig.zeroResultSearches.floatDurationSec') ease-in-out
+    infinite;
+}
+
+@keyframes bounce-subtle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Floating Animation - Palette's visual delight! */
+.animate-float {
+  animation: float v-bind('animationConfig.zeroResultSearches.floatDurationSec')
+    ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float v-bind('animationConfig.zeroResultSearches.floatDurationSec')
+    ease-in-out infinite;
+  animation-delay: v-bind('animationConfig.zeroResultSearches.floatDelaySec');
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(
+      v-bind('animationConfig.zeroResultSearches.floatDistance')
+    );
+  }
+}
+
+/* Spring Physics Hover - satisfying tactile feedback! */
+.group {
+  transition:
+    transform v-bind('animationConfig.zeroResultSearches.springDurationSec')
+      v-bind('animationConfig.zeroResultSearches.springEasing'),
+    box-shadow v-bind('animationConfig.zeroResultSearches.springDurationSec')
+      v-bind('animationConfig.zeroResultSearches.springEasing'),
+    background-color 0.2s ease-out;
+}
+
 /* Reduced motion support - Palette cares about accessibility! */
 @media (prefers-reduced-motion: reduce) {
   .space-y-2 > * {
@@ -424,6 +577,27 @@ onUnmounted(() => {
   .animate-ripple {
     animation: none;
     opacity: 0;
+  }
+
+  .animate-draw,
+  .animate-draw-delayed {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+
+  .animate-fade-in-delayed {
+    animation: none;
+    opacity: 0.6;
+  }
+
+  .animate-bounce-subtle {
+    animation: none;
+  }
+
+  .animate-float,
+  .animate-float-delayed {
+    animation: none;
   }
 
   .group {
