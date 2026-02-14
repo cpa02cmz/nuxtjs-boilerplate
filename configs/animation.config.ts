@@ -2337,6 +2337,42 @@ export const animationConfig = {
     // Avatar pulse duration (seconds)
     avatarPulseSec: parseFloat(process.env.COMMENTS_AVATAR_PULSE_SEC || '2'),
   },
+
+  // Moderation Dashboard Animations - Flexy hates hardcoded values!
+  // Configuration for counter animations, stagger delays, and activity transitions
+  moderationDashboard: {
+    // Counter animation duration (ms) - Flexy hates hardcoded 1500!
+    counterDurationMs: parseInt(
+      process.env.MODERATION_COUNTER_DURATION_MS || '1500'
+    ),
+    // CSS duration string for counter animation
+    counterDurationSec: `${parseInt(process.env.MODERATION_COUNTER_DURATION_MS || '1500') / 1000}s`,
+    // Stagger delay between counter animations (ms) - Flexy hates hardcoded 150!
+    counterStaggerDelayMs: parseInt(
+      process.env.MODERATION_COUNTER_STAGGER_MS || '150'
+    ),
+    // Initial delay before starting counter animations (ms) - Flexy hates hardcoded 300!
+    initialDelayMs: parseInt(process.env.MODERATION_INITIAL_DELAY_MS || '300'),
+    // Completion announcement delay (ms) - Flexy hates hardcoded 2000!
+    completionDelayMs: parseInt(
+      process.env.MODERATION_COMPLETION_DELAY_MS || '2000'
+    ),
+    // Announcement clear timeout (ms) - Flexy hates hardcoded 3000!
+    announcementClearMs: parseInt(
+      process.env.MODERATION_ANNOUNCEMENT_CLEAR_MS || '3000'
+    ),
+    // Card entrance transition duration class - Flexy hates hardcoded duration-400!
+    cardTransitionClass:
+      process.env.MODERATION_CARD_TRANSITION_CLASS || 'duration-400',
+    // Activity entrance animation duration (seconds)
+    activityEntranceDurationSec: `${parseInt(process.env.MODERATION_ACTIVITY_DURATION_MS || '400') / 1000}s`,
+    // Activity animation delay offset (ms) - Flexy hates hardcoded 400!
+    activityDelayOffsetMs: parseInt(
+      process.env.MODERATION_ACTIVITY_DELAY_OFFSET_MS || '400'
+    ),
+    // CSS delay offset string
+    activityDelayOffsetSec: `${parseInt(process.env.MODERATION_ACTIVITY_DELAY_OFFSET_MS || '400') / 1000}s`,
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

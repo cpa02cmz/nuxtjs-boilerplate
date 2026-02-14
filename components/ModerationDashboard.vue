@@ -145,7 +145,7 @@
 
         <!-- Empty state with animation -->
         <Transition
-          enter-active-class="transition-all duration-400 ease-out"
+          :enter-active-class="`transition-all ${animationConfig.moderationDashboard?.cardTransitionClass || 'duration-400'} ease-out`"
           enter-from-class="opacity-0 translate-y-4"
           enter-to-class="opacity-100 translate-y-0"
         >
@@ -352,7 +352,8 @@ const checkReducedMotion = () => {
 const animateCounter = (
   key: string,
   target: number,
-  duration: number = 1500
+  duration: number = animationConfig.moderationDashboard?.counterDurationMs ||
+    1500
 ) => {
   const start = animatedValues.value[key as keyof typeof animatedValues.value]
   const startTime = performance.now()
@@ -389,12 +390,16 @@ const startCounterAnimations = () => {
 
   // Stagger counter animations
   Object.keys(targetValues.value).forEach((key, index) => {
-    setTimeout(() => {
-      animateCounter(
-        key,
-        targetValues.value[key as keyof typeof targetValues.value]
-      )
-    }, index * 150)
+    setTimeout(
+      () => {
+        animateCounter(
+          key,
+          targetValues.value[key as keyof typeof targetValues.value]
+        )
+      },
+      index *
+        (animationConfig.moderationDashboard?.counterStaggerDelayMs || 150)
+    )
   })
 
   // Announce completion after all animations
@@ -403,11 +408,11 @@ const startCounterAnimations = () => {
     announcement.value = `Dashboard loaded. ${targetValues.value.pending} pending, ${targetValues.value.approved} approved.`
     setTimeout(() => {
       announcement.value = ''
-    }, 3000)
+    }, animationConfig.moderationDashboard?.announcementClearMs || 3000)
 
     // Haptic feedback for completion
     hapticSuccess()
-  }, 2000)
+  }, animationConfig.moderationDashboard?.completionDelayMs || 2000)
 }
 
 // Palette's micro-UX enhancement: Card hover handlers
@@ -514,7 +519,10 @@ onMounted(() => {
   }
 
   // Start counter animations after a brief delay
-  setTimeout(startCounterAnimations, 300)
+  setTimeout(
+    startCounterAnimations,
+    animationConfig.moderationDashboard?.initialDelayMs || 300
+  )
 })
 
 // Watch for value changes and update animations
@@ -761,7 +769,13 @@ watch(
       'animationConfig.moderationDashboard?.activityEntranceDurationSec || "0.4s"'
     )
     ease-out forwards;
-  animation-delay: calc(var(--activity-delay, 0ms) + 400ms);
+  animation-delay: calc(
+    var(--activity-delay, 0ms) +
+      v-bind(
+        'animationConfig.moderationDashboard?.activityDelayOffsetMs || 400'
+      )
+      ms
+  );
 }
 
 @keyframes activity-entrance {
