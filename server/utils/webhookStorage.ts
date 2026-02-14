@@ -554,17 +554,41 @@ export const webhookStorage = {
 
   /**
    * Atomically dequeue the next available webhook item
-   * Uses a processing status flag to prevent duplicate processing
+   * Uses row-level locking with processingStartedAt to prevent race conditions
    * Returns null if no items available or if item is already being processed
    */
-  async dequeueAtomic(): Promise<WebhookQueueItem | null> {
+  async dequeueAtomic(
+    workerId: string = `worker-${process.pid}-${Date.now()}`
+  ): Promise<WebhookQueueItem | null> {
     try {
       return await prisma.$transaction(async tx => {
-        // Find the oldest pending item that's not currently being processed
-        const item = await tx.webhookQueue.findFirst({
+        const now = new Date()
+
+        // Atomically update the next available item, setting processingStartedAt
+        // This uses the database's row-level locking to prevent race conditions
+        const { count } = await tx.webhookQueue.updateMany({
           where: {
             deletedAt: null,
-            scheduledFor: { lte: new Date() },
+            scheduledFor: { lte: now },
+            processingStartedAt: null, // Only select items not currently being processed
+          },
+          data: {
+            processingStartedAt: now,
+            processedBy: workerId,
+            updatedAt: now,
+          },
+        })
+
+        if (count === 0) {
+          return null
+        }
+
+        // Fetch the item we just marked as processing
+        const item = await tx.webhookQueue.findFirst({
+          where: {
+            processingStartedAt: now,
+            processedBy: workerId,
+            deletedAt: null,
           },
           orderBy: [{ priority: 'asc' }, { scheduledFor: 'asc' }],
         })
@@ -576,7 +600,7 @@ export const webhookStorage = {
         // Soft delete the item atomically within the transaction
         await tx.webhookQueue.update({
           where: { id: item.id },
-          data: { deletedAt: new Date() },
+          data: { deletedAt: now },
         })
 
         return mapPrismaToWebhookQueueItem(item)
