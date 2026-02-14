@@ -2,6 +2,12 @@
  * Composable for managing focus in accessible components
  */
 
+// Comprehensive selector for all focusable elements (WCAG 2.1 compliant)
+// Includes: buttons, links, form controls, tabbable elements, summary/details,
+// media controls, editable content, and iframes
+const FOCUSABLE_ELEMENTS_SELECTOR =
+  'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled]), summary, details > summary, audio[controls], video[controls], [contenteditable]:not([contenteditable="false"]), iframe, object, embed'
+
 export const useFocusManagement = () => {
   /**
    * Trap focus within an element - useful for modals and dropdowns
@@ -10,7 +16,7 @@ export const useFocusManagement = () => {
     if (!element) return
 
     const focusableElements = element.querySelectorAll(
-      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled]), summary, details[open] summary, audio[controls], video[controls], [contenteditable]:not([contenteditable="false"]), iframe'
+      FOCUSABLE_ELEMENTS_SELECTOR
     )
 
     if (focusableElements.length === 0) return
@@ -54,7 +60,7 @@ export const useFocusManagement = () => {
     if (!container) return
 
     const firstFocusable = container.querySelector(
-      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled]), summary, details[open] summary, audio[controls], video[controls], [contenteditable]:not([contenteditable="false"]), iframe'
+      FOCUSABLE_ELEMENTS_SELECTOR
     ) as HTMLElement | null
 
     if (firstFocusable) {
