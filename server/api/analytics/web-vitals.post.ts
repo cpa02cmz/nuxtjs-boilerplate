@@ -49,18 +49,21 @@ export default defineEventHandler(async event => {
       },
     }
 
-    // In production, store in database or analytics service
-    // For now, log at debug level with enriched data
-    logger.debug('Web Vitals Report:', {
-      metric: enrichedReport.metric.name,
-      value: enrichedReport.metric.value,
-      rating: enrichedReport.metric.rating,
-      url: enrichedReport.url,
-      server: enrichedReport.server,
-    })
+    // Store in analytics database
+    const { storeWebVitalsMetric } = await import('~/server/utils/analytics-db')
+    const storeResult = await storeWebVitalsMetric(enrichedReport)
 
-    // TODO: Store in analytics database
-    // await storeWebVitalsMetric(enrichedReport)
+    if (!storeResult.success) {
+      logger.warn('Failed to store web vitals metric:', storeResult.error)
+      // Still return success to client - don't block for analytics storage
+    } else {
+      logger.debug('Web Vitals Report stored:', {
+        metric: enrichedReport.metric.name,
+        value: enrichedReport.metric.value,
+        rating: enrichedReport.metric.rating,
+        url: enrichedReport.url,
+      })
+    }
 
     return {
       success: true,

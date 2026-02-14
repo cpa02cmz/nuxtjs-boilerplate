@@ -6,7 +6,7 @@
       </h2>
       <button
         :class="[
-          'text-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded px-2 py-1 rounded',
+          `text-sm transition-all ${animationConfig.tailwindDurations.normal} ease-out focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded px-2 py-1 rounded`,
           resetConfirming
             ? 'text-green-600 bg-green-50'
             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
@@ -118,10 +118,7 @@
         :aria-label="contentConfig.filters.ariaLabels.dateAdded"
         class="space-y-2"
       >
-        <label
-          class="flex items-center"
-          :for="'date-anytime'"
-        >
+        <label class="flex items-center" :for="'date-anytime'">
           <input
             id="date-anytime"
             type="radio"
@@ -130,15 +127,12 @@
             :checked="selectedDateRange === 'anytime'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('anytime')"
-          >
+          />
           <span class="ml-2 text-sm text-gray-800">{{
             contentConfig.filters.dateRanges.any
           }}</span>
         </label>
-        <label
-          class="flex items-center"
-          :for="'date-last-week'"
-        >
+        <label class="flex items-center" :for="'date-last-week'">
           <input
             id="date-last-week"
             type="radio"
@@ -147,15 +141,12 @@
             :checked="selectedDateRange === 'lastWeek'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastWeek')"
-          >
+          />
           <span class="ml-2 text-sm text-gray-800">{{
             contentConfig.filters.dateRanges.week
           }}</span>
         </label>
-        <label
-          class="flex items-center"
-          :for="'date-last-month'"
-        >
+        <label class="flex items-center" :for="'date-last-month'">
           <input
             id="date-last-month"
             type="radio"
@@ -164,15 +155,12 @@
             :checked="selectedDateRange === 'lastMonth'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastMonth')"
-          >
+          />
           <span class="ml-2 text-sm text-gray-800">{{
             contentConfig.filters.dateRanges.month
           }}</span>
         </label>
-        <label
-          class="flex items-center"
-          :for="'date-last-year'"
-        >
+        <label class="flex items-center" :for="'date-last-year'">
           <input
             id="date-last-year"
             type="radio"
@@ -181,7 +169,7 @@
             :checked="selectedDateRange === 'lastYear'"
             class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
             @change="onDateRangeChange('lastYear')"
-          >
+          />
           <span class="ml-2 text-sm text-gray-800">{{
             contentConfig.filters.dateRanges.year
           }}</span>
@@ -206,6 +194,7 @@ import FilterSection from '~/components/FilterSection.vue'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
+import { animationConfig } from '~/configs/animation.config'
 
 interface FacetCounts {
   [key: string]: number

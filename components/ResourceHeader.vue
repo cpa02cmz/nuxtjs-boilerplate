@@ -23,7 +23,7 @@
           :href="url"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 transition-colors duration-200"
+          :class="`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 hover:bg-gray-900 transition-colors ${animationConfig.tailwindDurations.normal}`"
         >
           Visit Resource
           <svg
@@ -38,7 +38,8 @@
               stroke-linejoin="round"
               stroke-width="2"
               d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-            /></svg>
+            />
+          </svg>
         </a>
       </div>
     </div>
@@ -46,6 +47,8 @@
 </template>
 
 <script setup lang="ts">
+import { animationConfig } from '~/configs/animation.config'
+
 interface Props {
   title: string
   category: string

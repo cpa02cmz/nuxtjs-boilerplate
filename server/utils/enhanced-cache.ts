@@ -249,6 +249,45 @@ class CacheManager {
   }
 
   /**
+   * Delete multiple keys atomically from cache
+   * Returns the count of keys actually deleted (atomic operation)
+   */
+  async deleteMultiple(keys: string[]): Promise<number> {
+    if (keys.length === 0) {
+      return 0
+    }
+
+    let deletedCount = 0
+
+    // Delete from memory cache
+    for (const key of keys) {
+      if (this.memoryCache.has(key)) {
+        this.memoryCache.delete(key)
+        deletedCount++
+      }
+    }
+
+    // If Redis is enabled, use atomic pipeline delete
+    if (this.enableRedis && this.redisClient && this.redisConnected) {
+      try {
+        // Use Redis DEL which returns number of keys deleted atomically
+        const redisDeleted = await this.redisClient.del(...keys)
+        // Only count Redis deletions for keys that weren't in memory cache
+        // to avoid double counting
+        const memoryOnlyCount = Math.max(
+          0,
+          deletedCount - (keys.length - redisDeleted)
+        )
+        deletedCount = memoryOnlyCount + redisDeleted
+      } catch (error) {
+        logger.warn('Redis batch delete error:', error)
+      }
+    }
+
+    return deletedCount
+  }
+
+  /**
    * Clear all cache entries (both memory and Redis if configured)
    */
   async clear(): Promise<void> {
@@ -496,39 +535,22 @@ export async function cacheSetWithTags<T = unknown>(
 
 /**
  * Invalidate cache by tag
+ * Uses atomic Redis operations to avoid race conditions
  */
 export async function invalidateCacheByTag(tag: string): Promise<number> {
   const tagKey = `tag:${tag}`
   const tagMembers: string[] = (await cacheManager.get(tagKey)) || []
-  let invalidatedCount = 0
 
-  // Filter out expired keys and delete valid ones
-  const remainingMembers: string[] = []
-  for (const key of tagMembers) {
-    // Check if the key still exists in cache
-    const value = await cacheManager.get(key)
-    if (value !== null) {
-      // Key still valid, delete it
-      if (await cacheManager.delete(key)) {
-        invalidatedCount++
-      }
-      remainingMembers.push(key)
-    }
-    // If value is null, key expired - don't add to remainingMembers
+  if (tagMembers.length === 0) {
+    return 0
   }
 
-  // Clean up the tag mapping
-  if (remainingMembers.length > 0) {
-    // Update tag mapping with only valid keys
-    await cacheManager.set(
-      tagKey,
-      remainingMembers,
-      cacheConfig.server.defaultTtlSeconds
-    )
-  } else {
-    // No valid keys left, delete the tag mapping entirely
-    await cacheManager.delete(tagKey)
-  }
+  // Use atomic deletion to avoid race conditions
+  // Redis DEL returns the number of keys actually deleted
+  const invalidatedCount = await cacheManager.deleteMultiple(tagMembers)
+
+  // Clean up the tag mapping - all tagged keys are now invalidated
+  await cacheManager.delete(tagKey)
 
   return invalidatedCount
 }
