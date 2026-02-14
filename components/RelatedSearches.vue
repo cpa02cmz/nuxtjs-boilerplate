@@ -165,6 +165,7 @@ import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { themeConfig } from '~/configs/theme.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
 
@@ -472,7 +473,8 @@ onUnmounted(() => {
 /* Button text */
 .button-text {
   position: relative;
-  z-index: 1;
+  /* Flexy hates hardcoded z-index! Using config instead. */
+  z-index: v-bind('zIndexScale.low[1]');
 }
 
 /* Button arrow - appears on hover */

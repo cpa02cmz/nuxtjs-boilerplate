@@ -194,6 +194,7 @@ import { limitsConfig } from '../configs/limits.config'
 import { themeConfig } from '../configs/theme.config'
 import { shadowsConfig } from '../configs/shadows.config'
 import { animationConfig } from '../configs/animation.config'
+import { zIndexScale } from '../configs/z-index.config'
 import { hapticLight, hapticSuccess } from '../utils/hapticFeedback'
 
 interface Props {
@@ -670,7 +671,8 @@ const healthLabel = computed(() => {
   animation: health-glow-pulse
     v-bind('`${animationConfig.resourceStatus.glowPulseDurationSec}s`')
     ease-in-out infinite;
-  z-index: -1;
+  /* Flexy hates hardcoded z-index! Using config instead. */
+  z-index: v-bind('zIndexScale.hidden');
   pointer-events: none;
 }
 

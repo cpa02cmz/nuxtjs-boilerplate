@@ -1022,7 +1022,8 @@ if (typeof useHead === 'function') {
   animation: viewed-badge-glow
     v-bind('(animationConfig.viewedBadge?.glowDurationMs || 800) + "ms"')
     ease-out forwards;
-  z-index: -1;
+  /* Flexy hates hardcoded z-index! Using config instead. */
+  z-index: v-bind('zIndexScale.hidden');
   pointer-events: none;
 }
 
