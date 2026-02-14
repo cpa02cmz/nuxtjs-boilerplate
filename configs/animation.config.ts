@@ -2221,6 +2221,42 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.COMPARISON_EMPTY_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Similar Resources Micro-UX - Palette's delightful enhancement! ✨
+  // Staggered entrance animations and satisfying interactions for similar resource cards
+  similarResources: {
+    // Delay between each card's entrance animation (ms)
+    staggerDelayMs: parseInt(process.env.SIMILAR_RESOURCES_STAGGER_MS || '100'),
+    // Duration of entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.SIMILAR_RESOURCES_ENTRANCE_MS || '500'
+    ),
+    // Distance cards travel during entrance (px)
+    entranceDistancePx: parseInt(
+      process.env.SIMILAR_RESOURCES_ENTRANCE_DISTANCE || '30'
+    ),
+    // Duration of hover lift transition (ms)
+    hoverTransitionMs: parseInt(
+      process.env.SIMILAR_RESOURCES_HOVER_TRANSITION_MS || '200'
+    ),
+    // Vertical lift amount on hover (px)
+    hoverLiftPx: parseInt(process.env.SIMILAR_RESOURCES_HOVER_LIFT || '4'),
+    // Duration of glow pulse animation (ms)
+    glowPulseDurationMs: parseInt(
+      process.env.SIMILAR_RESOURCES_GLOW_PULSE_MS || '2000'
+    ),
+    // Shimmer line animation duration (seconds)
+    shimmerDurationSec: parseFloat(
+      process.env.SIMILAR_RESOURCES_SHIMMER_SEC || '3'
+    ),
+    // Arrow slide animation duration (ms)
+    arrowSlideDurationMs: parseInt(
+      process.env.SIMILAR_RESOURCES_ARROW_SLIDE_MS || '200'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SIMILAR_RESOURCES_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
