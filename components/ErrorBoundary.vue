@@ -1,9 +1,6 @@
 <template>
   <div class="error-boundary-wrapper">
-    <Transition
-      name="error-fade"
-      @after-enter="onErrorEntered"
-    >
+    <Transition name="error-fade" @after-enter="onErrorEntered">
       <div
         v-if="hasError"
         ref="errorContainer"
@@ -43,20 +40,12 @@
           >
             Something went wrong
           </h2>
-          <p
-            id="error-message"
-            class="error-message"
-          >
+          <p id="error-message" class="error-message">
             {{ errorMessage }}
           </p>
-          <div
-            v-if="showDetails"
-            class="error-details"
-          >
+          <div v-if="showDetails" class="error-details">
             <details class="error-details-container">
-              <summary class="error-details-summary">
-                Error Details
-              </summary>
+              <summary class="error-details-summary">Error Details</summary>
               <pre class="error-stack">{{ errorStack }}</pre>
             </details>
           </div>
@@ -219,7 +208,12 @@ const countdownProgress = computed(() => {
   return (autoRetryCountdown.value / props.autoRetryDelaySec) * 100
 })
 
-const countdownRingCircumference = computed(() => 2 * Math.PI * 18) // radius = 18
+const countdownRingRadius = computed(
+  () => animationConfig.errorBoundary?.countdownRing?.radiusPx || 18
+)
+const countdownRingCircumference = computed(
+  () => 2 * Math.PI * countdownRingRadius.value
+)
 const countdownRingOffset = computed(() => {
   return countdownRingCircumference.value * (1 - countdownProgress.value / 100)
 })
