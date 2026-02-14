@@ -2217,6 +2217,43 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.COMPARISON_EMPTY_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Saved Searches Micro-UX - Palette's delightful enhancement! 🎨
+  // Adds celebratory animations and visual feedback when saving searches
+  savedSearches: {
+    // Duration the "New" badge remains visible (ms)
+    newBadgeDurationMs: parseInt(
+      process.env.SAVED_SEARCH_NEW_BADGE_MS || '5000'
+    ),
+    // Duration of the celebratory pop animation when saving (ms)
+    savePopDurationMs: parseInt(
+      process.env.SAVED_SEARCH_POP_DURATION_MS || '400'
+    ),
+    // Duration of the shimmer effect on newly saved items (ms)
+    shimmerDurationMs: parseInt(process.env.SAVED_SEARCH_SHIMMER_MS || '1500'),
+    // Scale factor at peak of save celebration
+    savePopScale: parseFloat(process.env.SAVED_SEARCH_POP_SCALE || '1.05'),
+    // Stagger delay for entrance animations (ms)
+    entranceStaggerMs: parseInt(process.env.SAVED_SEARCH_STAGGER_MS || '80'),
+    // Duration of entrance slide animation (ms)
+    entranceDurationMs: parseInt(process.env.SAVED_SEARCH_ENTRANCE_MS || '300'),
+    // Glow intensity for hover effect (px)
+    hoverGlowSpread: parseInt(process.env.SAVED_SEARCH_HOVER_GLOW_PX || '8'),
+    // Glow color for hover effect
+    hoverGlowColor:
+      process.env.SAVED_SEARCH_HOVER_GLOW_COLOR || 'rgba(59, 130, 246, 0.15)',
+    // Badge entrance animation duration (ms)
+    badgeEntranceDurationMs: parseInt(
+      process.env.SAVED_SEARCH_BADGE_ENTRANCE_MS || '300'
+    ),
+    // Badge scale bounce for pop effect
+    badgePopScale: parseFloat(
+      process.env.SAVED_SEARCH_BADGE_POP_SCALE || '1.2'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SAVED_SEARCH_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
