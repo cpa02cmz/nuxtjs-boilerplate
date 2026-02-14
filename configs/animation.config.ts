@@ -1359,6 +1359,10 @@ export const animationConfig = {
     healthRingDurationSec: parseFloat(
       process.env.RESOURCE_STATUS_HEALTH_RING_SEC || '1.5'
     ),
+    // Glow pulse duration for excellent health (seconds) - Palette's micro-UX enhancement!
+    glowPulseDurationSec: parseFloat(
+      process.env.RESOURCE_STATUS_GLOW_PULSE_SEC || '2.0'
+    ),
     // Celebration easing function
     celebrationEasing:
       process.env.RESOURCE_STATUS_CELEBRATION_EASING ||
