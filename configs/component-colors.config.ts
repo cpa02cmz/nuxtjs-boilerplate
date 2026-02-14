@@ -84,6 +84,12 @@ export const componentColorsConfig = {
       button: process.env.DEPRECATION_INFO_BTN || '#3b82f6',
       buttonHover: process.env.DEPRECATION_INFO_BTN_HOVER || '#2563eb',
     },
+    success: {
+      bg: process.env.DEPRECATION_SUCCESS_BG || '#f0fdf4',
+      border: process.env.DEPRECATION_SUCCESS_BORDER || '#22c55e',
+      text: process.env.DEPRECATION_SUCCESS_TEXT || '#15803d',
+      bgHover: process.env.DEPRECATION_SUCCESS_BG_HOVER || '#dcfce7',
+    },
     text: process.env.DEPRECATION_TEXT || '#4b5563',
   },
 

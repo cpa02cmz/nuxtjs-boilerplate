@@ -155,12 +155,19 @@
           enter-from-class="opacity-0 translate-y-4"
           enter-to-class="opacity-100 translate-y-0"
         >
-          <div v-if="recentActivity.length === 0" class="activity-empty-state">
+          <div
+            v-if="recentActivity.length === 0"
+            class="activity-empty-state"
+          >
             <div
               class="activity-empty-icon"
               :class="{ 'animate-float': !prefersReducedMotion }"
             >
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -177,11 +184,17 @@
       </section>
 
       <!-- Palette's micro-UX enhancement: Quick Actions with Press Effects -->
-      <section class="quick-actions" aria-labelledby="quick-actions-heading">
+      <section
+        class="quick-actions"
+        aria-labelledby="quick-actions-heading"
+      >
         <h2 id="quick-actions-heading">
           {{ config.dashboard.quickActions }}
         </h2>
-        <nav class="action-buttons" aria-label="Quick actions navigation">
+        <nav
+          class="action-buttons"
+          aria-label="Quick actions navigation"
+        >
           <NuxtLink
             v-for="(action, index) in quickActions"
             :key="action.route"
@@ -233,7 +246,12 @@
     </div>
 
     <!-- Palette's micro-UX enhancement: Screen reader announcements -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ announcement }}
     </div>
   </div>

@@ -399,7 +399,13 @@ export const contentConfig = {
         process.env.CONTENT_COMPARISON_EMPTY_DESC ||
         'Add resources to compare them side-by-side.',
       browse: process.env.CONTENT_COMPARISON_EMPTY_BROWSE || 'Browse Resources',
+      ariaLabel:
+        process.env.CONTENT_COMPARISON_EMPTY_ARIA ||
+        'Empty comparison state - no resources selected',
+      popularLabel:
+        process.env.CONTENT_COMPARISON_POPULAR_LABEL || 'Popular resources',
     },
+    popularLabel: process.env.CONTENT_COMPARISON_POPULAR_LABEL || 'Popular',
   },
 
   // PWA
