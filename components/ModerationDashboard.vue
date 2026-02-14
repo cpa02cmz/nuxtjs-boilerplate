@@ -181,6 +181,7 @@ import { contentConfig } from '~/configs/content.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
 import { uiConfig } from '~/configs/ui.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 const {
   pendingCount,
@@ -315,7 +316,7 @@ const config = contentConfig.moderation
 
 .activity-flag {
   background: v-bind('shadowsConfig.moderationDashboard.flaggedBg');
-  color: #ffc107;
+  color: v-bind('componentColorsConfig.moderationDashboard.activity.flag');
 }
 
 .activity-submit {

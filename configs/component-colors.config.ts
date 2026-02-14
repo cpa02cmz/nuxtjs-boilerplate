@@ -126,6 +126,14 @@ export const componentColorsConfig = {
   // Review Queue Colors - Flexy hates hardcoded queue colors!
   reviewQueue: {
     cardShadow: process.env.REVIEW_QUEUE_CARD_SHADOW || '0, 0, 0, 0.1',
+    focus: {
+      border: process.env.REVIEW_QUEUE_FOCUS_BORDER || '#3b82f6',
+      shadow: process.env.REVIEW_QUEUE_FOCUS_SHADOW || '59, 130, 246',
+    },
+    action: {
+      approve: process.env.REVIEW_QUEUE_ACTION_APPROVE || '#1d4ed8',
+    },
+    divider: process.env.REVIEW_QUEUE_DIVIDER || '#d1d5db',
   },
 
   // Toast Notification Colors - Flexy hates hardcoded toast colors!
@@ -203,6 +211,9 @@ export const componentColorsConfig = {
   // Scroll To Top Colors - Flexy hates hardcoded scroll button colors!
   scrollToTop: {
     focusOutline: process.env.SCROLL_TO_TOP_FOCUS || '#3b82f6',
+    celebration: {
+      checkmark: process.env.SCROLL_TO_TOP_CHECKMARK || '#10b981',
+    },
   },
 
   // Resource Card Visited Link Colors - Flexy hates hardcoded visited colors!
@@ -474,7 +485,54 @@ export const componentColorsConfig = {
       500: process.env.GREEN_500 || '#22c55e',
     },
     red: {
+      300: process.env.RED_300 || '#fca5a5',
       500: process.env.RED_500 || '#ef4444',
+      600: process.env.RED_600 || '#dc2626',
+      800: process.env.RED_800 || '#991b1b',
+    },
+    yellow: {
+      500: process.env.YELLOW_500 || '#ffc107',
+    },
+  },
+
+  // OptimizedImage Component Colors - Flexy hates hardcoded error colors!
+  optimizedImage: {
+    error: {
+      icon: process.env.OPTIMIZED_IMAGE_ERROR_ICON || '#ef4444',
+      iconDark: process.env.OPTIMIZED_IMAGE_ERROR_ICON_DARK || '#fca5a5',
+      text: process.env.OPTIMIZED_IMAGE_ERROR_TEXT || '#991b1b',
+      textDark: process.env.OPTIMIZED_IMAGE_ERROR_TEXT_DARK || '#fca5a5',
+      buttonBorder: process.env.OPTIMIZED_IMAGE_ERROR_BTN_BORDER || '#ef4444',
+      buttonText: process.env.OPTIMIZED_IMAGE_ERROR_BTN_TEXT || '#dc2626',
+      buttonBgHover:
+        process.env.OPTIMIZED_IMAGE_ERROR_BTN_HOVER_BG || '#fef2f2',
+      buttonBgDark: process.env.OPTIMIZED_IMAGE_ERROR_BTN_BG_DARK || '#450a0a',
+      buttonBorderDark:
+        process.env.OPTIMIZED_IMAGE_ERROR_BTN_BORDER_DARK || '#fca5a5',
+      buttonTextDark:
+        process.env.OPTIMIZED_IMAGE_ERROR_BTN_TEXT_DARK || '#fca5a5',
+      buttonBgHoverDark:
+        process.env.OPTIMIZED_IMAGE_ERROR_BTN_HOVER_DARK || '#7f1d1d',
+    },
+  },
+
+  // ErrorBoundary Component Colors - Flexy hates hardcoded error colors!
+  errorBoundaryColors: {
+    countdown: {
+      primary: process.env.ERROR_BOUNDARY_COUNTDOWN_PRIMARY || '#3b82f6',
+      paused: process.env.ERROR_BOUNDARY_COUNTDOWN_PAUSED || '#f59e0b',
+    },
+    text: {
+      muted: process.env.ERROR_BOUNDARY_TEXT_MUTED || '#4b5563',
+      secondary: process.env.ERROR_BOUNDARY_TEXT_SECONDARY || '#6b7280',
+      tertiary: process.env.ERROR_BOUNDARY_TEXT_TERTIARY || '#374151',
+    },
+  },
+
+  // ModerationDashboard Component Colors - Flexy hates hardcoded activity colors!
+  moderationDashboard: {
+    activity: {
+      flag: process.env.MODERATION_ACTIVITY_FLAG || '#ffc107',
     },
   },
 } as const

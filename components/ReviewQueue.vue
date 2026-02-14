@@ -25,7 +25,10 @@
         </Transition>
       </div>
       <div class="queue-filters">
-        <select v-model="statusFilter" class="filter-select">
+        <select
+          v-model="statusFilter"
+          class="filter-select"
+        >
           <option value="">
             {{ contentConfig.reviewQueue.filters.allStatuses }}
           </option>
@@ -44,12 +47,15 @@
           type="text"
           :placeholder="moderationConfig.ui.categoryFilterPlaceholder"
           class="filter-input"
-        />
+        >
       </div>
     </div>
 
     <!-- Loading State with Skeleton Animation -->
-    <div v-if="loading" class="loading-state">
+    <div
+      v-if="loading"
+      class="loading-state"
+    >
       <div class="skeleton-wrapper">
         <div
           v-for="n in 3"
@@ -105,7 +111,10 @@
             :class="['status-badge', `status-${submission.status}`]"
             :aria-label="`Status: ${submission.status}`"
           >
-            <span class="status-icon" aria-hidden="true">
+            <span
+              class="status-icon"
+              aria-hidden="true"
+            >
               <svg
                 v-if="submission.status === 'pending'"
                 class="w-3 h-3"
@@ -255,7 +264,10 @@
     </TransitionGroup>
 
     <!-- Empty State with Illustration -->
-    <div v-else class="empty-state">
+    <div
+      v-else
+      class="empty-state"
+    >
       <div
         class="empty-illustration"
         :class="{ 'float-animation': !prefersReducedMotion }"
@@ -276,8 +288,12 @@
         </svg>
         <div class="empty-decoration" />
       </div>
-      <p class="empty-title">{{ contentConfig.reviewQueue.emptyState }}</p>
-      <p class="empty-subtitle">New submissions will appear here</p>
+      <p class="empty-title">
+        {{ contentConfig.reviewQueue.emptyState }}
+      </p>
+      <p class="empty-subtitle">
+        New submissions will appear here
+      </p>
     </div>
   </div>
 </template>
@@ -292,6 +308,8 @@ import { shadowsConfig } from '~/configs/shadows.config'
 import { uiConfig } from '~/configs/ui.config'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 
 interface Props {
   initialSubmissions?: Submission[]
@@ -453,8 +471,9 @@ onUnmounted(() => {
 .filter-select:focus,
 .filter-input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  border-color: v-bind('componentColorsConfig.reviewQueue.focus.border');
+  box-shadow: 0 0 0 3px
+    rgba(v-bind('componentColorsConfig.reviewQueue.focus.shadow'), 0.2);
   transform: translateY(-1px);
 }
 
@@ -743,7 +762,7 @@ onUnmounted(() => {
 
 .tag {
   background: rgba(59, 130, 246, 0.1);
-  color: #1d4ed8;
+  color: v-bind('componentColorsConfig.reviewQueue.action.approve');
   padding: 0.25rem 0.625rem;
   border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.lg}px`');
   font-size: 0.75rem;
@@ -840,8 +859,8 @@ onUnmounted(() => {
 .empty-icon {
   width: 64px;
   height: 64px;
-  color: #d1d5db;
-  z-index: 1;
+  color: v-bind('componentColorsConfig.reviewQueue.divider');
+  z-index: v-bind('zIndexConfig.floatingLabel');
 }
 
 .empty-decoration {

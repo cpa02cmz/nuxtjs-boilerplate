@@ -266,6 +266,7 @@ import { contentConfig } from '~/configs/content.config'
 import { searchConfig } from '~/configs/search.config'
 import { uiConfig } from '~/configs/ui.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 import { hapticSuccess } from '~/utils/hapticFeedback'
 
 // SSR-safe config fallbacks - BroCula fixed these! 🦇
@@ -996,7 +997,7 @@ if (typeof window !== 'undefined') {
   width: 0;
   height: 0;
   pointer-events: none;
-  z-index: 10;
+  z-index: v-bind('zIndexConfig.listItem');
 }
 
 .particle {

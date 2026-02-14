@@ -1198,6 +1198,19 @@ export const animationConfig = {
       process.env.POPULAR_SEARCHES_REDUCED_MOTION !== 'false',
   },
 
+  // Related Searches Animations - Palette's micro-UX delight! ✨
+  // Used by RelatedSearches component for delightful button interactions
+  relatedSearches: {
+    // Delay between each button's entrance animation (ms)
+    staggerDelayMs: parseInt(process.env.RELATED_SEARCHES_STAGGER_MS || '60'),
+    // Container entrance animation duration (seconds)
+    containerEntranceSec: `${parseInt(process.env.RELATED_SEARCHES_CONTAINER_ENTRANCE_MS || '300') / 1000}s`,
+    // Button entrance animation duration (seconds)
+    buttonEntranceSec: `${parseInt(process.env.RELATED_SEARCHES_BUTTON_ENTRANCE_MS || '400') / 1000}s`,
+    // Icon bounce animation duration (seconds)
+    iconBounceSec: `${parseInt(process.env.RELATED_SEARCHES_ICON_BOUNCE_MS || '2000') / 1000}s`,
+  },
+
   // Magnetic Button Effect - Palette's premium micro-UX delight! 🧲
   // Creates a subtle "magnetic" pull that draws buttons toward the cursor
   magneticButton: {
@@ -1327,6 +1340,36 @@ export const animationConfig = {
     focusColor: process.env.STATUS_FOCUS_COLOR || '#3b82f6',
     changeBorderColor: process.env.STATUS_CHANGE_BORDER_COLOR || '#f59e0b',
     changeBgColor: process.env.STATUS_CHANGE_BG_COLOR || '#fffbeb',
+  },
+
+  // Resource Status Component - Palette's micro-UX delight! 🎨
+  // Adds delightful animations and celebrations for resource status badges
+  resourceStatus: {
+    // Pulse animation duration for updated/pending status (seconds)
+    pulseDurationSec: parseFloat(
+      process.env.RESOURCE_STATUS_PULSE_DURATION_SEC || '2'
+    ),
+    // Celebration animation duration when health is excellent (ms)
+    celebrationDurationMs: parseInt(
+      process.env.RESOURCE_STATUS_CELEBRATION_DURATION_MS || '800'
+    ),
+    // CSS duration string for v-bind
+    celebrationDurationSec: `${parseInt(process.env.RESOURCE_STATUS_CELEBRATION_DURATION_MS || '800') / 1000}s`,
+    // Health ring pulse duration (seconds)
+    healthRingDurationSec: parseFloat(
+      process.env.RESOURCE_STATUS_HEALTH_RING_SEC || '1.5'
+    ),
+    // Celebration easing function
+    celebrationEasing:
+      process.env.RESOURCE_STATUS_CELEBRATION_EASING ||
+      EASING_CONSTANTS.SPRING_STANDARD,
+    // Scale factor for celebration animation
+    celebrationScale: parseFloat(
+      process.env.RESOURCE_STATUS_CELEBRATION_SCALE || '1.15'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.RESOURCE_STATUS_RESPECT_REDUCED_MOTION !== 'false',
   },
 
   // PWA Install Prompt Component - Flexy hates hardcoded values!

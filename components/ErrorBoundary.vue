@@ -1,6 +1,9 @@
 <template>
   <div class="error-boundary-wrapper">
-    <Transition name="error-fade" @after-enter="onErrorEntered">
+    <Transition
+      name="error-fade"
+      @after-enter="onErrorEntered"
+    >
       <div
         v-if="hasError"
         ref="errorContainer"
@@ -40,12 +43,20 @@
           >
             Something went wrong
           </h2>
-          <p id="error-message" class="error-message">
+          <p
+            id="error-message"
+            class="error-message"
+          >
             {{ errorMessage }}
           </p>
-          <div v-if="showDetails" class="error-details">
+          <div
+            v-if="showDetails"
+            class="error-details"
+          >
             <details class="error-details-container">
-              <summary class="error-details-summary">Error Details</summary>
+              <summary class="error-details-summary">
+                Error Details
+              </summary>
               <pre class="error-stack">{{ errorStack }}</pre>
             </details>
           </div>
@@ -157,6 +168,7 @@ import { ROUTE_PATTERNS } from '~/configs/routes.config'
 import { hapticError, hapticSuccess } from '~/utils/hapticFeedback'
 import { contentConfig } from '~/configs/content.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface ErrorInfo {
   componentStack: string
@@ -668,11 +680,11 @@ onUnmounted(() => {
   justify-content: center;
   font-size: 14px;
   font-weight: 600;
-  color: #3b82f6;
+  color: v-bind('componentColorsConfig.errorBoundaryColors.countdown.primary');
 }
 
 .countdown-ring.is-paused .countdown-ring__text {
-  color: #f59e0b;
+  color: v-bind('componentColorsConfig.errorBoundaryColors.countdown.paused');
 }
 
 .auto-retry-status {
@@ -684,13 +696,13 @@ onUnmounted(() => {
 
 .auto-retry-status__text {
   font-size: 14px;
-  color: #4b5563;
+  color: v-bind('componentColorsConfig.errorBoundaryColors.text.muted');
   margin: 0;
 }
 
 .cancel-retry-button {
   font-size: 12px;
-  color: #6b7280;
+  color: v-bind('componentColorsConfig.errorBoundaryColors.text.secondary');
   background: none;
   border: none;
   padding: 0;
@@ -700,7 +712,7 @@ onUnmounted(() => {
 }
 
 .cancel-retry-button:hover {
-  color: #374151;
+  color: v-bind('componentColorsConfig.errorBoundaryColors.text.tertiary');
 }
 
 .cancel-retry-button:focus-visible {

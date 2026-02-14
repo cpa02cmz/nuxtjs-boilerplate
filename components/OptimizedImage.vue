@@ -161,6 +161,7 @@
 import { ref, useTemplateRef, computed, onMounted, onUnmounted } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import { hapticLight, hapticError, hapticSuccess } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -529,14 +530,14 @@ onUnmounted(() => {
 .error-icon {
   width: 40px;
   height: 40px;
-  color: #ef4444;
+  color: v-bind('componentColorsConfig.optimizedImage.error.icon');
   animation: error-icon-pulse
     v-bind('animationConfig.optimizedImage?.errorPulseDurationSec || "2s"')
     ease-in-out infinite;
 }
 
 :global(.dark) .error-icon {
-  color: #fca5a5;
+  color: v-bind('componentColorsConfig.optimizedImage.error.iconDark');
 }
 
 @keyframes error-icon-pulse {
@@ -553,12 +554,12 @@ onUnmounted(() => {
 
 .error-text {
   font-size: 0.875rem;
-  color: #991b1b;
+  color: v-bind('componentColorsConfig.optimizedImage.error.text');
   margin: 0;
 }
 
 :global(.dark) .error-text {
-  color: #fca5a5;
+  color: v-bind('componentColorsConfig.optimizedImage.error.textDark');
 }
 
 .retry-button {
@@ -567,9 +568,10 @@ onUnmounted(() => {
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   background: white;
-  border: 1px solid #ef4444;
+  border: 1px solid
+    v-bind('componentColorsConfig.optimizedImage.error.buttonBorder');
   border-radius: 0.375rem;
-  color: #dc2626;
+  color: v-bind('componentColorsConfig.optimizedImage.error.buttonText');
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -580,7 +582,9 @@ onUnmounted(() => {
 }
 
 .retry-button:hover {
-  background: #fef2f2;
+  background: v-bind(
+    'componentColorsConfig.optimizedImage.error.buttonBgHover'
+  );
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
@@ -590,13 +594,17 @@ onUnmounted(() => {
 }
 
 :global(.dark) .retry-button {
-  background: #450a0a;
-  border-color: #fca5a5;
-  color: #fca5a5;
+  background: v-bind('componentColorsConfig.optimizedImage.error.buttonBgDark');
+  border-color: v-bind(
+    'componentColorsConfig.optimizedImage.error.buttonBorderDark'
+  );
+  color: v-bind('componentColorsConfig.optimizedImage.error.buttonTextDark');
 }
 
 :global(.dark) .retry-button:hover {
-  background: #7f1d1d;
+  background: v-bind(
+    'componentColorsConfig.optimizedImage.error.buttonBgHoverDark'
+  );
 }
 
 .retry-icon {
