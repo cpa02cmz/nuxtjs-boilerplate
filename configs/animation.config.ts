@@ -2124,66 +2124,22 @@ export const animationConfig = {
     dotFloatDistancePx: parseInt(
       process.env.COMPARISON_EMPTY_DOT_FLOAT_PX || '8'
     ),
-    // Whether to respect reduced motion preference
-    respectReducedMotion:
-      process.env.COMPARISON_EMPTY_RESPECT_REDUCED_MOTION !== 'false',
-  },
-
-  // Comparison Empty State Animations - Palette's delightful micro-UX touch! 🎨
-  // Delightful animations and visual feedback for the comparison table empty state
-  comparisonEmptyState: {
-    // Duration for icon bounce animation (ms)
-    iconBounceDurationMs: parseInt(
-      process.env.COMPARISON_EMPTY_ICON_BOUNCE_MS || '2000'
+    // Text reveal stagger delays - Flexy hates hardcoded 100ms, 200ms, 300ms!
+    textRevealStaggerMs: parseInt(
+      process.env.COMPARISON_EMPTY_TEXT_STAGGER_MS || '100'
     ),
-    // CSS duration string for icon bounce
-    iconBounceDurationSec: `${parseInt(process.env.COMPARISON_EMPTY_ICON_BOUNCE_MS || '2000') / 1000}s`,
-    // Duration for icon pulse animation (ms)
-    iconPulseDurationMs: parseInt(
-      process.env.COMPARISON_EMPTY_ICON_PULSE_MS || '3000'
-    ),
-    // Duration for scale icon animation (ms)
-    scaleIconDurationMs: parseInt(
-      process.env.COMPARISON_EMPTY_SCALE_ICON_MS || '4000'
-    ),
-    // Ring rotation duration (ms)
-    ringRotateDurationMs: parseInt(
-      process.env.COMPARISON_EMPTY_RING_ROTATE_MS || '20000'
-    ),
-    // Dot float animation duration (ms)
-    dotFloatDurationMs: parseInt(
-      process.env.COMPARISON_EMPTY_DOT_FLOAT_MS || '3000'
-    ),
-    // Circle float animation duration (ms)
-    circleFloatDurationMs: parseInt(
-      process.env.COMPARISON_EMPTY_CIRCLE_FLOAT_MS || '8000'
-    ),
-    // Text reveal animation duration (ms)
-    textRevealDurationMs: parseInt(
-      process.env.COMPARISON_EMPTY_TEXT_REVEAL_MS || '600'
-    ),
-    // CSS duration string for text reveal
-    textRevealDurationSec: `${parseInt(process.env.COMPARISON_EMPTY_TEXT_REVEAL_MS || '600') / 1000}s`,
-    // Suggestion button pop animation duration (ms)
-    suggestionPopDurationMs: parseInt(
-      process.env.COMPARISON_EMPTY_SUGGESTION_POP_MS || '400'
-    ),
-    // Stagger delay between suggestion buttons (ms)
-    suggestionStaggerDelayMs: parseInt(
-      process.env.COMPARISON_EMPTY_SUGGESTION_STAGGER_MS || '100'
-    ),
-    // Scale factor for icon bounce (how far it moves up)
-    iconBounceDistancePx: parseInt(
-      process.env.COMPARISON_EMPTY_BOUNCE_DISTANCE_PX || '4'
-    ),
-    // Icon pulse scale multiplier
-    iconPulseScale: parseFloat(
-      process.env.COMPARISON_EMPTY_PULSE_SCALE || '1.2'
-    ),
-    // Dot float distance (px)
-    dotFloatDistancePx: parseInt(
-      process.env.COMPARISON_EMPTY_DOT_FLOAT_PX || '8'
-    ),
+    // Dot float animation delays (seconds) - Flexy hates hardcoded delays!
+    dotFloatDelaysSec: [
+      parseFloat(process.env.COMPARISON_EMPTY_DOT_DELAY_1 || '0'),
+      parseFloat(process.env.COMPARISON_EMPTY_DOT_DELAY_2 || '1'),
+      parseFloat(process.env.COMPARISON_EMPTY_DOT_DELAY_3 || '2'),
+    ],
+    // Circle float animation delays (seconds) - negative delays for offset
+    circleFloatDelaysSec: [
+      parseFloat(process.env.COMPARISON_EMPTY_CIRCLE_DELAY_1 || '0'),
+      parseFloat(process.env.COMPARISON_EMPTY_CIRCLE_DELAY_2 || '-3'),
+      parseFloat(process.env.COMPARISON_EMPTY_CIRCLE_DELAY_3 || '-5'),
+    ],
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.COMPARISON_EMPTY_RESPECT_REDUCED_MOTION !== 'false',
