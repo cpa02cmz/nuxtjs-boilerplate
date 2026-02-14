@@ -636,6 +636,27 @@ export const animationConfig = {
     baseDelayMs: parseInt(process.env.EMPTY_STATE_STAGGER_BASE || '100'),
   },
 
+  // Empty State Float Dots - Flexy hates hardcoded animation-delay! 🎯
+  // Staggered animation delays for floating decorative dots in empty states
+  emptyStateFloatDots: {
+    // First dot delay (seconds) - Flexy hates hardcoded 1s!
+    firstDelaySec: parseFloat(
+      process.env.EMPTY_FLOAT_DOT_FIRST_DELAY_SEC || '1'
+    ),
+    // Second dot delay (seconds) - Flexy hates hardcoded 2s!
+    secondDelaySec: parseFloat(
+      process.env.EMPTY_FLOAT_DOT_SECOND_DELAY_SEC || '2'
+    ),
+    // Third dot delay (seconds)
+    thirdDelaySec: parseFloat(
+      process.env.EMPTY_FLOAT_DOT_THIRD_DELAY_SEC || '3'
+    ),
+    // Stagger increment between dots (seconds)
+    staggerIncrementSec: parseFloat(
+      process.env.EMPTY_FLOAT_DOT_STAGGER_SEC || '1'
+    ),
+  },
+
   // PWA Install Prompt Pulse
   pwaPulse: {
     color: process.env.PWA_PULSE_COLOR || 'rgba(59, 130, 246, 0.4)',
@@ -2639,6 +2660,31 @@ export const animationConfig = {
     // CSS-compatible value transition duration (seconds)
     valueTransitionSec: `${
       parseInt(process.env.ANALYTICS_VALUE_TRANSITION_MS || '200') / 1000
+    }s`,
+  },
+
+  // Search Analytics Animations - Flexy hates hardcoded setTimeout! 🎯
+  // Used by SearchAnalytics.vue for chart animations and transitions
+  searchAnalytics: {
+    // Transition completion delay for callback (ms) - Flexy hates hardcoded 300!
+    transitionCompletionDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_TRANSITION_DELAY_MS || '300'
+    ),
+    // Chart bar stagger delay between bars (ms)
+    barStaggerDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_BAR_STAGGER_MS || '50'
+    ),
+    // CSS-compatible bar stagger delay (seconds)
+    barStaggerDelaySec: `${
+      parseInt(process.env.SEARCH_ANALYTICS_BAR_STAGGER_MS || '50') / 1000
+    }s`,
+    // Container fade-in duration (ms)
+    containerFadeInMs: parseInt(
+      process.env.SEARCH_ANALYTICS_FADE_IN_MS || '400'
+    ),
+    // CSS-compatible container fade-in duration (seconds)
+    containerFadeInSec: `${
+      parseInt(process.env.SEARCH_ANALYTICS_FADE_IN_MS || '400') / 1000
     }s`,
   },
 } as const
