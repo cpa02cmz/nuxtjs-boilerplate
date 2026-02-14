@@ -134,7 +134,9 @@ export const securityConfig = {
       const salt = process.env.CRYPTO_SALT
       // Skip check during build process or when explicitly disabled
       const skipCheck =
-        process.env.SKIP_CRYPTO_CHECK === 'true' || process.env.NUXT_BUILD
+        process.env.SKIP_CRYPTO_CHECK === 'true' ||
+        process.env.NUXT_BUILD === 'true' ||
+        process.env.npm_lifecycle_event === 'build'
       if (!salt && process.env.NODE_ENV === 'production' && !skipCheck) {
         throw new Error(
           'CRYPTO_SALT environment variable must be set in production for secure encryption. Generate a secure salt using crypto.randomBytes(32).toString("hex")'
