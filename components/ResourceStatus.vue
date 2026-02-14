@@ -28,7 +28,11 @@
         @blur="handleBlur"
       >
         <!-- Status Icon - Palette's micro-UX delight! -->
-        <span v-if="showStatusIcon" class="status-icon" aria-hidden="true">
+        <span
+          v-if="showStatusIcon"
+          class="status-icon"
+          aria-hidden="true"
+        >
           <svg
             v-if="status === 'active'"
             xmlns="http://www.w3.org/2000/svg"
