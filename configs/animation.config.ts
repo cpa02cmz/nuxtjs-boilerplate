@@ -1198,6 +1198,19 @@ export const animationConfig = {
       process.env.POPULAR_SEARCHES_REDUCED_MOTION !== 'false',
   },
 
+  // Related Searches Animations - Palette's micro-UX delight! ✨
+  // Used by RelatedSearches component for delightful button interactions
+  relatedSearches: {
+    // Delay between each button's entrance animation (ms)
+    staggerDelayMs: parseInt(process.env.RELATED_SEARCHES_STAGGER_MS || '60'),
+    // Container entrance animation duration (seconds)
+    containerEntranceSec: `${parseInt(process.env.RELATED_SEARCHES_CONTAINER_ENTRANCE_MS || '300') / 1000}s`,
+    // Button entrance animation duration (seconds)
+    buttonEntranceSec: `${parseInt(process.env.RELATED_SEARCHES_BUTTON_ENTRANCE_MS || '400') / 1000}s`,
+    // Icon bounce animation duration (seconds)
+    iconBounceSec: `${parseInt(process.env.RELATED_SEARCHES_ICON_BOUNCE_MS || '2000') / 1000}s`,
+  },
+
   // Magnetic Button Effect - Palette's premium micro-UX delight! 🧲
   // Creates a subtle "magnetic" pull that draws buttons toward the cursor
   magneticButton: {
