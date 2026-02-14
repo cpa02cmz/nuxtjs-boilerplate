@@ -125,6 +125,42 @@ export const uiTimingConfig = {
       process.env.UI_BREADCRUMBS_ANNOUNCEMENT_CLEAR || '1000'
     ),
   },
+
+  // Review queue - Flexy hates hardcoded values!
+  reviewQueue: {
+    // New submissions badge timeout (ms)
+    badgeTimeout: parseInt(process.env.UI_REVIEW_QUEUE_BADGE_TIMEOUT || '2000'),
+  },
+
+  // Virtual list - Flexy hates hardcoded values!
+  virtualList: {
+    // Staggered entrance animation delay (ms)
+    entranceDelay: parseInt(process.env.UI_VIRTUAL_LIST_ENTRANCE_DELAY || '50'),
+  },
+
+  // Recommendations - Flexy hates hardcoded values!
+  recommendations: {
+    // Screen reader announcement clear delay (ms)
+    announcementClearDelay: parseInt(
+      process.env.UI_RECOMMENDATIONS_ANNOUNCEMENT_CLEAR || '3000'
+    ),
+  },
+
+  // Related searches - Flexy hates hardcoded values!
+  relatedSearches: {
+    // Searching state display duration (ms)
+    searchDuration: parseInt(process.env.UI_RELATED_SEARCHES_DURATION || '500'),
+  },
+
+  // Optimized image - Flexy hates hardcoded values!
+  optimizedImage: {
+    // Load time threshold for screen reader announcement (ms)
+    slowLoadThreshold: parseInt(
+      process.env.UI_IMAGE_SLOW_LOAD_THRESHOLD || '1000'
+    ),
+    // Load time threshold for haptic feedback (ms)
+    hapticThreshold: parseInt(process.env.UI_IMAGE_HAPTIC_THRESHOLD || '500'),
+  },
 } as const
 
 export type UITimingConfig = typeof uiTimingConfig
