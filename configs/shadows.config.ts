@@ -82,6 +82,16 @@ export const shadowsConfig = {
     pendingBg: process.env.MODERATION_PENDING_BG || 'rgba(0, 123, 255, 0.1)',
   },
 
+  // Related Searches Shadows - Palette's micro-UX enhancement!
+  relatedSearches: {
+    default:
+      process.env.RELATED_SEARCHES_SHADOW_DEFAULT ||
+      '0 1px 3px rgba(0, 0, 0, 0.1)',
+    hover:
+      process.env.RELATED_SEARCHES_SHADOW_HOVER ||
+      '0 4px 12px rgba(59, 130, 246, 0.15)',
+  },
+
   // Search Focus Pulse Colors
   searchFocus: {
     pulseStart:

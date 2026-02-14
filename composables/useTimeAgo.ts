@@ -1,5 +1,6 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { TIME } from '~/server/utils/constants'
+import { timeConfig } from '~/configs/time.config'
 
 export interface TimeAgoOptions {
   /** Update interval in milliseconds (default: auto-calculated based on age) */
@@ -26,12 +27,13 @@ const MS_PER_MONTH = 30.44 * TIME.MS_PER_DAY // Average days per month
 const MS_PER_YEAR = 365.25 * TIME.MS_PER_DAY // Account for leap years
 
 // Default update intervals based on age - Flexy hates hardcoded values!
+// Now using configurable values from timeConfig
 const UPDATE_INTERVALS = {
-  justNow: 5000, // 5 seconds for "just now"
-  minute: 15000, // 15 seconds for minute-level
-  hour: 60000, // 1 minute for hour-level
-  day: 300000, // 5 minutes for day-level
-  older: 3600000, // 1 hour for older items
+  justNow: timeConfig.timeAgo.justNowIntervalMs,
+  minute: timeConfig.timeAgo.minuteIntervalMs,
+  hour: timeConfig.timeAgo.hourIntervalMs,
+  day: timeConfig.timeAgo.dayIntervalMs,
+  older: timeConfig.timeAgo.olderIntervalMs,
 }
 
 /**

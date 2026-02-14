@@ -96,6 +96,26 @@ export const themeConfig = {
     },
   },
 
+  // Related Searches Colors - Palette's micro-UX enhancement!
+  relatedSearches: {
+    gradientStart: process.env.RELATED_SEARCHES_GRADIENT_START || '#eff6ff',
+    gradientEnd: process.env.RELATED_SEARCHES_GRADIENT_END || '#dbeafe',
+    borderColor: process.env.RELATED_SEARCHES_BORDER || '#bfdbfe',
+    iconColor: process.env.RELATED_SEARCHES_ICON_COLOR || '#3b82f6',
+    titleColor: process.env.RELATED_SEARCHES_TITLE_COLOR || '#1e40af',
+    rippleColor: process.env.RELATED_SEARCHES_RIPPLE_COLOR || '#3b82f6',
+    button: {
+      bg: process.env.RELATED_SEARCHES_BUTTON_BG || '#ffffff',
+      border: process.env.RELATED_SEARCHES_BUTTON_BORDER || '#d1d5db',
+      text: process.env.RELATED_SEARCHES_BUTTON_TEXT || '#374151',
+      hoverBg: process.env.RELATED_SEARCHES_BUTTON_HOVER_BG || '#eff6ff',
+      hoverBorder:
+        process.env.RELATED_SEARCHES_BUTTON_HOVER_BORDER || '#3b82f6',
+      hoverText: process.env.RELATED_SEARCHES_BUTTON_HOVER_TEXT || '#1d4ed8',
+      focusRing: process.env.RELATED_SEARCHES_BUTTON_FOCUS_RING || '#3b82f6',
+    },
+  },
+
   // Resource Status Badge Colors - Flexy hates hardcoded hex codes!
   resourceStatus: {
     active: {

@@ -532,8 +532,13 @@ watch(
   top: 50%;
   left: 50%;
   opacity: 0;
-  animation: sparkle-burst 0.6s ease-out forwards;
-  animation-delay: calc(var(--sparkle-index) * 0.05s);
+  animation: sparkle-burst
+    v-bind('animationConfig.recommendations.sparkleBurst.durationSec') ease-out
+    forwards;
+  animation-delay: calc(
+    var(--sparkle-index) *
+      v-bind('animationConfig.recommendations.sparkleBurst.staggerDelaySec')
+  );
   --angle: calc(var(--sparkle-index) * 60deg);
 }
 
@@ -612,7 +617,9 @@ watch(
 
   .recommendation-card-enter-active,
   .recommendation-card-move {
-    transition: opacity 0.2s ease-out;
+    transition: opacity
+      v-bind('animationConfig.recommendations.cardTransition.durationSec')
+      ease-out;
   }
 
   .recommendation-card-enter-from {
