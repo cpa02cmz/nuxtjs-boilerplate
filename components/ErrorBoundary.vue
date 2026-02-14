@@ -153,6 +153,7 @@ import { logError } from '~/utils/errorLogger'
 import { componentStylesConfig } from '~/configs/component-styles.config'
 import { themeConfig } from '~/configs/theme.config'
 import { animationConfig } from '~/configs/animation.config'
+import { uiConfig } from '~/configs/ui.config'
 import { ROUTE_PATTERNS } from '~/configs/routes.config'
 import { hapticError, hapticSuccess } from '~/utils/hapticFeedback'
 import { contentConfig } from '~/configs/content.config'
@@ -617,7 +618,7 @@ onUnmounted(() => {
     rgba(59, 130, 246, 0.05) 0%,
     rgba(147, 197, 253, 0.05) 100%
   );
-  border-radius: 12px;
+  border-radius: v-bind('uiConfig.layout.borderRadiusCss.lg');
   border: 1px solid rgba(59, 130, 246, 0.1);
 }
 
@@ -707,7 +708,7 @@ onUnmounted(() => {
 .cancel-retry-button:focus-visible {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: v-bind('uiConfig.layout.borderRadiusCss.xxs');
 }
 
 /* Reduced motion support */

@@ -414,7 +414,7 @@ onUnmounted(() => {
   color: white;
   font-size: 0.75rem;
   font-weight: 700;
-  border-radius: 9999px;
+  border-radius: v-bind('uiConfig.layout.borderRadiusCss.full');
   box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
 
@@ -498,7 +498,7 @@ onUnmounted(() => {
   height: 1.5rem;
   background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
   background-size: 200% 100%;
-  border-radius: 9999px;
+  border-radius: v-bind('uiConfig.layout.borderRadiusCss.full');
 }
 
 .skeleton-body {

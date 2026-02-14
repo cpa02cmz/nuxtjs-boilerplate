@@ -176,7 +176,7 @@ const config = contentConfig.moderation
 .stat-card {
   background: var(--color-card-background);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: v-bind('uiConfig.layout.borderRadiusCss.md');
   padding: 1.5rem;
   text-align: center;
 }

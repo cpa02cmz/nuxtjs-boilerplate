@@ -1,9 +1,5 @@
 <template>
-  <span
-    :class="wrapperClass"
-    :style="wrapperStyle"
-    v-bind="wrapperAttrs"
-  >
+  <span :class="wrapperClass" :style="wrapperStyle" v-bind="wrapperAttrs">
     <svg
       :xmlns="SVG_NS"
       :viewBox="viewBox"
@@ -23,6 +19,7 @@
 import { computed, useAttrs, type StyleValue } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { EASING } from '~/configs/easing.config'
+import { uiConfig } from '~/configs/ui.config'
 
 /**
  * BaseIcon Component - Flexy loves modularity!
@@ -163,7 +160,7 @@ const svgAttrs = computed(() => {
 .icon-wrapper--interactive:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: v-bind('uiConfig.layout.borderRadiusCss.xs');
 }
 
 /* Reduced motion support: Disable animations for users who prefer reduced motion */

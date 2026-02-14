@@ -355,6 +355,7 @@ export const uiConfig = {
 
     // Border radius in pixels (for direct CSS usage)
     borderRadiusPx: {
+      xxs: parseInt(process.env.LAYOUT_BORDER_RADIUS_XXS_PX || '2'), // 2px
       xs: parseInt(process.env.LAYOUT_BORDER_RADIUS_XS_PX || '4'), // 4px
       sm: parseInt(process.env.LAYOUT_BORDER_RADIUS_SM_PX || '6'), // 6px
       md: parseInt(process.env.LAYOUT_BORDER_RADIUS_MD_PX || '8'), // 8px
@@ -362,6 +363,19 @@ export const uiConfig = {
       xl: parseInt(process.env.LAYOUT_BORDER_RADIUS_XL_PX || '16'), // 16px
       '2xl': parseInt(process.env.LAYOUT_BORDER_RADIUS_2XL_PX || '24'), // 24px
       full: parseInt(process.env.LAYOUT_BORDER_RADIUS_FULL_PX || '9999'), // 9999px
+    },
+
+    // Border radius as CSS strings (for v-bind in Vue components)
+    // Flexy hates hardcoded border-radius values!
+    borderRadiusCss: {
+      xxs: process.env.LAYOUT_BORDER_RADIUS_XXS_CSS || '2px',
+      xs: process.env.LAYOUT_BORDER_RADIUS_XS_CSS || '4px',
+      sm: process.env.LAYOUT_BORDER_RADIUS_SM_CSS || '6px',
+      md: process.env.LAYOUT_BORDER_RADIUS_MD_CSS || '8px',
+      lg: process.env.LAYOUT_BORDER_RADIUS_LG_CSS || '12px',
+      xl: process.env.LAYOUT_BORDER_RADIUS_XL_CSS || '16px',
+      '2xl': process.env.LAYOUT_BORDER_RADIUS_2XL_CSS || '24px',
+      full: process.env.LAYOUT_BORDER_RADIUS_FULL_CSS || '9999px',
     },
 
     // Font sizes (in rem)

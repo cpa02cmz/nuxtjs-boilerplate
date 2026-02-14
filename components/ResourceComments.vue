@@ -810,7 +810,7 @@ defineExpose({
   animation: comment-highlight
     v-bind('animationConfig?.comments?.highlightDurationSec ?? "2s"') ease-out
     forwards;
-  border-radius: 8px;
+  border-radius: v-bind('uiConfig.layout.borderRadiusCss.md');
   position: relative;
 }
 
@@ -824,7 +824,7 @@ defineExpose({
     rgba(250, 204, 21, 0.1) 50%,
     transparent 100%
   );
-  border-radius: 12px;
+  border-radius: v-bind('uiConfig.layout.borderRadiusCss.lg');
   z-index: -1;
   animation: highlight-glow
     v-bind('animationConfig?.comments?.highlightDurationSec ?? "2s"') ease-out
