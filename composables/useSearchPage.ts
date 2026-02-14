@@ -259,7 +259,7 @@ export const useSearchPage = () => {
 
     analyticsTimeout = setTimeout(() => {
       trackSearch(query, filteredResources.value.length)
-    }, animationConfig.analytics.trackingDelayMs)
+    }, animationConfig.analyticsTracking.trackingDelayMs)
   }
 
   // Clear cache when filters are reset
