@@ -180,9 +180,15 @@ const generateParticles = () => {
   const newParticles = []
 
   for (let i = 0; i < count; i++) {
-    const angle = (360 / count) * i + Math.random() * 30 // Distribute evenly with some randomness
+    const angle =
+      (360 / count) * i + Math.random() * (config.angleRandomnessDeg || 30)
     const radians = (angle * Math.PI) / 180
-    const distance = config.spreadPx * (0.7 + Math.random() * 0.6) // Vary distance
+    const distance =
+      config.spreadPx *
+      ((config.distanceVariationMin || 0.7) +
+        Math.random() *
+          ((config.distanceVariationMax || 1.3) -
+            (config.distanceVariationMin || 0.7)))
     const x = Math.cos(radians) * distance
     const y = Math.sin(radians) * distance
 
