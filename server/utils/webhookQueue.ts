@@ -260,7 +260,7 @@ export class WebhookQueueSystem {
           this.circuitBreakerKeys.delete(oldestKey)
         }
       }
-      const key = `webhook:${webhook.url}`
+      const key = `webhook:${webhook.id}:${webhook.url}`
       this.circuitBreakerKeys.set(webhook.id, key)
     }
     return this.circuitBreakerKeys.get(webhook.id)!
