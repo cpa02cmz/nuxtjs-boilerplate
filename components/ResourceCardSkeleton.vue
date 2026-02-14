@@ -112,17 +112,19 @@ import { animationConfig } from '~/configs/animation.config'
 // Flexy: All cubic-bezier values now use modular EASING config! 🎯
 
 // SSR-safe animation configuration with defaults
-// During SSR, we use these defaults; on client, we could enhance
+// Flexy: Using animationConfig with SSR fallbacks - no more hardcoded values!
 const SKELETON_CONFIG = {
-  staggerDelayMs: 0,
-  staggerIncrementMs: 75,
-  waveDurationSec: 2,
-  waveStaggerSec: 0.08,
-  shimmerDurationSec: '1.5s',
-  pulseDurationSec: '2s',
-  cardEnterDurationSec: '0.3s',
-  reducedMotionEnterDurationSec: '0.2s',
-  hoverTransitionSec: '0.3s',
+  staggerDelayMs: animationConfig.skeleton?.staggerDelayMs ?? 0,
+  staggerIncrementMs: animationConfig.skeleton?.staggerIncrementMs ?? 75,
+  waveDurationSec: animationConfig.skeleton?.waveDurationSec ?? 2,
+  waveStaggerSec: animationConfig.skeleton?.waveStaggerSec ?? 0.08,
+  shimmerDurationSec: animationConfig.skeleton?.shimmerDurationSec ?? '1.5s',
+  pulseDurationSec: animationConfig.skeleton?.pulseDurationSec ?? '2s',
+  cardEnterDurationSec:
+    animationConfig.skeleton?.cardEnterDurationSec ?? '0.3s',
+  reducedMotionEnterDurationSec:
+    animationConfig.skeleton?.reducedMotionEnterDurationSec ?? '0.2s',
+  hoverTransitionSec: animationConfig.cssTransitions?.hoverSec ?? '0.3s',
 }
 
 // SSR-safe color configuration with defaults

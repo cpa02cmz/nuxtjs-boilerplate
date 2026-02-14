@@ -1892,7 +1892,21 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.RECOMMENDATIONS_RESPECT_REDUCED_MOTION !== 'false',
-
+    // Sparkle burst animation configuration - Flexy hates hardcoded values!
+    sparkleBurst: {
+      // Stagger delay between each sparkle particle (seconds)
+      staggerDelaySec: parseFloat(
+        process.env.RECOMMENDATIONS_SPARKLE_STAGGER_SEC || '0.05'
+      ),
+      // Animation duration for each sparkle (seconds)
+      durationSec: parseFloat(
+        process.env.RECOMMENDATIONS_SPARKLE_DURATION_SEC || '0.6'
+      ),
+      // Distance sparkles travel (px)
+      travelDistancePx: parseInt(
+        process.env.RECOMMENDATIONS_SPARKLE_DISTANCE_PX || '30'
+      ),
+    },
   },
   // VirtualList Component Animations - Palette's micro-UX enhancement!
   // Staggered entrance animations and smooth transitions for virtual scrolling
@@ -1938,7 +1952,6 @@ export const animationConfig = {
     entranceMidScale: parseFloat(
       process.env.VIRTUAL_LIST_ENTRANCE_MID_SCALE || '1.01'
     ),
-
   },
 } as const
 

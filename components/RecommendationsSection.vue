@@ -533,7 +533,10 @@ watch(
   left: 50%;
   opacity: 0;
   animation: sparkle-burst 0.6s ease-out forwards;
-  animation-delay: calc(var(--sparkle-index) * 0.05s);
+  animation-delay: calc(
+    var(--sparkle-index) *
+      v-bind('animConfig.sparkleBurst?.staggerDelaySec ?? 0.05') * 1s
+  );
   --angle: calc(var(--sparkle-index) * 60deg);
 }
 
