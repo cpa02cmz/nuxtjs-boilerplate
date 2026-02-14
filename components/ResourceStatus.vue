@@ -28,11 +28,7 @@
         @blur="handleBlur"
       >
         <!-- Status Icon - Palette's micro-UX delight! -->
-        <span
-          v-if="showStatusIcon"
-          class="status-icon"
-          aria-hidden="true"
-        >
+        <span v-if="showStatusIcon" class="status-icon" aria-hidden="true">
           <svg
             v-if="status === 'active'"
             xmlns="http://www.w3.org/2000/svg"
@@ -654,6 +650,26 @@ const healthLabel = computed(() => {
     ease-out infinite;
 }
 
+/* Glow Pulse Effect - Palette's micro-UX enhancement!
+   Adds a soft, pulsing glow behind excellent health indicators */
+.health-indicator--excellent::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    v-bind('themeConfig.healthIndicator.glowStart') 0%,
+    v-bind('themeConfig.healthIndicator.glowEnd') 70%
+  );
+  opacity: 0;
+  animation: health-glow-pulse
+    v-bind('`${animationConfig.resourceStatus.glowPulseDurationSec}s`')
+    ease-in-out infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
 .health-indicator--celebrating svg {
   animation: health-celebration
     v-bind('`${animationConfig.resourceStatus.celebrationDurationMs}ms`')
@@ -668,6 +684,18 @@ const healthLabel = computed(() => {
   100% {
     transform: scale(1.5);
     opacity: 0;
+  }
+}
+
+@keyframes health-glow-pulse {
+  0%,
+  100% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.4;
   }
 }
 
@@ -724,7 +752,8 @@ const healthLabel = computed(() => {
     transform: none;
   }
 
-  .health-indicator--excellent::before {
+  .health-indicator--excellent::before,
+  .health-indicator--excellent::after {
     display: none;
   }
 

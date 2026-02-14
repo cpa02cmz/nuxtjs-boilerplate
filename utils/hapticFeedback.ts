@@ -66,6 +66,21 @@ export const shouldSkipHaptics = (): boolean => {
 }
 
 /**
+ * Track if user has interacted with the page
+ * navigator.vibrate() requires user interaction first
+ */
+let hasUserInteracted = false
+
+if (typeof window !== 'undefined') {
+  const markUserInteraction = () => {
+    hasUserInteracted = true
+  }
+  window.addEventListener('click', markUserInteraction, { once: true })
+  window.addEventListener('touchstart', markUserInteraction, { once: true })
+  window.addEventListener('keydown', markUserInteraction, { once: true })
+}
+
+/**
  * Trigger haptic feedback with specified intensity
  * @param type - The type of haptic feedback
  * @returns boolean - Whether haptic was triggered successfully
@@ -73,6 +88,12 @@ export const shouldSkipHaptics = (): boolean => {
 export const triggerHaptic = (type: HapticType): boolean => {
   // Skip if reduced motion is preferred or not supported
   if (shouldSkipHaptics() || !isHapticSupported()) {
+    return false
+  }
+
+  // Skip if user hasn't interacted with the page yet
+  // navigator.vibrate() requires user interaction first
+  if (!hasUserInteracted) {
     return false
   }
 

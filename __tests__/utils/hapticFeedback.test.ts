@@ -35,11 +35,21 @@ describe('hapticFeedback', () => {
       writable: true,
       configurable: true,
     })
+
+    // Reset module cache to get fresh hasUserInteracted state
+    vi.resetModules()
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
   })
+
+  // Helper to simulate user interaction for haptic feedback
+  const simulateUserInteraction = () => {
+    // Dispatch a click event to set hasUserInteracted = true
+    const clickEvent = new Event('click', { bubbles: true })
+    window.dispatchEvent(clickEvent)
+  }
 
   describe('isHapticSupported', () => {
     it('returns true when vibrate is supported', () => {
@@ -70,6 +80,10 @@ describe('hapticFeedback', () => {
   })
 
   describe('triggerHaptic', () => {
+    beforeEach(() => {
+      simulateUserInteraction()
+    })
+
     it('triggers light haptic feedback', () => {
       triggerHaptic('light')
       expect(vibrateMock).toHaveBeenCalledWith(10)
@@ -127,6 +141,10 @@ describe('hapticFeedback', () => {
   })
 
   describe('convenience functions', () => {
+    beforeEach(() => {
+      simulateUserInteraction()
+    })
+
     it('hapticSuccess triggers success pattern', () => {
       hapticSuccess()
       expect(vibrateMock).toHaveBeenCalledWith([50, 100, 50])
@@ -154,6 +172,10 @@ describe('hapticFeedback', () => {
   })
 
   describe('withHaptic', () => {
+    beforeEach(() => {
+      simulateUserInteraction()
+    })
+
     it('triggers haptic and executes callback', () => {
       const callback = vi.fn().mockReturnValue('result')
       const result = withHaptic('success', callback)
