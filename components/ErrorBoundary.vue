@@ -157,6 +157,7 @@ import { ROUTE_PATTERNS } from '~/configs/routes.config'
 import { hapticError, hapticSuccess } from '~/utils/hapticFeedback'
 import { contentConfig } from '~/configs/content.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface ErrorInfo {
   componentStack: string
@@ -668,11 +669,11 @@ onUnmounted(() => {
   justify-content: center;
   font-size: 14px;
   font-weight: 600;
-  color: #3b82f6;
+  color: v-bind('componentColorsConfig.errorBoundaryColors.countdown.primary');
 }
 
 .countdown-ring.is-paused .countdown-ring__text {
-  color: #f59e0b;
+  color: v-bind('componentColorsConfig.errorBoundaryColors.countdown.paused');
 }
 
 .auto-retry-status {
@@ -684,13 +685,13 @@ onUnmounted(() => {
 
 .auto-retry-status__text {
   font-size: 14px;
-  color: #4b5563;
+  color: v-bind('componentColorsConfig.errorBoundaryColors.text.muted');
   margin: 0;
 }
 
 .cancel-retry-button {
   font-size: 12px;
-  color: #6b7280;
+  color: v-bind('componentColorsConfig.errorBoundaryColors.text.secondary');
   background: none;
   border: none;
   padding: 0;
@@ -700,7 +701,7 @@ onUnmounted(() => {
 }
 
 .cancel-retry-button:hover {
-  color: #374151;
+  color: v-bind('componentColorsConfig.errorBoundaryColors.text.tertiary');
 }
 
 .cancel-retry-button:focus-visible {
