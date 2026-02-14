@@ -93,7 +93,7 @@ describe('Analytics Utilities', () => {
   })
 
   describe('trackResourceClick', () => {
-    it('should track a resource click event', async () => {
+    it('should track a resource click event with valid category', async () => {
       mockFetch.mockResolvedValueOnce({
         json: () => Promise.resolve({ success: true }),
         ok: true,
@@ -102,7 +102,7 @@ describe('Analytics Utilities', () => {
       const result = await trackResourceClick(
         'resource-123',
         'Test Resource',
-        'AI Tools'
+        'AI/ML'
       )
 
       expect(result).toBe(true)
@@ -114,7 +114,35 @@ describe('Analytics Utilities', () => {
         body: JSON.stringify({
           type: 'resource_click',
           resourceId: 'resource-123',
-          category: 'AI Tools',
+          category: 'AI/ML',
+          properties: {
+            title: 'Test Resource',
+          },
+        }),
+      })
+    })
+
+    it('should filter out invalid categories', async () => {
+      mockFetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({ success: true }),
+        ok: true,
+      })
+
+      const result = await trackResourceClick(
+        'resource-123',
+        'Test Resource',
+        'Invalid Category'
+      )
+
+      expect(result).toBe(true)
+      expect(mockFetch).toHaveBeenCalledWith('/api/analytics/events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'resource_click',
+          resourceId: 'resource-123',
           properties: {
             title: 'Test Resource',
           },
@@ -124,7 +152,7 @@ describe('Analytics Utilities', () => {
   })
 
   describe('trackResourceView', () => {
-    it('should track a resource view event', async () => {
+    it('should track a resource view event with valid category', async () => {
       mockFetch.mockResolvedValueOnce({
         json: () => Promise.resolve({ success: true }),
         ok: true,
@@ -133,7 +161,7 @@ describe('Analytics Utilities', () => {
       const result = await trackResourceView(
         'resource-123',
         'Test Resource',
-        'AI Tools'
+        'AI/ML'
       )
 
       expect(result).toBe(true)
@@ -145,7 +173,35 @@ describe('Analytics Utilities', () => {
         body: JSON.stringify({
           type: 'resource_view',
           resourceId: 'resource-123',
-          category: 'AI Tools',
+          category: 'AI/ML',
+          properties: {
+            title: 'Test Resource',
+          },
+        }),
+      })
+    })
+
+    it('should filter out invalid categories', async () => {
+      mockFetch.mockResolvedValueOnce({
+        json: () => Promise.resolve({ success: true }),
+        ok: true,
+      })
+
+      const result = await trackResourceView(
+        'resource-123',
+        'Test Resource',
+        'Invalid Category'
+      )
+
+      expect(result).toBe(true)
+      expect(mockFetch).toHaveBeenCalledWith('/api/analytics/events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'resource_view',
+          resourceId: 'resource-123',
           properties: {
             title: 'Test Resource',
           },
