@@ -1539,6 +1539,20 @@ export const animationConfig = {
     celebrationBorderRadius: process.env.WEBHOOK_CELEBRATION_RADIUS || '12px',
     celebrationIconSize: process.env.WEBHOOK_CELEBRATION_ICON_SIZE || '28px',
     celebrationFontSize: process.env.WEBHOOK_CELEBRATION_FONT_SIZE || '14px',
+    // Celebration animation durations - Flexy hates hardcoded CSS!
+    celebrationPopInDurationSec: `${parseInt(process.env.WEBHOOK_CELEBRATION_POP_DURATION_MS || '500') / 1000}s`,
+    celebrationPopInDelaySec: `${parseInt(process.env.WEBHOOK_CELEBRATION_POP_DELAY_MS || '0') / 1000}s`,
+    iconRotateInDurationSec: `${parseInt(process.env.WEBHOOK_ICON_ROTATE_DURATION_MS || '400') / 1000}s`,
+    iconRotateInDelaySec: `${parseInt(process.env.WEBHOOK_ICON_ROTATE_DELAY_MS || '200') / 1000}s`,
+    circleScaleDurationSec: `${parseInt(process.env.WEBHOOK_CIRCLE_SCALE_DURATION_MS || '300') / 1000}s`,
+    circleScaleDelaySec: `${parseInt(process.env.WEBHOOK_CIRCLE_SCALE_DELAY_MS || '100') / 1000}s`,
+    checkmarkDrawDurationSec: `${parseInt(process.env.WEBHOOK_CHECKMARK_DRAW_DURATION_MS || '400') / 1000}s`,
+    checkmarkDrawDelaySec: `${parseInt(process.env.WEBHOOK_CHECKMARK_DRAW_DELAY_MS || '300') / 1000}s`,
+    textFadeInDurationSec: `${parseInt(process.env.WEBHOOK_TEXT_FADE_DURATION_MS || '300') / 1000}s`,
+    textFadeInDelaySec: `${parseInt(process.env.WEBHOOK_TEXT_FADE_DELAY_MS || '400') / 1000}s`,
+    sparkleBurstDurationSec: `${parseInt(process.env.WEBHOOK_SPARKLE_DURATION_MS || '800') / 1000}s`,
+    sparkleBurstBaseDelaySec: `${parseInt(process.env.WEBHOOK_SPARKLE_BASE_DELAY_MS || '0') / 1000}s`,
+    sparkleBurstIndexMultiplierSec: `${parseInt(process.env.WEBHOOK_SPARKLE_INDEX_MULTIPLIER_MS || '100') / 1000}s`,
   },
 
   // Zero Result Searches Component - Flexy hates hardcoded values!
@@ -2167,10 +2181,16 @@ export const animationConfig = {
     dotFloatDurationMs: parseInt(
       process.env.COMPARISON_EMPTY_DOT_FLOAT_MS || '3000'
     ),
-    // Circle float animation duration (ms)
+    // Circle float animation durations (ms) - Flexy hates hardcoded 8s, 10s, 12s!
     circleFloatDurationMs: parseInt(
       process.env.COMPARISON_EMPTY_CIRCLE_FLOAT_MS || '8000'
     ),
+    // CSS duration strings for circle float animations
+    circleFloatDurationsSec: [
+      `${parseInt(process.env.COMPARISON_EMPTY_CIRCLE_DURATION_1_MS || '8000') / 1000}s`,
+      `${parseInt(process.env.COMPARISON_EMPTY_CIRCLE_DURATION_2_MS || '10000') / 1000}s`,
+      `${parseInt(process.env.COMPARISON_EMPTY_CIRCLE_DURATION_3_MS || '12000') / 1000}s`,
+    ],
     // Text reveal animation duration (ms)
     textRevealDurationMs: parseInt(
       process.env.COMPARISON_EMPTY_TEXT_REVEAL_MS || '600'
