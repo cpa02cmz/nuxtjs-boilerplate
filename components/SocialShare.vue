@@ -277,12 +277,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcementText }}
     </div>
   </div>
@@ -326,6 +321,9 @@ const announcementText = ref('')
 const showCopiedTooltip = ref(false)
 const copiedTooltipPosition = ref({ x: 0, y: 0 })
 let copiedTooltipTimeout: ReturnType<typeof setTimeout> | null = null
+
+// BroCula fix: Media query listener cleanup to prevent memory leaks
+let mediaQueryCleanup: (() => void) | null = null
 
 // Use the enhanced social sharing composable
 const { share, copyLink: copyLinkWithTracking } = useSocialSharing()
@@ -589,6 +587,11 @@ onMounted(() => {
     prefersReducedMotion.value = e.matches
   }
   mediaQuery.addEventListener('change', handleMotionChange)
+
+  // BroCula fix: Store cleanup function for onUnmounted
+  mediaQueryCleanup = () => {
+    mediaQuery.removeEventListener('change', handleMotionChange)
+  }
 })
 
 // Remove event listeners when component is unmounted
@@ -596,6 +599,12 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
   if (copiedTooltipTimeout) {
     clearTimeout(copiedTooltipTimeout)
+  }
+
+  // BroCula fix: Clean up media query listener to prevent memory leak
+  if (mediaQueryCleanup) {
+    mediaQueryCleanup()
+    mediaQueryCleanup = null
   }
 })
 </script>
