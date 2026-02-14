@@ -25,10 +25,7 @@
       <div class="skeleton-layer skeleton-layer--pulse" />
 
       <!-- Optional loading spinner for larger images -->
-      <div
-        v-if="showLoadingIndicator"
-        class="loading-indicator"
-      >
+      <div v-if="showLoadingIndicator" class="loading-indicator">
         <svg
           class="loading-spinner"
           viewBox="0 0 24 24"
@@ -75,23 +72,9 @@
           stroke-width="2"
           aria-hidden="true"
         >
-          <circle
-            cx="12"
-            cy="12"
-            r="10"
-          />
-          <line
-            x1="12"
-            y1="8"
-            x2="12"
-            y2="12"
-          />
-          <line
-            x1="12"
-            y1="16"
-            x2="12.01"
-            y2="16"
-          />
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
         </svg>
         <p class="error-text">
           {{
@@ -102,7 +85,7 @@
           class="retry-button"
           :aria-label="
             contentConfig.optimizedImage?.error?.retryAriaLabel ||
-              'Retry loading image'
+            'Retry loading image'
           "
           @click="handleRetry"
         >
@@ -146,12 +129,7 @@
     />
 
     <!-- Screen reader announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -163,6 +141,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { hapticLight, hapticError, hapticSuccess } from '~/utils/hapticFeedback'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
   src: string
@@ -229,7 +208,7 @@ const entranceDuration = computed(() => {
   // Faster animations for quick loads, slower for longer waits
   if (loadTime < 200)
     return `${animationConfig.optimizedImage.fastEntranceMs}ms`
-  if (loadTime < 1000)
+  if (loadTime < uiTimingConfig.optimizedImage.slowLoadThreshold)
     return `${animationConfig.optimizedImage.normalEntranceMs}ms`
   return `${animationConfig.optimizedImage.slowEntranceMs}ms`
 })
@@ -265,7 +244,7 @@ const handleLoad = () => {
 
   // Announce success to screen readers (only if it took a while)
   const loadTime = Date.now() - loadStartTime.value
-  if (loadTime > 1000) {
+  if (loadTime > uiTimingConfig.optimizedImage.slowLoadThreshold) {
     announcement.value =
       contentConfig.optimizedImage?.loadAnnouncement || 'Image loaded'
     setTimeout(() => {
@@ -274,7 +253,11 @@ const handleLoad = () => {
   }
 
   // Haptic feedback for successful load (only on slower loads)
-  if (loadTime > 500 && typeof navigator !== 'undefined' && navigator.vibrate) {
+  if (
+    loadTime > uiTimingConfig.optimizedImage.hapticThreshold &&
+    typeof navigator !== 'undefined' &&
+    navigator.vibrate
+  ) {
     hapticSuccess()
   }
 
@@ -322,7 +305,7 @@ const startProgressSimulation = () => {
     const increment =
       loadProgress.value < 50 ? 5 : loadProgress.value < 80 ? 2 : 0.5
     loadProgress.value = Math.min(loadProgress.value + increment, 95)
-  }, 100)
+  }, uiTimingConfig.progress.updateInterval)
 }
 
 onMounted(() => {
@@ -348,7 +331,7 @@ onMounted(() => {
       if (!isLoaded.value && !hasError.value) {
         startProgressSimulation()
       }
-    }, 200)
+    }, uiTimingConfig.progress.startDelay)
   }
 })
 

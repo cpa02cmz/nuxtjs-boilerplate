@@ -330,6 +330,7 @@ import type { ComparisonCriteria } from '~/types/comparison'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { hapticLight, hapticMedium } from '~/utils/hapticFeedback'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
   resources?: Resource[]
@@ -392,7 +393,7 @@ const handleBrowseClick = () => {
   // Clear announcement after screen reader has time to read it
   setTimeout(() => {
     announcement.value = ''
-  }, 1000)
+  }, uiTimingConfig.accessibility.clearDelay)
 }
 
 const handleQuickAdd = (resource: Resource) => {
@@ -407,7 +408,7 @@ const handleQuickAdd = (resource: Resource) => {
   // Clear announcement
   setTimeout(() => {
     announcement.value = ''
-  }, 1000)
+  }, uiTimingConfig.accessibility.clearDelay)
 }
 
 const getCategoryColor = (category?: string): string => {

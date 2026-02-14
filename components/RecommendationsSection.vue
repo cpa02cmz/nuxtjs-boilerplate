@@ -43,15 +43,10 @@
           </div>
         </div>
       </div>
-      <p class="sr-only">
-        Loading personalized recommendations for you...
-      </p>
+      <p class="sr-only">Loading personalized recommendations for you...</p>
     </div>
 
-    <div
-      v-else-if="error"
-      class="bg-red-50 border-l-4 border-red-400 p-4"
-    >
+    <div v-else-if="error" class="bg-red-50 border-l-4 border-red-400 p-4">
       <div class="flex">
         <div class="flex-shrink-0">
           <svg
@@ -75,10 +70,7 @@
       </div>
     </div>
 
-    <div
-      v-else-if="recommendations.length === 0"
-      class="text-center py-12"
-    >
+    <div v-else-if="recommendations.length === 0" class="text-center py-12">
       <svg
         class="mx-auto h-12 w-12 text-gray-400"
         fill="none"
@@ -123,24 +115,13 @@
             fill="none"
             aria-hidden="true"
           >
-            <circle
-              class="success-circle"
-              cx="12"
-              cy="12"
-              r="10"
-            />
-            <path
-              class="success-checkmark"
-              d="M7 12l3 3 7-7"
-            />
+            <circle class="success-circle" cx="12" cy="12" r="10" />
+            <path class="success-checkmark" d="M7 12l3 3 7-7" />
           </svg>
           <span class="success-text">Recommendations loaded!</span>
         </div>
         <!-- Sparkle effects -->
-        <div
-          class="sparkle-container"
-          aria-hidden="true"
-        >
+        <div class="sparkle-container" aria-hidden="true">
           <span
             v-for="n in 6"
             :key="n"
@@ -171,10 +152,7 @@
       />
     </TransitionGroup>
 
-    <div
-      v-if="recommendations.length > 0"
-      class="mt-6 flex justify-center"
-    >
+    <div v-if="recommendations.length > 0" class="mt-6 flex justify-center">
       <button
         class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
         :class="{
@@ -202,12 +180,7 @@
     </div>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcementText }}
     </div>
   </div>
@@ -222,6 +195,7 @@ import { useUserPreferences } from '~/composables/useUserPreferences'
 import { logError } from '~/utils/errorLogger'
 import { UI_TIMING } from '~/server/utils/constants'
 import { animationConfig } from '~/configs/animation.config'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 import { hapticSuccess } from '~/utils/hapticFeedback'
 import type { RecommendationResult } from '~/types/recommendation'
 import type { Resource } from '~/types/resource'
@@ -290,7 +264,7 @@ const announceRecommendations = () => {
 
   setTimeout(() => {
     announcementText.value = ''
-  }, 3000)
+  }, uiTimingConfig.recommendations.announcementClearDelay)
 }
 
 // Initialize recommendation engine

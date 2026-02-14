@@ -40,11 +40,7 @@
         position: 'relative',
       }"
     >
-      <TransitionGroup
-        name="list-item"
-        tag="div"
-        class="w-full h-full"
-      >
+      <TransitionGroup name="list-item" tag="div" class="w-full h-full">
         <div
           v-for="virtualRow in virtualizer.getVirtualItems()"
           :key="String(virtualRow.key)"
@@ -63,10 +59,7 @@
             '--item-index': virtualRow.index % 10,
           }"
         >
-          <slot
-            :item="items[virtualRow.index]"
-            :index="virtualRow.index"
-          />
+          <slot :item="items[virtualRow.index]" :index="virtualRow.index" />
         </div>
       </TransitionGroup>
     </div>
@@ -81,6 +74,7 @@ import { thresholdsConfig } from '../configs/thresholds.config'
 import { componentColorsConfig } from '../configs/component-colors.config'
 import { animationConfig } from '../configs/animation.config'
 import { zIndexScale } from '../configs/z-index.config'
+import { uiTimingConfig } from '../configs/ui-timing.config'
 
 interface Props {
   items: T[]
@@ -171,7 +165,7 @@ onMounted(() => {
   // Small delay to ensure DOM is ready and prevent hydration mismatch
   setTimeout(() => {
     isListLoaded.value = true
-  }, 50)
+  }, uiTimingConfig.virtualList.entranceDelay)
 })
 
 onUnmounted(() => {
