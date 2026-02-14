@@ -9,6 +9,59 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 
+// Validation constants for error report fields
+const MAX_MESSAGE_LENGTH = 500
+const MAX_STACK_LENGTH = 10000
+const MAX_COMPONENT_LENGTH = 100
+const MAX_URL_LENGTH = 2048
+const MAX_USER_AGENT_LENGTH = 500
+const MAX_IP_LENGTH = 45 // IPv6 max length
+const ALLOWED_SEVERITIES = ['error', 'warning', 'info', 'critical'] as const
+
+/**
+ * Validates and sanitizes error report input
+ * Prevents log injection and ensures data integrity
+ */
+function validateErrorReport(body: Record<string, unknown>) {
+  // Validate required message field
+  if (!body.message || typeof body.message !== 'string') {
+    return { error: 'Missing or invalid required field: message' }
+  }
+
+  // Sanitize and validate all fields
+  const validated = {
+    message: body.message.substring(0, MAX_MESSAGE_LENGTH).trim(),
+    stack:
+      typeof body.stack === 'string'
+        ? body.stack.substring(0, MAX_STACK_LENGTH).trim()
+        : undefined,
+    component:
+      typeof body.component === 'string'
+        ? body.component.substring(0, MAX_COMPONENT_LENGTH).trim()
+        : undefined,
+    severity: ALLOWED_SEVERITIES.includes(
+      body.severity as (typeof ALLOWED_SEVERITIES)[number]
+    )
+      ? (body.severity as (typeof ALLOWED_SEVERITIES)[number])
+      : 'error',
+    url:
+      typeof body.url === 'string'
+        ? body.url.substring(0, MAX_URL_LENGTH).trim()
+        : undefined,
+  }
+
+  // Additional validation for URL format if provided
+  if (validated.url) {
+    try {
+      new URL(validated.url)
+    } catch {
+      validated.url = undefined
+    }
+  }
+
+  return { data: validated }
+}
+
 /**
  * API endpoint for client-side error reporting
  * POST /api/errors/report
@@ -26,27 +79,39 @@ export default defineEventHandler(async event => {
     const body = await readBody(event)
     const errorTracker = createErrorTracker()
 
-    // Validate required fields
-    if (!body.message) {
-      return sendBadRequestError(event, 'Missing required field: message')
+    // Validate and sanitize all input fields
+    const validation = validateErrorReport(body)
+    if (validation.error) {
+      return sendBadRequestError(event, validation.error)
     }
 
-    // Get client info from request
-    const ip =
-      event.node.req.headers['x-forwarded-for'] ||
-      event.node.req.socket?.remoteAddress ||
-      'unknown'
-    const userAgent = event.node.req.headers['user-agent'] || 'unknown'
+    const validatedData = validation.data!
 
-    // Track the error
+    // Get client info from request
+    const rawIp =
+      event.node.req.headers['x-forwarded-for'] ||
+      event.node.req.socket?.remoteAddress
+    const rawUserAgent = event.node.req.headers['user-agent']
+
+    // Sanitize client info
+    const ip =
+      typeof rawIp === 'string'
+        ? rawIp.substring(0, MAX_IP_LENGTH).trim()
+        : undefined
+    const userAgent =
+      typeof rawUserAgent === 'string'
+        ? rawUserAgent.substring(0, MAX_USER_AGENT_LENGTH).trim()
+        : undefined
+
+    // Track the error with validated data
     await errorTracker.trackError({
-      message: body.message,
-      stack: body.stack,
-      component: body.component,
-      severity: body.severity || 'error',
-      url: body.url,
-      userAgent: typeof userAgent === 'string' ? userAgent : undefined,
-      ip: typeof ip === 'string' ? ip : undefined,
+      message: validatedData.message,
+      stack: validatedData.stack,
+      component: validatedData.component,
+      severity: validatedData.severity,
+      url: validatedData.url,
+      userAgent,
+      ip,
       source: 'client',
     })
 
