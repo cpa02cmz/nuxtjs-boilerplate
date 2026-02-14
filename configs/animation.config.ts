@@ -426,6 +426,17 @@ export const animationConfig = {
       fadeDelaySec: parseFloat(
         process.env.BOOKMARK_PARTICLE_FADE_DELAY || '0.3'
       ),
+      // Angle randomness in degrees - adds natural variation to particle distribution
+      angleRandomnessDeg: parseInt(
+        process.env.BOOKMARK_PARTICLE_ANGLE_RANDOMNESS || '30'
+      ),
+      // Distance variation factor - particles spread between 70-130% of base spread
+      distanceVariationMin: parseFloat(
+        process.env.BOOKMARK_PARTICLE_DISTANCE_MIN || '0.7'
+      ),
+      distanceVariationMax: parseFloat(
+        process.env.BOOKMARK_PARTICLE_DISTANCE_MAX || '1.3'
+      ),
     },
   },
 
@@ -575,6 +586,21 @@ export const animationConfig = {
     successPulseDurationMs: parseInt(
       process.env.ERROR_BOUNDARY_SUCCESS_PULSE_DURATION_MS || '400'
     ),
+    // Countdown ring configuration for auto-retry
+    countdownRing: {
+      // Radius of the countdown ring in pixels
+      radiusPx: parseInt(process.env.ERROR_BOUNDARY_RING_RADIUS_PX || '18'),
+      // Stroke width of the ring
+      strokeWidthPx: parseInt(
+        process.env.ERROR_BOUNDARY_RING_STROKE_WIDTH_PX || '2'
+      ),
+      // Ring color
+      color: process.env.ERROR_BOUNDARY_RING_COLOR || 'rgba(59, 130, 246, 0.8)',
+      // Background track color
+      trackColor:
+        process.env.ERROR_BOUNDARY_RING_TRACK_COLOR ||
+        'rgba(59, 130, 246, 0.2)',
+    },
   },
 
   // API Keys Animations - Flexy hates hardcoded draw animation!
@@ -1640,6 +1666,30 @@ export const animationConfig = {
     highlightOpacity: parseFloat(
       process.env.COMMENT_HIGHLIGHT_OPACITY || '0.2'
     ),
+    // Particle burst animation for like button - Palette's delightful touch!
+    particleBurst: {
+      // Number of particles in the burst
+      particleCount: parseInt(process.env.COMMENT_PARTICLE_COUNT || '6'),
+      // Angle increment per particle in degrees (360 / particleCount)
+      angleIncrementDeg: parseInt(
+        process.env.COMMENT_PARTICLE_ANGLE_INCREMENT || '60'
+      ),
+      // Stagger delay between particles (ms)
+      staggerDelayMs: parseInt(process.env.COMMENT_PARTICLE_STAGGER_MS || '50'),
+      // Animation duration (seconds)
+      durationSec: parseFloat(
+        process.env.COMMENT_PARTICLE_DURATION_SEC || '0.6'
+      ),
+      // Spread distance (px)
+      spreadPx: parseInt(process.env.COMMENT_PARTICLE_SPREAD_PX || '40'),
+      // Particle colors (pink/red theme for likes)
+      colors: [
+        process.env.COMMENT_PARTICLE_COLOR_1 || '#ec4899', // pink-500
+        process.env.COMMENT_PARTICLE_COLOR_2 || '#f472b6', // pink-400
+        process.env.COMMENT_PARTICLE_COLOR_3 || '#f43f5e', // rose-500
+        process.env.COMMENT_PARTICLE_COLOR_4 || '#fb7185', // rose-400
+      ],
+    },
   },
 
   // Error Page Animations - Palette's micro-UX enhancement!
@@ -1842,7 +1892,6 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.RECOMMENDATIONS_RESPECT_REDUCED_MOTION !== 'false',
-
   },
   // VirtualList Component Animations - Palette's micro-UX enhancement!
   // Staggered entrance animations and smooth transitions for virtual scrolling
@@ -1888,7 +1937,44 @@ export const animationConfig = {
     entranceMidScale: parseFloat(
       process.env.VIRTUAL_LIST_ENTRANCE_MID_SCALE || '1.01'
     ),
+  },
 
+  // ReviewQueue Component Animations - Palette's micro-UX delight! 🎨
+  // Staggered card entrances, loading skeletons, and delightful hover effects
+  reviewQueue: {
+    // Stagger delay between card entrances (ms)
+    staggerDelayMs: parseInt(process.env.REVIEW_QUEUE_STAGGER_MS || '100'),
+    // Card entrance animation duration (ms)
+    entranceDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Card hover transition duration (ms)
+    hoverTransitionMs: parseInt(
+      process.env.REVIEW_QUEUE_HOVER_TRANSITION_MS || '200'
+    ),
+    // Status badge pulse animation duration (ms)
+    badgePulseDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_BADGE_PULSE_MS || '2000'
+    ),
+    // Empty state float animation duration (ms)
+    emptyFloatDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_EMPTY_FLOAT_MS || '3000'
+    ),
+    // Skeleton shimmer animation duration (ms)
+    skeletonShimmerDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_SKELETON_SHIMMER_MS || '1500'
+    ),
+    // Button pulse animation duration (ms)
+    buttonPulseDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_BUTTON_PULSE_MS || '400'
+    ),
+    // Filter transition duration (ms)
+    filterTransitionMs: parseInt(
+      process.env.REVIEW_QUEUE_FILTER_TRANSITION_MS || '200'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.REVIEW_QUEUE_RESPECT_REDUCED_MOTION !== 'false',
   },
 } as const
 
