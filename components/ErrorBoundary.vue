@@ -1,9 +1,6 @@
 <template>
   <div class="error-boundary-wrapper">
-    <Transition
-      name="error-fade"
-      @after-enter="onErrorEntered"
-    >
+    <Transition name="error-fade" @after-enter="onErrorEntered">
       <div
         v-if="hasError"
         ref="errorContainer"
@@ -43,20 +40,12 @@
           >
             Something went wrong
           </h2>
-          <p
-            id="error-message"
-            class="error-message"
-          >
+          <p id="error-message" class="error-message">
             {{ errorMessage }}
           </p>
-          <div
-            v-if="showDetails"
-            class="error-details"
-          >
+          <div v-if="showDetails" class="error-details">
             <details class="error-details-container">
-              <summary class="error-details-summary">
-                Error Details
-              </summary>
+              <summary class="error-details-summary">Error Details</summary>
               <pre class="error-stack">{{ errorStack }}</pre>
             </details>
           </div>
@@ -436,22 +425,31 @@ onErrorCaptured((err, instance, info) => {
 })
 
 // Check reduced motion preference on mount
+let mediaQueryRef: MediaQueryList | null = null
+let handleChangeRef: ((e: MediaQueryListEvent) => void) | null = null
+
 onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 
   // Listen for changes in reduced motion preference
   if (typeof window !== 'undefined' && window.matchMedia) {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleChange = (e: MediaQueryListEvent) => {
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    handleChangeRef = (e: MediaQueryListEvent) => {
       prefersReducedMotion.value = e.matches
     }
-    mediaQuery.addEventListener('change', handleChange)
+    mediaQueryRef.addEventListener('change', handleChangeRef)
   }
 })
 
 // Palette's micro-UX: Clean up auto-retry on unmount
 onUnmounted(() => {
   stopAutoRetry()
+  // BroCula fix: Cleanup media query listener to prevent memory leak
+  if (mediaQueryRef && handleChangeRef) {
+    mediaQueryRef.removeEventListener('change', handleChangeRef)
+    mediaQueryRef = null
+    handleChangeRef = null
+  }
 })
 </script>
 
