@@ -224,7 +224,9 @@
     />
 
     <!-- Enhanced Empty State - Palette's micro-UX delight! -->
-    <div v-else class="empty-state">
+    <div
+      v-else
+      class="empty-state">
       <div class="empty-state__illustration">
         <!-- Animated Background Circle -->
         <div
