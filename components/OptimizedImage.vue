@@ -25,7 +25,10 @@
       <div class="skeleton-layer skeleton-layer--pulse" />
 
       <!-- Optional loading spinner for larger images -->
-      <div v-if="showLoadingIndicator" class="loading-indicator">
+      <div
+        v-if="showLoadingIndicator"
+        class="loading-indicator"
+      >
         <svg
           class="loading-spinner"
           viewBox="0 0 24 24"
@@ -72,9 +75,23 @@
           stroke-width="2"
           aria-hidden="true"
         >
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="8" x2="12" y2="12" />
-          <line x1="12" y1="16" x2="12.01" y2="16" />
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+          />
+          <line
+            x1="12"
+            y1="8"
+            x2="12"
+            y2="12"
+          />
+          <line
+            x1="12"
+            y1="16"
+            x2="12.01"
+            y2="16"
+          />
         </svg>
         <p class="error-text">
           {{
@@ -85,7 +102,7 @@
           class="retry-button"
           :aria-label="
             contentConfig.optimizedImage?.error?.retryAriaLabel ||
-            'Retry loading image'
+              'Retry loading image'
           "
           @click="handleRetry"
         >
@@ -129,7 +146,12 @@
     />
 
     <!-- Screen reader announcements -->
-    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >
       {{ announcement }}
     </div>
   </div>
