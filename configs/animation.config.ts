@@ -806,6 +806,11 @@ export const animationConfig = {
   // CSS Transition Durations - Flexy hates hardcoded CSS duration values!
   // For use in <style> sections of Vue components with CSS transitions
   cssTransitions: {
+    // Zero delay (0ms) - for particle effects and no-delay scenarios
+    // Flexy hates hardcoded 0s! Now configurable via env var
+    zeroDelayMs: parseInt(process.env.CSS_TRANSITION_ZERO_DELAY_MS || '0'),
+    zeroDelaySec: `${parseInt(process.env.CSS_TRANSITION_ZERO_DELAY_MS || '0') / 1000}s`,
+
     // Instant/Immediate transitions (1ms) - for reduced motion or instant feedback
     instantMs: parseInt(process.env.CSS_TRANSITION_INSTANT_MS || '1'),
     instantSec: `${parseInt(process.env.CSS_TRANSITION_INSTANT_MS || '1') / 1000}s`,
@@ -881,6 +886,11 @@ export const animationConfig = {
   // CSS Animation Timing - Flexy hates hardcoded animation delays!
   // For CSS animations with animation-delay and animation-duration
   cssAnimations: {
+    // Zero delay (0ms) - for particle effects and immediate animations
+    // Flexy hates hardcoded 0s! Now configurable via env var
+    zeroDelayMs: parseInt(process.env.CSS_ANIM_ZERO_DELAY_MS || '0'),
+    zeroDelaySec: `${parseInt(process.env.CSS_ANIM_ZERO_DELAY_MS || '0') / 1000}s`,
+
     // Micro delays for staggered animations
     microDelayMs: parseInt(process.env.CSS_ANIM_MICRO_DELAY_MS || '50'),
     microDelaySec: `${parseInt(process.env.CSS_ANIM_MICRO_DELAY_MS || '50') / 1000}s`,

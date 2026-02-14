@@ -396,7 +396,7 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
   border-radius: 50%;
   transform: translate(-50%, -50%) rotate(var(--particle-rotation));
   animation: particle-burst var(--particle-duration) ease-out forwards;
-  animation-delay: 0s;
+  animation-delay: v-bind('animationConfig.cssAnimations.zeroDelaySec');
   opacity: 0;
 }
 

@@ -538,7 +538,9 @@ onUnmounted(() => {
   .toast-enter-active {
     transition: opacity v-bind('toastConfig.reducedMotionDurationMs + "ms"')
       ease-out;
-    transition-delay: 0ms;
+    transition-delay: v-bind(
+      'animationConfig.cssTransitions.zeroDelayMs + "ms"'
+    );
   }
 
   .toast-leave-active {
