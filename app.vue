@@ -87,44 +87,56 @@ useHead({
   },
 })
 
+// Store handler references for cleanup
+let handleKeyDown: ((e: KeyboardEvent) => void) | null = null
+let handleMouseDown: (() => void) | null = null
+let handleOnline: (() => void) | null = null
+let handleOffline: (() => void) | null = null
+
 // Add global accessibility utilities
 onMounted(() => {
   // Add visual focus indicators when using keyboard navigation
-  const handleKeyDown = (e: KeyboardEvent) => {
+  handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Tab' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       document.body.classList.add('keyboard-nav')
       document.body.classList.remove('mouse-nav')
     }
   }
 
-  const handleMouseDown = () => {
+  handleMouseDown = () => {
     document.body.classList.remove('keyboard-nav')
     document.body.classList.add('mouse-nav')
   }
 
+  handleOnline = () => {}
+
+  handleOffline = () => {
+    // Optionally redirect to offline page or show notification
+  }
+
   window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('mousedown', handleMouseDown)
+  window.addEventListener('online', handleOnline)
+  window.addEventListener('offline', handleOffline)
+})
 
-  // Cleanup event listeners
-  onUnmounted(() => {
+// Cleanup event listeners on unmount
+onUnmounted(() => {
+  if (handleKeyDown) {
     window.removeEventListener('keydown', handleKeyDown)
+    handleKeyDown = null
+  }
+  if (handleMouseDown) {
     window.removeEventListener('mousedown', handleMouseDown)
-  })
-
-  // Handle online/offline status
-  window.addEventListener('online', () => {})
-
-  window.addEventListener('offline', () => {
-    // Optionally redirect to offline page or show notification
-  })
-
-  // Cleanup event listeners
-  onUnmounted(() => {
-    window.removeEventListener('keydown', handleKeyDown)
-    window.removeEventListener('mousedown', handleMouseDown)
-    window.removeEventListener('beforeinstallprompt', () => {
-      // We can't remove the specific deferredPrompt function since it's in a closure
-    })
-  })
+    handleMouseDown = null
+  }
+  if (handleOnline) {
+    window.removeEventListener('online', handleOnline)
+    handleOnline = null
+  }
+  if (handleOffline) {
+    window.removeEventListener('offline', handleOffline)
+    handleOffline = null
+  }
 })
 </script>

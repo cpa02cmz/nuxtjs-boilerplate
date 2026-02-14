@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="resources && resources.length >= 2"
-    class="overflow-x-auto"
-  >
+  <div v-if="resources && resources.length >= 2" class="overflow-x-auto">
     <table
       class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
       :aria-label="`Comparison of ${resources.length} resources`"
@@ -165,10 +162,10 @@
         prefersReducedMotion
           ? ''
           : [
-            'transition-all',
-            'ease-out',
-            animationConfig.tailwindDurations.slower,
-          ].join(' ')
+              'transition-all',
+              'ease-out',
+              animationConfig.tailwindDurations.slower,
+            ].join(' ')
       "
       :enter-from-class="prefersReducedMotion ? '' : 'opacity-0 translate-y-4'"
       :enter-to-class="prefersReducedMotion ? '' : 'opacity-100 translate-y-0'"
@@ -299,7 +296,7 @@
           >
             {{
               contentConfig.comparison.emptyState.popularLabel ||
-                'Popular resources'
+              'Popular resources'
             }}
           </p>
           <div class="flex flex-wrap justify-center gap-2">
@@ -350,11 +347,7 @@
     </Transition>
 
     <!-- Screen Reader Live Region -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-    >
+    <div class="sr-only" role="status" aria-live="polite">
       {{ announcement }}
     </div>
   </div>
@@ -388,6 +381,9 @@ const prefersReducedMotion = ref(false)
 // Media query ref for cleanup (Issue #2333 - Memory leak fix)
 const reducedMotionMediaQuery = ref<MediaQueryList | null>(null)
 
+// Store handler reference for proper cleanup
+const motionChangeHandler = ref<((e: MediaQueryListEvent) => void) | null>(null)
+
 // Popular resources for quick-add suggestions
 const popularResources = computed<Resource[]>(() => {
   // In a real implementation, these could come from analytics or config
@@ -403,18 +399,26 @@ onMounted(() => {
     )
     prefersReducedMotion.value = reducedMotionMediaQuery.value.matches
 
-    // Listen for changes
-    reducedMotionMediaQuery.value.addEventListener('change', e => {
+    // Listen for changes and store handler reference
+    motionChangeHandler.value = (e: MediaQueryListEvent) => {
       prefersReducedMotion.value = e.matches
-    })
+    }
+    reducedMotionMediaQuery.value.addEventListener(
+      'change',
+      motionChangeHandler.value
+    )
   }
 })
 
 // Cleanup media query listener on unmount (Issue #2333 - Memory leak fix)
 onUnmounted(() => {
-  if (reducedMotionMediaQuery.value) {
-    reducedMotionMediaQuery.value.removeEventListener('change', () => {})
+  if (reducedMotionMediaQuery.value && motionChangeHandler.value) {
+    reducedMotionMediaQuery.value.removeEventListener(
+      'change',
+      motionChangeHandler.value
+    )
     reducedMotionMediaQuery.value = null
+    motionChangeHandler.value = null
   }
 })
 
