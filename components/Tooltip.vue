@@ -12,8 +12,9 @@
     @touchmove="handleTouchMove"
     @keydown="handleTriggerKeyDown"
   >
-    <!-- Wrapper slot with aria-describedby for accessibility -->
+    <!-- Wrapper slot with aria-labelledby for accessibility -->
     <div
+      :aria-labelledby="isVisible ? tooltipId : undefined"
       :aria-describedby="isVisible ? tooltipId : undefined"
       class="tooltip-trigger-wrapper"
     >
@@ -66,12 +67,7 @@
     </Transition>
 
     <!-- Screen reader announcement - announces tooltip content when visible -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ isVisible ? content : '' }}
     </div>
   </div>
