@@ -1808,6 +1808,42 @@ export const animationConfig = {
     ),
   },
 
+  // Recommendations Section Micro-UX - Palette's delightful enhancement!
+  // Staggered entrance animations and success feedback for recommendations
+  recommendations: {
+    // Delay between each card's entrance animation (ms)
+    staggerDelayMs: parseInt(process.env.RECOMMENDATIONS_STAGGER_MS || '100'),
+    // Duration of entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.RECOMMENDATIONS_ENTRANCE_DURATION_MS || '600'
+    ),
+    // CSS duration string for v-bind
+    entranceDurationSec: `${parseInt(process.env.RECOMMENDATIONS_ENTRANCE_DURATION_MS || '600') / 1000}s`,
+    // Distance cards travel during entrance (px)
+    entranceDistancePx: parseInt(
+      process.env.RECOMMENDATIONS_ENTRANCE_DISTANCE || '30'
+    ),
+    // Scale at start of entrance animation
+    entranceStartScale: parseFloat(
+      process.env.RECOMMENDATIONS_ENTRANCE_SCALE || '0.92'
+    ),
+    // Loading shimmer animation duration (seconds)
+    shimmerDurationSec: parseFloat(
+      process.env.RECOMMENDATIONS_SHIMMER_DURATION || '1.5'
+    ),
+    // Success celebration animation duration (ms)
+    successDurationMs: parseInt(
+      process.env.RECOMMENDATIONS_SUCCESS_DURATION_MS || '800'
+    ),
+    // Delay before triggering haptic feedback on load (ms)
+    hapticDelayMs: parseInt(
+      process.env.RECOMMENDATIONS_HAPTIC_DELAY_MS || '300'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.RECOMMENDATIONS_RESPECT_REDUCED_MOTION !== 'false',
+
+  },
   // VirtualList Component Animations - Palette's micro-UX enhancement!
   // Staggered entrance animations and smooth transitions for virtual scrolling
   virtualList: {
@@ -1852,6 +1888,7 @@ export const animationConfig = {
     entranceMidScale: parseFloat(
       process.env.VIRTUAL_LIST_ENTRANCE_MID_SCALE || '1.01'
     ),
+
   },
 } as const
 
