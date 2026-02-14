@@ -353,7 +353,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, type Ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, type Ref } from 'vue'
 import { useHead } from '#imports'
 import { useRipple } from '~/composables/useRipple'
 import { useMagneticButton } from '~/composables/useMagneticButton'
@@ -428,6 +428,12 @@ const isTilting = ref(false)
 const tiltX = ref(0)
 const tiltY = ref(0)
 const prefersReducedMotion = ref(false)
+
+// Media query refs for cleanup (Issue #2333 - Memory leak fix)
+const reducedMotionMediaQuery = ref<MediaQueryList | null>(null)
+const reducedMotionHandler = ref<((e: MediaQueryListEvent) => void) | null>(
+  null
+)
 
 // Palette's Viewed Badge Micro-UX Enhancement!
 // Tracks when to show the entrance animation for delightful feedback
@@ -608,8 +614,10 @@ onMounted(() => {
 
   // Listen for changes to reduced motion preference
   if (typeof window !== 'undefined' && window.matchMedia) {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleMotionChange = (e: MediaQueryListEvent) => {
+    reducedMotionMediaQuery.value = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    )
+    reducedMotionHandler.value = (e: MediaQueryListEvent) => {
       prefersReducedMotion.value = e.matches
       if (e.matches) {
         // Reset tilt when reduced motion is enabled
@@ -618,7 +626,22 @@ onMounted(() => {
         tiltY.value = 0
       }
     }
-    mediaQuery.addEventListener('change', handleMotionChange)
+    reducedMotionMediaQuery.value.addEventListener(
+      'change',
+      reducedMotionHandler.value
+    )
+  }
+})
+
+// Cleanup media query listener on unmount (Issue #2333 - Memory leak fix)
+onUnmounted(() => {
+  if (reducedMotionMediaQuery.value && reducedMotionHandler.value) {
+    reducedMotionMediaQuery.value.removeEventListener(
+      'change',
+      reducedMotionHandler.value
+    )
+    reducedMotionMediaQuery.value = null
+    reducedMotionHandler.value = null
   }
 })
 
