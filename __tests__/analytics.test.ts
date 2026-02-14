@@ -102,7 +102,7 @@ describe('Analytics Utilities', () => {
       const result = await trackResourceClick(
         'resource-123',
         'Test Resource',
-        'AI Tools'
+        'AI/ML'
       )
 
       expect(result).toBe(true)
@@ -114,7 +114,7 @@ describe('Analytics Utilities', () => {
         body: JSON.stringify({
           type: 'resource_click',
           resourceId: 'resource-123',
-          category: 'AI Tools',
+          category: 'AI/ML',
           properties: {
             title: 'Test Resource',
           },
@@ -133,7 +133,7 @@ describe('Analytics Utilities', () => {
       const result = await trackResourceView(
         'resource-123',
         'Test Resource',
-        'AI Tools'
+        'AI/ML'
       )
 
       expect(result).toBe(true)
@@ -145,7 +145,7 @@ describe('Analytics Utilities', () => {
         body: JSON.stringify({
           type: 'resource_view',
           resourceId: 'resource-123',
-          category: 'AI Tools',
+          category: 'AI/ML',
           properties: {
             title: 'Test Resource',
           },
