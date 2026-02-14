@@ -224,10 +224,7 @@
     />
 
     <!-- Enhanced Empty State - Palette's micro-UX delight! -->
-    <div
-      v-else
-      class="empty-state"
-    >
+    <div v-else class="empty-state">
       <div class="empty-state__illustration">
         <!-- Animated Background Circle -->
         <div
@@ -272,9 +269,7 @@
         />
       </div>
 
-      <h3 class="empty-state__title">
-        No resources selected
-      </h3>
+      <h3 class="empty-state__title">No resources selected</h3>
       <p class="empty-state__description">
         Add resources to compare them side-by-side and see detailed differences.
       </p>
@@ -888,7 +883,9 @@ defineExpose({
   bottom: 2rem;
   left: 1.5rem;
   animation: float 3s ease-in-out infinite;
-  animation-delay: 1s;
+  animation-delay: v-bind(
+    'animationConfig.comparisonEmptyState.dotFloatDelaysSec[1] + "s"'
+  );
 }
 
 .empty-state__float-dot--3 {
@@ -897,7 +894,9 @@ defineExpose({
   top: 3rem;
   left: 1rem;
   animation: float 3s ease-in-out infinite;
-  animation-delay: 2s;
+  animation-delay: v-bind(
+    'animationConfig.comparisonEmptyState.dotFloatDelaysSec[2] + "s"'
+  );
 }
 
 .empty-state__title {
