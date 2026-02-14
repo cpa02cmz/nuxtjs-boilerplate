@@ -188,6 +188,7 @@ import { contentConfig } from '~/configs/content.config'
 import { uiConfig } from '~/configs/ui.config'
 import { EASING } from '~/configs/easing.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { hapticLight, hapticError, hapticSuccess } from '~/utils/hapticFeedback'
 
 interface SavedSearch {
@@ -472,7 +473,8 @@ const formatDate = (date: Date) => {
   animation: shimmer-sweep
     v-bind('animationConfig.cssAnimations.sweepDurationSec') ease-in-out;
   pointer-events: none;
-  z-index: 1;
+  /* Flexy hates hardcoded z-index! Using config instead. */
+  z-index: v-bind('zIndexScale.low[1]');
 }
 
 @keyframes shimmer-sweep {

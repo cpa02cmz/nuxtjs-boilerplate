@@ -134,6 +134,17 @@ export const componentColorsConfig = {
       approve: process.env.REVIEW_QUEUE_ACTION_APPROVE || '#1d4ed8',
     },
     divider: process.env.REVIEW_QUEUE_DIVIDER || '#d1d5db',
+    // Card gradient colors
+    cardGradient: {
+      start: process.env.REVIEW_QUEUE_GRADIENT_START || '#3b82f6',
+      end: process.env.REVIEW_QUEUE_GRADIENT_END || '#2563eb',
+    },
+    // Shimmer/loading gradient colors
+    shimmer: {
+      start: process.env.REVIEW_QUEUE_SHIMMER_START || '#e5e7eb',
+      middle: process.env.REVIEW_QUEUE_SHIMMER_MIDDLE || '#f3f4f6',
+      end: process.env.REVIEW_QUEUE_SHIMMER_END || '#e5e7eb',
+    },
   },
 
   // Toast Notification Colors - Flexy hates hardcoded toast colors!
@@ -519,6 +530,9 @@ export const componentColorsConfig = {
 
   // OptimizedImage Component Colors - Flexy hates hardcoded error colors!
   optimizedImage: {
+    // Loading spinner color
+    spinner: process.env.OPTIMIZED_IMAGE_SPINNER_COLOR || '#6b7280',
+    // Error state background gradients
     error: {
       icon: process.env.OPTIMIZED_IMAGE_ERROR_ICON || '#ef4444',
       iconDark: process.env.OPTIMIZED_IMAGE_ERROR_ICON_DARK || '#fca5a5',
@@ -535,6 +549,13 @@ export const componentColorsConfig = {
         process.env.OPTIMIZED_IMAGE_ERROR_BTN_TEXT_DARK || '#fca5a5',
       buttonBgHoverDark:
         process.env.OPTIMIZED_IMAGE_ERROR_BTN_HOVER_DARK || '#7f1d1d',
+      // Error state background gradients
+      bgGradientStart: process.env.OPTIMIZED_IMAGE_ERROR_BG_START || '#fef2f2',
+      bgGradientEnd: process.env.OPTIMIZED_IMAGE_ERROR_BG_END || '#fee2e2',
+      bgGradientDarkStart:
+        process.env.OPTIMIZED_IMAGE_ERROR_BG_DARK_START || '#450a0a',
+      bgGradientDarkEnd:
+        process.env.OPTIMIZED_IMAGE_ERROR_BG_DARK_END || '#7f1d1d',
     },
   },
 
@@ -555,6 +576,37 @@ export const componentColorsConfig = {
   moderationDashboard: {
     activity: {
       flag: process.env.MODERATION_ACTIVITY_FLAG || '#ffc107',
+    },
+  },
+
+  // Confetti Celebration Colors - Flexy hates hardcoded confetti colors!
+  // Used by SubmissionReview and ReadingProgress for celebration animations
+  confetti: {
+    colors: [
+      process.env.CONFETTI_COLOR_1 || '#ff6b6b',
+      process.env.CONFETTI_COLOR_2 || '#4ecdc4',
+      process.env.CONFETTI_COLOR_3 || '#45b7d1',
+      process.env.CONFETTI_COLOR_4 || '#96ceb4',
+      process.env.CONFETTI_COLOR_5 || '#ffeaa7',
+      process.env.CONFETTI_COLOR_6 || '#dda0dd',
+      process.env.CONFETTI_COLOR_7 || '#98d8c8',
+      process.env.CONFETTI_COLOR_8 || '#f7dc6f',
+    ],
+  },
+
+  // ResourceComments Component Colors - Flexy hates hardcoded comment colors!
+  resourceComments: {
+    // Character counter gradient colors
+    counterGradient: {
+      error: {
+        start: process.env.COMMENTS_COUNTER_ERROR_START || '#ef4444',
+        middle: process.env.COMMENTS_COUNTER_ERROR_MIDDLE || '#f87171',
+        end: process.env.COMMENTS_COUNTER_ERROR_END || '#fca5a5',
+      },
+      success: {
+        start: process.env.COMMENTS_COUNTER_SUCCESS_START || '#10b981',
+        end: process.env.COMMENTS_COUNTER_SUCCESS_END || '#34d399',
+      },
     },
   },
 } as const

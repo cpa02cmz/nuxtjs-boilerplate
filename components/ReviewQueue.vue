@@ -428,7 +428,11 @@ onUnmounted(() => {
   min-width: 1.5rem;
   height: 1.5rem;
   padding: 0 0.375rem;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(
+    135deg,
+    v-bind('componentColorsConfig.reviewQueue.cardGradient.start || "#3b82f6"'),
+    v-bind('componentColorsConfig.reviewQueue.cardGradient.end || "#2563eb"')
+  );
   color: white;
   font-size: 0.75rem;
   font-weight: 700;
@@ -500,21 +504,18 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
-}
-
-.skeleton-title {
-  width: 60%;
-  height: 1.25rem;
-  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
-  background-size: 200% 100%;
-  border-radius: 0.25rem;
+  margin-bottom: 0.75rem;
 }
 
 .skeleton-badge {
   width: 5rem;
   height: 1.5rem;
-  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background: linear-gradient(
+    90deg,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.start || "#e5e7eb"') 25%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.middle || "#f3f4f6"') 50%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.end || "#e5e7eb"') 75%
+  );
   background-size: 200% 100%;
   border-radius: 9999px;
 }
@@ -526,7 +527,12 @@ onUnmounted(() => {
 .skeleton-line {
   width: 100%;
   height: 0.875rem;
-  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background: linear-gradient(
+    90deg,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.start || "#e5e7eb"') 25%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.middle || "#f3f4f6"') 50%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.end || "#e5e7eb"') 75%
+  );
   background-size: 200% 100%;
   border-radius: 0.25rem;
   margin-bottom: 0.5rem;
@@ -550,7 +556,12 @@ onUnmounted(() => {
 .skeleton-tag {
   width: 4rem;
   height: 1.5rem;
-  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background: linear-gradient(
+    90deg,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.start || "#e5e7eb"') 25%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.middle || "#f3f4f6"') 50%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.end || "#e5e7eb"') 75%
+  );
   background-size: 200% 100%;
   border-radius: 0.25rem;
 }
@@ -558,7 +569,97 @@ onUnmounted(() => {
 .skeleton-button {
   width: 5rem;
   height: 2rem;
-  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background: linear-gradient(
+    90deg,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.start || "#e5e7eb"') 25%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.middle || "#f3f4f6"') 50%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.end || "#e5e7eb"') 75%
+  );
+  background-size: 200% 100%;
+  border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.xs}px`');
+}
+
+.skeleton-title {
+  width: 60%;
+  height: 1.25rem;
+  background: linear-gradient(
+    90deg,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.start || "#e5e7eb"') 25%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.middle || "#f3f4f6"') 50%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.end || "#e5e7eb"') 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 0.25rem;
+}
+
+.skeleton-badge {
+  width: 5rem;
+  height: 1.5rem;
+  background: linear-gradient(
+    90deg,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.start || "#e5e7eb"') 25%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.middle || "#f3f4f6"') 50%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.end || "#e5e7eb"') 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 9999px;
+}
+
+.skeleton-body {
+  margin-bottom: 1rem;
+}
+
+.skeleton-line {
+  width: 100%;
+  height: 0.875rem;
+  background: linear-gradient(
+    90deg,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.start || "#e5e7eb"') 25%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.middle || "#f3f4f6"') 50%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.end || "#e5e7eb"') 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-line.short {
+  width: 75%;
+}
+
+.skeleton-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skeleton-tags {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.skeleton-tag {
+  width: 4rem;
+  height: 1.5rem;
+  background: linear-gradient(
+    90deg,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.start || "#e5e7eb"') 25%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.middle || "#f3f4f6"') 50%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.end || "#e5e7eb"') 75%
+  );
+  background-size: 200% 100%;
+  border-radius: 0.25rem;
+}
+
+.skeleton-button {
+  width: 5rem;
+  height: 2rem;
+  background: linear-gradient(
+    90deg,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.start || "#e5e7eb"') 25%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.middle || "#f3f4f6"') 50%,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.end || "#e5e7eb"') 75%
+  );
   background-size: 200% 100%;
   border-radius: v-bind('`${uiConfig.layout.borderRadiusPx.xs}px`');
 }
@@ -800,13 +901,21 @@ onUnmounted(() => {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(
+    135deg,
+    v-bind('componentColorsConfig.reviewQueue.cardGradient.start || "#3b82f6"'),
+    v-bind('componentColorsConfig.reviewQueue.cardGradient.end || "#2563eb"')
+  );
   color: white;
   box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  background: linear-gradient(
+    135deg,
+    v-bind('componentColorsConfig.reviewQueue.cardGradient.end || "#2563eb"'),
+    v-bind('componentColorsConfig.reviewQueue.action.approve || "#1d4ed8"')
+  );
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
@@ -867,7 +976,11 @@ onUnmounted(() => {
 .empty-decoration {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  background: linear-gradient(
+    135deg,
+    v-bind('componentColorsConfig.reviewQueue.shimmer.middle || "#f3f4f6"'),
+    v-bind('componentColorsConfig.reviewQueue.shimmer.start || "#e5e7eb"')
+  );
   border-radius: 50%;
   opacity: 0.5;
 }

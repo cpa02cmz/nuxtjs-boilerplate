@@ -331,10 +331,12 @@ import { animationConfig } from '~/configs/animation.config'
 import { validationConfig } from '~/configs/validation.config'
 import { limitsConfig } from '~/configs/limits.config'
 import { uiConfig } from '~/configs/ui.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { generateId } from '~/utils/generateId'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
 import { formatTimeAgoOnce } from '~/composables/useTimeAgo'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   comments: Comment[]
@@ -756,7 +758,21 @@ defineExpose({
   position: absolute;
   width: 6px;
   height: 6px;
-  background: linear-gradient(135deg, #ef4444 0%, #f87171 50%, #fca5a5 100%);
+  background: linear-gradient(
+    135deg,
+    v-bind(
+        'componentColorsConfig.resourceComments.counterGradient.error.start || "#ef4444"'
+      )
+      0%,
+    v-bind(
+        'componentColorsConfig.resourceComments.counterGradient.error.middle || "#f87171"'
+      )
+      50%,
+    v-bind(
+        'componentColorsConfig.resourceComments.counterGradient.error.end || "#fca5a5"'
+      )
+      100%
+  );
   border-radius: 50%;
   animation: particle-burst
     v-bind('animationConfig?.cssTransitions?.longSec ?? "0.6s"')
@@ -830,7 +846,8 @@ defineExpose({
     transparent 100%
   );
   border-radius: 12px;
-  z-index: -1;
+  /* Flexy hates hardcoded z-index! Using config instead. */
+  z-index: v-bind('zIndexScale.hidden');
   animation: highlight-glow
     v-bind('animationConfig?.comments?.highlightDurationSec ?? "2s"') ease-out
     forwards;
@@ -959,7 +976,17 @@ textarea {
   display: inline-block;
   width: 6px;
   height: 6px;
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  background: linear-gradient(
+    135deg,
+    v-bind(
+        'componentColorsConfig.resourceComments.counterGradient.success.start || "#10b981"'
+      )
+      0%,
+    v-bind(
+        'componentColorsConfig.resourceComments.counterGradient.success.end || "#34d399"'
+      )
+      100%
+  );
   border-radius: 50%;
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
 }

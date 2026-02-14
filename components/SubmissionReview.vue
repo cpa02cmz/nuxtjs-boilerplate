@@ -688,31 +688,49 @@ onMounted(() => {
     v-bind('celebrationConfig?.confettiDelayMs || "100ms"') forwards;
   --angle: calc(var(--confetti-index) * 30deg);
   --color-index: calc(var(--confetti-index) % 6);
+  --confetti-color-1: v-bind(
+    'componentColorsConfig.confetti.colors[0] || "#ff6b6b"'
+  );
+  --confetti-color-2: v-bind(
+    'componentColorsConfig.confetti.colors[1] || "#4ecdc4"'
+  );
+  --confetti-color-3: v-bind(
+    'componentColorsConfig.confetti.colors[2] || "#45b7d1"'
+  );
+  --confetti-color-4: v-bind(
+    'componentColorsConfig.confetti.colors[3] || "#96ceb4"'
+  );
+  --confetti-color-5: v-bind(
+    'componentColorsConfig.confetti.colors[4] || "#ffeaa7"'
+  );
+  --confetti-color-6: v-bind(
+    'componentColorsConfig.confetti.colors[5] || "#dda0dd"'
+  );
 }
 
 .confetti-piece:nth-child(1),
 .confetti-piece:nth-child(7) {
-  background: #ff6b6b;
+  background: var(--confetti-color-1);
 }
 .confetti-piece:nth-child(2),
 .confetti-piece:nth-child(8) {
-  background: #4ecdc4;
+  background: var(--confetti-color-2);
 }
 .confetti-piece:nth-child(3),
 .confetti-piece:nth-child(9) {
-  background: #45b7d1;
+  background: var(--confetti-color-3);
 }
 .confetti-piece:nth-child(4),
 .confetti-piece:nth-child(10) {
-  background: #96ceb4;
+  background: var(--confetti-color-4);
 }
 .confetti-piece:nth-child(5),
 .confetti-piece:nth-child(11) {
-  background: #ffeaa7;
+  background: var(--confetti-color-5);
 }
 .confetti-piece:nth-child(6),
 .confetti-piece:nth-child(12) {
-  background: #dda0dd;
+  background: var(--confetti-color-6);
 }
 
 @keyframes confetti-burst {

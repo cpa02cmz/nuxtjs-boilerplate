@@ -1,5 +1,8 @@
 <template>
-  <div v-if="resources && resources.length >= 2" class="overflow-x-auto">
+  <div
+    v-if="resources && resources.length >= 2"
+    class="overflow-x-auto"
+  >
     <table
       class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
       :aria-label="`Comparison of ${resources.length} resources`"
@@ -162,10 +165,10 @@
         prefersReducedMotion
           ? ''
           : [
-              'transition-all',
-              'ease-out',
-              animationConfig.tailwindDurations.slower,
-            ].join(' ')
+            'transition-all',
+            'ease-out',
+            animationConfig.tailwindDurations.slower,
+          ].join(' ')
       "
       :enter-from-class="prefersReducedMotion ? '' : 'opacity-0 translate-y-4'"
       :enter-to-class="prefersReducedMotion ? '' : 'opacity-100 translate-y-0'"
@@ -296,7 +299,7 @@
           >
             {{
               contentConfig.comparison.emptyState.popularLabel ||
-              'Popular resources'
+                'Popular resources'
             }}
           </p>
           <div class="flex flex-wrap justify-center gap-2">
@@ -347,14 +350,18 @@
     </Transition>
 
     <!-- Screen Reader Live Region -->
-    <div class="sr-only" role="status" aria-live="polite">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+    >
       {{ announcement }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { Resource } from '~/types/resource'
 import type { ComparisonCriteria } from '~/types/comparison'
 import { contentConfig } from '~/configs/content.config'
@@ -378,6 +385,9 @@ const emptyStateRef = ref<HTMLElement | null>(null)
 const announcement = ref('')
 const prefersReducedMotion = ref(false)
 
+// Media query ref for cleanup (Issue #2333 - Memory leak fix)
+const reducedMotionMediaQuery = ref<MediaQueryList | null>(null)
+
 // Popular resources for quick-add suggestions
 const popularResources = computed<Resource[]>(() => {
   // In a real implementation, these could come from analytics or config
@@ -388,13 +398,23 @@ const popularResources = computed<Resource[]>(() => {
 // Check for reduced motion preference
 onMounted(() => {
   if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    prefersReducedMotion.value = mediaQuery.matches
+    reducedMotionMediaQuery.value = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    )
+    prefersReducedMotion.value = reducedMotionMediaQuery.value.matches
 
     // Listen for changes
-    mediaQuery.addEventListener('change', e => {
+    reducedMotionMediaQuery.value.addEventListener('change', e => {
       prefersReducedMotion.value = e.matches
     })
+  }
+})
+
+// Cleanup media query listener on unmount (Issue #2333 - Memory leak fix)
+onUnmounted(() => {
+  if (reducedMotionMediaQuery.value) {
+    reducedMotionMediaQuery.value.removeEventListener('change', () => {})
+    reducedMotionMediaQuery.value = null
   }
 })
 
