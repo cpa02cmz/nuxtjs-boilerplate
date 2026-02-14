@@ -113,11 +113,19 @@ function createRetryProxy(retryFn: () => PrismaClient): PrismaClient {
       }
 
       if (connectionError) {
-        return () => {
-          throw new Error(
-            `Database connection failed: ${connectionError?.message}`
-          )
+        const value = (client as unknown as Record<string | symbol, unknown>)[
+          prop
+        ]
+        if (typeof value === 'function') {
+          return () => {
+            throw new Error(
+              `Database connection failed: ${connectionError?.message}`
+            )
+          }
         }
+        throw new Error(
+          `Database connection failed: ${connectionError?.message}`
+        )
       }
 
       return (client as unknown as Record<string | symbol, unknown>)[prop]
