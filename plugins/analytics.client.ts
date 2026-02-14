@@ -8,6 +8,15 @@ import { uiTimingConfig } from '~/configs/ui-timing.config'
 export default defineNuxtPlugin(nuxtApp => {
   // Track initial page view
   if (process.client) {
+    // Initialize Core Web Vitals tracking
+    import('~/composables/useWebVitals')
+      .then(({ useWebVitals }) => {
+        useWebVitals()
+      })
+      .catch((error: Error) => {
+        console.warn('Web Vitals module failed to load:', error.message)
+      })
+
     import('~/utils/analytics')
       .then(({ trackPageView }) => {
         // Wait for page to load before tracking

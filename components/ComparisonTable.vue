@@ -26,10 +26,22 @@
                 {{ resource.category }}
               </div>
               <Transition
-                enter-active-class="transition-all duration-200 ease-out"
+                :enter-active-class="
+                  [
+                    'transition-all',
+                    'ease-out',
+                    animationConfig.tailwindDurations.normal,
+                  ].join(' ')
+                "
                 enter-from-class="opacity-0 scale-95"
                 enter-to-class="opacity-100 scale-100"
-                leave-active-class="transition-all duration-150 ease-in"
+                :leave-active-class="
+                  [
+                    'transition-all',
+                    'ease-in',
+                    animationConfig.tailwindDurations.quick,
+                  ].join(' ')
+                "
                 leave-from-class="opacity-100 scale-100"
                 leave-to-class="opacity-0 scale-95"
                 mode="out-in"
@@ -147,7 +159,13 @@
     <Transition
       appear
       :enter-active-class="
-        prefersReducedMotion ? '' : 'transition-all duration-500 ease-out'
+        prefersReducedMotion
+          ? ''
+          : [
+              'transition-all',
+              'ease-out',
+              animationConfig.tailwindDurations.slower,
+            ].join(' ')
       "
       :enter-from-class="prefersReducedMotion ? '' : 'opacity-0 translate-y-4'"
       :enter-to-class="prefersReducedMotion ? '' : 'opacity-100 translate-y-0'"
@@ -232,14 +250,20 @@
           }"
         >
           <button
-            class="group relative inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-all duration-300"
-            :class="{
-              'hover:scale-105 active:scale-95': !prefersReducedMotion,
-            }"
+            :class="[
+              'group relative inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-all',
+              animationConfig.tailwindDurations.standard,
+              {
+                'hover:scale-105 active:scale-95': !prefersReducedMotion,
+              },
+            ]"
             @click="handleBrowseClick"
           >
             <svg
-              class="w-5 h-5 mr-2 transition-transform duration-300 group-hover:rotate-12"
+              :class="[
+                'w-5 h-5 mr-2 transition-transform group-hover:rotate-12',
+                animationConfig.tailwindDurations.standard,
+              ]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -279,11 +303,14 @@
             <button
               v-for="(resource, index) in popularResources"
               :key="resource.id"
-              class="group inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-700 dark:hover:text-blue-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all duration-200"
-              :class="{
-                'hover:scale-105 active:scale-95': !prefersReducedMotion,
-                'comparison-empty-suggestion': !prefersReducedMotion,
-              }"
+              :class="[
+                'group inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-700 dark:hover:text-blue-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 transition-all',
+                animationConfig.tailwindDurations.normal,
+                {
+                  'hover:scale-105 active:scale-95': !prefersReducedMotion,
+                  'comparison-empty-suggestion': !prefersReducedMotion,
+                },
+              ]"
               :style="
                 !prefersReducedMotion
                   ? { animationDelay: `${400 + index * 100}ms` }
@@ -297,7 +324,10 @@
               />
               {{ resource.title }}
               <svg
-                class="w-3 h-3 ml-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200"
+                :class="[
+                  'w-3 h-3 ml-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all',
+                  animationConfig.tailwindDurations.normal,
+                ]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
