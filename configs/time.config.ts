@@ -151,6 +151,27 @@ export const timeConfig = {
     normal: 300,
     slow: 500,
   },
+
+  // TimeAgo update intervals - Flexy hates hardcoded values!
+  // Controls how often relative timestamps refresh based on their age
+  timeAgo: {
+    // Update interval for "just now" timestamps (default: 5 seconds)
+    justNowIntervalMs: parseInt(
+      process.env.TIME_AGO_JUST_NOW_INTERVAL_MS || '5000'
+    ),
+    // Update interval for minute-level timestamps (default: 15 seconds)
+    minuteIntervalMs: parseInt(
+      process.env.TIME_AGO_MINUTE_INTERVAL_MS || '15000'
+    ),
+    // Update interval for hour-level timestamps (default: 1 minute)
+    hourIntervalMs: parseInt(process.env.TIME_AGO_HOUR_INTERVAL_MS || '60000'),
+    // Update interval for day-level timestamps (default: 5 minutes)
+    dayIntervalMs: parseInt(process.env.TIME_AGO_DAY_INTERVAL_MS || '300000'),
+    // Update interval for older timestamps (default: 1 hour)
+    olderIntervalMs: parseInt(
+      process.env.TIME_AGO_OLDER_INTERVAL_MS || '3600000'
+    ),
+  },
 } as const
 
 // Type exports

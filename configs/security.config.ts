@@ -129,8 +129,20 @@ export const securityConfig = {
     // Encryption key length for scrypt in bytes (default: 32 = 256 bits)
     keyLength: parseInt(process.env.CRYPTO_KEY_LENGTH || '32'),
 
-    // Salt for scrypt key derivation
-    salt: process.env.CRYPTO_SALT || 'webhook-salt',
+    // Salt for scrypt key derivation - must be set explicitly, no default for security
+    salt: (() => {
+      const salt = process.env.CRYPTO_SALT
+      // Skip check during build process or when explicitly disabled
+      const skipCheck =
+        process.env.SKIP_CRYPTO_CHECK === 'true' || process.env.NUXT_BUILD
+      if (!salt && process.env.NODE_ENV === 'production' && !skipCheck) {
+        throw new Error(
+          'CRYPTO_SALT environment variable must be set in production for secure encryption. Generate a secure salt using crypto.randomBytes(32).toString("hex")'
+        )
+      }
+      // In non-production environments, use a development-only salt
+      return salt || 'dev-salt-not-for-production-use-only'
+    })(),
 
     // Encryption algorithm
     algorithm: process.env.CRYPTO_ALGORITHM || 'aes-256-gcm',
