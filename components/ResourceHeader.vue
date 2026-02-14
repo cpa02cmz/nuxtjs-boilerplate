@@ -145,6 +145,8 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
   showBookmark: true,
+  status: 'unknown',
+  healthScore: 0,
 })
 
 // Micro-UX State Management

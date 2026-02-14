@@ -1,5 +1,8 @@
 <template>
-  <div ref="cardRef" class="lazy-resource-card-wrapper">
+  <div
+    ref="cardRef"
+    class="lazy-resource-card-wrapper"
+  >
     <!-- Skeleton loader shown while not intersecting -->
     <ResourceCardSkeleton v-if="!isIntersecting && !isLoaded" />
 
