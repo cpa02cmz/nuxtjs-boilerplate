@@ -6,6 +6,7 @@ import type {
 import { randomUUID } from 'node:crypto'
 import { webhookStorage } from './webhookStorage'
 import { webhooksConfig } from '~/configs/webhooks.config'
+import logger from '~/utils/logger'
 
 export class DeadLetterManager {
   async addToDeadLetter(
@@ -67,6 +68,34 @@ export class DeadLetterManager {
     for (const item of deadLetterItems) {
       await webhookStorage.removeFromDeadLetterQueue(item.id)
     }
+  }
+
+  /**
+   * Clean up dead letter queue items older than the retention period
+   * @param retentionDays Number of days to retain items (default: 30)
+   * @returns Number of items deleted
+   */
+  async cleanupOldItems(retentionDays: number = 30): Promise<number> {
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - retentionDays)
+
+    const deadLetterItems = await webhookStorage.getDeadLetterQueue()
+    const itemsToDelete = deadLetterItems.filter(item => {
+      const createdAt = new Date(item.createdAt)
+      return createdAt < cutoff
+    })
+
+    for (const item of itemsToDelete) {
+      await webhookStorage.removeFromDeadLetterQueue(item.id)
+    }
+
+    if (itemsToDelete.length > 0) {
+      logger.info(
+        `[DeadLetter] Cleaned up ${itemsToDelete.length} items older than ${retentionDays} days`
+      )
+    }
+
+    return itemsToDelete.length
   }
 
   async retry(
