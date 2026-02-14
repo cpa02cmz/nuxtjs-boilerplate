@@ -2641,6 +2641,40 @@ export const animationConfig = {
       parseInt(process.env.ANALYTICS_VALUE_TRANSITION_MS || '200') / 1000
     }s`,
   },
+
+  // Search Analytics Animations - Flexy hates hardcoded 50ms and 100ms!
+  // Used by SearchAnalytics.vue for chart bars and list item stagger effects
+  searchAnalytics: {
+    // Stagger delay between chart bars (ms) - replaces hardcoded 50ms
+    chartBarStaggerDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_BAR_STAGGER_MS || '50'
+    ),
+    // CSS-compatible chart bar stagger delay (seconds)
+    chartBarStaggerDelaySec: `${
+      parseInt(process.env.SEARCH_ANALYTICS_BAR_STAGGER_MS || '50') / 1000
+    }s`,
+    // Stagger delay between search list items (ms) - replaces hardcoded 50ms
+    listItemStaggerDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_LIST_STAGGER_MS || '50'
+    ),
+    // CSS-compatible list item stagger delay (seconds)
+    listItemStaggerDelaySec: `${
+      parseInt(process.env.SEARCH_ANALYTICS_LIST_STAGGER_MS || '50') / 1000
+    }s`,
+    // Stagger delay for entrance animations (ms) - replaces hardcoded 100ms
+    entranceStaggerDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_ENTRANCE_STAGGER_MS || '100'
+    ),
+    // Transition duration for entrance animations (ms) - replaces hardcoded 300ms
+    entranceTransitionMs: parseInt(
+      process.env.SEARCH_ANALYTICS_ENTRANCE_TRANSITION_MS || '300'
+    ),
+    // CSS-compatible entrance transition duration (seconds)
+    entranceTransitionSec: `${
+      parseInt(process.env.SEARCH_ANALYTICS_ENTRANCE_TRANSITION_MS || '300') /
+      1000
+    }s`,
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

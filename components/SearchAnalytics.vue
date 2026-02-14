@@ -359,7 +359,7 @@
                   }"
                   :style="{
                     height: `${(day.count / maxSearchCount) * 100}%`,
-                    animationDelay: `${index * 50}ms`,
+                    animationDelay: `${index * animationConfig.searchAnalytics.chartBarStaggerDelayMs}ms`,
                   }"
                   :title="`${day.date}: ${day.count} searches`"
                 />
@@ -724,13 +724,13 @@ const onBeforeEnter = (el: Element) => {
 const onEnter = (el: Element, done: () => void) => {
   const htmlEl = el as HTMLElement
   const index = parseInt(htmlEl.dataset.index || '0', 10)
-  const delay = index * 100
+  const delay = index * animationConfig.searchAnalytics.entranceStaggerDelayMs
 
   setTimeout(() => {
     htmlEl.style.transition = `all ${animationConfig.tailwindDurations.normal} ease-out`
     htmlEl.style.opacity = '1'
     htmlEl.style.transform = 'translateY(0) scale(1)'
-    setTimeout(done, 300)
+    setTimeout(done, animationConfig.searchAnalytics.entranceTransitionMs)
   }, delay)
 }
 
@@ -740,7 +740,7 @@ const getBarStyle = (index: number) => {
     return {}
   }
   return {
-    animationDelay: `${index * 50}ms`,
+    animationDelay: `${index * animationConfig.searchAnalytics.chartBarStaggerDelayMs}ms`,
   }
 }
 
@@ -750,7 +750,7 @@ const getSearchItemStyle = (index: number) => {
     return {}
   }
   return {
-    '--stagger-delay': `${index * 50}ms`,
+    '--stagger-delay': `${index * animationConfig.searchAnalytics.listItemStaggerDelayMs}ms`,
   }
 }
 
