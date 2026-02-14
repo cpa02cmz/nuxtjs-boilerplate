@@ -24,10 +24,10 @@
       >
         <!-- Loading spinner shown during debounce -->
         <Transition
-          enter-active-class="transition-all duration-200 ease-out"
+          :enter-active-class="`transition-all ${animationConfig.transition.normal.class} ${animationConfig.transition.easeOut}`"
           enter-from-class="opacity-0 scale-75"
           enter-to-class="opacity-100 scale-100"
-          leave-active-class="transition-all duration-150 ease-in"
+          :leave-active-class="`transition-all ${animationConfig.transition.fast.class} ${animationConfig.transition.easeIn}`"
           leave-from-class="opacity-100 scale-100"
           leave-to-class="opacity-0 scale-75"
           mode="out-in"
@@ -105,11 +105,15 @@
         role="combobox"
         aria-haspopup="listbox"
         :value="modelValue"
-        class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400 focus:shadow-lg focus:-translate-y-0.5"
-        :class="{
-          'placeholder:text-gray-300': isSearching,
-          'animate-focus-pulse': showFocusPulse,
-        }"
+        :class="[
+          'block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg bg-white shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus-visible:ring-offset-2 focus-visible:ring-blue-600 hover:border-gray-400 focus:shadow-lg focus:-translate-y-0.5',
+          animationConfig.transition.normal.class,
+          animationConfig.transition.easeOut,
+          {
+            'placeholder:text-gray-300': isSearching,
+            'animate-focus-pulse': showFocusPulse,
+          },
+        ]"
         :placeholder="contentConfig.search.placeholder"
         :aria-label="contentConfig.search.ariaLabel"
         aria-describedby="search-results-info search-shortcut-hint"
@@ -120,7 +124,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint with idle pulse animation -->
       <div
         v-if="!modelValue && !isFocused"
@@ -128,7 +132,7 @@
       >
         <kbd
           :class="[
-            'hidden sm:inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded-md shadow-sm transition-all duration-200 ease-out',
+            `hidden sm:inline-flex items-center justify-center px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 rounded-md shadow-sm transition-all ${animationConfig.transition.normal.class} ${animationConfig.transition.easeOut}`,
             'hover:bg-gray-100 hover:border-gray-300 hover:shadow-md hover:scale-105',
             showIdlePulse && !prefersReducedMotion ? 'animate-idle-pulse' : '',
             showShortcutSuccess && !prefersReducedMotion
@@ -151,10 +155,10 @@
 
       <!-- Enhanced Clear Button with Magnetic Effect & Particle Burst - Palette's micro-UX delight! -->
       <Transition
-        enter-active-class="transition-all duration-200 ease-out"
+        :enter-active-class="`transition-all ${animationConfig.transition.normal.class} ${animationConfig.transition.easeOut}`"
         enter-from-class="opacity-0 scale-75"
         enter-to-class="opacity-100 scale-100"
-        leave-active-class="transition-all duration-150 ease-in"
+        :leave-active-class="`transition-all ${animationConfig.transition.fast.class} ${animationConfig.transition.easeIn}`"
         leave-from-class="opacity-100 scale-100"
         leave-to-class="opacity-0 scale-75"
       >

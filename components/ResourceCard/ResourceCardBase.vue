@@ -84,10 +84,10 @@
             <!-- Viewed Badge with Palette's micro-UX delight! -->
             <!-- Delightful entrance animation with haptic feedback -->
             <Transition
-              enter-active-class="transition-all duration-300 ease-out"
+              :enter-active-class="`transition-all ${animationConfig.transition.slow.class} ${animationConfig.transition.easeOut}`"
               enter-from-class="opacity-0 scale-50 -translate-y-2"
               enter-to-class="opacity-100 scale-100 translate-y-0"
-              leave-active-class="transition-all duration-200 ease-in"
+              :leave-active-class="`transition-all ${animationConfig.transition.normal.class} ${animationConfig.transition.easeIn}`"
               leave-from-class="opacity-100 scale-100"
               leave-to-class="opacity-0 scale-75"
               @after-enter="handleViewedBadgeEntered"
