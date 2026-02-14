@@ -1892,7 +1892,6 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.RECOMMENDATIONS_RESPECT_REDUCED_MOTION !== 'false',
-
   },
   // VirtualList Component Animations - Palette's micro-UX enhancement!
   // Staggered entrance animations and smooth transitions for virtual scrolling
@@ -1938,7 +1937,44 @@ export const animationConfig = {
     entranceMidScale: parseFloat(
       process.env.VIRTUAL_LIST_ENTRANCE_MID_SCALE || '1.01'
     ),
+  },
 
+  // ReviewQueue Component Animations - Palette's micro-UX delight! 🎨
+  // Staggered card entrances, loading skeletons, and delightful hover effects
+  reviewQueue: {
+    // Stagger delay between card entrances (ms)
+    staggerDelayMs: parseInt(process.env.REVIEW_QUEUE_STAGGER_MS || '100'),
+    // Card entrance animation duration (ms)
+    entranceDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Card hover transition duration (ms)
+    hoverTransitionMs: parseInt(
+      process.env.REVIEW_QUEUE_HOVER_TRANSITION_MS || '200'
+    ),
+    // Status badge pulse animation duration (ms)
+    badgePulseDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_BADGE_PULSE_MS || '2000'
+    ),
+    // Empty state float animation duration (ms)
+    emptyFloatDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_EMPTY_FLOAT_MS || '3000'
+    ),
+    // Skeleton shimmer animation duration (ms)
+    skeletonShimmerDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_SKELETON_SHIMMER_MS || '1500'
+    ),
+    // Button pulse animation duration (ms)
+    buttonPulseDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_BUTTON_PULSE_MS || '400'
+    ),
+    // Filter transition duration (ms)
+    filterTransitionMs: parseInt(
+      process.env.REVIEW_QUEUE_FILTER_TRANSITION_MS || '200'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.REVIEW_QUEUE_RESPECT_REDUCED_MOTION !== 'false',
   },
 } as const
 
