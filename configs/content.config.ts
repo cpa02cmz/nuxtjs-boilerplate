@@ -1454,12 +1454,26 @@ export const contentConfig = {
           process.env.CONTENT_REVIEW_ACTION_APPROVE_TITLE ||
           'Approve Submission',
         button: process.env.CONTENT_REVIEW_ACTION_APPROVE_BTN || 'Approve',
+        // Palette's micro-UX enhancement: Loading and success states
+        loading:
+          process.env.CONTENT_REVIEW_ACTION_APPROVE_LOADING || 'Approving...',
+        success:
+          process.env.CONTENT_REVIEW_ACTION_APPROVE_SUCCESS || 'Approved!',
+        celebration:
+          process.env.CONTENT_REVIEW_ACTION_APPROVE_CELEBRATION ||
+          'Resource approved successfully!',
       },
       reject: {
         title:
           process.env.CONTENT_REVIEW_ACTION_REJECT_TITLE || 'Reject Submission',
         button: process.env.CONTENT_REVIEW_ACTION_REJECT_BTN || 'Reject',
+        // Palette's micro-UX enhancement: Loading state
+        loading:
+          process.env.CONTENT_REVIEW_ACTION_REJECT_LOADING || 'Rejecting...',
+        success: process.env.CONTENT_REVIEW_ACTION_REJECT_SUCCESS || 'Rejected',
       },
+      // Retry action for error states
+      retry: process.env.CONTENT_REVIEW_ACTION_RETRY || 'Try Again',
     },
     errors: {
       approveFailed:

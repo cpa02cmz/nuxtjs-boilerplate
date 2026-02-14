@@ -2092,6 +2092,55 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.COMPARISON_EMPTY_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // SubmissionReview Component Animations - Palette's micro-UX enhancement!
+  // Provides delightful feedback for admin review actions
+  submissionReview: {
+    // Button spinner animation duration (ms)
+    spinnerDurationMs: parseInt(
+      process.env.SUBMISSION_REVIEW_SPINNER_MS || '1000'
+    ),
+    // Button success state duration (ms)
+    buttonSuccessDurationMs: parseInt(
+      process.env.SUBMISSION_REVIEW_BUTTON_SUCCESS_MS || '2000'
+    ),
+    // Success celebration overlay duration (ms)
+    celebrationDurationMs: parseInt(
+      process.env.SUBMISSION_REVIEW_CELEBRATION_MS || '3000'
+    ),
+    // Celebration pop-in animation duration (ms)
+    celebrationPopDurationMs: parseInt(
+      process.env.SUBMISSION_REVIEW_CELEBRATION_POP_MS || '500'
+    ),
+    // Checkmark circle scale animation duration (ms)
+    checkmarkCircleDurationMs: parseInt(
+      process.env.SUBMISSION_REVIEW_CIRCLE_MS || '300'
+    ),
+    // Checkmark draw animation duration (ms)
+    checkmarkDrawDurationMs: parseInt(
+      process.env.SUBMISSION_REVIEW_CHECKMARK_MS || '400'
+    ),
+    // Delay before checkmark starts drawing (ms)
+    checkmarkDrawDelayMs: parseInt(
+      process.env.SUBMISSION_REVIEW_CHECKMARK_DELAY_MS || '200'
+    ),
+    // Success text fade-in duration (ms)
+    textFadeInDurationMs: parseInt(
+      process.env.SUBMISSION_REVIEW_TEXT_FADE_MS || '300'
+    ),
+    // Delay before success text fades in (ms)
+    textFadeInDelayMs: parseInt(
+      process.env.SUBMISSION_REVIEW_TEXT_DELAY_MS || '300'
+    ),
+    // Confetti burst animation duration (ms)
+    confettiBurstDurationMs: parseInt(
+      process.env.SUBMISSION_REVIEW_CONFETTI_MS || '800'
+    ),
+    // Delay before confetti burst starts (ms)
+    confettiBurstDelayMs: parseInt(
+      process.env.SUBMISSION_REVIEW_CONFETTI_DELAY_MS || '100'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

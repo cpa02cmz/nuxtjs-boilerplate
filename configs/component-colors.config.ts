@@ -141,7 +141,7 @@ export const componentColorsConfig = {
     backdrop: process.env.TOAST_BACKDROP_COLOR || '0, 0, 0, 0.2',
   },
 
-  // Submission Review Colors - Flexy hates hardcoded review badge colors!
+  // Submission Review Colors - Palette's micro-UX enhancement!
   submissionReview: {
     badge: {
       padding: process.env.SUBMISSION_BADGE_PADDING || '0.25rem 0.5rem',
@@ -159,6 +159,29 @@ export const componentColorsConfig = {
         bg: process.env.SUBMISSION_REJECTED_BG || '#f8d7da',
         text: process.env.SUBMISSION_REJECTED_TEXT || '#721c24',
       },
+    },
+    // Error state colors for retry button
+    error: {
+      bg: process.env.SUBMISSION_ERROR_BG || '#fef2f2',
+      border: process.env.SUBMISSION_ERROR_BORDER || '#fee2e2',
+      text: process.env.SUBMISSION_ERROR_TEXT || '#991b1b',
+      iconBg: process.env.SUBMISSION_ERROR_ICON_BG || '#fee2e2',
+      iconColor: process.env.SUBMISSION_ERROR_ICON_COLOR || '#dc2626',
+      retryBg: process.env.SUBMISSION_ERROR_RETRY_BG || '#ffffff',
+      retryText: process.env.SUBMISSION_ERROR_RETRY_TEXT || '#dc2626',
+      retryBorder: process.env.SUBMISSION_ERROR_RETRY_BORDER || '#fecaca',
+      retryHoverBg: process.env.SUBMISSION_ERROR_RETRY_HOVER_BG || '#fef2f2',
+    },
+    // Approve action colors
+    approve: {
+      border: process.env.SUBMISSION_APPROVE_BORDER || '#bbf7d0',
+      hoverBorder: process.env.SUBMISSION_APPROVE_HOVER_BORDER || '#86efac',
+    },
+    // Reject action colors
+    reject: {
+      border: process.env.SUBMISSION_REJECT_BORDER || '#fecaca',
+      hoverBorder: process.env.SUBMISSION_REJECT_HOVER_BORDER || '#fca5a5',
+      focusBorder: process.env.SUBMISSION_REJECT_FOCUS_BORDER || '#f87171',
     },
   },
 
