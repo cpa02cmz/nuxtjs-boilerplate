@@ -102,7 +102,10 @@
             'w-full flex items-center justify-center transition-all duration-200',
             isChecking
               ? 'opacity-80 cursor-wait'
-              : 'hover:scale-[1.02] active:scale-[0.98]',
+              : [
+                  tailwind.interactive.arbitrary.hoverScaleSubtle,
+                  tailwind.interactive.arbitrary.activeScaleSubtle,
+                ],
           ]"
           :disabled="isChecking"
           :aria-label="
@@ -142,7 +145,9 @@
           :class="[
             tailwind.buttons.secondary,
             tailwind.focus.ringSecondaryWithOffset,
-            'w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]',
+            'w-full transition-all duration-200',
+            tailwind.interactive.arbitrary.hoverScaleSubtle,
+            tailwind.interactive.arbitrary.activeScaleSubtle,
           ]"
           @click="goHome"
         >
@@ -151,29 +156,23 @@
       </div>
 
       <!-- Auto-retry hint -->
-      <p
-        v-if="!isChecking"
-        class="mt-4 text-xs text-gray-400"
-      >
+      <p v-if="!isChecking" class="mt-4 text-xs text-gray-400">
         Tip: Press
         <kbd
           class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs"
-        >Space</kbd>
+          >Space</kbd
+        >
         or
         <kbd
           class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs"
-        >Enter</kbd>
+          >Enter</kbd
+        >
         to retry
       </p>
     </div>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>

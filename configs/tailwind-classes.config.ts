@@ -138,12 +138,19 @@ export const tailwindClassesConfig = {
   interactive: {
     // Scale on hover
     hoverScale: process.env.HOVER_SCALE || 'hover:scale-105',
+    // Larger scale on hover (110%)
+    hoverScaleLarge: process.env.HOVER_SCALE_LARGE || 'hover:scale-110',
     // Scale down on active
     activeScale: process.env.ACTIVE_SCALE || 'active:scale-95',
-    // Lift on hover (translate Y)
+    // Lift on hover (translate Y up/negative)
     hoverLift: process.env.HOVER_LIFT || 'hover:-translate-y-0.5',
+    // Gentle lift on hover (translate Y down/positive)
+    hoverLiftGentle: process.env.HOVER_LIFT_GENTLE || 'hover:translate-y-0.5',
     // Return to normal on active
     activeNormal: process.env.ACTIVE_NORMAL || 'active:translate-y-0',
+    // Slide right on group hover
+    groupHoverSlideRight:
+      process.env.GROUP_HOVER_SLIDE_RIGHT || 'group-hover:translate-x-1',
     // Combined hover and active scale
     scale: process.env.INTERACTIVE_SCALE || 'hover:scale-105 active:scale-95',
     // Combined lift and return
@@ -157,6 +164,14 @@ export const tailwindClassesConfig = {
     // Hover background change
     hoverBg: process.env.HOVER_BG_GRAY || 'hover:bg-gray-50',
     hoverBgDark: process.env.HOVER_BG_GRAY_DARK || 'hover:bg-gray-100',
+    // Arbitrary scale values for precise control
+    arbitrary: {
+      // Subtle hover scale (102%)
+      hoverScaleSubtle: process.env.HOVER_SCALE_SUBTLE || 'hover:scale-[1.02]',
+      // Subtle active scale (98%)
+      activeScaleSubtle:
+        process.env.ACTIVE_SCALE_SUBTLE || 'active:scale-[0.98]',
+    },
   },
 
   // Input Styles - Flexy hates hardcoded input classes!
