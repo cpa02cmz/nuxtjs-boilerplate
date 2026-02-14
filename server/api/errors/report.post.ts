@@ -2,6 +2,7 @@ import { defineEventHandler, readBody } from 'h3'
 import { createErrorTracker } from '~/server/utils/error-tracker'
 import { logger } from '~/utils/logger'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+import { limitsConfig } from '~/configs/limits.config'
 import {
   sendMethodNotAllowedError,
   sendBadRequestError,
@@ -9,13 +10,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 
-// Validation constants for error report fields
-const MAX_MESSAGE_LENGTH = 500
-const MAX_STACK_LENGTH = 10000
-const MAX_COMPONENT_LENGTH = 100
-const MAX_URL_LENGTH = 2048
-const MAX_USER_AGENT_LENGTH = 500
-const MAX_IP_LENGTH = 45 // IPv6 max length
+// Flexy update: Using centralized limits config - no more hardcoded values!
 const ALLOWED_SEVERITIES = ['error', 'warning', 'info', 'critical'] as const
 
 /**
@@ -30,14 +25,20 @@ function validateErrorReport(body: Record<string, unknown>) {
 
   // Sanitize and validate all fields
   const validated = {
-    message: body.message.substring(0, MAX_MESSAGE_LENGTH).trim(),
+    message: body.message
+      .substring(0, limitsConfig.errorReport.maxMessageLength)
+      .trim(),
     stack:
       typeof body.stack === 'string'
-        ? body.stack.substring(0, MAX_STACK_LENGTH).trim()
+        ? body.stack
+            .substring(0, limitsConfig.errorReport.maxStackLength)
+            .trim()
         : undefined,
     component:
       typeof body.component === 'string'
-        ? body.component.substring(0, MAX_COMPONENT_LENGTH).trim()
+        ? body.component
+            .substring(0, limitsConfig.errorReport.maxComponentLength)
+            .trim()
         : undefined,
     severity: ALLOWED_SEVERITIES.includes(
       body.severity as (typeof ALLOWED_SEVERITIES)[number]
@@ -46,7 +47,7 @@ function validateErrorReport(body: Record<string, unknown>) {
       : 'error',
     url:
       typeof body.url === 'string'
-        ? body.url.substring(0, MAX_URL_LENGTH).trim()
+        ? body.url.substring(0, limitsConfig.errorReport.maxUrlLength).trim()
         : undefined,
   }
 
@@ -96,11 +97,13 @@ export default defineEventHandler(async event => {
     // Sanitize client info
     const ip =
       typeof rawIp === 'string'
-        ? rawIp.substring(0, MAX_IP_LENGTH).trim()
+        ? rawIp.substring(0, limitsConfig.errorReport.maxIpLength).trim()
         : undefined
     const userAgent =
       typeof rawUserAgent === 'string'
-        ? rawUserAgent.substring(0, MAX_USER_AGENT_LENGTH).trim()
+        ? rawUserAgent
+            .substring(0, limitsConfig.errorReport.maxUserAgentLength)
+            .trim()
         : undefined
 
     // Track the error with validated data
