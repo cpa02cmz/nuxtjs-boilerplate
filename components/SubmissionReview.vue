@@ -25,30 +25,19 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                class="checkmark-circle"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-              <path
-                class="checkmark-path"
-                d="M7 12l3 3 7-7"
-              />
+              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
           <span class="celebration-text">
             {{
               contentConfig.submissionReview.celebration?.approved ||
-                'Submission Approved!'
+              'Submission Approved!'
             }}
           </span>
         </div>
         <!-- Confetti burst effect -->
-        <div
-          class="confetti-container"
-          aria-hidden="true"
-        >
+        <div class="confetti-container" aria-hidden="true">
           <span
             v-for="n in 12"
             :key="n"
@@ -59,21 +48,14 @@
       </div>
     </Transition>
 
-    <div
-      v-if="loading"
-      class="loading"
-    >
+    <div v-if="loading" class="loading">
       <LoadingSpinner
         :label="contentConfig.submissionReview.loading"
         size="medium"
       />
     </div>
 
-    <div
-      v-else-if="error"
-      class="error"
-      role="alert"
-    >
+    <div v-else-if="error" class="error" role="alert">
       <span class="error-icon">⚠️</span>
       {{ error }}
     </div>
@@ -144,7 +126,7 @@
                 }}</label>
                 <span>{{
                   submission.resourceData?.pricingModel ||
-                    contentConfig.submissionReview.values.notAvailable
+                  contentConfig.submissionReview.values.notAvailable
                 }}</span>
               </div>
 
@@ -154,7 +136,7 @@
                 }}</label>
                 <span>{{
                   submission.resourceData?.difficulty ||
-                    contentConfig.submissionReview.values.notAvailable
+                  contentConfig.submissionReview.values.notAvailable
                 }}</span>
               </div>
 
@@ -213,7 +195,7 @@
                 }}</label>
                 <span>{{
                   submission.submittedBy ||
-                    contentConfig.submissionReview.values.anonymous
+                  contentConfig.submissionReview.values.anonymous
                 }}</span>
               </div>
 
@@ -224,33 +206,24 @@
                 <span>{{ formatDate(submission.submittedAt) }}</span>
               </div>
 
-              <div
-                v-if="submission.reviewedAt"
-                class="info-item"
-              >
+              <div v-if="submission.reviewedAt" class="info-item">
                 <label>{{
                   contentConfig.submissionReview.labels.reviewedBy
                 }}</label>
                 <span>{{
                   submission.reviewedBy ||
-                    contentConfig.submissionReview.values.notAvailable
+                  contentConfig.submissionReview.values.notAvailable
                 }}</span>
               </div>
 
-              <div
-                v-if="submission.reviewedAt"
-                class="info-item"
-              >
+              <div v-if="submission.reviewedAt" class="info-item">
                 <label>{{
                   contentConfig.submissionReview.labels.reviewedAt
                 }}</label>
                 <span>{{ formatDate(submission.reviewedAt) }}</span>
               </div>
 
-              <div
-                v-if="submission.rejectionReason"
-                class="info-item"
-              >
+              <div v-if="submission.rejectionReason" class="info-item">
                 <label>{{
                   contentConfig.submissionReview.labels.rejectionReason
                 }}</label>
@@ -259,10 +232,7 @@
                 }}</span>
               </div>
 
-              <div
-                v-if="submission.notes"
-                class="info-item"
-              >
+              <div v-if="submission.notes" class="info-item">
                 <label>{{ contentConfig.submissionReview.labels.notes }}</label>
                 <span>{{ submission.notes }}</span>
               </div>
@@ -278,10 +248,7 @@
           leave-from-class="opacity-100 translate-y-0"
           leave-to-class="opacity-0 -translate-y-2"
         >
-          <div
-            v-if="submission.status === 'pending'"
-            class="review-actions"
-          >
+          <div v-if="submission.status === 'pending'" class="review-actions">
             <div class="action-group">
               <h4>
                 {{ contentConfig.submissionReview.actions.approve.title }}
@@ -387,12 +354,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -688,31 +650,49 @@ onMounted(() => {
     v-bind('celebrationConfig?.confettiDelayMs || "100ms"') forwards;
   --angle: calc(var(--confetti-index) * 30deg);
   --color-index: calc(var(--confetti-index) % 6);
+  --confetti-color-1: v-bind(
+    'componentColorsConfig.confetti.colors[0] || "#ff6b6b"'
+  );
+  --confetti-color-2: v-bind(
+    'componentColorsConfig.confetti.colors[1] || "#4ecdc4"'
+  );
+  --confetti-color-3: v-bind(
+    'componentColorsConfig.confetti.colors[2] || "#45b7d1"'
+  );
+  --confetti-color-4: v-bind(
+    'componentColorsConfig.confetti.colors[3] || "#96ceb4"'
+  );
+  --confetti-color-5: v-bind(
+    'componentColorsConfig.confetti.colors[4] || "#ffeaa7"'
+  );
+  --confetti-color-6: v-bind(
+    'componentColorsConfig.confetti.colors[5] || "#dda0dd"'
+  );
 }
 
 .confetti-piece:nth-child(1),
 .confetti-piece:nth-child(7) {
-  background: #ff6b6b;
+  background: var(--confetti-color-1);
 }
 .confetti-piece:nth-child(2),
 .confetti-piece:nth-child(8) {
-  background: #4ecdc4;
+  background: var(--confetti-color-2);
 }
 .confetti-piece:nth-child(3),
 .confetti-piece:nth-child(9) {
-  background: #45b7d1;
+  background: var(--confetti-color-3);
 }
 .confetti-piece:nth-child(4),
 .confetti-piece:nth-child(10) {
-  background: #96ceb4;
+  background: var(--confetti-color-4);
 }
 .confetti-piece:nth-child(5),
 .confetti-piece:nth-child(11) {
-  background: #ffeaa7;
+  background: var(--confetti-color-5);
 }
 .confetti-piece:nth-child(6),
 .confetti-piece:nth-child(12) {
-  background: #dda0dd;
+  background: var(--confetti-color-6);
 }
 
 @keyframes confetti-burst {
