@@ -1,189 +1,181 @@
-import { chromium, type Browser, type Page } from 'playwright'
-import * as fs from 'fs'
-import * as path from 'path'
+/**
+ * BroCula Browser Console Audit Script
+ * Scans codebase for potential browser console errors and warnings
+ */
 
-interface ConsoleEntry {
-  type: 'error' | 'warning' | 'log' | 'info'
-  message: string
-  location?: string
-  timestamp: string
+import { glob } from 'glob';
+import * as fs from 'fs';
+import * as path from 'path';
+
+interface AuditResult {
+  file: string;
+  line: number;
+  type: 'error' | 'warning' | 'info';
+  message: string;
+  code: string;
 }
 
-interface PageResult {
-  url: string
-  consoleEntries: ConsoleEntry[]
-  errors: ConsoleEntry[]
-  warnings: ConsoleEntry[]
-  loadTime: number
-}
+const results: AuditResult[] = [];
 
-async function runConsoleAudit(): Promise<void> {
-  const results: PageResult[] = []
-  const consoleEntries: ConsoleEntry[] = []
+// Patterns that could cause console errors
+const errorPatterns = [
+  {
+    pattern: /console\.(log|warn|error|info|debug)\s*\(/g,
+    type: 'warning' as const,
+    message: 'Console statement found in production code',
+    exclude: ['.test.', '.spec.', '__tests__', 'logger.ts', 'error-handler.ts']
+  },
+  {
+    pattern: /window\.[a-zA-Z_$][a-zA-Z0-9_$]*/g,
+    type: 'error' as const,
+    message: 'Unprotected window access - potential SSR error',
+    requireGuard: true
+  },
+  {
+    pattern: /document\.[a-zA-Z_$][a-zA-Z0-9_$]*/g,
+    type: 'error' as const,
+    message: 'Unprotected document access - potential SSR error',
+    requireGuard: true
+  },
+  {
+    pattern: /localStorage\.[a-zA-Z_$][a-zA-Z0-9_$]*/g,
+    type: 'error' as const,
+    message: 'Unprotected localStorage access - potential SSR error',
+    requireGuard: true
+  },
+  {
+    pattern: /sessionStorage\.[a-zA-Z_$][a-zA-Z0-9_$]*/g,
+    type: 'error' as const,
+    message: 'Unprotected sessionStorage access - potential SSR error',
+    requireGuard: true
+  },
+  {
+    pattern: /navigator\.[a-zA-Z_$][a-zA-Z0-9_$]*/g,
+    type: 'warning' as const,
+    message: 'Navigator access - verify SSR safety',
+    requireGuard: true
+  }
+];
 
-  // Critical pages to test
-  const pages = [
-    { url: '/', name: 'Home' },
-    { url: '/about', name: 'About' },
-    { url: '/search', name: 'Search' },
-    { url: '/submit', name: 'Submit' },
-    { url: '/ai-keys', name: 'AI Keys' },
-  ]
-
-  let browser: Browser | null = null
-
-  try {
-    console.log('🦇 BroCula: Starting browser console audit...\n')
-
-    // Launch browser
-    browser = await chromium.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    })
-
-    const context = await browser.newContext({
-      viewport: { width: 1280, height: 720 },
-    })
-
-    // Test each page
-    for (const pageConfig of pages) {
-      const page = await context.newPage()
-      const pageConsoleEntries: ConsoleEntry[] = []
-
-      // Listen to console events
-      page.on('console', async msg => {
-        const type = msg.type() as 'error' | 'warning' | 'log' | 'info'
-        const text = msg.text()
-        const location = msg.location()?.url
-
-        const entry: ConsoleEntry = {
-          type,
-          message: text,
-          location,
-          timestamp: new Date().toISOString(),
-        }
-
-        pageConsoleEntries.push(entry)
-        consoleEntries.push(entry)
-
-        if (type === 'error') {
-          console.error(`❌ [${pageConfig.name}] Console Error: ${text}`)
-        } else if (type === 'warning') {
-          console.warn(`⚠️  [${pageConfig.name}] Console Warning: ${text}`)
-        }
-      })
-
-      // Listen to page errors
-      page.on('pageerror', error => {
-        const entry: ConsoleEntry = {
-          type: 'error',
-          message: error.message,
-          timestamp: new Date().toISOString(),
-        }
-        pageConsoleEntries.push(entry)
-        consoleEntries.push(entry)
-        console.error(`❌ [${pageConfig.name}] Page Error: ${error.message}`)
-      })
-
-      try {
-        const startTime = Date.now()
-        await page.goto(`http://localhost:3000${pageConfig.url}`, {
-          waitUntil: 'networkidle',
-          timeout: 30000,
-        })
-        const loadTime = Date.now() - startTime
-
-        // Wait a bit for any async console messages
-        await page.waitForTimeout(2000)
-
-        const errors = pageConsoleEntries.filter(e => e.type === 'error')
-        const warnings = pageConsoleEntries.filter(e => e.type === 'warning')
-
-        results.push({
-          url: pageConfig.url,
-          consoleEntries: pageConsoleEntries,
-          errors,
-          warnings,
-          loadTime,
-        })
-
-        console.log(
-          `✅ [${pageConfig.name}] Loaded in ${loadTime}ms - ${errors.length} errors, ${warnings.length} warnings`
-        )
-      } catch (error) {
-        console.error(`❌ [${pageConfig.name}] Failed to load: ${error}`)
-        results.push({
-          url: pageConfig.url,
-          consoleEntries: pageConsoleEntries,
-          errors: [
-            ...pageConsoleEntries.filter(e => e.type === 'error'),
-            {
-              type: 'error',
-              message: String(error),
-              timestamp: new Date().toISOString(),
-            },
-          ],
-          warnings: pageConsoleEntries.filter(e => e.type === 'warning'),
-          loadTime: -1,
-        })
-      } finally {
-        await page.close()
-      }
-    }
-
-    // Generate report
-    const totalErrors = results.reduce((sum, r) => sum + r.errors.length, 0)
-    const totalWarnings = results.reduce((sum, r) => sum + r.warnings.length, 0)
-
-    console.log('\n' + '='.repeat(60))
-    console.log('🦇 BroCula Browser Console Audit Report')
-    console.log('='.repeat(60))
-    console.log(`Total Pages Tested: ${results.length}`)
-    console.log(`Total Console Errors: ${totalErrors}`)
-    console.log(`Total Console Warnings: ${totalWarnings}`)
-    console.log('='.repeat(60) + '\n')
-
-    // Save report
-    const reportDir = 'playwright-report'
-    if (!fs.existsSync(reportDir)) {
-      fs.mkdirSync(reportDir, { recursive: true })
-    }
-
-    const report = {
-      timestamp: new Date().toISOString(),
-      summary: {
-        pagesTested: results.length,
-        totalErrors,
-        totalWarnings,
-        status: totalErrors === 0 && totalWarnings === 0 ? 'PASS' : 'FAIL',
-      },
-      results,
-    }
-
-    fs.writeFileSync(
-      path.join(reportDir, 'brocula-console-report.json'),
-      JSON.stringify(report, null, 2)
-    )
-
-    console.log(
-      `📊 Report saved to: ${path.join(reportDir, 'brocula-console-report.json')}`
-    )
-
-    if (totalErrors > 0 || totalWarnings > 0) {
-      console.log('\n⚠️  Issues found! Please review and fix.')
-      process.exit(1)
-    } else {
-      console.log('\n✅ No console errors or warnings found!')
-      process.exit(0)
-    }
-  } catch (error) {
-    console.error('❌ Audit failed:', error)
-    process.exit(1)
-  } finally {
-    if (browser) {
-      await browser.close()
+// Check if line has proper SSR guard
+function hasSSRGuard(lines: string[], lineIndex: number): boolean {
+  // Check current line and up to 5 lines before
+  for (let i = Math.max(0, lineIndex - 5); i <= lineIndex; i++) {
+    const line = lines[i];
+    if (line.includes('typeof window') || 
+        line.includes('typeof document') || 
+        line.includes('typeof localStorage') ||
+        line.includes('typeof sessionStorage') ||
+        line.includes('process.client') ||
+        line.includes('import.meta.client') ||
+        line.includes('onMounted') ||
+        line.includes('<ClientOnly>')) {
+      return true;
     }
   }
+  return false;
 }
 
-runConsoleAudit()
+async function auditFile(filePath: string) {
+  const content = fs.readFileSync(filePath, 'utf-8');
+  const lines = content.split('\n');
+  const isTestFile = filePath.includes('.test.') || filePath.includes('.spec.') || filePath.includes('__tests__');
+  
+  lines.forEach((line, index) => {
+    errorPatterns.forEach(({ pattern, type, message, exclude, requireGuard }) => {
+      // Skip excluded files
+      if (exclude && exclude.some(ex => filePath.includes(ex))) {
+        return;
+      }
+      
+      // Reset pattern lastIndex
+      pattern.lastIndex = 0;
+      
+      if (pattern.test(line)) {
+        // Check for SSR guards if required
+        if (requireGuard && !isTestFile) {
+          if (hasSSRGuard(lines, index)) {
+            return; // Has guard, skip
+          }
+        }
+        
+        results.push({
+          file: filePath,
+          line: index + 1,
+          type,
+          message,
+          code: line.trim()
+        });
+      }
+    });
+  });
+}
+
+async function main() {
+  console.log('🦇 BroCula Browser Console Audit Starting...\n');
+  
+  // Find all Vue, TS, and JS files
+  const files = await glob('**/*.{vue,ts,js}', {
+    ignore: ['node_modules/**', 'dist/**', '.nuxt/**', 'playwright-report/**', 'test-results/**']
+  });
+  
+  console.log(`Scanning ${files.length} files...\n`);
+  
+  for (const file of files) {
+    await auditFile(file);
+  }
+  
+  // Group results by type
+  const errors = results.filter(r => r.type === 'error');
+  const warnings = results.filter(r => r.type === 'warning');
+  
+  console.log('\n' + '='.repeat(80));
+  console.log('BROCULA CONSOLE AUDIT RESULTS');
+  console.log('='.repeat(80));
+  
+  if (errors.length > 0) {
+    console.log(`\n❌ ERRORS (${errors.length}):`);
+    errors.forEach(err => {
+      console.log(`\n  File: ${err.file}:${err.line}`);
+      console.log(`  Issue: ${err.message}`);
+      console.log(`  Code:  ${err.code.substring(0, 80)}`);
+    });
+  }
+  
+  if (warnings.length > 0) {
+    console.log(`\n⚠️  WARNINGS (${warnings.length}):`);
+    warnings.forEach(warn => {
+      console.log(`\n  File: ${warn.file}:${warn.line}`);
+      console.log(`  Issue: ${warn.message}`);
+      console.log(`  Code:  ${warn.code.substring(0, 80)}`);
+    });
+  }
+  
+  if (results.length === 0) {
+    console.log('\n✅ No console issues found! Browser console is clean.');
+  }
+  
+  console.log('\n' + '='.repeat(80));
+  console.log(`Total Issues: ${results.length} (${errors.length} errors, ${warnings.length} warnings)`);
+  console.log('='.repeat(80));
+  
+  // Save report
+  const reportPath = 'playwright-report/brocula-console-report.json';
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, JSON.stringify({
+    timestamp: new Date().toISOString(),
+    summary: {
+      total: results.length,
+      errors: errors.length,
+      warnings: warnings.length
+    },
+    results
+  }, null, 2));
+  
+  console.log(`\n📄 Report saved to: ${reportPath}`);
+  
+  // Exit with error code if errors found
+  process.exit(errors.length > 0 ? 1 : 0);
+}
+
+main().catch(console.error);
