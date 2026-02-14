@@ -1159,6 +1159,48 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.TYPING_INDICATOR_RESPECT_REDUCED_MOTION !== 'false',
+    // Palette's micro-UX enhancement: Sound Wave Mode for voice/audio input! 🎨
+    // Animated bars that visualize audio input for accessibility and delight
+    soundwave: {
+      // Number of bars in the sound wave visualization
+      barCount: parseInt(process.env.TYPING_SOUNDWAVE_BAR_COUNT || '5'),
+      // Width of each bar (px)
+      barWidthPx: parseInt(process.env.TYPING_SOUNDWAVE_BAR_WIDTH || '3'),
+      // Height of the sound wave container (px)
+      heightPx: parseInt(process.env.TYPING_SOUNDWAVE_HEIGHT || '16'),
+      // Gap between bars (px)
+      gapPx: parseInt(process.env.TYPING_SOUNDWAVE_GAP || '2'),
+      // Animation duration for one complete pulse cycle (seconds)
+      durationSec: parseFloat(process.env.TYPING_SOUNDWAVE_DURATION || '0.8'),
+      // Delay between each bar's animation (ms)
+      staggerDelayMs: parseInt(process.env.TYPING_SOUNDWAVE_STAGGER_MS || '80'),
+      // CSS-compatible stagger delay (seconds)
+      staggerDelaySec: parseFloat(
+        process.env.TYPING_SOUNDWAVE_STAGGER_SEC || '0.08'
+      ),
+      // Minimum scale for bar animation (0-1)
+      minScale: parseFloat(process.env.TYPING_SOUNDWAVE_MIN_SCALE || '0.4'),
+      // Maximum scale for bar animation
+      maxScale: parseFloat(process.env.TYPING_SOUNDWAVE_MAX_SCALE || '1.0'),
+      // Minimum opacity for bar animation (0-1)
+      minOpacity: parseFloat(process.env.TYPING_SOUNDWAVE_MIN_OPACITY || '0.5'),
+      // Maximum opacity for bar animation (0-1)
+      maxOpacity: parseFloat(process.env.TYPING_SOUNDWAVE_MAX_OPACITY || '1.0'),
+      // Glow effect blur radius (px)
+      glowBlurPx: parseInt(process.env.TYPING_SOUNDWAVE_GLOW_BLUR || '6'),
+      // Glow effect opacity (0-1)
+      glowOpacity: parseFloat(
+        process.env.TYPING_SOUNDWAVE_GLOW_OPACITY || '0.4'
+      ),
+      // Reduced motion: static scale value
+      reducedMotionScale: parseFloat(
+        process.env.TYPING_SOUNDWAVE_REDUCED_SCALE || '0.7'
+      ),
+      // Reduced motion: static opacity value
+      reducedMotionOpacity: parseFloat(
+        process.env.TYPING_SOUNDWAVE_REDUCED_OPACITY || '0.8'
+      ),
+    },
   },
 
   // 3D Card Tilt Micro-UX - Palette's premium delight! 🎨
