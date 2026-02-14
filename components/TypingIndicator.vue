@@ -160,7 +160,9 @@ onUnmounted(() => {
     rgba(v-bind('blueColor'), 0.05) 40%,
     transparent 70%
   );
-  animation: glow-pulse 2s ease-in-out infinite;
+  animation: glow-pulse
+    v-bind('animationConfig.typingIndicator?.glowPulseDurationSec ?? "2s"')
+    ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -178,7 +180,9 @@ onUnmounted(() => {
 
 /* Enhanced typing dots with spring physics animation - Flexy hates hardcoded rgba! */
 .typing-dot {
-  animation: typing-bounce 1.4s ease-in-out infinite;
+  animation: typing-bounce
+    v-bind('animationConfig.typingIndicator?.bounceDurationSec ?? "1.4s"')
+    ease-in-out infinite;
   will-change: transform;
   box-shadow: 0 2px 4px rgba(v-bind('shadowColorDefault'), 0.1);
 }

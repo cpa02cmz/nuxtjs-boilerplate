@@ -1159,6 +1159,9 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.TYPING_INDICATOR_RESPECT_REDUCED_MOTION !== 'false',
+    // CSS duration strings for v-bind - Flexy hates hardcoded CSS!
+    glowPulseDurationSec: `${parseInt(process.env.TYPING_INDICATOR_GLOW_PULSE_MS || '2000') / 1000}s`,
+    bounceDurationSec: `${parseInt(process.env.TYPING_INDICATOR_BOUNCE_DURATION_MS || '1400') / 1000}s`,
   },
 
   // 3D Card Tilt Micro-UX - Palette's premium delight! 🎨
@@ -1497,6 +1500,25 @@ export const animationConfig = {
     celebrationBorderRadius: process.env.WEBHOOK_CELEBRATION_RADIUS || '12px',
     celebrationIconSize: process.env.WEBHOOK_CELEBRATION_ICON_SIZE || '28px',
     celebrationFontSize: process.env.WEBHOOK_CELEBRATION_FONT_SIZE || '14px',
+    // Celebration animation durations - Flexy hates hardcoded CSS!
+    celebrationPopInDurationSec:
+      process.env.WEBHOOK_CELEBRATION_POP_IN_SEC || '0.5s',
+    celebrationPopInEasing:
+      process.env.WEBHOOK_CELEBRATION_EASING ||
+      'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    iconRotateInDurationSec: process.env.WEBHOOK_ICON_ROTATE_SEC || '0.4s',
+    iconRotateInDelaySec: process.env.WEBHOOK_ICON_ROTATE_DELAY_SEC || '0.2s',
+    circleScaleDurationSec: process.env.WEBHOOK_CIRCLE_SCALE_SEC || '0.3s',
+    circleScaleDelaySec: process.env.WEBHOOK_CIRCLE_SCALE_DELAY_SEC || '0.1s',
+    checkmarkDrawDurationSec: process.env.WEBHOOK_CHECKMARK_DRAW_SEC || '0.4s',
+    checkmarkDrawDelaySec:
+      process.env.WEBHOOK_CHECKMARK_DRAW_DELAY_SEC || '0.3s',
+    textFadeInDurationSec: process.env.WEBHOOK_TEXT_FADE_SEC || '0.3s',
+    textFadeInDelaySec: process.env.WEBHOOK_TEXT_FADE_DELAY_SEC || '0.4s',
+    sparkleBurstDurationSec: process.env.WEBHOOK_SPARKLE_BURST_SEC || '0.8s',
+    sparkleStaggerDelaySec: process.env.WEBHOOK_SPARKLE_STAGGER_SEC || '0.1s',
+    reducedMotionTransitionSec:
+      process.env.WEBHOOK_REDUCED_MOTION_SEC || '0.2s',
   },
 
   // Zero Result Searches Component - Flexy hates hardcoded values!
@@ -1979,6 +2001,12 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.RECOMMENDATIONS_RESPECT_REDUCED_MOTION !== 'false',
+    // CSS duration strings for v-bind - Flexy hates hardcoded CSS!
+    circleScaleDurationSec: `${parseInt(process.env.RECOMMENDATIONS_CIRCLE_SCALE_MS || '300') / 1000}s`,
+    circleScaleDelaySec: `${parseInt(process.env.RECOMMENDATIONS_CIRCLE_SCALE_DELAY_MS || '100') / 1000}s`,
+    checkmarkDrawDurationSec: `${parseInt(process.env.RECOMMENDATIONS_CHECKMARK_DRAW_MS || '300') / 1000}s`,
+    checkmarkDrawDelaySec: `${parseInt(process.env.RECOMMENDATIONS_CHECKMARK_DRAW_DELAY_MS || '200') / 1000}s`,
+    refreshSpinDurationSec: `${parseInt(process.env.RECOMMENDATIONS_REFRESH_SPIN_MS || '500') / 1000}s`,
   },
   // VirtualList Component Animations - Palette's micro-UX enhancement!
   // Staggered entrance animations and smooth transitions for virtual scrolling
@@ -2062,6 +2090,12 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.REVIEW_QUEUE_RESPECT_REDUCED_MOTION !== 'false',
+    // CSS duration strings for v-bind - Flexy hates hardcoded CSS!
+    pendingPulseDurationSec: `${parseInt(process.env.REVIEW_QUEUE_PENDING_PULSE_MS || '2000') / 1000}s`,
+    badgePulseDurationSec: `${parseInt(process.env.REVIEW_QUEUE_BADGE_PULSE_MS || '600') / 1000}s`,
+    skeletonShimmerDurationSec: `${parseInt(process.env.REVIEW_QUEUE_SKELETON_SHIMMER_MS || '1500') / 1000}s`,
+    btnPulseDurationSec: `${parseInt(process.env.REVIEW_QUEUE_BUTTON_PULSE_MS || '400') / 1000}s`,
+    floatDurationSec: `${parseInt(process.env.REVIEW_QUEUE_EMPTY_FLOAT_MS || '3000') / 1000}s`,
   },
 
   // SubmissionReview Component Animations - Palette's micro-UX delight! 🎉
