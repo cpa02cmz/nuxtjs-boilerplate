@@ -66,12 +66,7 @@
     </Transition>
 
     <!-- Screen reader announcement - announces tooltip content when visible -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ isVisible ? content : '' }}
     </div>
   </div>
@@ -169,8 +164,8 @@ const lastSuccessfulPosition = ref<TooltipPosition | null>(null)
 const previousPosition = ref<TooltipPosition>(props.position)
 
 const calculateOptimalPosition = () => {
-  if (!tooltipRef.value || !triggerRef.value) return
   if (typeof window === 'undefined') return
+  if (!tooltipRef.value || !triggerRef.value) return
 
   const tooltipRect = tooltipRef.value.getBoundingClientRect()
   const viewportWidth = window.innerWidth
