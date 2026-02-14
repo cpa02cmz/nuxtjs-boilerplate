@@ -2641,6 +2641,23 @@ export const animationConfig = {
       parseInt(process.env.ANALYTICS_VALUE_TRANSITION_MS || '200') / 1000
     }s`,
   },
+
+  // Search Analytics Animations - Flexy hates hardcoded completion delays!
+  // Used by SearchAnalytics.vue for bar animation completion
+  searchAnalytics: {
+    // Delay after bar animation completes before triggering done callback (ms)
+    barCompletionDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_BAR_COMPLETION_MS || '300'
+    ),
+    // Stagger delay between bar animations (ms)
+    barStaggerDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_BAR_STAGGER_MS || '100'
+    ),
+    // Individual bar animation delay (ms)
+    barAnimationDelayMs: parseInt(
+      process.env.SEARCH_ANALYTICS_BAR_ANIMATION_MS || '50'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
