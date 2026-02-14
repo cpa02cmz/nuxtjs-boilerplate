@@ -26,6 +26,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}
+      SKIP_CRYPTO_CHECK: true
 
     steps:
       - name: Wait in Queue
@@ -211,7 +212,7 @@ jobs:
             - Close duplicates with reference
             - Group similiar small issues into 1 meaningfull issues
             - Do NOT lose information        
- 
+
           STEP 4 — REPAIR MODE
           **Objective:** Solve ONE github issue with highest-priority.
             1. SELECTION
