@@ -339,21 +339,24 @@ onUnmounted(() => {
 
 @keyframes springFadeIn {
   0% {
-    opacity: 0;
+    opacity: v-bind('animationConfig.cssTransforms.opacity.hidden');
     transform: translateY(var(--card-enter-start-translate-y))
       scale(var(--card-enter-start-scale));
-    filter: blur(2px);
+    filter: blur(v-bind('animationConfig.cssTransforms.blur.subtle + "px"'));
   }
   60% {
-    opacity: 1;
+    opacity: v-bind('animationConfig.cssTransforms.opacity.visible');
     transform: translateY(var(--card-enter-mid-translate-y))
       scale(var(--card-enter-mid-scale));
-    filter: blur(0);
+    filter: blur(v-bind('animationConfig.cssTransforms.blur.none + "px"'));
   }
   100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
+    opacity: v-bind('animationConfig.cssTransforms.opacity.visible');
+    transform: translateY(
+        v-bind('animationConfig.cssTransforms.translate.none + "px"')
+      )
+      scale(v-bind('animationConfig.cssTransforms.scale.none'));
+    filter: blur(v-bind('animationConfig.cssTransforms.blur.none + "px"'));
   }
 }
 

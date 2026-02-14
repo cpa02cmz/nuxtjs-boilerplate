@@ -38,10 +38,7 @@
     </div>
 
     <!-- Category Section -->
-    <div
-      class="mb-6 filter-section"
-      :style="{ '--section-index': 1 }"
-    >
+    <div class="mb-6 filter-section" :style="{ '--section-index': 1 }">
       <div
         class="skeleton-shimmer skeleton-header-expand h-5 rounded w-24 mb-3 skeleton-item skeleton-wave"
         :style="{ animationDelay: getStaggerDelay(2), '--wave-index': 2 }"
@@ -76,10 +73,7 @@
     </div>
 
     <!-- Pricing Model Section -->
-    <div
-      class="mb-6 filter-section"
-      :style="{ '--section-index': 2 }"
-    >
+    <div class="mb-6 filter-section" :style="{ '--section-index': 2 }">
       <div
         class="skeleton-shimmer skeleton-header-expand h-5 rounded w-32 mb-3 skeleton-item skeleton-wave"
         :style="{ animationDelay: getStaggerDelay(9), '--wave-index': 9 }"
@@ -114,10 +108,7 @@
     </div>
 
     <!-- Difficulty Section -->
-    <div
-      class="mb-6 filter-section"
-      :style="{ '--section-index': 3 }"
-    >
+    <div class="mb-6 filter-section" :style="{ '--section-index': 3 }">
       <div
         class="skeleton-shimmer skeleton-header-expand h-5 rounded w-20 mb-3 skeleton-item skeleton-wave"
         :style="{ animationDelay: getStaggerDelay(14), '--wave-index': 14 }"
@@ -152,10 +143,7 @@
     </div>
 
     <!-- Date Added Section -->
-    <div
-      class="mb-6 filter-section"
-      :style="{ '--section-index': 4 }"
-    >
+    <div class="mb-6 filter-section" :style="{ '--section-index': 4 }">
       <div
         class="skeleton-shimmer skeleton-header-expand h-5 rounded w-24 mb-3 skeleton-item skeleton-wave"
         :style="{ animationDelay: getStaggerDelay(20), '--wave-index': 20 }"
@@ -294,7 +282,10 @@ const easingValues = computed(() => ({
 }
 
 .skeleton-interactive:hover {
-  transform: translateY(-2px) scale(1.005);
+  transform: translateY(
+      v-bind('animationConfig.cssTransforms.translate.negativeTiny + "px"')
+    )
+    scale(v-bind('animationConfig.cssTransforms.scale.bounce'));
   box-shadow:
     0 10px 25px -5px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);

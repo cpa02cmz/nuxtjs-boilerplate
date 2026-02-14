@@ -94,10 +94,7 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p
-            v-if="toast.description"
-            class="toast__description"
-          >
+          <p v-if="toast.description" class="toast__description">
             {{ toast.description }}
           </p>
         </div>
@@ -443,7 +440,7 @@ onUnmounted(() => {
   .toast__progress {
     animation: none;
     width: 100%;
-    opacity: 0.15;
+    opacity: v-bind('animationConfig.cssTransforms.opacity.subtle');
   }
 
   .toast {
@@ -453,10 +450,10 @@ onUnmounted(() => {
 
   @keyframes fadeIn {
     from {
-      opacity: 0;
+      opacity: v-bind('animationConfig.cssTransforms.opacity.hidden');
     }
     to {
-      opacity: 1;
+      opacity: v-bind('animationConfig.cssTransforms.opacity.visible');
     }
   }
 
@@ -469,18 +466,22 @@ onUnmounted(() => {
   .toast-enter-from,
   .toast-leave-to {
     transform: none;
-    opacity: 0;
+    opacity: v-bind('animationConfig.cssTransforms.opacity.hidden');
   }
 }
 
 @keyframes slideIn {
   from {
-    transform: translateX(100%);
-    opacity: 0;
+    transform: translateX(
+      v-bind('animationConfig.cssTransforms.translate.huge + "%"')
+    );
+    opacity: v-bind('animationConfig.cssTransforms.opacity.hidden');
   }
   to {
-    transform: translateX(0);
-    opacity: 1;
+    transform: translateX(
+      v-bind('animationConfig.cssTransforms.translate.none')
+    );
+    opacity: v-bind('animationConfig.cssTransforms.opacity.visible');
   }
 }
 
@@ -504,12 +505,14 @@ onUnmounted(() => {
 .toast-enter-from {
   transform: translateX(v-bind('`${toastConfig.initialTranslateXPx}px`'))
     scale(v-bind('toastConfig.initialScale'));
-  opacity: 0;
+  opacity: v-bind('animationConfig.cssTransforms.opacity.hidden');
 }
 
 .toast-leave-to {
-  transform: translateX(100%);
-  opacity: 0;
+  transform: translateX(
+    v-bind('animationConfig.cssTransforms.translate.huge + "%"')
+  );
+  opacity: v-bind('animationConfig.cssTransforms.opacity.hidden');
 }
 
 /* Icon pop animation for extra delight */
@@ -521,15 +524,15 @@ onUnmounted(() => {
 
 @keyframes icon-pop {
   0% {
-    transform: scale(0.5);
-    opacity: 0;
+    transform: scale(v-bind('animationConfig.cssTransforms.scale.micro'));
+    opacity: v-bind('animationConfig.cssTransforms.opacity.hidden');
   }
   50% {
-    transform: scale(1.2);
+    transform: scale(v-bind('animationConfig.cssTransforms.scale.huge'));
   }
   100% {
-    transform: scale(1);
-    opacity: 1;
+    transform: scale(v-bind('animationConfig.cssTransforms.scale.none'));
+    opacity: v-bind('animationConfig.cssTransforms.opacity.visible');
   }
 }
 
@@ -548,24 +551,24 @@ onUnmounted(() => {
 
   .toast-enter-from {
     transform: none;
-    opacity: 0;
+    opacity: v-bind('animationConfig.cssTransforms.opacity.hidden');
   }
 
   .toast-leave-to {
     transform: none;
-    opacity: 0;
+    opacity: v-bind('animationConfig.cssTransforms.opacity.hidden');
   }
 
   .toast__icon--pop svg {
     animation: none;
-    opacity: 1;
+    opacity: v-bind('animationConfig.cssTransforms.opacity.visible');
     transform: none;
   }
 
   .toast__progress {
     animation: none;
     width: 100%;
-    opacity: 0.15;
+    opacity: v-bind('animationConfig.cssTransforms.opacity.subtle');
   }
 }
 
@@ -577,7 +580,7 @@ onUnmounted(() => {
 
   .toast__progress {
     background: currentColor;
-    opacity: 0.3;
+    opacity: v-bind('animationConfig.cssTransforms.opacity.medium');
   }
 }
 

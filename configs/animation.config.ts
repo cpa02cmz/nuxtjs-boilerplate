@@ -2389,6 +2389,72 @@ export const animationConfig = {
     // Avatar pulse duration (seconds)
     avatarPulseSec: parseFloat(process.env.COMMENTS_AVATAR_PULSE_SEC || '2'),
   },
+
+  // CSS Transform Values - Flexy hates hardcoded CSS values!
+  // Centralized opacity, blur, scale, translate, and rotate values
+  cssTransforms: {
+    // Opacity values
+    opacity: {
+      hidden: parseFloat(process.env.CSS_OPACITY_HIDDEN || '0'),
+      visible: parseFloat(process.env.CSS_OPACITY_VISIBLE || '1'),
+      dimmed: parseFloat(process.env.CSS_OPACITY_DIMMED || '0.5'),
+      subtle: parseFloat(process.env.CSS_OPACITY_SUBTLE || '0.15'),
+      medium: parseFloat(process.env.CSS_OPACITY_MEDIUM || '0.3'),
+      high: parseFloat(process.env.CSS_OPACITY_HIGH || '0.9'),
+    },
+    // Blur values (px)
+    blur: {
+      none: parseInt(process.env.CSS_BLUR_NONE || '0'),
+      subtle: parseInt(process.env.CSS_BLUR_SUBTLE || '2'),
+      light: parseInt(process.env.CSS_BLUR_LIGHT || '4'),
+      medium: parseInt(process.env.CSS_BLUR_MEDIUM || '8'),
+      heavy: parseInt(process.env.CSS_BLUR_HEAVY || '16'),
+    },
+    // Scale values
+    scale: {
+      none: parseFloat(process.env.CSS_SCALE_NONE || '1'),
+      small: parseFloat(process.env.CSS_SCALE_SMALL || '0.95'),
+      smaller: parseFloat(process.env.CSS_SCALE_SMALLER || '0.92'),
+      tiny: parseFloat(process.env.CSS_SCALE_TINY || '0.9'),
+      micro: parseFloat(process.env.CSS_SCALE_MICRO || '0.8'),
+      hidden: parseFloat(process.env.CSS_SCALE_HIDDEN || '0'),
+      large: parseFloat(process.env.CSS_SCALE_LARGE || '1.05'),
+      larger: parseFloat(process.env.CSS_SCALE_LARGER || '1.1'),
+      big: parseFloat(process.env.CSS_SCALE_BIG || '1.15'),
+      huge: parseFloat(process.env.CSS_SCALE_HUGE || '1.2'),
+      massive: parseFloat(process.env.CSS_SCALE_MASSIVE || '1.3'),
+      press: parseFloat(process.env.CSS_SCALE_PRESS || '0.98'),
+      bounce: parseFloat(process.env.CSS_SCALE_BOUNCE || '1.01'),
+    },
+    // Translate values (px)
+    translate: {
+      none: parseInt(process.env.CSS_TRANSLATE_NONE || '0'),
+      micro: parseInt(process.env.CSS_TRANSLATE_MICRO || '1'),
+      tiny: parseInt(process.env.CSS_TRANSLATE_TINY || '2'),
+      small: parseInt(process.env.CSS_TRANSLATE_SMALL || '4'),
+      medium: parseInt(process.env.CSS_TRANSLATE_MEDIUM || '8'),
+      large: parseInt(process.env.CSS_TRANSLATE_LARGE || '10'),
+      larger: parseInt(process.env.CSS_TRANSLATE_LARGER || '12'),
+      huge: parseInt(process.env.CSS_TRANSLATE_HUGE || '20'),
+      massive: parseInt(process.env.CSS_TRANSLATE_MASSIVE || '30'),
+      negativeTiny: parseInt(process.env.CSS_TRANSLATE_NEG_TINY || '-2'),
+      negativeSmall: parseInt(process.env.CSS_TRANSLATE_NEG_SMALL || '-4'),
+      negativeMedium: parseInt(process.env.CSS_TRANSLATE_NEG_MEDIUM || '-8'),
+    },
+    // Rotate values (degrees)
+    rotate: {
+      none: parseInt(process.env.CSS_ROTATE_NONE || '0'),
+      micro: parseInt(process.env.CSS_ROTATE_MICRO || '2'),
+      tiny: parseInt(process.env.CSS_ROTATE_TINY || '5'),
+      small: parseInt(process.env.CSS_ROTATE_SMALL || '15'),
+      medium: parseInt(process.env.CSS_ROTATE_MEDIUM || '45'),
+      large: parseInt(process.env.CSS_ROTATE_LARGE || '90'),
+      full: parseInt(process.env.CSS_ROTATE_FULL || '360'),
+      negativeSmall: parseInt(process.env.CSS_ROTATE_NEG_SMALL || '-15'),
+      negativeMedium: parseInt(process.env.CSS_ROTATE_NEG_MEDIUM || '-45'),
+      negativeLarge: parseInt(process.env.CSS_ROTATE_NEG_LARGE || '-90'),
+    },
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
