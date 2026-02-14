@@ -292,6 +292,23 @@ export const contentConfig = {
     wordSingular: process.env.CONTENT_RESOURCE_DETAIL_WORD_SINGULAR || 'word',
     wordPlural: process.env.CONTENT_RESOURCE_DETAIL_WORD_PLURAL || 'words',
     minRead: process.env.CONTENT_RESOURCE_DETAIL_MIN_READ || 'min read',
+    // Palette's micro-UX enhancement: Section titles and announcements
+    sections: {
+      features: process.env.CONTENT_RESOURCE_FEATURES_TITLE || 'Features',
+      specifications:
+        process.env.CONTENT_RESOURCE_SPECIFICATIONS_TITLE || 'Specifications',
+      benefits: process.env.CONTENT_RESOURCE_BENEFITS_TITLE || 'Benefits',
+      limitations:
+        process.env.CONTENT_RESOURCE_LIMITATIONS_TITLE || 'Limitations',
+    },
+    aria: {
+      featuresList:
+        process.env.CONTENT_RESOURCE_FEATURES_LIST_ARIA || 'List of features',
+    },
+    announcements: {
+      featureRevealed:
+        process.env.CONTENT_RESOURCE_FEATURE_REVEALED || 'Feature: {feature}',
+    },
   },
 
   // Favorites Page - Flexy hates hardcoded page content!
