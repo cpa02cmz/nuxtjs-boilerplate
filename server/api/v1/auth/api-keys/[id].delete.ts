@@ -27,25 +27,22 @@ export default defineEventHandler(async event => {
     const id = event.context.params?.id as string
 
     if (!id) {
-      sendNotFoundError(event, 'API Key', 'id')
-      return
+      return sendNotFoundError(event, 'API Key', 'id')
     }
 
     // Find API key by ID
     const apiKey = webhookStorage.getApiKeyById(id)
     if (!apiKey) {
-      sendNotFoundError(event, 'API Key', id)
-      return
+      return sendNotFoundError(event, 'API Key', id)
     }
 
     // Remove API key
     const deleted = webhookStorage.deleteApiKey(id)
     if (!deleted) {
-      sendNotFoundError(event, 'API Key', id)
-      return
+      return sendNotFoundError(event, 'API Key', id)
     }
 
-    sendSuccessResponse(event, {
+    return sendSuccessResponse(event, {
       message: 'API key deleted successfully',
     })
   } catch (error) {

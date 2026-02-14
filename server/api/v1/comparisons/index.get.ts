@@ -28,14 +28,15 @@ export default defineEventHandler(async event => {
       : []
 
     if (!resourceIds || resourceIds.length === 0) {
-      sendBadRequestError(event, 'Resource IDs are required for comparison')
-      return
+      return sendBadRequestError(
+        event,
+        'Resource IDs are required for comparison'
+      )
     }
 
     // Validate resource IDs format
     if (resourceIds.some(id => typeof id !== 'string' || !id.trim())) {
-      sendBadRequestError(event, 'Invalid resource ID format')
-      return
+      return sendBadRequestError(event, 'Invalid resource ID format')
     }
 
     // Generate cache key
@@ -64,8 +65,7 @@ export default defineEventHandler(async event => {
       const foundIds = new Set(requestedResources.map(r => r.id))
       const missingIds = resourceIds.filter(id => !foundIds.has(id))
 
-      sendNotFoundError(event, 'Resources', missingIds.join(', '))
-      return
+      return sendNotFoundError(event, 'Resources', missingIds.join(', '))
     }
 
     // Generate comparison data

@@ -46,8 +46,7 @@ export default defineEventHandler(async event => {
     if (query.resourceId) {
       targetResource = allResources.find(r => r.id === query.resourceId)
       if (!targetResource) {
-        sendNotFoundError(event, 'Resource', query.resourceId)
-        return
+        return sendNotFoundError(event, 'Resource', query.resourceId)
       }
     }
 
