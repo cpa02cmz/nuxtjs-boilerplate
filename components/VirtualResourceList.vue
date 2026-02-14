@@ -40,11 +40,7 @@
         position: 'relative',
       }"
     >
-      <TransitionGroup
-        name="list-item"
-        tag="div"
-        class="w-full h-full"
-      >
+      <TransitionGroup name="list-item" tag="div" class="w-full h-full">
         <div
           v-for="virtualRow in virtualizer.getVirtualItems()"
           :key="String(virtualRow.key)"
@@ -63,10 +59,7 @@
             '--item-index': virtualRow.index % 10,
           }"
         >
-          <slot
-            :item="items[virtualRow.index]"
-            :index="virtualRow.index"
-          />
+          <slot :item="items[virtualRow.index]" :index="virtualRow.index" />
         </div>
       </TransitionGroup>
     </div>
@@ -153,16 +146,17 @@ const handleScroll = () => {
 
 // Listen for reduced motion preference changes
 let mediaQuery: MediaQueryList | null = null
+let handleMotionChange: ((e: MediaQueryListEvent) => void) | null = null
 
 onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 
   if (typeof window !== 'undefined') {
     mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleChange = (e: MediaQueryListEvent) => {
+    handleMotionChange = (e: MediaQueryListEvent) => {
       prefersReducedMotion.value = e.matches
     }
-    mediaQuery.addEventListener('change', handleChange)
+    mediaQuery.addEventListener('change', handleMotionChange)
   }
 
   // Initial scroll position calculation
@@ -176,11 +170,10 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (mediaQuery) {
-    const handleChange = (e: MediaQueryListEvent) => {
-      prefersReducedMotion.value = e.matches
-    }
-    mediaQuery.removeEventListener('change', handleChange)
+  if (mediaQuery && handleMotionChange) {
+    mediaQuery.removeEventListener('change', handleMotionChange)
+    mediaQuery = null
+    handleMotionChange = null
   }
 })
 </script>
