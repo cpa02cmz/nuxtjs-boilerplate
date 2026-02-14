@@ -22,8 +22,7 @@ export default defineEventHandler(async event => {
     const resourceId = getRouterParam(event, 'id')
 
     if (!resourceId) {
-      sendBadRequestError(event, 'Resource ID is required')
-      return
+      return sendBadRequestError(event, 'Resource ID is required')
     }
 
     // Parse request body
@@ -31,8 +30,7 @@ export default defineEventHandler(async event => {
     const { alternativeId, action = 'add' } = body
 
     if (!alternativeId) {
-      sendBadRequestError(event, 'Alternative resource ID is required')
-      return
+      return sendBadRequestError(event, 'Alternative resource ID is required')
     }
 
     // Import resources from JSON to validate IDs
@@ -44,8 +42,7 @@ export default defineEventHandler(async event => {
     const alternativeResource = resources.find(r => r.id === alternativeId)
 
     if (!resource || !alternativeResource) {
-      sendNotFoundError(event, 'Resource or alternative resource')
-      return
+      return sendNotFoundError(event, 'Resource or alternative resource')
     }
 
     // Get existing alternatives for this resource
@@ -78,8 +75,10 @@ export default defineEventHandler(async event => {
       reverseAlternatives = reverseAlternatives.filter(id => id !== resourceId)
       alternativeRelationships.set(alternativeId, reverseAlternatives)
     } else {
-      sendBadRequestError(event, 'Invalid action. Use "add" or "remove".')
-      return
+      return sendBadRequestError(
+        event,
+        'Invalid action. Use "add" or "remove".'
+      )
     }
 
     return sendSuccessResponse(event, {
