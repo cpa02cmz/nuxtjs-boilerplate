@@ -218,6 +218,27 @@ export const contentConfig = {
     },
   },
 
+  // Related Searches - Palette's micro-UX enhancement!
+  relatedSearches: {
+    title: process.env.CONTENT_RELATED_SEARCHES_TITLE || 'Did you mean?',
+    aria: {
+      region:
+        process.env.CONTENT_RELATED_SEARCHES_ARIA_REGION ||
+        'Related search suggestions',
+      group:
+        process.env.CONTENT_RELATED_SEARCHES_ARIA_GROUP ||
+        'Related search options',
+      button:
+        process.env.CONTENT_RELATED_SEARCHES_ARIA_BUTTON ||
+        'Search for {query}',
+    },
+    announcement: {
+      searching:
+        process.env.CONTENT_RELATED_SEARCHES_ANNOUNCE ||
+        'Searching for {query}',
+    },
+  },
+
   // Sorting
   sort: {
     label: process.env.CONTENT_SORT_LABEL || 'Sort by:',
