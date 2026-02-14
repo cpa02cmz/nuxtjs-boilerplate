@@ -348,7 +348,6 @@ export const animationConfig = {
   analyticsTracking: {
     trackingDelayMs: parseInt(process.env.ANALYTICS_TRACKING_DELAY_MS || '500'),
   },
-
   // Draft Save Pulse Animation - Palette's micro-UX delight!
   // Adds a satisfying pulse ring when auto-save occurs
   draftSave: {
