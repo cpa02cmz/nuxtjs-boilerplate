@@ -1074,6 +1074,11 @@ export const contentConfig = {
         process.env.CONTENT_WEBHOOKS_ARIA_DELIVERY ||
         'Last delivery status: {{ status }}',
     },
+    success: {
+      created:
+        process.env.CONTENT_WEBHOOKS_SUCCESS_CREATED ||
+        'Webhook created successfully!',
+    },
   },
 
   // Loading States - Flexy hates hardcoded loading messages!
