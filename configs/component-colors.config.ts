@@ -583,6 +583,32 @@ export const componentColorsConfig = {
     activity: {
       flag: process.env.MODERATION_ACTIVITY_FLAG || '#ffc107',
     },
+    // Card hover border color - BugFixer ULW Loop Fix 🐛
+    cardHoverBorder:
+      process.env.MODERATION_CARD_HOVER_BORDER || 'rgba(59, 130, 246, 0.3)',
+    // Counting animation color - BugFixer ULW Loop Fix 🐛
+    countingColor: process.env.MODERATION_COUNTING_COLOR || '#3b82f6',
+    // Trend up background color - BugFixer ULW Loop Fix 🐛
+    trendUpBg: process.env.MODERATION_TREND_UP_BG || 'rgba(34, 197, 94, 0.1)',
+    // Trend down background color - BugFixer ULW Loop Fix 🐛
+    trendDownBg:
+      process.env.MODERATION_TREND_DOWN_BG || 'rgba(239, 68, 68, 0.1)',
+    // Link hover color - BugFixer ULW Loop Fix 🐛
+    linkHoverColor: process.env.MODERATION_LINK_HOVER_COLOR || '#2563eb',
+    // Empty state background gradient start - BugFixer ULW Loop Fix 🐛
+    emptyStateBgStart:
+      process.env.MODERATION_EMPTY_BG_START || 'rgba(59, 130, 246, 0.05)',
+    // Empty state background gradient end - BugFixer ULW Loop Fix 🐛
+    emptyStateBgEnd:
+      process.env.MODERATION_EMPTY_BG_END || 'rgba(59, 130, 246, 0.02)',
+    // Empty state border color - BugFixer ULW Loop Fix 🐛
+    emptyStateBorder:
+      process.env.MODERATION_EMPTY_BORDER || 'rgba(59, 130, 246, 0.2)',
+    // Empty state icon color - BugFixer ULW Loop Fix 🐛
+    emptyStateIconColor: process.env.MODERATION_EMPTY_ICON_COLOR || '#3b82f6',
+    // Action button hover border color - BugFixer ULW Loop Fix 🐛
+    actionHoverBorder:
+      process.env.MODERATION_ACTION_HOVER_BORDER || 'rgba(59, 130, 246, 0.4)',
   },
 
   // Confetti Celebration Colors - Flexy hates hardcoded confetti colors!

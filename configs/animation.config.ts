@@ -2163,6 +2163,38 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.RECOMMENDATIONS_RESPECT_REDUCED_MOTION !== 'false',
+    // Sparkle burst animation configuration - BugFixer ULW Loop Fix 🐛
+    sparkleBurst: {
+      // Number of sparkles in burst
+      count: parseInt(process.env.RECOMMENDATIONS_SPARKLE_COUNT || '12'),
+      // Burst animation duration (ms)
+      durationMs: parseInt(
+        process.env.RECOMMENDATIONS_SPARKLE_DURATION_MS || '800'
+      ),
+      // CSS-compatible duration (seconds)
+      durationSec: `${parseInt(process.env.RECOMMENDATIONS_SPARKLE_DURATION_MS || '800') / 1000}s`,
+      // Scale at peak of burst
+      peakScale: parseFloat(
+        process.env.RECOMMENDATIONS_SPARKLE_PEAK_SCALE || '1.5'
+      ),
+    },
+    // Card transition configuration - BugFixer ULW Loop Fix 🐛
+    cardTransition: {
+      // Hover lift distance (px)
+      hoverLiftPx: parseInt(
+        process.env.RECOMMENDATIONS_CARD_HOVER_LIFT_PX || '8'
+      ),
+      // Hover scale factor
+      hoverScale: parseFloat(
+        process.env.RECOMMENDATIONS_CARD_HOVER_SCALE || '1.02'
+      ),
+      // Transition duration (ms)
+      durationMs: parseInt(
+        process.env.RECOMMENDATIONS_CARD_TRANSITION_MS || '300'
+      ),
+      // CSS-compatible duration (seconds)
+      durationSec: `${parseInt(process.env.RECOMMENDATIONS_CARD_TRANSITION_MS || '300') / 1000}s`,
+    },
   },
   // VirtualList Component Animations - Palette's micro-UX enhancement!
   // Staggered entrance animations and smooth transitions for virtual scrolling
@@ -2465,6 +2497,14 @@ export const animationConfig = {
     activityHoverTransitionMs: parseInt(
       process.env.MODERATION_ACTIVITY_HOVER_MS || '150'
     ),
+    // Card entrance animation duration (seconds) - BugFixer ULW Loop Fix 🐛
+    cardEntranceDurationSec: `${parseInt(process.env.MODERATION_CARD_ENTRANCE_MS || '500') / 1000}s`,
+    // Activity entrance animation duration (seconds) - BugFixer ULW Loop Fix 🐛
+    activityEntranceDurationSec: `${parseInt(process.env.MODERATION_ACTIVITY_ENTRANCE_MS || '400') / 1000}s`,
+    // Action button entrance animation duration (seconds) - BugFixer ULW Loop Fix 🐛
+    actionEntranceDurationSec: `${parseInt(process.env.MODERATION_ACTION_ENTRANCE_MS || '400') / 1000}s`,
+    // Trend pulse animation duration (seconds) - BugFixer ULW Loop Fix 🐛
+    trendPulseDurationSec: `${parseInt(process.env.MODERATION_TREND_PULSE_MS || '2000') / 1000}s`,
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.MODERATION_RESPECT_REDUCED_MOTION !== 'false',
@@ -2758,6 +2798,49 @@ export const animationConfig = {
     ),
     // CSS-compatible delay offset (seconds)
     delayOffsetSec: `${parseInt(process.env.FEATURES_ICON_POP_DELAY_OFFSET_MS || '150') / 1000}s`,
+  },
+
+  // Health Monitor Animations - BugFixer ULW Loop Fix 🐛
+  // Configuration for health status animations and haptic feedback timing
+  healthMonitor: {
+    // Delay before triggering haptic feedback on status change (ms)
+    hapticDelayMs: parseInt(
+      process.env.HEALTH_MONITOR_HAPTIC_DELAY_MS || '100'
+    ),
+    // Duration to show success animation (ms)
+    successDurationMs: parseInt(
+      process.env.HEALTH_MONITOR_SUCCESS_DURATION_MS || '1000'
+    ),
+    // CSS-compatible success duration (seconds)
+    successDurationSec: `${parseInt(process.env.HEALTH_MONITOR_SUCCESS_DURATION_MS || '1000') / 1000}s`,
+    // Success animation peak scale
+    successScale: parseFloat(process.env.HEALTH_MONITOR_SUCCESS_SCALE || '1.2'),
+    // Success animation rotation in degrees
+    successRotationDeg: parseInt(
+      process.env.HEALTH_MONITOR_SUCCESS_ROTATION_DEG || '360'
+    ),
+    // Duration to show error animation (ms)
+    errorDurationMs: parseInt(
+      process.env.HEALTH_MONITOR_ERROR_DURATION_MS || '1000'
+    ),
+    // CSS-compatible error duration (seconds)
+    errorDurationSec: `${parseInt(process.env.HEALTH_MONITOR_ERROR_DURATION_MS || '1000') / 1000}s`,
+    // Pulse animation duration for status indicators (ms)
+    pulseDurationMs: parseInt(
+      process.env.HEALTH_MONITOR_PULSE_DURATION_MS || '2000'
+    ),
+    // CSS-compatible pulse duration (seconds)
+    pulseDurationSec: `${parseInt(process.env.HEALTH_MONITOR_PULSE_DURATION_MS || '2000') / 1000}s`,
+    // Pulse animation scale
+    pulseScale: parseFloat(process.env.HEALTH_MONITOR_PULSE_SCALE || '1.15'),
+    // Status transition duration (ms)
+    transitionDurationMs: parseInt(
+      process.env.HEALTH_MONITOR_TRANSITION_MS || '300'
+    ),
+    // Spinner animation duration (ms)
+    spinnerDurationMs: parseInt(
+      process.env.HEALTH_MONITOR_SPINNER_DURATION_MS || '1000'
+    ),
   },
 } as const
 

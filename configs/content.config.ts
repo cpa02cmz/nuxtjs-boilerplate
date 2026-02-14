@@ -767,6 +767,16 @@ export const contentConfig = {
         process.env.CONTENT_ERROR_VOTE_LOGIN ||
         'User must be logged in to vote',
     },
+    // Error Boundary Messages - BugFixer ULW Loop Fix 🐛
+    retry: process.env.CONTENT_ERROR_BOUNDARY_RETRY || 'Retry',
+    retryAria:
+      process.env.CONTENT_ERROR_BOUNDARY_RETRY_ARIA ||
+      'Retry loading component',
+    componentError:
+      process.env.CONTENT_ERROR_BOUNDARY_COMPONENT || 'Component Error',
+    resetSuccess:
+      process.env.CONTENT_ERROR_BOUNDARY_RESET_SUCCESS ||
+      'Component reset successfully',
   },
 
   // Social Sharing - Flexy hates hardcoded sharing params!

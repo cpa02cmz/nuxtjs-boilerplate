@@ -188,6 +188,16 @@ export const messagesConfig = {
     auth: {
       required: process.env.ERROR_AUTH_REQUIRED || 'Authentication required',
     },
+
+    // Error Boundary-related messages
+    retry: process.env.ERROR_BOUNDARY_RETRY || 'Retry',
+    retryAria:
+      process.env.ERROR_BOUNDARY_RETRY_ARIA || 'Retry loading component',
+    componentError:
+      process.env.ERROR_BOUNDARY_COMPONENT_ERROR || 'Component Error',
+    resetSuccess:
+      process.env.ERROR_BOUNDARY_RESET_SUCCESS ||
+      'Component reset successfully',
   },
 
   // Success Messages

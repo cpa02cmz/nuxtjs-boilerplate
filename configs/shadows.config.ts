@@ -80,6 +80,18 @@ export const shadowsConfig = {
     rejectedBg: process.env.MODERATION_REJECTED_BG || 'rgba(220, 53, 69, 0.1)',
     flaggedBg: process.env.MODERATION_FLAGGED_BG || 'rgba(255, 193, 7, 0.1)',
     pendingBg: process.env.MODERATION_PENDING_BG || 'rgba(0, 123, 255, 0.1)',
+    // Card hover shadow - BugFixer ULW Loop Fix 🐛
+    cardHoverShadow:
+      process.env.MODERATION_CARD_HOVER_SHADOW ||
+      '0 12px 24px rgba(0, 0, 0, 0.1)',
+    // Activity hover shadow - BugFixer ULW Loop Fix 🐛
+    activityHoverShadow:
+      process.env.MODERATION_ACTIVITY_HOVER_SHADOW ||
+      '0 8px 16px rgba(0, 0, 0, 0.08)',
+    // Action button hover shadow - BugFixer ULW Loop Fix 🐛
+    actionHoverShadow:
+      process.env.MODERATION_ACTION_HOVER_SHADOW ||
+      '0 4px 12px rgba(59, 130, 246, 0.2)',
   },
 
   // Related Searches Shadows - Palette's micro-UX enhancement!
