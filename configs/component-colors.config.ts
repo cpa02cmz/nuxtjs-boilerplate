@@ -194,6 +194,13 @@ export const componentColorsConfig = {
       danger: process.env.WEBHOOK_BTN_DANGER || '#ef4444',
       dangerHover: process.env.WEBHOOK_BTN_DANGER_HOVER || '#dc2626',
     },
+    // Palette's micro-UX enhancement: Success celebration colors
+    celebration: {
+      gradientStart:
+        process.env.WEBHOOK_CELEBRATION_GRADIENT_START || '#10b981',
+      gradientEnd: process.env.WEBHOOK_CELEBRATION_GRADIENT_END || '#059669',
+      sparkleColor: process.env.WEBHOOK_CELEBRATION_SPARKLE || '#fbbf24',
+    },
   },
 
   // Error Message Colors - Flexy hates hardcoded error message colors!

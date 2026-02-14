@@ -1453,6 +1453,19 @@ export const animationConfig = {
       // Container
       containerMaxWidth: process.env.WEBHOOK_CONTAINER_MAX_WIDTH || '800px',
     },
+    // Palette's micro-UX enhancement: Success celebration configuration
+    celebrationDurationMs: parseInt(
+      process.env.WEBHOOK_CELEBRATION_DURATION_MS || '2000'
+    ),
+    celebrationPosition: {
+      top: process.env.WEBHOOK_CELEBRATION_TOP || '20px',
+      right: process.env.WEBHOOK_CELEBRATION_RIGHT || '20px',
+    },
+    celebrationGap: process.env.WEBHOOK_CELEBRATION_GAP || '12px',
+    celebrationPadding: process.env.WEBHOOK_CELEBRATION_PADDING || '12px 20px',
+    celebrationBorderRadius: process.env.WEBHOOK_CELEBRATION_RADIUS || '12px',
+    celebrationIconSize: process.env.WEBHOOK_CELEBRATION_ICON_SIZE || '28px',
+    celebrationFontSize: process.env.WEBHOOK_CELEBRATION_FONT_SIZE || '14px',
   },
 
   // Zero Result Searches Component - Flexy hates hardcoded values!
