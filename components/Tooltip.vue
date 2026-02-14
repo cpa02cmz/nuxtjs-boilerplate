@@ -55,24 +55,22 @@
         >
           (Esc to close)
         </span>
+        <!-- Arrow with Palette's micro-UX bounce animation -->
         <div
           :class="[
             'absolute w-2 h-2 transform rotate-45',
             componentColorsConfig.tooltip.arrowBg,
             arrowClasses[adjustedPosition],
             isPositionTransitioning ? 'arrow-transitioning' : '',
+            'arrow-bounce',
+            { 'arrow-bounce--animate': !prefersReducedMotion },
           ]"
         />
       </div>
     </Transition>
 
     <!-- Screen reader announcement - announces tooltip content when visible -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ isVisible ? content : '' }}
     </div>
   </div>
@@ -145,6 +143,16 @@ const touchCurrentY = ref(0)
 const isSwiping = ref(false)
 // Minimum swipe distance to dismiss (px) - Flexy hates hardcoded values! Using config now.
 const SWIPE_THRESHOLD = animationConfig.tooltip.swipeThresholdPx
+
+// Palette's micro-UX: Track reduced motion preference for arrow bounce animation
+const prefersReducedMotion = ref(false)
+
+// Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
 
 const positionClasses: Record<TooltipPosition, string> = {
   top: 'bottom-full left-1/2 -translate-x-1/2 mb-2',
@@ -547,6 +555,23 @@ onMounted(() => {
   if (props.closeOnClickOutside) {
     document.addEventListener('click', handleClickOutside, { passive: true })
   }
+
+  // Palette's micro-UX: Check reduced motion preference
+  prefersReducedMotion.value = checkReducedMotion()
+
+  // Listen for changes in reduced motion preference
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handleMotionChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.value = e.matches
+    }
+    mediaQuery.addEventListener('change', handleMotionChange)
+
+    // Clean up on unmount
+    onUnmounted(() => {
+      mediaQuery.removeEventListener('change', handleMotionChange)
+    })
+  }
 })
 
 onUnmounted(() => {
@@ -617,6 +642,47 @@ defineExpose({
 @media (prefers-contrast: high) {
   [role='tooltip'] {
     border: 2px solid currentColor;
+  }
+}
+
+/* Palette's micro-UX: Arrow bounce animation for delightful feedback */
+.arrow-bounce {
+  transform-origin: center;
+}
+
+.arrow-bounce--animate {
+  animation: arrow-bounce-in
+    v-bind('`${animationConfig.tooltip.arrowBounceDurationMs || 400}ms`')
+    v-bind(
+      'easingConfig?.cubicBezier?.spring ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+    )
+    forwards;
+}
+
+@keyframes arrow-bounce-in {
+  0% {
+    transform: rotate(45deg) scale(0) translateZ(0);
+    opacity: 0;
+  }
+  40% {
+    transform: rotate(45deg) scale(1.3) translateZ(0);
+    opacity: 1;
+  }
+  60% {
+    transform: rotate(45deg) scale(0.9) translateZ(0);
+  }
+  80% {
+    transform: rotate(45deg) scale(1.05) translateZ(0);
+  }
+  100% {
+    transform: rotate(45deg) scale(1) translateZ(0);
+  }
+}
+
+/* Reduced motion support for arrow bounce */
+@media (prefers-reduced-motion: reduce) {
+  .arrow-bounce--animate {
+    animation: none;
   }
 }
 </style>
