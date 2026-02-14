@@ -2547,6 +2547,56 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.FEATURES_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Resource Analytics Animations - Flexy hates hardcoded stagger delays!
+  // Used by ResourceAnalytics.vue for card entrance and skeleton loading
+  analytics: {
+    // Stagger delay between analytics cards (ms)
+    cardStaggerDelayMs: parseInt(
+      process.env.ANALYTICS_CARD_STAGGER_DELAY_MS || '100'
+    ),
+    // CSS-compatible card stagger delay (seconds)
+    cardStaggerDelaySec: `${
+      parseInt(process.env.ANALYTICS_CARD_STAGGER_DELAY_MS || '100') / 1000
+    }s`,
+    // Stagger delay between skeleton items (ms)
+    skeletonStaggerDelayMs: parseInt(
+      process.env.ANALYTICS_SKELETON_STAGGER_DELAY_MS || '150'
+    ),
+    // CSS-compatible skeleton stagger delay (seconds)
+    skeletonStaggerDelaySec: `${
+      parseInt(process.env.ANALYTICS_SKELETON_STAGGER_DELAY_MS || '150') / 1000
+    }s`,
+    // Transition duration for value color changes (ms)
+    valueTransitionMs: parseInt(
+      process.env.ANALYTICS_VALUE_TRANSITION_MS || '200'
+    ),
+    // CSS-compatible value transition duration (seconds)
+    valueTransitionSec: `${
+      parseInt(process.env.ANALYTICS_VALUE_TRANSITION_MS || '200') / 1000
+    }s`,
+  },
+
+  // Webhook Manager Animations - Flexy hates hardcoded sparkle delays!
+  // Used by WebhookManager.vue for celebration animations
+  webhookManager: {
+    // Stagger delay between sparkle elements (ms)
+    sparkleStaggerDelayMs: parseInt(
+      process.env.WEBHOOK_SPARKLE_STAGGER_DELAY_MS || '100'
+    ),
+    // CSS-compatible sparkle stagger delay (seconds)
+    sparkleStaggerDelaySec: `${
+      parseInt(process.env.WEBHOOK_SPARKLE_STAGGER_DELAY_MS || '100') / 1000
+    }s`,
+    // Reduced motion opacity transition duration (ms)
+    reducedMotionOpacityMs: parseInt(
+      process.env.WEBHOOK_REDUCED_OPACITY_MS || '200'
+    ),
+    // CSS-compatible reduced motion opacity transition (seconds)
+    reducedMotionOpacitySec: `${
+      parseInt(process.env.WEBHOOK_REDUCED_OPACITY_MS || '200') / 1000
+    }s`,
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

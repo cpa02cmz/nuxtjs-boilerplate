@@ -525,7 +525,10 @@ import type { Ref } from 'vue'
   overflow: hidden;
   animation: card-entrance v-bind('animationConfig.cssTransitions.slowerSec')
     ease-out backwards;
-  animation-delay: calc(var(--card-index, 0) * 0.1s);
+  animation-delay: calc(
+    var(--card-index, 0) *
+      v-bind('animationConfig.analytics.cardStaggerDelaySec')
+  );
 }
 
 @keyframes card-entrance {
@@ -554,7 +557,10 @@ import type { Ref } from 'vue'
 /* Skeleton Loading State - Palette's micro-UX delight! */
 .analytics-card--skeleton {
   animation: skeleton-pulse 1.5s ease-in-out infinite;
-  animation-delay: calc(var(--skeleton-index, 0) * 0.15s);
+  animation-delay: calc(
+    var(--skeleton-index, 0) *
+      v-bind('animationConfig.analytics.skeletonStaggerDelaySec')
+  );
 }
 
 @keyframes skeleton-pulse {
@@ -612,7 +618,7 @@ import type { Ref } from 'vue'
   font-weight: 700;
   color: #111827;
   display: block;
-  transition: color 0.2s ease;
+  transition: color v-bind('animationConfig.analytics.valueTransitionSec') ease;
 }
 
 .analytics-value--counting {
