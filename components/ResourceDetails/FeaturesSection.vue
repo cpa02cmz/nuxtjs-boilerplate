@@ -163,6 +163,10 @@ const triggerEntranceAnimation = () => {
   })
 }
 
+// Media query refs for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+let handleChangeRef: ((e: MediaQueryListEvent) => void) | null = null
+
 // Setup intersection observer for entrance animation
 const setupIntersectionObserver = () => {
   if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
@@ -203,11 +207,11 @@ onMounted(() => {
 
   // Listen for reduced motion preference changes
   if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleChange = (e: MediaQueryListEvent) => {
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    handleChangeRef = (e: MediaQueryListEvent) => {
       prefersReducedMotion.value = e.matches
     }
-    mediaQuery.addEventListener('change', handleChange)
+    mediaQueryRef.addEventListener('change', handleChangeRef)
   }
 })
 
@@ -217,9 +221,10 @@ onUnmounted(() => {
   }
 
   // Clean up event listeners
-  if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    mediaQuery.removeEventListener('change', () => {})
+  if (mediaQueryRef && handleChangeRef) {
+    mediaQueryRef.removeEventListener('change', handleChangeRef)
+    mediaQueryRef = null
+    handleChangeRef = null
   }
 })
 </script>

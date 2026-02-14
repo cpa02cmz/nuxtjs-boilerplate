@@ -70,7 +70,9 @@
           `error-message--${variant}`,
           { 'error-message--dismissible': dismissible },
         ]"
-        role="alert"
+        :role="
+          variant === 'error' || variant === 'warning' ? 'alert' : 'status'
+        "
         :aria-live="variant === 'error' ? 'assertive' : 'polite'"
         @mouseenter="pauseDismiss"
         @mouseleave="resumeDismiss"

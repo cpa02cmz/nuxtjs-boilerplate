@@ -236,6 +236,8 @@ const getButtonLabel = (category: string) => {
 
 // Intersection Observer for entrance animation
 let observer: IntersectionObserver | null = null
+let mediaQueryRef: MediaQueryList | null = null
+let handleMotionChangeRef: ((e: MediaQueryListEvent) => void) | null = null
 
 onMounted(() => {
   // Check reduced motion preference
@@ -243,11 +245,11 @@ onMounted(() => {
 
   // Listen for reduced motion preference changes
   if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleMotionChange = (e: MediaQueryListEvent) => {
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    handleMotionChangeRef = (e: MediaQueryListEvent) => {
       prefersReducedMotion.value = e.matches
     }
-    mediaQuery.addEventListener('change', handleMotionChange)
+    mediaQueryRef.addEventListener('change', handleMotionChangeRef)
 
     // Set up intersection observer for entrance animation
     if (sectionRef.value && !prefersReducedMotion.value) {
@@ -273,6 +275,11 @@ onUnmounted(() => {
   if (observer) {
     observer.disconnect()
     observer = null
+  }
+  if (mediaQueryRef && handleMotionChangeRef) {
+    mediaQueryRef.removeEventListener('change', handleMotionChangeRef)
+    mediaQueryRef = null
+    handleMotionChangeRef = null
   }
 })
 </script>

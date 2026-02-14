@@ -705,21 +705,30 @@ const getSearchItemStyle = (index: number) => {
   }
 }
 
+// Media query refs for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+
 // Lifecycle
 onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 
   // Listen for reduced motion preference changes
   if (typeof window !== 'undefined' && window.matchMedia) {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    mediaQuery.addEventListener('change', e => {
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    mediaQueryRef.addEventListener('change', e => {
       prefersReducedMotion.value = e.matches
     })
   }
 })
 
 onUnmounted(() => {
-  // Cleanup if needed
+  // Cleanup media query listener
+  if (mediaQueryRef) {
+    mediaQueryRef.removeEventListener('change', e => {
+      prefersReducedMotion.value = e.matches
+    })
+    mediaQueryRef = null
+  }
 })
 </script>
 

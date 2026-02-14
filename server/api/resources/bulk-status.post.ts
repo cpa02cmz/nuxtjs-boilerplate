@@ -1,9 +1,10 @@
-import { defineEventHandler, readBody } from 'h3'
+import { defineEventHandler, readBody, getHeader } from 'h3'
 import type { Resource } from '~/types/resource'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendBadRequestError,
   sendSuccessResponse,
+  sendUnauthorizedError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { paginationConfig } from '~/configs/pagination.config'
@@ -16,21 +17,29 @@ const MAX_BULK_UPDATE_COUNT = paginationConfig.limits.maxBulkUpdateItems
 export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
+
+    // Authentication check - require valid API key
+    const authApiKey = getHeader(event, 'X-API-Key')
+    if (!authApiKey) {
+      return sendUnauthorizedError(event, 'API key required')
+    }
+
     const { resourceIds, status } = await readBody(event)
 
     // Validate required fields
     if (!Array.isArray(resourceIds) || !status) {
-      sendBadRequestError(event, 'resourceIds array and status are required')
-      return
+      return sendBadRequestError(
+        event,
+        'resourceIds array and status are required'
+      )
     }
 
     // Validate array length to prevent DoS via memory exhaustion
     if (resourceIds.length > MAX_BULK_UPDATE_COUNT) {
-      sendBadRequestError(
+      return sendBadRequestError(
         event,
         `Cannot update more than ${MAX_BULK_UPDATE_COUNT} resources at once`
       )
-      return
     }
 
     // Validate status value
@@ -42,8 +51,7 @@ export default defineEventHandler(async event => {
       'pending',
     ]
     if (!validStatuses.includes(status)) {
-      sendBadRequestError(event, 'Invalid status value')
-      return
+      return sendBadRequestError(event, 'Invalid status value')
     }
 
     // Get all resources

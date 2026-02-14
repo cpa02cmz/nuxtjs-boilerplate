@@ -141,7 +141,6 @@
             v-for="n in 8"
             :key="n"
             class="confetti-piece"
-            :style="{ '--confetti-index': n }"
           />
         </div>
       </div>
@@ -708,9 +707,6 @@ onUnmounted(() => {
   position: absolute;
   width: 8px;
   height: 8px;
-  background: v-bind(
-    'themeConfig.readingProgress.confettiColors[(parseInt(`--confetti-index`) - 1) % 4]'
-  );
   border-radius: 50%;
   opacity: 0;
   animation: confetti-burst
@@ -718,7 +714,6 @@ onUnmounted(() => {
     ease-out
     v-bind('`${animationConfig.readingProgress.confettiBurstDelayMs}ms`')
     forwards;
-  --angle: calc(var(--confetti-index) * 45deg);
 }
 
 .confetti-piece:nth-child(1) {

@@ -399,7 +399,13 @@ export const contentConfig = {
         process.env.CONTENT_COMPARISON_EMPTY_DESC ||
         'Add resources to compare them side-by-side.',
       browse: process.env.CONTENT_COMPARISON_EMPTY_BROWSE || 'Browse Resources',
+      ariaLabel:
+        process.env.CONTENT_COMPARISON_EMPTY_ARIA ||
+        'Empty comparison state - no resources selected',
+      popularLabel:
+        process.env.CONTENT_COMPARISON_POPULAR_LABEL || 'Popular resources',
     },
+    popularLabel: process.env.CONTENT_COMPARISON_POPULAR_LABEL || 'Popular',
   },
 
   // PWA
@@ -1708,6 +1714,22 @@ export const contentConfig = {
         process.env.CONTENT_COMPARISON_ARIA_COPY_ALL ||
         'Copy all {{count}} items to clipboard',
     },
+  },
+
+  // Resource Header Component - Palette's micro-UX enhancement!
+  // Header section for resource detail pages with animated interactions
+  resourceHeader: {
+    // Button text for visiting external resource
+    visitButton:
+      process.env.CONTENT_RESOURCE_HEADER_VISIT_BUTTON || 'Visit Resource',
+    // Aria label for accessibility
+    visitButtonAria:
+      process.env.CONTENT_RESOURCE_HEADER_VISIT_ARIA ||
+      'Visit external resource: {{title}}',
+    // Announcement for screen readers when opening link
+    openingAnnouncement:
+      process.env.CONTENT_RESOURCE_HEADER_OPENING ||
+      'Opening Visit Resource in a new tab',
   },
 } as const
 

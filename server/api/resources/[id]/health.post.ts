@@ -20,8 +20,7 @@ export default defineEventHandler(async event => {
     const resource = resources.find((r: Resource) => r.id === resourceId)
 
     if (!resource) {
-      sendNotFoundError(event, 'Resource', resourceId)
-      return
+      return sendNotFoundError(event, 'Resource', resourceId)
     }
 
     // Perform health check

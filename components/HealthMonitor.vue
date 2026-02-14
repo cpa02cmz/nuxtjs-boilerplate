@@ -199,7 +199,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useResourceHealth } from '~/composables/useResourceHealth'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
@@ -293,17 +293,30 @@ watch(
   { immediate: false }
 )
 
+// Media query refs for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+let handleMotionChangeRef: ((e: MediaQueryListEvent) => void) | null = null
+
 // Initialize on mount
 onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 
   // Listen for reduced motion preference changes
   if (typeof window !== 'undefined' && window.matchMedia) {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleMotionChange = (e: MediaQueryListEvent) => {
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    handleMotionChangeRef = (e: MediaQueryListEvent) => {
       prefersReducedMotion.value = e.matches
     }
-    mediaQuery.addEventListener('change', handleMotionChange)
+    mediaQueryRef.addEventListener('change', handleMotionChangeRef)
+  }
+})
+
+// Cleanup on unmount
+onUnmounted(() => {
+  if (mediaQueryRef && handleMotionChangeRef) {
+    mediaQueryRef.removeEventListener('change', handleMotionChangeRef)
+    mediaQueryRef = null
+    handleMotionChangeRef = null
   }
 })
 </script>

@@ -364,19 +364,31 @@ const handleBookmark = (resource: Resource) => {
 }
 
 // Initialize on component mount
+let mediaQueryRef: MediaQueryList | null = null
+let handleChangeRef: ((e: MediaQueryListEvent) => void) | null = null
+
 onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 
   // Listen for changes in reduced motion preference
   if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleChange = (e: MediaQueryListEvent) => {
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    handleChangeRef = (e: MediaQueryListEvent) => {
       prefersReducedMotion.value = e.matches
     }
-    mediaQuery.addEventListener('change', handleChange)
+    mediaQueryRef.addEventListener('change', handleChangeRef)
   }
 
   initRecommendations()
+})
+
+onUnmounted(() => {
+  // BroCula fix: Cleanup media query listener to prevent memory leak
+  if (mediaQueryRef && handleChangeRef) {
+    mediaQueryRef.removeEventListener('change', handleChangeRef)
+    mediaQueryRef = null
+    handleChangeRef = null
+  }
 })
 
 // Watch for changes in current resource or category

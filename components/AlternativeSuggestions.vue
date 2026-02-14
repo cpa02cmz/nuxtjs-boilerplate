@@ -170,7 +170,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, nextTick } from 'vue'
+import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { useAlternativeSuggestions } from '~/composables/useAlternativeSuggestions'
 import { useResourceData } from '~/composables/useResourceData'
 import type { Resource, AlternativeSuggestion } from '~/types/resource'
@@ -278,18 +278,31 @@ const initAlternatives = async () => {
   }
 }
 
+// Media query refs for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+let handleMotionChangeRef: ((e: MediaQueryListEvent) => void) | null = null
+
 // Initialize on component mount
 onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 
   // Listen for reduced motion preference changes
-  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-  const handleMotionChange = (e: MediaQueryListEvent) => {
+  mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+  handleMotionChangeRef = (e: MediaQueryListEvent) => {
     prefersReducedMotion.value = e.matches
   }
-  mediaQuery.addEventListener('change', handleMotionChange)
+  mediaQueryRef.addEventListener('change', handleMotionChangeRef)
 
   initAlternatives()
+})
+
+// Cleanup on unmount
+onUnmounted(() => {
+  if (mediaQueryRef && handleMotionChangeRef) {
+    mediaQueryRef.removeEventListener('change', handleMotionChangeRef)
+    mediaQueryRef = null
+    handleMotionChangeRef = null
+  }
 })
 
 // Watch for changes in resource

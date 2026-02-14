@@ -39,6 +39,10 @@
         height: `${totalHeight}px`,
         position: 'relative',
       }"
+      role="listbox"
+      :aria-label="ariaLabel"
+      tabindex="0"
+      @keydown="handleKeyDown"
     >
       <TransitionGroup
         name="list-item"
@@ -49,10 +53,16 @@
           v-for="virtualRow in virtualizer.getVirtualItems()"
           :key="String(virtualRow.key)"
           :data-index="virtualRow.index"
+          :tabindex="focusedIndex === virtualRow.index ? 0 : -1"
+          role="option"
+          :aria-posinset="virtualRow.index + 1"
+          :aria-setsize="items.length"
+          :aria-selected="focusedIndex === virtualRow.index"
           class="virtual-list-item"
           :class="{
             'virtual-list-item--animated':
               !prefersReducedMotion && isListLoaded,
+            'virtual-list-item--focused': focusedIndex === virtualRow.index,
           }"
           :style="{
             position: 'absolute',
@@ -62,10 +72,12 @@
             transform: `translateY(${virtualRow.start}px)`,
             '--item-index': virtualRow.index % 10,
           }"
+          @focus="handleItemFocus(virtualRow.index)"
         >
           <slot
             :item="items[virtualRow.index]"
             :index="virtualRow.index"
+            :is-focused="focusedIndex === virtualRow.index"
           />
         </div>
       </TransitionGroup>
@@ -93,6 +105,11 @@ interface Props {
    * @default true
    */
   showProgressIndicator?: boolean
+  /**
+   * Accessible label for the listbox
+   * @default 'Resource list'
+   */
+  ariaLabel?: string
 }
 
 // Flexy says: No more hardcoded defaults! Using config values.
@@ -101,12 +118,15 @@ const props = withDefaults(defineProps<Props>(), {
   overscan: uiConfig.virtualList.overscan,
   containerHeight: thresholdsConfig.virtualList.defaultContainerHeight,
   showProgressIndicator: true,
+  ariaLabel: 'Resource list',
 })
 
 const scrollContainer = ref<HTMLElement | null>(null)
+const scrollContent = ref<HTMLElement | null>(null)
 const scrollPercentage = ref(0)
 const prefersReducedMotion = ref(false)
 const isListLoaded = ref(false)
+const focusedIndex = ref(0)
 
 const totalHeight = computed(() => props.items.length * props.itemHeight)
 
@@ -183,6 +203,78 @@ onUnmounted(() => {
     handleMotionChange = null
   }
 })
+
+/**
+ * Keyboard navigation handlers for accessibility
+ * Implements roving tabindex pattern with full keyboard support
+ */
+const handleKeyDown = (e: KeyboardEvent) => {
+  const itemCount = props.items.length
+  if (itemCount === 0) return
+
+  let newIndex = focusedIndex.value
+  let shouldPreventDefault = true
+
+  switch (e.key) {
+    case 'ArrowDown':
+      newIndex = Math.min(focusedIndex.value + 1, itemCount - 1)
+      break
+    case 'ArrowUp':
+      newIndex = Math.max(focusedIndex.value - 1, 0)
+      break
+    case 'PageDown':
+      newIndex = Math.min(focusedIndex.value + 5, itemCount - 1)
+      break
+    case 'PageUp':
+      newIndex = Math.max(focusedIndex.value - 5, 0)
+      break
+    case 'Home':
+      newIndex = 0
+      break
+    case 'End':
+      newIndex = itemCount - 1
+      break
+    default:
+      shouldPreventDefault = false
+  }
+
+  if (shouldPreventDefault) {
+    e.preventDefault()
+    if (newIndex !== focusedIndex.value) {
+      focusedIndex.value = newIndex
+      scrollToIndex(newIndex)
+      announcePosition(newIndex, itemCount)
+    }
+  }
+}
+
+/**
+ * Handle focus on a list item
+ */
+const handleItemFocus = (index: number) => {
+  focusedIndex.value = index
+}
+
+/**
+ * Scroll to make the focused item visible
+ */
+const scrollToIndex = (index: number) => {
+  if (!scrollContainer.value) return
+  const scrollTop = index * props.itemHeight
+  scrollContainer.value.scrollTo({
+    top: scrollTop,
+    behavior: prefersReducedMotion.value ? 'auto' : 'smooth',
+  })
+}
+
+/**
+ * Announce position to screen readers
+ */
+const announcePosition = (_index: number, _total: number) => {
+  // Use aria-live region if available, or rely on aria-posinset/aria-setsize
+  // The browser should announce the position automatically with these attributes
+  // No console logging needed - screen readers handle the announcement
+}
 </script>
 
 <style scoped>
@@ -298,6 +390,18 @@ onUnmounted(() => {
 .list-item-move {
   transition: transform
     v-bind('`${animationConfig.virtualList.moveDurationMs}ms`') ease-out;
+}
+
+/* Focus styles for keyboard navigation */
+.virtual-list-item--focused {
+  outline: 2px solid v-bind('componentColorsConfig.focusRing.color');
+  outline-offset: 2px;
+}
+
+/* Ensure focus is visible */
+.virtual-list-item:focus-visible {
+  outline: 2px solid v-bind('componentColorsConfig.focusRing.color');
+  outline-offset: 2px;
 }
 
 /* Reduced motion support - disable staggered animation */

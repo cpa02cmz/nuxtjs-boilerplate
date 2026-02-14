@@ -31,36 +31,52 @@
                 cy="12"
                 r="10"
               />
-              <path class="checkmark-path" d="M7 12l3 3 7-7" />
+              <path
+                class="checkmark-path"
+                d="M7 12l3 3 7-7"
+              />
             </svg>
           </div>
           <span class="celebration-text">
             {{
               contentConfig.submissionReview.celebration?.approved ||
-              'Submission Approved!'
+                'Submission Approved!'
             }}
           </span>
         </div>
         <!-- Confetti burst effect -->
-        <div class="confetti-container" aria-hidden="true">
+        <div
+          class="confetti-container"
+          aria-hidden="true"
+        >
           <span
             v-for="n in 12"
             :key="n"
             class="confetti-piece"
-            :style="{ '--confetti-index': n }"
+            :style="{
+              '--confetti-index': n,
+              '--color-index': ((n - 1) % 6) + 1,
+            }"
           />
         </div>
       </div>
     </Transition>
 
-    <div v-if="loading" class="loading">
+    <div
+      v-if="loading"
+      class="loading"
+    >
       <LoadingSpinner
         :label="contentConfig.submissionReview.loading"
         size="medium"
       />
     </div>
 
-    <div v-else-if="error" class="error" role="alert">
+    <div
+      v-else-if="error"
+      class="error"
+      role="alert"
+    >
       <span class="error-icon">⚠️</span>
       {{ error }}
     </div>
@@ -131,7 +147,7 @@
                 }}</label>
                 <span>{{
                   submission.resourceData?.pricingModel ||
-                  contentConfig.submissionReview.values.notAvailable
+                    contentConfig.submissionReview.values.notAvailable
                 }}</span>
               </div>
 
@@ -141,7 +157,7 @@
                 }}</label>
                 <span>{{
                   submission.resourceData?.difficulty ||
-                  contentConfig.submissionReview.values.notAvailable
+                    contentConfig.submissionReview.values.notAvailable
                 }}</span>
               </div>
 
@@ -200,7 +216,7 @@
                 }}</label>
                 <span>{{
                   submission.submittedBy ||
-                  contentConfig.submissionReview.values.anonymous
+                    contentConfig.submissionReview.values.anonymous
                 }}</span>
               </div>
 
@@ -211,24 +227,33 @@
                 <span>{{ formatDate(submission.submittedAt) }}</span>
               </div>
 
-              <div v-if="submission.reviewedAt" class="info-item">
+              <div
+                v-if="submission.reviewedAt"
+                class="info-item"
+              >
                 <label>{{
                   contentConfig.submissionReview.labels.reviewedBy
                 }}</label>
                 <span>{{
                   submission.reviewedBy ||
-                  contentConfig.submissionReview.values.notAvailable
+                    contentConfig.submissionReview.values.notAvailable
                 }}</span>
               </div>
 
-              <div v-if="submission.reviewedAt" class="info-item">
+              <div
+                v-if="submission.reviewedAt"
+                class="info-item"
+              >
                 <label>{{
                   contentConfig.submissionReview.labels.reviewedAt
                 }}</label>
                 <span>{{ formatDate(submission.reviewedAt) }}</span>
               </div>
 
-              <div v-if="submission.rejectionReason" class="info-item">
+              <div
+                v-if="submission.rejectionReason"
+                class="info-item"
+              >
                 <label>{{
                   contentConfig.submissionReview.labels.rejectionReason
                 }}</label>
@@ -237,7 +262,10 @@
                 }}</span>
               </div>
 
-              <div v-if="submission.notes" class="info-item">
+              <div
+                v-if="submission.notes"
+                class="info-item"
+              >
                 <label>{{ contentConfig.submissionReview.labels.notes }}</label>
                 <span>{{ submission.notes }}</span>
               </div>
@@ -253,7 +281,10 @@
           leave-from-class="opacity-100 translate-y-0"
           leave-to-class="opacity-0 -translate-y-2"
         >
-          <div v-if="submission.status === 'pending'" class="review-actions">
+          <div
+            v-if="submission.status === 'pending'"
+            class="review-actions"
+          >
             <div class="action-group">
               <h4>
                 {{ contentConfig.submissionReview.actions.approve.title }}
@@ -359,14 +390,19 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ announcement }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useSubmissionReview } from '~/composables/useSubmissionReview'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
@@ -509,16 +545,29 @@ const formatDate = (dateString?: string) => {
   return new Date(dateString).toLocaleString()
 }
 
+// Media query refs for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+
 onMounted(() => {
   fetchSubmission()
   prefersReducedMotion.value = checkReducedMotion()
 
   // Listen for reduced motion preference changes
   if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    mediaQuery.addEventListener('change', () => {
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    mediaQueryRef.addEventListener('change', () => {
       prefersReducedMotion.value = checkReducedMotion()
     })
+  }
+})
+
+// Cleanup on unmount
+onUnmounted(() => {
+  if (mediaQueryRef) {
+    mediaQueryRef.removeEventListener('change', () => {
+      prefersReducedMotion.value = checkReducedMotion()
+    })
+    mediaQueryRef = null
   }
 })
 </script>
@@ -655,7 +704,6 @@ onMounted(() => {
     v-bind('celebrationConfig?.confettiDurationMs || "800ms"') ease-out
     v-bind('celebrationConfig?.confettiDelayMs || "100ms"') forwards;
   --angle: calc(var(--confetti-index) * 30deg);
-  --color-index: calc(var(--confetti-index) % 6);
   --confetti-color-1: v-bind(
     'componentColorsConfig.confetti.colors[0] || "#ff6b6b"'
   );
