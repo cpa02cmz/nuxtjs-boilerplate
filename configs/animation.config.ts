@@ -1842,6 +1842,53 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.RECOMMENDATIONS_RESPECT_REDUCED_MOTION !== 'false',
+
+  },
+  // VirtualList Component Animations - Palette's micro-UX enhancement!
+  // Staggered entrance animations and smooth transitions for virtual scrolling
+  virtualList: {
+    // Entrance animation duration for list items (ms)
+    entranceDurationMs: parseInt(
+      process.env.VIRTUAL_LIST_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Easing function for entrance animation
+    entranceEasing:
+      process.env.VIRTUAL_LIST_ENTRANCE_EASING || EASING_REF.SPRING_STANDARD,
+    // Stagger delay between each item (ms) - creates wave effect
+    staggerDelayMs: parseInt(process.env.VIRTUAL_LIST_STAGGER_DELAY_MS || '50'),
+    // Maximum number of items to animate in a batch (prevents performance issues)
+    maxAnimatedItems: parseInt(
+      process.env.VIRTUAL_LIST_MAX_ANIMATED_ITEMS || '10'
+    ),
+    // Transition duration for item enter/leave (ms)
+    transitionDurationMs: parseInt(
+      process.env.VIRTUAL_LIST_TRANSITION_DURATION_MS || '200'
+    ),
+    // Move transition duration for reordering (ms)
+    moveDurationMs: parseInt(
+      process.env.VIRTUAL_LIST_MOVE_DURATION_MS || '300'
+    ),
+    // Reduced motion duration - faster and simpler for accessibility (ms)
+    reducedMotionDurationMs: parseInt(
+      process.env.VIRTUAL_LIST_REDUCED_MOTION_DURATION_MS || '100'
+    ),
+    // Entrance animation start translate Y (px)
+    entranceStartTranslateYPx: parseInt(
+      process.env.VIRTUAL_LIST_ENTRANCE_START_TRANSLATE_Y_PX || '20'
+    ),
+    // Entrance animation start scale
+    entranceStartScale: parseFloat(
+      process.env.VIRTUAL_LIST_ENTRANCE_START_SCALE || '0.95'
+    ),
+    // Entrance animation mid-point translate Y for bounce effect (px)
+    entranceMidTranslateYPx: parseInt(
+      process.env.VIRTUAL_LIST_ENTRANCE_MID_TRANSLATE_Y_PX || '-2'
+    ),
+    // Entrance animation mid-point scale for bounce effect
+    entranceMidScale: parseFloat(
+      process.env.VIRTUAL_LIST_ENTRANCE_MID_SCALE || '1.01'
+    ),
+
   },
 } as const
 
