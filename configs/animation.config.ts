@@ -1893,48 +1893,6 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.RECOMMENDATIONS_RESPECT_REDUCED_MOTION !== 'false',
   },
-  // Health Monitor Micro-UX - Palette's delightful enhancement! 🎨
-  // Visual feedback and haptic responses for health checks
-  healthMonitor: {
-    // Pulse animation duration during health check (ms)
-    pulseDurationMs: parseInt(
-      process.env.HEALTH_MONITOR_PULSE_DURATION_MS || '1500'
-    ),
-    // CSS duration string for v-bind
-    pulseDurationSec: `${parseInt(process.env.HEALTH_MONITOR_PULSE_DURATION_MS || '1500') / 1000}s`,
-    // Scale for pulse effect
-    pulseScale: parseFloat(process.env.HEALTH_MONITOR_PULSE_SCALE || '1.15'),
-    // Success celebration duration (ms)
-    successDurationMs: parseInt(
-      process.env.HEALTH_MONITOR_SUCCESS_DURATION_MS || '600'
-    ),
-    // Success celebration duration string
-    successDurationSec: `${parseInt(process.env.HEALTH_MONITOR_SUCCESS_DURATION_MS || '600') / 1000}s`,
-    // Error shake animation duration (ms)
-    errorDurationMs: parseInt(
-      process.env.HEALTH_MONITOR_ERROR_DURATION_MS || '400'
-    ),
-    // Error shake duration string
-    errorDurationSec: `${parseInt(process.env.HEALTH_MONITOR_ERROR_DURATION_MS || '400') / 1000}s`,
-    // Scale for success pop effect
-    successScale: parseFloat(process.env.HEALTH_MONITOR_SUCCESS_SCALE || '1.1'),
-    // Icon rotation for success (degrees)
-    successRotationDeg: parseInt(
-      process.env.HEALTH_MONITOR_SUCCESS_ROTATION || '360'
-    ),
-    // Spinner rotation duration (ms)
-    spinnerDurationMs: parseInt(
-      process.env.HEALTH_MONITOR_SPINNER_DURATION_MS || '1000'
-    ),
-    // Delay before triggering haptic feedback (ms)
-    hapticDelayMs: parseInt(
-      process.env.HEALTH_MONITOR_HAPTIC_DELAY_MS || '200'
-    ),
-    // Whether to respect reduced motion preference
-    respectReducedMotion:
-      process.env.HEALTH_MONITOR_RESPECT_REDUCED_MOTION !== 'false',
-  },
-
   // VirtualList Component Animations - Palette's micro-UX enhancement!
   // Staggered entrance animations and smooth transitions for virtual scrolling
   virtualList: {
@@ -1979,6 +1937,44 @@ export const animationConfig = {
     entranceMidScale: parseFloat(
       process.env.VIRTUAL_LIST_ENTRANCE_MID_SCALE || '1.01'
     ),
+  },
+
+  // ReviewQueue Component Animations - Palette's micro-UX delight! 🎨
+  // Staggered card entrances, loading skeletons, and delightful hover effects
+  reviewQueue: {
+    // Stagger delay between card entrances (ms)
+    staggerDelayMs: parseInt(process.env.REVIEW_QUEUE_STAGGER_MS || '100'),
+    // Card entrance animation duration (ms)
+    entranceDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Card hover transition duration (ms)
+    hoverTransitionMs: parseInt(
+      process.env.REVIEW_QUEUE_HOVER_TRANSITION_MS || '200'
+    ),
+    // Status badge pulse animation duration (ms)
+    badgePulseDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_BADGE_PULSE_MS || '2000'
+    ),
+    // Empty state float animation duration (ms)
+    emptyFloatDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_EMPTY_FLOAT_MS || '3000'
+    ),
+    // Skeleton shimmer animation duration (ms)
+    skeletonShimmerDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_SKELETON_SHIMMER_MS || '1500'
+    ),
+    // Button pulse animation duration (ms)
+    buttonPulseDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_BUTTON_PULSE_MS || '400'
+    ),
+    // Filter transition duration (ms)
+    filterTransitionMs: parseInt(
+      process.env.REVIEW_QUEUE_FILTER_TRANSITION_MS || '200'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.REVIEW_QUEUE_RESPECT_REDUCED_MOTION !== 'false',
   },
 } as const
 

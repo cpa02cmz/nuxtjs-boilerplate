@@ -319,6 +319,9 @@ export const limitsConfig = {
     urlValidationRetryDelay: parseInt(
       process.env.URL_VALIDATION_RETRY_DELAY || '1000'
     ),
+    urlValidationMaxTimeout: parseInt(
+      process.env.URL_VALIDATION_MAX_TIMEOUT || '30000'
+    ),
   },
 
   // Error Tracking Limits - Flexy hates hardcoded limits!
