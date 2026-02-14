@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="resources && resources.length >= 2"
-    class="overflow-x-auto"
-  >
+  <div v-if="resources && resources.length >= 2" class="overflow-x-auto">
     <table
       class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
       :aria-label="`Comparison of ${resources.length} resources`"
@@ -165,10 +162,10 @@
         prefersReducedMotion
           ? ''
           : [
-            'transition-all',
-            'ease-out',
-            animationConfig.tailwindDurations.slower,
-          ].join(' ')
+              'transition-all',
+              'ease-out',
+              animationConfig.tailwindDurations.slower,
+            ].join(' ')
       "
       :enter-from-class="prefersReducedMotion ? '' : 'opacity-0 translate-y-4'"
       :enter-to-class="prefersReducedMotion ? '' : 'opacity-100 translate-y-0'"
@@ -299,7 +296,7 @@
           >
             {{
               contentConfig.comparison.emptyState.popularLabel ||
-                'Popular resources'
+              'Popular resources'
             }}
           </p>
           <div class="flex flex-wrap justify-center gap-2">
@@ -350,11 +347,7 @@
     </Transition>
 
     <!-- Screen Reader Live Region -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-    >
+    <div class="sr-only" role="status" aria-live="polite">
       {{ announcement }}
     </div>
   </div>
@@ -489,7 +482,9 @@ const getResourceValue = (resource: Resource, field: string) => {
 
 /* Icon bounce animation */
 .comparison-empty-icon-bounce {
-  animation: comparisonIconBounce 2s ease-in-out infinite;
+  animation: comparisonIconBounce
+    v-bind('animationConfig.comparisonTable.iconBounceSec + "s"') ease-in-out
+    infinite;
 }
 
 @keyframes comparisonIconBounce {
@@ -504,7 +499,9 @@ const getResourceValue = (resource: Resource, field: string) => {
 
 /* Icon pulse animation */
 .comparison-empty-icon-pulse {
-  animation: comparisonIconPulse 3s ease-in-out infinite;
+  animation: comparisonIconPulse
+    v-bind('animationConfig.comparisonTable.iconPulseSec + "s"') ease-in-out
+    infinite;
 }
 
 @keyframes comparisonIconPulse {
@@ -519,7 +516,9 @@ const getResourceValue = (resource: Resource, field: string) => {
 
 /* Scale icon animation */
 .comparison-empty-scale-icon {
-  animation: comparisonScaleIcon 4s ease-in-out infinite;
+  animation: comparisonScaleIcon
+    v-bind('animationConfig.comparisonTable.iconScaleSec + "s"') ease-in-out
+    infinite;
   transform-origin: center;
 }
 
@@ -541,7 +540,9 @@ const getResourceValue = (resource: Resource, field: string) => {
 
 /* Ring rotation animation */
 .comparison-empty-ring-rotate {
-  animation: comparisonRingRotate 20s linear infinite;
+  animation: comparisonRingRotate
+    v-bind('animationConfig.comparisonTable.ringRotateSec + "s"') linear
+    infinite;
 }
 
 @keyframes comparisonRingRotate {
@@ -555,7 +556,9 @@ const getResourceValue = (resource: Resource, field: string) => {
 
 /* Floating dots animations */
 .comparison-empty-dot {
-  animation: comparisonDotFloat 3s ease-in-out infinite;
+  animation: comparisonDotFloat
+    v-bind('animationConfig.comparisonTable.dotFloatSec + "s"') ease-in-out
+    infinite;
 }
 
 .comparison-empty-dot-1 {
@@ -596,37 +599,43 @@ const getResourceValue = (resource: Resource, field: string) => {
 
 /* Background circles */
 .comparison-empty-circle {
-  filter: blur(40px);
+  filter: blur(v-bind('animationConfig.comparisonTable.blurRadiusPx + "px"'));
 }
 
 .comparison-empty-circle-1 {
-  width: 120px;
-  height: 120px;
-  top: -20px;
+  width: v-bind('animationConfig.comparisonTable.circleSizeLargePx + "px"');
+  height: v-bind('animationConfig.comparisonTable.circleSizeLargePx + "px"');
+  top: v-bind('animationConfig.comparisonTable.circleOffsetTopPx + "px"');
   left: 20%;
-  animation: comparisonCircleFloat 8s ease-in-out infinite;
+  animation: comparisonCircleFloat
+    v-bind('animationConfig.comparisonTable.circleFloatSec1 + "s"') ease-in-out
+    infinite;
   animation-delay: v-bind(
     'animationConfig.comparisonEmptyState.circleFloatDelaysSec[0] + "s"'
   );
 }
 
 .comparison-empty-circle-2 {
-  width: 100px;
-  height: 100px;
+  width: v-bind('animationConfig.comparisonTable.circleSizeMediumPx + "px"');
+  height: v-bind('animationConfig.comparisonTable.circleSizeMediumPx + "px"');
   bottom: 10%;
   right: 15%;
-  animation: comparisonCircleFloat 10s ease-in-out infinite;
+  animation: comparisonCircleFloat
+    v-bind('animationConfig.comparisonTable.circleFloatSec2 + "s"') ease-in-out
+    infinite;
   animation-delay: v-bind(
     'animationConfig.comparisonEmptyState.circleFloatDelaysSec[1] + "s"'
   );
 }
 
 .comparison-empty-circle-3 {
-  width: 80px;
-  height: 80px;
+  width: v-bind('animationConfig.comparisonTable.circleSizeSmallPx + "px"');
+  height: v-bind('animationConfig.comparisonTable.circleSizeSmallPx + "px"');
   top: 40%;
   right: 25%;
-  animation: comparisonCircleFloat 12s ease-in-out infinite;
+  animation: comparisonCircleFloat
+    v-bind('animationConfig.comparisonTable.circleFloatSec3 + "s"') ease-in-out
+    infinite;
   animation-delay: v-bind(
     'animationConfig.comparisonEmptyState.circleFloatDelaysSec[2] + "s"'
   );
@@ -647,7 +656,9 @@ const getResourceValue = (resource: Resource, field: string) => {
 
 /* Text reveal animation */
 .comparison-empty-text-reveal {
-  animation: comparisonTextReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: comparisonTextReveal
+    v-bind('animationConfig.comparisonTable.textRevealSec + "s"')
+    cubic-bezier(0.16, 1, 0.3, 1) forwards;
   opacity: 0;
   transform: translateY(10px);
 }
