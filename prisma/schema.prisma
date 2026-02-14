@@ -86,23 +86,26 @@ model WebhookDelivery {
 }
 
 model WebhookQueue {
-  id           String    @id @default(cuid())
-  webhookId    String
-  webhook      Webhook   @relation(fields: [webhookId], references: [id], onDelete: Cascade)
-  event        String
-  payload      String
-  priority     Int       @default(0)
-  retryCount   Int       @default(0)
-  maxRetries   Int       @default(3)
-  scheduledFor DateTime  @default(now())
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  deletedAt    DateTime?
+  id                  String    @id @default(cuid())
+  webhookId           String
+  webhook             Webhook   @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  event               String
+  payload             String
+  priority            Int       @default(0)
+  retryCount          Int       @default(0)
+  maxRetries          Int       @default(3)
+  scheduledFor        DateTime  @default(now())
+  processingStartedAt DateTime?
+  processedBy         String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime?
 
   @@index([scheduledFor])
   @@index([priority, scheduledFor])
   @@index([webhookId])
   @@index([deletedAt])
+  @@index([processingStartedAt])
 }
 
 model DeadLetterWebhook {
