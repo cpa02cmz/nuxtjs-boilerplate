@@ -577,7 +577,6 @@ export const webhookStorage = {
             processedBy: workerId,
             updatedAt: now,
           },
-          take: 1, // Only update one item
         })
 
         if (count === 0) {
