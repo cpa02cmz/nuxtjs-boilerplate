@@ -1843,6 +1843,40 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.RECOMMENDATIONS_RESPECT_REDUCED_MOTION !== 'false',
 
+    // Sparkle Burst Animation - Flexy hates hardcoded 0.05s stagger delays!
+    // Celebratory particle burst when recommendations load successfully
+    sparkleBurst: {
+      // Duration of each sparkle's animation (ms)
+      durationMs: parseInt(
+        process.env.RECOMMENDATIONS_SPARKLE_DURATION_MS || '600'
+      ),
+      // CSS duration string for v-bind
+      durationSec: `${parseInt(process.env.RECOMMENDATIONS_SPARKLE_DURATION_MS || '600') / 1000}s`,
+      // Stagger delay between each sparkle (ms)
+      staggerDelayMs: parseInt(
+        process.env.RECOMMENDATIONS_SPARKLE_STAGGER_MS || '50'
+      ),
+      // CSS stagger delay string for v-bind
+      staggerDelaySec: `${parseInt(process.env.RECOMMENDATIONS_SPARKLE_STAGGER_MS || '50') / 1000}s`,
+      // Number of sparkles in the burst
+      count: parseInt(process.env.RECOMMENDATIONS_SPARKLE_COUNT || '6'),
+      // Distance sparkles travel (px)
+      travelDistancePx: parseInt(
+        process.env.RECOMMENDATIONS_SPARKLE_DISTANCE || '30'
+      ),
+      // Sparkle color (yellow-300)
+      color: process.env.RECOMMENDATIONS_SPARKLE_COLOR || '#fde047',
+    },
+
+    // Card transition timing for reduced motion mode
+    cardTransition: {
+      // Duration of card enter/leave transitions (ms)
+      durationMs: parseInt(
+        process.env.RECOMMENDATIONS_CARD_TRANSITION_MS || '200'
+      ),
+      // CSS duration string for v-bind
+      durationSec: `${parseInt(process.env.RECOMMENDATIONS_CARD_TRANSITION_MS || '200') / 1000}s`,
+    },
   },
   // VirtualList Component Animations - Palette's micro-UX enhancement!
   // Staggered entrance animations and smooth transitions for virtual scrolling
@@ -1888,7 +1922,6 @@ export const animationConfig = {
     entranceMidScale: parseFloat(
       process.env.VIRTUAL_LIST_ENTRANCE_MID_SCALE || '1.01'
     ),
-
   },
 } as const
 
