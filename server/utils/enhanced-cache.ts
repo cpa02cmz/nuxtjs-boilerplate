@@ -111,7 +111,7 @@ class CacheManager {
   /**
    * Stop the cleanup interval to prevent memory leaks
    */
-  private stopCleanup(): void {
+  private stopCleanup() {
     if (this.cleanupIntervalId) {
       clearInterval(this.cleanupIntervalId)
       this.cleanupIntervalId = null

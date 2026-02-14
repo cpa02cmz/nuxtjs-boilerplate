@@ -53,12 +53,7 @@
     </Teleport>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </div>
@@ -147,7 +142,7 @@ const feedbackText = computed(() => props.feedbackMessage)
  * Calculate tooltip position based on trigger element and preferred position
  */
 const calculatePosition = async () => {
-  if (!triggerRef.value) return
+  if (!triggerRef.value || typeof window === 'undefined') return
 
   await nextTick()
 
