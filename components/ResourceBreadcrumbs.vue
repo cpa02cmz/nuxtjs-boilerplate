@@ -1,58 +1,32 @@
 <template>
-  <nav
-    class="mb-6"
-    aria-label="Breadcrumb"
-  >
+  <nav class="mb-6" aria-label="Breadcrumb">
     <ol class="flex items-center space-x-2 text-sm">
       <li class="breadcrumb-item">
-        <NuxtLink
-          to="/"
-          class="breadcrumb-link group"
-        >
+        <NuxtLink to="/" class="breadcrumb-link group">
           <span class="breadcrumb-text">Home</span>
-          <span
-            class="breadcrumb-underline"
-            aria-hidden="true"
-          />
+          <span class="breadcrumb-underline" aria-hidden="true" />
         </NuxtLink>
       </li>
       <li aria-hidden="true">
         <span class="breadcrumb-separator">/</span>
       </li>
       <li class="breadcrumb-item">
-        <NuxtLink
-          to="/search"
-          class="breadcrumb-link group"
-        >
+        <NuxtLink to="/search" class="breadcrumb-link group">
           <span class="breadcrumb-text">Resources</span>
-          <span
-            class="breadcrumb-underline"
-            aria-hidden="true"
-          />
+          <span class="breadcrumb-underline" aria-hidden="true" />
         </NuxtLink>
       </li>
       <li aria-hidden="true">
         <span class="breadcrumb-separator">/</span>
       </li>
-      <li
-        class="breadcrumb-current"
-        aria-current="page"
-      >
+      <li class="breadcrumb-current" aria-current="page">
         <span class="breadcrumb-current-text">{{ title }}</span>
-        <span
-          class="breadcrumb-current-indicator"
-          aria-hidden="true"
-        />
+        <span class="breadcrumb-current-indicator" aria-hidden="true" />
       </li>
     </ol>
 
     <!-- Screen reader announcement for current page -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </nav>
@@ -61,6 +35,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import { contentConfig } from '~/configs/content.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
@@ -116,7 +91,9 @@ onMounted(() => {
   position: relative;
   display: inline-flex;
   flex-direction: column;
-  color: rgb(37, 99, 235); /* blue-600 */
+  color: rgb(
+    v-bind('componentColorsConfig.breadcrumbs.link.color')
+  ); /* blue-600 */
   text-decoration: none;
   padding: 0.125rem 0.25rem;
   margin: -0.125rem -0.25rem;
@@ -126,11 +103,14 @@ onMounted(() => {
 }
 
 .breadcrumb-link:hover {
-  color: rgb(30, 64, 175); /* blue-800 */
+  color: rgb(
+    v-bind('componentColorsConfig.breadcrumbs.link.hoverColor')
+  ); /* blue-800 */
 }
 
 .breadcrumb-link:focus-visible {
-  outline: 2px solid rgb(37, 99, 235);
+  outline: 2px solid
+    rgb(v-bind('componentColorsConfig.breadcrumbs.link.focusOutline'));
   outline-offset: 2px;
 }
 
@@ -147,7 +127,11 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, rgb(37, 99, 235), rgb(59, 130, 246));
+  background: linear-gradient(
+    90deg,
+    rgb(v-bind('componentColorsConfig.breadcrumbs.gradient.start')),
+    rgb(v-bind('componentColorsConfig.breadcrumbs.gradient.end'))
+  );
   border-radius: 1px;
   transform: scaleX(0);
   transform-origin: left;
@@ -165,7 +149,9 @@ onMounted(() => {
 
 /* Separator styling */
 .breadcrumb-separator {
-  color: rgb(75, 85, 99); /* gray-600 */
+  color: rgb(
+    v-bind('componentColorsConfig.breadcrumbs.current.color')
+  ); /* gray-600 */
   transition: color v-bind('`${animationConfig.transition.fast.durationMs}ms`')
     ease-out;
 }
@@ -176,7 +162,9 @@ onMounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: rgb(107, 114, 128); /* gray-500 */
+  color: rgb(
+    v-bind('componentColorsConfig.breadcrumbs.current.muted')
+  ); /* gray-500 */
   font-weight: 500;
   padding: 0.125rem 0.5rem;
   margin: -0.125rem -0.5rem;
@@ -199,7 +187,7 @@ onMounted(() => {
 .breadcrumb-current-indicator {
   width: 6px;
   height: 6px;
-  background: rgb(37, 99, 235);
+  background: rgb(v-bind('componentColorsConfig.breadcrumbs.separator.color'));
   border-radius: 50%;
   animation: pulse-dot
     v-bind('`${animationConfig.breadcrumbs.pulseDurationMs}ms`') ease-in-out
@@ -212,12 +200,14 @@ onMounted(() => {
   100% {
     transform: scale(1);
     opacity: 1;
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 0 0
+      rgba(v-bind('componentColorsConfig.breadcrumbs.separator.color'), 0.4);
   }
   50% {
     transform: scale(1.2);
     opacity: 0.8;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0);
+    box-shadow: 0 0 0 4px
+      rgba(v-bind('componentColorsConfig.breadcrumbs.separator.color'), 0);
   }
 }
 

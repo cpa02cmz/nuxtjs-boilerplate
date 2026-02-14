@@ -161,10 +161,7 @@
         </span>
 
         <!-- Reading time estimate -->
-        <span
-          class="stat-divider"
-          aria-hidden="true"
-        >·</span>
+        <span class="stat-divider" aria-hidden="true">·</span>
 
         <span class="stat-item">
           <svg
@@ -189,12 +186,7 @@
     </div>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -202,7 +194,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
-import Tooltip from '~/components/Tooltip.vue'
+
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { limitsConfig } from '~/configs/limits.config'
@@ -425,7 +418,7 @@ onUnmounted(() => {
 .description-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: rgb(17, 24, 39);
+  color: rgb(v-bind('componentColorsConfig.descriptionSection.title.color'));
   margin: 0;
 }
 
@@ -442,9 +435,13 @@ onUnmounted(() => {
   width: 2rem;
   height: 2rem;
   border-radius: 0.5rem;
-  background-color: rgb(243, 244, 246);
+  background-color: rgb(
+    v-bind('componentColorsConfig.descriptionSection.actionBtn.bg')
+  );
   border: none;
-  color: rgb(75, 85, 99);
+  color: rgb(
+    v-bind('componentColorsConfig.descriptionSection.actionBtn.color')
+  );
   cursor: pointer;
   transition: all v-bind('`${animationConfig.transition.fast.durationMs}ms`')
     ease-out;
@@ -453,13 +450,20 @@ onUnmounted(() => {
 }
 
 .action-btn:hover {
-  background-color: rgb(229, 231, 235);
-  color: rgb(55, 65, 81);
+  background-color: rgb(
+    v-bind('componentColorsConfig.descriptionSection.actionBtn.hoverBg')
+  );
+  color: rgb(
+    v-bind('componentColorsConfig.descriptionSection.actionBtn.hoverColor')
+  );
   transform: translateY(-1px);
 }
 
 .action-btn:focus-visible {
-  outline: 2px solid rgb(59, 130, 246);
+  outline: 2px solid
+    rgb(
+      v-bind('componentColorsConfig.descriptionSection.actionBtn.focusOutline')
+    );
   outline-offset: 2px;
 }
 
@@ -476,12 +480,18 @@ onUnmounted(() => {
 
 /* Copy button states */
 .copy-btn.copy-success {
-  background-color: rgb(220, 252, 231);
-  color: rgb(22, 101, 52);
+  background-color: rgb(
+    v-bind('componentColorsConfig.descriptionSection.copySuccess.bg')
+  );
+  color: rgb(
+    v-bind('componentColorsConfig.descriptionSection.copySuccess.color')
+  );
 }
 
 .copy-btn.copy-success:hover {
-  background-color: rgb(187, 247, 208);
+  background-color: rgb(
+    v-bind('componentColorsConfig.descriptionSection.copySuccess.hoverBg')
+  );
 }
 
 /* Icon animations */
@@ -530,7 +540,7 @@ onUnmounted(() => {
 
 .description-text {
   margin: 0 0 0.75rem 0;
-  color: rgb(55, 65, 81);
+  color: rgb(v-bind('componentColorsConfig.descriptionSection.text.muted'));
   line-height: 1.625;
   font-size: 1rem;
   overflow: hidden;
@@ -554,8 +564,10 @@ onUnmounted(() => {
   padding: 0.375rem 0.75rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: rgb(37, 99, 235);
-  background-color: rgb(239, 246, 255);
+  color: rgb(v-bind('componentColorsConfig.descriptionSection.link.color'));
+  background-color: rgb(
+    v-bind('componentColorsConfig.descriptionSection.link.bg')
+  );
   border: none;
   border-radius: 0.375rem;
   cursor: pointer;
@@ -564,13 +576,20 @@ onUnmounted(() => {
 }
 
 .read-more-btn:hover {
-  background-color: rgb(219, 234, 254);
-  color: rgb(29, 78, 216);
+  background-color: rgb(
+    v-bind('componentColorsConfig.descriptionSection.link.hoverBg')
+  );
+  color: rgb(
+    v-bind('componentColorsConfig.descriptionSection.link.hoverColor')
+  );
   transform: translateY(-1px);
 }
 
 .read-more-btn:focus-visible {
-  outline: 2px solid rgb(59, 130, 246);
+  outline: 2px solid
+    rgb(
+      v-bind('componentColorsConfig.descriptionSection.actionBtn.focusOutline')
+    );
   outline-offset: 2px;
 }
 
@@ -597,7 +616,8 @@ onUnmounted(() => {
 .description-footer {
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid rgb(229, 231, 235);
+  border-top: 1px solid
+    rgb(v-bind('componentColorsConfig.descriptionSection.border.divider'));
 }
 
 .reading-stats {
@@ -605,7 +625,7 @@ onUnmounted(() => {
   align-items: center;
   gap: 0.75rem;
   font-size: 0.875rem;
-  color: rgb(107, 114, 128);
+  color: rgb(v-bind('componentColorsConfig.descriptionSection.text.light'));
 }
 
 .stat-item {
@@ -622,7 +642,9 @@ onUnmounted(() => {
 
 .stat-value {
   font-weight: 600;
-  color: rgb(75, 85, 99);
+  color: rgb(
+    v-bind('componentColorsConfig.descriptionSection.actionBtn.color')
+  );
 }
 
 .stat-label {
@@ -630,7 +652,7 @@ onUnmounted(() => {
 }
 
 .stat-divider {
-  color: rgb(209, 213, 219);
+  color: rgb(v-bind('componentColorsConfig.descriptionSection.text.disabled'));
   user-select: none;
 }
 

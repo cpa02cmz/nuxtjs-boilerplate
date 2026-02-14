@@ -194,6 +194,11 @@ export const componentColorsConfig = {
       danger: process.env.WEBHOOK_BTN_DANGER || '#ef4444',
       dangerHover: process.env.WEBHOOK_BTN_DANGER_HOVER || '#dc2626',
     },
+    // Flexy hates hardcoded white values!
+    buttonText: {
+      primary: process.env.WEBHOOK_BTN_TEXT_PRIMARY || '255, 255, 255', // white
+      danger: process.env.WEBHOOK_BTN_TEXT_DANGER || '255, 255, 255', // white
+    },
   },
 
   // Error Message Colors - Flexy hates hardcoded error message colors!
@@ -526,6 +531,79 @@ export const componentColorsConfig = {
   moderationDashboard: {
     activity: {
       flag: process.env.MODERATION_ACTIVITY_FLAG || '#ffc107',
+    },
+  },
+
+  // DescriptionSection Component Colors - Flexy hates hardcoded description colors!
+  descriptionSection: {
+    title: {
+      color: process.env.DESCRIPTION_TITLE_COLOR || '17, 24, 39', // gray-900
+    },
+    actionBtn: {
+      bg: process.env.DESCRIPTION_ACTION_BTN_BG || '243, 244, 246', // gray-100
+      color: process.env.DESCRIPTION_ACTION_BTN_COLOR || '75, 85, 99', // gray-600
+      hoverBg: process.env.DESCRIPTION_ACTION_BTN_HOVER_BG || '229, 231, 235', // gray-200
+      hoverColor:
+        process.env.DESCRIPTION_ACTION_BTN_HOVER_COLOR || '55, 65, 81', // gray-700
+      focusOutline: process.env.DESCRIPTION_ACTION_BTN_FOCUS || '59, 130, 246', // blue-500
+    },
+    copySuccess: {
+      bg: process.env.DESCRIPTION_COPY_SUCCESS_BG || '220, 252, 231', // green-100
+      color: process.env.DESCRIPTION_COPY_SUCCESS_COLOR || '22, 101, 52', // green-800
+      hoverBg: process.env.DESCRIPTION_COPY_SUCCESS_HOVER_BG || '187, 247, 208', // green-200
+    },
+    link: {
+      color: process.env.DESCRIPTION_LINK_COLOR || '37, 99, 235', // blue-600
+      bg: process.env.DESCRIPTION_LINK_BG || '239, 246, 255', // blue-50
+      hoverBg: process.env.DESCRIPTION_LINK_HOVER_BG || '219, 234, 254', // blue-100
+      hoverColor: process.env.DESCRIPTION_LINK_HOVER_COLOR || '29, 78, 216', // blue-700
+    },
+    text: {
+      muted: process.env.DESCRIPTION_TEXT_MUTED || '55, 65, 81', // gray-700
+      light: process.env.DESCRIPTION_TEXT_LIGHT || '107, 114, 128', // gray-500
+      disabled: process.env.DESCRIPTION_TEXT_DISABLED || '209, 213, 219', // gray-300
+    },
+    border: {
+      divider: process.env.DESCRIPTION_BORDER_DIVIDER || '229, 231, 235', // gray-200
+    },
+  },
+
+  // ResourceBreadcrumbs Component Colors - Flexy hates hardcoded breadcrumb colors!
+  breadcrumbs: {
+    link: {
+      color: process.env.BREADCRUMBS_LINK_COLOR || '37, 99, 235', // blue-600
+      hoverColor: process.env.BREADCRUMBS_LINK_HOVER_COLOR || '30, 64, 175', // blue-800
+      focusOutline: process.env.BREADCRUMBS_LINK_FOCUS || '37, 99, 235', // blue-600
+    },
+    gradient: {
+      start: process.env.BREADCRUMBS_GRADIENT_START || '37, 99, 235', // blue-600
+      end: process.env.BREADCRUMBS_GRADIENT_END || '59, 130, 246', // blue-500
+    },
+    separator: {
+      color: process.env.BREADCRUMBS_SEPARATOR_COLOR || '37, 99, 235', // blue-600
+    },
+    current: {
+      color: process.env.BREADCRUMBS_CURRENT_COLOR || '75, 85, 99', // gray-600
+      muted: process.env.BREADCRUMBS_CURRENT_MUTED || '107, 114, 128', // gray-500
+    },
+  },
+
+  // OfflineIndicator Component Colors - Flexy hates hardcoded offline colors!
+  offlineIndicator: {
+    warning: {
+      text: process.env.OFFLINE_WARNING_TEXT || '146, 64, 14', // amber-800
+      bg: process.env.OFFLINE_WARNING_BG || '255, 251, 235', // amber-50
+      border: process.env.OFFLINE_WARNING_BORDER || '251, 191, 36', // amber-400
+      progressBg: process.env.OFFLINE_WARNING_PROGRESS_BG || '254, 243, 199', // amber-100
+      progressBorder:
+        process.env.OFFLINE_WARNING_PROGRESS_BORDER || '245, 158, 11', // amber-500
+      ring: process.env.OFFLINE_WARNING_RING || '245, 158, 11', // amber-500
+      pulse: process.env.OFFLINE_WARNING_PULSE || '245, 158, 11', // amber-500
+    },
+    online: {
+      bg: process.env.OFFLINE_ONLINE_BG || '220, 252, 231', // green-100
+      border: process.env.OFFLINE_ONLINE_BORDER || '74, 222, 128', // green-400
+      text: process.env.OFFLINE_ONLINE_TEXT || '22, 101, 52', // green-800
     },
   },
 } as const

@@ -27,10 +27,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <!-- Animated offline icon with connection pulse - Palette's micro-UX enhancement! -->
-                <div
-                  class="relative flex-shrink-0 w-8 h-8"
-                  aria-hidden="true"
-                >
+                <div class="relative flex-shrink-0 w-8 h-8" aria-hidden="true">
                   <!-- Connection pulse rings (shown when reconnecting) -->
                   <template v-if="isReconnecting && !prefersReducedMotion">
                     <div
@@ -240,12 +237,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </Teleport>
@@ -253,6 +245,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
@@ -588,7 +581,10 @@ onUnmounted(() => {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 2px solid v-bind('pulseConfig?.color ?? "rgb(245, 158, 11)"');
+  border: 2px solid
+    v-bind(
+      'pulseConfig?.color ?? `rgb(${componentColorsConfig.offlineIndicator.warning.pulse})`'
+    );
   animation: connection-pulse v-bind('pulseConfig?.durationSec ?? "1.5s"')
     ease-out infinite;
   opacity: 0;
@@ -613,9 +609,14 @@ onUnmounted(() => {
   padding: 0.375rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 500;
-  color: rgb(146, 64, 14); /* amber-800 */
-  background-color: rgb(255, 251, 235); /* amber-50 */
-  border: 1px solid rgb(251, 191, 36); /* amber-400 */
+  color: rgb(
+    v-bind('componentColorsConfig.offlineIndicator.warning.text')
+  ); /* amber-800 */
+  background-color: rgb(
+    v-bind('componentColorsConfig.offlineIndicator.warning.bg')
+  ); /* amber-50 */
+  border: 1px solid
+    rgb(v-bind('componentColorsConfig.offlineIndicator.warning.border')); /* amber-400 */
   border-radius: 9999px;
   cursor: pointer;
   transition: all v-bind('animationConfig.cssTransitions.normalSec') ease-out;
@@ -625,15 +626,21 @@ onUnmounted(() => {
 }
 
 .retry-button:hover:not(:disabled) {
-  background-color: rgb(254, 243, 199); /* amber-100 */
-  border-color: rgb(245, 158, 11); /* amber-500 */
+  background-color: rgb(
+    v-bind('componentColorsConfig.offlineIndicator.warning.progressBg')
+  ); /* amber-100 */
+  border-color: rgb(
+    v-bind('componentColorsConfig.offlineIndicator.warning.progressBorder')
+  ); /* amber-500 */
   transform: translateY(-1px);
   box-shadow: v-bind('shadowsConfig.offlineIndicatorComponent.default');
 }
 
 .retry-button:focus-visible {
   ring: 2px;
-  ring-color: rgb(245, 158, 11); /* amber-500 */
+  ring-color: rgb(
+    v-bind('componentColorsConfig.offlineIndicator.warning.ring')
+  ); /* amber-500 */
   ring-offset: 1px;
 }
 
@@ -652,9 +659,15 @@ onUnmounted(() => {
 
 /* Success state */
 .retry-button.is-success {
-  background-color: rgb(220, 252, 231); /* green-100 */
-  border-color: rgb(74, 222, 128); /* green-400 */
-  color: rgb(22, 101, 52); /* green-800 */
+  background-color: rgb(
+    v-bind('componentColorsConfig.offlineIndicator.online.bg')
+  ); /* green-100 */
+  border-color: rgb(
+    v-bind('componentColorsConfig.offlineIndicator.online.border')
+  ); /* green-400 */
+  color: rgb(
+    v-bind('componentColorsConfig.offlineIndicator.online.text')
+  ); /* green-800 */
 }
 
 /* Retry button icons */
