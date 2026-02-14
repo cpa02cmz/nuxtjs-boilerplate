@@ -1,9 +1,21 @@
 <template>
   <Transition
-    enter-active-class="transition-all duration-300 ease-out"
+    :enter-active-class="
+      [
+        'transition-all',
+        'ease-out',
+        animationConfig.tailwindDurations.standard,
+      ].join(' ')
+    "
     enter-from-class="opacity-0 -translate-x-4 scale-95"
     enter-to-class="opacity-100 translate-x-0 scale-100"
-    leave-active-class="transition-all duration-200 ease-in"
+    :leave-active-class="
+      [
+        'transition-all',
+        'ease-in',
+        animationConfig.tailwindDurations.normal,
+      ].join(' ')
+    "
     leave-from-class="opacity-100 translate-x-0 scale-100"
     leave-to-class="opacity-0 translate-x-4 scale-95"
   >
@@ -66,15 +78,9 @@
           </button>
         </div>
         <p>{{ noticeMessage }}</p>
-        <div
-          v-if="migrationPath || alternatives"
-          class="notice-actions"
-        >
+        <div v-if="migrationPath || alternatives" class="notice-actions">
           <!-- Migration Link with Copy Button - Palette's micro-UX delight! -->
-          <div
-            v-if="migrationPath"
-            class="migration-link-wrapper"
-          >
+          <div v-if="migrationPath" class="migration-link-wrapper">
             <a
               :href="migrationPath"
               target="_blank"
@@ -124,10 +130,22 @@
                 @mouseleave="isHoveringCopy = false"
               >
                 <Transition
-                  enter-active-class="transition-all duration-200 ease-out"
+                  :enter-active-class="
+                    [
+                      'transition-all',
+                      'ease-out',
+                      animationConfig.tailwindDurations.normal,
+                    ].join(' ')
+                  "
                   enter-from-class="opacity-0 scale-50"
                   enter-to-class="opacity-100 scale-100"
-                  leave-active-class="transition-all duration-150 ease-in"
+                  :leave-active-class="
+                    [
+                      'transition-all',
+                      'ease-in',
+                      animationConfig.tailwindDurations.quick,
+                    ].join(' ')
+                  "
                   leave-from-class="opacity-100 scale-100"
                   leave-to-class="opacity-0 scale-50"
                   mode="out-in"
@@ -210,11 +228,7 @@
       />
 
       <!-- Screen reader announcement -->
-      <div
-        class="sr-only"
-        role="status"
-        aria-live="polite"
-      >
+      <div class="sr-only" role="status" aria-live="polite">
         {{ announcementText }}
       </div>
     </div>

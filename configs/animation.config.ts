@@ -851,6 +851,33 @@ export const animationConfig = {
     reducedMotionSec: `${parseInt(process.env.CSS_TRANSITION_REDUCED_MS || '100') / 1000}s`,
   },
 
+  // Tailwind Duration Classes - Flexy hates hardcoded duration-* classes!
+  // Use these in Vue templates: :class="animationConfig.tailwindDurations.fast"
+  tailwindDurations: {
+    // Instant (0ms/1ms)
+    instant: process.env.TAILWIND_DURATION_INSTANT || 'duration-0',
+    // Ultra-fast (50ms) - micro-interactions
+    ultraFast: process.env.TAILWIND_DURATION_ULTRA_FAST || 'duration-75',
+    // Fast (100ms) - quick feedback
+    fast: process.env.TAILWIND_DURATION_FAST || 'duration-100',
+    // Quick (150ms) - button presses
+    quick: process.env.TAILWIND_DURATION_QUICK || 'duration-150',
+    // Normal (200ms) - most UI interactions
+    normal: process.env.TAILWIND_DURATION_NORMAL || 'duration-200',
+    // Standard (300ms) - hover states
+    standard: process.env.TAILWIND_DURATION_STANDARD || 'duration-300',
+    // Slow (400ms) - noticeable animations
+    slow: process.env.TAILWIND_DURATION_SLOW || 'duration-400',
+    // Slower (500ms) - entrance animations
+    slower: process.env.TAILWIND_DURATION_SLOWER || 'duration-500',
+    // Long (600ms) - dramatic effects
+    long: process.env.TAILWIND_DURATION_LONG || 'duration-600',
+    // Extra long (700ms)
+    extraLong: process.env.TAILWIND_DURATION_EXTRA_LONG || 'duration-700',
+    // Extended (1000ms/1s) - slow transitions
+    extended: process.env.TAILWIND_DURATION_EXTENDED || 'duration-1000',
+  },
+
   // CSS Animation Timing - Flexy hates hardcoded animation delays!
   // For CSS animations with animation-delay and animation-duration
   cssAnimations: {
