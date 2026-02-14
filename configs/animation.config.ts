@@ -2267,6 +2267,76 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.COMPARISON_EMPTY_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Comparison Table Animations
+  comparisonTable: {
+    // Icon bounce duration (seconds)
+    iconBounceSec: parseFloat(process.env.COMPARISON_ICON_BOUNCE_SEC || '2'),
+    // Icon pulse duration (seconds)
+    iconPulseSec: parseFloat(process.env.COMPARISON_ICON_PULSE_SEC || '3'),
+    // Icon scale duration (seconds)
+    iconScaleSec: parseFloat(process.env.COMPARISON_ICON_SCALE_SEC || '4'),
+    // Ring rotate duration (seconds)
+    ringRotateSec: parseFloat(process.env.COMPARISON_RING_ROTATE_SEC || '20'),
+    // Dot float duration (seconds)
+    dotFloatSec: parseFloat(process.env.COMPARISON_DOT_FLOAT_SEC || '3'),
+    // Circle float durations (seconds)
+    circleFloatSec1: parseFloat(
+      process.env.COMPARISON_CIRCLE_FLOAT_SEC_1 || '8'
+    ),
+    circleFloatSec2: parseFloat(
+      process.env.COMPARISON_CIRCLE_FLOAT_SEC_2 || '10'
+    ),
+    circleFloatSec3: parseFloat(
+      process.env.COMPARISON_CIRCLE_FLOAT_SEC_3 || '12'
+    ),
+    // Text reveal duration (seconds)
+    textRevealSec: parseFloat(process.env.COMPARISON_TEXT_REVEAL_SEC || '0.6'),
+    // Blur radius (px)
+    blurRadiusPx: parseInt(process.env.COMPARISON_BLUR_RADIUS_PX || '40'),
+    // Circle size large (px)
+    circleSizeLargePx: parseInt(
+      process.env.COMPARISON_CIRCLE_SIZE_LARGE_PX || '120'
+    ),
+    // Circle size medium (px)
+    circleSizeMediumPx: parseInt(
+      process.env.COMPARISON_CIRCLE_SIZE_MEDIUM_PX || '100'
+    ),
+    // Circle size small (px)
+    circleSizeSmallPx: parseInt(
+      process.env.COMPARISON_CIRCLE_SIZE_SMALL_PX || '80'
+    ),
+    // Circle offset top (px)
+    circleOffsetTopPx: parseInt(
+      process.env.COMPARISON_CIRCLE_OFFSET_TOP_PX || '-20'
+    ),
+  },
+
+  // Offline Indicator Animations
+  offlineIndicator: {
+    // Pulse subtle duration (seconds)
+    pulseSubtleSec: parseFloat(process.env.OFFLINE_PULSE_SUBTLE_SEC || '2'),
+    // Icon pulse duration (seconds)
+    iconPulseSec: parseFloat(process.env.OFFLINE_ICON_PULSE_SEC || '2'),
+    // Bounce subtle duration (seconds)
+    bounceSubtleSec: parseFloat(process.env.OFFLINE_BOUNCE_SUBTLE_SEC || '0.5'),
+    // Check pop duration (seconds)
+    checkPopSec: parseFloat(process.env.OFFLINE_CHECK_POP_SEC || '0.4'),
+    // Spin duration (seconds)
+    spinSec: parseFloat(process.env.OFFLINE_SPIN_SEC || '1'),
+  },
+
+  // Resource Card Animations
+  resourceCard: {
+    // New badge pulse duration (seconds)
+    newPulseSec: parseFloat(process.env.RESOURCE_CARD_NEW_PULSE_SEC || '2'),
+  },
+
+  // Resource Comments Animations
+  resourceComments: {
+    // Avatar pulse duration (seconds)
+    avatarPulseSec: parseFloat(process.env.COMMENTS_AVATAR_PULSE_SEC || '2'),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
