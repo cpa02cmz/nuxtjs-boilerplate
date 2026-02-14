@@ -59,7 +59,11 @@
             :class="`flex-shrink-0 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors ${animationConfig.tailwindDurations.normal}`"
             aria-hidden="true"
           >
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"

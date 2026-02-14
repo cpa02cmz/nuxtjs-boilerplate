@@ -25,7 +25,12 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <circle
+                class="checkmark-circle"
+                cx="12"
+                cy="12"
+                r="10"
+              />
               <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
