@@ -375,7 +375,7 @@ export class WebhookDeliveryService {
     }
 
     if (!this.circuitBreakerKeys.has(webhook.id)) {
-      const key = `webhook:${webhook.url}`
+      const key = `webhook:${webhook.id}:${webhook.url}`
       this.circuitBreakerKeys.set(webhook.id, key)
     }
     return this.circuitBreakerKeys.get(webhook.id)!
