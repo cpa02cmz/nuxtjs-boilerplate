@@ -2400,6 +2400,79 @@ export const animationConfig = {
     avatarPulseSec: parseFloat(process.env.COMMENTS_AVATAR_PULSE_SEC || '2'),
   },
 
+  // ============================================
+  // Flexy ULW Loop - Additional Modular Configs
+  // Eliminating hardcoded values! 🎯
+  // ============================================
+
+  // CSS Cubic-Bezier Easing Functions - Flexy hates hardcoded values!
+  // Centralized easing functions for consistent animations
+  cssEasing: {
+    // Spring standard easing (commonly cubic-bezier(0.175, 0.885, 0.32, 1.275))
+    spring:
+      process.env.CSS_EASING_SPRING ||
+      'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    // Bouncy easing (commonly cubic-bezier(0.34, 1.56, 0.64, 1))
+    bouncy:
+      process.env.CSS_EASING_BOUNCY || 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+    // Standard easing (commonly cubic-bezier(0.25, 0.46, 0.45, 0.94))
+    standard:
+      process.env.CSS_EASING_STANDARD || 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    // Entrance easing (commonly cubic-bezier(0.16, 1, 0.3, 1))
+    entrance:
+      process.env.CSS_EASING_ENTRANCE || 'cubic-bezier(0.16, 1, 0.3, 1)',
+  },
+
+  // Comparison Animations - Additional properties for suggestion pop
+  // Used for pop animations in comparison views
+  comparisonPop: {
+    // Pop animation duration in seconds (commonly 0.4s)
+    durationSec: `${parseInt(process.env.COMPARISON_POP_MS || '400') / 1000}s`,
+    // Entrance easing for icon animations
+    easing:
+      process.env.COMPARISON_ENTRANCE_EASING || 'cubic-bezier(0.16, 1, 0.3, 1)',
+  },
+
+  // Checkmark Success Animations
+  // Used for success state checkmark animations
+  checkmarkAnim: {
+    // Circle scale animation duration in seconds
+    circleScaleDurationSec: `${parseInt(process.env.CHECKMARK_CIRCLE_SCALE_MS || '300') / 1000}s`,
+    // Checkmark draw duration in seconds
+    drawDurationSec: `${parseInt(process.env.CHECKMARK_DRAW_MS || '300') / 1000}s`,
+    // Icon rotate-in duration in seconds
+    iconRotateDurationSec: `${parseInt(process.env.CHECKMARK_ICON_ROTATE_MS || '400') / 1000}s`,
+    // Text fade-in duration in seconds
+    textFadeDurationSec: `${parseInt(process.env.CHECKMARK_TEXT_FADE_MS || '300') / 1000}s`,
+  },
+
+  // Validation Shake Animation
+  // Used for form validation error feedback
+  validationShakeAnim: {
+    // Shake animation duration in seconds
+    durationSec: `${parseInt(process.env.VALIDATION_SHAKE_DURATION_MS || '500') / 1000}s`,
+    // X-axis translation values for shake in pixels
+    translateXPx: [0, -4, 4, -2, 2],
+  },
+
+  // Offline Page Animations
+  // Used for offline page animations
+  offlineAnim: {
+    // Pulse animation duration in seconds
+    pulseDurationSec: `${parseInt(process.env.OFFLINE_PULSE_MS || '3000') / 1000}s`,
+    // Bounce animation duration in seconds
+    bounceDurationSec: `${parseInt(process.env.OFFLINE_BOUNCE_MS || '600') / 1000}s`,
+  },
+
+  // Float Animations
+  // Used for floating decorative elements
+  floatAnim: {
+    // Float animation duration in seconds
+    durationSec: `${parseInt(process.env.FLOAT_DURATION_MS || '3000') / 1000}s`,
+    // Easing function
+    easing: process.env.FLOAT_EASING || 'ease-in-out',
+  },
+
   // Features Section Animations - Palette's micro-UX delight! 🎨
   // Staggered entrance animations for feature lists with delightful checkmarks
   featuresSection: {
