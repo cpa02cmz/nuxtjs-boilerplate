@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="resources && resources.length >= 2"
-    class="overflow-x-auto"
-  >
+  <div v-if="resources && resources.length >= 2" class="overflow-x-auto">
     <table
       class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
       :aria-label="`Comparison of ${resources.length} resources`"
@@ -264,7 +261,7 @@
           >
             {{
               contentConfig.comparison.emptyState.popularLabel ||
-                'Popular resources'
+              'Popular resources'
             }}
           </p>
           <div class="flex flex-wrap justify-center gap-2">
@@ -309,11 +306,7 @@
     </Transition>
 
     <!-- Screen Reader Live Region -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-    >
+    <div class="sr-only" role="status" aria-live="polite">
       {{ announcement }}
     </div>
   </div>
@@ -324,7 +317,7 @@ import { ref, computed, onMounted } from 'vue'
 import type { Resource } from '~/types/resource'
 import type { ComparisonCriteria } from '~/types/comparison'
 import { contentConfig } from '~/configs/content.config'
-import { hapticFeedback } from '~/utils/hapticFeedback'
+import { hapticLight, hapticMedium } from '~/utils/hapticFeedback'
 
 interface Props {
   resources?: Resource[]
@@ -378,7 +371,7 @@ const confirmRemove = (resourceId: string) => {
 const handleBrowseClick = () => {
   // Provide haptic feedback on supported devices
   if (!prefersReducedMotion.value) {
-    hapticFeedback.light()
+    hapticLight()
   }
 
   announcement.value = 'Opening resource browser'
@@ -393,7 +386,7 @@ const handleBrowseClick = () => {
 const handleQuickAdd = (resource: Resource) => {
   // Provide haptic feedback on supported devices
   if (!prefersReducedMotion.value) {
-    hapticFeedback.medium()
+    hapticMedium()
   }
 
   announcement.value = `${resource.title} added to comparison`
