@@ -9,6 +9,10 @@ export const validateUrlSchema = z.object({
     .number()
     .int()
     .positive()
+    .max(
+      limitsConfig.validation.urlValidationMaxTimeout,
+      `Timeout cannot exceed ${limitsConfig.validation.urlValidationMaxTimeout}ms`
+    )
     .optional()
     .default(limitsConfig.validation.urlValidationTimeout),
   retries: z
