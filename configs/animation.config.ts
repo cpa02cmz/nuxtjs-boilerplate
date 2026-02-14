@@ -1748,6 +1748,65 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.SCROLL_CELEBRATION_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // ScrollToTop Tooltip Styling - Flexy hates hardcoded CSS!
+  // Centralized styling values for the scroll progress tooltip
+  scrollToTopTooltip: {
+    // Mobile positioning from bottom (rem) - Flexy hates hardcoded 5rem!
+    mobileBottomRem: parseFloat(
+      process.env.SCROLLTOOLTIP_MOBILE_BOTTOM_REM || '5'
+    ),
+    // Tooltip vertical offset from button (px)
+    verticalOffsetPx: parseInt(
+      process.env.SCROLLTOOLTIP_VERTICAL_OFFSET_PX || '8'
+    ),
+    // Tooltip padding X axis (px)
+    paddingXPx: parseInt(process.env.SCROLLTOOLTIP_PADDING_X_PX || '10'),
+    // Tooltip padding Y axis (px)
+    paddingYPx: parseInt(process.env.SCROLLTOOLTIP_PADDING_Y_PX || '6'),
+    // Tooltip border radius (px)
+    borderRadiusPx: parseInt(process.env.SCROLLTOOLTIP_BORDER_RADIUS_PX || '8'),
+    // Main text font size (px) - Flexy hates hardcoded 14px!
+    textFontSizePx: parseInt(
+      process.env.SCROLLTOOLTIP_TEXT_FONT_SIZE_PX || '14'
+    ),
+    // Label text font size (px) - Flexy hates hardcoded 10px!
+    labelFontSizePx: parseInt(
+      process.env.SCROLLTOOLTIP_LABEL_FONT_SIZE_PX || '10'
+    ),
+    // Label letter spacing (px) - Flexy hates hardcoded 0.5px!
+    labelLetterSpacingPx: parseFloat(
+      process.env.SCROLLTOOLTIP_LABEL_SPACING_PX || '0.5'
+    ),
+    // Label margin top (px)
+    labelMarginTopPx: parseInt(
+      process.env.SCROLLTOOLTIP_LABEL_MARGIN_TOP_PX || '2'
+    ),
+    // Tooltip arrow size (px) - border size for CSS triangle
+    arrowSizePx: parseInt(process.env.SCROLLTOOLTIP_ARROW_SIZE_PX || '6'),
+    // Box shadow values
+    shadow: {
+      x: parseInt(process.env.SCROLLTOOLTIP_SHADOW_X || '0'),
+      y: parseInt(process.env.SCROLLTOOLTIP_SHADOW_Y || '4'),
+      blur: parseInt(process.env.SCROLLTOOLTIP_SHADOW_BLUR || '12'),
+      opacity: parseFloat(process.env.SCROLLTOOLTIP_SHADOW_OPACITY || '0.15'),
+    },
+  },
+
+  // Mobile Positioning Config - Flexy hates hardcoded media query values!
+  // Standardized mobile positioning values for fixed elements
+  mobilePositioning: {
+    // Bottom position for mobile (rem) - prevents overlap with other fixed elements
+    bottomSpacingRem: parseFloat(process.env.MOBILE_BOTTOM_SPACING_REM || '5'),
+    // Tablet breakpoint max-width (px)
+    tabletBreakpointPx: parseInt(
+      process.env.MOBILE_TABLET_BREAKPOINT_PX || '768'
+    ),
+    // Mobile breakpoint max-width (px)
+    mobileBreakpointPx: parseInt(
+      process.env.MOBILE_MOBILE_BREAKPOINT_PX || '640'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
