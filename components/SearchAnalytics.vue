@@ -323,7 +323,7 @@
                   }"
                   :style="{
                     height: `${(day.count / maxSearchCount) * 100}%`,
-                    animationDelay: `${index * 50}ms`,
+                    animationDelay: `${index * animationConfig.card.staggerDelayMs}ms`,
                   }"
                   :title="`${day.date}: ${day.count} searches`"
                 />
@@ -694,7 +694,7 @@ const getBarStyle = (index: number) => {
     return {}
   }
   return {
-    animationDelay: `${index * 50}ms`,
+    animationDelay: `${index * animationConfig.card.staggerDelayMs}ms`,
   }
 }
 
@@ -704,7 +704,7 @@ const getSearchItemStyle = (index: number) => {
     return {}
   }
   return {
-    '--stagger-delay': `${index * 50}ms`,
+    '--stagger-delay': `${index * animationConfig.card.staggerDelayMs}ms`,
   }
 }
 

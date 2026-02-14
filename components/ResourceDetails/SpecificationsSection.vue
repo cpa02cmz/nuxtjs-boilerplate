@@ -175,6 +175,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
+import { zIndexScale } from '~/configs/z-index.config'
 
 interface Props {
   specifications: Record<string, string>
@@ -450,7 +451,7 @@ onUnmounted(() => {
   border-radius: inherit;
   color: white;
   font-weight: 600;
-  z-index: 10;
+  z-index: v-bind('zIndexScale.low[10]');
 }
 
 .copy-feedback-icon {
