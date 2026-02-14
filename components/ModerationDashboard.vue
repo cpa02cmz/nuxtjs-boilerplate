@@ -9,10 +9,7 @@
     </header>
 
     <!-- Palette's micro-UX enhancement: Stat Cards with Counter Animation -->
-    <section
-      aria-label="Dashboard statistics"
-      class="dashboard-stats"
-    >
+    <section aria-label="Dashboard statistics" class="dashboard-stats">
       <article
         v-for="(stat, index) in stats"
         :key="stat.key"
@@ -118,10 +115,7 @@
             </div>
             <div class="activity-content">
               <p>{{ activity.message }}</p>
-              <time
-                class="activity-time"
-                :datetime="activity.timestamp"
-              >{{
+              <time class="activity-time" :datetime="activity.timestamp">{{
                 formatDate(activity.timestamp)
               }}</time>
             </div>
@@ -258,7 +252,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useModerationDashboard } from '~/composables/useModerationDashboard'
 import { contentConfig } from '~/configs/content.config'
 import { shadowsConfig } from '~/configs/shadows.config'
@@ -524,17 +518,21 @@ const getActionStyle = (index: number) => {
   }
 }
 
+// Media query refs for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+let handleMotionChangeRef: ((e: MediaQueryListEvent) => void) | null = null
+
 // Initialize on mount
 onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 
   // Listen for reduced motion preference changes
   if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleMotionChange = (e: MediaQueryListEvent) => {
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    handleMotionChangeRef = (e: MediaQueryListEvent) => {
       prefersReducedMotion.value = e.matches
     }
-    mediaQuery.addEventListener('change', handleMotionChange)
+    mediaQueryRef.addEventListener('change', handleMotionChangeRef)
   }
 
   // Start counter animations after a brief delay
@@ -542,6 +540,15 @@ onMounted(() => {
     startCounterAnimations,
     animationConfig.moderationDashboard.counterStartDelayMs
   )
+})
+
+// Cleanup on unmount
+onUnmounted(() => {
+  if (mediaQueryRef && handleMotionChangeRef) {
+    mediaQueryRef.removeEventListener('change', handleMotionChangeRef)
+    mediaQueryRef = null
+    handleMotionChangeRef = null
+  }
 })
 
 // Watch for value changes and update animations

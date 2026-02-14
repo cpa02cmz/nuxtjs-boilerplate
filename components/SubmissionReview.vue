@@ -364,7 +364,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useSubmissionReview } from '~/composables/useSubmissionReview'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
@@ -507,16 +507,29 @@ const formatDate = (dateString?: string) => {
   return new Date(dateString).toLocaleString()
 }
 
+// Media query refs for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+
 onMounted(() => {
   fetchSubmission()
   prefersReducedMotion.value = checkReducedMotion()
 
   // Listen for reduced motion preference changes
   if (typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    mediaQuery.addEventListener('change', () => {
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    mediaQueryRef.addEventListener('change', () => {
       prefersReducedMotion.value = checkReducedMotion()
     })
+  }
+})
+
+// Cleanup on unmount
+onUnmounted(() => {
+  if (mediaQueryRef) {
+    mediaQueryRef.removeEventListener('change', () => {
+      prefersReducedMotion.value = checkReducedMotion()
+    })
+    mediaQueryRef = null
   }
 })
 </script>
