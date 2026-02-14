@@ -128,6 +128,15 @@ export default defineEventHandler(async event => {
       201
     )
   } catch (error) {
+    // Check if this is a rate limiting error (429) - re-throw to preserve status code
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      const statusCode = (error as { statusCode: number }).statusCode
+      if (statusCode === 429) {
+        // Re-throw rate limiting errors to preserve 429 status code
+        throw error
+      }
+    }
+
     logger.error('Analytics event error:', error)
     const apiError = createApiError(
       ErrorCode.INTERNAL_SERVER_ERROR,
