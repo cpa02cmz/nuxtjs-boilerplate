@@ -1624,6 +1624,10 @@ export const animationConfig = {
       process.env.ZERO_RESULT_DRAW_DURATION_SEC || '1.2'
     ),
     drawDelaySec: parseFloat(process.env.ZERO_RESULT_DRAW_DELAY_SEC || '0.2'),
+    // Fade-in delayed animation duration (seconds) - Flexy hates hardcoded 0.3s!
+    fadeInDurationSec: parseFloat(
+      process.env.ZERO_RESULT_FADE_IN_DURATION_SEC || '0.3'
+    ),
     drawEasing:
       process.env.ZERO_RESULT_DRAW_EASING ||
       'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
@@ -2640,6 +2644,49 @@ export const animationConfig = {
     valueTransitionSec: `${
       parseInt(process.env.ANALYTICS_VALUE_TRANSITION_MS || '200') / 1000
     }s`,
+  },
+
+  // Search Analytics Animations - Flexy hates hardcoded timing values!
+  // Used by SearchAnalytics.vue for chart animations and transitions
+  searchAnalytics: {
+    // Chart transition duration after entrance animation (ms)
+    chartTransitionMs: parseInt(
+      process.env.SEARCH_ANALYTICS_CHART_TRANSITION_MS || '300'
+    ),
+    // Bar stagger delay multiplier for chart bars (ms per index)
+    barStaggerMultiplierMs: parseInt(
+      process.env.SEARCH_ANALYTICS_BAR_STAGGER_MULTIPLIER_MS || '50'
+    ),
+    // Fade in animation duration (seconds)
+    fadeInDurationSec: parseFloat(
+      process.env.SEARCH_ANALYTICS_FADE_IN_DURATION_SEC || '0.3'
+    ),
+  },
+
+  // Comparison Builder Float Animations - Flexy hates hardcoded delays!
+  // Used for floating decorative dots in empty state
+  comparisonFloat: {
+    // Animation duration for floating dots (seconds)
+    durationSec: parseFloat(process.env.COMPARISON_FLOAT_DURATION_SEC || '3'),
+    // Delay for second floating dot (seconds)
+    dot2DelaySec: parseFloat(
+      process.env.COMPARISON_FLOAT_DOT2_DELAY_SEC || '1'
+    ),
+    // Delay for third floating dot (seconds)
+    dot3DelaySec: parseFloat(
+      process.env.COMPARISON_FLOAT_DOT3_DELAY_SEC || '2'
+    ),
+  },
+
+  // Features Section Icon Pop Animation - Flexy hates hardcoded offsets!
+  // Additional delay offset for icon pop animation after stagger
+  featuresIconPop: {
+    // Delay offset after stagger delay (ms)
+    delayOffsetMs: parseInt(
+      process.env.FEATURES_ICON_POP_DELAY_OFFSET_MS || '150'
+    ),
+    // CSS-compatible delay offset (seconds)
+    delayOffsetSec: `${parseInt(process.env.FEATURES_ICON_POP_DELAY_OFFSET_MS || '150') / 1000}s`,
   },
 } as const
 
