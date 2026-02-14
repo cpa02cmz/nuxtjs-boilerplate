@@ -25,30 +25,19 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                class="checkmark-circle"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-              <path
-                class="checkmark-path"
-                d="M7 12l3 3 7-7"
-              />
+              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
           <span class="celebration-text">
             {{
               contentConfig.submissionReview.celebration?.approved ||
-                'Submission Approved!'
+              'Submission Approved!'
             }}
           </span>
         </div>
         <!-- Confetti burst effect -->
-        <div
-          class="confetti-container"
-          aria-hidden="true"
-        >
+        <div class="confetti-container" aria-hidden="true">
           <span
             v-for="n in 12"
             :key="n"
@@ -59,21 +48,14 @@
       </div>
     </Transition>
 
-    <div
-      v-if="loading"
-      class="loading"
-    >
+    <div v-if="loading" class="loading">
       <LoadingSpinner
         :label="contentConfig.submissionReview.loading"
         size="medium"
       />
     </div>
 
-    <div
-      v-else-if="error"
-      class="error"
-      role="alert"
-    >
+    <div v-else-if="error" class="error" role="alert">
       <span class="error-icon">⚠️</span>
       {{ error }}
     </div>
@@ -144,7 +126,7 @@
                 }}</label>
                 <span>{{
                   submission.resourceData?.pricingModel ||
-                    contentConfig.submissionReview.values.notAvailable
+                  contentConfig.submissionReview.values.notAvailable
                 }}</span>
               </div>
 
@@ -154,7 +136,7 @@
                 }}</label>
                 <span>{{
                   submission.resourceData?.difficulty ||
-                    contentConfig.submissionReview.values.notAvailable
+                  contentConfig.submissionReview.values.notAvailable
                 }}</span>
               </div>
 
@@ -213,7 +195,7 @@
                 }}</label>
                 <span>{{
                   submission.submittedBy ||
-                    contentConfig.submissionReview.values.anonymous
+                  contentConfig.submissionReview.values.anonymous
                 }}</span>
               </div>
 
@@ -224,33 +206,24 @@
                 <span>{{ formatDate(submission.submittedAt) }}</span>
               </div>
 
-              <div
-                v-if="submission.reviewedAt"
-                class="info-item"
-              >
+              <div v-if="submission.reviewedAt" class="info-item">
                 <label>{{
                   contentConfig.submissionReview.labels.reviewedBy
                 }}</label>
                 <span>{{
                   submission.reviewedBy ||
-                    contentConfig.submissionReview.values.notAvailable
+                  contentConfig.submissionReview.values.notAvailable
                 }}</span>
               </div>
 
-              <div
-                v-if="submission.reviewedAt"
-                class="info-item"
-              >
+              <div v-if="submission.reviewedAt" class="info-item">
                 <label>{{
                   contentConfig.submissionReview.labels.reviewedAt
                 }}</label>
                 <span>{{ formatDate(submission.reviewedAt) }}</span>
               </div>
 
-              <div
-                v-if="submission.rejectionReason"
-                class="info-item"
-              >
+              <div v-if="submission.rejectionReason" class="info-item">
                 <label>{{
                   contentConfig.submissionReview.labels.rejectionReason
                 }}</label>
@@ -259,10 +232,7 @@
                 }}</span>
               </div>
 
-              <div
-                v-if="submission.notes"
-                class="info-item"
-              >
+              <div v-if="submission.notes" class="info-item">
                 <label>{{ contentConfig.submissionReview.labels.notes }}</label>
                 <span>{{ submission.notes }}</span>
               </div>
@@ -278,10 +248,7 @@
           leave-from-class="opacity-100 translate-y-0"
           leave-to-class="opacity-0 -translate-y-2"
         >
-          <div
-            v-if="submission.status === 'pending'"
-            class="review-actions"
-          >
+          <div v-if="submission.status === 'pending'" class="review-actions">
             <div class="action-group">
               <h4>
                 {{ contentConfig.submissionReview.actions.approve.title }}
@@ -387,12 +354,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -405,6 +367,7 @@ import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { uiConfig } from '~/configs/ui.config'
 import { animationConfig } from '~/configs/animation.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 import { hapticSuccess, hapticError, hapticLight } from '~/utils/hapticFeedback'
 import LoadingSpinner from './LoadingSpinner.vue'
 
@@ -779,10 +742,10 @@ onMounted(() => {
 @keyframes status-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+    box-shadow: v-bind('shadowsConfig.submissionReview.warningPulseStart');
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(245, 158, 11, 0);
+    box-shadow: v-bind('shadowsConfig.submissionReview.warningPulseEnd');
   }
 }
 
@@ -941,7 +904,7 @@ onMounted(() => {
 .rejection-textarea:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: v-bind('shadowsConfig.submissionReview.editButton');
 }
 
 .rejection-textarea:disabled {
@@ -1002,7 +965,7 @@ onMounted(() => {
     'componentColorsConfig.submissionReview.approveButtonHover'
   );
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  box-shadow: v-bind('shadowsConfig.submissionReview.approveGlow');
 }
 
 .btn-approve.btn--pressed {
@@ -1020,7 +983,7 @@ onMounted(() => {
     'componentColorsConfig.submissionReview.rejectButtonHover'
   );
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  box-shadow: v-bind('shadowsConfig.submissionReview.rejectGlow');
 }
 
 .btn-reject.btn--pressed {
