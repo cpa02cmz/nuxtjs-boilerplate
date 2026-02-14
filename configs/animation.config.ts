@@ -345,7 +345,7 @@ export const animationConfig = {
   },
 
   // Search Tracking Delay
-  analytics: {
+  analyticsTracking: {
     trackingDelayMs: parseInt(process.env.ANALYTICS_TRACKING_DELAY_MS || '500'),
   },
 
@@ -1618,6 +1618,27 @@ export const animationConfig = {
     ),
     // Transition duration
     transitionDurationSec: `${parseInt(process.env.ZERO_RESULT_TRANSITION_DURATION_MS || '100') / 1000}s`,
+    // SVG Draw animation for empty state icon - Palette's delightful enhancement!
+    drawDurationSec: parseFloat(
+      process.env.ZERO_RESULT_DRAW_DURATION_SEC || '1.2'
+    ),
+    drawDelaySec: parseFloat(process.env.ZERO_RESULT_DRAW_DELAY_SEC || '0.2'),
+    drawEasing:
+      process.env.ZERO_RESULT_DRAW_EASING ||
+      'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    // Floating elements animation - adds visual delight to empty state!
+    floatDurationSec: parseFloat(
+      process.env.ZERO_RESULT_FLOAT_DURATION_SEC || '3'
+    ),
+    floatDelaySec: parseFloat(process.env.ZERO_RESULT_FLOAT_DELAY_SEC || '0.5'),
+    floatDistance: process.env.ZERO_RESULT_FLOAT_DISTANCE || '8px',
+    // Spring physics for hover effects - satisfying tactile feedback!
+    springEasing:
+      process.env.ZERO_RESULT_SPRING_EASING ||
+      'cubic-bezier(0.34, 1.56, 0.64, 1)',
+    springDurationSec: parseFloat(
+      process.env.ZERO_RESULT_SPRING_DURATION_SEC || '0.4'
+    ),
   },
 
   // Convenience easing reference for component use - uses standard ease-out
@@ -2617,27 +2638,6 @@ export const animationConfig = {
     // CSS-compatible value transition duration (seconds)
     valueTransitionSec: `${
       parseInt(process.env.ANALYTICS_VALUE_TRANSITION_MS || '200') / 1000
-    }s`,
-  },
-
-  // Webhook Manager Animations - Flexy hates hardcoded sparkle delays!
-  // Used by WebhookManager.vue for celebration animations
-  webhookManager: {
-    // Stagger delay between sparkle elements (ms)
-    sparkleStaggerDelayMs: parseInt(
-      process.env.WEBHOOK_SPARKLE_STAGGER_DELAY_MS || '100'
-    ),
-    // CSS-compatible sparkle stagger delay (seconds)
-    sparkleStaggerDelaySec: `${
-      parseInt(process.env.WEBHOOK_SPARKLE_STAGGER_DELAY_MS || '100') / 1000
-    }s`,
-    // Reduced motion opacity transition duration (ms)
-    reducedMotionOpacityMs: parseInt(
-      process.env.WEBHOOK_REDUCED_OPACITY_MS || '200'
-    ),
-    // CSS-compatible reduced motion opacity transition (seconds)
-    reducedMotionOpacitySec: `${
-      parseInt(process.env.WEBHOOK_REDUCED_OPACITY_MS || '200') / 1000
     }s`,
   },
 } as const
