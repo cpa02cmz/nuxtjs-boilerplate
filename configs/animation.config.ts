@@ -1129,6 +1129,52 @@ export const animationConfig = {
       process.env.ALTERNATIVES_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // Similar Resources Micro-UX - Palette's delightful enhancement! ✨
+  // Staggered card entrance with lift and press effects
+  similarResources: {
+    // Duration of each card's entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.SIMILAR_ENTRANCE_DURATION_MS || '500'
+    ),
+    // CSS duration string
+    entranceDurationSec: `${parseInt(process.env.SIMILAR_ENTRANCE_DURATION_MS || '500') / 1000}s`,
+    // Duration of leave animation (ms)
+    leaveDurationMs: parseInt(process.env.SIMILAR_LEAVE_DURATION_MS || '300'),
+    // CSS duration string for leave
+    leaveDurationSec: `${parseInt(process.env.SIMILAR_LEAVE_DURATION_MS || '300') / 1000}s`,
+    // Delay between each card's entrance (stagger effect) (ms)
+    staggerDelayMs: parseInt(process.env.SIMILAR_STAGGER_MS || '100'),
+    // Maximum stagger delay to prevent long waits (ms)
+    maxStaggerDelayMs: parseInt(process.env.SIMILAR_MAX_STAGGER_MS || '600'),
+    // Distance cards travel during entrance (px)
+    entranceDistancePx: parseInt(process.env.SIMILAR_ENTRANCE_DISTANCE || '24'),
+    // Scale at start of entrance animation
+    entranceStartScale: parseFloat(
+      process.env.SIMILAR_ENTRANCE_SCALE || '0.95'
+    ),
+    // Hover lift amount (px)
+    hoverLiftPx: parseInt(process.env.SIMILAR_HOVER_LIFT || '4'),
+    // Hover scale factor
+    hoverScale: parseFloat(process.env.SIMILAR_HOVER_SCALE || '1.02'),
+    // Hover transition duration (ms)
+    hoverTransitionMs: parseInt(
+      process.env.SIMILAR_HOVER_TRANSITION_MS || '200'
+    ),
+    // Press scale factor (tactile feedback)
+    pressScale: parseFloat(process.env.SIMILAR_PRESS_SCALE || '0.98'),
+    // Press transition duration (ms)
+    pressTransitionMs: parseInt(
+      process.env.SIMILAR_PRESS_TRANSITION_MS || '100'
+    ),
+    // Arrow bounce animation duration (seconds)
+    arrowBounceDurationSec: parseFloat(
+      process.env.SIMILAR_ARROW_BOUNCE || '0.6'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SIMILAR_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // Typing Indicator Micro-UX - Palette's delightful touch! ✨
   // Animated bouncing dots that provide visual feedback during typing
   typingIndicator: {
@@ -2220,6 +2266,76 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.COMPARISON_EMPTY_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // Comparison Table Animations
+  comparisonTable: {
+    // Icon bounce duration (seconds)
+    iconBounceSec: parseFloat(process.env.COMPARISON_ICON_BOUNCE_SEC || '2'),
+    // Icon pulse duration (seconds)
+    iconPulseSec: parseFloat(process.env.COMPARISON_ICON_PULSE_SEC || '3'),
+    // Icon scale duration (seconds)
+    iconScaleSec: parseFloat(process.env.COMPARISON_ICON_SCALE_SEC || '4'),
+    // Ring rotate duration (seconds)
+    ringRotateSec: parseFloat(process.env.COMPARISON_RING_ROTATE_SEC || '20'),
+    // Dot float duration (seconds)
+    dotFloatSec: parseFloat(process.env.COMPARISON_DOT_FLOAT_SEC || '3'),
+    // Circle float durations (seconds)
+    circleFloatSec1: parseFloat(
+      process.env.COMPARISON_CIRCLE_FLOAT_SEC_1 || '8'
+    ),
+    circleFloatSec2: parseFloat(
+      process.env.COMPARISON_CIRCLE_FLOAT_SEC_2 || '10'
+    ),
+    circleFloatSec3: parseFloat(
+      process.env.COMPARISON_CIRCLE_FLOAT_SEC_3 || '12'
+    ),
+    // Text reveal duration (seconds)
+    textRevealSec: parseFloat(process.env.COMPARISON_TEXT_REVEAL_SEC || '0.6'),
+    // Blur radius (px)
+    blurRadiusPx: parseInt(process.env.COMPARISON_BLUR_RADIUS_PX || '40'),
+    // Circle size large (px)
+    circleSizeLargePx: parseInt(
+      process.env.COMPARISON_CIRCLE_SIZE_LARGE_PX || '120'
+    ),
+    // Circle size medium (px)
+    circleSizeMediumPx: parseInt(
+      process.env.COMPARISON_CIRCLE_SIZE_MEDIUM_PX || '100'
+    ),
+    // Circle size small (px)
+    circleSizeSmallPx: parseInt(
+      process.env.COMPARISON_CIRCLE_SIZE_SMALL_PX || '80'
+    ),
+    // Circle offset top (px)
+    circleOffsetTopPx: parseInt(
+      process.env.COMPARISON_CIRCLE_OFFSET_TOP_PX || '-20'
+    ),
+  },
+
+  // Offline Indicator Animations
+  offlineIndicator: {
+    // Pulse subtle duration (seconds)
+    pulseSubtleSec: parseFloat(process.env.OFFLINE_PULSE_SUBTLE_SEC || '2'),
+    // Icon pulse duration (seconds)
+    iconPulseSec: parseFloat(process.env.OFFLINE_ICON_PULSE_SEC || '2'),
+    // Bounce subtle duration (seconds)
+    bounceSubtleSec: parseFloat(process.env.OFFLINE_BOUNCE_SUBTLE_SEC || '0.5'),
+    // Check pop duration (seconds)
+    checkPopSec: parseFloat(process.env.OFFLINE_CHECK_POP_SEC || '0.4'),
+    // Spin duration (seconds)
+    spinSec: parseFloat(process.env.OFFLINE_SPIN_SEC || '1'),
+  },
+
+  // Resource Card Animations
+  resourceCard: {
+    // New badge pulse duration (seconds)
+    newPulseSec: parseFloat(process.env.RESOURCE_CARD_NEW_PULSE_SEC || '2'),
+  },
+
+  // Resource Comments Animations
+  resourceComments: {
+    // Avatar pulse duration (seconds)
+    avatarPulseSec: parseFloat(process.env.COMMENTS_AVATAR_PULSE_SEC || '2'),
   },
 } as const
 
