@@ -160,6 +160,28 @@ export const componentColorsConfig = {
         text: process.env.SUBMISSION_REJECTED_TEXT || '#721c24',
       },
     },
+    // Palette's micro-UX delight: Celebration animation colors for approval
+    celebration: {
+      gradientStart:
+        process.env.SUBMISSION_CELEBRATION_GRADIENT_START || '#22c55e',
+      gradientEnd: process.env.SUBMISSION_CELEBRATION_GRADIENT_END || '#16a34a',
+      checkmarkColor: process.env.SUBMISSION_CELEBRATION_CHECKMARK || '#16a34a',
+      shadow:
+        process.env.SUBMISSION_CELEBRATION_SHADOW ||
+        '0 25px 50px -12px rgba(34, 197, 94, 0.4)',
+    },
+    // Approved state visual enhancements
+    approvedBorder: process.env.SUBMISSION_APPROVED_BORDER || '#86efac',
+    approvedShadow:
+      process.env.SUBMISSION_APPROVED_SHADOW ||
+      '0 0 0 3px rgba(34, 197, 94, 0.1)',
+    // Button hover states
+    approveButtonHover: process.env.SUBMISSION_APPROVE_BTN_HOVER || '#16a34a',
+    rejectButtonHover: process.env.SUBMISSION_REJECT_BTN_HOVER || '#dc2626',
+    // Action group hover shadow
+    actionGroupHoverShadow:
+      process.env.SUBMISSION_ACTION_GROUP_SHADOW ||
+      '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
   },
 
   // Webhook Manager Colors - Flexy hates hardcoded webhook colors!

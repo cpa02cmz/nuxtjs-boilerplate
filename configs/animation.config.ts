@@ -2019,6 +2019,42 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.REVIEW_QUEUE_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // SubmissionReview Component Animations - Palette's micro-UX delight! 🎉
+  // Celebration animation for successful submission approvals
+  submissionReview: {
+    // Duration for the celebration overlay to show (ms)
+    celebrationDurationMs: parseInt(
+      process.env.SUBMISSION_REVIEW_CELEBRATION_DURATION_MS || '2500'
+    ),
+    // Duration for the checkmark circle scale animation (ms)
+    circleScaleDurationMs: parseInt(
+      process.env.SUBMISSION_REVIEW_CIRCLE_SCALE_MS || '300'
+    ),
+    // Duration for the checkmark draw animation (ms)
+    checkmarkDrawDurationMs: parseInt(
+      process.env.SUBMISSION_REVIEW_CHECKMARK_DRAW_MS || '400'
+    ),
+    // Delay before starting checkmark draw animation (ms)
+    checkmarkDrawDelayMs: parseInt(
+      process.env.SUBMISSION_REVIEW_CHECKMARK_DELAY_MS || '200'
+    ),
+    // Duration for the pop-in animation (seconds)
+    popInDurationSec: `${parseInt(process.env.SUBMISSION_REVIEW_POP_IN_MS || '500') / 1000}s`,
+    // Duration for confetti burst animation (ms)
+    confettiDurationMs: parseInt(
+      process.env.SUBMISSION_REVIEW_CONFETTI_DURATION_MS || '800'
+    ),
+    // Delay before starting confetti animation (ms)
+    confettiDelayMs: parseInt(
+      process.env.SUBMISSION_REVIEW_CONFETTI_DELAY_MS || '100'
+    ),
+    // Duration for status badge pulse animation (seconds)
+    statusPulseDurationSec: `${parseInt(process.env.SUBMISSION_REVIEW_STATUS_PULSE_MS || '2000') / 1000}s`,
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SUBMISSION_REVIEW_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
