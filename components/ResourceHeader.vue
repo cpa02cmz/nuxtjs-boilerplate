@@ -4,12 +4,7 @@
     :class="{ 'animations-enabled': !prefersReducedMotion }"
   >
     <!-- ARIA Live Region for Announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
 
@@ -413,7 +408,7 @@ onUnmounted(() => {
     transform v-bind('`${config.magneticReturnDurationMs}ms`')
       v-bind('EASING.SPRING_STANDARD'),
     box-shadow v-bind('`${config.magneticReturnDurationMs}ms`') ease-out,
-    background-color 0.2s ease-out;
+    background-color v-bind('animationConfig.cssTransitions.normalSec') ease-out;
 }
 
 .resource-header__button--hover {
@@ -428,8 +423,8 @@ onUnmounted(() => {
   transform: translateY(0) scale(v-bind('config.buttonPressScale'));
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   transition:
-    transform 0.1s ease-out,
-    box-shadow 0.1s ease-out;
+    transform v-bind('animationConfig.cssTransitions.fastSec') ease-out,
+    box-shadow v-bind('animationConfig.cssTransitions.fastSec') ease-out;
 }
 
 /* Icon Animation - Diagonal movement on hover */
