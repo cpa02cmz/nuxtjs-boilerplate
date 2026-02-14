@@ -1,9 +1,5 @@
 <template>
-  <span
-    :class="wrapperClass"
-    :style="wrapperStyle"
-    v-bind="wrapperAttrs"
-  >
+  <span :class="wrapperClass" :style="wrapperStyle" v-bind="wrapperAttrs">
     <svg
       :xmlns="SVG_NS"
       :viewBox="viewBox"
@@ -163,7 +159,7 @@ const svgAttrs = computed(() => {
 .icon-wrapper--interactive:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: v-bind('animationConfig.borderRadius.md + "px"');
 }
 
 /* Reduced motion support: Disable animations for users who prefer reduced motion */

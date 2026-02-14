@@ -1,9 +1,6 @@
 <template>
   <div class="error-boundary-wrapper">
-    <Transition
-      name="error-fade"
-      @after-enter="onErrorEntered"
-    >
+    <Transition name="error-fade" @after-enter="onErrorEntered">
       <div
         v-if="hasError"
         ref="errorContainer"
@@ -43,20 +40,12 @@
           >
             Something went wrong
           </h2>
-          <p
-            id="error-message"
-            class="error-message"
-          >
+          <p id="error-message" class="error-message">
             {{ errorMessage }}
           </p>
-          <div
-            v-if="showDetails"
-            class="error-details"
-          >
+          <div v-if="showDetails" class="error-details">
             <details class="error-details-container">
-              <summary class="error-details-summary">
-                Error Details
-              </summary>
+              <summary class="error-details-summary">Error Details</summary>
               <pre class="error-stack">{{ errorStack }}</pre>
             </details>
           </div>
@@ -622,7 +611,7 @@ onUnmounted(() => {
     rgba(59, 130, 246, 0.05) 0%,
     rgba(147, 197, 253, 0.05) 100%
   );
-  border-radius: 12px;
+  border-radius: v-bind('animationConfig.borderRadius.xxl + "px"');
   border: 1px solid rgba(59, 130, 246, 0.1);
 }
 
@@ -712,7 +701,7 @@ onUnmounted(() => {
 .cancel-retry-button:focus-visible {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: v-bind('animationConfig.borderRadius.sm + "px"');
 }
 
 /* Reduced motion support */

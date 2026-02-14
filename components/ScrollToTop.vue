@@ -671,7 +671,7 @@ onMounted(() => {
   align-items: center;
   padding: 6px 10px;
   background: v-bind('themeConfig.scrollToTop.tooltipBg');
-  border-radius: 8px;
+  border-radius: v-bind('animationConfig.borderRadius.xl + "px"');
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   white-space: nowrap;
 }

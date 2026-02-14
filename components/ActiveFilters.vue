@@ -64,10 +64,7 @@
         <span :class="['truncate', uiConfig.chips.queryMaxWidth]">{{
           searchQuery
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -86,10 +83,7 @@
           </svg>
         </span>
         <!-- Shimmer effect on hover -->
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Category chips -->
@@ -125,10 +119,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           category
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -146,10 +137,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Pricing model chips -->
@@ -185,10 +173,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           pricing
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -206,10 +191,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Difficulty chips -->
@@ -245,10 +227,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           difficulty
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -266,10 +245,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Technology chips -->
@@ -305,10 +281,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           tech
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -326,10 +299,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Tag chips -->
@@ -365,10 +335,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           tag
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -386,10 +353,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Benefit chips -->
@@ -425,10 +389,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           benefit
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -446,10 +407,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Date range chip -->
@@ -483,10 +441,7 @@
           contentConfig.filters.labels.date
         }}</span>
         <span>{{ formatDateRange(selectedDateRange) }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -504,10 +459,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Undo button for recently removed filter -->
@@ -537,11 +489,14 @@
             d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
           />
         </svg>
-        <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span>
+        <span :class="['truncate', uiConfig.chips.valueMaxWidth]"
+          >{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span
+        >
         <kbd
           class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
           aria-hidden="true"
-        >{{ contentConfig.filters.keyboard.ctrlZ }}</kbd>
+          >{{ contentConfig.filters.keyboard.ctrlZ }}</kbd
+        >
         <!-- Progress bar for undo window with color transition -->
         <span
           class="undo-progress-bar"
@@ -563,7 +518,8 @@
       <kbd
         class="hidden sm:inline-block ml-1.5 px-1.5 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded group-hover:bg-gray-200 transition-colors"
         aria-hidden="true"
-      >{{ contentConfig.filters.keyboard.esc }}</kbd>
+        >{{ contentConfig.filters.keyboard.esc }}</kbd
+      >
     </button>
   </div>
 </template>
@@ -1367,7 +1323,7 @@ onUnmounted(() => {
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
-  border-radius: 6px;
+  border-radius: v-bind('animationConfig.borderRadius.lg + "px"');
   opacity: 0;
   visibility: hidden;
   transition: all v-bind('animationConfig.cssTransitions.normalSec')
