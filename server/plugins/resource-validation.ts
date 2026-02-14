@@ -87,15 +87,6 @@ export default defineNitroPlugin(async nitroApp => {
     }
   }, timeConfig.validation.resourceIntervalMs)
 
-  // Also run validation on server start after a short delay
-  setTimeout(async () => {
-    try {
-      await validateAllResources()
-    } catch (error) {
-      logger.error('Initial resource validation failed:', error)
-    }
-  }, timeConfig.validation.startupDelayMs)
-
   // Store the validation interval in nitroApp for potential cleanup
   extendedApp._resourceValidationInterval = validationInterval
 })
