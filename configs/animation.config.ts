@@ -1098,6 +1098,54 @@ export const animationConfig = {
       process.env.ALTERNATIVES_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // Health Monitor Micro-UX - Palette's delightful touch! 🎨
+  // Adds satisfying animations for health status changes and checks
+  healthMonitor: {
+    // Duration of the pulse animation during health check (ms)
+    pulseDurationMs: parseInt(
+      process.env.HEALTH_MONITOR_PULSE_DURATION_MS || '1200'
+    ),
+    // CSS duration string for v-bind
+    pulseDurationSec: `${parseInt(process.env.HEALTH_MONITOR_PULSE_DURATION_MS || '1200') / 1000}s`,
+    // Duration of status color transition (ms)
+    statusTransitionMs: parseInt(
+      process.env.HEALTH_MONITOR_STATUS_TRANSITION_MS || '400'
+    ),
+    // CSS duration string for status transitions
+    statusTransitionSec: `${parseInt(process.env.HEALTH_MONITOR_STATUS_TRANSITION_MS || '400') / 1000}s`,
+    // Duration of checkmark pop animation when becoming healthy (ms)
+    checkmarkPopDurationMs: parseInt(
+      process.env.HEALTH_MONITOR_CHECKMARK_POP_MS || '500'
+    ),
+    // CSS duration string for checkmark pop
+    checkmarkPopDurationSec: `${parseInt(process.env.HEALTH_MONITOR_CHECKMARK_POP_MS || '500') / 1000}s`,
+    // Scale factor at peak of checkmark pop
+    checkmarkPopScale: parseFloat(
+      process.env.HEALTH_MONITOR_CHECKMARK_SCALE || '1.3'
+    ),
+    // Duration of history item slide-in animation (ms)
+    historySlideDurationMs: parseInt(
+      process.env.HEALTH_MONITOR_HISTORY_SLIDE_MS || '400'
+    ),
+    // CSS duration string for history slide
+    historySlideDurationSec: `${parseInt(process.env.HEALTH_MONITOR_HISTORY_SLIDE_MS || '400') / 1000}s`,
+    // Distance history items slide in from (px)
+    historySlideDistancePx: parseInt(
+      process.env.HEALTH_MONITOR_HISTORY_DISTANCE || '20'
+    ),
+    // Stagger delay between history items (ms)
+    historyStaggerMs: parseInt(
+      process.env.HEALTH_MONITOR_HISTORY_STAGGER_MS || '75'
+    ),
+    // Delay before haptic feedback on status change (ms)
+    hapticDelayMs: parseInt(
+      process.env.HEALTH_MONITOR_HAPTIC_DELAY_MS || '300'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.HEALTH_MONITOR_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // Typing Indicator Micro-UX - Palette's delightful touch! ✨
   // Animated bouncing dots that provide visual feedback during typing
   typingIndicator: {
