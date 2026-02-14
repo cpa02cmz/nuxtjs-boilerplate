@@ -293,6 +293,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 
 interface Props {
   initialSubmissions?: Submission[]
@@ -843,7 +844,7 @@ onUnmounted(() => {
   width: 64px;
   height: 64px;
   color: v-bind('componentColorsConfig.reviewQueue.divider');
-  z-index: 1;
+  z-index: v-bind('zIndexConfig.floatingLabel');
 }
 
 .empty-decoration {
