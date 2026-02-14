@@ -1,7 +1,7 @@
 <template>
   <article
     ref="skeletonRef"
-    class="bg-white p-6 rounded-lg shadow skeleton-card skeleton-interactive"
+    class="bg-white p-6 rounded-lg shadow skeleton-card skeleton-interactive relative"
     aria-busy="true"
     aria-label="Loading resource card"
     :style="{
@@ -20,10 +20,20 @@
       '--card-enter-start-scale': animationConfig.skeleton.cardEnterStartScale,
       '--card-enter-mid-translate-y': `${animationConfig.skeleton.cardEnterMidTranslateYPx}px`,
       '--card-enter-mid-scale': animationConfig.skeleton.cardEnterMidScale,
+      '--scan-duration': `${scanConfig.durationSec}s`,
+      '--scan-delay': `${scanConfig.delaySec}s`,
+      '--scan-color': scanConfig.color,
+      '--scan-opacity': scanConfig.opacity,
     }"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
   >
+    <!-- 🎨 Palette: Scanning laser line effect - makes loading feel active and high-tech! -->
+    <div
+      v-if="!prefersReducedMotion"
+      class="skeleton-scan-line"
+      aria-hidden="true"
+    />
     <div class="flex items-start">
       <!-- Icon placeholder -->
       <div class="flex-shrink-0 mr-4">
@@ -101,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, computed } from 'vue'
+import { ref, onUnmounted, computed, onMounted } from 'vue'
 import { EASING } from '~/configs/easing.config'
 import { animationConfig } from '~/configs/animation.config'
 
@@ -179,6 +189,23 @@ const hoverIntensity = ref(0)
 const isHovering = ref(false)
 let hoverAnimationFrame: number | null = null
 
+// 🎨 Palette: Scanning laser line configuration - adds high-tech loading feel!
+// Flexy hates hardcoded values! Using modular config values
+const scanConfig = computed(() => ({
+  durationSec: animationConfig.skeleton?.scanLine?.durationSec ?? 2.5,
+  delaySec: animationConfig.skeleton?.scanLine?.delaySec ?? 0.5,
+  color: animationConfig.skeleton?.scanLine?.color ?? 'rgba(59, 130, 246, 0.3)',
+  opacity: animationConfig.skeleton?.scanLine?.opacity ?? 0.6,
+}))
+
+// 🎨 Palette: Respect reduced motion preference
+const prefersReducedMotion = ref(false)
+const checkReducedMotion = () => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
 const handleMouseEnter = (): void => {
   isHovering.value = true
   animateHoverIntensity(1)
@@ -214,6 +241,28 @@ const animateHoverIntensity = (target: number): void => {
 onUnmounted(() => {
   if (hoverAnimationFrame !== null) {
     cancelAnimationFrame(hoverAnimationFrame)
+  }
+})
+
+// 🎨 Palette: Check reduced motion preference on mount
+onMounted(() => {
+  prefersReducedMotion.value = checkReducedMotion()
+
+  // Listen for changes in reduced motion preference
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function'
+  ) {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handleMotionChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.value = e.matches
+    }
+    mediaQuery.addEventListener('change', handleMotionChange)
+
+    // Cleanup on unmount
+    onUnmounted(() => {
+      mediaQuery.removeEventListener('change', handleMotionChange)
+    })
   }
 })
 </script>
@@ -411,8 +460,61 @@ onUnmounted(() => {
   }
 }
 
+/* 🎨 Palette: Scanning laser line effect - makes loading feel active and high-tech!
+   Sweeps across the card periodically to create an engaging loading experience */
+.skeleton-scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--scan-color) 20%,
+    var(--scan-color) 80%,
+    transparent 100%
+  );
+  opacity: var(--scan-opacity);
+  animation: scan-sweep var(--scan-duration) ease-in-out var(--scan-delay)
+    infinite;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow:
+    0 0 4px var(--scan-color),
+    0 0 8px var(--scan-color),
+    0 0 12px var(--scan-color);
+}
+
+/* Scanning sweep animation - moves from top to bottom */
+@keyframes scan-sweep {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  5% {
+    opacity: var(--scan-opacity);
+  }
+  95% {
+    opacity: var(--scan-opacity);
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* 🎨 Palette: Pause scanning animation on hover for better UX */
+.skeleton-interactive:hover .skeleton-scan-line {
+  animation-play-state: paused;
+  opacity: calc(var(--scan-opacity) * 0.5);
+}
+
 /* Reduced motion support - accessibility first */
 @media (prefers-reduced-motion: reduce) {
+  .skeleton-scan-line {
+    display: none;
+  }
   .skeleton-shimmer,
   .skeleton-icon,
   .skeleton-wave {
