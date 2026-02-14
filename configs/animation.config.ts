@@ -87,6 +87,13 @@ export const animationConfig = {
     cardEnterMidScale: parseFloat(
       process.env.SKELETON_ENTER_MID_SCALE || '1.01'
     ),
+    // 🎨 Palette: Scanning laser line effect - makes loading feel active and high-tech!
+    scanLine: {
+      durationSec: parseFloat(process.env.SKELETON_SCAN_DURATION_SEC || '2.5'),
+      delaySec: parseFloat(process.env.SKELETON_SCAN_DELAY_SEC || '0.5'),
+      color: process.env.SKELETON_SCAN_COLOR || 'rgba(59, 130, 246, 0.3)',
+      opacity: parseFloat(process.env.SKELETON_SCAN_OPACITY || '0.6'),
+    },
   },
 
   // OptimizedImage Component Animations - Palette's micro-UX enhancement!
