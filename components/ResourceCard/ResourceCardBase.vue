@@ -16,10 +16,7 @@
     @mouseleave="handleMouseLeave"
   >
     <div class="flex items-start">
-      <div
-        v-if="icon"
-        class="flex-shrink-0 mr-4"
-      >
+      <div v-if="icon" class="flex-shrink-0 mr-4">
         <OptimizedImage
           :src="icon"
           :alt="title"
@@ -140,10 +137,7 @@
         </div>
 
         <!-- Description -->
-        <p
-          id="resource-description"
-          class="mt-1 text-gray-800 text-sm"
-        >
+        <p id="resource-description" class="mt-1 text-gray-800 text-sm">
           <span
             v-if="highlightedDescription"
             v-html="sanitizedHighlightedDescription"
@@ -157,30 +151,18 @@
           role="region"
           aria-label="Free tier information"
         >
-          <p
-            id="free-tier-label"
-            class="font-medium text-gray-900 text-sm"
-          >
+          <p id="free-tier-label" class="font-medium text-gray-900 text-sm">
             {{ contentConfig.resourceCard.freeTier }}
           </p>
-          <ul
-            class="mt-1 space-y-1 text-xs text-gray-800"
-            role="list"
-          >
-            <li
-              v-for="(benefit, index) in benefits"
-              :key="index"
-            >
+          <ul class="mt-1 space-y-1 text-xs text-gray-800" role="list">
+            <li v-for="(benefit, index) in benefits" :key="index">
               {{ benefit }}
             </li>
           </ul>
         </div>
 
         <!-- Similarity information (for alternative suggestions) -->
-        <div
-          v-if="similarityScore && similarityScore > 0"
-          class="mt-3"
-        >
+        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
           <div class="flex items-center">
             <div
               class="w-full bg-gray-200 rounded-full h-2"
@@ -199,10 +181,7 @@
               {{ Math.round(similarityScore * 100) }}% match
             </span>
           </div>
-          <p
-            v-if="similarityReason"
-            class="mt-1 text-xs text-gray-600"
-          >
+          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
             {{ similarityReason }}
           </p>
         </div>
@@ -319,10 +298,7 @@
   </article>
 
   <!-- Error state -->
-  <div
-    v-else
-    class="bg-white p-6 rounded-lg shadow border border-red-200"
-  >
+  <div v-else class="bg-white p-6 rounded-lg shadow border border-red-200">
     <div class="flex items-start">
       <div class="flex-shrink-0 mr-4">
         <svg
@@ -341,9 +317,7 @@
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-red-900">
-          Resource Unavailable
-        </h3>
+        <h3 class="text-lg font-medium text-red-900">Resource Unavailable</h3>
         <p class="mt-1 text-red-700 text-sm">
           This resource could not be displayed due to an error.
         </p>
@@ -597,7 +571,10 @@ const memoizedHighlight = memoizeHighlight(sanitizeAndHighlight)
 // Track resource view when component mounts
 onMounted(() => {
   if (props.id) {
-    trackResourceView(props.id, props.title, props.category || 'unknown')
+    // Only track with category if it's provided and valid
+    // Invalid categories will cause 400 errors from the analytics API
+    const category = props.category || undefined
+    trackResourceView(props.id, props.title, category)
   }
 
   // Check reduced motion preference for 3D tilt effect
@@ -650,7 +627,9 @@ const handleImageError = () => {
 // Handle link clicks
 const handleLinkClick = (event: Event) => {
   if (props.id) {
-    trackResourceClick(props.id, props.title, props.category || 'unknown')
+    // Only track with category if it's provided (undefined is better than 'unknown' which fails validation)
+    const category = props.category || undefined
+    trackResourceClick(props.id, props.title, category)
     markResourceVisited()
     emit('visited', props.id)
   }

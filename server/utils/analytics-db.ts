@@ -44,7 +44,7 @@ function normalizeTimestamp(timestamp: Date | string | number): Date {
 
 export async function insertAnalyticsEvent(
   event: AnalyticsEventInput
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; tableNotFound?: boolean }> {
   try {
     // Normalize timestamp before validation
     const normalizedEvent = {
@@ -85,8 +85,22 @@ export async function insertAnalyticsEvent(
     })
     return { success: true }
   } catch (error) {
+    const errorMessage = String(error)
+
+    // Check if this is a "table not found" error
+    const isTableNotFound =
+      errorMessage.includes('AnalyticsEvent') &&
+      (errorMessage.includes('does not exist') ||
+        errorMessage.includes('not found') ||
+        errorMessage.includes("Table '"))
+
+    if (isTableNotFound) {
+      logger.warn('AnalyticsEvent table not found in database')
+      return { success: false, error: errorMessage, tableNotFound: true }
+    }
+
     logger.error('Error inserting analytics event:', error)
-    return { success: false, error: String(error) }
+    return { success: false, error: errorMessage }
   }
 }
 
