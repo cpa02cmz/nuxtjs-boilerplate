@@ -868,6 +868,8 @@ export const animationConfig = {
     quick: process.env.TAILWIND_DURATION_QUICK || 'duration-150',
     // Normal (200ms) - most UI interactions
     normal: process.env.TAILWIND_DURATION_NORMAL || 'duration-200',
+    // Moderate (250ms) - between normal and standard - Flexy hates hardcoded duration-250!
+    moderate: process.env.TAILWIND_DURATION_MODERATE || 'duration-250',
     // Standard (300ms) - hover states
     standard: process.env.TAILWIND_DURATION_STANDARD || 'duration-300',
     // Slow (400ms) - noticeable animations
