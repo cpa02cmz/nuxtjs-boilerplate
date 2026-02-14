@@ -3,3743 +3,155 @@ import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
 import { apiConfig } from '~/configs/api.config'
 import { webhooksConfig } from '~/configs/webhooks.config'
+import { handleApiRouteError } from '~/server/utils/api-response'
 
 export default defineEventHandler(async event => {
-  await rateLimit(event)
+  try {
+    await rateLimit(event)
 
-  // Flexy hates hardcoded URLs! Using runtime config for dynamic server URLs
-  const config = useRuntimeConfig()
-  const siteUrl =
-    config.public.siteUrl || config.public.canonicalUrl || DEFAULT_DEV_URL
+    // Flexy hates hardcoded URLs! Using runtime config for dynamic server URLs
+    const config = useRuntimeConfig()
+    const siteUrl =
+      config.public.siteUrl || config.public.canonicalUrl || DEFAULT_DEV_URL
 
-  const openApiSpec = {
-    openapi: '3.0.3',
-    info: {
-      title: 'Free Stuff on the Internet API',
-      description:
-        'API for discovering and managing free resources available on the internet. ' +
-        'This API implements industry-standard resilience patterns including ' +
-        'circuit breakers, exponential backoff retries, rate limiting, ' +
-        'and standardized error responses.',
-      version: '1.0.0',
-      contact: {
-        name: apiConfig.contact.name,
-        url: apiConfig.contact.url,
-        email: apiConfig.contact.email,
-      },
-      license: {
-        name: apiConfig.license.name,
-        url: apiConfig.license.url,
-      },
-    },
-    servers: [
-      {
-        url: siteUrl,
-        description: 'Current server',
-      },
-    ],
-    tags: [
-      { name: 'Resources', description: 'Resource discovery and management' },
-      { name: 'Search', description: 'Search and filtering' },
-      { name: 'Webhooks', description: 'Webhook management' },
-      { name: 'Analytics', description: 'Analytics and metrics' },
-      { name: 'Authentication', description: 'API key management' },
-      { name: 'Moderation', description: 'Content moderation' },
-      { name: 'Submissions', description: 'Resource submissions' },
-      { name: 'Validation', description: 'URL validation' },
-      { name: 'Export', description: 'Data export' },
-      { name: 'User', description: 'User preferences and settings' },
-      { name: 'Sitemap', description: 'XML sitemap for SEO' },
-      { name: 'Integration', description: 'Integration health monitoring' },
-    ],
-    paths: {
-      '/api/v1/resources': {
-        get: {
-          summary: 'Get all resources',
-          description:
-            'Retrieve a paginated list of resources with optional filtering. ' +
-            'Supports filtering by category, pricing model, difficulty level, and search terms. ' +
-            'Protected by rate limiting (token bucket algorithm).',
-          operationId: 'getResources',
-          tags: ['Resources'],
-          'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
-          parameters: [
-            {
-              name: 'limit',
-              in: 'query',
-              description:
-                'Number of resources to return (default: 20, max: 100)',
-              required: false,
-              schema: {
-                type: 'integer',
-                minimum: 1,
-                maximum: 100,
-                default: 20,
-              },
-            },
-            {
-              name: 'offset',
-              in: 'query',
-              description: 'Number of resources to skip (default: 0)',
-              required: false,
-              schema: {
-                type: 'integer',
-                minimum: 0,
-                default: 0,
-              },
-            },
-            {
-              name: 'category',
-              in: 'query',
-              description: 'Filter by category',
-              required: false,
-              schema: {
-                type: 'string',
-              },
-            },
-            {
-              name: 'pricing',
-              in: 'query',
-              description: 'Filter by pricing model',
-              required: false,
-              schema: {
-                type: 'string',
-                enum: ['Free', 'Freemium', 'Open Source', 'Paid'],
-              },
-            },
-            {
-              name: 'difficulty',
-              in: 'query',
-              description: 'Filter by difficulty level',
-              required: false,
-              schema: {
-                type: 'string',
-                enum: ['Beginner', 'Intermediate', 'Advanced'],
-              },
-            },
-            {
-              name: 'search',
-              in: 'query',
-              description: 'Search term to filter by title/description',
-              required: false,
-              schema: {
-                type: 'string',
-              },
-            },
-            {
-              name: 'sort',
-              in: 'query',
-              description: 'Sort option',
-              required: false,
-              schema: {
-                type: 'string',
-                enum: [
-                  'alphabetical-asc',
-                  'alphabetical-desc',
-                  'date-added-desc',
-                  'popularity-desc',
-                ],
-                default: 'popularity-desc',
-              },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Successful response',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/SuccessResponse',
-                  },
-                },
-              },
-              headers: {
-                'X-Cache': {
-                  description: 'Cache status (HIT or MISS)',
-                  schema: { type: 'string', enum: ['HIT', 'MISS'] },
-                },
-                'X-Cache-Key': {
-                  description: 'Cache key used',
-                  schema: { type: 'string' },
-                },
-              },
-            },
-            '400': {
-              description: 'Bad request',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '429': {
-              description: 'Rate limit exceeded',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-              headers: {
-                'Retry-After': {
-                  description: 'Seconds until retry is allowed',
-                  schema: { type: 'integer' },
-                },
-                'X-RateLimit-Limit': {
-                  $ref: '#/components/headers/XRateLimitLimit',
-                },
-                'X-RateLimit-Remaining': {
-                  $ref: '#/components/headers/XRateLimitRemaining',
-                },
-                'X-RateLimit-Reset': {
-                  $ref: '#/components/headers/XRateLimitReset',
-                },
-                'X-RateLimit-Window': {
-                  $ref: '#/components/headers/XRateLimitWindow',
-                },
-              },
-            },
-            '500': {
-              description: 'Internal server error',
-              headers: {
-                'X-RateLimit-Limit': {
-                  $ref: '#/components/headers/XRateLimitLimit',
-                },
-                'X-RateLimit-Remaining': {
-                  $ref: '#/components/headers/XRateLimitRemaining',
-                },
-                'X-RateLimit-Reset': {
-                  $ref: '#/components/headers/XRateLimitReset',
-                },
-                'X-RateLimit-Window': {
-                  $ref: '#/components/headers/XRateLimitWindow',
-                },
-              },
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-          security: [],
+    const openApiSpec = {
+      openapi: '3.0.3',
+      info: {
+        title: 'Free Stuff on the Internet API',
+        description:
+          'API for discovering and managing free resources available on the internet. ' +
+          'This API implements industry-standard resilience patterns including ' +
+          'circuit breakers, exponential backoff retries, rate limiting, ' +
+          'and standardized error responses.',
+        version: '1.0.0',
+        contact: {
+          name: apiConfig.contact.name,
+          url: apiConfig.contact.url,
+          email: apiConfig.contact.email,
+        },
+        license: {
+          name: apiConfig.license.name,
+          url: apiConfig.license.url,
         },
       },
-      '/api/recommendations/index': {
-        get: {
-          summary: 'Get recommendations',
-          description: 'Get personalized or trending resource recommendations.',
-          operationId: 'getRecommendations',
-          tags: ['Resources'],
-          parameters: [
-            {
-              name: 'limit',
-              in: 'query',
-              description: 'Number of recommendations',
-              schema: { type: 'integer', default: 10, maximum: 50 },
-            },
-            {
-              name: 'strategy',
-              in: 'query',
-              description: 'Recommendation strategy',
-              schema: {
-                type: 'string',
-                enum: ['trending', 'popular', 'personalized', 'content-based'],
-                default: 'trending',
-              },
-            },
-            {
-              name: 'category',
-              in: 'query',
-              description: 'Filter by category',
-              schema: { type: 'string' },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Recommendations',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          recommendations: {
-                            type: 'array',
-                            items: {
-                              $ref: '#/components/schemas/Resource',
-                            },
-                          },
-                          strategy: { type: 'string' },
-                          count: { type: 'integer' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+      servers: [
+        {
+          url: siteUrl,
+          description: 'Current server',
         },
-      },
-      '/api/search/suggestions': {
-        get: {
-          summary: 'Get search suggestions',
-          description: 'Get search suggestions and popular searches.',
-          operationId: 'getSearchSuggestions',
-          tags: ['Search'],
-          parameters: [
-            {
-              name: 'q',
-              in: 'query',
-              description: 'Partial search query',
-              schema: { type: 'string' },
-            },
-            {
-              name: 'limit',
-              in: 'query',
-              description: 'Number of suggestions',
-              schema: { type: 'integer', default: 10, maximum: 20 },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Search suggestions',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          suggestions: {
-                            type: 'array',
-                            items: { type: 'string' },
-                          },
-                          related: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              properties: {
-                                term: { type: 'string' },
-                                count: { type: 'integer' },
-                              },
-                            },
-                          },
-                          popular: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              properties: {
-                                query: { type: 'string' },
-                                count: { type: 'integer' },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/resources/{id}': {
-        get: {
-          summary: 'Get resource by ID',
-          description:
-            'Retrieve a specific resource by its ID. Includes hierarchical tags and metadata.',
-          operationId: 'getResourceById',
-          tags: ['Resources'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'Resource ID',
-              schema: {
-                type: 'string',
-              },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Successful response',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/SuccessResponse',
-                  },
-                },
-              },
-              headers: {
-                'X-Cache': {
-                  description: 'Cache status (HIT or MISS)',
-                  schema: { type: 'string', enum: ['HIT', 'MISS'] },
-                },
-              },
-            },
-            '404': {
-              description: 'Resource not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '429': {
-              description: 'Rate limit exceeded',
-              headers: {
-                'Retry-After': {
-                  description: 'Seconds until retry is allowed',
-                  schema: { type: 'integer' },
-                },
-              },
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '500': {
-              description: 'Internal server error',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/categories': {
-        get: {
-          summary: 'Get all categories',
-          description: 'Retrieve list of all categories with resource counts.',
-          operationId: 'getCategories',
-          tags: ['Resources'],
-          responses: {
-            '200': {
-              description: 'Categories with counts',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'array',
-                        items: {
-                          type: 'object',
-                          properties: {
-                            name: { type: 'string', example: 'Development' },
-                            count: { type: 'integer', example: 42 },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              headers: {
-                'X-Cache': {
-                  description: 'Cache status (HIT or MISS)',
-                  schema: { type: 'string', enum: ['HIT', 'MISS'] },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/tags': {
-        get: {
-          summary: 'Get all tags',
-          description: 'Retrieve list of all tags with optional hierarchy.',
-          operationId: 'getTags',
-          tags: ['Resources'],
-          parameters: [
-            {
-              name: 'includeChildren',
-              in: 'query',
-              description: 'Include child tags',
-              schema: { type: 'boolean' },
-            },
-            {
-              name: 'includeParents',
-              in: 'query',
-              description: 'Include parent tags',
-              schema: { type: 'boolean' },
-            },
-            {
-              name: 'rootOnly',
-              in: 'query',
-              description: 'Return only root-level tags',
-              schema: { type: 'boolean' },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Tags',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          tags: {
-                            type: 'array',
-                            items: { type: 'string' },
-                          },
-                          includeChildren: { type: 'boolean' },
-                          includeParents: { type: 'boolean' },
-                          rootOnly: { type: 'boolean' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/resources/{id}/alternatives': {
-        get: {
-          summary: 'Get resource alternatives',
-          description:
-            'Get alternative resources similar to specified resource.',
-          operationId: 'getResourceAlternatives',
-          tags: ['Resources'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'Resource ID',
-              schema: { type: 'string' },
-            },
-            {
-              name: 'limit',
-              in: 'query',
-              description: 'Number of alternatives',
-              schema: { type: 'integer', default: 5, maximum: 20 },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Alternative resources',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          resourceId: { type: 'string' },
-                          alternatives: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              properties: {
-                                id: { type: 'string' },
-                                title: { type: 'string' },
-                                description: { type: 'string' },
-                                url: { type: 'string', format: 'uri' },
-                                score: {
-                                  type: 'number',
-                                  description: 'Similarity score',
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Resource not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/search': {
-        get: {
-          summary: 'Search resources',
-          description:
-            'Search resources with advanced filtering options using Fuse.js fuzzy search.',
-          operationId: 'searchResources',
-          tags: ['Search'],
-          parameters: [
-            {
-              name: 'q',
-              in: 'query',
-              description: 'Search query term',
-              required: false,
-              schema: {
-                type: 'string',
-              },
-            },
-            {
-              name: 'limit',
-              in: 'query',
-              description:
-                'Number of resources to return (default: 20, max: 100)',
-              required: false,
-              schema: {
-                type: 'integer',
-                minimum: 1,
-                maximum: 100,
-                default: 20,
-              },
-            },
-            {
-              name: 'offset',
-              in: 'query',
-              description: 'Number of resources to skip (default: 0)',
-              required: false,
-              schema: {
-                type: 'integer',
-                minimum: 0,
-                default: 0,
-              },
-            },
-            {
-              name: 'category',
-              in: 'query',
-              description: 'Filter by category',
-              required: false,
-              schema: {
-                type: 'string',
-              },
-            },
-            {
-              name: 'pricing',
-              in: 'query',
-              description: 'Filter by pricing model',
-              required: false,
-              schema: {
-                type: 'string',
-                enum: ['Free', 'Freemium', 'Open Source', 'Paid'],
-              },
-            },
-            {
-              name: 'difficulty',
-              in: 'query',
-              description: 'Filter by difficulty level',
-              required: false,
-              schema: {
-                type: 'string',
-                enum: ['Beginner', 'Intermediate', 'Advanced'],
-              },
-            },
-            {
-              name: 'tags',
-              in: 'query',
-              description: 'Filter by tags (comma-separated)',
-              required: false,
-              schema: {
-                type: 'string',
-              },
-            },
-            {
-              name: 'hierarchicalTags',
-              in: 'query',
-              description: 'Filter by hierarchical tags (comma-separated)',
-              required: false,
-              schema: {
-                type: 'string',
-              },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Successful response',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/SuccessResponse',
-                  },
-                },
-              },
-            },
-            '400': {
-              description: 'Bad request',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '500': {
-              description: 'Internal server error',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/validate-url': {
-        post: {
-          summary: 'Validate URL',
-          description:
-            'Validate a URL by checking its HTTP status. ' +
-            'Uses circuit breaker (hostname-based) and retry with exponential backoff (1s-30s, max 3 retries) for resilience. ' +
-            'Circuit breaker prevents cascading failures from unreachable hosts.',
-          operationId: 'validateUrl',
-          tags: ['Validation'],
-          'x-circuitBreaker': { enabled: true, scope: 'per-hostname' },
-          'x-retry': {
-            strategy: 'exponential-backoff',
-            maxRetries: 3,
-            maxDelay: '30s',
-          },
-          'x-rateLimit': { config: 'standard', limit: 50, window: '5 min' },
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  required: ['url'],
-                  properties: {
-                    url: {
-                      type: 'string',
-                      format: 'uri',
-                      description: 'URL to validate',
-                    },
-                    timeout: {
-                      type: 'integer',
-                      description: 'Timeout in milliseconds (default: 10000)',
-                      default: 10000,
-                    },
-                    retries: {
-                      type: 'integer',
-                      description: 'Number of retry attempts (default: 3)',
-                      default: 3,
-                    },
-                    retryDelay: {
-                      type: 'integer',
-                      description:
-                        'Initial retry delay in milliseconds (default: 1000)',
-                      default: 1000,
-                    },
-                    useCircuitBreaker: {
-                      type: 'boolean',
-                      description:
-                        'Use circuit breaker for this validation (default: true)',
-                      default: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'URL validation result',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: {
-                        type: 'boolean',
-                        example: true,
-                      },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          validationResult: {
-                            type: 'object',
-                            properties: {
-                              url: {
-                                type: 'string',
-                                example: apiConfig.docs.examples.baseUrl,
-                              },
-                              status: {
-                                type: 'string',
-                                enum: [
-                                  'valid',
-                                  'invalid',
-                                  'unreachable',
-                                  'timeout',
-                                ],
-                                example: 'valid',
-                              },
-                              statusCode: {
-                                type: 'integer',
-                                example: 200,
-                              },
-                              attempts: {
-                                type: 'integer',
-                                description: 'Number of attempts made',
-                                example: 1,
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '400': {
-              description: 'Bad request',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '500': {
-              description: 'Internal server error',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/webhooks': {
-        get: {
-          summary: 'List webhooks',
-          description:
-            'Retrieve all registered webhooks for the authenticated user.',
-          operationId: 'listWebhooks',
-          tags: ['Webhooks'],
-          'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
-          responses: {
-            '200': {
-              description: 'Successful response',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'array',
-                        items: {
-                          $ref: '#/components/schemas/Webhook',
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '401': {
-              description: 'Unauthorized',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-        post: {
-          summary: 'Create webhook',
-          description:
-            'Create a new webhook for event notifications. Webhook delivery uses circuit breaker ' +
-            '(hostname-based) and retry with exponential backoff (1s-30s, max 3 retries). ' +
-            'Failed webhooks are moved to dead letter queue for manual inspection and retry. ' +
-            'Supports idempotency keys to prevent duplicate deliveries.',
-          operationId: 'createWebhook',
-          tags: ['Webhooks'],
-          'x-circuitBreaker': { enabled: true, scope: 'per-hostname' },
-          'x-retry': {
-            strategy: 'exponential-backoff',
-            maxRetries: 3,
-            maxDelay: '30s',
-            jitter: true,
-          },
-          'x-idempotency': { supported: true, header: 'X-Idempotency-Key' },
-          'x-queue': { asyncDelivery: true, deadLetterQueue: true },
-          'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  required: ['url', 'events'],
-                  properties: {
-                    url: {
-                      type: 'string',
-                      format: 'uri',
-                      description: 'Webhook URL to send events to',
-                    },
-                    events: {
-                      type: 'array',
-                      items: {
-                        type: 'string',
-                        enum: [
-                          'resource.created',
-                          'resource.updated',
-                          'resource.deleted',
-                          'submission.created',
-                          'submission.approved',
-                          'submission.rejected',
-                        ],
-                      },
-                      description: 'List of events to subscribe to',
-                    },
-                    active: {
-                      type: 'boolean',
-                      description: 'Whether the webhook is active',
-                      default: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'Webhook created successfully',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        $ref: '#/components/schemas/Webhook',
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '400': {
-              description: 'Bad request',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/webhooks/{id}': {
-        put: {
-          summary: 'Update webhook',
-          description: 'Update an existing webhook configuration.',
-          operationId: 'updateWebhook',
-          tags: ['Webhooks'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'Webhook ID',
-              schema: {
-                type: 'string',
-              },
-            },
-          ],
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    url: {
-                      type: 'string',
-                      format: 'uri',
-                    },
-                    events: {
-                      type: 'array',
-                      items: { type: 'string' },
-                    },
-                    active: {
-                      type: 'boolean',
-                    },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'Webhook updated successfully',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        $ref: '#/components/schemas/Webhook',
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Webhook not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-        delete: {
-          summary: 'Delete webhook',
-          description: 'Delete a webhook.',
-          operationId: 'deleteWebhook',
-          tags: ['Webhooks'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'Webhook ID',
-              schema: {
-                type: 'string',
-              },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Webhook deleted successfully',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      message: {
-                        type: 'string',
-                        example: 'Webhook deleted successfully',
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Webhook not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/webhooks/trigger': {
-        post: {
-          summary: 'Trigger webhook test',
-          description:
-            'Send a test event to a webhook for testing purposes. ' +
-            'Uses circuit breaker and retry with exponential backoff for delivery. ' +
-            'Delivery is queued asynchronously and non-blocking.',
-          operationId: 'triggerWebhook',
-          tags: ['Webhooks'],
-          'x-circuitBreaker': { enabled: true, scope: 'per-hostname' },
-          'x-retry': {
-            strategy: 'exponential-backoff',
-            maxRetries: 3,
-            maxDelay: '30s',
-          },
-          'x-queue': { asyncDelivery: true },
-          'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  required: ['webhookId'],
-                  properties: {
-                    webhookId: {
-                      type: 'string',
-                      description: 'Webhook ID to trigger',
-                    },
-                    eventType: {
-                      type: 'string',
-                      description: 'Event type to send',
-                      enum: [
-                        'resource.created',
-                        'resource.updated',
-                        'submission.created',
-                      ],
-                      default: 'resource.created',
-                    },
-                    testData: {
-                      type: 'object',
-                      description: 'Custom test data (optional)',
-                    },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'Test event sent successfully',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      message: {
-                        type: 'string',
-                        example: 'Test event sent',
-                      },
-                      deliveryId: {
-                        type: 'string',
-                        example: 'del_abc123',
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '400': {
-              description: 'Bad request',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/webhooks/queue': {
-        get: {
-          summary: 'Get webhook queue',
-          description:
-            'Retrieve webhook queue statistics and contents including dead letter queue. ' +
-            'Monitors pending webhooks, delivery history, and failed webhooks in dead letter queue. ' +
-            'Provides visibility into webhook delivery health and retry status.',
-          operationId: 'getWebhookQueue',
-          tags: ['Webhooks'],
-          'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
-          responses: {
-            '200': {
-              description: 'Webhook queue data',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          stats: {
-                            type: 'object',
-                            properties: {
-                              totalQueued: { type: 'integer' },
-                              totalDelivered: { type: 'integer' },
-                              totalFailed: { type: 'integer' },
-                              totalDeadLetter: { type: 'integer' },
-                            },
-                          },
-                          queue: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              properties: {
-                                id: { type: 'string' },
-                                webhookId: { type: 'string' },
-                                event: { type: 'string' },
-                                scheduledFor: {
-                                  type: 'string',
-                                  format: 'date-time',
-                                },
-                                retryCount: { type: 'integer' },
-                                maxRetries: { type: 'integer' },
-                                createdAt: {
-                                  type: 'string',
-                                  format: 'date-time',
-                                },
-                              },
-                            },
-                          },
-                          deadLetterQueue: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              properties: {
-                                id: { type: 'string' },
-                                webhookId: { type: 'string' },
-                                event: { type: 'string' },
-                                failureReason: { type: 'string' },
-                                lastAttemptAt: {
-                                  type: 'string',
-                                  format: 'date-time',
-                                },
-                                deliveryAttempts: { type: 'integer' },
-                                createdAt: {
-                                  type: 'string',
-                                  format: 'date-time',
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/webhooks/dead-letter/{id}/retry': {
-        post: {
-          summary: 'Retry dead letter webhook',
-          description:
-            'Retry a webhook that failed and was moved to dead letter queue.',
-          operationId: 'retryDeadLetterWebhook',
-          tags: ['Webhooks'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'Dead letter webhook ID',
-              schema: { type: 'string' },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Webhook queued for retry',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      message: {
-                        type: 'string',
-                        example: 'Webhook queued for retry',
-                      },
-                      deliveryId: { type: 'string' },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Dead letter webhook not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/webhooks/deliveries': {
-        get: {
-          summary: 'List webhook deliveries',
-          description: 'Retrieve delivery history for webhooks.',
-          operationId: 'listWebhookDeliveries',
-          tags: ['Webhooks'],
-          parameters: [
-            {
-              name: 'webhookId',
-              in: 'query',
-              description: 'Filter by webhook ID',
-              required: false,
-              schema: { type: 'string' },
-            },
-            {
-              name: 'status',
-              in: 'query',
-              description: 'Filter by delivery status',
-              required: false,
-              schema: {
-                type: 'string',
-                enum: ['success', 'failed', 'pending'],
-              },
-            },
-            {
-              name: 'limit',
-              in: 'query',
-              description: 'Number of deliveries to return',
-              required: false,
-              schema: { type: 'integer', default: 50, maximum: 100 },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Successful response',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'array',
-                        items: {
-                          $ref: '#/components/schemas/WebhookDelivery',
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/resources/{id}/history': {
-        get: {
-          summary: 'Get resource history',
-          description: 'Get status change history for a resource.',
-          operationId: 'getResourceHistory',
-          tags: ['Resources'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'Resource ID',
-              schema: { type: 'string' },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Resource history',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          resourceId: { type: 'string' },
-                          history: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              properties: {
-                                id: { type: 'string' },
-                                fromStatus: { type: 'string' },
-                                toStatus: { type: 'string' },
-                                reason: { type: 'string' },
-                                changedBy: { type: 'string' },
-                                changedAt: {
-                                  type: 'string',
-                                  format: 'date-time',
-                                },
-                                notes: { type: 'string' },
-                              },
-                            },
-                          },
-                          count: { type: 'integer' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Resource not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/resources/{id}/health': {
-        post: {
-          summary: 'Trigger health check',
-          description: 'Manually trigger health check for a specific resource.',
-          operationId: 'triggerResourceHealth',
-          tags: ['Resources', 'Health'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'Resource ID',
-              schema: { type: 'string' },
-            },
-          ],
-          requestBody: {
-            required: false,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    force: {
-                      type: 'boolean',
-                      description: 'Force check even if recently checked',
-                      default: false,
-                    },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'Health check result',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          resourceId: { type: 'string' },
-                          url: { type: 'string' },
-                          status: {
-                            type: 'string',
-                            enum: ['healthy', 'unhealthy', 'unknown'],
-                          },
-                          responseTime: { type: 'integer' },
-                          checkedAt: { type: 'string', format: 'date-time' },
-                          details: {
-                            type: 'object',
-                            properties: {
-                              statusCode: { type: 'integer' },
-                              sslValid: { type: 'boolean' },
-                              certificateExpiry: {
-                                type: 'string',
-                                format: 'date-time',
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Resource not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/resources/{id}/status': {
-        put: {
-          summary: 'Update resource status',
-          description: 'Update status of a specific resource.',
-          operationId: 'updateResourceStatus',
-          tags: ['Resources'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'Resource ID',
-              schema: { type: 'string' },
-            },
-          ],
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  required: ['status'],
-                  properties: {
-                    status: {
-                      type: 'string',
-                      enum: [
-                        'active',
-                        'deprecated',
-                        'discontinued',
-                        'updated',
-                        'pending',
-                      ],
-                    },
-                    reason: { type: 'string' },
-                    notes: { type: 'string' },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'Status updated',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          id: { type: 'string' },
-                          status: { type: 'string' },
-                          title: { type: 'string' },
-                          updatedAt: { type: 'string', format: 'date-time' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Resource not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/resources/lifecycle': {
-        get: {
-          summary: 'Get resource lifecycle stats',
-          description: 'Get lifecycle statistics and status distribution.',
-          operationId: 'getResourceLifecycle',
-          tags: ['Resources'],
-          responses: {
-            '200': {
-              description: 'Lifecycle statistics',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          totalResources: { type: 'integer' },
-                          byStatus: {
-                            type: 'object',
-                            properties: {
-                              active: { type: 'integer' },
-                              deprecated: { type: 'integer' },
-                              discontinued: { type: 'integer' },
-                              updated: { type: 'integer' },
-                              pending: { type: 'integer' },
-                            },
-                          },
-                          byCategory: {
-                            type: 'object',
-                            additionalProperties: { type: 'integer' },
-                          },
-                          recentlyAdded: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              properties: {
-                                id: { type: 'string' },
-                                title: { type: 'string' },
-                                dateAdded: {
-                                  type: 'string',
-                                  format: 'date-time',
-                                },
-                              },
-                            },
-                          },
-                          recentlyUpdated: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              properties: {
-                                id: { type: 'string' },
-                                title: { type: 'string' },
-                                lastUpdated: {
-                                  type: 'string',
-                                  format: 'date-time',
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/analytics/events': {
-        post: {
-          summary: 'Record analytics event',
-          description:
-            'Record an analytics event for tracking. Rate limited to 10 events per IP per minute. ' +
-            'Uses Prisma ORM with database-level aggregation for performance.',
-          operationId: 'recordAnalyticsEvent',
-          tags: ['Analytics'],
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  required: ['type'],
-                  properties: {
-                    type: {
-                      type: 'string',
-                      description:
-                        'Event type (e.g., page_view, resource_click)',
-                      example: 'page_view',
-                    },
-                    resourceId: {
-                      type: 'string',
-                      description: 'Associated resource ID (optional)',
-                    },
-                    category: {
-                      type: 'string',
-                      description: 'Event category (optional)',
-                    },
-                    url: {
-                      type: 'string',
-                      description: 'Current URL (optional)',
-                    },
-                    properties: {
-                      type: 'object',
-                      description: 'Additional event properties as JSON',
-                      example: { referrer: 'google.com' },
-                    },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'Event recorded successfully',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      eventId: {
-                        type: 'number',
-                        description: 'Event timestamp as unique identifier',
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '400': {
-              description: 'Bad request',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '429': {
-              description: 'Rate limit exceeded',
-              headers: {
-                'Retry-After': {
-                  description: 'Seconds until retry is allowed',
-                  schema: { type: 'integer' },
-                },
-              },
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '500': {
-              description: 'Internal server error',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/health-checks': {
-        get: {
-          summary: 'Health checks',
-          description: 'Get application health status and component checks.',
-          operationId: 'getHealthChecks',
-          tags: ['Health'],
-          responses: {
-            '200': {
-              description: 'Health status',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          totalChecks: { type: 'integer' },
-                          healthStatuses: {
-                            type: 'object',
-                            properties: {
-                              database: {
-                                type: 'object',
-                                properties: {
-                                  status: { type: 'string' },
-                                  responseTime: { type: 'integer' },
-                                },
-                              },
-                              cache: {
-                                type: 'object',
-                                properties: {
-                                  status: { type: 'string' },
-                                  responseTime: { type: 'integer' },
-                                },
-                              },
-                              storage: {
-                                type: 'object',
-                                properties: {
-                                  status: { type: 'string' },
-                                  availableSpace: { type: 'string' },
-                                },
-                              },
-                            },
-                          },
-                          summary: {
-                            type: 'object',
-                            properties: {
-                              overall: {
-                                type: 'string',
-                                enum: ['healthy', 'degraded', 'unhealthy'],
-                              },
-                              healthy: { type: 'integer' },
-                              degraded: { type: 'integer' },
-                              unhealthy: { type: 'integer' },
-                            },
-                          },
-                          lastUpdated: { type: 'string', format: 'date-time' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/analytics/search': {
-        get: {
-          summary: 'Query analytics data',
-          description:
-            'Retrieve aggregated analytics data with filtering. Uses parallel database queries ' +
-            'and database-level aggregation for 95% reduction in data transfer.',
-          operationId: 'queryAnalytics',
-          tags: ['Analytics'],
-          parameters: [
-            {
-              name: 'startDate',
-              in: 'query',
-              required: true,
-              description: 'Start date (ISO 8601 format)',
-              schema: { type: 'string', format: 'date-time' },
-            },
-            {
-              name: 'endDate',
-              in: 'query',
-              required: true,
-              description: 'End date (ISO 8601 format)',
-              schema: { type: 'string', format: 'date-time' },
-            },
-            {
-              name: 'resourceId',
-              in: 'query',
-              description: 'Filter by resource ID',
-              schema: { type: 'string' },
-            },
-            {
-              name: 'type',
-              in: 'query',
-              description: 'Filter by event type',
-              schema: { type: 'string' },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Analytics data',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          totalEvents: { type: 'integer' },
-                          eventsByType: {
-                            type: 'object',
-                            additionalProperties: { type: 'integer' },
-                          },
-                          resourceViews: {
-                            type: 'object',
-                            additionalProperties: { type: 'integer' },
-                          },
-                          dailyTrends: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              properties: {
-                                date: { type: 'string' },
-                                count: { type: 'integer' },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '400': {
-              description: 'Bad request',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/auth/api-keys': {
-        get: {
-          summary: 'List API keys',
-          description: 'Retrieve all API keys (secrets omitted).',
-          operationId: 'listApiKeys',
-          tags: ['Authentication'],
-          responses: {
-            '200': {
-              description: 'API keys',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          data: {
-                            type: 'array',
-                            items: {
-                              $ref: '#/components/schemas/ApiKey',
-                            },
-                          },
-                          count: { type: 'integer' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        post: {
-          summary: 'Create API key',
-          description: 'Create a new API key for authentication.',
-          operationId: 'createApiKey',
-          tags: ['Authentication'],
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  required: ['name', 'scopes'],
-                  properties: {
-                    name: {
-                      type: 'string',
-                      description: 'API key name',
-                      example: 'My App Key',
-                    },
-                    scopes: {
-                      type: 'array',
-                      items: { type: 'string' },
-                      description: 'API key permissions',
-                      example: ['read', 'write'],
-                    },
-                    expiresIn: {
-                      type: 'integer',
-                      description: 'Expiration time in seconds (optional)',
-                      example: 86400,
-                    },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'API key created',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        $ref: '#/components/schemas/ApiKey',
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '400': {
-              description: 'Validation error',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/auth/api-keys/{id}': {
-        delete: {
-          summary: 'Delete API key',
-          description: 'Delete an API key by ID.',
-          operationId: 'deleteApiKey',
-          tags: ['Authentication'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'API Key ID',
-              schema: { type: 'string' },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'API key deleted',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      message: {
-                        type: 'string',
-                        example: 'API key deleted successfully',
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'API key not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/analytics/resource/{id}': {
-        get: {
-          summary: 'Get resource analytics',
-          description: 'Retrieve analytics data for a specific resource.',
-          operationId: 'getResourceAnalytics',
-          tags: ['Analytics'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'Resource ID',
-              schema: { type: 'string' },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Resource analytics data',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          resourceId: { type: 'string' },
-                          totalViews: { type: 'integer' },
-                          uniqueVisitors: { type: 'integer' },
-                          clickRate: { type: 'number' },
-                          topReferrers: {
-                            type: 'array',
-                            items: { type: 'string' },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Resource not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/analytics/export/csv': {
-        get: {
-          summary: 'Export analytics as CSV',
-          description:
-            'Export analytics data in CSV format with optional date range filtering. ' +
-            'Rate limited to prevent abuse.',
-          operationId: 'exportAnalyticsCsv',
-          tags: ['Analytics', 'Export'],
-          parameters: [
-            {
-              name: 'startDate',
-              in: 'query',
-              description: 'Start date for analytics export (ISO 8601 format)',
-              required: false,
-              schema: {
-                type: 'string',
-                format: 'date-time',
-              },
-            },
-            {
-              name: 'endDate',
-              in: 'query',
-              description: 'End date for analytics export (ISO 8601 format)',
-              required: false,
-              schema: {
-                type: 'string',
-                format: 'date-time',
-              },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'CSV file with analytics data',
-              content: {
-                'text/csv': {
-                  schema: {
-                    type: 'string',
-                    format: 'binary',
-                  },
-                },
-              },
-              headers: {
-                'Content-Disposition': {
-                  description: 'Filename for download',
-                  schema: {
-                    type: 'string',
-                    example:
-                      'attachment; filename="analytics-2025-01-01-to-2025-01-10.csv"',
-                  },
-                },
-                'Content-Length': {
-                  description: 'Size of CSV file in bytes',
-                  schema: { type: 'integer' },
-                },
-              },
-            },
-            '400': {
-              description: 'Invalid date range',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '429': {
-              description: 'Rate limit exceeded',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-              headers: {
-                'Retry-After': {
-                  description: 'Seconds until retry is allowed',
-                  schema: { type: 'integer' },
-                },
-              },
-            },
-            '500': {
-              description: 'Internal server error',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/alternatives/{id}': {
-        get: {
-          summary: 'Get alternatives for resource',
-          description:
-            'Retrieve alternative resources for a specific resource.',
-          operationId: 'getAlternativesForResource',
-          tags: ['Resources'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'Resource ID',
-              schema: { type: 'string' },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Alternative resources',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          resourceId: { type: 'string' },
-                          alternatives: {
-                            type: 'array',
-                            items: {
-                              $ref: '#/components/schemas/Resource',
-                            },
-                          },
-                          count: { type: 'integer' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              headers: {
-                'X-Cache': {
-                  description: 'Cache status (HIT or MISS)',
-                  schema: { type: 'string', enum: ['HIT', 'MISS'] },
-                },
-                'X-Cache-Key': {
-                  description: 'Cache key used',
-                  schema: { type: 'string' },
-                },
-              },
-            },
-            '404': {
-              description: 'Resource not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-        post: {
-          summary: 'Manage alternative relationship',
-          description: 'Add or remove alternative resource relationship.',
-          operationId: 'manageAlternativeRelationship',
-          tags: ['Resources'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'Resource ID',
-              schema: { type: 'string' },
-            },
-          ],
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  required: ['alternativeId'],
-                  properties: {
-                    alternativeId: {
-                      type: 'string',
-                      description: 'Alternative resource ID',
-                    },
-                    action: {
-                      type: 'string',
-                      enum: ['add', 'remove'],
-                      default: 'add',
-                    },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'Relationship updated',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          resourceId: { type: 'string' },
-                          alternativeId: { type: 'string' },
-                          action: { type: 'string' },
-                          alternatives: {
-                            type: 'array',
-                            items: { type: 'string' },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Resource or alternative not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/resource-health': {
-        get: {
-          summary: 'Get all resources health',
-          description: 'Retrieve health status of all resources.',
-          operationId: 'getAllResourcesHealth',
-          tags: ['Health'],
-          responses: {
-            '200': {
-              description: 'All resources health status',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          resources: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              properties: {
-                                resourceId: { type: 'string' },
-                                url: { type: 'string' },
-                                status: {
-                                  type: 'string',
-                                  enum: ['healthy', 'unhealthy', 'unknown'],
-                                },
-                                responseTime: { type: 'integer' },
-                                lastChecked: {
-                                  type: 'string',
-                                  format: 'date-time',
-                                },
-                              },
-                            },
-                          },
-                          stats: {
-                            type: 'object',
-                            properties: {
-                              total: { type: 'integer' },
-                              healthy: { type: 'integer' },
-                              unhealthy: { type: 'integer' },
-                              unknown: { type: 'integer' },
-                              healthPercentage: { type: 'number' },
-                            },
-                          },
-                          timestamp: { type: 'string', format: 'date-time' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/resource-health/{id}': {
-        get: {
-          summary: 'Get resource health',
-          description: 'Get health status for a specific resource.',
-          operationId: 'getResourceHealth',
-          tags: ['Health'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'Resource ID',
-              schema: { type: 'string' },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Resource health status',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          resourceId: { type: 'string' },
-                          url: { type: 'string' },
-                          status: {
-                            type: 'string',
-                            enum: ['healthy', 'unhealthy', 'unknown'],
-                          },
-                          responseTime: { type: 'integer' },
-                          lastChecked: { type: 'string', format: 'date-time' },
-                          statusCode: { type: 'integer' },
-                          sslValid: { type: 'boolean' },
-                          certificateExpiry: {
-                            type: 'string',
-                            format: 'date-time',
-                          },
-                          uptimePercentage: { type: 'number' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Resource not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/submissions/index': {
-        get: {
-          summary: 'Get submissions',
-          description: 'Retrieve list of submissions with optional filtering.',
-          operationId: 'getSubmissions',
-          tags: ['Submissions'],
-          parameters: [
-            {
-              name: 'status',
-              in: 'query',
-              description: 'Filter by status',
-              schema: {
-                type: 'string',
-                enum: ['pending', 'approved', 'rejected'],
-              },
-            },
-            {
-              name: 'submittedBy',
-              in: 'query',
-              description: 'Filter by submitter',
-              schema: { type: 'string' },
-            },
-            {
-              name: 'limit',
-              in: 'query',
-              description: 'Items per page',
-              schema: { type: 'integer', default: 50, maximum: 100 },
-            },
-            {
-              name: 'offset',
-              in: 'query',
-              description: 'Items to skip',
-              schema: { type: 'integer', default: 0 },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Submissions list',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          submissions: {
-                            type: 'array',
-                            items: {
-                              $ref: '#/components/schemas/Submission',
-                            },
-                          },
-                          total: { type: 'integer' },
-                          limit: { type: 'integer' },
-                          offset: { type: 'integer' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/submissions/{id}': {
-        get: {
-          summary: 'Get submission by ID',
-          description: 'Retrieve a specific submission by ID.',
-          operationId: 'getSubmissionById',
-          tags: ['Submissions'],
-          parameters: [
-            {
-              name: 'id',
-              in: 'path',
-              required: true,
-              description: 'Submission ID',
-              schema: { type: 'string' },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Submission details',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        $ref: '#/components/schemas/Submission',
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Submission not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/moderation/flag': {
-        put: {
-          summary: 'Flag content',
-          description: 'Report inappropriate content for moderation review.',
-          operationId: 'flagContent',
-          tags: ['Moderation'],
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  required: ['resourceId', 'reason', 'reportedBy'],
-                  properties: {
-                    resourceId: {
-                      type: 'string',
-                      description: 'Resource ID being flagged',
-                    },
-                    reason: {
-                      type: 'string',
-                      description: 'Reason for flagging',
-                      example: 'Inappropriate content',
-                    },
-                    reportedBy: {
-                      type: 'string',
-                      description: 'User ID reporting the content',
-                    },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'Content flagged successfully',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      message: {
-                        type: 'string',
-                        example: 'Resource flagged successfully',
-                      },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          id: { type: 'string' },
-                          resourceId: { type: 'string' },
-                          reason: { type: 'string' },
-                          reportedBy: { type: 'string' },
-                          createdAt: { type: 'string', format: 'date-time' },
-                          resolved: { type: 'boolean' },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '400': {
-              description: 'Bad request',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Resource not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/submissions': {
-        post: {
-          summary: 'Submit a new resource',
-          description:
-            'Submit a new resource for review. Submissions are queued for moderation.',
-          operationId: 'submitResource',
-          tags: ['Submissions'],
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  $ref: '#/components/schemas/ResourceSubmission',
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'Resource submitted successfully',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      message: {
-                        type: 'string',
-                        example: 'Resource submitted successfully',
-                      },
-                      submissionId: {
-                        type: 'string',
-                        example: 'sub_123456789',
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '400': {
-              description: 'Validation error',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '500': {
-              description: 'Internal server error',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/moderation/queue': {
-        get: {
-          summary: 'Get moderation queue',
-          description:
-            'Retrieve pending submissions for moderation. Requires authentication.',
-          operationId: 'getModerationQueue',
-          tags: ['Moderation'],
-          parameters: [
-            {
-              name: 'status',
-              in: 'query',
-              description: 'Filter by status',
-              schema: {
-                type: 'string',
-                enum: ['pending', 'approved', 'rejected'],
-              },
-            },
-            {
-              name: 'category',
-              in: 'query',
-              description: 'Filter by category',
-              schema: { type: 'string' },
-            },
-            {
-              name: 'limit',
-              in: 'query',
-              description: 'Number of submissions to return',
-              schema: { type: 'integer', default: 50 },
-            },
-            {
-              name: 'offset',
-              in: 'query',
-              description: 'Number of submissions to skip',
-              schema: { type: 'integer', default: 0 },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'Moderation queue',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      queue: {
-                        type: 'array',
-                        items: {
-                          $ref: '#/components/schemas/Submission',
-                        },
-                      },
-                      total: { type: 'integer' },
-                      limit: { type: 'integer' },
-                      offset: { type: 'integer' },
-                    },
-                  },
-                },
-              },
-            },
-            '401': {
-              description: 'Unauthorized',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/moderation/approve': {
-        post: {
-          summary: 'Approve submission',
-          description:
-            'Approve a submission and add it to the resources collection.',
-          operationId: 'approveSubmission',
-          tags: ['Moderation'],
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  required: ['submissionId'],
-                  properties: {
-                    submissionId: {
-                      type: 'string',
-                      description: 'Submission ID to approve',
-                    },
-                    notes: {
-                      type: 'string',
-                      description: 'Moderation notes (optional)',
-                    },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'Submission approved',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      message: {
-                        type: 'string',
-                        example: 'Submission approved',
-                      },
-                      resourceId: {
-                        type: 'string',
-                        example: 'res_12345',
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Submission not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/moderation/reject': {
-        post: {
-          summary: 'Reject submission',
-          description: 'Reject a submission. Optionally provide a reason.',
-          operationId: 'rejectSubmission',
-          tags: ['Moderation'],
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  required: ['submissionId'],
-                  properties: {
-                    submissionId: {
-                      type: 'string',
-                      description: 'Submission ID to reject',
-                    },
-                    reason: {
-                      type: 'string',
-                      description: 'Rejection reason (optional)',
-                    },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'Submission rejected',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      message: {
-                        type: 'string',
-                        example: 'Submission rejected',
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '404': {
-              description: 'Submission not found',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/resources/bulk-status': {
-        post: {
-          summary: 'Bulk update resource status',
-          description: 'Update status for multiple resources at once.',
-          operationId: 'bulkUpdateResourceStatus',
-          tags: ['Resources'],
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  required: ['resourceIds', 'status'],
-                  properties: {
-                    resourceIds: {
-                      type: 'array',
-                      items: { type: 'string' },
-                      description: 'List of resource IDs to update',
-                    },
-                    status: {
-                      type: 'string',
-                      enum: [
-                        'active',
-                        'deprecated',
-                        'discontinued',
-                        'updated',
-                        'pending',
-                      ],
-                      description: 'New status value',
-                    },
-                    reason: {
-                      type: 'string',
-                      description: 'Reason for status change (optional)',
-                    },
-                    notes: {
-                      type: 'string',
-                      description: 'Additional notes (optional)',
-                    },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'Bulk status update result',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      updatedCount: { type: 'integer' },
-                      errorCount: { type: 'integer' },
-                      updatedResources: {
-                        type: 'array',
-                        items: {
-                          type: 'object',
-                          properties: {
-                            id: { type: 'string' },
-                            status: { type: 'string' },
-                            title: { type: 'string' },
-                          },
-                        },
-                      },
-                      errors: {
-                        type: 'array',
-                        items: {
-                          type: 'object',
-                          properties: {
-                            resourceId: { type: 'string' },
-                            error: { type: 'string' },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '400': {
-              description: 'Bad request',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/sitemap': {
-        get: {
-          summary: 'Get sitemap',
-          description: 'Retrieve XML sitemap for SEO.',
-          operationId: 'getSitemap',
-          tags: ['Resources'],
-          responses: {
-            '200': {
-              description: 'XML sitemap',
-              content: {
-                'application/xml': {
-                  schema: { type: 'string', format: 'xml' },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/rss': {
-        get: {
-          summary: 'Get RSS feed',
-          description: 'Retrieve RSS feed of latest resources.',
-          operationId: 'getRssFeed',
-          tags: ['Resources'],
-          responses: {
-            '200': {
-              description: 'RSS feed',
-              content: {
-                'application/rss+xml': {
-                  schema: { type: 'string', format: 'xml' },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/export/csv': {
-        get: {
-          summary: 'Export resources as CSV',
-          description:
-            'Export all resources in CSV format for offline use or analysis.',
-          operationId: 'exportResourcesCsv',
-          tags: ['Export'],
-          responses: {
-            '200': {
-              description: 'CSV file',
-              content: {
-                'text/csv': {
-                  schema: {
-                    type: 'string',
-                    format: 'binary',
-                  },
-                },
-              },
-              headers: {
-                'Content-Disposition': {
-                  description: 'Filename for download',
-                  schema: {
-                    type: 'string',
-                    example: 'attachment; filename="resources.csv"',
-                  },
-                },
-              },
-            },
-            '500': {
-              description: 'Internal server error',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/user/preferences': {
-        get: {
-          summary: 'Get user preferences',
-          description:
-            'Retrieve user preferences including categories, technologies, skill level, ' +
-            'interests, notification settings, and privacy settings. ' +
-            'In this implementation, returns mock data. Rate limited.',
-          operationId: 'getUserPreferences',
-          tags: ['User'],
-          parameters: [
-            {
-              name: 'userId',
-              in: 'query',
-              description: 'User ID (defaults to default-user if not provided)',
-              required: false,
-              schema: { type: 'string', default: 'default-user' },
-            },
-          ],
-          responses: {
-            '200': {
-              description: 'User preferences',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      preferences: {
-                        type: 'object',
-                        properties: {
-                          id: { type: 'string', description: 'User ID' },
-                          categories: {
-                            type: 'array',
-                            items: { type: 'string' },
-                            description: 'Preferred resource categories',
-                          },
-                          technologies: {
-                            type: 'array',
-                            items: { type: 'string' },
-                            description: 'Preferred technologies',
-                          },
-                          skillLevel: {
-                            type: 'string',
-                            enum: [
-                              'beginner',
-                              'intermediate',
-                              'advanced',
-                              'expert',
-                            ],
-                            description: 'User skill level',
-                          },
-                          interests: {
-                            type: 'array',
-                            items: { type: 'string' },
-                            description: 'User interests',
-                          },
-                          notificationSettings: {
-                            type: 'object',
-                            properties: {
-                              resourceUpdates: {
-                                type: 'boolean',
-                                description: 'Resource update notifications',
-                              },
-                              newContent: {
-                                type: 'boolean',
-                                description: 'New content notifications',
-                              },
-                              weeklyDigest: {
-                                type: 'boolean',
-                                description: 'Weekly digest email',
-                              },
-                            },
-                          },
-                          privacySettings: {
-                            type: 'object',
-                            properties: {
-                              allowPersonalization: {
-                                type: 'boolean',
-                                description:
-                                  'Allow personalized recommendations',
-                              },
-                              allowDataCollection: {
-                                type: 'boolean',
-                                description: 'Allow data collection',
-                              },
-                              allowRecommendationExplanations: {
-                                type: 'boolean',
-                                description: 'Show recommendation explanations',
-                              },
-                            },
-                          },
-                          createdAt: {
-                            type: 'string',
-                            format: 'date-time',
-                            description: 'When preferences were created',
-                          },
-                          lastUpdated: {
-                            type: 'string',
-                            format: 'date-time',
-                            description: 'When preferences were last updated',
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '429': {
-              description: 'Rate limit exceeded',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-              headers: {
-                'Retry-After': {
-                  description: 'Seconds until retry is allowed',
-                  schema: { type: 'integer' },
-                },
-              },
-            },
-          },
-        },
-        post: {
-          summary: 'Update user preferences',
-          description:
-            'Update user preferences. Supports partial updates - only provided fields will be updated. ' +
-            'In this implementation, returns mock data. Rate limited.',
-          operationId: 'updateUserPreferences',
-          tags: ['User'],
-          parameters: [
-            {
-              name: 'userId',
-              in: 'query',
-              description: 'User ID (defaults to default-user if not provided)',
-              required: false,
-              schema: { type: 'string', default: 'default-user' },
-            },
-          ],
-          requestBody: {
-            required: true,
-            description: 'Preferences to update (partial updates supported)',
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    categories: {
-                      type: 'array',
-                      items: { type: 'string' },
-                      description: 'Preferred resource categories',
-                    },
-                    technologies: {
-                      type: 'array',
-                      items: { type: 'string' },
-                      description: 'Preferred technologies',
-                    },
-                    skillLevel: {
-                      type: 'string',
-                      enum: ['beginner', 'intermediate', 'advanced', 'expert'],
-                      description: 'User skill level',
-                    },
-                    interests: {
-                      type: 'array',
-                      items: { type: 'string' },
-                      description: 'User interests',
-                    },
-                    notificationSettings: {
-                      type: 'object',
-                      properties: {
-                        resourceUpdates: {
-                          type: 'boolean',
-                          description: 'Resource update notifications',
-                        },
-                        newContent: {
-                          type: 'boolean',
-                          description: 'New content notifications',
-                        },
-                        weeklyDigest: {
-                          type: 'boolean',
-                          description: 'Weekly digest email',
-                        },
-                      },
-                    },
-                    privacySettings: {
-                      type: 'object',
-                      properties: {
-                        allowPersonalization: {
-                          type: 'boolean',
-                          description: 'Allow personalized recommendations',
-                        },
-                        allowDataCollection: {
-                          type: 'boolean',
-                          description: 'Allow data collection',
-                        },
-                        allowRecommendationExplanations: {
-                          type: 'boolean',
-                          description: 'Show recommendation explanations',
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-          responses: {
-            '200': {
-              description: 'Updated user preferences',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      preferences: {
-                        type: 'object',
-                        properties: {
-                          id: { type: 'string', description: 'User ID' },
-                          categories: {
-                            type: 'array',
-                            items: { type: 'string' },
-                            description:
-                              'Updated preferred resource categories',
-                          },
-                          technologies: {
-                            type: 'array',
-                            items: { type: 'string' },
-                            description: 'Updated preferred technologies',
-                          },
-                          skillLevel: {
-                            type: 'string',
-                            enum: [
-                              'beginner',
-                              'intermediate',
-                              'advanced',
-                              'expert',
-                            ],
-                            description: 'Updated user skill level',
-                          },
-                          interests: {
-                            type: 'array',
-                            items: { type: 'string' },
-                            description: 'Updated user interests',
-                          },
-                          notificationSettings: {
-                            type: 'object',
-                            properties: {
-                              resourceUpdates: {
-                                type: 'boolean',
-                                description: 'Resource update notifications',
-                              },
-                              newContent: {
-                                type: 'boolean',
-                                description: 'New content notifications',
-                              },
-                              weeklyDigest: {
-                                type: 'boolean',
-                                description: 'Weekly digest email',
-                              },
-                            },
-                          },
-                          privacySettings: {
-                            type: 'object',
-                            properties: {
-                              allowPersonalization: {
-                                type: 'boolean',
-                                description:
-                                  'Allow personalized recommendations',
-                              },
-                              allowDataCollection: {
-                                type: 'boolean',
-                                description: 'Allow data collection',
-                              },
-                              allowRecommendationExplanations: {
-                                type: 'boolean',
-                                description: 'Show recommendation explanations',
-                              },
-                            },
-                          },
-                          createdAt: {
-                            type: 'string',
-                            format: 'date-time',
-                            description: 'When preferences were created',
-                          },
-                          lastUpdated: {
-                            type: 'string',
-                            format: 'date-time',
-                            description: 'When preferences were last updated',
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-            '400': {
-              description: 'Invalid request body',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-            '429': {
-              description: 'Rate limit exceeded',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-              headers: {
-                'Retry-After': {
-                  description: 'Seconds until retry is allowed',
-                  schema: { type: 'integer' },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/v1/export/json': {
-        get: {
-          summary: 'Export resources as JSON',
-          description:
-            'Export all resources in JSON format. Returns array of all resources with Content-Disposition header for file download.',
-          operationId: 'exportResourcesJson',
-          tags: ['Export'],
-          responses: {
-            '200': {
-              description: 'JSON export of all resources',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'array',
-                    items: {
-                      $ref: '#/components/schemas/Resource',
-                    },
-                  },
-                },
-              },
-              headers: {
-                'Content-Disposition': {
-                  description: 'File attachment with filename',
-                  schema: {
-                    type: 'string',
-                    example: 'attachment; filename="resources.json"',
-                  },
-                },
-              },
-            },
-            '500': {
-              description: 'Internal server error',
-              content: {
-                'application/json': {
-                  schema: {
-                    $ref: '#/components/schemas/ErrorResponse',
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      '/api/integration-health': {
-        get: {
-          summary: 'Get integration health',
-          description:
-            'Retrieve comprehensive health status for all external integrations including circuit breakers, webhooks, and queue systems. ' +
-            'Provides aggregate health status (healthy/degraded/unhealthy) and detailed metrics for monitoring and alerting. ' +
-            'Circuit breaker states (closed/open/half-open) indicate service availability. ' +
-            'Webhook queue metrics show pending and dead letter webhooks. ' +
-            'Use this endpoint for proactive monitoring and incident response.',
-          operationId: 'getIntegrationHealth',
-          tags: ['Integration'],
-          'x-rateLimit': { config: 'standard', limit: 100, window: '15 min' },
-          responses: {
-            '200': {
-              description: 'Integration health report',
-              content: {
-                'application/json': {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      success: { type: 'boolean', example: true },
-                      data: {
-                        type: 'object',
-                        properties: {
-                          overall: {
-                            type: 'object',
-                            description: 'Aggregate integration health',
-                            properties: {
-                              status: {
-                                type: 'string',
-                                enum: ['healthy', 'degraded', 'unhealthy'],
-                                description:
-                                  'Overall health status: healthy (all systems operational), degraded (some issues), unhealthy (critical failures)',
-                              },
-                              timestamp: {
-                                type: 'string',
-                                format: 'date-time',
-                                description: 'When health check was performed',
-                              },
-                              totalCircuitBreakers: {
-                                type: 'integer',
-                                description:
-                                  'Total number of circuit breakers configured',
-                              },
-                              openCircuitBreakers: {
-                                type: 'integer',
-                                description:
-                                  'Number of circuit breakers currently open (failing)',
-                              },
-                              totalWebhooksQueued: {
-                                type: 'integer',
-                                description:
-                                  'Number of webhooks pending delivery',
-                              },
-                              totalDeadLetterWebhooks: {
-                                type: 'integer',
-                                description:
-                                  'Number of webhooks moved to dead letter queue (failed all retries)',
-                              },
-                            },
-                          },
-                          circuitBreakers: {
-                            type: 'object',
-                            description:
-                              'Detailed circuit breaker stats per service',
-                            additionalProperties: {
-                              type: 'object',
-                              properties: {
-                                state: {
-                                  type: 'string',
-                                  enum: ['closed', 'open', 'half-open'],
-                                  description:
-                                    'Circuit breaker state: closed (normal), open (failing), half-open (testing recovery)',
-                                },
-                                failureCount: {
-                                  type: 'integer',
-                                  description:
-                                    'Number of failures since last reset',
-                                },
-                                successCount: {
-                                  type: 'integer',
-                                  description:
-                                    'Number of successes since last reset',
-                                },
-                                lastFailureTime: {
-                                  type: 'integer',
-                                  format: 'int64',
-                                  description:
-                                    'Unix timestamp of last failure (null if no failures)',
-                                  nullable: true,
-                                },
-                                lastSuccessTime: {
-                                  type: 'integer',
-                                  format: 'int64',
-                                  description:
-                                    'Unix timestamp of last success (null if no successes)',
-                                  nullable: true,
-                                },
-                                failureRate: {
-                                  type: 'number',
-                                  format: 'float',
-                                  description:
-                                    'Failure rate percentage (0-100)',
-                                },
-                              },
-                            },
-                          },
-                          webhooks: {
-                            type: 'object',
-                            description: 'Webhook delivery queue status',
-                            properties: {
-                              queue: {
-                                type: 'object',
-                                description: 'Webhook queue metrics',
-                                properties: {
-                                  pending: {
-                                    type: 'integer',
-                                    description:
-                                      'Number of webhooks waiting to be delivered',
-                                  },
-                                  nextScheduled: {
-                                    type: 'string',
-                                    format: 'date-time',
-                                    description:
-                                      'When next webhook delivery is scheduled (null if queue empty)',
-                                    nullable: true,
-                                  },
-                                },
-                              },
-                              deadLetter: {
-                                type: 'object',
-                                description:
-                                  'Dead letter queue for failed webhooks',
-                                properties: {
-                                  count: {
-                                    type: 'integer',
-                                    description:
-                                      'Number of failed webhooks in dead letter queue',
-                                  },
-                                  items: {
-                                    type: 'array',
-                                    description: 'List of failed webhooks',
-                                    items: {
-                                      type: 'object',
-                                      properties: {
-                                        id: {
-                                          type: 'string',
-                                          description: 'Dead letter webhook ID',
-                                        },
-                                        webhookId: {
-                                          type: 'string',
-                                          description: 'Original webhook ID',
-                                        },
-                                        event: {
-                                          type: 'string',
-                                          description: 'Webhook event type',
-                                        },
-                                        failureReason: {
-                                          type: 'string',
-                                          description: 'Reason webhook failed',
-                                        },
-                                        createdAt: {
-                                          type: 'string',
-                                          format: 'date-time',
-                                          description:
-                                            'When webhook was initially created',
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              '429': {
-                description: 'Rate limit exceeded',
-                content: {
-                  'application/json': {
-                    schema: {
-                      $ref: '#/components/schemas/ErrorResponse',
-                    },
-                  },
-                },
-              },
-              '500': {
-                description: 'Internal server error',
-                content: {
-                  'application/json': {
-                    schema: {
-                      $ref: '#/components/schemas/ErrorResponse',
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        '/api/sitemap': {
+      ],
+      tags: [
+        { name: 'Resources', description: 'Resource discovery and management' },
+        { name: 'Search', description: 'Search and filtering' },
+        { name: 'Webhooks', description: 'Webhook management' },
+        { name: 'Analytics', description: 'Analytics and metrics' },
+        { name: 'Authentication', description: 'API key management' },
+        { name: 'Moderation', description: 'Content moderation' },
+        { name: 'Submissions', description: 'Resource submissions' },
+        { name: 'Validation', description: 'URL validation' },
+        { name: 'Export', description: 'Data export' },
+        { name: 'User', description: 'User preferences and settings' },
+        { name: 'Sitemap', description: 'XML sitemap for SEO' },
+        { name: 'Integration', description: 'Integration health monitoring' },
+      ],
+      paths: {
+        '/api/v1/resources': {
           get: {
-            summary: 'Get XML sitemap',
+            summary: 'Get all resources',
             description:
-              'Retrieve XML sitemap for SEO indexing. Includes static pages with priorities and change frequencies.',
-            operationId: 'getSitemap',
-            tags: ['Sitemap'],
-            responses: {
-              '200': {
-                description: 'XML sitemap',
-                content: {
-                  'application/xml': {
-                    schema: {
-                      type: 'string',
-                      example: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${apiConfig.docs.examples.baseUrl}</loc>\n    <priority>1.0</priority>\n  </url>\n</urlset>`,
-                    },
-                  },
-                },
-              },
-              '500': {
-                description: 'Sitemap generation error',
-                content: {
-                  'application/xml': {
-                    schema: {
-                      type: 'string',
-                      example:
-                        '<?xml version="1.0" encoding="UTF-8"?>\n<error>\n  <message>Failed to generate sitemap</message>\n</error>',
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-        '/api/v1/comparisons/index': {
-          get: {
-            summary: 'Compare resources',
-            description:
-              'Compare multiple resources side-by-side. Accepts comma-separated resource IDs and returns comparison data with caching.',
-            operationId: 'compareResources',
+              'Retrieve a paginated list of resources with optional filtering. ' +
+              'Supports filtering by category, pricing model, difficulty level, and search terms. ' +
+              'Protected by rate limiting (token bucket algorithm).',
+            operationId: 'getResources',
             tags: ['Resources'],
+            'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
             parameters: [
               {
-                name: 'ids',
+                name: 'limit',
                 in: 'query',
-                required: true,
-                description: 'Comma-separated list of resource IDs to compare',
+                description:
+                  'Number of resources to return (default: 20, max: 100)',
+                required: false,
                 schema: {
-                  type: 'array',
-                  items: { type: 'string' },
-                  minItems: 2,
-                  maxItems: 5,
+                  type: 'integer',
+                  minimum: 1,
+                  maximum: 100,
+                  default: 20,
+                },
+              },
+              {
+                name: 'offset',
+                in: 'query',
+                description: 'Number of resources to skip (default: 0)',
+                required: false,
+                schema: {
+                  type: 'integer',
+                  minimum: 0,
+                  default: 0,
+                },
+              },
+              {
+                name: 'category',
+                in: 'query',
+                description: 'Filter by category',
+                required: false,
+                schema: {
+                  type: 'string',
+                },
+              },
+              {
+                name: 'pricing',
+                in: 'query',
+                description: 'Filter by pricing model',
+                required: false,
+                schema: {
+                  type: 'string',
+                  enum: ['Free', 'Freemium', 'Open Source', 'Paid'],
+                },
+              },
+              {
+                name: 'difficulty',
+                in: 'query',
+                description: 'Filter by difficulty level',
+                required: false,
+                schema: {
+                  type: 'string',
+                  enum: ['Beginner', 'Intermediate', 'Advanced'],
+                },
+              },
+              {
+                name: 'search',
+                in: 'query',
+                description: 'Search term to filter by title/description',
+                required: false,
+                schema: {
+                  type: 'string',
+                },
+              },
+              {
+                name: 'sort',
+                in: 'query',
+                description: 'Sort option',
+                required: false,
+                schema: {
+                  type: 'string',
+                  enum: [
+                    'alphabetical-asc',
+                    'alphabetical-desc',
+                    'date-added-desc',
+                    'popularity-desc',
+                  ],
+                  default: 'popularity-desc',
                 },
               },
             ],
             responses: {
               '200': {
-                description: 'Comparison result',
+                description: 'Successful response',
                 content: {
                   'application/json': {
                     schema: {
-                      type: 'object',
-                      properties: {
-                        success: { type: 'boolean', example: true },
-                        data: {
-                          type: 'object',
-                          properties: {
-                            comparison: {
-                              $ref: '#/components/schemas/ResourceComparison',
-                            },
-                            resources: {
-                              type: 'array',
-                              items: {
-                                $ref: '#/components/schemas/Resource',
-                              },
-                            },
-                          },
-                        },
-                      },
+                      $ref: '#/components/schemas/SuccessResponse',
                     },
                   },
                 },
@@ -3764,16 +176,6 @@ export default defineEventHandler(async event => {
                   },
                 },
               },
-              '404': {
-                description: 'Resource(s) not found',
-                content: {
-                  'application/json': {
-                    schema: {
-                      $ref: '#/components/schemas/ErrorResponse',
-                    },
-                  },
-                },
-              },
               '429': {
                 description: 'Rate limit exceeded',
                 content: {
@@ -3788,39 +190,87 @@ export default defineEventHandler(async event => {
                     description: 'Seconds until retry is allowed',
                     schema: { type: 'integer' },
                   },
+                  'X-RateLimit-Limit': {
+                    $ref: '#/components/headers/XRateLimitLimit',
+                  },
+                  'X-RateLimit-Remaining': {
+                    $ref: '#/components/headers/XRateLimitRemaining',
+                  },
+                  'X-RateLimit-Reset': {
+                    $ref: '#/components/headers/XRateLimitReset',
+                  },
+                  'X-RateLimit-Window': {
+                    $ref: '#/components/headers/XRateLimitWindow',
+                  },
+                },
+              },
+              '500': {
+                description: 'Internal server error',
+                headers: {
+                  'X-RateLimit-Limit': {
+                    $ref: '#/components/headers/XRateLimitLimit',
+                  },
+                  'X-RateLimit-Remaining': {
+                    $ref: '#/components/headers/XRateLimitRemaining',
+                  },
+                  'X-RateLimit-Reset': {
+                    $ref: '#/components/headers/XRateLimitReset',
+                  },
+                  'X-RateLimit-Window': {
+                    $ref: '#/components/headers/XRateLimitWindow',
+                  },
+                },
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
                 },
               },
             },
+            security: [],
           },
         },
-        '/api/analytics/data': {
+        '/api/recommendations/index': {
           get: {
-            summary: 'Get analytics dashboard data',
+            summary: 'Get recommendations',
             description:
-              'Retrieve aggregated analytics data for dashboard display. Includes top resources, categories, and date-range filtering with rate limiting.',
-            operationId: 'getAnalyticsDashboardData',
-            tags: ['Analytics'],
+              'Get personalized or trending resource recommendations.',
+            operationId: 'getRecommendations',
+            tags: ['Resources'],
             parameters: [
               {
-                name: 'startDate',
+                name: 'limit',
                 in: 'query',
-                required: false,
-                description:
-                  'Start date for analytics data (ISO 8601 format, defaults to 30 days ago)',
-                schema: { type: 'string', format: 'date-time' },
+                description: 'Number of recommendations',
+                schema: { type: 'integer', default: 10, maximum: 50 },
               },
               {
-                name: 'endDate',
+                name: 'strategy',
                 in: 'query',
-                required: false,
-                description:
-                  'End date for analytics data (ISO 8601 format, defaults to now)',
-                schema: { type: 'string', format: 'date-time' },
+                description: 'Recommendation strategy',
+                schema: {
+                  type: 'string',
+                  enum: [
+                    'trending',
+                    'popular',
+                    'personalized',
+                    'content-based',
+                  ],
+                  default: 'trending',
+                },
+              },
+              {
+                name: 'category',
+                in: 'query',
+                description: 'Filter by category',
+                schema: { type: 'string' },
               },
             ],
             responses: {
               '200': {
-                description: 'Analytics dashboard data',
+                description: 'Recommendations',
                 content: {
                   'application/json': {
                     schema: {
@@ -3830,16 +280,1618 @@ export default defineEventHandler(async event => {
                         data: {
                           type: 'object',
                           properties: {
-                            totalEvents: { type: 'integer', example: 1234 },
+                            recommendations: {
+                              type: 'array',
+                              items: {
+                                $ref: '#/components/schemas/Resource',
+                              },
+                            },
+                            strategy: { type: 'string' },
+                            count: { type: 'integer' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/search/suggestions': {
+          get: {
+            summary: 'Get search suggestions',
+            description: 'Get search suggestions and popular searches.',
+            operationId: 'getSearchSuggestions',
+            tags: ['Search'],
+            parameters: [
+              {
+                name: 'q',
+                in: 'query',
+                description: 'Partial search query',
+                schema: { type: 'string' },
+              },
+              {
+                name: 'limit',
+                in: 'query',
+                description: 'Number of suggestions',
+                schema: { type: 'integer', default: 10, maximum: 20 },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Search suggestions',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            suggestions: {
+                              type: 'array',
+                              items: { type: 'string' },
+                            },
+                            related: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  term: { type: 'string' },
+                                  count: { type: 'integer' },
+                                },
+                              },
+                            },
+                            popular: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  query: { type: 'string' },
+                                  count: { type: 'integer' },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/resources/{id}': {
+          get: {
+            summary: 'Get resource by ID',
+            description:
+              'Retrieve a specific resource by its ID. Includes hierarchical tags and metadata.',
+            operationId: 'getResourceById',
+            tags: ['Resources'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Resource ID',
+                schema: {
+                  type: 'string',
+                },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Successful response',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/SuccessResponse',
+                    },
+                  },
+                },
+                headers: {
+                  'X-Cache': {
+                    description: 'Cache status (HIT or MISS)',
+                    schema: { type: 'string', enum: ['HIT', 'MISS'] },
+                  },
+                },
+              },
+              '404': {
+                description: 'Resource not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+              '429': {
+                description: 'Rate limit exceeded',
+                headers: {
+                  'Retry-After': {
+                    description: 'Seconds until retry is allowed',
+                    schema: { type: 'integer' },
+                  },
+                },
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+              '500': {
+                description: 'Internal server error',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/categories': {
+          get: {
+            summary: 'Get all categories',
+            description:
+              'Retrieve list of all categories with resource counts.',
+            operationId: 'getCategories',
+            tags: ['Resources'],
+            responses: {
+              '200': {
+                description: 'Categories with counts',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            properties: {
+                              name: { type: 'string', example: 'Development' },
+                              count: { type: 'integer', example: 42 },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                headers: {
+                  'X-Cache': {
+                    description: 'Cache status (HIT or MISS)',
+                    schema: { type: 'string', enum: ['HIT', 'MISS'] },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/tags': {
+          get: {
+            summary: 'Get all tags',
+            description: 'Retrieve list of all tags with optional hierarchy.',
+            operationId: 'getTags',
+            tags: ['Resources'],
+            parameters: [
+              {
+                name: 'includeChildren',
+                in: 'query',
+                description: 'Include child tags',
+                schema: { type: 'boolean' },
+              },
+              {
+                name: 'includeParents',
+                in: 'query',
+                description: 'Include parent tags',
+                schema: { type: 'boolean' },
+              },
+              {
+                name: 'rootOnly',
+                in: 'query',
+                description: 'Return only root-level tags',
+                schema: { type: 'boolean' },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Tags',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            tags: {
+                              type: 'array',
+                              items: { type: 'string' },
+                            },
+                            includeChildren: { type: 'boolean' },
+                            includeParents: { type: 'boolean' },
+                            rootOnly: { type: 'boolean' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/resources/{id}/alternatives': {
+          get: {
+            summary: 'Get resource alternatives',
+            description:
+              'Get alternative resources similar to specified resource.',
+            operationId: 'getResourceAlternatives',
+            tags: ['Resources'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Resource ID',
+                schema: { type: 'string' },
+              },
+              {
+                name: 'limit',
+                in: 'query',
+                description: 'Number of alternatives',
+                schema: { type: 'integer', default: 5, maximum: 20 },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Alternative resources',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            resourceId: { type: 'string' },
+                            alternatives: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  id: { type: 'string' },
+                                  title: { type: 'string' },
+                                  description: { type: 'string' },
+                                  url: { type: 'string', format: 'uri' },
+                                  score: {
+                                    type: 'number',
+                                    description: 'Similarity score',
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Resource not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/search': {
+          get: {
+            summary: 'Search resources',
+            description:
+              'Search resources with advanced filtering options using Fuse.js fuzzy search.',
+            operationId: 'searchResources',
+            tags: ['Search'],
+            parameters: [
+              {
+                name: 'q',
+                in: 'query',
+                description: 'Search query term',
+                required: false,
+                schema: {
+                  type: 'string',
+                },
+              },
+              {
+                name: 'limit',
+                in: 'query',
+                description:
+                  'Number of resources to return (default: 20, max: 100)',
+                required: false,
+                schema: {
+                  type: 'integer',
+                  minimum: 1,
+                  maximum: 100,
+                  default: 20,
+                },
+              },
+              {
+                name: 'offset',
+                in: 'query',
+                description: 'Number of resources to skip (default: 0)',
+                required: false,
+                schema: {
+                  type: 'integer',
+                  minimum: 0,
+                  default: 0,
+                },
+              },
+              {
+                name: 'category',
+                in: 'query',
+                description: 'Filter by category',
+                required: false,
+                schema: {
+                  type: 'string',
+                },
+              },
+              {
+                name: 'pricing',
+                in: 'query',
+                description: 'Filter by pricing model',
+                required: false,
+                schema: {
+                  type: 'string',
+                  enum: ['Free', 'Freemium', 'Open Source', 'Paid'],
+                },
+              },
+              {
+                name: 'difficulty',
+                in: 'query',
+                description: 'Filter by difficulty level',
+                required: false,
+                schema: {
+                  type: 'string',
+                  enum: ['Beginner', 'Intermediate', 'Advanced'],
+                },
+              },
+              {
+                name: 'tags',
+                in: 'query',
+                description: 'Filter by tags (comma-separated)',
+                required: false,
+                schema: {
+                  type: 'string',
+                },
+              },
+              {
+                name: 'hierarchicalTags',
+                in: 'query',
+                description: 'Filter by hierarchical tags (comma-separated)',
+                required: false,
+                schema: {
+                  type: 'string',
+                },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Successful response',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/SuccessResponse',
+                    },
+                  },
+                },
+              },
+              '400': {
+                description: 'Bad request',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+              '500': {
+                description: 'Internal server error',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/validate-url': {
+          post: {
+            summary: 'Validate URL',
+            description:
+              'Validate a URL by checking its HTTP status. ' +
+              'Uses circuit breaker (hostname-based) and retry with exponential backoff (1s-30s, max 3 retries) for resilience. ' +
+              'Circuit breaker prevents cascading failures from unreachable hosts.',
+            operationId: 'validateUrl',
+            tags: ['Validation'],
+            'x-circuitBreaker': { enabled: true, scope: 'per-hostname' },
+            'x-retry': {
+              strategy: 'exponential-backoff',
+              maxRetries: 3,
+              maxDelay: '30s',
+            },
+            'x-rateLimit': { config: 'standard', limit: 50, window: '5 min' },
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['url'],
+                    properties: {
+                      url: {
+                        type: 'string',
+                        format: 'uri',
+                        description: 'URL to validate',
+                      },
+                      timeout: {
+                        type: 'integer',
+                        description: 'Timeout in milliseconds (default: 10000)',
+                        default: 10000,
+                      },
+                      retries: {
+                        type: 'integer',
+                        description: 'Number of retry attempts (default: 3)',
+                        default: 3,
+                      },
+                      retryDelay: {
+                        type: 'integer',
+                        description:
+                          'Initial retry delay in milliseconds (default: 1000)',
+                        default: 1000,
+                      },
+                      useCircuitBreaker: {
+                        type: 'boolean',
+                        description:
+                          'Use circuit breaker for this validation (default: true)',
+                        default: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'URL validation result',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: {
+                          type: 'boolean',
+                          example: true,
+                        },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            validationResult: {
+                              type: 'object',
+                              properties: {
+                                url: {
+                                  type: 'string',
+                                  example: apiConfig.docs.examples.baseUrl,
+                                },
+                                status: {
+                                  type: 'string',
+                                  enum: [
+                                    'valid',
+                                    'invalid',
+                                    'unreachable',
+                                    'timeout',
+                                  ],
+                                  example: 'valid',
+                                },
+                                statusCode: {
+                                  type: 'integer',
+                                  example: 200,
+                                },
+                                attempts: {
+                                  type: 'integer',
+                                  description: 'Number of attempts made',
+                                  example: 1,
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '400': {
+                description: 'Bad request',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+              '500': {
+                description: 'Internal server error',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/webhooks': {
+          get: {
+            summary: 'List webhooks',
+            description:
+              'Retrieve all registered webhooks for the authenticated user.',
+            operationId: 'listWebhooks',
+            tags: ['Webhooks'],
+            'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
+            responses: {
+              '200': {
+                description: 'Successful response',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'array',
+                          items: {
+                            $ref: '#/components/schemas/Webhook',
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '401': {
+                description: 'Unauthorized',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          post: {
+            summary: 'Create webhook',
+            description:
+              'Create a new webhook for event notifications. Webhook delivery uses circuit breaker ' +
+              '(hostname-based) and retry with exponential backoff (1s-30s, max 3 retries). ' +
+              'Failed webhooks are moved to dead letter queue for manual inspection and retry. ' +
+              'Supports idempotency keys to prevent duplicate deliveries.',
+            operationId: 'createWebhook',
+            tags: ['Webhooks'],
+            'x-circuitBreaker': { enabled: true, scope: 'per-hostname' },
+            'x-retry': {
+              strategy: 'exponential-backoff',
+              maxRetries: 3,
+              maxDelay: '30s',
+              jitter: true,
+            },
+            'x-idempotency': { supported: true, header: 'X-Idempotency-Key' },
+            'x-queue': { asyncDelivery: true, deadLetterQueue: true },
+            'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['url', 'events'],
+                    properties: {
+                      url: {
+                        type: 'string',
+                        format: 'uri',
+                        description: 'Webhook URL to send events to',
+                      },
+                      events: {
+                        type: 'array',
+                        items: {
+                          type: 'string',
+                          enum: [
+                            'resource.created',
+                            'resource.updated',
+                            'resource.deleted',
+                            'submission.created',
+                            'submission.approved',
+                            'submission.rejected',
+                          ],
+                        },
+                        description: 'List of events to subscribe to',
+                      },
+                      active: {
+                        type: 'boolean',
+                        description: 'Whether the webhook is active',
+                        default: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'Webhook created successfully',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          $ref: '#/components/schemas/Webhook',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '400': {
+                description: 'Bad request',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/webhooks/{id}': {
+          put: {
+            summary: 'Update webhook',
+            description: 'Update an existing webhook configuration.',
+            operationId: 'updateWebhook',
+            tags: ['Webhooks'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Webhook ID',
+                schema: {
+                  type: 'string',
+                },
+              },
+            ],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      url: {
+                        type: 'string',
+                        format: 'uri',
+                      },
+                      events: {
+                        type: 'array',
+                        items: { type: 'string' },
+                      },
+                      active: {
+                        type: 'boolean',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'Webhook updated successfully',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          $ref: '#/components/schemas/Webhook',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Webhook not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          delete: {
+            summary: 'Delete webhook',
+            description: 'Delete a webhook.',
+            operationId: 'deleteWebhook',
+            tags: ['Webhooks'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Webhook ID',
+                schema: {
+                  type: 'string',
+                },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Webhook deleted successfully',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        message: {
+                          type: 'string',
+                          example: 'Webhook deleted successfully',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Webhook not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/webhooks/trigger': {
+          post: {
+            summary: 'Trigger webhook test',
+            description:
+              'Send a test event to a webhook for testing purposes. ' +
+              'Uses circuit breaker and retry with exponential backoff for delivery. ' +
+              'Delivery is queued asynchronously and non-blocking.',
+            operationId: 'triggerWebhook',
+            tags: ['Webhooks'],
+            'x-circuitBreaker': { enabled: true, scope: 'per-hostname' },
+            'x-retry': {
+              strategy: 'exponential-backoff',
+              maxRetries: 3,
+              maxDelay: '30s',
+            },
+            'x-queue': { asyncDelivery: true },
+            'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['webhookId'],
+                    properties: {
+                      webhookId: {
+                        type: 'string',
+                        description: 'Webhook ID to trigger',
+                      },
+                      eventType: {
+                        type: 'string',
+                        description: 'Event type to send',
+                        enum: [
+                          'resource.created',
+                          'resource.updated',
+                          'submission.created',
+                        ],
+                        default: 'resource.created',
+                      },
+                      testData: {
+                        type: 'object',
+                        description: 'Custom test data (optional)',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'Test event sent successfully',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        message: {
+                          type: 'string',
+                          example: 'Test event sent',
+                        },
+                        deliveryId: {
+                          type: 'string',
+                          example: 'del_abc123',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '400': {
+                description: 'Bad request',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/webhooks/queue': {
+          get: {
+            summary: 'Get webhook queue',
+            description:
+              'Retrieve webhook queue statistics and contents including dead letter queue. ' +
+              'Monitors pending webhooks, delivery history, and failed webhooks in dead letter queue. ' +
+              'Provides visibility into webhook delivery health and retry status.',
+            operationId: 'getWebhookQueue',
+            tags: ['Webhooks'],
+            'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
+            responses: {
+              '200': {
+                description: 'Webhook queue data',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            stats: {
+                              type: 'object',
+                              properties: {
+                                totalQueued: { type: 'integer' },
+                                totalDelivered: { type: 'integer' },
+                                totalFailed: { type: 'integer' },
+                                totalDeadLetter: { type: 'integer' },
+                              },
+                            },
+                            queue: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  id: { type: 'string' },
+                                  webhookId: { type: 'string' },
+                                  event: { type: 'string' },
+                                  scheduledFor: {
+                                    type: 'string',
+                                    format: 'date-time',
+                                  },
+                                  retryCount: { type: 'integer' },
+                                  maxRetries: { type: 'integer' },
+                                  createdAt: {
+                                    type: 'string',
+                                    format: 'date-time',
+                                  },
+                                },
+                              },
+                            },
+                            deadLetterQueue: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  id: { type: 'string' },
+                                  webhookId: { type: 'string' },
+                                  event: { type: 'string' },
+                                  failureReason: { type: 'string' },
+                                  lastAttemptAt: {
+                                    type: 'string',
+                                    format: 'date-time',
+                                  },
+                                  deliveryAttempts: { type: 'integer' },
+                                  createdAt: {
+                                    type: 'string',
+                                    format: 'date-time',
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/webhooks/dead-letter/{id}/retry': {
+          post: {
+            summary: 'Retry dead letter webhook',
+            description:
+              'Retry a webhook that failed and was moved to dead letter queue.',
+            operationId: 'retryDeadLetterWebhook',
+            tags: ['Webhooks'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Dead letter webhook ID',
+                schema: { type: 'string' },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Webhook queued for retry',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        message: {
+                          type: 'string',
+                          example: 'Webhook queued for retry',
+                        },
+                        deliveryId: { type: 'string' },
+                      },
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Dead letter webhook not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/webhooks/deliveries': {
+          get: {
+            summary: 'List webhook deliveries',
+            description: 'Retrieve delivery history for webhooks.',
+            operationId: 'listWebhookDeliveries',
+            tags: ['Webhooks'],
+            parameters: [
+              {
+                name: 'webhookId',
+                in: 'query',
+                description: 'Filter by webhook ID',
+                required: false,
+                schema: { type: 'string' },
+              },
+              {
+                name: 'status',
+                in: 'query',
+                description: 'Filter by delivery status',
+                required: false,
+                schema: {
+                  type: 'string',
+                  enum: ['success', 'failed', 'pending'],
+                },
+              },
+              {
+                name: 'limit',
+                in: 'query',
+                description: 'Number of deliveries to return',
+                required: false,
+                schema: { type: 'integer', default: 50, maximum: 100 },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Successful response',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'array',
+                          items: {
+                            $ref: '#/components/schemas/WebhookDelivery',
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/resources/{id}/history': {
+          get: {
+            summary: 'Get resource history',
+            description: 'Get status change history for a resource.',
+            operationId: 'getResourceHistory',
+            tags: ['Resources'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Resource ID',
+                schema: { type: 'string' },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Resource history',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            resourceId: { type: 'string' },
+                            history: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  id: { type: 'string' },
+                                  fromStatus: { type: 'string' },
+                                  toStatus: { type: 'string' },
+                                  reason: { type: 'string' },
+                                  changedBy: { type: 'string' },
+                                  changedAt: {
+                                    type: 'string',
+                                    format: 'date-time',
+                                  },
+                                  notes: { type: 'string' },
+                                },
+                              },
+                            },
+                            count: { type: 'integer' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Resource not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/resources/{id}/health': {
+          post: {
+            summary: 'Trigger health check',
+            description:
+              'Manually trigger health check for a specific resource.',
+            operationId: 'triggerResourceHealth',
+            tags: ['Resources', 'Health'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Resource ID',
+                schema: { type: 'string' },
+              },
+            ],
+            requestBody: {
+              required: false,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      force: {
+                        type: 'boolean',
+                        description: 'Force check even if recently checked',
+                        default: false,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'Health check result',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            resourceId: { type: 'string' },
+                            url: { type: 'string' },
+                            status: {
+                              type: 'string',
+                              enum: ['healthy', 'unhealthy', 'unknown'],
+                            },
+                            responseTime: { type: 'integer' },
+                            checkedAt: { type: 'string', format: 'date-time' },
+                            details: {
+                              type: 'object',
+                              properties: {
+                                statusCode: { type: 'integer' },
+                                sslValid: { type: 'boolean' },
+                                certificateExpiry: {
+                                  type: 'string',
+                                  format: 'date-time',
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Resource not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/resources/{id}/status': {
+          put: {
+            summary: 'Update resource status',
+            description: 'Update status of a specific resource.',
+            operationId: 'updateResourceStatus',
+            tags: ['Resources'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Resource ID',
+                schema: { type: 'string' },
+              },
+            ],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['status'],
+                    properties: {
+                      status: {
+                        type: 'string',
+                        enum: [
+                          'active',
+                          'deprecated',
+                          'discontinued',
+                          'updated',
+                          'pending',
+                        ],
+                      },
+                      reason: { type: 'string' },
+                      notes: { type: 'string' },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'Status updated',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            id: { type: 'string' },
+                            status: { type: 'string' },
+                            title: { type: 'string' },
+                            updatedAt: { type: 'string', format: 'date-time' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Resource not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/resources/lifecycle': {
+          get: {
+            summary: 'Get resource lifecycle stats',
+            description: 'Get lifecycle statistics and status distribution.',
+            operationId: 'getResourceLifecycle',
+            tags: ['Resources'],
+            responses: {
+              '200': {
+                description: 'Lifecycle statistics',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            totalResources: { type: 'integer' },
+                            byStatus: {
+                              type: 'object',
+                              properties: {
+                                active: { type: 'integer' },
+                                deprecated: { type: 'integer' },
+                                discontinued: { type: 'integer' },
+                                updated: { type: 'integer' },
+                                pending: { type: 'integer' },
+                              },
+                            },
+                            byCategory: {
+                              type: 'object',
+                              additionalProperties: { type: 'integer' },
+                            },
+                            recentlyAdded: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  id: { type: 'string' },
+                                  title: { type: 'string' },
+                                  dateAdded: {
+                                    type: 'string',
+                                    format: 'date-time',
+                                  },
+                                },
+                              },
+                            },
+                            recentlyUpdated: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  id: { type: 'string' },
+                                  title: { type: 'string' },
+                                  lastUpdated: {
+                                    type: 'string',
+                                    format: 'date-time',
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/analytics/events': {
+          post: {
+            summary: 'Record analytics event',
+            description:
+              'Record an analytics event for tracking. Rate limited to 10 events per IP per minute. ' +
+              'Uses Prisma ORM with database-level aggregation for performance.',
+            operationId: 'recordAnalyticsEvent',
+            tags: ['Analytics'],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['type'],
+                    properties: {
+                      type: {
+                        type: 'string',
+                        description:
+                          'Event type (e.g., page_view, resource_click)',
+                        example: 'page_view',
+                      },
+                      resourceId: {
+                        type: 'string',
+                        description: 'Associated resource ID (optional)',
+                      },
+                      category: {
+                        type: 'string',
+                        description: 'Event category (optional)',
+                      },
+                      url: {
+                        type: 'string',
+                        description: 'Current URL (optional)',
+                      },
+                      properties: {
+                        type: 'object',
+                        description: 'Additional event properties as JSON',
+                        example: { referrer: 'google.com' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'Event recorded successfully',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        eventId: {
+                          type: 'number',
+                          description: 'Event timestamp as unique identifier',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '400': {
+                description: 'Bad request',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+              '429': {
+                description: 'Rate limit exceeded',
+                headers: {
+                  'Retry-After': {
+                    description: 'Seconds until retry is allowed',
+                    schema: { type: 'integer' },
+                  },
+                },
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+              '500': {
+                description: 'Internal server error',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/health-checks': {
+          get: {
+            summary: 'Health checks',
+            description: 'Get application health status and component checks.',
+            operationId: 'getHealthChecks',
+            tags: ['Health'],
+            responses: {
+              '200': {
+                description: 'Health status',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            totalChecks: { type: 'integer' },
+                            healthStatuses: {
+                              type: 'object',
+                              properties: {
+                                database: {
+                                  type: 'object',
+                                  properties: {
+                                    status: { type: 'string' },
+                                    responseTime: { type: 'integer' },
+                                  },
+                                },
+                                cache: {
+                                  type: 'object',
+                                  properties: {
+                                    status: { type: 'string' },
+                                    responseTime: { type: 'integer' },
+                                  },
+                                },
+                                storage: {
+                                  type: 'object',
+                                  properties: {
+                                    status: { type: 'string' },
+                                    availableSpace: { type: 'string' },
+                                  },
+                                },
+                              },
+                            },
+                            summary: {
+                              type: 'object',
+                              properties: {
+                                overall: {
+                                  type: 'string',
+                                  enum: ['healthy', 'degraded', 'unhealthy'],
+                                },
+                                healthy: { type: 'integer' },
+                                degraded: { type: 'integer' },
+                                unhealthy: { type: 'integer' },
+                              },
+                            },
+                            lastUpdated: {
+                              type: 'string',
+                              format: 'date-time',
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/analytics/search': {
+          get: {
+            summary: 'Query analytics data',
+            description:
+              'Retrieve aggregated analytics data with filtering. Uses parallel database queries ' +
+              'and database-level aggregation for 95% reduction in data transfer.',
+            operationId: 'queryAnalytics',
+            tags: ['Analytics'],
+            parameters: [
+              {
+                name: 'startDate',
+                in: 'query',
+                required: true,
+                description: 'Start date (ISO 8601 format)',
+                schema: { type: 'string', format: 'date-time' },
+              },
+              {
+                name: 'endDate',
+                in: 'query',
+                required: true,
+                description: 'End date (ISO 8601 format)',
+                schema: { type: 'string', format: 'date-time' },
+              },
+              {
+                name: 'resourceId',
+                in: 'query',
+                description: 'Filter by resource ID',
+                schema: { type: 'string' },
+              },
+              {
+                name: 'type',
+                in: 'query',
+                description: 'Filter by event type',
+                schema: { type: 'string' },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Analytics data',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            totalEvents: { type: 'integer' },
                             eventsByType: {
                               type: 'object',
                               additionalProperties: { type: 'integer' },
                             },
                             resourceViews: {
-                              type: 'object',
-                              additionalProperties: { type: 'integer' },
-                            },
-                            eventsByCategory: {
                               type: 'object',
                               additionalProperties: { type: 'integer' },
                             },
@@ -3853,34 +1905,6 @@ export default defineEventHandler(async event => {
                                 },
                               },
                             },
-                            topResources: {
-                              type: 'array',
-                              items: {
-                                type: 'object',
-                                properties: {
-                                  id: { type: 'string' },
-                                  title: { type: 'string' },
-                                  views: { type: 'integer' },
-                                },
-                              },
-                            },
-                            topCategories: {
-                              type: 'array',
-                              items: {
-                                type: 'object',
-                                properties: {
-                                  name: { type: 'string' },
-                                  count: { type: 'integer' },
-                                },
-                              },
-                            },
-                          },
-                        },
-                        dateRange: {
-                          type: 'object',
-                          properties: {
-                            start: { type: 'string', format: 'date-time' },
-                            end: { type: 'string', format: 'date-time' },
                           },
                         },
                       },
@@ -3890,6 +1914,275 @@ export default defineEventHandler(async event => {
               },
               '400': {
                 description: 'Bad request',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/auth/api-keys': {
+          get: {
+            summary: 'List API keys',
+            description: 'Retrieve all API keys (secrets omitted).',
+            operationId: 'listApiKeys',
+            tags: ['Authentication'],
+            responses: {
+              '200': {
+                description: 'API keys',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            data: {
+                              type: 'array',
+                              items: {
+                                $ref: '#/components/schemas/ApiKey',
+                              },
+                            },
+                            count: { type: 'integer' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          post: {
+            summary: 'Create API key',
+            description: 'Create a new API key for authentication.',
+            operationId: 'createApiKey',
+            tags: ['Authentication'],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['name', 'scopes'],
+                    properties: {
+                      name: {
+                        type: 'string',
+                        description: 'API key name',
+                        example: 'My App Key',
+                      },
+                      scopes: {
+                        type: 'array',
+                        items: { type: 'string' },
+                        description: 'API key permissions',
+                        example: ['read', 'write'],
+                      },
+                      expiresIn: {
+                        type: 'integer',
+                        description: 'Expiration time in seconds (optional)',
+                        example: 86400,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'API key created',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          $ref: '#/components/schemas/ApiKey',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '400': {
+                description: 'Validation error',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/auth/api-keys/{id}': {
+          delete: {
+            summary: 'Delete API key',
+            description: 'Delete an API key by ID.',
+            operationId: 'deleteApiKey',
+            tags: ['Authentication'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'API Key ID',
+                schema: { type: 'string' },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'API key deleted',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        message: {
+                          type: 'string',
+                          example: 'API key deleted successfully',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'API key not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/analytics/resource/{id}': {
+          get: {
+            summary: 'Get resource analytics',
+            description: 'Retrieve analytics data for a specific resource.',
+            operationId: 'getResourceAnalytics',
+            tags: ['Analytics'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Resource ID',
+                schema: { type: 'string' },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Resource analytics data',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            resourceId: { type: 'string' },
+                            totalViews: { type: 'integer' },
+                            uniqueVisitors: { type: 'integer' },
+                            clickRate: { type: 'number' },
+                            topReferrers: {
+                              type: 'array',
+                              items: { type: 'string' },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Resource not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/analytics/export/csv': {
+          get: {
+            summary: 'Export analytics as CSV',
+            description:
+              'Export analytics data in CSV format with optional date range filtering. ' +
+              'Rate limited to prevent abuse.',
+            operationId: 'exportAnalyticsCsv',
+            tags: ['Analytics', 'Export'],
+            parameters: [
+              {
+                name: 'startDate',
+                in: 'query',
+                description:
+                  'Start date for analytics export (ISO 8601 format)',
+                required: false,
+                schema: {
+                  type: 'string',
+                  format: 'date-time',
+                },
+              },
+              {
+                name: 'endDate',
+                in: 'query',
+                description: 'End date for analytics export (ISO 8601 format)',
+                required: false,
+                schema: {
+                  type: 'string',
+                  format: 'date-time',
+                },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'CSV file with analytics data',
+                content: {
+                  'text/csv': {
+                    schema: {
+                      type: 'string',
+                      format: 'binary',
+                    },
+                  },
+                },
+                headers: {
+                  'Content-Disposition': {
+                    description: 'Filename for download',
+                    schema: {
+                      type: 'string',
+                      example:
+                        'attachment; filename="analytics-2025-01-01-to-2025-01-10.csv"',
+                    },
+                  },
+                  'Content-Length': {
+                    description: 'Size of CSV file in bytes',
+                    schema: { type: 'integer' },
+                  },
+                },
+              },
+              '400': {
+                description: 'Invalid date range',
                 content: {
                   'application/json': {
                     schema: {
@@ -3927,407 +2220,2151 @@ export default defineEventHandler(async event => {
             },
           },
         },
-      },
-      components: {
-        schemas: {
-          SuccessResponse: {
-            type: 'object',
-            properties: {
-              success: { type: 'boolean', example: true },
-              data: {
-                type: 'object',
-                description: 'Response data (varies by endpoint)',
+        '/api/v1/alternatives/{id}': {
+          get: {
+            summary: 'Get alternatives for resource',
+            description:
+              'Retrieve alternative resources for a specific resource.',
+            operationId: 'getAlternativesForResource',
+            tags: ['Resources'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Resource ID',
+                schema: { type: 'string' },
               },
-              pagination: {
-                $ref: '#/components/schemas/Pagination',
-              },
-            },
-          },
-          ErrorResponse: {
-            type: 'object',
-            required: ['success', 'error'],
-            properties: {
-              success: {
-                type: 'boolean',
-                example: false,
-                description: 'Always false for error responses',
-              },
-              error: {
-                type: 'object',
-                required: ['code', 'message', 'category', 'timestamp'],
-                properties: {
-                  code: {
-                    type: 'string',
-                    description: 'Standardized error code',
-                    enum: [
-                      'INTERNAL_SERVER_ERROR',
-                      'BAD_REQUEST',
-                      'UNAUTHORIZED',
-                      'FORBIDDEN',
-                      'NOT_FOUND',
-                      'CONFLICT',
-                      'VALIDATION_ERROR',
-                      'RATE_LIMIT_EXCEEDED',
-                      'SERVICE_UNAVAILABLE',
-                      'GATEWAY_TIMEOUT',
-                      'CIRCUIT_BREAKER_OPEN',
-                      'EXTERNAL_SERVICE_ERROR',
-                    ],
-                    example: 'VALIDATION_ERROR',
-                  },
-                  message: {
-                    type: 'string',
-                    description: 'Human-readable error message',
-                    example: 'Validation failed for field: email',
-                  },
-                  category: {
-                    type: 'string',
-                    description: 'Error category for logical grouping',
-                    enum: [
-                      'validation',
-                      'authentication',
-                      'authorization',
-                      'not_found',
-                      'rate_limit',
-                      'external_service',
-                      'internal',
-                      'network',
-                    ],
-                    example: 'validation',
-                  },
-                  details: {
-                    type: 'object',
-                    description: 'Additional error details (optional)',
-                    properties: {
-                      field: {
-                        type: 'string',
-                        description: 'Field that caused error',
+            ],
+            responses: {
+              '200': {
+                description: 'Alternative resources',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            resourceId: { type: 'string' },
+                            alternatives: {
+                              type: 'array',
+                              items: {
+                                $ref: '#/components/schemas/Resource',
+                              },
+                            },
+                            count: { type: 'integer' },
+                          },
+                        },
                       },
-                      value: { description: 'Invalid value received' },
-                      resource: {
-                        type: 'string',
-                        description: 'Resource type',
-                      },
-                      identifier: { description: 'Resource identifier' },
                     },
                   },
-                  timestamp: {
-                    type: 'string',
-                    format: 'date-time',
-                    description: 'ISO 8601 timestamp of error',
+                },
+                headers: {
+                  'X-Cache': {
+                    description: 'Cache status (HIT or MISS)',
+                    schema: { type: 'string', enum: ['HIT', 'MISS'] },
                   },
-                  requestId: {
-                    type: 'string',
-                    description: 'Unique request ID for tracing',
+                  'X-Cache-Key': {
+                    description: 'Cache key used',
+                    schema: { type: 'string' },
                   },
-                  path: {
-                    type: 'string',
-                    description: 'API endpoint path',
+                },
+              },
+              '404': {
+                description: 'Resource not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
                   },
                 },
               },
             },
           },
-          Resource: {
-            type: 'object',
-            properties: {
-              id: { type: 'string', example: 'res_12345' },
-              title: { type: 'string', example: 'Free Hosting Service' },
-              description: {
-                type: 'string',
-                example: 'A free hosting service for static websites',
+          post: {
+            summary: 'Manage alternative relationship',
+            description: 'Add or remove alternative resource relationship.',
+            operationId: 'manageAlternativeRelationship',
+            tags: ['Resources'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Resource ID',
+                schema: { type: 'string' },
               },
-              url: {
-                type: 'string',
-                format: 'uri',
-                example: apiConfig.docs.examples.baseUrl,
+            ],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['alternativeId'],
+                    properties: {
+                      alternativeId: {
+                        type: 'string',
+                        description: 'Alternative resource ID',
+                      },
+                      action: {
+                        type: 'string',
+                        enum: ['add', 'remove'],
+                        default: 'add',
+                      },
+                    },
+                  },
+                },
               },
-              category: { type: 'string', example: 'Hosting' },
-              pricingModel: {
-                type: 'string',
-                enum: ['Free', 'Freemium', 'Open Source', 'Paid'],
-                example: 'Free',
+            },
+            responses: {
+              '200': {
+                description: 'Relationship updated',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            resourceId: { type: 'string' },
+                            alternativeId: { type: 'string' },
+                            action: { type: 'string' },
+                            alternatives: {
+                              type: 'array',
+                              items: { type: 'string' },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
               },
-              difficulty: {
-                type: 'string',
-                enum: ['Beginner', 'Intermediate', 'Advanced'],
-                example: 'Beginner',
+              '404': {
+                description: 'Resource or alternative not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
               },
-              technology: {
-                type: 'array',
-                items: { type: 'string' },
-                example: ['JavaScript', 'React'],
+            },
+          },
+        },
+        '/api/resource-health': {
+          get: {
+            summary: 'Get all resources health',
+            description: 'Retrieve health status of all resources.',
+            operationId: 'getAllResourcesHealth',
+            tags: ['Health'],
+            responses: {
+              '200': {
+                description: 'All resources health status',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            resources: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  resourceId: { type: 'string' },
+                                  url: { type: 'string' },
+                                  status: {
+                                    type: 'string',
+                                    enum: ['healthy', 'unhealthy', 'unknown'],
+                                  },
+                                  responseTime: { type: 'integer' },
+                                  lastChecked: {
+                                    type: 'string',
+                                    format: 'date-time',
+                                  },
+                                },
+                              },
+                            },
+                            stats: {
+                              type: 'object',
+                              properties: {
+                                total: { type: 'integer' },
+                                healthy: { type: 'integer' },
+                                unhealthy: { type: 'integer' },
+                                unknown: { type: 'integer' },
+                                healthPercentage: { type: 'number' },
+                              },
+                            },
+                            timestamp: { type: 'string', format: 'date-time' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
               },
-              tags: {
-                type: 'array',
-                items: { type: 'string' },
-                example: ['hosting', 'static', 'free'],
+            },
+          },
+        },
+        '/api/resource-health/{id}': {
+          get: {
+            summary: 'Get resource health',
+            description: 'Get health status for a specific resource.',
+            operationId: 'getResourceHealth',
+            tags: ['Health'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Resource ID',
+                schema: { type: 'string' },
               },
-              hierarchicalTags: {
-                type: 'array',
-                items: {
+            ],
+            responses: {
+              '200': {
+                description: 'Resource health status',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            resourceId: { type: 'string' },
+                            url: { type: 'string' },
+                            status: {
+                              type: 'string',
+                              enum: ['healthy', 'unhealthy', 'unknown'],
+                            },
+                            responseTime: { type: 'integer' },
+                            lastChecked: {
+                              type: 'string',
+                              format: 'date-time',
+                            },
+                            statusCode: { type: 'integer' },
+                            sslValid: { type: 'boolean' },
+                            certificateExpiry: {
+                              type: 'string',
+                              format: 'date-time',
+                            },
+                            uptimePercentage: { type: 'number' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Resource not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/submissions/index': {
+          get: {
+            summary: 'Get submissions',
+            description:
+              'Retrieve list of submissions with optional filtering.',
+            operationId: 'getSubmissions',
+            tags: ['Submissions'],
+            parameters: [
+              {
+                name: 'status',
+                in: 'query',
+                description: 'Filter by status',
+                schema: {
+                  type: 'string',
+                  enum: ['pending', 'approved', 'rejected'],
+                },
+              },
+              {
+                name: 'submittedBy',
+                in: 'query',
+                description: 'Filter by submitter',
+                schema: { type: 'string' },
+              },
+              {
+                name: 'limit',
+                in: 'query',
+                description: 'Items per page',
+                schema: { type: 'integer', default: 50, maximum: 100 },
+              },
+              {
+                name: 'offset',
+                in: 'query',
+                description: 'Items to skip',
+                schema: { type: 'integer', default: 0 },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Submissions list',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            submissions: {
+                              type: 'array',
+                              items: {
+                                $ref: '#/components/schemas/Submission',
+                              },
+                            },
+                            total: { type: 'integer' },
+                            limit: { type: 'integer' },
+                            offset: { type: 'integer' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/submissions/{id}': {
+          get: {
+            summary: 'Get submission by ID',
+            description: 'Retrieve a specific submission by ID.',
+            operationId: 'getSubmissionById',
+            tags: ['Submissions'],
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                description: 'Submission ID',
+                schema: { type: 'string' },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Submission details',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          $ref: '#/components/schemas/Submission',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Submission not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/moderation/flag': {
+          put: {
+            summary: 'Flag content',
+            description: 'Report inappropriate content for moderation review.',
+            operationId: 'flagContent',
+            tags: ['Moderation'],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['resourceId', 'reason', 'reportedBy'],
+                    properties: {
+                      resourceId: {
+                        type: 'string',
+                        description: 'Resource ID being flagged',
+                      },
+                      reason: {
+                        type: 'string',
+                        description: 'Reason for flagging',
+                        example: 'Inappropriate content',
+                      },
+                      reportedBy: {
+                        type: 'string',
+                        description: 'User ID reporting the content',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'Content flagged successfully',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        message: {
+                          type: 'string',
+                          example: 'Resource flagged successfully',
+                        },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            id: { type: 'string' },
+                            resourceId: { type: 'string' },
+                            reason: { type: 'string' },
+                            reportedBy: { type: 'string' },
+                            createdAt: { type: 'string', format: 'date-time' },
+                            resolved: { type: 'boolean' },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '400': {
+                description: 'Bad request',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Resource not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/submissions': {
+          post: {
+            summary: 'Submit a new resource',
+            description:
+              'Submit a new resource for review. Submissions are queued for moderation.',
+            operationId: 'submitResource',
+            tags: ['Submissions'],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    $ref: '#/components/schemas/ResourceSubmission',
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'Resource submitted successfully',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        message: {
+                          type: 'string',
+                          example: 'Resource submitted successfully',
+                        },
+                        submissionId: {
+                          type: 'string',
+                          example: 'sub_123456789',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '400': {
+                description: 'Validation error',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+              '500': {
+                description: 'Internal server error',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/moderation/queue': {
+          get: {
+            summary: 'Get moderation queue',
+            description:
+              'Retrieve pending submissions for moderation. Requires authentication.',
+            operationId: 'getModerationQueue',
+            tags: ['Moderation'],
+            parameters: [
+              {
+                name: 'status',
+                in: 'query',
+                description: 'Filter by status',
+                schema: {
+                  type: 'string',
+                  enum: ['pending', 'approved', 'rejected'],
+                },
+              },
+              {
+                name: 'category',
+                in: 'query',
+                description: 'Filter by category',
+                schema: { type: 'string' },
+              },
+              {
+                name: 'limit',
+                in: 'query',
+                description: 'Number of submissions to return',
+                schema: { type: 'integer', default: 50 },
+              },
+              {
+                name: 'offset',
+                in: 'query',
+                description: 'Number of submissions to skip',
+                schema: { type: 'integer', default: 0 },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'Moderation queue',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        queue: {
+                          type: 'array',
+                          items: {
+                            $ref: '#/components/schemas/Submission',
+                          },
+                        },
+                        total: { type: 'integer' },
+                        limit: { type: 'integer' },
+                        offset: { type: 'integer' },
+                      },
+                    },
+                  },
+                },
+              },
+              '401': {
+                description: 'Unauthorized',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/moderation/approve': {
+          post: {
+            summary: 'Approve submission',
+            description:
+              'Approve a submission and add it to the resources collection.',
+            operationId: 'approveSubmission',
+            tags: ['Moderation'],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['submissionId'],
+                    properties: {
+                      submissionId: {
+                        type: 'string',
+                        description: 'Submission ID to approve',
+                      },
+                      notes: {
+                        type: 'string',
+                        description: 'Moderation notes (optional)',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'Submission approved',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        message: {
+                          type: 'string',
+                          example: 'Submission approved',
+                        },
+                        resourceId: {
+                          type: 'string',
+                          example: 'res_12345',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Submission not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/moderation/reject': {
+          post: {
+            summary: 'Reject submission',
+            description: 'Reject a submission. Optionally provide a reason.',
+            operationId: 'rejectSubmission',
+            tags: ['Moderation'],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['submissionId'],
+                    properties: {
+                      submissionId: {
+                        type: 'string',
+                        description: 'Submission ID to reject',
+                      },
+                      reason: {
+                        type: 'string',
+                        description: 'Rejection reason (optional)',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'Submission rejected',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        message: {
+                          type: 'string',
+                          example: 'Submission rejected',
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '404': {
+                description: 'Submission not found',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/resources/bulk-status': {
+          post: {
+            summary: 'Bulk update resource status',
+            description: 'Update status for multiple resources at once.',
+            operationId: 'bulkUpdateResourceStatus',
+            tags: ['Resources'],
+            requestBody: {
+              required: true,
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    required: ['resourceIds', 'status'],
+                    properties: {
+                      resourceIds: {
+                        type: 'array',
+                        items: { type: 'string' },
+                        description: 'List of resource IDs to update',
+                      },
+                      status: {
+                        type: 'string',
+                        enum: [
+                          'active',
+                          'deprecated',
+                          'discontinued',
+                          'updated',
+                          'pending',
+                        ],
+                        description: 'New status value',
+                      },
+                      reason: {
+                        type: 'string',
+                        description: 'Reason for status change (optional)',
+                      },
+                      notes: {
+                        type: 'string',
+                        description: 'Additional notes (optional)',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'Bulk status update result',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        updatedCount: { type: 'integer' },
+                        errorCount: { type: 'integer' },
+                        updatedResources: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            properties: {
+                              id: { type: 'string' },
+                              status: { type: 'string' },
+                              title: { type: 'string' },
+                            },
+                          },
+                        },
+                        errors: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            properties: {
+                              resourceId: { type: 'string' },
+                              error: { type: 'string' },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '400': {
+                description: 'Bad request',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/sitemap': {
+          get: {
+            summary: 'Get sitemap',
+            description: 'Retrieve XML sitemap for SEO.',
+            operationId: 'getSitemap',
+            tags: ['Resources'],
+            responses: {
+              '200': {
+                description: 'XML sitemap',
+                content: {
+                  'application/xml': {
+                    schema: { type: 'string', format: 'xml' },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/rss': {
+          get: {
+            summary: 'Get RSS feed',
+            description: 'Retrieve RSS feed of latest resources.',
+            operationId: 'getRssFeed',
+            tags: ['Resources'],
+            responses: {
+              '200': {
+                description: 'RSS feed',
+                content: {
+                  'application/rss+xml': {
+                    schema: { type: 'string', format: 'xml' },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/export/csv': {
+          get: {
+            summary: 'Export resources as CSV',
+            description:
+              'Export all resources in CSV format for offline use or analysis.',
+            operationId: 'exportResourcesCsv',
+            tags: ['Export'],
+            responses: {
+              '200': {
+                description: 'CSV file',
+                content: {
+                  'text/csv': {
+                    schema: {
+                      type: 'string',
+                      format: 'binary',
+                    },
+                  },
+                },
+                headers: {
+                  'Content-Disposition': {
+                    description: 'Filename for download',
+                    schema: {
+                      type: 'string',
+                      example: 'attachment; filename="resources.csv"',
+                    },
+                  },
+                },
+              },
+              '500': {
+                description: 'Internal server error',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/user/preferences': {
+          get: {
+            summary: 'Get user preferences',
+            description:
+              'Retrieve user preferences including categories, technologies, skill level, ' +
+              'interests, notification settings, and privacy settings. ' +
+              'In this implementation, returns mock data. Rate limited.',
+            operationId: 'getUserPreferences',
+            tags: ['User'],
+            parameters: [
+              {
+                name: 'userId',
+                in: 'query',
+                description:
+                  'User ID (defaults to default-user if not provided)',
+                required: false,
+                schema: { type: 'string', default: 'default-user' },
+              },
+            ],
+            responses: {
+              '200': {
+                description: 'User preferences',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        preferences: {
+                          type: 'object',
+                          properties: {
+                            id: { type: 'string', description: 'User ID' },
+                            categories: {
+                              type: 'array',
+                              items: { type: 'string' },
+                              description: 'Preferred resource categories',
+                            },
+                            technologies: {
+                              type: 'array',
+                              items: { type: 'string' },
+                              description: 'Preferred technologies',
+                            },
+                            skillLevel: {
+                              type: 'string',
+                              enum: [
+                                'beginner',
+                                'intermediate',
+                                'advanced',
+                                'expert',
+                              ],
+                              description: 'User skill level',
+                            },
+                            interests: {
+                              type: 'array',
+                              items: { type: 'string' },
+                              description: 'User interests',
+                            },
+                            notificationSettings: {
+                              type: 'object',
+                              properties: {
+                                resourceUpdates: {
+                                  type: 'boolean',
+                                  description: 'Resource update notifications',
+                                },
+                                newContent: {
+                                  type: 'boolean',
+                                  description: 'New content notifications',
+                                },
+                                weeklyDigest: {
+                                  type: 'boolean',
+                                  description: 'Weekly digest email',
+                                },
+                              },
+                            },
+                            privacySettings: {
+                              type: 'object',
+                              properties: {
+                                allowPersonalization: {
+                                  type: 'boolean',
+                                  description:
+                                    'Allow personalized recommendations',
+                                },
+                                allowDataCollection: {
+                                  type: 'boolean',
+                                  description: 'Allow data collection',
+                                },
+                                allowRecommendationExplanations: {
+                                  type: 'boolean',
+                                  description:
+                                    'Show recommendation explanations',
+                                },
+                              },
+                            },
+                            createdAt: {
+                              type: 'string',
+                              format: 'date-time',
+                              description: 'When preferences were created',
+                            },
+                            lastUpdated: {
+                              type: 'string',
+                              format: 'date-time',
+                              description: 'When preferences were last updated',
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '429': {
+                description: 'Rate limit exceeded',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+                headers: {
+                  'Retry-After': {
+                    description: 'Seconds until retry is allowed',
+                    schema: { type: 'integer' },
+                  },
+                },
+              },
+            },
+          },
+          post: {
+            summary: 'Update user preferences',
+            description:
+              'Update user preferences. Supports partial updates - only provided fields will be updated. ' +
+              'In this implementation, returns mock data. Rate limited.',
+            operationId: 'updateUserPreferences',
+            tags: ['User'],
+            parameters: [
+              {
+                name: 'userId',
+                in: 'query',
+                description:
+                  'User ID (defaults to default-user if not provided)',
+                required: false,
+                schema: { type: 'string', default: 'default-user' },
+              },
+            ],
+            requestBody: {
+              required: true,
+              description: 'Preferences to update (partial updates supported)',
+              content: {
+                'application/json': {
+                  schema: {
+                    type: 'object',
+                    properties: {
+                      categories: {
+                        type: 'array',
+                        items: { type: 'string' },
+                        description: 'Preferred resource categories',
+                      },
+                      technologies: {
+                        type: 'array',
+                        items: { type: 'string' },
+                        description: 'Preferred technologies',
+                      },
+                      skillLevel: {
+                        type: 'string',
+                        enum: [
+                          'beginner',
+                          'intermediate',
+                          'advanced',
+                          'expert',
+                        ],
+                        description: 'User skill level',
+                      },
+                      interests: {
+                        type: 'array',
+                        items: { type: 'string' },
+                        description: 'User interests',
+                      },
+                      notificationSettings: {
+                        type: 'object',
+                        properties: {
+                          resourceUpdates: {
+                            type: 'boolean',
+                            description: 'Resource update notifications',
+                          },
+                          newContent: {
+                            type: 'boolean',
+                            description: 'New content notifications',
+                          },
+                          weeklyDigest: {
+                            type: 'boolean',
+                            description: 'Weekly digest email',
+                          },
+                        },
+                      },
+                      privacySettings: {
+                        type: 'object',
+                        properties: {
+                          allowPersonalization: {
+                            type: 'boolean',
+                            description: 'Allow personalized recommendations',
+                          },
+                          allowDataCollection: {
+                            type: 'boolean',
+                            description: 'Allow data collection',
+                          },
+                          allowRecommendationExplanations: {
+                            type: 'boolean',
+                            description: 'Show recommendation explanations',
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            responses: {
+              '200': {
+                description: 'Updated user preferences',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        preferences: {
+                          type: 'object',
+                          properties: {
+                            id: { type: 'string', description: 'User ID' },
+                            categories: {
+                              type: 'array',
+                              items: { type: 'string' },
+                              description:
+                                'Updated preferred resource categories',
+                            },
+                            technologies: {
+                              type: 'array',
+                              items: { type: 'string' },
+                              description: 'Updated preferred technologies',
+                            },
+                            skillLevel: {
+                              type: 'string',
+                              enum: [
+                                'beginner',
+                                'intermediate',
+                                'advanced',
+                                'expert',
+                              ],
+                              description: 'Updated user skill level',
+                            },
+                            interests: {
+                              type: 'array',
+                              items: { type: 'string' },
+                              description: 'Updated user interests',
+                            },
+                            notificationSettings: {
+                              type: 'object',
+                              properties: {
+                                resourceUpdates: {
+                                  type: 'boolean',
+                                  description: 'Resource update notifications',
+                                },
+                                newContent: {
+                                  type: 'boolean',
+                                  description: 'New content notifications',
+                                },
+                                weeklyDigest: {
+                                  type: 'boolean',
+                                  description: 'Weekly digest email',
+                                },
+                              },
+                            },
+                            privacySettings: {
+                              type: 'object',
+                              properties: {
+                                allowPersonalization: {
+                                  type: 'boolean',
+                                  description:
+                                    'Allow personalized recommendations',
+                                },
+                                allowDataCollection: {
+                                  type: 'boolean',
+                                  description: 'Allow data collection',
+                                },
+                                allowRecommendationExplanations: {
+                                  type: 'boolean',
+                                  description:
+                                    'Show recommendation explanations',
+                                },
+                              },
+                            },
+                            createdAt: {
+                              type: 'string',
+                              format: 'date-time',
+                              description: 'When preferences were created',
+                            },
+                            lastUpdated: {
+                              type: 'string',
+                              format: 'date-time',
+                              description: 'When preferences were last updated',
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              '400': {
+                description: 'Invalid request body',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+              '429': {
+                description: 'Rate limit exceeded',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+                headers: {
+                  'Retry-After': {
+                    description: 'Seconds until retry is allowed',
+                    schema: { type: 'integer' },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/v1/export/json': {
+          get: {
+            summary: 'Export resources as JSON',
+            description:
+              'Export all resources in JSON format. Returns array of all resources with Content-Disposition header for file download.',
+            operationId: 'exportResourcesJson',
+            tags: ['Export'],
+            responses: {
+              '200': {
+                description: 'JSON export of all resources',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'array',
+                      items: {
+                        $ref: '#/components/schemas/Resource',
+                      },
+                    },
+                  },
+                },
+                headers: {
+                  'Content-Disposition': {
+                    description: 'File attachment with filename',
+                    schema: {
+                      type: 'string',
+                      example: 'attachment; filename="resources.json"',
+                    },
+                  },
+                },
+              },
+              '500': {
+                description: 'Internal server error',
+                content: {
+                  'application/json': {
+                    schema: {
+                      $ref: '#/components/schemas/ErrorResponse',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        '/api/integration-health': {
+          get: {
+            summary: 'Get integration health',
+            description:
+              'Retrieve comprehensive health status for all external integrations including circuit breakers, webhooks, and queue systems. ' +
+              'Provides aggregate health status (healthy/degraded/unhealthy) and detailed metrics for monitoring and alerting. ' +
+              'Circuit breaker states (closed/open/half-open) indicate service availability. ' +
+              'Webhook queue metrics show pending and dead letter webhooks. ' +
+              'Use this endpoint for proactive monitoring and incident response.',
+            operationId: 'getIntegrationHealth',
+            tags: ['Integration'],
+            'x-rateLimit': { config: 'standard', limit: 100, window: '15 min' },
+            responses: {
+              '200': {
+                description: 'Integration health report',
+                content: {
+                  'application/json': {
+                    schema: {
+                      type: 'object',
+                      properties: {
+                        success: { type: 'boolean', example: true },
+                        data: {
+                          type: 'object',
+                          properties: {
+                            overall: {
+                              type: 'object',
+                              description: 'Aggregate integration health',
+                              properties: {
+                                status: {
+                                  type: 'string',
+                                  enum: ['healthy', 'degraded', 'unhealthy'],
+                                  description:
+                                    'Overall health status: healthy (all systems operational), degraded (some issues), unhealthy (critical failures)',
+                                },
+                                timestamp: {
+                                  type: 'string',
+                                  format: 'date-time',
+                                  description:
+                                    'When health check was performed',
+                                },
+                                totalCircuitBreakers: {
+                                  type: 'integer',
+                                  description:
+                                    'Total number of circuit breakers configured',
+                                },
+                                openCircuitBreakers: {
+                                  type: 'integer',
+                                  description:
+                                    'Number of circuit breakers currently open (failing)',
+                                },
+                                totalWebhooksQueued: {
+                                  type: 'integer',
+                                  description:
+                                    'Number of webhooks pending delivery',
+                                },
+                                totalDeadLetterWebhooks: {
+                                  type: 'integer',
+                                  description:
+                                    'Number of webhooks moved to dead letter queue (failed all retries)',
+                                },
+                              },
+                            },
+                            circuitBreakers: {
+                              type: 'object',
+                              description:
+                                'Detailed circuit breaker stats per service',
+                              additionalProperties: {
+                                type: 'object',
+                                properties: {
+                                  state: {
+                                    type: 'string',
+                                    enum: ['closed', 'open', 'half-open'],
+                                    description:
+                                      'Circuit breaker state: closed (normal), open (failing), half-open (testing recovery)',
+                                  },
+                                  failureCount: {
+                                    type: 'integer',
+                                    description:
+                                      'Number of failures since last reset',
+                                  },
+                                  successCount: {
+                                    type: 'integer',
+                                    description:
+                                      'Number of successes since last reset',
+                                  },
+                                  lastFailureTime: {
+                                    type: 'integer',
+                                    format: 'int64',
+                                    description:
+                                      'Unix timestamp of last failure (null if no failures)',
+                                    nullable: true,
+                                  },
+                                  lastSuccessTime: {
+                                    type: 'integer',
+                                    format: 'int64',
+                                    description:
+                                      'Unix timestamp of last success (null if no successes)',
+                                    nullable: true,
+                                  },
+                                  failureRate: {
+                                    type: 'number',
+                                    format: 'float',
+                                    description:
+                                      'Failure rate percentage (0-100)',
+                                  },
+                                },
+                              },
+                            },
+                            webhooks: {
+                              type: 'object',
+                              description: 'Webhook delivery queue status',
+                              properties: {
+                                queue: {
+                                  type: 'object',
+                                  description: 'Webhook queue metrics',
+                                  properties: {
+                                    pending: {
+                                      type: 'integer',
+                                      description:
+                                        'Number of webhooks waiting to be delivered',
+                                    },
+                                    nextScheduled: {
+                                      type: 'string',
+                                      format: 'date-time',
+                                      description:
+                                        'When next webhook delivery is scheduled (null if queue empty)',
+                                      nullable: true,
+                                    },
+                                  },
+                                },
+                                deadLetter: {
+                                  type: 'object',
+                                  description:
+                                    'Dead letter queue for failed webhooks',
+                                  properties: {
+                                    count: {
+                                      type: 'integer',
+                                      description:
+                                        'Number of failed webhooks in dead letter queue',
+                                    },
+                                    items: {
+                                      type: 'array',
+                                      description: 'List of failed webhooks',
+                                      items: {
+                                        type: 'object',
+                                        properties: {
+                                          id: {
+                                            type: 'string',
+                                            description:
+                                              'Dead letter webhook ID',
+                                          },
+                                          webhookId: {
+                                            type: 'string',
+                                            description: 'Original webhook ID',
+                                          },
+                                          event: {
+                                            type: 'string',
+                                            description: 'Webhook event type',
+                                          },
+                                          failureReason: {
+                                            type: 'string',
+                                            description:
+                                              'Reason webhook failed',
+                                          },
+                                          createdAt: {
+                                            type: 'string',
+                                            format: 'date-time',
+                                            description:
+                                              'When webhook was initially created',
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                '429': {
+                  description: 'Rate limit exceeded',
+                  content: {
+                    'application/json': {
+                      schema: {
+                        $ref: '#/components/schemas/ErrorResponse',
+                      },
+                    },
+                  },
+                },
+                '500': {
+                  description: 'Internal server error',
+                  content: {
+                    'application/json': {
+                      schema: {
+                        $ref: '#/components/schemas/ErrorResponse',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          '/api/sitemap': {
+            get: {
+              summary: 'Get XML sitemap',
+              description:
+                'Retrieve XML sitemap for SEO indexing. Includes static pages with priorities and change frequencies.',
+              operationId: 'getSitemap',
+              tags: ['Sitemap'],
+              responses: {
+                '200': {
+                  description: 'XML sitemap',
+                  content: {
+                    'application/xml': {
+                      schema: {
+                        type: 'string',
+                        example: `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>${apiConfig.docs.examples.baseUrl}</loc>\n    <priority>1.0</priority>\n  </url>\n</urlset>`,
+                      },
+                    },
+                  },
+                },
+                '500': {
+                  description: 'Sitemap generation error',
+                  content: {
+                    'application/xml': {
+                      schema: {
+                        type: 'string',
+                        example:
+                          '<?xml version="1.0" encoding="UTF-8"?>\n<error>\n  <message>Failed to generate sitemap</message>\n</error>',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          '/api/v1/comparisons/index': {
+            get: {
+              summary: 'Compare resources',
+              description:
+                'Compare multiple resources side-by-side. Accepts comma-separated resource IDs and returns comparison data with caching.',
+              operationId: 'compareResources',
+              tags: ['Resources'],
+              parameters: [
+                {
+                  name: 'ids',
+                  in: 'query',
+                  required: true,
+                  description:
+                    'Comma-separated list of resource IDs to compare',
+                  schema: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    minItems: 2,
+                    maxItems: 5,
+                  },
+                },
+              ],
+              responses: {
+                '200': {
+                  description: 'Comparison result',
+                  content: {
+                    'application/json': {
+                      schema: {
+                        type: 'object',
+                        properties: {
+                          success: { type: 'boolean', example: true },
+                          data: {
+                            type: 'object',
+                            properties: {
+                              comparison: {
+                                $ref: '#/components/schemas/ResourceComparison',
+                              },
+                              resources: {
+                                type: 'array',
+                                items: {
+                                  $ref: '#/components/schemas/Resource',
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  headers: {
+                    'X-Cache': {
+                      description: 'Cache status (HIT or MISS)',
+                      schema: { type: 'string', enum: ['HIT', 'MISS'] },
+                    },
+                    'X-Cache-Key': {
+                      description: 'Cache key used',
+                      schema: { type: 'string' },
+                    },
+                  },
+                },
+                '400': {
+                  description: 'Bad request',
+                  content: {
+                    'application/json': {
+                      schema: {
+                        $ref: '#/components/schemas/ErrorResponse',
+                      },
+                    },
+                  },
+                },
+                '404': {
+                  description: 'Resource(s) not found',
+                  content: {
+                    'application/json': {
+                      schema: {
+                        $ref: '#/components/schemas/ErrorResponse',
+                      },
+                    },
+                  },
+                },
+                '429': {
+                  description: 'Rate limit exceeded',
+                  content: {
+                    'application/json': {
+                      schema: {
+                        $ref: '#/components/schemas/ErrorResponse',
+                      },
+                    },
+                  },
+                  headers: {
+                    'Retry-After': {
+                      description: 'Seconds until retry is allowed',
+                      schema: { type: 'integer' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          '/api/analytics/data': {
+            get: {
+              summary: 'Get analytics dashboard data',
+              description:
+                'Retrieve aggregated analytics data for dashboard display. Includes top resources, categories, and date-range filtering with rate limiting.',
+              operationId: 'getAnalyticsDashboardData',
+              tags: ['Analytics'],
+              parameters: [
+                {
+                  name: 'startDate',
+                  in: 'query',
+                  required: false,
+                  description:
+                    'Start date for analytics data (ISO 8601 format, defaults to 30 days ago)',
+                  schema: { type: 'string', format: 'date-time' },
+                },
+                {
+                  name: 'endDate',
+                  in: 'query',
+                  required: false,
+                  description:
+                    'End date for analytics data (ISO 8601 format, defaults to now)',
+                  schema: { type: 'string', format: 'date-time' },
+                },
+              ],
+              responses: {
+                '200': {
+                  description: 'Analytics dashboard data',
+                  content: {
+                    'application/json': {
+                      schema: {
+                        type: 'object',
+                        properties: {
+                          success: { type: 'boolean', example: true },
+                          data: {
+                            type: 'object',
+                            properties: {
+                              totalEvents: { type: 'integer', example: 1234 },
+                              eventsByType: {
+                                type: 'object',
+                                additionalProperties: { type: 'integer' },
+                              },
+                              resourceViews: {
+                                type: 'object',
+                                additionalProperties: { type: 'integer' },
+                              },
+                              eventsByCategory: {
+                                type: 'object',
+                                additionalProperties: { type: 'integer' },
+                              },
+                              dailyTrends: {
+                                type: 'array',
+                                items: {
+                                  type: 'object',
+                                  properties: {
+                                    date: { type: 'string' },
+                                    count: { type: 'integer' },
+                                  },
+                                },
+                              },
+                              topResources: {
+                                type: 'array',
+                                items: {
+                                  type: 'object',
+                                  properties: {
+                                    id: { type: 'string' },
+                                    title: { type: 'string' },
+                                    views: { type: 'integer' },
+                                  },
+                                },
+                              },
+                              topCategories: {
+                                type: 'array',
+                                items: {
+                                  type: 'object',
+                                  properties: {
+                                    name: { type: 'string' },
+                                    count: { type: 'integer' },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          dateRange: {
+                            type: 'object',
+                            properties: {
+                              start: { type: 'string', format: 'date-time' },
+                              end: { type: 'string', format: 'date-time' },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                '400': {
+                  description: 'Bad request',
+                  content: {
+                    'application/json': {
+                      schema: {
+                        $ref: '#/components/schemas/ErrorResponse',
+                      },
+                    },
+                  },
+                },
+                '429': {
+                  description: 'Rate limit exceeded',
+                  content: {
+                    'application/json': {
+                      schema: {
+                        $ref: '#/components/schemas/ErrorResponse',
+                      },
+                    },
+                  },
+                  headers: {
+                    'Retry-After': {
+                      description: 'Seconds until retry is allowed',
+                      schema: { type: 'integer' },
+                    },
+                  },
+                },
+                '500': {
+                  description: 'Internal server error',
+                  content: {
+                    'application/json': {
+                      schema: {
+                        $ref: '#/components/schemas/ErrorResponse',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        components: {
+          schemas: {
+            SuccessResponse: {
+              type: 'object',
+              properties: {
+                success: { type: 'boolean', example: true },
+                data: {
                   type: 'object',
-                  properties: {
-                    id: { type: 'string' },
-                    name: { type: 'string' },
-                    parentId: { type: 'string' },
-                    level: { type: 'integer' },
-                  },
+                  description: 'Response data (varies by endpoint)',
+                },
+                pagination: {
+                  $ref: '#/components/schemas/Pagination',
                 },
               },
-              popularity: { type: 'number', example: 95 },
-              status: {
-                type: 'string',
-                enum: [
-                  'active',
-                  'deprecated',
-                  'discontinued',
-                  'updated',
-                  'pending',
-                ],
-                example: 'active',
-              },
-              dateAdded: {
-                type: 'string',
-                format: 'date-time',
-                example: '2023-01-01T00:00:00Z',
-              },
-              lastUpdated: {
-                type: 'string',
-                format: 'date-time',
-                example: '2024-01-01T00:00:00Z',
-              },
-              statusHistory: {
-                type: 'array',
-                items: {
+            },
+            ErrorResponse: {
+              type: 'object',
+              required: ['success', 'error'],
+              properties: {
+                success: {
+                  type: 'boolean',
+                  example: false,
+                  description: 'Always false for error responses',
+                },
+                error: {
                   type: 'object',
+                  required: ['code', 'message', 'category', 'timestamp'],
                   properties: {
-                    id: { type: 'string' },
-                    fromStatus: { type: 'string' },
-                    toStatus: { type: 'string' },
-                    reason: { type: 'string' },
-                    changedBy: { type: 'string' },
-                    changedAt: { type: 'string', format: 'date-time' },
-                    notes: { type: 'string' },
+                    code: {
+                      type: 'string',
+                      description: 'Standardized error code',
+                      enum: [
+                        'INTERNAL_SERVER_ERROR',
+                        'BAD_REQUEST',
+                        'UNAUTHORIZED',
+                        'FORBIDDEN',
+                        'NOT_FOUND',
+                        'CONFLICT',
+                        'VALIDATION_ERROR',
+                        'RATE_LIMIT_EXCEEDED',
+                        'SERVICE_UNAVAILABLE',
+                        'GATEWAY_TIMEOUT',
+                        'CIRCUIT_BREAKER_OPEN',
+                        'EXTERNAL_SERVICE_ERROR',
+                      ],
+                      example: 'VALIDATION_ERROR',
+                    },
+                    message: {
+                      type: 'string',
+                      description: 'Human-readable error message',
+                      example: 'Validation failed for field: email',
+                    },
+                    category: {
+                      type: 'string',
+                      description: 'Error category for logical grouping',
+                      enum: [
+                        'validation',
+                        'authentication',
+                        'authorization',
+                        'not_found',
+                        'rate_limit',
+                        'external_service',
+                        'internal',
+                        'network',
+                      ],
+                      example: 'validation',
+                    },
+                    details: {
+                      type: 'object',
+                      description: 'Additional error details (optional)',
+                      properties: {
+                        field: {
+                          type: 'string',
+                          description: 'Field that caused error',
+                        },
+                        value: { description: 'Invalid value received' },
+                        resource: {
+                          type: 'string',
+                          description: 'Resource type',
+                        },
+                        identifier: { description: 'Resource identifier' },
+                      },
+                    },
+                    timestamp: {
+                      type: 'string',
+                      format: 'date-time',
+                      description: 'ISO 8601 timestamp of error',
+                    },
+                    requestId: {
+                      type: 'string',
+                      description: 'Unique request ID for tracing',
+                    },
+                    path: {
+                      type: 'string',
+                      description: 'API endpoint path',
+                    },
                   },
                 },
               },
             },
-          },
-          ResourceSubmission: {
-            type: 'object',
-            required: ['title', 'description', 'url', 'category'],
-            properties: {
-              title: { type: 'string', example: 'My Resource' },
-              description: {
-                type: 'string',
-                example: 'A brief description',
-                minLength: 10,
+            Resource: {
+              type: 'object',
+              properties: {
+                id: { type: 'string', example: 'res_12345' },
+                title: { type: 'string', example: 'Free Hosting Service' },
+                description: {
+                  type: 'string',
+                  example: 'A free hosting service for static websites',
+                },
+                url: {
+                  type: 'string',
+                  format: 'uri',
+                  example: apiConfig.docs.examples.baseUrl,
+                },
+                category: { type: 'string', example: 'Hosting' },
+                pricingModel: {
+                  type: 'string',
+                  enum: ['Free', 'Freemium', 'Open Source', 'Paid'],
+                  example: 'Free',
+                },
+                difficulty: {
+                  type: 'string',
+                  enum: ['Beginner', 'Intermediate', 'Advanced'],
+                  example: 'Beginner',
+                },
+                technology: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  example: ['JavaScript', 'React'],
+                },
+                tags: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  example: ['hosting', 'static', 'free'],
+                },
+                hierarchicalTags: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      id: { type: 'string' },
+                      name: { type: 'string' },
+                      parentId: { type: 'string' },
+                      level: { type: 'integer' },
+                    },
+                  },
+                },
+                popularity: { type: 'number', example: 95 },
+                status: {
+                  type: 'string',
+                  enum: [
+                    'active',
+                    'deprecated',
+                    'discontinued',
+                    'updated',
+                    'pending',
+                  ],
+                  example: 'active',
+                },
+                dateAdded: {
+                  type: 'string',
+                  format: 'date-time',
+                  example: '2023-01-01T00:00:00Z',
+                },
+                lastUpdated: {
+                  type: 'string',
+                  format: 'date-time',
+                  example: '2024-01-01T00:00:00Z',
+                },
+                statusHistory: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      id: { type: 'string' },
+                      fromStatus: { type: 'string' },
+                      toStatus: { type: 'string' },
+                      reason: { type: 'string' },
+                      changedBy: { type: 'string' },
+                      changedAt: { type: 'string', format: 'date-time' },
+                      notes: { type: 'string' },
+                    },
+                  },
+                },
               },
-              url: {
-                type: 'string',
-                format: 'uri',
-                example: apiConfig.docs.examples.baseUrl,
+            },
+            ResourceSubmission: {
+              type: 'object',
+              required: ['title', 'description', 'url', 'category'],
+              properties: {
+                title: { type: 'string', example: 'My Resource' },
+                description: {
+                  type: 'string',
+                  example: 'A brief description',
+                  minLength: 10,
+                },
+                url: {
+                  type: 'string',
+                  format: 'uri',
+                  example: apiConfig.docs.examples.baseUrl,
+                },
+                category: { type: 'string', example: 'Tools' },
+                tags: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  example: ['development', 'free'],
+                },
+                pricingModel: {
+                  type: 'string',
+                  enum: ['Free', 'Freemium', 'Open Source', 'Paid'],
+                  example: 'Free',
+                },
+                difficulty: {
+                  type: 'string',
+                  enum: ['Beginner', 'Intermediate', 'Advanced'],
+                  example: 'Beginner',
+                },
+                technology: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  example: ['JavaScript', 'React'],
+                },
+                benefits: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  example: ['Free tier', 'Open source'],
+                },
               },
-              category: { type: 'string', example: 'Tools' },
-              tags: {
-                type: 'array',
-                items: { type: 'string' },
-                example: ['development', 'free'],
+            },
+            Submission: {
+              type: 'object',
+              properties: {
+                id: { type: 'string', example: 'sub_123456' },
+                resourceData: {
+                  $ref: '#/components/schemas/ResourceSubmission',
+                },
+                status: {
+                  type: 'string',
+                  enum: ['pending', 'approved', 'rejected'],
+                  example: 'pending',
+                },
+                submittedBy: { type: 'string', example: 'user123' },
+                submittedAt: {
+                  type: 'string',
+                  format: 'date-time',
+                  example: '2024-01-01T12:00:00Z',
+                },
               },
-              pricingModel: {
-                type: 'string',
-                enum: ['Free', 'Freemium', 'Open Source', 'Paid'],
-                example: 'Free',
+            },
+            Webhook: {
+              type: 'object',
+              properties: {
+                id: { type: 'string', example: 'wh_abc123' },
+                url: {
+                  type: 'string',
+                  format: 'uri',
+                  example: webhooksConfig.placeholders.url,
+                },
+                events: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  example: ['resource.created', 'resource.updated'],
+                },
+                active: { type: 'boolean', example: true },
+                createdAt: {
+                  type: 'string',
+                  format: 'date-time',
+                },
+                updatedAt: {
+                  type: 'string',
+                  format: 'date-time',
+                },
+                deliveryCount: { type: 'integer', example: 42 },
+                failureCount: { type: 'integer', example: 2 },
               },
-              difficulty: {
-                type: 'string',
-                enum: ['Beginner', 'Intermediate', 'Advanced'],
-                example: 'Beginner',
+            },
+            WebhookDelivery: {
+              type: 'object',
+              properties: {
+                id: { type: 'string', example: 'del_xyz789' },
+                webhookId: { type: 'string', example: 'wh_abc123' },
+                eventType: {
+                  type: 'string',
+                  example: 'resource.created',
+                },
+                status: {
+                  type: 'string',
+                  enum: ['success', 'failed', 'pending'],
+                  example: 'success',
+                },
+                attempt: { type: 'integer', example: 1 },
+                deliveredAt: {
+                  type: 'string',
+                  format: 'date-time',
+                },
+                response: {
+                  type: 'object',
+                  description: 'HTTP response from webhook endpoint',
+                },
               },
-              technology: {
-                type: 'array',
-                items: { type: 'string' },
-                example: ['JavaScript', 'React'],
-              },
-              benefits: {
-                type: 'array',
-                items: { type: 'string' },
-                example: ['Free tier', 'Open source'],
+            },
+            Pagination: {
+              type: 'object',
+              properties: {
+                total: {
+                  type: 'integer',
+                  description: 'Total number of items',
+                },
+                limit: { type: 'integer', description: 'Items per page' },
+                offset: { type: 'integer', description: 'Items skipped' },
+                hasNext: {
+                  type: 'boolean',
+                  description: 'Whether there are more items',
+                },
+                hasPrev: {
+                  type: 'boolean',
+                  description: 'Whether there are previous items',
+                },
               },
             },
           },
-          Submission: {
+          ResourceComparison: {
             type: 'object',
             properties: {
-              id: { type: 'string', example: 'sub_123456' },
-              resourceData: {
-                $ref: '#/components/schemas/ResourceSubmission',
-              },
-              status: {
+              id: {
                 type: 'string',
-                enum: ['pending', 'approved', 'rejected'],
-                example: 'pending',
+                description: 'Unique comparison ID',
+                example: 'cmp_1704967234567_abc123',
               },
-              submittedBy: { type: 'string', example: 'user123' },
-              submittedAt: {
-                type: 'string',
-                format: 'date-time',
-                example: '2024-01-01T12:00:00Z',
-              },
-            },
-          },
-          Webhook: {
-            type: 'object',
-            properties: {
-              id: { type: 'string', example: 'wh_abc123' },
-              url: {
-                type: 'string',
-                format: 'uri',
-                example: webhooksConfig.placeholders.url,
-              },
-              events: {
+              resources: {
                 type: 'array',
+                description: 'List of resource IDs being compared',
                 items: { type: 'string' },
-                example: ['resource.created', 'resource.updated'],
+                example: ['res_1', 'res_2', 'res_3'],
               },
-              active: { type: 'boolean', example: true },
+              criteria: {
+                type: 'array',
+                description: 'Comparison criteria used',
+                items: { type: 'string' },
+                example: ['price', 'features', 'ease_of_use'],
+              },
+              scores: {
+                type: 'object',
+                description: 'Scoring data for each criterion',
+                additionalProperties: {
+                  type: 'number',
+                },
+              },
               createdAt: {
                 type: 'string',
                 format: 'date-time',
+                description: 'When comparison was created',
+                example: '2024-01-10T12:00:00Z',
               },
-              updatedAt: {
-                type: 'string',
-                format: 'date-time',
-              },
-              deliveryCount: { type: 'integer', example: 42 },
-              failureCount: { type: 'integer', example: 2 },
-            },
-          },
-          WebhookDelivery: {
-            type: 'object',
-            properties: {
-              id: { type: 'string', example: 'del_xyz789' },
-              webhookId: { type: 'string', example: 'wh_abc123' },
-              eventType: {
-                type: 'string',
-                example: 'resource.created',
-              },
-              status: {
-                type: 'string',
-                enum: ['success', 'failed', 'pending'],
-                example: 'success',
-              },
-              attempt: { type: 'integer', example: 1 },
-              deliveredAt: {
-                type: 'string',
-                format: 'date-time',
-              },
-              response: {
-                type: 'object',
-                description: 'HTTP response from webhook endpoint',
-              },
-            },
-          },
-          Pagination: {
-            type: 'object',
-            properties: {
-              total: { type: 'integer', description: 'Total number of items' },
-              limit: { type: 'integer', description: 'Items per page' },
-              offset: { type: 'integer', description: 'Items skipped' },
-              hasNext: {
+              isPublic: {
                 type: 'boolean',
-                description: 'Whether there are more items',
+                description: 'Whether comparison is publicly accessible',
+                example: true,
               },
-              hasPrev: {
-                type: 'boolean',
-                description: 'Whether there are previous items',
+              slug: {
+                type: 'string',
+                description: 'URL-friendly identifier for sharing',
+                example: 'resource-a-vs-resource-b-vs-resource-c',
               },
             },
           },
         },
-        ResourceComparison: {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'string',
-              description: 'Unique comparison ID',
-              example: 'cmp_1704967234567_abc123',
-            },
-            resources: {
-              type: 'array',
-              description: 'List of resource IDs being compared',
-              items: { type: 'string' },
-              example: ['res_1', 'res_2', 'res_3'],
-            },
-            criteria: {
-              type: 'array',
-              description: 'Comparison criteria used',
-              items: { type: 'string' },
-              example: ['price', 'features', 'ease_of_use'],
-            },
-            scores: {
-              type: 'object',
-              description: 'Scoring data for each criterion',
-              additionalProperties: {
-                type: 'number',
-              },
-            },
-            createdAt: {
-              type: 'string',
-              format: 'date-time',
-              description: 'When comparison was created',
-              example: '2024-01-10T12:00:00Z',
-            },
-            isPublic: {
-              type: 'boolean',
-              description: 'Whether comparison is publicly accessible',
-              example: true,
-            },
-            slug: {
-              type: 'string',
-              description: 'URL-friendly identifier for sharing',
-              example: 'resource-a-vs-resource-b-vs-resource-c',
-            },
+        securitySchemes: {
+          ApiKeyAuth: {
+            type: 'apiKey',
+            in: 'header',
+            name: 'X-API-Key',
+            description: 'API key for authentication',
+          },
+        },
+        headers: {
+          XRateLimitLimit: {
+            description:
+              'Maximum number of requests allowed per rate limit window',
+            schema: { type: 'integer' },
+          },
+          XRateLimitRemaining: {
+            description:
+              'Number of requests remaining in current rate limit window',
+            schema: { type: 'integer' },
+          },
+          XRateLimitReset: {
+            description: 'Unix timestamp when rate limit window resets',
+            schema: { type: 'integer' },
+          },
+          XRateLimitWindow: {
+            description: 'Rate limit window duration in seconds',
+            schema: { type: 'integer' },
+          },
+          XRateLimitBypassed: {
+            description:
+              'Present if admin bypass key was used (internal use only)',
+            schema: { type: 'string' },
           },
         },
       },
-      securitySchemes: {
-        ApiKeyAuth: {
-          type: 'apiKey',
-          in: 'header',
-          name: 'X-API-Key',
-          description: 'API key for authentication',
-        },
-      },
-      headers: {
-        XRateLimitLimit: {
-          description:
-            'Maximum number of requests allowed per rate limit window',
-          schema: { type: 'integer' },
-        },
-        XRateLimitRemaining: {
-          description:
-            'Number of requests remaining in current rate limit window',
-          schema: { type: 'integer' },
-        },
-        XRateLimitReset: {
-          description: 'Unix timestamp when rate limit window resets',
-          schema: { type: 'integer' },
-        },
-        XRateLimitWindow: {
-          description: 'Rate limit window duration in seconds',
-          schema: { type: 'integer' },
-        },
-        XRateLimitBypassed: {
-          description:
-            'Present if admin bypass key was used (internal use only)',
-          schema: { type: 'string' },
-        },
-      },
-    },
-    security: [],
-  }
+      security: [],
+    }
 
-  return openApiSpec
+    return openApiSpec
+  } catch (error) {
+    return handleApiRouteError(event, error)
+  }
 })
