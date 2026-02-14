@@ -2326,6 +2326,58 @@ export const animationConfig = {
     spinSec: parseFloat(process.env.OFFLINE_SPIN_SEC || '1'),
   },
 
+  // Moderation Dashboard Animations - Flexy hates hardcoded values! 🎯
+  // Counter animations, stagger effects, and timing for dashboard statistics
+  moderationDashboard: {
+    // Initial delay before starting counter animations (ms) - Flexy hates hardcoded 300!
+    counterStartDelayMs: parseInt(
+      process.env.MODERATION_COUNTER_START_DELAY_MS || '300'
+    ),
+    // Duration of counter animation from start to end (ms) - Flexy hates hardcoded 2000!
+    counterAnimationDurationMs: parseInt(
+      process.env.MODERATION_COUNTER_DURATION_MS || '2000'
+    ),
+    // Duration for individual counter updates on value changes (ms) - Flexy hates hardcoded 800!
+    counterUpdateDurationMs: parseInt(
+      process.env.MODERATION_COUNTER_UPDATE_MS || '800'
+    ),
+    // How long to show completion announcement (ms) - Flexy hates hardcoded 3000!
+    announcementDisplayDurationMs: parseInt(
+      process.env.MODERATION_ANNOUNCEMENT_DURATION_MS || '3000'
+    ),
+    // Delay between each stat card's entrance (stagger effect) (ms)
+    cardStaggerDelayMs: parseInt(
+      process.env.MODERATION_CARD_STAGGER_MS || '100'
+    ),
+    // Delay between each activity item's entrance (ms)
+    activityStaggerDelayMs: parseInt(
+      process.env.MODERATION_ACTIVITY_STAGGER_MS || '75'
+    ),
+    // Maximum stagger delay for activities to prevent long waits (ms)
+    maxActivityStaggerDelayMs: parseInt(
+      process.env.MODERATION_MAX_ACTIVITY_STAGGER_MS || '600'
+    ),
+    // Delay between each action button's entrance (ms)
+    actionStaggerDelayMs: parseInt(
+      process.env.MODERATION_ACTION_STAGGER_MS || '100'
+    ),
+    // Card hover transition duration (ms)
+    cardHoverTransitionMs: parseInt(
+      process.env.MODERATION_CARD_HOVER_MS || '200'
+    ),
+    // Card press transition duration (ms)
+    cardPressTransitionMs: parseInt(
+      process.env.MODERATION_CARD_PRESS_MS || '100'
+    ),
+    // Activity item hover transition duration (ms)
+    activityHoverTransitionMs: parseInt(
+      process.env.MODERATION_ACTIVITY_HOVER_MS || '150'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.MODERATION_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // Resource Card Animations
   resourceCard: {
     // New badge pulse duration (seconds)

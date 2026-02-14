@@ -394,7 +394,7 @@ const startCounterAnimations = () => {
         key,
         targetValues.value[key as keyof typeof targetValues.value]
       )
-    }, index * 150)
+    }, index * animationConfig.moderationDashboard.cardStaggerDelayMs)
   })
 
   // Announce completion after all animations
@@ -403,11 +403,11 @@ const startCounterAnimations = () => {
     announcement.value = `Dashboard loaded. ${targetValues.value.pending} pending, ${targetValues.value.approved} approved.`
     setTimeout(() => {
       announcement.value = ''
-    }, 3000)
+    }, animationConfig.moderationDashboard.announcementDisplayDurationMs)
 
     // Haptic feedback for completion
     hapticSuccess()
-  }, 2000)
+  }, animationConfig.moderationDashboard.counterAnimationDurationMs)
 }
 
 // Palette's micro-UX enhancement: Card hover handlers
@@ -514,7 +514,10 @@ onMounted(() => {
   }
 
   // Start counter animations after a brief delay
-  setTimeout(startCounterAnimations, 300)
+  setTimeout(
+    startCounterAnimations,
+    animationConfig.moderationDashboard.counterStartDelayMs
+  )
 })
 
 // Watch for value changes and update animations
@@ -527,7 +530,11 @@ watch(
         const currentValue =
           animatedValues.value[key as keyof typeof animatedValues.value]
         if (newValue !== currentValue) {
-          animateCounter(key, newValue, 800)
+          animateCounter(
+            key,
+            newValue,
+            animationConfig.moderationDashboard.counterUpdateDurationMs
+          )
         }
       })
     }
