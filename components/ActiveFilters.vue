@@ -64,10 +64,7 @@
         <span :class="['truncate', uiConfig.chips.queryMaxWidth]">{{
           searchQuery
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -86,10 +83,7 @@
           </svg>
         </span>
         <!-- Shimmer effect on hover -->
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Category chips -->
@@ -125,10 +119,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           category
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -146,10 +137,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Pricing model chips -->
@@ -185,10 +173,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           pricing
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -206,10 +191,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Difficulty chips -->
@@ -245,10 +227,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           difficulty
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -266,10 +245,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Technology chips -->
@@ -305,10 +281,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           tech
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -326,10 +299,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Tag chips -->
@@ -365,10 +335,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           tag
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -386,10 +353,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Benefit chips -->
@@ -425,10 +389,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           benefit
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -446,10 +407,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Date range chip -->
@@ -483,10 +441,7 @@
           contentConfig.filters.labels.date
         }}</span>
         <span>{{ formatDateRange(selectedDateRange) }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -504,10 +459,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Undo button for recently removed filter -->
@@ -537,11 +489,14 @@
             d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
           />
         </svg>
-        <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span>
+        <span :class="['truncate', uiConfig.chips.valueMaxWidth]"
+          >{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span
+        >
         <kbd
           class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
           aria-hidden="true"
-        >{{ contentConfig.filters.keyboard.ctrlZ }}</kbd>
+          >{{ contentConfig.filters.keyboard.ctrlZ }}</kbd
+        >
         <!-- Progress bar for undo window with color transition -->
         <span
           class="undo-progress-bar"
@@ -555,7 +510,8 @@
     <!-- Clear all button with keyboard shortcut hint -->
     <button
       ref="clearAllButtonRef"
-      class="group ml-2 text-sm text-gray-500 hover:text-gray-700 underline focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-400 rounded px-1 transition-colors"
+      class="group ml-2 text-sm text-gray-500 hover:text-gray-700 underline focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-gray-400 rounded px-1 transition-colors relative"
+      :class="{ 'clear-all--sweeping': isClearAllSweeping }"
       :aria-label="contentConfig.filters.ariaLabels.clearAll"
       @click="handleClearAll"
     >
@@ -563,8 +519,53 @@
       <kbd
         class="hidden sm:inline-block ml-1.5 px-1.5 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded group-hover:bg-gray-200 transition-colors"
         aria-hidden="true"
-      >{{ contentConfig.filters.keyboard.esc }}</kbd>
+        >{{ contentConfig.filters.keyboard.esc }}</kbd
+      >
+
+      <!-- Sweep effect ripple - Palette's micro-UX delight! -->
+      <span
+        v-if="isClearAllSweeping && !prefersReducedMotion"
+        class="clear-all-sweep-ripple"
+        aria-hidden="true"
+      />
     </button>
+
+    <!-- Cleared Filters Counter Badge - Palette's micro-UX delight! -->
+    <Transition
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="opacity-0 scale-50 -translate-y-2"
+      enter-to-class="opacity-100 scale-100 translate-y-0"
+      leave-active-class="transition-all duration-200 ease-in"
+      leave-from-class="opacity-100 scale-100 translate-y-0"
+      leave-to-class="opacity-0 scale-75 translate-y-1"
+    >
+      <div
+        v-if="showClearedBadge && !prefersReducedMotion"
+        class="cleared-badge"
+        role="status"
+        aria-live="polite"
+      >
+        <span class="cleared-badge__content">
+          <svg
+            class="cleared-badge__icon"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          <span class="cleared-badge__text">
+            {{ clearedFilterCount }}
+            {{ clearedFilterCount === 1 ? 'filter' : 'filters' }} cleared
+          </span>
+        </span>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -644,6 +645,13 @@ const _removingChips = ref<Set<string>>(new Set())
 const pressedChips = ref<Set<string>>(new Set())
 // Track which chips are being removed for exit animation
 const exitingChips = ref<Set<string>>(new Set())
+
+// Palette's micro-UX: Clear All Sweep Animation state
+const isClearAllSweeping = ref(false)
+const showClearedBadge = ref(false)
+const clearedFilterCount = ref(0)
+let clearAllTimeout: ReturnType<typeof setTimeout> | null = null
+let clearedBadgeTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Check for reduced motion preference
 const prefersReducedMotion = ref(false)
@@ -786,15 +794,76 @@ const handleClearAll = () => {
   // Clear any pending undo first
   clearUndoState()
 
-  // Announce to screen readers
-  announcement.value = 'All filters cleared.'
+  // Palette's micro-UX: Calculate total filters before clearing
+  const totalFilters = activeFilterCount.value
+
+  // Palette's micro-UX: Trigger sweep animation
+  isClearAllSweeping.value = true
+
+  // Palette's micro-UX: Add all chips to exiting state with staggered timing
+  const allChips = [
+    ...(props.searchQuery ? [`search-${props.searchQuery}`] : []),
+    ...props.selectedCategories.map(c => `category-${c}`),
+    ...props.selectedPricingModels.map(p => `pricing-${p}`),
+    ...props.selectedDifficultyLevels.map(d => `difficulty-${d}`),
+    ...props.selectedTechnologies.map(t => `technology-${t}`),
+    ...props.selectedTags.map(t => `tag-${t}`),
+    ...props.selectedBenefits.map(b => `benefit-${b}`),
+    ...(props.selectedDateRange && props.selectedDateRange !== 'anytime'
+      ? [`date-${props.selectedDateRange}`]
+      : []),
+  ]
+
+  // Staggered exit animation - chips disappear in a wave pattern
+  allChips.forEach((chipKey, index) => {
+    setTimeout(() => {
+      exitingChips.value.add(chipKey)
+    }, index * 50) // 50ms stagger between each chip
+  })
+
+  // Palette's micro-UX: Haptic feedback for satisfying clear action
+  if (!prefersReducedMotion.value) {
+    triggerHaptic('medium')
+  }
 
   // Clear announcement after screen reader has time to read it
   setTimeout(() => {
     announcement.value = ''
   }, ANNOUNCEMENT_CLEAR_MS)
 
-  emit('reset-filters')
+  // Clear timeouts
+  if (clearAllTimeout) clearTimeout(clearAllTimeout)
+  if (clearedBadgeTimeout) clearTimeout(clearedBadgeTimeout)
+
+  // Reset sweep state after animation completes
+  clearAllTimeout = setTimeout(
+    () => {
+      isClearAllSweeping.value = false
+      exitingChips.value.clear()
+
+      // Show cleared badge with count
+      if (totalFilters > 0 && !prefersReducedMotion.value) {
+        clearedFilterCount.value = totalFilters
+        showClearedBadge.value = true
+
+        // Hide badge after delay
+        clearedBadgeTimeout = setTimeout(() => {
+          showClearedBadge.value = false
+        }, 2000)
+      }
+
+      // Announce to screen readers
+      announcement.value = `${totalFilters} ${totalFilters === 1 ? 'filter' : 'filters'} cleared.`
+
+      setTimeout(() => {
+        announcement.value = ''
+      }, ANNOUNCEMENT_CLEAR_MS)
+
+      // Emit reset event
+      emit('reset-filters')
+    },
+    allChips.length * 50 + 300
+  ) // Wait for all chips to animate out
 }
 
 // Clear undo state and timers
@@ -1456,6 +1525,175 @@ onUnmounted(() => {
 
   .filter-chip:focus-visible {
     animation: none;
+  }
+}
+
+/* Palette's micro-UX: Clear All Sweep Animation Styles */
+.clear-all--sweeping {
+  position: relative;
+  overflow: visible;
+}
+
+.clear-all-sweep-ripple {
+  position: absolute;
+  inset: -4px;
+  border-radius: 6px;
+  pointer-events: none;
+  animation: clear-all-ripple 0.6s ease-out forwards;
+}
+
+.clear-all-sweep-ripple::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.4) 0%,
+    rgba(59, 130, 246, 0.2) 40%,
+    transparent 70%
+  );
+  animation: clear-all-ripple-inner 0.6s ease-out forwards;
+}
+
+@keyframes clear-all-ripple {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes clear-all-ripple-inner {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* Cleared Badge Styles - Palette's micro-UX delight! */
+.cleared-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 10;
+  animation: cleared-badge-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+    forwards;
+}
+
+.cleared-badge__content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+  white-space: nowrap;
+}
+
+.cleared-badge__icon {
+  width: 14px;
+  height: 14px;
+  animation: cleared-badge-check 0.3s ease-out 0.1s both;
+}
+
+.cleared-badge__text {
+  animation: cleared-badge-text 0.3s ease-out 0.15s both;
+}
+
+@keyframes cleared-badge-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5) translateY(10px);
+  }
+  60% {
+    transform: scale(1.1) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes cleared-badge-check {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-45deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes cleared-badge-text {
+  0% {
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Staggered chip exit animation during clear all */
+.filter-chip.is-exiting {
+  animation: chip-sweep-out 0.3s ease-out forwards;
+}
+
+@keyframes chip-sweep-out {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.95) translateX(-5px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) translateX(-20px);
+  }
+}
+
+/* Reduced motion support for clear all animation */
+@media (prefers-reduced-motion: reduce) {
+  .clear-all-sweep-ripple,
+  .cleared-badge {
+    display: none;
+  }
+
+  .filter-chip.is-exiting {
+    animation: none;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .cleared-badge__content {
+    border: 2px solid currentColor;
+  }
+
+  .clear-all-sweep-ripple::before {
+    background: currentColor;
+    opacity: 0.3;
   }
 }
 </style>
