@@ -94,10 +94,7 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p
-            v-if="toast.description"
-            class="toast__description"
-          >
+          <p v-if="toast.description" class="toast__description">
             {{ toast.description }}
           </p>
         </div>
@@ -538,7 +535,9 @@ onUnmounted(() => {
   .toast-enter-active {
     transition: opacity v-bind('toastConfig.reducedMotionDurationMs + "ms"')
       ease-out;
-    transition-delay: 0ms;
+    transition-delay: v-bind(
+      'animationConfig.cssTransitions.zeroDelayMs + "ms"'
+    );
   }
 
   .toast-leave-active {

@@ -122,7 +122,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint with idle pulse animation -->
       <div
         v-if="!modelValue && !isFocused"
@@ -1013,7 +1013,7 @@ if (typeof window !== 'undefined') {
   transform: translate(-50%, -50%) rotate(var(--particle-rotation));
   animation: search-clear-particle-burst var(--particle-duration) ease-out
     forwards;
-  animation-delay: 0s;
+  animation-delay: v-bind('animationConfig.cssAnimations.zeroDelaySec');
   opacity: 0;
 }
 
