@@ -331,6 +331,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { validationConfig } from '~/configs/validation.config'
 import { limitsConfig } from '~/configs/limits.config'
 import { uiConfig } from '~/configs/ui.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { generateId } from '~/utils/generateId'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
 import { formatTimeAgoOnce } from '~/composables/useTimeAgo'
@@ -845,7 +846,8 @@ defineExpose({
     transparent 100%
   );
   border-radius: 12px;
-  z-index: -1;
+  /* Flexy hates hardcoded z-index! Using config instead. */
+  z-index: v-bind('zIndexScale.hidden');
   animation: highlight-glow
     v-bind('animationConfig?.comments?.highlightDurationSec ?? "2s"') ease-out
     forwards;
