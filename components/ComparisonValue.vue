@@ -16,10 +16,7 @@
         @keydown.space.prevent="handleCopy(value as string, 'text')"
       >
         <span class="comparison-value__text">{{ value }}</span>
-        <span
-          class="comparison-value__icon"
-          aria-hidden="true"
-        >
+        <span class="comparison-value__icon" aria-hidden="true">
           <Transition
             mode="out-in"
             enter-active-class="transition-all duration-200 ease-out"
@@ -62,10 +59,7 @@
           </Transition>
         </span>
       </button>
-      <span
-        v-else
-        class="comparison-value comparison-value--empty"
-      >-</span>
+      <span v-else class="comparison-value comparison-value--empty">-</span>
     </template>
 
     <!-- Number Type with Copy Functionality -->
@@ -84,10 +78,7 @@
         @keydown.space.prevent="handleCopy(String(value), 'number')"
       >
         <span class="comparison-value__text">{{ value }}</span>
-        <span
-          class="comparison-value__icon"
-          aria-hidden="true"
-        >
+        <span class="comparison-value__icon" aria-hidden="true">
           <Transition
             mode="out-in"
             enter-active-class="transition-all duration-200 ease-out"
@@ -130,10 +121,7 @@
           </Transition>
         </span>
       </button>
-      <span
-        v-else
-        class="comparison-value comparison-value--empty"
-      >-</span>
+      <span v-else class="comparison-value comparison-value--empty">-</span>
     </template>
 
     <!-- Boolean Type with Enhanced Visuals -->
@@ -143,15 +131,8 @@
         class="comparison-value comparison-value--boolean comparison-value--true"
         :class="{ 'comparison-value--reduced-motion': prefersReducedMotion }"
       >
-        <span
-          class="comparison-value__boolean-icon"
-          aria-hidden="true"
-        >
-          <svg
-            class="w-3.5 h-3.5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+        <span class="comparison-value__boolean-icon" aria-hidden="true">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
             <path
               fill-rule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -166,15 +147,8 @@
         class="comparison-value comparison-value--boolean comparison-value--false"
         :class="{ 'comparison-value--reduced-motion': prefersReducedMotion }"
       >
-        <span
-          class="comparison-value__boolean-icon"
-          aria-hidden="true"
-        >
-          <svg
-            class="w-3.5 h-3.5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+        <span class="comparison-value__boolean-icon" aria-hidden="true">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
             <path
               fill-rule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -184,10 +158,7 @@
         </span>
         <span class="comparison-value__boolean-text">No</span>
       </span>
-      <span
-        v-else
-        class="comparison-value comparison-value--empty"
-      >-</span>
+      <span v-else class="comparison-value comparison-value--empty">-</span>
     </template>
 
     <!-- List Type with Copy All Functionality -->
@@ -217,8 +188,10 @@
             @keydown.enter.prevent="handleCopyList"
             @keydown.space.prevent="handleCopyList"
           >
-            <span>+{{ value.length - displayLimit }}
-              {{ contentConfig.similarResources.moreItemsText }}</span>
+            <span
+              >+{{ value.length - displayLimit }}
+              {{ contentConfig.similarResources.moreItemsText }}</span
+            >
             <Transition
               mode="out-in"
               enter-active-class="transition-all duration-200 ease-out"
@@ -262,19 +235,11 @@
           </button>
         </div>
       </div>
-      <span
-        v-else
-        class="comparison-value comparison-value--empty"
-      >-</span>
+      <span v-else class="comparison-value comparison-value--empty">-</span>
     </template>
 
     <!-- Screen Reader Announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </div>
@@ -285,6 +250,8 @@ import { computed, ref, onMounted } from 'vue'
 import { limitsConfig } from '~/configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { spacingConfig } from '~/configs/spacing.config'
+import { typographyConfig } from '~/configs/typography.config'
 import { hapticSuccess } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -412,9 +379,9 @@ const handleCopyList = async () => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.375rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  gap: v-bind('spacingConfig.gap.md');
+  font-size: v-bind('typographyConfig.fontSize.sm');
+  line-height: v-bind('typographyConfig.lineHeight.sm');
   transition: all v-bind('animationConfig.transition.fast.durationMs + "ms"')
     ease-out;
 }
@@ -422,10 +389,10 @@ const handleCopyList = async () => {
 /* Interactive value styles - Palette's micro-UX enhancement! */
 .comparison-value--interactive {
   position: relative;
-  padding: 0.25rem 0.5rem;
+  padding: v-bind('spacingConfig.padding.smMd');
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 0.375rem;
+  border: v-bind('spacingConfig.border.transparent');
+  border-radius: v-bind('spacingConfig.borderRadius.base');
   cursor: pointer;
   color: v-bind(
     'themeConfig.comparisonValue.interactiveTextColor || "#374151"'
@@ -456,9 +423,11 @@ const handleCopyList = async () => {
 }
 
 .comparison-value--interactive:focus-visible {
-  outline: 2px solid
+  outline: v-bind(
+      'spacingConfig.outline.width + " " + spacingConfig.outline.style'
+    )
     v-bind('themeConfig.comparisonValue.focusRingColor || "#3b82f6"');
-  outline-offset: 2px;
+  outline-offset: v-bind('spacingConfig.outline.offset');
 }
 
 /* Copied state styles */
@@ -520,11 +489,11 @@ const handleCopyList = async () => {
 .comparison-value--boolean {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-weight: 500;
-  font-size: 0.75rem;
+  gap: v-bind('spacingConfig.gap.md');
+  padding: v-bind('spacingConfig.padding.smLg');
+  border-radius: v-bind('spacingConfig.borderRadius.full');
+  font-weight: v-bind('typographyConfig.fontWeight.medium');
+  font-size: v-bind('typographyConfig.fontSize.xs');
 }
 
 .comparison-value--true {
@@ -575,28 +544,30 @@ const handleCopyList = async () => {
 .comparison-value__list-item {
   display: inline-flex;
   align-items: center;
-  padding: 0.125rem 0.5rem;
+  padding: v-bind('spacingConfig.padding.xs')
+    v-bind('spacingConfig.padding.base');
   background-color: v-bind(
     'themeConfig.comparisonValue.listItemBg || "rgba(59, 130, 246, 0.1)"'
   );
   color: v-bind('themeConfig.comparisonValue.listItemColor || "#1d4ed8"');
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 500;
+  border-radius: v-bind('spacingConfig.borderRadius.md');
+  font-size: v-bind('typographyConfig.fontSize.xs');
+  font-weight: v-bind('typographyConfig.fontWeight.medium');
 }
 
 .comparison-value__more-btn {
   display: inline-flex;
   align-items: center;
-  padding: 0.125rem 0.5rem;
+  padding: v-bind('spacingConfig.padding.xs')
+    v-bind('spacingConfig.padding.base');
   background-color: v-bind(
     'themeConfig.comparisonValue.moreBtnBg || "rgba(107, 114, 128, 0.1)"'
   );
   color: v-bind('themeConfig.comparisonValue.moreBtnColor || "#4b5563"');
-  border: 1px solid transparent;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 500;
+  border: v-bind('spacingConfig.border.transparent');
+  border-radius: v-bind('spacingConfig.borderRadius.md');
+  font-size: v-bind('typographyConfig.fontSize.xs');
+  font-weight: v-bind('typographyConfig.fontWeight.medium');
   cursor: pointer;
   transition: all v-bind('animationConfig.transition.fast.durationMs + "ms"')
     ease-out;
@@ -612,9 +583,11 @@ const handleCopyList = async () => {
 }
 
 .comparison-value__more-btn:focus-visible {
-  outline: 2px solid
+  outline: v-bind(
+      'spacingConfig.outline.width + " " + spacingConfig.outline.style'
+    )
     v-bind('themeConfig.comparisonValue.focusRingColor || "#3b82f6"');
-  outline-offset: 2px;
+  outline-offset: v-bind('spacingConfig.outline.offset');
 }
 
 /* Reduced motion support */
@@ -655,7 +628,7 @@ const handleCopyList = async () => {
 
   .comparison-value--interactive:focus-visible {
     outline: 3px solid currentColor;
-    outline-offset: 3px;
+    outline-offset: v-bind('spacingConfig.outline.offset');
   }
 }
 </style>

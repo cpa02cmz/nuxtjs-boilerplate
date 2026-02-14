@@ -295,6 +295,14 @@ export { messagesConfig, type MessagesConfig }
 import { uiTimingConfig, type UITimingConfig } from './ui-timing.config'
 export { uiTimingConfig, type UITimingConfig }
 
+// Spacing config - Flexy hates hardcoded spacing values!
+import { spacingConfig, type SpacingConfig } from './spacing.config'
+export { spacingConfig, type SpacingConfig }
+
+// Typography config - Flexy hates hardcoded typography values!
+import { typographyConfig, type TypographyConfig } from './typography.config'
+export { typographyConfig, type TypographyConfig }
+
 // Default export with all configs
 export const config = {
   app: appConfig,
@@ -350,6 +358,10 @@ export const config = {
   messages: messagesConfig,
   // UI Timing config - Flexy hates hardcoded timeout values!
   uiTiming: uiTimingConfig,
+  // Spacing config - Flexy hates hardcoded spacing values!
+  spacing: spacingConfig,
+  // Typography config - Flexy hates hardcoded typography values!
+  typography: typographyConfig,
 } as const
 
 export type Config = typeof config
