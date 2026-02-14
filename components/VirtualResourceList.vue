@@ -44,7 +44,11 @@
       tabindex="0"
       @keydown="handleKeyDown"
     >
-      <TransitionGroup name="list-item" tag="div" class="w-full h-full">
+      <TransitionGroup
+        name="list-item"
+        tag="div"
+        class="w-full h-full"
+      >
         <div
           v-for="virtualRow in virtualizer.getVirtualItems()"
           :key="String(virtualRow.key)"

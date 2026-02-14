@@ -285,6 +285,7 @@ import { computed, ref, onMounted } from 'vue'
 import { limitsConfig } from '~/configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { themeConfig } from '~/configs/theme.config'
 import { hapticSuccess } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -358,7 +359,7 @@ const copyTooltip = computed(() => {
 })
 
 // Handle copy action with haptic feedback and visual confirmation
-const handleCopy = async (text: string, type: 'text' | 'number') => {
+const handleCopy = async (text: string, type: 'text' | 'number' | 'list') => {
   if (!props.enableCopy) return
 
   try {
