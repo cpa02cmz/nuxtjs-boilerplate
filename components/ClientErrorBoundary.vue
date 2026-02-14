@@ -29,7 +29,11 @@
         >
           <div class="loading-shimmer__ring" />
         </div>
-        <div v-else class="loading-simple" aria-hidden="true">
+        <div
+          v-else
+          class="loading-simple"
+          aria-hidden="true"
+        >
           <div class="loading-simple__dot" />
         </div>
         <span class="sr-only">Loading...</span>
@@ -128,7 +132,10 @@
           enter-to-class="opacity-100 translate-y-0"
           appear
         >
-          <div v-show="isInitialized" class="client-error-boundary__content">
+          <div
+            v-show="isInitialized"
+            class="client-error-boundary__content"
+          >
             <slot />
           </div>
         </Transition>
@@ -136,7 +143,12 @@
     </ClientOnly>
 
     <!-- Screen reader announcement -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ announcementText }}
     </div>
   </div>
