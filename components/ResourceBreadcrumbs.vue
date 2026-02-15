@@ -1,19 +1,14 @@
 <template>
-  <nav
-    class="mb-6"
-    aria-label="Breadcrumb"
-  >
+  <nav class="mb-6" aria-label="Breadcrumb">
     <ol class="flex items-center space-x-2 text-sm">
       <li class="breadcrumb-item">
         <NuxtLink
           to="/"
           class="breadcrumb-link group"
+          @click="handleBreadcrumbClick('Home')"
         >
           <span class="breadcrumb-text">Home</span>
-          <span
-            class="breadcrumb-underline"
-            aria-hidden="true"
-          />
+          <span class="breadcrumb-underline" aria-hidden="true" />
         </NuxtLink>
       </li>
       <li aria-hidden="true">
@@ -23,36 +18,23 @@
         <NuxtLink
           to="/search"
           class="breadcrumb-link group"
+          @click="handleBreadcrumbClick('Resources')"
         >
           <span class="breadcrumb-text">Resources</span>
-          <span
-            class="breadcrumb-underline"
-            aria-hidden="true"
-          />
+          <span class="breadcrumb-underline" aria-hidden="true" />
         </NuxtLink>
       </li>
       <li aria-hidden="true">
         <span class="breadcrumb-separator">/</span>
       </li>
-      <li
-        class="breadcrumb-current"
-        aria-current="page"
-      >
+      <li class="breadcrumb-current" aria-current="page">
         <span class="breadcrumb-current-text">{{ title }}</span>
-        <span
-          class="breadcrumb-current-indicator"
-          aria-hidden="true"
-        />
+        <span class="breadcrumb-current-indicator" aria-hidden="true" />
       </li>
     </ol>
 
     <!-- Screen reader announcement for current page -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </nav>
@@ -64,6 +46,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 const props = defineProps<{
   title: string
@@ -103,6 +86,15 @@ onMounted(() => {
     ).matches
   }
 })
+
+// 🎨 Palette's micro-UX delight: Haptic feedback on breadcrumb navigation
+// Provides subtle tactile confirmation when users click breadcrumb links
+const handleBreadcrumbClick = (_pageName: string) => {
+  // Only trigger haptic feedback if user doesn't prefer reduced motion
+  if (!prefersReducedMotion.value) {
+    hapticLight()
+  }
+}
 </script>
 
 <style scoped>
