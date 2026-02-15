@@ -96,6 +96,11 @@ export const monitoringConfig = {
     measurementDelayMs: parseInt(
       process.env.MONITOR_PERFORMANCE_DELAY_MS || '1000'
     ),
+    // Timeout for Web Vitals measurement via Performance Observer
+    // Flexy hates hardcoded 2000! Make it configurable.
+    webVitalsTimeoutMs: parseInt(
+      process.env.MONITOR_WEB_VITALS_TIMEOUT_MS || '2000'
+    ),
   },
 
   // Thresholds for performance analysis
