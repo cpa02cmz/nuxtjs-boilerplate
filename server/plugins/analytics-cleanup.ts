@@ -6,7 +6,13 @@ import { TIME } from '../utils/constants'
 export default defineNitroPlugin(async () => {
   logger.info('Analytics cleanup plugin initialized')
 
-  // Dynamically import analytics cleanup only at runtime, not during build/prerendering
+  // Skip during build/prerendering - no database available
+  if (process.env.NUXT_BUILD || process.env.NITRO_PRERENDER) {
+    logger.info('Skipping analytics cleanup during build/prerender')
+    return
+  }
+
+  // Dynamically import analytics cleanup only at runtime
   try {
     const { runAnalyticsCleanup } = await import('../utils/analyticsCleanup')
 

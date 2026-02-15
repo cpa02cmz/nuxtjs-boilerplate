@@ -2,16 +2,11 @@
 // Flexy hates hardcoded values! All database settings are now configurable.
 
 export const databaseConfig = {
-  // Database File Paths - Flexy hates hardcoded paths!
-  paths: {
-    // Default SQLite database file path
-    defaultDb:
-      process.env.DATABASE_URL ||
-      process.env.DB_PATH_DEFAULT ||
-      'file:./data/dev.db',
-    // Data directory path
-    dataDir: process.env.DB_DATA_DIR || './data',
-  },
+  // Database Connection URL
+  // Uses PostgreSQL connection string format
+  url:
+    process.env.DATABASE_URL ||
+    'postgresql://user:password@localhost:5432/mydb',
 
   // Connection Timeouts (ms) - Different values per environment
   timeouts: {
@@ -26,7 +21,7 @@ export const databaseConfig = {
     delayMs: parseInt(process.env.DB_RETRY_DELAY_MS || '1000'),
   },
 
-  // Connection Pool Settings
+  // Connection Pool Settings - Now Active for PostgreSQL
   pool: {
     min: parseInt(process.env.DB_POOL_MIN || '2'),
     max: parseInt(process.env.DB_POOL_MAX || '10'),
@@ -56,19 +51,17 @@ export const databaseConfig = {
     ),
   },
 
-  // Connection Pool Configuration Note:
-  // SQLite is file-based and doesn't support connection pooling like PostgreSQL/MySQL.
-  // The better-sqlite3 adapter handles connections synchronously with a single
-  // connection per database file. Pool settings below are reserved for future use
-  // if migrating to a client-server database (PostgreSQL, MySQL, etc.).
+  // Connection Pool Configuration for PostgreSQL
+  // Prisma manages connection pooling automatically via DATABASE_URL
+  // These settings can be tuned via connection string parameters or Prisma configuration
   connectionPool: {
-    // Minimum connections in pool (reserved for future use)
+    // Minimum connections in pool
     min: parseInt(process.env.DB_POOL_MIN || '2'),
-    // Maximum connections in pool (reserved for future use)
+    // Maximum connections in pool
     max: parseInt(process.env.DB_POOL_MAX || '10'),
-    // Connection acquire timeout in milliseconds (reserved for future use)
+    // Connection acquire timeout in milliseconds
     acquireTimeoutMs: parseInt(process.env.DB_ACQUIRE_TIMEOUT_MS || '3000'),
-    // Connection idle timeout in milliseconds (reserved for future use)
+    // Connection idle timeout in milliseconds
     idleTimeoutMs: parseInt(process.env.DB_IDLE_TIMEOUT_MS || '10000'),
   },
 } as const

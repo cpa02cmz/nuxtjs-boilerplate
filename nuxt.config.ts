@@ -201,19 +201,19 @@ export default defineNuxtConfig({
     // Flexy says: No more hardcoded cache headers! Using cacheConfig.routes
     routeRules: {
       '/': {
-        prerender: true,
+        prerender: !process.env.NUXT_NO_PRERENDER,
         headers: {
           'Cache-Control': `public, max-age=${cacheConfig.routes.home.maxAge}, s-maxage=${cacheConfig.routes.home.sMaxAge}`,
         },
       },
       '/search': {
-        prerender: true,
+        prerender: !process.env.NUXT_NO_PRERENDER,
         headers: {
           'Cache-Control': `public, max-age=${cacheConfig.routes.search.maxAge}, s-maxage=${cacheConfig.routes.search.sMaxAge}`,
         },
       },
       '/about': {
-        prerender: true,
+        prerender: !process.env.NUXT_NO_PRERENDER,
         headers: {
           'Cache-Control': `public, max-age=${cacheConfig.routes.about.maxAge}, s-maxage=${cacheConfig.routes.about.sMaxAge}`,
         },
@@ -327,21 +327,21 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    // Main routes with prerender
+    // Main routes with prerender - disabled during build if no database
     '/': {
-      prerender: true,
+      prerender: !process.env.NUXT_NO_PRERENDER,
     },
     '/ai-keys': {
-      prerender: true,
+      prerender: !process.env.NUXT_NO_PRERENDER,
     },
     '/about': {
-      prerender: true,
+      prerender: !process.env.NUXT_NO_PRERENDER,
     },
     '/search': {
-      prerender: true,
+      prerender: !process.env.NUXT_NO_PRERENDER,
     },
     '/submit': {
-      prerender: true,
+      prerender: !process.env.NUXT_NO_PRERENDER,
     },
     // API routes
     '/api/**': {

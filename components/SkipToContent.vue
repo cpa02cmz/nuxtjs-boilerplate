@@ -16,17 +16,14 @@
         'skip-link--focused': isFocused,
         'skip-link--animating': isAnimating && !prefersReducedMotion,
       }"
-      :aria-label="contentConfig.skipLink.ariaLabel"
+      :aria-label="contentConfig?.skipLink?.ariaLabel || 'Skip to main content'"
       @click.prevent="handleSkipClick"
       @focus="handleFocus"
       @blur="handleBlur"
       @keydown="handleKeyDown"
     >
       <!-- Icon -->
-      <span
-        class="skip-link__icon"
-        aria-hidden="true"
-      >
+      <span class="skip-link__icon" aria-hidden="true">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-4 w-4"
@@ -45,14 +42,11 @@
 
       <!-- Label -->
       <span class="skip-link__text">
-        {{ contentConfig.skipLink.label }}
+        {{ contentConfig?.skipLink?.label || 'Skip to main content' }}
       </span>
 
       <!-- Keyboard Shortcut Hint -->
-      <kbd
-        class="skip-link__shortcut"
-        aria-hidden="true"
-      >
+      <kbd class="skip-link__shortcut" aria-hidden="true">
         {{ shortcutKey }}
       </kbd>
     </a>
@@ -66,18 +60,13 @@
   </div>
 
   <!-- Screen reader announcement -->
-  <div
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-    class="sr-only"
-  >
+  <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
     {{ announcement }}
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
@@ -91,8 +80,8 @@ const skipLinkRef = ref<HTMLAnchorElement | null>(null)
 const announcement = ref('')
 const prefersReducedMotion = ref(false)
 
-// Get shortcut key from config
-const shortcutKey = contentConfig.skipLink.shortcutKey
+// Get shortcut key from config with SSR-safe fallback
+const shortcutKey = computed(() => contentConfig?.skipLink?.shortcutKey || '0')
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
@@ -176,7 +165,8 @@ const handleSkipClick = async () => {
   }, animationConfig.skipLink.focusRestoreDelayMs)
 
   // Announce to screen readers
-  announcement.value = contentConfig.skipLink.announcement
+  announcement.value =
+    contentConfig?.skipLink?.announcement || 'Navigated to main content area'
   setTimeout(() => {
     announcement.value = ''
   }, animationConfig.skipLink.announcementClearMs)

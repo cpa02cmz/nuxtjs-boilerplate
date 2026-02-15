@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaBetterSQLite3 as PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 import { databaseConfig } from '~/configs/database.config'
 
 // Flexy hates hardcoded values! Using config for log prefix
@@ -9,48 +8,28 @@ declare global {
   var __dbPrisma: PrismaClient | undefined
 }
 
-// SQLite connection configuration
-// Note: SQLite is file-based and doesn't use connection pooling like PostgreSQL/MySQL
-// The better-sqlite3 adapter handles connections differently - it's synchronous and
-// uses a single connection per database file. We configure timeout for busy handling.
-const getDatabaseConfig = () => {
-  const env = process.env.NODE_ENV || 'development'
-
-  // Environment-specific configurations - now using modular databaseConfig
-  const configs = {
-    development: {
-      timeout: databaseConfig.timeouts.development,
-    },
-    production: {
-      timeout: databaseConfig.timeouts.production,
-    },
-    test: {
-      timeout: databaseConfig.timeouts.test,
-    },
-  }
-
-  return configs[env as keyof typeof configs] || configs.development
-}
-
-const dbConfig = getDatabaseConfig()
-
 // FIXED: Add retry logic and error handling for database connection
 const MAX_RETRIES = databaseConfig.retries.maxAttempts
 
 /**
  * Create Prisma client with retry logic and error handling
  * Prevents server crashes on database connection issues
+ *
+ * Note: Prisma Client connects directly to PostgreSQL via DATABASE_URL.
+ * No adapter needed for PostgreSQL - Prisma handles the connection internally.
  */
 function createPrismaClient(): PrismaClient {
   let retries = 0
 
   const attemptConnection = (): PrismaClient => {
     try {
+      // Prisma Client connects directly to PostgreSQL using DATABASE_URL
+      // No adapter configuration needed for PostgreSQL
       const client = new PrismaClient({
-        adapter: new PrismaBetterSqlite3({
-          url: databaseConfig.paths.defaultDb,
-          timeout: dbConfig.timeout,
-        }),
+        log:
+          process.env.NODE_ENV === 'development'
+            ? ['query', 'info', 'warn', 'error']
+            : ['error'],
       })
 
       // Log successful connection
