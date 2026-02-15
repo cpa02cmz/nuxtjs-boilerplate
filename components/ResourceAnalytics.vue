@@ -43,10 +43,10 @@
       tag="div"
       class="grid grid-cols-1 md:grid-cols-3 gap-4"
       :class="{ 'reduced-motion': prefersReducedMotion }"
-      enter-active-class="transition-all duration-500 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.slower} ease-out`"
       enter-from-class="opacity-0 translate-y-4 scale-95"
       enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition-all duration-300 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-in`"
       leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 translate-y-4 scale-95"
     >

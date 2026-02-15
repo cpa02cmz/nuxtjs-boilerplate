@@ -5,10 +5,10 @@
       <div class="queue-title-wrapper">
         <h2>{{ contentConfig.reviewQueue.title }}</h2>
         <Transition
-          enter-active-class="transition-all duration-300 ease-out"
+          :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
           enter-from-class="opacity-0 scale-50"
           enter-to-class="opacity-100 scale-100"
-          leave-active-class="transition-all duration-200 ease-in"
+          :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
           leave-from-class="opacity-100 scale-100"
           leave-to-class="opacity-0 scale-50"
         >
