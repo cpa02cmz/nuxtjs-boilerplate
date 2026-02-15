@@ -68,8 +68,16 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
-              <path class="checkmark-path" d="M7 12l3 3 7-7" />
+              <circle
+                class="checkmark-circle"
+                cx="12"
+                cy="12"
+                r="10"
+              />
+              <path
+                class="checkmark-path"
+                d="M7 12l3 3 7-7"
+              />
             </svg>
           </div>
           <span class="celebration-text">
@@ -77,7 +85,10 @@
           </span>
         </div>
         <!-- Sparkle effects -->
-        <div class="sparkle-container" aria-hidden="true">
+        <div
+          class="sparkle-container"
+          aria-hidden="true"
+        >
           <span
             v-for="n in 6"
             :key="n"
@@ -111,7 +122,10 @@
       aria-live="polite"
     >
       <!-- Animated Illustration -->
-      <div class="webhook-illustration" aria-hidden="true">
+      <div
+        class="webhook-illustration"
+        aria-hidden="true"
+      >
         <!-- Background Circle -->
         <div
           class="webhook-bg-circle"
@@ -194,7 +208,10 @@
         {{ contentConfig.webhooks.empty.ctaButton }}
       </button>
     </div>
-    <div v-else class="webhook-items">
+    <div
+      v-else
+      class="webhook-items"
+    >
       <div
         v-for="webhook in webhooks"
         :key="webhook.id"
@@ -285,7 +302,7 @@
             :style="getPressAndHold(webhook.id, webhook).progressStyle"
             :aria-label="
               contentConfig.webhooks.ariaLabels.deleteWebhook +
-              ' (Press and hold to confirm)'
+                ' (Press and hold to confirm)'
             "
             @mousedown="getPressAndHold(webhook.id, webhook).startPress"
             @mouseup="getPressAndHold(webhook.id, webhook).endPress"
@@ -300,7 +317,7 @@
             <span
               v-if="
                 getPressAndHold(webhook.id, webhook).isPressing &&
-                !reducedMotion
+                  !reducedMotion
               "
               class="press-hold-ring"
               aria-hidden="true"
@@ -319,7 +336,7 @@
                   :r="
                     (animationConfig.pressAndHold.ringSize -
                       animationConfig.pressAndHold.strokeWidth) /
-                    2
+                      2
                   "
                   fill="none"
                   :stroke-width="animationConfig.pressAndHold.strokeWidth"
@@ -332,7 +349,7 @@
                   :r="
                     (animationConfig.pressAndHold.ringSize -
                       animationConfig.pressAndHold.strokeWidth) /
-                    2
+                      2
                   "
                   fill="none"
                   :stroke-width="animationConfig.pressAndHold.strokeWidth"

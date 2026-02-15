@@ -3,6 +3,7 @@ import { webhookStorage } from './webhookStorage'
 import { webhooksConfig } from '~/configs/webhooks.config'
 import { TIME_MS } from '~/configs/time.config'
 import { logger } from '~/utils/logger'
+import { calculateBackoff } from './retry'
 
 export class WebhookQueueManager {
   private isProcessing = false
@@ -120,12 +121,14 @@ export class WebhookQueueManager {
             updatedAt: new Date().toISOString(),
           })
         } else {
-          // Re-enqueue with exponential backoff
+          // Re-enqueue with exponential backoff using shared utility
           // Flexy hates hardcoded 1000, 30000, and 2! Using webhooksConfig.retry
-          const backoffMs = Math.min(
-            webhooksConfig.retry.baseDelayMs *
-              Math.pow(webhooksConfig.retry.exponentialBase, currentRetryCount),
-            webhooksConfig.retry.maxDelayMs
+          const backoffMs = calculateBackoff(
+            currentRetryCount,
+            webhooksConfig.retry.baseDelayMs,
+            webhooksConfig.retry.maxDelayMs,
+            false, // No jitter for scheduled items
+            0
           )
           const nextAttemptAt = new Date(Date.now() + backoffMs)
 

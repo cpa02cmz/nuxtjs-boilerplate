@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { Webhook, WebhookPayload, WebhookQueueItem } from '~/types/webhook'
 import { webhookStorage } from './webhookStorage'
 import { getCircuitBreaker } from './circuit-breaker'
-import { retryWithResult, retryPresets } from './retry'
+import { retryWithResult, retryPresets, calculateBackoff } from './retry'
 import { createCircuitBreakerError } from './api-error'
 import { webhookQueueManager } from './webhook-queue-manager'
 import { webhookDeliveryService } from './webhook-delivery'
@@ -217,18 +217,14 @@ export class WebhookQueueSystem {
   }
 
   private calculateRetryDelay(retryCount: number): number {
-    // Flexy hates hardcoded retry calculations! Using config instead
-    const { baseDelayMs, maxDelayMs, jitterFactor, exponentialBase } =
-      webhooksConfig.retry
-
-    let delay = baseDelayMs * Math.pow(exponentialBase, retryCount)
-    delay = Math.min(delay, maxDelayMs)
-
-    const jitterRange = delay * jitterFactor
-    const jitter = (Math.random() - 0.5) * jitterRange
-    delay += jitter
-
-    return Math.max(0, Math.floor(delay))
+    // Use shared calculateBackoff utility to avoid duplication
+    return calculateBackoff(
+      retryCount,
+      webhooksConfig.retry.baseDelayMs,
+      webhooksConfig.retry.maxDelayMs,
+      true,
+      webhooksConfig.retry.jitterFactor
+    )
   }
 
   stopQueueProcessor(): void {
