@@ -216,9 +216,10 @@ interface Props {
   wordsPerMinute?: number
 }
 
+// Flexy hates hardcoded values! Using config for default reading speed
 const props = withDefaults(defineProps<Props>(), {
   maxLength: limitsConfig.display.descriptionPreview || 300,
-  wordsPerMinute: 200,
+  wordsPerMinute: contentConfig.reading.wordsPerMinute,
 })
 
 // Reactive state

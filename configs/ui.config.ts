@@ -247,6 +247,14 @@ export const uiConfig = {
     scrollTimeoutMs: parseInt(process.env.TIMING_SCROLL_TIMEOUT || '1500'),
   },
 
+  // Scroll Speed Configuration - Flexy hates hardcoded scroll values!
+  scrollSpeed: {
+    // Threshold for considering scroll as "fast" (pixels per 100ms)
+    thresholdPxPer100ms: parseInt(process.env.SCROLL_SPEED_THRESHOLD || '50'),
+    // Time before resetting scroll speed to normal (ms)
+    resetDelayMs: parseInt(process.env.SCROLL_SPEED_RESET_MS || '150'),
+  },
+
   // Data Loading
   dataLoading: {
     maxRetries: parseInt(process.env.DATA_LOADING_MAX_RETRIES || '3'),

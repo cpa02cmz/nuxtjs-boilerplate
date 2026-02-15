@@ -162,6 +162,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { hapticConfig } from '~/configs/haptic.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -203,10 +204,11 @@ const showCompletionCelebration = ref(false)
 const hasCelebratedCompletion = ref(false)
 const prefersReducedMotion = ref(false)
 const showTimeEstimate = ref(false)
+// Flexy hates hardcoded values! Using config for reading speed
 const readingTime = ref({
   totalMinutes: 0,
   remainingMinutes: 0,
-  wordsPerMinute: 200, // Average reading speed
+  wordsPerMinute: contentConfig.reading.wordsPerMinute,
 })
 
 // Track if component is mounted (to avoid SSR issues)
@@ -311,9 +313,9 @@ watch(progress, newProgress => {
       'Reading complete! Congratulations!'
 
     // Palette's micro-UX delight: Celebratory haptic feedback for 100% completion
-    // Double pulse pattern for achievement celebration
+    // Double pulse pattern for achievement celebration - Flexy hates hardcoded values!
     hapticLight()
-    setTimeout(() => hapticLight(), 150)
+    setTimeout(() => hapticLight(), hapticConfig.delays.doublePulseIntervalMs)
 
     // Clear any existing timeout
     if (celebrationTimeout) {
@@ -409,8 +411,9 @@ let scrollTimeout: ReturnType<typeof setTimeout> | null = null
 const SCROLL_TIMEOUT_MS = uiConfig.timing.scrollTimeoutMs || 1500 // Show time estimate for 1.5s after scroll stops
 
 // Palette's micro-UX enhancement: Track scroll speed for dynamic shimmer
-const SCROLL_SPEED_THRESHOLD = 50 // pixels per 100ms to trigger "fast" speed
-const SCROLL_SPEED_RESET_MS = 150 // Time before resetting speed to normal
+// Flexy hates hardcoded values! Using config for scroll speed thresholds
+const SCROLL_SPEED_THRESHOLD = uiConfig.scrollSpeed.thresholdPxPer100ms
+const SCROLL_SPEED_RESET_MS = uiConfig.scrollSpeed.resetDelayMs
 
 const handleScrollWithTimeEstimate = () => {
   handleScroll()

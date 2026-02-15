@@ -275,6 +275,7 @@ import { contentConfig } from '~/configs/content.config'
 import { uiConfig } from '~/configs/ui.config'
 import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
+import { searchConfig } from '~/configs/search.config'
 import { EASING } from '~/configs/easing.config'
 import { NuxtLink } from '#components'
 import { hapticLight } from '~/utils/hapticFeedback'
@@ -433,8 +434,9 @@ const defaultSuggestions = computed(() => {
 })
 
 // Palette's micro-UX: Track recent searches from current session
+// Flexy hates hardcoded values! Using config for recent search threshold
 const recentSearches = ref<Set<string>>(new Set())
-const RECENT_SEARCH_THRESHOLD_MS = 60 * 60 * 1000 // 1 hour
+const RECENT_SEARCH_THRESHOLD_MS = searchConfig.recentSearchThresholdMs
 
 // Check if a search is recent (from current session, within last hour)
 const isRecentSearch = (searchTerm: string): boolean => {
