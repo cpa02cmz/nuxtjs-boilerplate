@@ -1,6 +1,6 @@
-import type { Resource } from '~/types/resource'
 import { logError } from '~/utils/errorLogger'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+import { prisma } from '~/server/utils/db'
 import {
   sendBadRequestError,
   sendNotFoundError,
@@ -8,11 +8,6 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { defineEventHandler, getRouterParam, readBody } from 'h3'
-import { contentConfig } from '~/configs/content.config'
-
-// This is a simplified implementation for demonstration
-// In a real implementation, you'd want to persist these relationships in a database
-const alternativeRelationships = new Map<string, string[]>()
 
 export default defineEventHandler(async event => {
   try {
@@ -33,33 +28,48 @@ export default defineEventHandler(async event => {
       return sendBadRequestError(event, 'Alternative resource ID is required')
     }
 
-    // Import resources from JSON to validate IDs
-    const resourcesModule = await import(contentConfig.paths.resourcesData)
-    const resources: Resource[] = resourcesModule.default || resourcesModule
-
-    // Validate both resources exist
-    const resource = resources.find(r => r.id === resourceId)
-    const alternativeResource = resources.find(r => r.id === alternativeId)
+    // Validate both resources exist in database
+    const resource = await prisma.resource.findUnique({
+      where: { id: resourceId },
+    })
+    const alternativeResource = await prisma.resource.findUnique({
+      where: { id: alternativeId },
+    })
 
     if (!resource || !alternativeResource) {
       return sendNotFoundError(event, 'Resource or alternative resource')
     }
 
-    // Get existing alternatives for this resource
-    let currentAlternatives = alternativeRelationships.get(resourceId) || []
+    // Parse existing alternatives
+    let currentAlternatives: string[] = resource.alternatives
+      ? JSON.parse(resource.alternatives)
+      : []
 
     if (action === 'add') {
       // Add alternative relationship (both ways)
       if (!currentAlternatives.includes(alternativeId)) {
         currentAlternatives.push(alternativeId)
-        alternativeRelationships.set(resourceId, currentAlternatives)
+
+        // Update resource with new alternatives
+        await prisma.resource.update({
+          where: { id: resourceId },
+          data: {
+            alternatives: JSON.stringify(currentAlternatives),
+          },
+        })
 
         // Also add reverse relationship
-        const reverseAlternatives =
-          alternativeRelationships.get(alternativeId) || []
+        const reverseAlternatives: string[] = alternativeResource.alternatives
+          ? JSON.parse(alternativeResource.alternatives)
+          : []
         if (!reverseAlternatives.includes(resourceId)) {
           reverseAlternatives.push(resourceId)
-          alternativeRelationships.set(alternativeId, reverseAlternatives)
+          await prisma.resource.update({
+            where: { id: alternativeId },
+            data: {
+              alternatives: JSON.stringify(reverseAlternatives),
+            },
+          })
         }
       }
     } else if (action === 'remove') {
@@ -67,13 +77,26 @@ export default defineEventHandler(async event => {
       currentAlternatives = currentAlternatives.filter(
         id => id !== alternativeId
       )
-      alternativeRelationships.set(resourceId, currentAlternatives)
+
+      // Update resource
+      await prisma.resource.update({
+        where: { id: resourceId },
+        data: {
+          alternatives: JSON.stringify(currentAlternatives),
+        },
+      })
 
       // Also remove reverse relationship
-      let reverseAlternatives =
-        alternativeRelationships.get(alternativeId) || []
+      let reverseAlternatives: string[] = alternativeResource.alternatives
+        ? JSON.parse(alternativeResource.alternatives)
+        : []
       reverseAlternatives = reverseAlternatives.filter(id => id !== resourceId)
-      alternativeRelationships.set(alternativeId, reverseAlternatives)
+      await prisma.resource.update({
+        where: { id: alternativeId },
+        data: {
+          alternatives: JSON.stringify(reverseAlternatives),
+        },
+      })
     } else {
       return sendBadRequestError(
         event,

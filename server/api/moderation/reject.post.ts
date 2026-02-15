@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody } from 'h3'
-import type { Submission } from '~/types/submission'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+import { prisma } from '~/server/utils/db'
 import {
   sendSuccessResponse,
   sendBadRequestError,
@@ -8,8 +8,6 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { logger } from '~/utils/logger'
-
-const mockSubmissions: Submission[] = []
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
@@ -33,20 +31,26 @@ export default defineEventHandler(async event => {
       return sendBadRequestError(event, 'Rejection reason is required')
     }
 
-    const submissionIndex = mockSubmissions.findIndex(
-      sub => sub.id === body.submissionId
-    )
+    // Check if submission exists
+    const existingSubmission = await prisma.submission.findUnique({
+      where: { id: body.submissionId },
+    })
 
-    if (submissionIndex === -1) {
+    if (!existingSubmission) {
       return sendNotFoundError(event, 'Submission', body.submissionId)
     }
 
-    const submission = mockSubmissions[submissionIndex]
-    submission.status = 'rejected'
-    submission.reviewedBy = body.reviewedBy
-    submission.reviewedAt = new Date().toISOString()
-    submission.rejectionReason = body.rejectionReason
-    submission.notes = body.notes || ''
+    // Update submission in database
+    const submission = await prisma.submission.update({
+      where: { id: body.submissionId },
+      data: {
+        status: 'rejected',
+        reviewedBy: body.reviewedBy,
+        reviewedAt: new Date(),
+        rejectionReason: body.rejectionReason,
+        notes: body.notes || '',
+      },
+    })
 
     logger.info(
       `Notification: Submission ${submission.id} rejected for user ${submission.submittedBy}`
