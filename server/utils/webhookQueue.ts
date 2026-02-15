@@ -218,9 +218,10 @@ export class WebhookQueueSystem {
 
   private calculateRetryDelay(retryCount: number): number {
     // Flexy hates hardcoded retry calculations! Using config instead
-    const { baseDelayMs, maxDelayMs, jitterFactor } = webhooksConfig.retry
+    const { baseDelayMs, maxDelayMs, jitterFactor, exponentialBase } =
+      webhooksConfig.retry
 
-    let delay = baseDelayMs * Math.pow(2, retryCount)
+    let delay = baseDelayMs * Math.pow(exponentialBase, retryCount)
     delay = Math.min(delay, maxDelayMs)
 
     const jitterRange = delay * jitterFactor
