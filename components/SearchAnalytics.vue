@@ -317,10 +317,13 @@
             >
               <div class="w-full flex justify-center">
                 <div
-                  class="w-3/4 bg-blue-500 rounded-t hover:bg-blue-600 transition-all duration-300 chart-bar"
-                  :class="{
-                    'animate-bar-grow': !prefersReducedMotion && !hasAnimated,
-                  }"
+                  class="w-3/4 bg-blue-500 rounded-t hover:bg-blue-600 transition-all chart-bar"
+                  :class="[
+                    animationConfig.tailwindDurations.standard,
+                    {
+                      'animate-bar-grow': !prefersReducedMotion && !hasAnimated,
+                    },
+                  ]"
                   :style="{
                     height: `${(day.count / maxSearchCount) * 100}%`,
                     animationDelay: `${index * animationConfig.searchAnalytics.barStaggerMultiplierMs}ms`,
