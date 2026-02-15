@@ -609,42 +609,6 @@ export const animationConfig = {
     confettiBurstDelayMs: parseInt(
       process.env.READING_PROGRESS_CONFETTI_BURST_DELAY_MS || '200'
     ),
-    // ============================================
-    // Flexy ULW Loop 2026-02-15 - CSS Animation Durations
-    // Eliminating hardcoded CSS animation durations in ReadingProgress.vue! 🎯
-    // ============================================
-    // Completion pop-in animation duration (seconds) - was hardcoded 0.5s
-    completionPopInDurationSec: parseFloat(
-      process.env.READING_PROGRESS_POP_IN_DURATION_SEC || '0.5'
-    ),
-    // Icon rotate-in animation duration (seconds) - was hardcoded 0.4s
-    iconRotateDurationSec: parseFloat(
-      process.env.READING_PROGRESS_ICON_ROTATE_DURATION_SEC || '0.4'
-    ),
-    // Icon rotate-in animation delay (seconds) - was hardcoded 0.2s
-    iconRotateDelaySec: parseFloat(
-      process.env.READING_PROGRESS_ICON_ROTATE_DELAY_SEC || '0.2'
-    ),
-    // Circle scale animation duration (seconds) - was hardcoded 0.3s
-    circleScaleDurationSec: parseFloat(
-      process.env.READING_PROGRESS_CIRCLE_SCALE_DURATION_SEC || '0.3'
-    ),
-    // Circle scale animation delay (seconds) - was hardcoded 0.1s
-    circleScaleDelaySec: parseFloat(
-      process.env.READING_PROGRESS_CIRCLE_SCALE_DELAY_SEC || '0.1'
-    ),
-    // Reading time pop animation duration (seconds) - was hardcoded 0.3s
-    readingTimePopDurationSec: parseFloat(
-      process.env.READING_PROGRESS_TIME_POP_DURATION_SEC || '0.3'
-    ),
-    // Clock tick animation duration (seconds) - was hardcoded 2s
-    clockTickDurationSec: parseFloat(
-      process.env.READING_PROGRESS_CLOCK_TICK_DURATION_SEC || '2'
-    ),
-    // Complete pulse animation duration (seconds) - was hardcoded 1.5s
-    completePulseDurationSec: parseFloat(
-      process.env.READING_PROGRESS_COMPLETE_PULSE_DURATION_SEC || '1.5'
-    ),
   },
 
   // Error Boundary Animations - Palette's micro-UX enhancements
@@ -1211,18 +1175,6 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.ALTERNATIVES_RESPECT_REDUCED_MOTION !== 'false',
-    // ============================================
-    // Flexy ULW Loop 2026-02-15 - CSS Animation Durations
-    // Eliminating hardcoded CSS animation durations in AlternativeSuggestions.vue! 🎯
-    // ============================================
-    // Skeleton shimmer animation duration (seconds) - was hardcoded 1.5s
-    skeletonShimmerDurationSec: parseFloat(
-      process.env.ALTERNATIVE_SUGGESTIONS_SHIMMER_DURATION_SEC || '1.5'
-    ),
-    // Transition duration for hover effects (seconds) - was hardcoded 0.2s
-    transitionDurationSec: parseFloat(
-      process.env.ALTERNATIVE_SUGGESTIONS_TRANSITION_DURATION_SEC || '0.2'
-    ),
   },
 
   // Similar Resources Micro-UX - Palette's delightful enhancement! ✨
@@ -1318,6 +1270,10 @@ export const animationConfig = {
     // Icon animation duration (ms)
     iconAnimationDurationMs: parseInt(
       process.env.RESOURCE_HEADER_ICON_DURATION_MS || '300'
+    ),
+    // Announcement clear delay after button click (ms) - Flexy hates hardcoded 1000!
+    announcementClearDelayMs: parseInt(
+      process.env.RESOURCE_HEADER_ANNOUNCEMENT_CLEAR_MS || '1000'
     ),
     // Whether to respect reduced motion preference
     respectReducedMotion:
@@ -3056,14 +3012,6 @@ export const animationConfig = {
     spinnerDurationMs: parseInt(
       process.env.HEALTH_MONITOR_SPINNER_DURATION_MS || '1000'
     ),
-    // ============================================
-    // Flexy ULW Loop 2026-02-15 - CSS Animation Durations
-    // Eliminating hardcoded CSS animation durations in HealthMonitor.vue! 🎯
-    // ============================================
-    // Checking pulse animation duration (seconds) - was hardcoded 1s
-    checkingPulseDurationSec: parseFloat(
-      process.env.HEALTH_MONITOR_CHECKING_PULSE_DURATION_SEC || '1'
-    ),
   },
 
   // Saved Searches Micro-UX - Palette's delightful enhancement! ✨
@@ -3121,6 +3069,10 @@ export const animationConfig = {
     ),
     // CSS duration string for undo progress
     undoProgressDurationSec: `${parseInt(process.env.SAVED_SEARCHES_UNDO_PROGRESS_MS || '5000') / 1000}s`,
+    // Restore state clear delay after undo animation (ms) - Flexy hates hardcoded 500!
+    restoreStateClearDelayMs: parseInt(
+      process.env.SAVED_SEARCHES_RESTORE_CLEAR_MS || '500'
+    ),
     // Progress bar color
     progressBarColor:
       process.env.SAVED_SEARCHES_PROGRESS_COLOR || 'rgba(245, 158, 11, 0.8)', // amber-500
@@ -3225,6 +3177,10 @@ export const animationConfig = {
     entranceFriction: parseFloat(
       process.env.MOBILE_DRAWER_ENTRANCE_FRICTION || '25'
     ),
+    // Filter count changed indicator reset delay (ms) - Flexy hates hardcoded 1000!
+    filterCountResetDelayMs: parseInt(
+      process.env.MOBILE_DRAWER_FILTER_RESET_MS || '1000'
+    ),
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.MOBILE_DRAWER_RESPECT_REDUCED_MOTION !== 'false',
@@ -3275,20 +3231,47 @@ export const animationConfig = {
   },
 
   // ============================================
-  // Flexy ULW Loop 2026-02-15 - Component Animation Durations
-  // Eliminating hardcoded CSS animation durations! 🎯
+  // Palette ULW Loop - About Page Animations
+  // Micro-UX delight for the About page! 🎨
   // ============================================
 
-  // Resource Card Skeleton Animations
-  // Used for loading skeleton icon pulse and breathe effects
-  resourceCardSkeleton: {
-    // Icon pulse animation duration (seconds) - was hardcoded 4s
-    iconPulseDurationSec: parseFloat(
-      process.env.SKELETON_ICON_PULSE_DURATION_SEC || '4'
+  // About Page Entrance Animations
+  about: {
+    // Initial delay before starting entrance animations (ms)
+    entranceDelayMs: parseInt(process.env.ABOUT_ENTRANCE_DELAY_MS || '100'),
+
+    // Title animation settings
+    titleDurationMs: parseInt(process.env.ABOUT_TITLE_DURATION_MS || '600'),
+    titleDelayMs: parseInt(process.env.ABOUT_TITLE_DELAY_MS || '0'),
+
+    // Card/container animation settings
+    cardDurationMs: parseInt(process.env.ABOUT_CARD_DURATION_MS || '700'),
+    cardDelayMs: parseInt(process.env.ABOUT_CARD_DELAY_MS || '150'),
+
+    // Section title animation settings
+    sectionDurationMs: parseInt(process.env.ABOUT_SECTION_DURATION_MS || '500'),
+    sectionDelayMs: parseInt(process.env.ABOUT_SECTION_DELAY_MS || '300'),
+
+    // Description animation settings
+    descDurationMs: parseInt(process.env.ABOUT_DESC_DURATION_MS || '500'),
+    descDelayMs: parseInt(process.env.ABOUT_DESC_DELAY_MS || '400'),
+
+    // Category item animation settings
+    categoryDurationMs: parseInt(
+      process.env.ABOUT_CATEGORY_DURATION_MS || '500'
     ),
-    // Breathe animation duration (seconds) - was hardcoded 3s
-    breatheDurationSec: parseFloat(
-      process.env.SKELETON_BREATHE_DURATION_SEC || '3'
+    // Stagger delay between each category item (ms)
+    staggerDelayMs: parseInt(process.env.ABOUT_STAGGER_DELAY_MS || '100'),
+
+    // Checkmark draw animation settings
+    checkmarkDurationMs: parseInt(
+      process.env.ABOUT_CHECKMARK_DURATION_MS || '400'
+    ),
+    checkmarkBaseDelayMs: parseInt(
+      process.env.ABOUT_CHECKMARK_BASE_DELAY_MS || '600'
+    ),
+    checkmarkStaggerMs: parseInt(
+      process.env.ABOUT_CHECKMARK_STAGGER_MS || '100'
     ),
   },
 } as const

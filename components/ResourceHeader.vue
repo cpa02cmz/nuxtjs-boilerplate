@@ -225,10 +225,10 @@ const handleClick = () => {
   // Announce to screen readers
   announcement.value = `Opening ${contentConfig.resourceHeader.visitButton} in a new tab`
 
-  // Clear announcement after a delay
+  // Clear announcement after a delay - Flexy hates hardcoded values!
   setTimeout(() => {
     announcement.value = ''
-  }, 1000)
+  }, config.value.announcementClearDelayMs)
 }
 
 // Palette's micro-UX enhancement: Magnetic bookmark button handlers
