@@ -2109,6 +2109,66 @@ export const animationConfig = {
       process.env.VIEWED_BADGE_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // Keyboard Hint Micro-UX - Palette's accessibility enhancement!
+  // Shows helpful keyboard shortcut hints when components are focused
+  keyboardHint: {
+    // Position from top of card (px)
+    topPx: parseInt(process.env.KEYBOARD_HINT_TOP_PX || '12'),
+    // Position from right of card (px)
+    rightPx: parseInt(process.env.KEYBOARD_HINT_RIGHT_PX || '12'),
+    // Gap between key and text (px)
+    gapPx: parseInt(process.env.KEYBOARD_HINT_GAP_PX || '6'),
+    // Vertical padding (px)
+    paddingYPx: parseInt(process.env.KEYBOARD_HINT_PADDING_Y_PX || '4'),
+    // Horizontal padding (px)
+    paddingXPx: parseInt(process.env.KEYBOARD_HINT_PADDING_X_PX || '8'),
+    // Background color
+    bgColor: process.env.KEYBOARD_HINT_BG_COLOR || 'rgba(17, 24, 39, 0.9)',
+    // Border radius (px)
+    borderRadiusPx: parseInt(process.env.KEYBOARD_HINT_BORDER_RADIUS_PX || '6'),
+    // Font size (px)
+    fontSizePx: parseInt(process.env.KEYBOARD_HINT_FONT_SIZE_PX || '11'),
+    // Font weight
+    fontWeight: parseInt(process.env.KEYBOARD_HINT_FONT_WEIGHT || '500'),
+    // Text color
+    textColor: process.env.KEYBOARD_HINT_TEXT_COLOR || 'white',
+    // Text opacity (0-1)
+    textOpacity: parseFloat(process.env.KEYBOARD_HINT_TEXT_OPACITY || '0.9'),
+    // Box shadow
+    shadow:
+      process.env.KEYBOARD_HINT_SHADOW ||
+      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    // Key background color
+    keyBgColor:
+      process.env.KEYBOARD_HINT_KEY_BG_COLOR || 'rgba(255, 255, 255, 0.2)',
+    // Key border
+    keyBorder:
+      process.env.KEYBOARD_HINT_KEY_BORDER ||
+      '1px solid rgba(255, 255, 255, 0.3)',
+    // Key border radius (px)
+    keyBorderRadiusPx: parseInt(
+      process.env.KEYBOARD_HINT_KEY_BORDER_RADIUS_PX || '4'
+    ),
+    // Key font family
+    keyFontFamily: process.env.KEYBOARD_HINT_KEY_FONT_FAMILY || 'monospace',
+    // Key font size (px)
+    keyFontSizePx: parseInt(process.env.KEYBOARD_HINT_KEY_FONT_SIZE_PX || '10'),
+    // Key font weight
+    keyFontWeight: parseInt(process.env.KEYBOARD_HINT_KEY_FONT_WEIGHT || '600'),
+    // Key minimum width (px)
+    keyMinWidthPx: parseInt(process.env.KEYBOARD_HINT_KEY_MIN_WIDTH_PX || '20'),
+    // Key vertical padding (px)
+    keyPaddingYPx: parseInt(process.env.KEYBOARD_HINT_KEY_PADDING_Y_PX || '2'),
+    // Key horizontal padding (px)
+    keyPaddingXPx: parseInt(process.env.KEYBOARD_HINT_KEY_PADDING_X_PX || '6'),
+    // Pop animation duration (ms)
+    popDurationMs: parseInt(process.env.KEYBOARD_HINT_POP_DURATION_MS || '200'),
+    // Pop animation easing
+    popEasing:
+      process.env.KEYBOARD_HINT_POP_EASING ||
+      'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+  },
+
   // Comparison Value Animations - Palette's micro-UX enhancement!
   // Delightful copy-to-clipboard interactions with visual feedback
   comparisonValue: {

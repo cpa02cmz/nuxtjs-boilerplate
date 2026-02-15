@@ -11,15 +11,17 @@
     ]"
     :style="tiltStyle"
     role="article"
+    tabindex="0"
+    :aria-label="`Resource: ${title}. Press Enter to visit.`"
     @mouseenter="handleMouseEnter"
     @mousemove="handleMouseMove"
     @mouseleave="handleMouseLeave"
+    @focus="handleCardFocus"
+    @blur="handleCardBlur"
+    @keydown="handleCardKeydown"
   >
     <div class="flex items-start">
-      <div
-        v-if="icon"
-        class="flex-shrink-0 mr-4"
-      >
+      <div v-if="icon" class="flex-shrink-0 mr-4">
         <OptimizedImage
           :src="icon"
           :alt="title"
@@ -140,10 +142,7 @@
         </div>
 
         <!-- Description -->
-        <p
-          id="resource-description"
-          class="mt-1 text-gray-800 text-sm"
-        >
+        <p id="resource-description" class="mt-1 text-gray-800 text-sm">
           <span
             v-if="highlightedDescription"
             v-html="sanitizedHighlightedDescription"
@@ -157,30 +156,18 @@
           role="region"
           aria-label="Free tier information"
         >
-          <p
-            id="free-tier-label"
-            class="font-medium text-gray-900 text-sm"
-          >
+          <p id="free-tier-label" class="font-medium text-gray-900 text-sm">
             {{ contentConfig.resourceCard.freeTier }}
           </p>
-          <ul
-            class="mt-1 space-y-1 text-xs text-gray-800"
-            role="list"
-          >
-            <li
-              v-for="(benefit, index) in benefits"
-              :key="index"
-            >
+          <ul class="mt-1 space-y-1 text-xs text-gray-800" role="list">
+            <li v-for="(benefit, index) in benefits" :key="index">
               {{ benefit }}
             </li>
           </ul>
         </div>
 
         <!-- Similarity information (for alternative suggestions) -->
-        <div
-          v-if="similarityScore && similarityScore > 0"
-          class="mt-3"
-        >
+        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
           <div class="flex items-center">
             <div
               class="w-full bg-gray-200 rounded-full h-2"
@@ -199,12 +186,21 @@
               {{ Math.round(similarityScore * 100) }}% match
             </span>
           </div>
-          <p
-            v-if="similarityReason"
-            class="mt-1 text-xs text-gray-600"
-          >
+          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
             {{ similarityReason }}
           </p>
+        </div>
+
+        <!-- Palette's micro-UX enhancement: Keyboard shortcut hint for accessibility -->
+        <!-- Shows Enter shortcut when card is focused to help keyboard users -->
+        <div
+          v-if="showKeyboardHint && !prefersReducedMotion"
+          class="keyboard-hint"
+          role="status"
+          aria-live="polite"
+        >
+          <kbd class="keyboard-hint__key">Enter</kbd>
+          <span class="keyboard-hint__text">to visit</span>
         </div>
 
         <!-- Visit button and actions slot -->
@@ -319,10 +315,7 @@
   </article>
 
   <!-- Error state -->
-  <div
-    v-else
-    class="bg-white p-6 rounded-lg shadow border border-red-200"
-  >
+  <div v-else class="bg-white p-6 rounded-lg shadow border border-red-200">
     <div class="flex items-start">
       <div class="flex-shrink-0 mr-4">
         <svg
@@ -341,9 +334,7 @@
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-red-900">
-          Resource Unavailable
-        </h3>
+        <h3 class="text-lg font-medium text-red-900">Resource Unavailable</h3>
         <p class="mt-1 text-red-700 text-sm">
           This resource could not be displayed due to an error.
         </p>
@@ -440,6 +431,13 @@ const reducedMotionHandler = ref<((e: MediaQueryListEvent) => void) | null>(
 const showViewedAnimation = ref(false)
 const hasAnimatedViewedBadge = ref(false)
 
+// Palette's micro-UX enhancement: Keyboard shortcut hint visibility
+// Shows Enter shortcut hint when card is keyboard-focused for accessibility
+const showKeyboardHint = ref(false)
+let keyboardHintTimeout: ReturnType<typeof setTimeout> | null = null
+const KEYBOARD_HINT_DELAY_MS = 800 // Delay before showing hint
+const KEYBOARD_HINT_DURATION_MS = 2000 // How long to show the hint
+
 // Check for reduced motion preference
 const checkReducedMotion = () => {
   if (typeof window === 'undefined' || !window.matchMedia) return false
@@ -502,6 +500,45 @@ const handleViewedBadgeEntered = () => {
   setTimeout(() => {
     showViewedAnimation.value = false
   }, animationConfig.viewedBadge?.animationDurationMs || 600)
+}
+
+// Palette's micro-UX enhancement: Keyboard shortcut hint handlers
+// Shows helpful keyboard shortcut when card receives focus
+const handleCardFocus = () => {
+  // Clear any existing timeout
+  if (keyboardHintTimeout) {
+    clearTimeout(keyboardHintTimeout)
+  }
+
+  // Show hint after a short delay to avoid distraction
+  keyboardHintTimeout = setTimeout(() => {
+    showKeyboardHint.value = true
+
+    // Auto-hide hint after duration
+    keyboardHintTimeout = setTimeout(() => {
+      showKeyboardHint.value = false
+    }, KEYBOARD_HINT_DURATION_MS)
+  }, KEYBOARD_HINT_DELAY_MS)
+}
+
+const handleCardBlur = () => {
+  // Hide hint immediately when card loses focus
+  showKeyboardHint.value = false
+  if (keyboardHintTimeout) {
+    clearTimeout(keyboardHintTimeout)
+    keyboardHintTimeout = null
+  }
+}
+
+// Handle keyboard navigation for the card
+const handleCardKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Enter') {
+    event.preventDefault()
+    // Trigger the visit action
+    if (visitButtonRef.value) {
+      visitButtonRef.value.click()
+    }
+  }
 }
 
 // Computed tilt style for dynamic CSS transforms
@@ -642,6 +679,12 @@ onUnmounted(() => {
     )
     reducedMotionMediaQuery.value = null
     reducedMotionHandler.value = null
+  }
+
+  // Palette's micro-UX enhancement: Clean up keyboard hint timeout
+  if (keyboardHintTimeout) {
+    clearTimeout(keyboardHintTimeout)
+    keyboardHintTimeout = null
   }
 })
 
@@ -1042,7 +1085,7 @@ if (typeof useHead === 'function') {
   }
 }
 
-/* Reduced motion support for viewed badge */
+/* Reduced motion support for visited badge */
 @media (prefers-reduced-motion: reduce) {
   .viewed-badge--animate,
   .viewed-badge__icon--bounce {
@@ -1050,6 +1093,93 @@ if (typeof useHead === 'function') {
   }
 
   .viewed-badge--animate::after {
+    display: none;
+  }
+}
+
+/* Palette's micro-UX enhancement: Keyboard shortcut hint styles */
+.keyboard-hint {
+  position: absolute;
+  top: v-bind('animationConfig.keyboardHint?.topPx ?? 12 + "px"');
+  right: v-bind('animationConfig.keyboardHint?.rightPx ?? 12 + "px"');
+  display: inline-flex;
+  align-items: center;
+  gap: v-bind('animationConfig.keyboardHint?.gapPx ?? 6 + "px"');
+  padding: v-bind('animationConfig.keyboardHint?.paddingYPx ?? 4 + "px"')
+    v-bind('animationConfig.keyboardHint?.paddingXPx ?? 8 + "px"');
+  background: v-bind(
+    'animationConfig.keyboardHint?.bgColor ?? "rgba(17, 24, 39, 0.9)"'
+  );
+  border-radius: v-bind(
+    'animationConfig.keyboardHint?.borderRadiusPx ?? 6 + "px"'
+  );
+  font-size: v-bind('animationConfig.keyboardHint?.fontSizePx ?? 11 + "px"');
+  font-weight: v-bind('animationConfig.keyboardHint?.fontWeight ?? 500');
+  color: v-bind('animationConfig.keyboardHint?.textColor ?? "white"');
+  box-shadow: v-bind(
+    'animationConfig.keyboardHint?.shadow ?? "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"'
+  );
+  z-index: v-bind('zIndexConfig.tooltip');
+  animation: keyboard-hint-pop
+    v-bind('(animationConfig.keyboardHint?.popDurationMs ?? 200) + "ms"')
+    v-bind(
+      '(animationConfig.keyboardHint?.popEasing ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)")'
+    )
+    forwards;
+  pointer-events: none;
+}
+
+@keyframes keyboard-hint-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.keyboard-hint__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: v-bind('animationConfig.keyboardHint?.keyPaddingYPx ?? 2 + "px"')
+    v-bind('animationConfig.keyboardHint?.keyPaddingXPx ?? 6 + "px"');
+  background: v-bind(
+    'animationConfig.keyboardHint?.keyBgColor ?? "rgba(255, 255, 255, 0.2)"'
+  );
+  border: v-bind(
+    'animationConfig.keyboardHint?.keyBorder ?? "1px solid rgba(255, 255, 255, 0.3)"'
+  );
+  border-radius: v-bind(
+    'animationConfig.keyboardHint?.keyBorderRadiusPx ?? 4 + "px"'
+  );
+  font-family: v-bind(
+    'animationConfig.keyboardHint?.keyFontFamily ?? "monospace"'
+  );
+  font-size: v-bind('animationConfig.keyboardHint?.keyFontSizePx ?? 10 + "px"');
+  font-weight: v-bind('animationConfig.keyboardHint?.keyFontWeight ?? 600');
+  min-width: v-bind('animationConfig.keyboardHint?.keyMinWidthPx ?? 20 + "px"');
+  text-align: center;
+}
+
+.keyboard-hint__text {
+  opacity: v-bind('animationConfig.keyboardHint?.textOpacity ?? 0.9');
+  white-space: nowrap;
+}
+
+/* Reduced motion support for keyboard hint */
+@media (prefers-reduced-motion: reduce) {
+  .keyboard-hint {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Hide keyboard hint on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .keyboard-hint {
     display: none;
   }
 }
