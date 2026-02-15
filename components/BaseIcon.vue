@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useAttrs, type StyleValue } from 'vue'
+import { computed, useAttrs, type StyleValue, ref, onMounted } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { EASING } from '~/configs/easing.config'
 
@@ -37,6 +37,11 @@ import { EASING } from '~/configs/easing.config'
  *
  * Interactive mode (Palette's micro-UX delight!):
  * <BaseIcon viewBox="0 0 24 24" class="w-5 h-5" interactive>
+ *   <path d="..." />
+ * </BaseIcon>
+ *
+ * With entrance animation:
+ * <BaseIcon viewBox="0 0 24 24" class="w-5 h-5" animate-entrance>
  *   <path d="..." />
  * </BaseIcon>
  */
@@ -63,6 +68,22 @@ interface Props {
    * @default 0.95
    */
   activeScale?: number
+  /**
+   * Enable entrance animation when component mounts
+   * @default false
+   */
+  animateEntrance?: boolean
+  /**
+   * Delay before entrance animation starts (ms)
+   * Useful for staggered animations
+   * @default 0
+   */
+  entranceDelay?: number
+  /**
+   * Enable wiggle animation on hover
+   * @default false
+   */
+  wiggleOnHover?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -75,9 +96,37 @@ const props = withDefaults(defineProps<Props>(), {
   interactive: false,
   hoverScale: 1.15,
   activeScale: 0.95,
+  animateEntrance: false,
+  entranceDelay: 0,
+  wiggleOnHover: false,
 })
 
 const attrs = useAttrs()
+
+// Track if component has mounted for entrance animation
+const isMounted = ref(false)
+const prefersReducedMotion = ref(false)
+
+// Check for reduced motion preference
+const checkReducedMotion = (): boolean => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// Trigger entrance animation on mount
+onMounted(() => {
+  prefersReducedMotion.value = checkReducedMotion()
+
+  if (props.animateEntrance && !prefersReducedMotion.value) {
+    // Small delay to ensure DOM is ready
+    setTimeout(() => {
+      isMounted.value = true
+    }, props.entranceDelay)
+  } else {
+    isMounted.value = true
+  }
+})
 
 // Flexy hates hardcoded values! Using centralized constant
 const SVG_NS = 'http://www.w3.org/2000/svg'
@@ -87,17 +136,57 @@ const svgClass = computed(() => props.class)
 // Palette's micro-UX enhancement: Interactive icon states!
 // Adds delightful hover lift and press effects for interactive icons
 const wrapperClass = computed(() => {
-  if (!props.interactive) return ''
-  return 'icon-wrapper icon-wrapper--interactive'
+  const classes = ['icon-wrapper']
+
+  if (props.interactive) {
+    classes.push('icon-wrapper--interactive')
+  }
+
+  if (props.animateEntrance && !prefersReducedMotion.value) {
+    classes.push('icon-wrapper--entrance')
+    if (isMounted.value) {
+      classes.push('icon-wrapper--mounted')
+    }
+  }
+
+  if (props.wiggleOnHover && !prefersReducedMotion.value) {
+    classes.push('icon-wrapper--wiggle')
+  }
+
+  return classes.join(' ')
 })
 
 const wrapperStyle = computed<StyleValue>(() => {
-  if (!props.interactive) return {}
-  return {
-    '--icon-hover-scale': props.hoverScale,
-    '--icon-active-scale': props.activeScale,
-    '--icon-transition-duration': `${animationConfig.iconInteraction.durationMs}ms`,
-  } as StyleValue
+  const style: Record<string, string> = {}
+
+  if (props.interactive) {
+    style['--icon-hover-scale'] = String(props.hoverScale)
+    style['--icon-active-scale'] = String(props.activeScale)
+    style['--icon-transition-duration'] =
+      `${animationConfig.iconInteraction.durationMs}ms`
+  }
+
+  if (props.animateEntrance && !prefersReducedMotion.value) {
+    style['--icon-entrance-duration'] = animationConfig.iconEntrance.durationSec
+    style['--icon-entrance-delay'] = `${props.entranceDelay}ms`
+    style['--icon-entrance-start-scale'] = String(
+      animationConfig.iconEntrance.startScale
+    )
+    style['--icon-entrance-end-scale'] = String(
+      animationConfig.iconEntrance.endScale
+    )
+    style['--icon-entrance-final-scale'] = String(
+      animationConfig.iconEntrance.finalScale
+    )
+  }
+
+  if (props.wiggleOnHover && !prefersReducedMotion.value) {
+    style['--icon-wiggle-duration'] = animationConfig.iconWiggle.durationSec
+    style['--icon-wiggle-rotation'] =
+      `${animationConfig.iconWiggle.rotationDeg}deg`
+  }
+
+  return style as StyleValue
 })
 
 // Separate wrapper and SVG attrs
@@ -167,6 +256,59 @@ const svgAttrs = computed(() => {
   border-radius: 4px;
 }
 
+/* Palette's micro-UX enhancement: Entrance animation ✨
+   Subtle fade-in + scale when icon first appears */
+.icon-wrapper--entrance {
+  opacity: 0;
+  transform: scale(var(--icon-entrance-start-scale, 0.7));
+}
+
+.icon-wrapper--entrance.icon-wrapper--mounted {
+  animation: icon-entrance var(--icon-entrance-duration, 0.4s)
+    v-bind('EASING.SPRING_STANDARD') var(--icon-entrance-delay, 0s) forwards;
+}
+
+@keyframes icon-entrance {
+  0% {
+    opacity: 0;
+    transform: scale(var(--icon-entrance-start-scale, 0.7));
+  }
+  60% {
+    opacity: 1;
+    transform: scale(var(--icon-entrance-end-scale, 1.05));
+  }
+  100% {
+    opacity: 1;
+    transform: scale(var(--icon-entrance-final-scale, 1));
+  }
+}
+
+/* Palette's micro-UX enhancement: Wiggle animation on hover 🎨
+   Playful rotation effect for extra delight */
+.icon-wrapper--wiggle:hover {
+  animation: icon-wiggle var(--icon-wiggle-duration, 0.5s)
+    v-bind('EASING.SPRING_STANDARD');
+}
+
+@keyframes icon-wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(calc(var(--icon-wiggle-rotation, 10deg) * -1));
+  }
+  40% {
+    transform: rotate(var(--icon-wiggle-rotation, 10deg));
+  }
+  60% {
+    transform: rotate(calc(var(--icon-wiggle-rotation, 10deg) * -0.5));
+  }
+  80% {
+    transform: rotate(calc(var(--icon-wiggle-rotation, 10deg) * 0.5));
+  }
+}
+
 /* Reduced motion support: Disable animations for users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .icon-wrapper--interactive {
@@ -176,6 +318,20 @@ const svgAttrs = computed(() => {
   .icon-wrapper--interactive:hover,
   .icon-wrapper--interactive:active {
     transform: none;
+  }
+
+  .icon-wrapper--entrance {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  .icon-wrapper--entrance.icon-wrapper--mounted {
+    animation: none;
+  }
+
+  .icon-wrapper--wiggle:hover {
+    animation: none;
   }
 }
 
