@@ -1,18 +1,12 @@
 <template>
-  <div
-    ref="featuresContainer"
-    class="mb-8"
-  >
+  <div ref="featuresContainer" class="mb-8">
     <!-- Section Title with subtle animation -->
     <Transition
-      enter-active-class="transition-all duration-500 ease-out"
+      :enter-active-class="`transition-all ${tailwindClassesConfig.duration.slow} ease-out`"
       enter-from-class="opacity-0 -translate-y-2"
       enter-to-class="opacity-100 translate-y-0"
     >
-      <h2
-        v-if="isVisible"
-        class="text-xl font-semibold text-gray-900 mb-4"
-      >
+      <h2 v-if="isVisible" class="text-xl font-semibold text-gray-900 mb-4">
         {{ contentConfig.resourceDetails.sections.features }}
       </h2>
     </Transition>
@@ -75,12 +69,7 @@
     </ul>
 
     <!-- Screen Reader Announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -90,6 +79,7 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
+import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
