@@ -4,6 +4,19 @@ import { databaseConfig } from '~/configs/database.config'
 // Flexy hates hardcoded values! Using config for log prefix
 const LOG_PREFIX = databaseConfig.logging.prefix
 
+// Models that support soft deletes (have deletedAt field)
+const SOFT_DELETE_MODELS = [
+  'analyticsEvent',
+  'webhook',
+  'webhookDelivery',
+  'webhookQueue',
+  'deadLetterWebhook',
+  'apiKey',
+  'resource',
+  'submission',
+  'idempotencyKey',
+] as const
+
 declare global {
   var __dbPrisma: PrismaClient | undefined
 }
@@ -12,8 +25,9 @@ declare global {
 const MAX_RETRIES = databaseConfig.retries.maxAttempts
 
 /**
- * Create Prisma client with retry logic and error handling
+ * Create Prisma client with retry logic, error handling, and soft delete filtering
  * Prevents server crashes on database connection issues
+ * Automatically filters out soft-deleted records (deletedAt != null)
  */
 function createPrismaClient(): PrismaClient {
   let retries = 0
@@ -25,12 +39,64 @@ function createPrismaClient(): PrismaClient {
           process.env.NODE_ENV === 'development'
             ? ['query', 'info', 'warn', 'error']
             : ['error'],
-      })
+      }).$extends({
+        query: {
+          $allModels: {
+            async findMany({ model, args, query }) {
+              if (
+                SOFT_DELETE_MODELS.includes(
+                  model as (typeof SOFT_DELETE_MODELS)[number]
+                )
+              ) {
+                args = args || {}
+                args.where = { ...args.where, deletedAt: null }
+              }
+              return query(args)
+            },
+            async findFirst({ model, args, query }) {
+              if (
+                SOFT_DELETE_MODELS.includes(
+                  model as (typeof SOFT_DELETE_MODELS)[number]
+                )
+              ) {
+                args = args || {}
+                args.where = { ...args.where, deletedAt: null }
+              }
+              return query(args)
+            },
+            async findUnique({ model, args, query }) {
+              if (
+                SOFT_DELETE_MODELS.includes(
+                  model as (typeof SOFT_DELETE_MODELS)[number]
+                )
+              ) {
+                args = args || {}
+                const argsRecord = args as Record<string, unknown>
+                const whereRecord =
+                  (argsRecord.where as Record<string, unknown>) || {}
+                argsRecord.where = { ...whereRecord, deletedAt: null }
+              }
+              return query(args)
+            },
+            async count({ model, args, query }) {
+              if (
+                SOFT_DELETE_MODELS.includes(
+                  model as (typeof SOFT_DELETE_MODELS)[number]
+                )
+              ) {
+                args = args || {}
+                args.where = { ...args.where, deletedAt: null }
+              }
+              return query(args)
+            },
+          },
+        },
+      }) as unknown as PrismaClient
 
       // Log successful connection
       if (process.env.NODE_ENV !== 'test') {
         console.log(
-          `${LOG_PREFIX} Prisma client initialized successfully with PostgreSQL`
+          `${LOG_PREFIX} Prisma client initialized successfully with PostgreSQL and soft delete filtering`
         )
       }
 
