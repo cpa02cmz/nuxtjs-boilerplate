@@ -1839,6 +1839,16 @@ export const contentConfig = {
     // Completion message (optional, shown after transition)
     complete: process.env.CONTENT_PAGE_TRANSITION_COMPLETE || 'Page loaded',
   },
+
+  // Search Analytics - Palette's micro-UX enhancement!
+  // ARIA labels and accessibility improvements for search analytics dashboard
+  searchAnalytics: {
+    aria: {
+      retryButton:
+        process.env.CONTENT_SEARCH_ANALYTICS_ARIA_RETRY ||
+        'Retry loading search analytics data',
+    },
+  },
 } as const
 
 // Helper function to parse comma-separated suggestions
