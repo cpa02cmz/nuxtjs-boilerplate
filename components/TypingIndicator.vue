@@ -45,12 +45,10 @@
       </span>
 
       <!-- Animated typing dots with spring physics -->
-      <span
-        v-else
-        class="flex items-center gap-0.5 relative z-10"
-      >
+      <span v-else class="flex items-center gap-0.5 relative z-10">
+        <!-- Flexy hates hardcoded 3! Using config instead -->
         <span
-          v-for="n in 3"
+          v-for="n in animationConfig.typingIndicator.dotCount"
           :key="n"
           :class="['typing-dot rounded-full', color]"
           :style="{

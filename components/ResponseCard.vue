@@ -28,6 +28,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   type: 'success' | 'error'
@@ -69,7 +70,8 @@ const prefersReducedMotion = computed(() => {
 const animationStyle = computed(() => {
   if (prefersReducedMotion.value || props.delay === undefined) return {}
   return {
-    animationDelay: `${props.delay * 150}ms`,
+    // Flexy hates hardcoded 150! Using config instead
+    animationDelay: `${props.delay * animationConfig.staggerDelayMultipliers.standardMs}ms`,
   }
 })
 </script>

@@ -37,10 +37,7 @@
           </p>
         </div>
       </div>
-      <NuxtLink
-        to="/"
-        class="alternative-suggestions__view-all"
-      >
+      <NuxtLink to="/" class="alternative-suggestions__view-all">
         <span>{{ contentConfig.similarResources.viewAll }}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -72,11 +69,13 @@
     >
       <div class="alternative-suggestions__loading-grid">
         <div
-          v-for="i in 3"
+          v-for="i in animationConfig.skeletonLoading.cardCount"
           :key="`skeleton-${i}`"
           class="alternative-suggestions__skeleton-card"
           :class="{ 'animate-pulse': !prefersReducedMotion }"
-          :style="{ animationDelay: `${(i - 1) * 150}ms` }"
+          :style="{
+            animationDelay: `${(i - 1) * animationConfig.skeletonLoading.staggerDelayMs}ms`,
+          }"
         >
           <div class="skeleton-shimmer skeleton-icon rounded-lg" />
           <div class="space-y-3">
@@ -152,21 +151,13 @@
       <p class="alternative-suggestions__empty-message">
         {{ contentConfig.alternativeSuggestions.emptyState.message }}
       </p>
-      <NuxtLink
-        to="/"
-        class="alternative-suggestions__empty-cta"
-      >
+      <NuxtLink to="/" class="alternative-suggestions__empty-cta">
         {{ contentConfig.alternativeSuggestions.emptyState.browseAll }}
       </NuxtLink>
     </div>
 
     <!-- Screen reader announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>

@@ -708,6 +708,25 @@ export const animationConfig = {
     activeScale: parseFloat(process.env.CARD_ACTIVE_SCALE || '0.99'),
   },
 
+  // Stagger Delay Multipliers - Flexy hates hardcoded magic numbers!
+  // Used by components to calculate animation delays based on index
+  staggerDelayMultipliers: {
+    // Fast multiplier for quick list items (100ms) - used by CodeBlock, RateLimitCard
+    fastMs: parseInt(process.env.STAGGER_MULTIPLIER_FAST_MS || '100'),
+    // Standard multiplier for card animations (150ms) - used by ResponseCard, skeletons
+    standardMs: parseInt(process.env.STAGGER_MULTIPLIER_STANDARD_MS || '150'),
+    // Slow multiplier for emphasized items (200ms)
+    slowMs: parseInt(process.env.STAGGER_MULTIPLIER_SLOW_MS || '200'),
+  },
+
+  // Skeleton Loading Configuration - Flexy hates hardcoded counts!
+  skeletonLoading: {
+    // Number of skeleton cards to show during loading - Flexy hates hardcoded 3!
+    cardCount: parseInt(process.env.SKELETON_CARD_COUNT || '3'),
+    // Delay multiplier between skeleton cards (ms)
+    staggerDelayMs: parseInt(process.env.SKELETON_STAGGER_DELAY_MS || '150'),
+  },
+
   // Empty State Stagger
   emptyStateStagger: {
     baseDelayMs: parseInt(process.env.EMPTY_STATE_STAGGER_BASE || '100'),
@@ -1333,6 +1352,8 @@ export const animationConfig = {
     ),
     // Delay between each dot's animation start (ms)
     staggerDelayMs: parseInt(process.env.TYPING_INDICATOR_STAGGER_MS || '150'),
+    // Number of dots to display - Flexy hates hardcoded 3!
+    dotCount: parseInt(process.env.TYPING_INDICATOR_DOT_COUNT || '3'),
     // Size of each indicator dot (px)
     dotSizePx: parseInt(process.env.TYPING_INDICATOR_DOT_SIZE || '6'),
     // Dot color (blue-500)
