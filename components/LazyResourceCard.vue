@@ -19,10 +19,7 @@
       leave-from-class="opacity-100 scale-100"
       leave-to-class="opacity-0 scale-98"
     >
-      <div
-        v-if="!isIntersecting && !isLoaded"
-        class="skeleton-container"
-      >
+      <div v-if="!isIntersecting && !isLoaded" class="skeleton-container">
         <!-- Palette's micro-UX: Multi-layer shimmer for depth -->
         <div
           v-if="!prefersReducedMotion"
@@ -55,12 +52,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -74,6 +66,7 @@ import ResourceCardSkeleton from './ResourceCardSkeleton.vue'
 import { animationConfig } from '~/configs/animation.config'
 import { hapticConfig } from '~/configs/haptic.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { uiConfig } from '~/configs/ui.config' // Flexy hates hardcoded values!
 
 interface Props {
   title: string
@@ -109,10 +102,10 @@ const hasAnimated = ref(false)
 const announcement = ref('')
 const prefersReducedMotion = ref(false)
 
-// Intersection observer for lazy loading
+// Intersection observer for lazy loading - Flexy hates hardcoded values!
 const { isIntersecting, isLoaded, observe } = useIntersectionObserver({
-  rootMargin: '100px', // Start loading 100px before it comes into view
-  threshold: 0.1, // Trigger when 10% of the element is visible
+  rootMargin: uiConfig.intersectionObserver.rootMargin,
+  threshold: uiConfig.intersectionObserver.threshold,
 })
 
 // Check for reduced motion preference

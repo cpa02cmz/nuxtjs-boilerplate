@@ -610,6 +610,14 @@ export const uiConfig = {
     unobserveOnIntersect:
       process.env.INTERSECTION_OBSERVER_UNOBSERVE !== 'false',
   },
+
+  // Features Section Intersection Observer Settings - Flexy hates hardcoded values!
+  featuresSection: {
+    // Threshold for triggering entrance animation (0-1)
+    threshold: parseFloat(process.env.FEATURES_SECTION_THRESHOLD || '0.2'),
+    // Root margin for intersection observer (css margin-like syntax)
+    rootMargin: process.env.FEATURES_SECTION_ROOT_MARGIN || '0px 0px -50px 0px',
+  },
 } as const
 
 export type UiConfig = typeof uiConfig

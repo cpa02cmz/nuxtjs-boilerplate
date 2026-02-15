@@ -88,12 +88,7 @@
       </TransitionGroup>
 
       <!-- Screen reader announcement -->
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        class="sr-only"
-      >
+      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
         {{ announcement }}
       </div>
     </section>
@@ -109,6 +104,7 @@ import { zIndexScale } from '~/configs/z-index.config'
 import { EASING } from '~/configs/easing.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { uiConfig } from '~/configs/ui.config' // Flexy hates hardcoded values!
 
 interface Props {
   resources: Resource[]
@@ -262,7 +258,7 @@ onMounted(() => {
             }
           })
         },
-        { threshold: 0.1 }
+        { threshold: uiConfig.intersectionObserver.threshold } // Flexy hates hardcoded values!
       )
       observer.observe(sectionRef.value)
     } else {
