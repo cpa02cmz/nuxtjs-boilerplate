@@ -64,7 +64,12 @@
               v-if="isRecentSearch(history)"
               class="new-indicator"
               :class="{ 'new-indicator--animated': !prefersReducedMotion() }"
-              aria-label="Recent search"
+              :aria-label="
+                contentConfig.search.suggestions.aria.newIndicator.replace(
+                  '{{term}}',
+                  history
+                )
+              "
             >
               new
             </span>
