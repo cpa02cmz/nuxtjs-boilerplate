@@ -1,6 +1,7 @@
 // server/api/recommendations/index.get.ts
 // API endpoint for personalized recommendations with search analytics integration
 
+import { randomInt } from 'crypto'
 import { useRecommendationEngine } from '~/composables/useRecommendationEngine'
 import { loadServerResources } from '~/server/utils/server-resources'
 import type { Resource } from '~/types/resource'
@@ -91,8 +92,7 @@ export default defineEventHandler(async event => {
         if (dateStr) {
           searchTrends.push({
             date: dateStr,
-            count:
-              Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount,
+            count: randomInt(minCount, maxCount + 1),
           })
         }
       }

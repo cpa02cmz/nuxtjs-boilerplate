@@ -1,6 +1,7 @@
 import { defineNuxtPlugin, useState } from '#app'
 import { TOAST_DURATION } from '~/server/utils/constants'
 import { limitsConfig } from '~/configs/limits.config'
+import { generateId } from '~/utils/generateId'
 
 export default defineNuxtPlugin(nuxtApp => {
   // Toast type definition
@@ -24,9 +25,10 @@ export default defineNuxtPlugin(nuxtApp => {
       description?: string,
       duration?: number
     ) => {
-      const id = Math.random()
-        .toString(36)
-        .substring(2, 2 + limitsConfig.displayLength.toastIdLength)
+      const id = generateId({
+        length: limitsConfig.displayLength.toastIdLength,
+        prefix: 'toast',
+      })
       const newToast = { id, type, message, description, duration }
 
       toastState.value.toasts.push(newToast)
