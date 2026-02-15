@@ -307,6 +307,14 @@ export const animationConfig = {
     successPopDurationMs: parseInt(
       process.env.COPY_FEEDBACK_SUCCESS_POP_DURATION || '300'
     ),
+    // Checkmark icon pop animation duration (ms) - Palette's micro-UX delight!
+    checkPopDurationMs: parseInt(
+      process.env.COPY_FEEDBACK_CHECK_POP_DURATION || '300'
+    ),
+    // Icon wiggle animation duration on hover (ms) - playful micro-interaction
+    iconWiggleDurationMs: parseInt(
+      process.env.COPY_FEEDBACK_WIGGLE_DURATION || '400'
+    ),
     // Tooltip styling values - Flexy hates hardcoded CSS!
     styles: {
       paddingX: parseInt(process.env.COPY_FEEDBACK_PADDING_X || '12'),
