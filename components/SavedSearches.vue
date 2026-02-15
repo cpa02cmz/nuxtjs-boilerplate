@@ -725,7 +725,7 @@ const undoProgressStyle = computed(() => {
   bottom: 0;
   left: 0;
   border-radius: 0 0 0 0.5rem;
-  transition: width 0.1s linear;
+  transition: width v-bind('animationConfig.cssTransitions.fastSec') linear;
 }
 
 /* Palette's micro-UX enhancement: Staggered entrance animation */
