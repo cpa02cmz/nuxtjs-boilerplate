@@ -2,13 +2,8 @@
   <div
     class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300"
   >
-    <!-- Skip to main content link for screen readers -->
-    <a
-      href="#main-content"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:text-gray-900 focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-800"
-    >
-      Skip to main content
-    </a>
+    <!-- Skip to Content Link - Palette's micro-UX enhancement! -->
+    <SkipToContent />
 
     <header
       class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 transition-colors duration-300"
@@ -445,8 +440,10 @@
         <div
           class="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <span>© {{ new Date().getFullYear() }} Free Stuff on the Internet. All
-            rights reserved.</span>
+          <span
+            >© {{ new Date().getFullYear() }} Free Stuff on the Internet. All
+            rights reserved.</span
+          >
           <button
             class="inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1 transition-colors duration-200"
             :aria-label="contentConfig.layout.ariaLabels.keyboardShortcuts"
@@ -460,9 +457,7 @@
             <span>Shortcuts</span>
           </button>
         </div>
-        <p class="sr-only">
-          Footer content ends
-        </p>
+        <p class="sr-only">Footer content ends</p>
       </div>
     </footer>
 
@@ -500,6 +495,7 @@ import { easingConfig } from '~/configs/easing.config'
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
 import KeyboardShortcutsHelp from '~/components/KeyboardShortcutsHelp.vue'
 import OfflineIndicator from '~/components/OfflineIndicator.vue'
+import SkipToContent from '~/components/SkipToContent.vue'
 
 // Theme state
 const { isDark, cycleTheme } = useTheme()

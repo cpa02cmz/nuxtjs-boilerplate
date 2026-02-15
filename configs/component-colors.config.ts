@@ -638,6 +638,32 @@ export const componentColorsConfig = {
       },
     },
   },
+
+  // Skip to Content Link Colors - Palette's micro-UX enhancement!
+  // Accessibility feature colors for the skip navigation link
+  skipLink: {
+    // Background color
+    background: process.env.SKIP_LINK_BACKGROUND || '#1f2937',
+    // Text color
+    text: process.env.SKIP_LINK_TEXT || '#ffffff',
+    // Keyboard shortcut background
+    shortcutBg:
+      process.env.SKIP_LINK_SHORTCUT_BG || 'rgba(255, 255, 255, 0.15)',
+    // Keyboard shortcut border
+    shortcutBorder:
+      process.env.SKIP_LINK_SHORTCUT_BORDER || 'rgba(255, 255, 255, 0.25)',
+    // Keyboard shortcut text
+    shortcutText:
+      process.env.SKIP_LINK_SHORTCUT_TEXT || 'rgba(255, 255, 255, 0.8)',
+    // Hover state for shortcut
+    shortcutHoverBg:
+      process.env.SKIP_LINK_SHORTCUT_HOVER_BG || 'rgba(255, 255, 255, 0.25)',
+    // Hover state for shortcut border
+    shortcutHoverBorder:
+      process.env.SKIP_LINK_SHORTCUT_HOVER_BORDER || 'rgba(255, 255, 255, 0.4)',
+    // Glow effect color
+    glowColor: process.env.SKIP_LINK_GLOW_COLOR || 'rgba(59, 130, 246, 0.4)',
+  },
 } as const
 
 export type ComponentColorsConfig = typeof componentColorsConfig

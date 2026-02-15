@@ -1801,6 +1801,23 @@ export const contentConfig = {
       process.env.CONTENT_RESOURCE_HEADER_OPENING ||
       'Opening Visit Resource in a new tab',
   },
+
+  // Skip to Content Link - Palette's micro-UX enhancement!
+  // Accessibility feature for keyboard users to skip navigation
+  skipLink: {
+    // Main label for the skip link
+    label: process.env.CONTENT_SKIP_LINK_LABEL || 'Skip to main content',
+    // ARIA label for accessibility
+    ariaLabel:
+      process.env.CONTENT_SKIP_LINK_ARIA ||
+      'Skip to main content area - press Enter to navigate',
+    // Screen reader announcement when activated
+    announcement:
+      process.env.CONTENT_SKIP_LINK_ANNOUNCEMENT ||
+      'Navigated to main content area',
+    // Keyboard shortcut key (shown as hint)
+    shortcutKey: process.env.CONTENT_SKIP_LINK_SHORTCUT || '0',
+  },
 } as const
 
 // Helper function to parse comma-separated suggestions

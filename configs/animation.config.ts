@@ -3341,6 +3341,100 @@ export const animationConfig = {
       process.env.CODEBLOCK_TOAST_DURATION_MS || '3000'
     ),
   },
+
+  // Skip to Content Link Animations - Palette's micro-UX enhancement!
+  skipLink: {
+  // Skip to Content Link Animations - Palette's micro-UX enhancement!
+  skipLink: {
+    // Entrance animation duration (ms)
+    entranceDurationMs: parseInt(
+      process.env.SKIP_LINK_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Bounce animation duration (ms)
+    bounceDurationMs: parseInt(
+      process.env.SKIP_LINK_BOUNCE_DURATION_MS || '600'
+    ),
+    // Transition duration for hover/focus states (ms)
+    transitionDurationMs: parseInt(
+      process.env.SKIP_LINK_TRANSITION_DURATION_MS || '300'
+    ),
+    // Delay before hiding on blur (ms)
+    blurDelayMs: parseInt(process.env.SKIP_LINK_BLUR_DELAY_MS || '200'),
+    // Time to restore tabindex after focus (ms)
+    focusRestoreDelayMs: parseInt(
+      process.env.SKIP_LINK_FOCUS_RESTORE_DELAY_MS || '1000'
+    ),
+    // Time to clear announcement (ms)
+    announcementClearMs: parseInt(
+      process.env.SKIP_LINK_ANNOUNCEMENT_CLEAR_MS || '1000'
+    ),
+    // Duration for reduced motion mode (ms)
+    reducedMotionDurationMs: parseInt(
+      process.env.SKIP_LINK_REDUCED_MOTION_DURATION_MS || '150'
+    ),
+    // Container padding (px)
+    containerPaddingX: parseInt(
+      process.env.SKIP_LINK_CONTAINER_PADDING_X || '16'
+    ),
+    containerPaddingY: parseInt(
+      process.env.SKIP_LINK_CONTAINER_PADDING_Y || '8'
+    ),
+    // Link padding (px)
+    paddingX: parseInt(process.env.SKIP_LINK_PADDING_X || '16'),
+    paddingY: parseInt(process.env.SKIP_LINK_PADDING_Y || '10'),
+    // Gap between elements (px)
+    gap: parseInt(process.env.SKIP_LINK_GAP || '8'),
+    // Font settings
+    fontWeight: parseInt(process.env.SKIP_LINK_FONT_WEIGHT || '600'),
+    fontSize: parseInt(process.env.SKIP_LINK_FONT_SIZE || '14'),
+    // Border radius (px)
+    borderRadius: parseInt(process.env.SKIP_LINK_BORDER_RADIUS || '8'),
+    // Shortcut settings
+    shortcutMinWidth: parseInt(
+      process.env.SKIP_LINK_SHORTCUT_MIN_WIDTH || '20'
+    ),
+    shortcutPaddingX: parseInt(process.env.SKIP_LINK_SHORTCUT_PADDING_X || '6'),
+    shortcutPaddingY: parseInt(process.env.SKIP_LINK_SHORTCUT_PADDING_Y || '2'),
+    shortcutBorderRadius: parseInt(
+      process.env.SKIP_LINK_SHORTCUT_BORDER_RADIUS || '4'
+    ),
+    shortcutFontSize: parseInt(
+      process.env.SKIP_LINK_SHORTCUT_FONT_SIZE || '12'
+    ),
+    shortcutMarginLeft: parseInt(
+      process.env.SKIP_LINK_SHORTCUT_MARGIN_LEFT || '8'
+    ),
+    shortcutFontFamily:
+      process.env.SKIP_LINK_SHORTCUT_FONT_FAMILY ||
+      'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace',
+    // Glow effect settings
+    glowWidth: parseInt(process.env.SKIP_LINK_GLOW_WIDTH || '150'),
+    glowHeight: parseInt(process.env.SKIP_LINK_GLOW_HEIGHT || '200'),
+    glowOpacity: parseFloat(process.env.SKIP_LINK_GLOW_OPACITY || '0.3'),
+    glowOpacityPulse: parseFloat(
+      process.env.SKIP_LINK_GLOW_OPACITY_PULSE || '0.5'
+    ),
+    glowPulseDurationSec: parseFloat(
+      process.env.SKIP_LINK_GLOW_PULSE_DURATION_SEC || '2'
+    ),
+    // Box shadows
+    boxShadow:
+      process.env.SKIP_LINK_BOX_SHADOW ||
+      '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    focusBoxShadow:
+      process.env.SKIP_LINK_FOCUS_BOX_SHADOW ||
+      '0 0 0 3px rgba(59, 130, 246, 0.5), 0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+    // Easing functions
+    transitionEasing:
+      process.env.SKIP_LINK_TRANSITION_EASING || EASING_REF.MATERIAL_STANDARD,
+    bounceEasing:
+      process.env.SKIP_LINK_BOUNCE_EASING || EASING_REF.SPRING_STANDARD,
+  },
+
+  // Z-Index Configuration
+  zIndex: {
+    skipLink: parseInt(process.env.Z_INDEX_SKIP_LINK || '9999'),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
