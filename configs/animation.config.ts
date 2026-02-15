@@ -3326,6 +3326,21 @@ export const animationConfig = {
       process.env.ABOUT_CHECKMARK_STAGGER_MS || '100'
     ),
   },
+
+  // ============================================
+  // Palette ULW Loop - CodeBlock Animations
+  // Micro-UX delight for code blocks! 🎨
+  // ============================================
+
+  // CodeBlock Keyboard Shortcut Animations
+  codeBlock: {
+    // Delay before showing keyboard shortcut hint on hover (ms)
+    shortcutHintDelayMs: parseInt(process.env.CODEBLOCK_HINT_DELAY_MS || '800'),
+    // Duration of keyboard shortcut toast display (ms)
+    shortcutToastDurationMs: parseInt(
+      process.env.CODEBLOCK_TOAST_DURATION_MS || '3000'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
