@@ -529,7 +529,9 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
     v-bind(
       '`${animationConfig?.bookmark?.newlyAdded?.pulseDurationMs ?? 600}ms`'
     )
-    v-bind('easingConfig?.cubicBezier?.easeOut ?? "cubic-bezier(0, 0, 0.2, 1)"');
+    v-bind(
+      'easingConfig?.cubicBezier?.decelerate ?? "cubic-bezier(0, 0, 0.2, 1)"'
+    );
 }
 
 @keyframes newly-added-pulse {
