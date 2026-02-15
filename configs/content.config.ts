@@ -767,6 +767,14 @@ export const contentConfig = {
         process.env.CONTENT_ERROR_VOTE_LOGIN ||
         'User must be logged in to vote',
     },
+    // Error boundary related errors
+    retry: process.env.CONTENT_ERROR_RETRY || 'Retry',
+    retryAria:
+      process.env.CONTENT_ERROR_RETRY_ARIA || 'Retry loading component',
+    componentError:
+      process.env.CONTENT_ERROR_COMPONENT || 'Component error occurred',
+    resetSuccess:
+      process.env.CONTENT_ERROR_RESET_SUCCESS || 'Component reset successfully',
   },
 
   // Social Sharing - Flexy hates hardcoded sharing params!
@@ -939,6 +947,14 @@ export const contentConfig = {
     status: {
       title:
         process.env.CONTENT_MODERATION_STATUS_TITLE || 'Manage Resource Status',
+    },
+    // Activity section - BugFixer's bug fix!
+    activity: {
+      emptyState:
+        process.env.CONTENT_MODERATION_ACTIVITY_EMPTY || 'No recent activity',
+      approved: process.env.CONTENT_MODERATION_ACTIVITY_APPROVED || 'approved',
+      rejected: process.env.CONTENT_MODERATION_ACTIVITY_REJECTED || 'rejected',
+      flagged: process.env.CONTENT_MODERATION_ACTIVITY_FLAGGED || 'flagged',
     },
   },
 

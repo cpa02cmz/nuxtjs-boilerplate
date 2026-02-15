@@ -73,7 +73,11 @@ export class CircuitBreaker {
         this.onSuccess()
         return result
       } catch (error) {
-        this.onFailure()
+        // Only count server errors (5xx) and network errors as failures
+        // 4xx client errors should not trip the circuit breaker
+        if (this.isServerError(error)) {
+          this.onFailure()
+        }
         if (fallback) {
           return fallback()
         }
@@ -82,6 +86,35 @@ export class CircuitBreaker {
     } finally {
       release()
     }
+  }
+
+  /**
+   * Determines if an error represents a server-side failure (5xx) or network error
+   * that should count toward the circuit breaker failure threshold.
+   * 4xx client errors are NOT counted as they are client-side issues, not service failures.
+   */
+  private isServerError(error: unknown): boolean {
+    // Check for HTTP status code in error
+    if (error && typeof error === 'object') {
+      const statusCode =
+        (error as { statusCode?: number }).statusCode ||
+        (error as { response?: { status?: number } }).response?.status ||
+        (error as { status?: number }).status
+
+      if (typeof statusCode === 'number') {
+        // 4xx errors are client errors, not server failures
+        if (statusCode >= 400 && statusCode < 500) {
+          return false
+        }
+        // 5xx errors are server failures
+        if (statusCode >= 500) {
+          return true
+        }
+      }
+    }
+
+    // Network errors, timeouts, and other non-HTTP errors are considered failures
+    return true
   }
 
   private onSuccess(): void {
@@ -153,6 +186,25 @@ export class CircuitBreaker {
   isOpen(): boolean {
     return this.state.isOpen
   }
+
+  /**
+   * Cleans up resources and prepares the circuit breaker for garbage collection.
+   * This method should be called before removing the circuit breaker from the registry
+   * to prevent memory leaks.
+   */
+  destroy(): void {
+    // Reset all state to clear references
+    this.state = {
+      isOpen: false,
+      isHalfOpen: false,
+      failureCount: 0,
+      lastFailureTime: null,
+      successCount: 0,
+    }
+    this.lastSuccessTime = null
+    // The mutex doesn't have explicit cleanup, but by ensuring no pending
+    // operations and clearing state, we allow GC to collect this instance
+  }
 }
 
 const circuitBreakers = new Map<string, CircuitBreaker>()
@@ -167,6 +219,10 @@ export function getCircuitBreaker(
     if (circuitBreakers.size >= MAX_CIRCUIT_BREAKERS) {
       const oldestKey = circuitBreakers.keys().next().value
       if (oldestKey) {
+        const oldestBreaker = circuitBreakers.get(oldestKey)
+        if (oldestBreaker) {
+          oldestBreaker.destroy()
+        }
         circuitBreakers.delete(oldestKey)
       }
     }
@@ -191,6 +247,18 @@ export function resetCircuitBreaker(key: string): void {
   const breaker = circuitBreakers.get(key)
   if (breaker) {
     breaker.reset()
+  }
+}
+
+/**
+ * Destroys and removes all circuit breakers from the registry.
+ * This should be called during application shutdown or testing cleanup
+ * to prevent memory leaks.
+ */
+export function destroyAllCircuitBreakers(): void {
+  for (const [key, breaker] of circuitBreakers.entries()) {
+    breaker.destroy()
+    circuitBreakers.delete(key)
   }
 }
 

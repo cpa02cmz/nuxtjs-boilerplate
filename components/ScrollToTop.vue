@@ -1,9 +1,9 @@
 <template>
   <transition
-    enter-active-class="transition-all duration-300 ease-out"
+    :enter-active-class="`transition-all ${tailwindClassesConfig.duration.medium} ease-out`"
     enter-from-class="opacity-0 translate-y-4 scale-90"
     enter-to-class="opacity-100 translate-y-0 scale-100"
-    leave-active-class="transition-all duration-200 ease-in"
+    :leave-active-class="`transition-all ${tailwindClassesConfig.duration.normal} ease-in`"
     leave-from-class="opacity-100 translate-y-0 scale-100"
     leave-to-class="opacity-0 translate-y-4 scale-90"
   >
@@ -23,10 +23,10 @@
     >
       <!-- Hover Tooltip - Palette's micro-UX enhancement! -->
       <Transition
-        enter-active-class="transition-all duration-200 ease-out"
+        :enter-active-class="`transition-all ${tailwindClassesConfig.duration.normal} ease-out`"
         enter-from-class="opacity-0 scale-75 translate-y-2"
         enter-to-class="opacity-100 scale-100 translate-y-0"
-        leave-active-class="transition-all duration-150 ease-in"
+        :leave-active-class="`transition-all ${tailwindClassesConfig.duration.fast} ease-in`"
         leave-from-class="opacity-100 scale-100 translate-y-0"
         leave-to-class="opacity-0 scale-75 translate-y-2"
       >
@@ -137,6 +137,7 @@ import { zIndexConfig } from '~/configs/z-index.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
 
 // Constants - Flexy hates hardcoded values! Using config instead.

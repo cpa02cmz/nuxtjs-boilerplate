@@ -2,10 +2,10 @@
   <div class="relative">
     <!-- Copied tooltip - appears at click position for delightful micro-UX feedback -->
     <Transition
-      enter-active-class="transition-all duration-200 ease-out"
+      :enter-active-class="`transition-all ${tailwindClassesConfig.duration.normal} ease-out`"
       enter-from-class="opacity-0 scale-75 translate-y-2"
       enter-to-class="opacity-100 scale-100 translate-y-0"
-      leave-active-class="transition-all duration-150 ease-in"
+      :leave-active-class="`transition-all ${tailwindClassesConfig.duration.fast} ease-in`"
       leave-from-class="opacity-100 scale-100 translate-y-0"
       leave-to-class="opacity-0 scale-75 -translate-y-1"
     >
@@ -82,10 +82,10 @@
 
     <!-- Dropdown menu with enhanced animations -->
     <Transition
-      enter-active-class="transition-all duration-200 ease-out"
+      :enter-active-class="`transition-all ${tailwindClassesConfig.duration.normal} ease-out`"
       enter-from-class="opacity-0 translate-y-2 scale-95"
       enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition-all duration-150 ease-in"
+      :leave-active-class="`transition-all ${tailwindClassesConfig.duration.fast} ease-in`"
       leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 translate-y-2 scale-95"
     >
@@ -277,12 +277,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcementText }}
     </div>
   </div>
@@ -294,6 +289,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { socialConfig } from '~/configs/social.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 import { useSocialSharing } from '~/composables/useSocialSharing'
 import { useRipple } from '~/composables/useRipple'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
