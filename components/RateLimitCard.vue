@@ -70,10 +70,7 @@
           />
         </svg>
       </div>
-      <h4
-        :id="titleId"
-        class="font-semibold text-gray-800 capitalize"
-      >
+      <h4 :id="titleId" class="font-semibold text-gray-800 capitalize">
         {{ type }}
       </h4>
     </div>
@@ -82,7 +79,8 @@
       <span
         class="text-2xl font-bold text-gray-900"
         :aria-label="`${limit} ${unit}`"
-      >{{ limit }}</span>
+        >{{ limit }}</span
+      >
     </div>
 
     <p
@@ -93,19 +91,14 @@
     </p>
 
     <!-- Palette's micro-UX: Screen reader announcement for interactions -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
 import { generateId } from '~/utils/generateId'
@@ -127,6 +120,10 @@ const isHovering = ref(false)
 const isFocused = ref(false)
 const announcement = ref('')
 const cardRef = ref<HTMLElement | null>(null)
+
+// BroCula fix: Store media query and handler for cleanup
+let mediaQuery: MediaQueryList | null = null
+let mediaQueryHandler: ((e: MediaQueryListEvent) => void) | null = null
 
 // Palette's micro-UX enhancement: Computed ARIA label for screen readers
 const ariaLabel = computed(() => {
@@ -171,13 +168,20 @@ const checkReducedMotion = () => {
 onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 
-  // Listen for reduced motion preference changes
+  // Listen for reduced motion preference changes - BroCula: Store refs for cleanup!
   if (typeof window !== 'undefined' && window.matchMedia) {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleChange = (e: MediaQueryListEvent) => {
+    mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    mediaQueryHandler = (e: MediaQueryListEvent) => {
       prefersReducedMotion.value = e.matches
     }
-    mediaQuery.addEventListener('change', handleChange)
+    mediaQuery.addEventListener('change', mediaQueryHandler)
+  }
+})
+
+// BroCula fix: Clean up event listener to prevent memory leaks
+onUnmounted(() => {
+  if (mediaQuery && mediaQueryHandler) {
+    mediaQuery.removeEventListener('change', mediaQueryHandler)
   }
 })
 
