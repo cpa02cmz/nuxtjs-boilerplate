@@ -563,12 +563,14 @@ const easingValues = computed(() => ({
   .skeleton-shimmer,
   .skeleton-wave {
     background: #767676;
-    animation: highContrastPulse 2s ease-in-out infinite;
+    animation: highContrastPulse
+      v-bind('animationConfig.skeleton.pulseDurationSec') ease-in-out infinite;
   }
 
   .skeleton-checkbox {
     background: #595959;
-    animation: highContrastPulse 2s ease-in-out infinite;
+    animation: highContrastPulse
+      v-bind('animationConfig.skeleton.pulseDurationSec') ease-in-out infinite;
     border: 1px solid #000;
   }
 
