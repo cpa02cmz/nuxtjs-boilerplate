@@ -59,11 +59,7 @@
             :class="`flex-shrink-0 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors ${animationConfig.tailwindDurations.normal}`"
             aria-hidden="true"
           >
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -123,10 +119,7 @@
         class="text-center text-gray-500 py-8 flex flex-col items-center"
       >
         <!-- Animated Illustration Container -->
-        <div
-          class="relative w-20 h-20 mb-4"
-          aria-hidden="true"
-        >
+        <div class="relative w-20 h-20 mb-4" aria-hidden="true">
           <!-- Background Circle with subtle pulse -->
           <div
             class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full"
@@ -206,12 +199,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -563,7 +551,7 @@ onUnmounted(() => {
       v-bind('animationConfig.zeroResultSearches.springEasing'),
     box-shadow v-bind('animationConfig.zeroResultSearches.springDurationSec')
       v-bind('animationConfig.zeroResultSearches.springEasing'),
-    background-color 0.2s ease-out;
+    background-color v-bind('animationConfig.cssTransitions.normalSec') ease-out;
 }
 
 /* Reduced motion support - Palette cares about accessibility! */

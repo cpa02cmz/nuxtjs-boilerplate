@@ -609,6 +609,38 @@ export const animationConfig = {
     confettiBurstDelayMs: parseInt(
       process.env.READING_PROGRESS_CONFETTI_BURST_DELAY_MS || '200'
     ),
+    // Completion pop-in animation duration (ms) - Flexy hates hardcoded 0.5s!
+    completionPopInDurationMs: parseInt(
+      process.env.READING_PROGRESS_COMPLETION_POP_IN_MS || '500'
+    ),
+    // Icon rotate animation duration (ms)
+    iconRotateDurationMs: parseInt(
+      process.env.READING_PROGRESS_ICON_ROTATE_MS || '400'
+    ),
+    // Icon rotate animation delay (ms)
+    iconRotateDelayMs: parseInt(
+      process.env.READING_PROGRESS_ICON_ROTATE_DELAY_MS || '200'
+    ),
+    // Circle scale animation duration (ms)
+    circleScaleDurationMs: parseInt(
+      process.env.READING_PROGRESS_CIRCLE_SCALE_MS || '300'
+    ),
+    // Circle scale animation delay (ms)
+    circleScaleDelayMs: parseInt(
+      process.env.READING_PROGRESS_CIRCLE_SCALE_DELAY_MS || '100'
+    ),
+    // Reading time pop animation duration (ms)
+    readingTimePopDurationMs: parseInt(
+      process.env.READING_PROGRESS_TIME_POP_MS || '300'
+    ),
+    // Clock tick animation duration (ms)
+    clockTickDurationMs: parseInt(
+      process.env.READING_PROGRESS_CLOCK_TICK_MS || '2000'
+    ),
+    // Complete pulse animation duration (ms)
+    completePulseDurationMs: parseInt(
+      process.env.READING_PROGRESS_COMPLETE_PULSE_MS || '1500'
+    ),
   },
 
   // Error Boundary Animations - Palette's micro-UX enhancements

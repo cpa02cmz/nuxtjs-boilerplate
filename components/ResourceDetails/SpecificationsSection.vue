@@ -55,11 +55,7 @@
     </div>
 
     <!-- Specifications Grid -->
-    <dl
-      v-else
-      :class="gridClass"
-      class="specifications-grid"
-    >
+    <dl v-else :class="gridClass" class="specifications-grid">
       <div
         v-for="(value, key, index) in specifications"
         :key="key"
@@ -172,12 +168,7 @@
     </div>
 
     <!-- Screen Reader Announcements -->
-    <div
-      aria-atomic="true"
-      aria-live="polite"
-      class="sr-only"
-      role="status"
-    >
+    <div aria-atomic="true" aria-live="polite" class="sr-only" role="status">
       {{ announcementText }}
     </div>
   </section>
@@ -426,9 +417,9 @@ onUnmounted(() => {
   border: 1px solid rgb(243, 244, 246);
   cursor: pointer;
   transition:
-    transform 0.2s ease-out,
-    box-shadow 0.2s ease-out,
-    border-color 0.2s ease-out;
+    transform v-bind('animationConfig.cssTransitions.normalSec') ease-out,
+    box-shadow v-bind('animationConfig.cssTransitions.normalSec') ease-out,
+    border-color v-bind('animationConfig.cssTransitions.normalSec') ease-out;
   overflow: hidden;
 }
 

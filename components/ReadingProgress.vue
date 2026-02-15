@@ -82,12 +82,7 @@
     </Transition>
 
     <!-- Screen reader announcement for progress changes -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ progressAnnouncement }}
     </div>
 
@@ -116,16 +111,8 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                class="checkmark-circle"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-              <path
-                class="checkmark-path"
-                d="M7 12l3 3 7-7"
-              />
+              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
           <span class="completion-text">{{
@@ -133,15 +120,8 @@
           }}</span>
         </div>
         <!-- Confetti burst effect -->
-        <div
-          class="confetti-container"
-          aria-hidden="true"
-        >
-          <span
-            v-for="n in 8"
-            :key="n"
-            class="confetti-piece"
-          />
+        <div class="confetti-container" aria-hidden="true">
+          <span v-for="n in 8" :key="n" class="confetti-piece" />
         </div>
       </div>
     </Transition>
@@ -589,8 +569,9 @@ onUnmounted(() => {
     'componentStylesConfig.readingProgress.completionBorderRadius'
   );
   box-shadow: v-bind('themeConfig.readingProgress.completionShadow');
-  animation: completion-pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)
-    forwards;
+  animation: completion-pop-in
+    v-bind('`${animationConfig.readingProgress.completionPopInDurationMs}ms`')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 @keyframes completion-pop-in {
@@ -616,7 +597,10 @@ onUnmounted(() => {
 .checkmark-svg {
   width: 100%;
   height: 100%;
-  animation: icon-rotate-in 0.4s ease-out 0.2s both;
+  animation: icon-rotate-in
+    v-bind('`${animationConfig.readingProgress.iconRotateDurationMs}ms`')
+    ease-out v-bind('`${animationConfig.readingProgress.iconRotateDelayMs}ms`')
+    both;
 }
 
 @keyframes icon-rotate-in {
@@ -632,7 +616,10 @@ onUnmounted(() => {
 
 .checkmark-circle {
   fill: v-bind('themeConfig.readingProgress.completionIconBg');
-  animation: circle-scale 0.3s ease-out 0.1s both;
+  animation: circle-scale
+    v-bind('`${animationConfig.readingProgress.circleScaleDurationMs}ms`')
+    ease-out v-bind('`${animationConfig.readingProgress.circleScaleDelayMs}ms`')
+    both;
 }
 
 @keyframes circle-scale {
@@ -791,7 +778,9 @@ onUnmounted(() => {
     0 2px 4px -1px rgba(0, 0, 0, 0.06),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   backdrop-filter: blur(8px);
-  animation: reading-time-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: reading-time-pop
+    v-bind('`${animationConfig.readingProgress.readingTimePopDurationMs}ms`')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes reading-time-pop {
@@ -809,7 +798,9 @@ onUnmounted(() => {
   width: 14px;
   height: 14px;
   flex-shrink: 0;
-  animation: clock-tick 2s ease-in-out infinite;
+  animation: clock-tick
+    v-bind('`${animationConfig.readingProgress.clockTickDurationMs}ms`')
+    ease-in-out infinite;
 }
 
 @keyframes clock-tick {
@@ -839,7 +830,9 @@ onUnmounted(() => {
 
 .reading-time-complete {
   font-weight: 600;
-  animation: complete-pulse 1.5s ease-in-out infinite;
+  animation: complete-pulse
+    v-bind('`${animationConfig.readingProgress.completePulseDurationMs}ms`')
+    ease-in-out infinite;
 }
 
 @keyframes complete-pulse {
