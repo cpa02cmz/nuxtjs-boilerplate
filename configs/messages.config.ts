@@ -15,6 +15,8 @@ export const messagesConfig = {
       timeout:
         process.env.ERROR_GENERIC_TIMEOUT ||
         'Request timed out. Please try again.',
+      operationFailed:
+        process.env.ERROR_GENERIC_OPERATION_FAILED || 'Operation failed',
     },
 
     // Resource-related errors
