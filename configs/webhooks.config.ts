@@ -255,6 +255,29 @@ export const webhooksConfig = {
 
   // Overall delivery timeout (ms) - Issue #2207
   overallTimeoutMs: parseInt(process.env.WEBHOOK_OVERALL_TIMEOUT_MS || '60000'),
+
+  // Dead Letter Queue Settings - Flexy hates hardcoded retention days!
+  deadLetter: {
+    // Number of days to retain dead letter items before cleanup (default: 30 days)
+    retentionDays: parseInt(
+      process.env.WEBHOOK_DEAD_LETTER_RETENTION_DAYS || '30'
+    ),
+
+    // Minimum retention days allowed
+    minRetentionDays: parseInt(
+      process.env.WEBHOOK_DEAD_LETTER_MIN_RETENTION_DAYS || '1'
+    ),
+
+    // Maximum retention days allowed
+    maxRetentionDays: parseInt(
+      process.env.WEBHOOK_DEAD_LETTER_MAX_RETENTION_DAYS || '365'
+    ),
+
+    // Maximum number of items to process in one cleanup run
+    cleanupBatchSize: parseInt(
+      process.env.WEBHOOK_DEAD_LETTER_CLEANUP_BATCH_SIZE || '100'
+    ),
+  },
 } as const
 
 // Helper function to parse status codes
