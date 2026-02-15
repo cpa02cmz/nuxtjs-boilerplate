@@ -1,9 +1,5 @@
 <template>
-  <span
-    :class="wrapperClass"
-    :style="wrapperStyle"
-    v-bind="wrapperAttrs"
-  >
+  <span :class="wrapperClass" :style="wrapperStyle" v-bind="wrapperAttrs">
     <svg
       :xmlns="SVG_NS"
       :viewBox="viewBox"
@@ -142,7 +138,8 @@ const svgAttrs = computed(() => {
 
 .icon-wrapper--interactive {
   cursor: pointer;
-  transition: transform var(--icon-transition-duration, 200ms)
+  transition: transform
+    v-bind('animationConfig.iconInteraction.durationMs + "ms"')
     v-bind('EASING.SPRING_STANDARD');
   will-change: transform;
   backface-visibility: hidden;

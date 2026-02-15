@@ -4,43 +4,27 @@
     :class="{ 'animations-enabled': !prefersReducedMotion }"
   >
     <!-- ARIA Live Region for Announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcementText }}
     </div>
 
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-xl font-bold text-gray-900">
-        Search Analytics
-      </h2>
+      <h2 class="text-xl font-bold text-gray-900">Search Analytics</h2>
       <div class="flex space-x-2">
         <select
           v-model="timeRange"
           class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           @change="handleTimeRangeChange"
         >
-          <option value="7">
-            Last 7 days
-          </option>
-          <option value="30">
-            Last 30 days
-          </option>
-          <option value="90">
-            Last 90 days
-          </option>
+          <option value="7">Last 7 days</option>
+          <option value="30">Last 30 days</option>
+          <option value="90">Last 90 days</option>
         </select>
       </div>
     </div>
 
     <!-- Loading State with Shimmer Animation - Palette's micro-UX delight! -->
-    <div
-      v-if="loading"
-      class="flex justify-center py-12"
-    >
+    <div v-if="loading" class="flex justify-center py-12">
       <div
         v-if="prefersReducedMotion"
         class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
@@ -59,13 +43,8 @@
     </div>
 
     <!-- Error State -->
-    <div
-      v-else-if="error"
-      class="text-red-600 text-center py-8"
-    >
-      <p class="text-lg font-medium">
-        Error loading search analytics
-      </p>
+    <div v-else-if="error" class="text-red-600 text-center py-8">
+      <p class="text-lg font-medium">Error loading search analytics</p>
       <p class="mt-2">
         {{ error }}
       </p>
@@ -126,9 +105,7 @@
             </svg>
           </div>
           <div class="ml-4">
-            <h3 class="text-sm font-medium text-gray-500">
-              Total Searches
-            </h3>
+            <h3 class="text-sm font-medium text-gray-500">Total Searches</h3>
             <p class="text-2xl font-semibold text-gray-900 stat-value">
               {{ animatedTotalSearches }}
             </p>
@@ -208,9 +185,7 @@
             </div>
           </div>
           <div class="ml-4">
-            <h3 class="text-sm font-medium text-gray-500">
-              Success Rate
-            </h3>
+            <h3 class="text-sm font-medium text-gray-500">Success Rate</h3>
             <p class="text-2xl font-semibold text-gray-900 stat-value">
               {{ animatedSuccessRate }}%
             </p>
@@ -256,9 +231,7 @@
             </svg>
           </div>
           <div class="ml-4">
-            <h3 class="text-sm font-medium text-gray-500">
-              Zero-Result
-            </h3>
+            <h3 class="text-sm font-medium text-gray-500">Zero-Result</h3>
             <p class="text-2xl font-semibold text-gray-900 stat-value">
               {{ animatedZeroResult }}
             </p>
@@ -312,9 +285,7 @@
             </div>
           </div>
           <div class="ml-4">
-            <h3 class="text-sm font-medium text-gray-500">
-              Avg Response
-            </h3>
+            <h3 class="text-sm font-medium text-gray-500">Avg Response</h3>
             <p class="text-2xl font-semibold text-gray-900 stat-value">
               {{ animatedAvgResponse
               }}<span class="text-sm font-normal text-gray-500">ms</span>
@@ -328,21 +299,14 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       <!-- Search Trends Chart -->
       <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">
-          Search Trends
-        </h3>
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Search Trends</h3>
         <div
           v-if="!searchAnalytics?.data?.searchTrends?.length"
           class="h-64 flex items-center justify-center"
         >
-          <p class="text-gray-500">
-            No search trend data available
-          </p>
+          <p class="text-gray-500">No search trend data available</p>
         </div>
-        <div
-          v-else
-          class="h-64"
-        >
+        <div v-else class="h-64">
           <!-- Simple bar chart visualization with animation -->
           <div class="flex items-end h-48 space-x-1">
             <div
@@ -353,10 +317,13 @@
             >
               <div class="w-full flex justify-center">
                 <div
-                  class="w-3/4 bg-blue-500 rounded-t hover:bg-blue-600 transition-all duration-300 chart-bar"
-                  :class="{
-                    'animate-bar-grow': !prefersReducedMotion && !hasAnimated,
-                  }"
+                  class="w-3/4 bg-blue-500 rounded-t hover:bg-blue-600 transition-all chart-bar"
+                  :class="[
+                    animationConfig.tailwindDurations.standard,
+                    {
+                      'animate-bar-grow': !prefersReducedMotion && !hasAnimated,
+                    },
+                  ]"
                   :style="{
                     height: `${(day.count / maxSearchCount) * 100}%`,
                     animationDelay: `${index * animationConfig.searchAnalytics.barStaggerMultiplierMs}ms`,
@@ -366,7 +333,8 @@
               </div>
               <span
                 class="text-xs text-gray-500 mt-1 truncate w-full text-center"
-              >{{ formatDate(day.date) }}</span>
+                >{{ formatDate(day.date) }}</span
+              >
             </div>
           </div>
         </div>
@@ -374,9 +342,7 @@
 
       <!-- Popular Searches -->
       <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">
-          Popular Searches
-        </h3>
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Popular Searches</h3>
         <div
           v-if="!searchAnalytics?.data?.popularSearches?.length"
           class="text-gray-500 text-center py-8"
@@ -431,10 +397,7 @@
         >
           No zero-result query data available
         </div>
-        <ul
-          v-else
-          class="space-y-2 max-h-64 overflow-y-auto"
-        >
+        <ul v-else class="space-y-2 max-h-64 overflow-y-auto">
           <li
             v-for="(query, index) in searchAnalytics.data.zeroResultQueries"
             :key="query.query"
@@ -460,18 +423,13 @@
         >
           No performance data available
         </div>
-        <div
-          v-else
-          class="space-y-3"
-        >
+        <div v-else class="space-y-3">
           <div class="grid grid-cols-2 gap-4">
             <div
               class="performance-metric bg-white p-3 rounded border border-gray-200"
               :class="{ 'is-fast': !prefersReducedMotion }"
             >
-              <p class="text-sm text-gray-500">
-                Fast Searches (&lt;100ms)
-              </p>
+              <p class="text-sm text-gray-500">Fast Searches (&lt;100ms)</p>
               <p class="text-xl font-semibold text-green-600 metric-value">
                 {{ animatedFastSearches }}
               </p>
@@ -480,9 +438,7 @@
               class="performance-metric bg-white p-3 rounded border border-gray-200"
               :class="{ 'is-medium': !prefersReducedMotion }"
             >
-              <p class="text-sm text-gray-500">
-                Medium Searches (100-500ms)
-              </p>
+              <p class="text-sm text-gray-500">Medium Searches (100-500ms)</p>
               <p class="text-xl font-semibold text-yellow-600 metric-value">
                 {{ animatedMediumSearches }}
               </p>
@@ -492,9 +448,7 @@
             class="performance-metric bg-white p-3 rounded border border-gray-200"
             :class="{ 'is-slow': !prefersReducedMotion }"
           >
-            <p class="text-sm text-gray-500">
-              Slow Searches (&gt;500ms)
-            </p>
+            <p class="text-sm text-gray-500">Slow Searches (&gt;500ms)</p>
             <p class="text-xl font-semibold text-red-600 metric-value">
               {{ animatedSlowSearches }}
             </p>
