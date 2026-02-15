@@ -2563,8 +2563,16 @@ export const animationConfig = {
     cardEntranceDurationSec: `${parseInt(process.env.MODERATION_CARD_ENTRANCE_DURATION_MS || '500') / 1000}s`,
     // Activity entrance animation duration in seconds
     activityEntranceDurationSec: `${parseInt(process.env.MODERATION_ACTIVITY_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Base delay offset for activity animations (ms) - Flexy hates hardcoded 400ms!
+    activityDelayOffsetMs: parseInt(
+      process.env.MODERATION_ACTIVITY_DELAY_OFFSET_MS || '400'
+    ),
     // Action button entrance animation duration in seconds
     actionEntranceDurationSec: `${parseInt(process.env.MODERATION_ACTION_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Base delay offset for action button animations (ms) - Flexy hates hardcoded 600ms!
+    actionDelayOffsetMs: parseInt(
+      process.env.MODERATION_ACTION_DELAY_OFFSET_MS || '600'
+    ),
     // Trend pulse animation duration in seconds
     trendPulseDurationSec: `${parseInt(process.env.MODERATION_TREND_PULSE_DURATION_MS || '800') / 1000}s`,
     // Float animation duration in seconds (for empty state)
