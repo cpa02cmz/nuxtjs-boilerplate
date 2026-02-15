@@ -309,6 +309,18 @@ export const contentConfig = {
       limitations:
         process.env.CONTENT_RESOURCE_LIMITATIONS_TITLE || 'Limitations',
     },
+    // Palette's micro-UX enhancement: Screenshots section content
+    screenshots: {
+      title: process.env.CONTENT_RESOURCE_SCREENSHOTS_TITLE || 'Screenshots',
+      closeButton:
+        process.env.CONTENT_RESOURCE_SCREENSHOTS_CLOSE ||
+        'Close screenshot viewer',
+      previousButton:
+        process.env.CONTENT_RESOURCE_SCREENSHOTS_PREVIOUS ||
+        'Previous screenshot',
+      nextButton:
+        process.env.CONTENT_RESOURCE_SCREENSHOTS_NEXT || 'Next screenshot',
+    },
     aria: {
       featuresList:
         process.env.CONTENT_RESOURCE_FEATURES_LIST_ARIA || 'List of features',

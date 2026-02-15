@@ -2677,6 +2677,28 @@ export const animationConfig = {
   // ============================================
   // Flexy ULW Loop - Additional Modular Configs
   // Eliminating hardcoded values! 🎯
+  // Screenshots Section Animations - Palette's micro-UX delight! 🎨
+  // Staggered grid entrance, lightbox transitions, and loading effects
+  screenshots: {
+    // Stagger delay between each screenshot item (ms)
+    staggerDelayMs: parseInt(process.env.SCREENSHOTS_STAGGER_MS || '100'),
+    // Maximum stagger delay to prevent long waits (ms)
+    maxStaggerDelayMs: parseInt(
+      process.env.SCREENSHOTS_MAX_STAGGER_MS || '600'
+    ),
+    // Shimmer loading animation duration (seconds)
+    shimmerDurationSec: `${parseInt(process.env.SCREENSHOTS_SHIMMER_MS || '1500') / 1000}s`,
+    // Lightbox image transition duration (ms)
+    lightboxTransitionMs: parseInt(
+      process.env.SCREENSHOTS_LIGHTBOX_TRANSITION_MS || '200'
+    ),
+    // Lightbox z-index for proper layering
+    lightboxZIndex: parseInt(process.env.SCREENSHOTS_LIGHTBOX_Z_INDEX || '50'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SCREENSHOTS_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // ============================================
 
   // CSS Cubic-Bezier Easing Functions - Flexy hates hardcoded values!
