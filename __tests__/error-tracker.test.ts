@@ -14,30 +14,33 @@ const createMockTransactionClient = () => ({
   },
 })
 
-// Mock PrismaClient
+// Mock transaction client
 const mockTransactionClient = createMockTransactionClient()
 
-const mockPrismaClient = {
-  trackedError: {
-    findFirst: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    count: vi.fn(),
-    groupBy: vi.fn(),
-    findMany: vi.fn(),
-    updateMany: vi.fn(),
-  },
-  errorMetric: {
-    upsert: vi.fn(),
-  },
-  $transaction: vi.fn(async callback => {
-    return await callback(mockTransactionClient)
-  }),
-}
-
-vi.mock('@prisma/client', () => ({
-  PrismaClient: vi.fn(() => mockPrismaClient),
-}))
+// Mock executeTransaction from db.ts
+vi.mock('~/server/utils/db', async () => {
+  const actual = await vi.importActual('~/server/utils/db')
+  return {
+    ...actual,
+    executeTransaction: vi.fn(async operation => {
+      return await operation(mockTransactionClient as any)
+    }),
+    prisma: {
+      trackedError: {
+        findFirst: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+        count: vi.fn(),
+        groupBy: vi.fn(),
+        findMany: vi.fn(),
+        updateMany: vi.fn(),
+      },
+      errorMetric: {
+        upsert: vi.fn(),
+      },
+    },
+  }
+})
 
 describe('Error Tracker', () => {
   let errorTracker: ReturnType<typeof createErrorTracker>
@@ -64,7 +67,6 @@ describe('Error Tracker', () => {
       mockTransactionClient.trackedError.create.mockResolvedValue({
         id: 'test-id',
       })
-      mockPrismaClient.errorMetric.upsert.mockResolvedValue({})
 
       await errorTracker.trackError({
         message: 'Test error',
@@ -93,7 +95,6 @@ describe('Error Tracker', () => {
         existingError
       )
       mockTransactionClient.trackedError.update.mockResolvedValue({})
-      mockPrismaClient.errorMetric.upsert.mockResolvedValue({})
 
       await errorTracker.trackError({
         message: 'Test error',
@@ -111,7 +112,8 @@ describe('Error Tracker', () => {
     })
 
     it('should not throw when database operation fails', async () => {
-      mockPrismaClient.$transaction.mockRejectedValueOnce(new Error('DB Error'))
+      const { executeTransaction } = await import('~/server/utils/db')
+      vi.mocked(executeTransaction).mockRejectedValueOnce(new Error('DB Error'))
 
       await expect(
         errorTracker.trackError({
@@ -121,9 +123,9 @@ describe('Error Tracker', () => {
         })
       ).resolves.not.toThrow()
 
-      // Restore the transaction mock for other tests
-      mockPrismaClient.$transaction.mockImplementation(async callback => {
-        return await callback(mockTransactionClient)
+      // Restore the mock for other tests
+      vi.mocked(executeTransaction).mockImplementation(async operation => {
+        return await operation(mockTransactionClient as any)
       })
     })
 
@@ -132,7 +134,6 @@ describe('Error Tracker', () => {
       mockTransactionClient.trackedError.create.mockResolvedValue({
         id: 'test-id',
       })
-      mockPrismaClient.errorMetric.upsert.mockResolvedValue({})
 
       await errorTracker.trackError({
         message: 'Test error',
@@ -149,19 +150,21 @@ describe('Error Tracker', () => {
 
   describe('getErrorStats', () => {
     it('should return error statistics', async () => {
+      const { prisma } = await import('~/server/utils/db')
+
       const timeRange = {
         start: new Date('2024-01-01'),
         end: new Date('2024-01-02'),
       }
 
-      mockPrismaClient.trackedError.count.mockResolvedValue(10)
-      mockPrismaClient.trackedError.groupBy.mockResolvedValue([
+      vi.mocked(prisma.trackedError.count).mockResolvedValue(10)
+      vi.mocked(prisma.trackedError.groupBy).mockResolvedValue([
         { severity: 'error', _count: { id: 5 } },
         { severity: 'critical', _count: { id: 3 } },
-      ])
-      mockPrismaClient.trackedError.findMany.mockResolvedValue([
+      ] as any)
+      vi.mocked(prisma.trackedError.findMany).mockResolvedValue([
         { id: '1', message: 'Error 1', severity: 'error', occurrenceCount: 5 },
-      ])
+      ] as any)
 
       const stats = await errorTracker.getErrorStats(timeRange)
 
@@ -183,12 +186,14 @@ describe('Error Tracker', () => {
     })
 
     it('should return null when database operation fails', async () => {
+      const { prisma } = await import('~/server/utils/db')
+
       const timeRange = {
         start: new Date('2024-01-01'),
         end: new Date('2024-01-02'),
       }
 
-      mockPrismaClient.trackedError.count.mockRejectedValue(
+      vi.mocked(prisma.trackedError.count).mockRejectedValue(
         new Error('DB Error')
       )
 
@@ -200,18 +205,22 @@ describe('Error Tracker', () => {
 
   describe('resolveErrors', () => {
     it('should mark errors as resolved', async () => {
-      mockPrismaClient.trackedError.updateMany.mockResolvedValue({ count: 2 })
+      const { prisma } = await import('~/server/utils/db')
+
+      vi.mocked(prisma.trackedError.updateMany).mockResolvedValue({ count: 2 })
 
       await errorTracker.resolveErrors(['error-1', 'error-2'])
 
-      expect(mockPrismaClient.trackedError.updateMany).toHaveBeenCalledWith({
+      expect(prisma.trackedError.updateMany).toHaveBeenCalledWith({
         where: { id: { in: ['error-1', 'error-2'] } },
         data: { resolvedAt: expect.any(Date) },
       })
     })
 
     it('should throw when database operation fails', async () => {
-      mockPrismaClient.trackedError.updateMany.mockRejectedValue(
+      const { prisma } = await import('~/server/utils/db')
+
+      vi.mocked(prisma.trackedError.updateMany).mockRejectedValue(
         new Error('DB Error')
       )
 
