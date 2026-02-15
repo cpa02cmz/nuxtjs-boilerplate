@@ -106,10 +106,7 @@
           @mouseenter="isHandleHovered = true"
           @mouseleave="isHandleHovered = false"
         >
-          <div
-            class="drawer-handle-bar"
-            :style="handleStyle"
-          />
+          <div class="drawer-handle-bar" :style="handleStyle" />
           <div
             v-if="!prefersReducedMotion && swipeProgress > 0"
             class="drawer-handle-glow"
@@ -211,9 +208,11 @@
             @touchstart="isResultsButtonPressed = true"
             @touchend="isResultsButtonPressed = false"
           >
-            <span class="button-text">Show {{ resultsCount }} result{{
-              resultsCount === 1 ? '' : 's'
-            }}</span>
+            <span class="button-text"
+              >Show {{ resultsCount }} result{{
+                resultsCount === 1 ? '' : 's'
+              }}</span
+            >
             <svg
               v-if="resultsCount > 0"
               class="ml-2 w-4 h-4 arrow-icon"
@@ -408,10 +407,10 @@ watch(activeFiltersCount, (newCount, oldCount) => {
       shouldBounceButton.value = false
     }, animationConfig.mobileFilterDrawer.filterButtonPulseMs)
 
-    // Reset pulse animation
+    // Reset pulse animation - Flexy hates hardcoded values!
     setTimeout(() => {
       hasFilterCountChanged.value = false
-    }, 1000)
+    }, animationConfig.mobileFilterDrawer.filterCountResetDelayMs)
 
     // Haptic feedback
     triggerHaptic(hapticConfig.patterns.light)
