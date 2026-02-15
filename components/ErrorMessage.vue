@@ -2,10 +2,10 @@
   <div class="error-message-container">
     <!-- Undo Button - Appears after dismissal with countdown -->
     <Transition
-      enter-active-class="transition-all duration-300 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
       enter-from-class="opacity-0 -translate-y-2 scale-95"
       enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition-all duration-200 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
       leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 -translate-y-2 scale-95"
     >
@@ -34,7 +34,8 @@
         <kbd
           class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
           aria-hidden="true"
-        >Ctrl+Z</kbd>
+          >Ctrl+Z</kbd
+        >
         <!-- Progress bar for undo window -->
         <span
           class="error-message__undo-progress"
@@ -46,20 +47,15 @@
     </Transition>
 
     <!-- Aria live region for announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
 
     <Transition
-      enter-active-class="transition-all duration-300 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
       enter-from-class="opacity-0 -translate-y-2 scale-95"
       enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition-all duration-200 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
       leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 -translate-y-2 scale-95"
     >
@@ -133,10 +129,7 @@
           <p class="error-message__text">
             {{ message }}
           </p>
-          <div
-            v-if="action"
-            class="error-message__action"
-          >
+          <div v-if="action" class="error-message__action">
             <button
               type="button"
               class="error-message__action-button"
@@ -193,6 +186,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { themeConfig } from '../configs/theme.config'
 import { uiConfig } from '../configs/ui.config'
 import { componentStylesConfig } from '../configs/component-styles.config'
+import { animationConfig } from '../configs/animation.config'
 import { PROGRESS } from '~/server/utils/constants'
 
 interface Action {

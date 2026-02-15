@@ -8,10 +8,10 @@
   >
     <!-- Loading State - Palette's micro-UX delight! -->
     <Transition
-      enter-active-class="transition-all duration-300 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
       enter-from-class="opacity-0"
       enter-to-class="opacity-100"
-      leave-active-class="transition-all duration-200 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
@@ -29,7 +29,11 @@
         >
           <div class="loading-shimmer__ring" />
         </div>
-        <div v-else class="loading-simple" aria-hidden="true">
+        <div
+          v-else
+          class="loading-simple"
+          aria-hidden="true"
+        >
           <div class="loading-simple__dot" />
         </div>
         <span class="sr-only">Loading...</span>
@@ -38,10 +42,10 @@
 
     <!-- Error State Visualization - Palette's micro-UX delight! -->
     <Transition
-      enter-active-class="transition-all duration-500 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.slower} ease-out`"
       enter-from-class="opacity-0 scale-95 -translate-y-2"
       enter-to-class="opacity-100 scale-100 translate-y-0"
-      leave-active-class="transition-all duration-300 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-in`"
       leave-from-class="opacity-100 scale-100 translate-y-0"
       leave-to-class="opacity-0 scale-95 translate-y-2"
     >
@@ -123,12 +127,15 @@
       >
         <!-- Fade-in slot content - Palette's micro-UX delight! -->
         <Transition
-          enter-active-class="transition-all duration-500 ease-out"
+          :enter-active-class="`transition-all ${animationConfig.tailwindDurations.slower} ease-out`"
           enter-from-class="opacity-0 translate-y-2"
           enter-to-class="opacity-100 translate-y-0"
           appear
         >
-          <div v-show="isInitialized" class="client-error-boundary__content">
+          <div
+            v-show="isInitialized"
+            class="client-error-boundary__content"
+          >
             <slot />
           </div>
         </Transition>
@@ -136,7 +143,12 @@
     </ClientOnly>
 
     <!-- Screen reader announcement -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ announcementText }}
     </div>
   </div>
