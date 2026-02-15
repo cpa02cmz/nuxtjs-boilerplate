@@ -583,6 +583,26 @@ export const componentColorsConfig = {
     activity: {
       flag: process.env.MODERATION_ACTIVITY_FLAG || '#ffc107',
     },
+    // Card hover effects
+    cardHoverBorder:
+      process.env.MODERATION_CARD_HOVER_BORDER || 'rgba(59, 130, 246, 0.3)',
+    // Stat value counting color
+    countingColor: process.env.MODERATION_COUNTING_COLOR || '#3b82f6',
+    // Trend indicator colors
+    trendUpBg: process.env.MODERATION_TREND_UP_BG || 'rgba(34, 197, 94, 0.1)',
+    trendDownBg:
+      process.env.MODERATION_TREND_DOWN_BG || 'rgba(239, 68, 68, 0.1)',
+    // Link hover color
+    linkHoverColor: process.env.MODERATION_LINK_HOVER_COLOR || '#3b82f6',
+    // Empty state colors
+    emptyStateBgStart:
+      process.env.MODERATION_EMPTY_STATE_BG_START || 'rgba(59, 130, 246, 0.05)',
+    emptyStateBgEnd:
+      process.env.MODERATION_EMPTY_STATE_BG_END || 'rgba(59, 130, 246, 0.1)',
+    emptyStateBorder:
+      process.env.MODERATION_EMPTY_STATE_BORDER || 'rgba(59, 130, 246, 0.2)',
+    emptyStateIconColor:
+      process.env.MODERATION_EMPTY_STATE_ICON_COLOR || '#3b82f6',
   },
 
   // Confetti Celebration Colors - Flexy hates hardcoded confetti colors!

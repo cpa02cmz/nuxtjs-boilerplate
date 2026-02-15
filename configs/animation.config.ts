@@ -205,6 +205,8 @@ export const animationConfig = {
       process.env.RIPPLE_FADE_OUT_START || '0.7'
     ),
     fadeOutEndMultiplier: parseFloat(process.env.RIPPLE_FADE_OUT_END || '0.3'),
+    // Ripple animation duration (ms) - BugFixer's bug fix!
+    durationMs: parseInt(process.env.RIPPLE_DURATION_MS || '600'),
   },
 
   // SearchBar Shortcut Success Animation - Flexy hates hardcoded CSS colors!
@@ -1765,6 +1767,8 @@ export const animationConfig = {
     clickShrinkScale: parseFloat(
       process.env.MICRO_CLICK_SHRINK_SCALE || '0.97'
     ),
+    // Press animation duration for tactile feedback (ms) - BugFixer's bug fix!
+    pressDurationMs: parseInt(process.env.MICRO_PRESS_DURATION_MS || '100'),
   },
 
   // User Preference Settings - Palette's micro-UX enhancement!
@@ -2170,6 +2174,15 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.RECOMMENDATIONS_RESPECT_REDUCED_MOTION !== 'false',
+    // Sparkle burst animation settings
+    sparkleBurst: {
+      durationSec: `${parseInt(process.env.RECOMMENDATIONS_SPARKLE_DURATION_MS || '600') / 1000}s`,
+      staggerDelaySec: `${parseInt(process.env.RECOMMENDATIONS_SPARKLE_STAGGER_MS || '50') / 1000}s`,
+    },
+    // Card transition settings
+    cardTransition: {
+      durationSec: `${parseInt(process.env.RECOMMENDATIONS_CARD_TRANSITION_MS || '300') / 1000}s`,
+    },
   },
   // VirtualList Component Animations - Palette's micro-UX enhancement!
   // Staggered entrance animations and smooth transitions for virtual scrolling
@@ -2475,6 +2488,14 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.MODERATION_RESPECT_REDUCED_MOTION !== 'false',
+    // Card entrance animation duration in seconds
+    cardEntranceDurationSec: `${parseInt(process.env.MODERATION_CARD_ENTRANCE_DURATION_MS || '500') / 1000}s`,
+    // Activity entrance animation duration in seconds
+    activityEntranceDurationSec: `${parseInt(process.env.MODERATION_ACTIVITY_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Action button entrance animation duration in seconds
+    actionEntranceDurationSec: `${parseInt(process.env.MODERATION_ACTION_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Trend pulse animation duration in seconds
+    trendPulseDurationSec: `${parseInt(process.env.MODERATION_TREND_PULSE_DURATION_MS || '800') / 1000}s`,
   },
 
   // Resource Card Animations
@@ -2765,6 +2786,41 @@ export const animationConfig = {
     ),
     // CSS-compatible delay offset (seconds)
     delayOffsetSec: `${parseInt(process.env.FEATURES_ICON_POP_DELAY_OFFSET_MS || '150') / 1000}s`,
+  },
+
+  // Health Monitor Animations - BugFixer's bug fix! 🐛
+  // Animation settings for HealthMonitor component status changes
+  healthMonitor: {
+    // Delay before triggering haptic feedback on status change (ms)
+    hapticDelayMs: parseInt(
+      process.env.HEALTH_MONITOR_HAPTIC_DELAY_MS || '100'
+    ),
+    // Duration of success animation (ms)
+    successDurationMs: parseInt(
+      process.env.HEALTH_MONITOR_SUCCESS_DURATION_MS || '2000'
+    ),
+    // Success animation duration in seconds
+    successDurationSec: `${parseInt(process.env.HEALTH_MONITOR_SUCCESS_DURATION_MS || '2000') / 1000}s`,
+    // Duration of error animation (ms)
+    errorDurationMs: parseInt(
+      process.env.HEALTH_MONITOR_ERROR_DURATION_MS || '2000'
+    ),
+    // Error animation duration in seconds
+    errorDurationSec: `${parseInt(process.env.HEALTH_MONITOR_ERROR_DURATION_MS || '2000') / 1000}s`,
+    // Pulse animation duration in seconds
+    pulseDurationSec: `${parseInt(process.env.HEALTH_MONITOR_PULSE_DURATION_MS || '1500') / 1000}s`,
+    // Pulse scale multiplier
+    pulseScale: parseFloat(process.env.HEALTH_MONITOR_PULSE_SCALE || '1.1'),
+    // Success animation scale
+    successScale: parseFloat(process.env.HEALTH_MONITOR_SUCCESS_SCALE || '1.2'),
+    // Success rotation in degrees
+    successRotationDeg: parseInt(
+      process.env.HEALTH_MONITOR_SUCCESS_ROTATION_DEG || '360'
+    ),
+    // Spinner animation duration in ms
+    spinnerDurationMs: parseInt(
+      process.env.HEALTH_MONITOR_SPINNER_DURATION_MS || '1000'
+    ),
   },
 } as const
 
