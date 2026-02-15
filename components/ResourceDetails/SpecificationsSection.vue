@@ -391,7 +391,8 @@ onUnmounted(() => {
 }
 
 .skeleton-shimmer {
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer v-bind('animationConfig.skeleton.shimmerDurationSec')
+    ease-in-out infinite;
 }
 
 @keyframes shimmer {
@@ -537,7 +538,8 @@ onUnmounted(() => {
 }
 
 .animate-float {
-  animation: float 3s ease-in-out infinite;
+  animation: float v-bind('animationConfig.floatAnim.durationSec') ease-in-out
+    infinite;
 }
 
 @keyframes float {
