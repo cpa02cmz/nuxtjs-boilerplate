@@ -1271,6 +1271,10 @@ export const animationConfig = {
     iconAnimationDurationMs: parseInt(
       process.env.RESOURCE_HEADER_ICON_DURATION_MS || '300'
     ),
+    // Announcement clear delay after button click (ms) - Flexy hates hardcoded 1000!
+    announcementClearDelayMs: parseInt(
+      process.env.RESOURCE_HEADER_ANNOUNCEMENT_CLEAR_MS || '1000'
+    ),
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.RESOURCE_HEADER_RESPECT_REDUCED_MOTION !== 'false',
@@ -3065,6 +3069,10 @@ export const animationConfig = {
     ),
     // CSS duration string for undo progress
     undoProgressDurationSec: `${parseInt(process.env.SAVED_SEARCHES_UNDO_PROGRESS_MS || '5000') / 1000}s`,
+    // Restore state clear delay after undo animation (ms) - Flexy hates hardcoded 500!
+    restoreStateClearDelayMs: parseInt(
+      process.env.SAVED_SEARCHES_RESTORE_CLEAR_MS || '500'
+    ),
     // Progress bar color
     progressBarColor:
       process.env.SAVED_SEARCHES_PROGRESS_COLOR || 'rgba(245, 158, 11, 0.8)', // amber-500
@@ -3169,6 +3177,10 @@ export const animationConfig = {
     entranceFriction: parseFloat(
       process.env.MOBILE_DRAWER_ENTRANCE_FRICTION || '25'
     ),
+    // Filter count changed indicator reset delay (ms) - Flexy hates hardcoded 1000!
+    filterCountResetDelayMs: parseInt(
+      process.env.MOBILE_DRAWER_FILTER_RESET_MS || '1000'
+    ),
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.MOBILE_DRAWER_RESPECT_REDUCED_MOTION !== 'false',
@@ -3216,6 +3228,51 @@ export const animationConfig = {
     // Slow duration for emphasis animations (500ms) - Flexy hates hardcoded duration-500!
     slowMs: parseInt(process.env.PAGE_TRANSITION_SLOW_MS || '500'),
     slowSec: `${parseInt(process.env.PAGE_TRANSITION_SLOW_MS || '500') / 1000}s`,
+  },
+
+  // ============================================
+  // Palette ULW Loop - About Page Animations
+  // Micro-UX delight for the About page! 🎨
+  // ============================================
+
+  // About Page Entrance Animations
+  about: {
+    // Initial delay before starting entrance animations (ms)
+    entranceDelayMs: parseInt(process.env.ABOUT_ENTRANCE_DELAY_MS || '100'),
+
+    // Title animation settings
+    titleDurationMs: parseInt(process.env.ABOUT_TITLE_DURATION_MS || '600'),
+    titleDelayMs: parseInt(process.env.ABOUT_TITLE_DELAY_MS || '0'),
+
+    // Card/container animation settings
+    cardDurationMs: parseInt(process.env.ABOUT_CARD_DURATION_MS || '700'),
+    cardDelayMs: parseInt(process.env.ABOUT_CARD_DELAY_MS || '150'),
+
+    // Section title animation settings
+    sectionDurationMs: parseInt(process.env.ABOUT_SECTION_DURATION_MS || '500'),
+    sectionDelayMs: parseInt(process.env.ABOUT_SECTION_DELAY_MS || '300'),
+
+    // Description animation settings
+    descDurationMs: parseInt(process.env.ABOUT_DESC_DURATION_MS || '500'),
+    descDelayMs: parseInt(process.env.ABOUT_DESC_DELAY_MS || '400'),
+
+    // Category item animation settings
+    categoryDurationMs: parseInt(
+      process.env.ABOUT_CATEGORY_DURATION_MS || '500'
+    ),
+    // Stagger delay between each category item (ms)
+    staggerDelayMs: parseInt(process.env.ABOUT_STAGGER_DELAY_MS || '100'),
+
+    // Checkmark draw animation settings
+    checkmarkDurationMs: parseInt(
+      process.env.ABOUT_CHECKMARK_DURATION_MS || '400'
+    ),
+    checkmarkBaseDelayMs: parseInt(
+      process.env.ABOUT_CHECKMARK_BASE_DELAY_MS || '600'
+    ),
+    checkmarkStaggerMs: parseInt(
+      process.env.ABOUT_CHECKMARK_STAGGER_MS || '100'
+    ),
   },
 } as const
 

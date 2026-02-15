@@ -441,10 +441,10 @@ const restoreLastDeleted = () => {
     undoProgressAnimationFrame.value = null
   }
 
-  // Clear restoring state after animation
+  // Clear restoring state after animation - Flexy hates hardcoded values!
   setTimeout(() => {
     restoringItem.value = null
-  }, 500)
+  }, animationConfig.savedSearches.restoreStateClearDelayMs)
 
   // Emit undo event
   emit('undo-delete', search)
