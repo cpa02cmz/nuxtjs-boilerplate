@@ -25,9 +25,11 @@
         </Transition>
       </div>
       <div class="queue-filters">
+        <!-- Palette's micro-UX enhancement: Added aria-label for accessibility -->
         <select
           v-model="statusFilter"
           class="filter-select"
+          :aria-label="contentConfig.reviewQueue.aria.statusFilter"
         >
           <option value="">
             {{ contentConfig.reviewQueue.filters.allStatuses }}
@@ -42,20 +44,19 @@
             {{ contentConfig.reviewQueue.filters.rejected }}
           </option>
         </select>
+        <!-- Palette's micro-UX enhancement: Added aria-label for accessibility -->
         <input
           v-model="categoryFilter"
           type="text"
           :placeholder="moderationConfig.ui.categoryFilterPlaceholder"
           class="filter-input"
-        >
+          :aria-label="contentConfig.reviewQueue.aria.categoryFilter"
+        />
       </div>
     </div>
 
     <!-- Loading State with Skeleton Animation -->
-    <div
-      v-if="loading"
-      class="loading-state"
-    >
+    <div v-if="loading" class="loading-state">
       <div class="skeleton-wrapper">
         <div
           v-for="n in 3"
@@ -90,6 +91,8 @@
       tag="div"
       class="submissions-list"
       :class="{ 'reduced-motion': prefersReducedMotion }"
+      role="list"
+      :aria-label="contentConfig.reviewQueue.aria.submissionsList"
     >
       <div
         v-for="(submission, index) in filteredSubmissions"
@@ -100,6 +103,12 @@
           'submission-enter': !prefersReducedMotion,
         }"
         :style="getCardStyle(index)"
+        role="listitem"
+        :aria-label="
+          contentConfig.reviewQueue.aria.submissionCard
+            .replace('{{submitter}}', submission.submittedBy)
+            .replace('{{title}}', submission.resourceData?.title || 'Untitled')
+        "
         @mouseenter="hoveredCard = submission.id"
         @mouseleave="hoveredCard = null"
         @focusin="hoveredCard = submission.id"
@@ -111,10 +120,7 @@
             :class="['status-badge', `status-${submission.status}`]"
             :aria-label="`Status: ${submission.status}`"
           >
-            <span
-              class="status-icon"
-              aria-hidden="true"
-            >
+            <span class="status-icon" aria-hidden="true">
               <svg
                 v-if="submission.status === 'pending'"
                 class="w-3 h-3"
@@ -264,10 +270,7 @@
     </TransitionGroup>
 
     <!-- Empty State with Illustration -->
-    <div
-      v-else
-      class="empty-state"
-    >
+    <div v-else class="empty-state">
       <div
         class="empty-illustration"
         :class="{ 'float-animation': !prefersReducedMotion }"
@@ -291,9 +294,7 @@
       <p class="empty-title">
         {{ contentConfig.reviewQueue.emptyState }}
       </p>
-      <p class="empty-subtitle">
-        New submissions will appear here
-      </p>
+      <p class="empty-subtitle">New submissions will appear here</p>
     </div>
   </div>
 </template>
