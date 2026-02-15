@@ -11,25 +11,31 @@
 
     <!-- Comment Form with Micro-UX Enhancements -->
     <div
-      class="bg-white border border-gray-200 rounded-lg p-6 mb-6 transition-all duration-300"
-      :class="{
-        'ring-2 ring-blue-500 ring-opacity-50 shadow-lg': isTextareaFocused,
-        'shadow-sm': !isTextareaFocused,
-      }"
+      class="bg-white border border-gray-200 rounded-lg p-6 mb-6 transition-all"
+      :class="[
+        animationConfig.tailwindDurations.standard,
+        {
+          'ring-2 ring-blue-500 ring-opacity-50 shadow-lg': isTextareaFocused,
+          'shadow-sm': !isTextareaFocused,
+        },
+      ]"
     >
       <div class="relative">
         <textarea
           ref="textareaRef"
           v-model="newComment"
           :placeholder="contentConfig.comments.placeholders.newComment"
-          class="w-full p-3 pr-12 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none overflow-hidden"
-          :class="{
-            'border-red-300 focus:ring-red-500 focus:border-red-500':
-              isOverLimit,
-            'border-yellow-300 focus:ring-yellow-500 focus:border-yellow-500':
-              isNearLimit && !isOverLimit,
-            'animate-textarea-glow': showSuccessGlow && !prefersReducedMotion,
-          }"
+          class="w-full p-3 pr-12 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none overflow-hidden"
+          :class="[
+            animationConfig.tailwindDurations.normal,
+            {
+              'border-red-300 focus:ring-red-500 focus:border-red-500':
+                isOverLimit,
+              'border-yellow-300 focus:ring-yellow-500 focus:border-yellow-500':
+                isNearLimit && !isOverLimit,
+              'animate-textarea-glow': showSuccessGlow && !prefersReducedMotion,
+            },
+          ]"
           :rows="MIN_ROWS"
           :aria-label="contentConfig.comments.aria.addComment"
           :aria-describedby="`comment-hint-${uniqueId}`"
@@ -43,11 +49,14 @@
         <!-- Character Counter Ring - Palette's Micro-UX Delight! -->
         <div
           v-if="newComment.length > 0"
-          class="absolute right-3 top-3 transition-all duration-300"
-          :class="{
-            'scale-100 opacity-100': newComment.length > 0,
-            'scale-0 opacity-0': newComment.length === 0,
-          }"
+          class="absolute right-3 top-3 transition-all"
+          :class="[
+            animationConfig.tailwindDurations.standard,
+            {
+              'scale-100 opacity-100': newComment.length > 0,
+              'scale-0 opacity-0': newComment.length === 0,
+            },
+          ]"
         >
           <div
             class="relative w-8 h-8"
@@ -73,10 +82,10 @@
                 stroke="currentColor"
                 stroke-width="3"
                 stroke-linecap="round"
+                class="transition-all duration-300 ease-out"
                 :stroke-dasharray="circumference"
                 :stroke-dashoffset="strokeDashOffset"
                 :class="progressColorClass"
-                class="transition-all duration-300 ease-out"
               />
             </svg>
             <!-- Count text -->
@@ -96,8 +105,11 @@
         class="mt-2 flex items-center justify-between text-sm"
       >
         <span
-          class="transition-colors duration-200"
-          :class="hintTextColorClass"
+          class="transition-colors"
+          :class="[
+            animationConfig.tailwindDurations.normal,
+            hintTextColorClass,
+          ]"
         >
           <template v-if="isOverLimit">
             <span class="flex items-center gap-1">
@@ -159,8 +171,11 @@
 
         <!-- Submit Button with Loading State -->
         <button
-          class="inline-flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          :class="submitButtonClasses"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          :class="[
+            animationConfig.tailwindDurations.normal,
+            submitButtonClasses,
+          ]"
           :disabled="!canSubmit || isSubmitting"
           :aria-label="
             isSubmitting
