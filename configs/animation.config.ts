@@ -587,6 +587,10 @@ export const animationConfig = {
     autoDismissIntervalMs: parseInt(
       process.env.PWA_AUTO_DISMISS_INTERVAL_MS || '50'
     ),
+    // Palette's micro-UX enhancement: Delay before announcing prompt appearance to screen readers
+    promptAnnouncementDelayMs: parseInt(
+      process.env.PWA_PROMPT_ANNOUNCEMENT_DELAY_MS || '500'
+    ),
   },
 
   // Offline Indicator Connection Pulse - Palette's micro-UX enhancement!

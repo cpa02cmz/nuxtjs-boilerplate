@@ -449,6 +449,10 @@ export const contentConfig = {
         process.env.CONTENT_PWA_ARIA_INSTALL || 'Install application',
       closeButton: process.env.CONTENT_PWA_ARIA_CLOSE || 'Close install prompt',
       appIcon: process.env.CONTENT_PWA_ARIA_ICON || 'App icon',
+      // Palette's micro-UX enhancement: Announce prompt appearance for screen readers
+      promptAppeared:
+        process.env.CONTENT_PWA_ARIA_PROMPT_APPEARED ||
+        'Install app prompt has appeared. Press Tab to navigate to install options, or Escape to dismiss.',
     },
   },
 
