@@ -19,14 +19,14 @@ model AnalyticsEvent {
   properties String?
   deletedAt  DateTime?
 
-  // Core indexes (7 total, reduced from 13)
-  @@index([timestamp]) // Time-based queries
-  @@index([timestamp, type]) // Time + event type
+  // Optimized indexes (5 total, reduced from 7)
+  // Removed: @@index([timestamp]) - covered by composite indexes with timestamp prefix
+  // Removed: @@index([resourceId, type]) - covered by comprehensive index below
+  @@index([timestamp, type]) // Time + event type queries
   @@index([timestamp, resourceId]) // Time + resource lookups
-  @@index([resourceId, type]) // Resource + event type
-  @@index([ip, timestamp]) // IP time-series analysis
-  @@index([category, timestamp]) // Category analytics
-  @@index([resourceId, type, timestamp, deletedAt]) // Complex analytics with soft delete
+  @@index([ip, timestamp]) // IP time-series analysis (unique access pattern)
+  @@index([category, timestamp]) // Category analytics (unique access pattern)
+  @@index([resourceId, type, timestamp, deletedAt]) // Comprehensive analytics with soft delete
 }
 
 model RateLimit {
