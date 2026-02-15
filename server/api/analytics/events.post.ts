@@ -85,6 +85,22 @@ export default defineEventHandler(async event => {
           'AnalyticsEvent table not found - event dropped (run migrations to enable analytics)'
         )
         // Return success anyway to prevent console errors in development
+        return sendSuccessResponse(
+          event,
+          {
+            eventId: randomUUID(),
+            message:
+              'Analytics event accepted but not stored - database table not available',
+            rateLimit: {
+              remaining: rateLimitConfig.defaults.maxRequests,
+              limit: rateLimitConfig.defaults.maxRequests,
+              reset: new Date(
+                Date.now() + rateLimitConfig.defaults.windowSeconds * 1000
+              ).toISOString(),
+            },
+          },
+          201
+        )
       } else {
         const error = createApiError(
           ErrorCode.INTERNAL_SERVER_ERROR,

@@ -211,8 +211,11 @@ export function useTimeAgo(
     if (live && !prefersReducedMotion.value) {
       const unwatch = watch(seconds, newSeconds => {
         const currentInterval = calculateUpdateInterval(newSeconds)
-        // Only recalculate interval if the category changed significantly
-        if (Math.abs(currentInterval - lastIntervalCalc) > 1000) {
+        // Only recalculate interval if the category changed significantly - Flexy hates hardcoded 1000ms!
+        if (
+          Math.abs(currentInterval - lastIntervalCalc) >
+          timeConfig.intervalRecalculationThresholdMs
+        ) {
           lastIntervalCalc = currentInterval
           setupInterval()
         }

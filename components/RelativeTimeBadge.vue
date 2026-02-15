@@ -10,6 +10,8 @@
         ...badgeClasses,
         {
           'relative-time-badge--updating': isUpdating && !prefersReducedMotion,
+          'relative-time-badge--new-flash':
+            showNewFlash && !prefersReducedMotion,
         },
       ]"
       :aria-label="ariaLabel"
@@ -31,6 +33,7 @@ import { computed, ref, onMounted, watch } from 'vue'
 import { useTimeAgo } from '~/composables/useTimeAgo'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { EASING } from '~/configs/easing.config'
 
 interface Props {
   /** Timestamp to display */
@@ -68,6 +71,11 @@ const prefersReducedMotion = ref(false)
 const isUpdating = ref(false)
 const lastUpdateTime = ref<number>(0)
 let updateTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Palette's micro-UX enhancement: New Item Flash Animation ✨
+// Brief celebratory flash for items just posted (within threshold)
+const showNewFlash = ref(false)
+let newFlashTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Watch for timeAgo changes and trigger update animation
 watch(timeAgo, (newValue, oldValue) => {
@@ -115,6 +123,29 @@ onMounted(() => {
       '(prefers-reduced-motion: reduce)'
     ).matches
   }
+
+  // Palette's micro-UX enhancement: Trigger new item flash for just-posted items
+  // This provides delightful visual feedback when content is brand new
+  if (
+    isJustPosted.value &&
+    !prefersReducedMotion.value &&
+    animationConfig.relativeTimeBadge.newItemFlash.enabled
+  ) {
+    // Small delay to let the component fully render first
+    setTimeout(() => {
+      showNewFlash.value = true
+
+      // Clear any existing timeout
+      if (newFlashTimeout) {
+        clearTimeout(newFlashTimeout)
+      }
+
+      // Reset flash state after animation completes
+      newFlashTimeout = setTimeout(() => {
+        showNewFlash.value = false
+      }, animationConfig.relativeTimeBadge.newItemFlash.durationMs)
+    }, 100)
+  }
 })
 
 // Check if item is within recent threshold
@@ -122,6 +153,13 @@ const isWithinRecentThreshold = computed(() => {
   const date = new Date(props.timestamp)
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000)
   return seconds < props.recentThresholdSec
+})
+
+// Check if item is "just posted" and should show flash animation
+const isJustPosted = computed(() => {
+  const date = new Date(props.timestamp)
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000)
+  return seconds < animationConfig.relativeTimeBadge.newItemFlash.thresholdSec
 })
 
 // Badge classes based on size and state
@@ -292,6 +330,60 @@ const ariaLabel = computed(() => {
 @media (prefers-reduced-motion: reduce) {
   .relative-time-badge--updating,
   .relative-time-badge--updating .relative-time-text {
+    animation: none;
+  }
+}
+
+/* Palette's micro-UX enhancement: New Item Flash Animation ✨
+   Brief celebratory flash for items just posted (within seconds) */
+.relative-time-badge--new-flash {
+  animation: new-item-flash
+    v-bind('`${animationConfig.relativeTimeBadge.newItemFlash.durationMs}ms`')
+    v-bind('EASING.SPRING_STANDARD') forwards;
+}
+
+.relative-time-badge--new-flash .relative-time-text {
+  animation: new-item-text-flash
+    v-bind('`${animationConfig.relativeTimeBadge.newItemFlash.durationMs}ms`')
+    v-bind('EASING.SPRING_STANDARD') forwards;
+}
+
+@keyframes new-item-flash {
+  0% {
+    background-color: transparent;
+    box-shadow: 0 0 0 0 transparent;
+  }
+  30% {
+    background-color: v-bind(
+      'animationConfig.relativeTimeBadge.newItemFlash.flashColor'
+    );
+    box-shadow: 0 0 0 3px
+      v-bind('animationConfig.relativeTimeBadge.newItemFlash.flashColor');
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@keyframes new-item-text-flash {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(
+      v-bind('animationConfig.relativeTimeBadge.newItemFlash.scalePeak')
+    );
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Reduced motion support: Disable new item flash */
+@media (prefers-reduced-motion: reduce) {
+  .relative-time-badge--new-flash,
+  .relative-time-badge--new-flash .relative-time-text {
     animation: none;
   }
 }

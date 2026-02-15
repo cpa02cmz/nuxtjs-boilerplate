@@ -190,6 +190,12 @@ export const timeConfig = {
       process.env.CACHE_PATTERN_MATCH_TIMEOUT_MS || '100'
     ),
   },
+
+  // Interval recalculation threshold - Flexy hates hardcoded 1000ms!
+  // Minimum difference in ms to trigger interval recalculation in useTimeAgo
+  intervalRecalculationThresholdMs: parseInt(
+    process.env.TIME_AGO_INTERVAL_RECALC_THRESHOLD_MS || '1000'
+  ),
 } as const
 
 // Type exports
