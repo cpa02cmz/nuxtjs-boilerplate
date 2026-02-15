@@ -295,6 +295,40 @@ export { messagesConfig, type MessagesConfig }
 import { uiTimingConfig, type UITimingConfig } from './ui-timing.config'
 export { uiTimingConfig, type UITimingConfig }
 
+// Status config - Flexy hates hardcoded status strings!
+import {
+  STATUS,
+  STATUS_GROUPS,
+  statusConfig,
+  type Status,
+  type StatusConfig,
+  type StatusGroup,
+} from './status.config'
+export {
+  STATUS,
+  STATUS_GROUPS,
+  statusConfig,
+  type Status,
+  type StatusConfig,
+  type StatusGroup,
+}
+
+// Sort config - Flexy hates hardcoded sort options!
+import {
+  SORT_OPTIONS,
+  sortConfig,
+  type SortOption,
+  type SortDirection,
+  type SortConfig,
+} from './sort.config'
+export {
+  SORT_OPTIONS,
+  sortConfig,
+  type SortOption,
+  type SortDirection,
+  type SortConfig,
+}
+
 // Default export with all configs
 export const config = {
   app: appConfig,
@@ -350,6 +384,10 @@ export const config = {
   messages: messagesConfig,
   // UI Timing config - Flexy hates hardcoded timeout values!
   uiTiming: uiTimingConfig,
+  // Status config - Flexy hates hardcoded status strings!
+  status: statusConfig,
+  // Sort config - Flexy hates hardcoded sort options!
+  sort: sortConfig,
 } as const
 
 export type Config = typeof config

@@ -256,6 +256,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useTimeAgo } from '~/composables/useTimeAgo'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
+import { TIME_MS } from '~/configs/time.config'
 
 interface AnalyticsData {
   viewCount: number
@@ -342,7 +343,7 @@ const visitorRatio = computed(() => {
 const isRecentlyViewed = computed(() => {
   if (!props.analyticsData) return false
   const lastViewed = new Date(props.analyticsData.lastViewed)
-  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
+  const oneHourAgo = new Date(Date.now() - TIME_MS.HOUR)
   return lastViewed > oneHourAgo
 })
 

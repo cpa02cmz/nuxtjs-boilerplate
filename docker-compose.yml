@@ -1,4 +1,24 @@
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: nuxtjs-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-nuxtjs_boilerplate}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   app:
     build:
       context: .
@@ -11,9 +31,13 @@ services:
       - NUXT_HOST=0.0.0.0
       - NUXT_PORT=3000
       - NUXT_PUBLIC_CANONICAL_URL=${NUXT_PUBLIC_CANONICAL_URL:-http://localhost:3000}
-      - DATABASE_URL=${DATABASE_URL:-file:./data/dev.db}
-    volumes:
-      - ./data:/app/data
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@db:5432/nuxtjs_boilerplate}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-nuxtjs_boilerplate}
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - app-network
     security_opt:
@@ -50,5 +74,5 @@ networks:
     driver: bridge
 
 volumes:
-  data:
+  postgres_data:
     driver: local

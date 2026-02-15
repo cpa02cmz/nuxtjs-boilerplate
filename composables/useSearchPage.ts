@@ -10,6 +10,7 @@ import { useResourceSort } from './useResourceSort'
 import { trackSearch, trackFilter } from '~/utils/analytics'
 import { animationConfig } from '~/configs/animation.config'
 import { limitsConfig } from '~/configs/limits.config'
+import { SORT_OPTIONS } from '~/configs/sort.config'
 
 // Extended filter options for search page
 export interface SearchPageFilterOptions {
@@ -75,7 +76,7 @@ export const useSearchPage = () => {
     dateRange: 'anytime',
   })
 
-  const sortOption = ref<SortOption>('relevance')
+  const sortOption = ref<SortOption>(SORT_OPTIONS.RELEVANCE)
 
   const advancedSearch = useAdvancedResourceSearch(resources.value)
 
@@ -246,7 +247,7 @@ export const useSearchPage = () => {
       benefits: [],
       dateRange: 'anytime',
     }
-    sortOption.value = 'relevance'
+    sortOption.value = SORT_OPTIONS.RELEVANCE
   }
 
   const handleSearch = (query: string) => {

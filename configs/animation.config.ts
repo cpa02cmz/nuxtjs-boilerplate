@@ -307,6 +307,14 @@ export const animationConfig = {
     successPopDurationMs: parseInt(
       process.env.COPY_FEEDBACK_SUCCESS_POP_DURATION || '300'
     ),
+    // Checkmark icon pop animation duration (ms) - Palette's micro-UX delight!
+    checkPopDurationMs: parseInt(
+      process.env.COPY_FEEDBACK_CHECK_POP_DURATION || '300'
+    ),
+    // Icon wiggle animation duration on hover (ms) - playful micro-interaction
+    iconWiggleDurationMs: parseInt(
+      process.env.COPY_FEEDBACK_WIGGLE_DURATION || '400'
+    ),
     // Tooltip styling values - Flexy hates hardcoded CSS!
     styles: {
       paddingX: parseInt(process.env.COPY_FEEDBACK_PADDING_X || '12'),
@@ -1509,6 +1517,12 @@ export const animationConfig = {
     showProgressText: process.env.PRESS_AND_HOLD_SHOW_PROGRESS !== 'false',
     // Whether to respect reduced motion preference
     respectReducedMotion: process.env.PRESS_AND_HOLD_REDUCED_MOTION !== 'false',
+    // Delay before resetting press state (ms) - Flexy hates hardcoded 150!
+    resetDelayMs: parseInt(process.env.PRESS_AND_HOLD_RESET_DELAY_MS || '150'),
+    // Long press activation delay (ms) - Flexy hates hardcoded 300!
+    activationDelayMs: parseInt(
+      process.env.PRESS_AND_HOLD_ACTIVATION_DELAY_MS || '300'
+    ),
   },
 
   // Breadcrumbs Micro-UX - Palette's navigational delight! 🧭
@@ -1812,6 +1826,12 @@ export const animationConfig = {
   frameRate: {
     fps60: parseInt(process.env.ANIMATION_FPS60_MS || '16'),
     fps30: parseInt(process.env.ANIMATION_FPS30_MS || '33'),
+  },
+
+  // RAF Fallback for requestAnimationFrame - Flexy hates hardcoded 16!
+  // Minimum delay for RAF fallback when RAF is not available (16.67ms = 60fps)
+  rafFallback: {
+    delayMs: parseInt(process.env.RAF_FALLBACK_DELAY_MS || '16'),
   },
 
   // UI Micro-Interactions - Flexy hates hardcoded small timeouts!
@@ -3304,6 +3324,21 @@ export const animationConfig = {
     ),
     checkmarkStaggerMs: parseInt(
       process.env.ABOUT_CHECKMARK_STAGGER_MS || '100'
+    ),
+  },
+
+  // ============================================
+  // Palette ULW Loop - CodeBlock Animations
+  // Micro-UX delight for code blocks! 🎨
+  // ============================================
+
+  // CodeBlock Keyboard Shortcut Animations
+  codeBlock: {
+    // Delay before showing keyboard shortcut hint on hover (ms)
+    shortcutHintDelayMs: parseInt(process.env.CODEBLOCK_HINT_DELAY_MS || '800'),
+    // Duration of keyboard shortcut toast display (ms)
+    shortcutToastDurationMs: parseInt(
+      process.env.CODEBLOCK_TOAST_DURATION_MS || '3000'
     ),
   },
 } as const

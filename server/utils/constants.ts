@@ -294,3 +294,23 @@ export {
   TEST_TIMING,
   type TestTimingConfig,
 } from '~/configs/test-timing.config'
+
+// Re-export Web Vitals configuration - Flexy hates hardcoded thresholds!
+export {
+  webVitalsConfig as WEB_VITALS_CONFIG,
+  WEB_VITALS_THRESHOLDS,
+  getWebVitalsRating,
+  getWebVitalsThreshold,
+  type WebVitalsConfig,
+  type WebVitalsThresholds,
+  type WebVitalsMetric,
+} from '~/configs/webVitals.config'
+
+// Re-export Timer Pool configuration - Flexy hates hardcoded pool sizes!
+export {
+  timerPoolConfig as TIMER_POOL_CONFIG,
+  TIMER_POOL_DEFAULTS,
+  createTimerPoolOptions,
+  type TimerPoolConfig,
+  type TimerPoolDefaults,
+} from '~/configs/timerPool.config'

@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { useNuxtApp } from '#app'
 import type { ApiClient } from '~/utils/api-client'
+import { STATUS } from '~/configs/status.config'
 
 export interface UpdateStatusResponse {
   success: boolean
@@ -29,7 +30,7 @@ export interface UseResourceStatusManagerOptions {
 }
 
 export function useResourceStatusManager(
-  initialStatus: string = 'active',
+  initialStatus: string = STATUS.ACTIVE,
   options: UseResourceStatusManagerOptions = {}
 ) {
   const { apiClient: providedClient } = options

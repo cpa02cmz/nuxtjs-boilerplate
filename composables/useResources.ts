@@ -6,6 +6,7 @@ import { useResourceSort } from './useResourceSort'
 import { useSearchHistory } from './useSearchHistory'
 import { useResourceSearchFilter } from './useResourceSearchFilter'
 import type { Resource, SortOption, FilterOptions } from '~/types/resource'
+import { SORT_OPTIONS } from '~/configs/sort.config'
 
 // Re-export types for convenience
 export type { Resource, SortOption, FilterOptions }
@@ -27,7 +28,7 @@ export const useResources = () => {
     retryResources,
   } = useResourceData()
 
-  const sortOption = ref<SortOption>('popularity-desc')
+  const sortOption = ref<SortOption>(SORT_OPTIONS.POPULARITY_DESC)
 
   const setSortOption = (option: SortOption) => {
     sortOption.value = option
