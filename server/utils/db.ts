@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaBetterSQLite3 as PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
 import { databaseConfig } from '~/configs/database.config'
 
 // Flexy hates hardcoded values! Using config for log prefix
@@ -8,31 +7,6 @@ const LOG_PREFIX = databaseConfig.logging.prefix
 declare global {
   var __dbPrisma: PrismaClient | undefined
 }
-
-// SQLite connection configuration
-// Note: SQLite is file-based and doesn't use connection pooling like PostgreSQL/MySQL
-// The better-sqlite3 adapter handles connections differently - it's synchronous and
-// uses a single connection per database file. We configure timeout for busy handling.
-const getDatabaseConfig = () => {
-  const env = process.env.NODE_ENV || 'development'
-
-  // Environment-specific configurations - now using modular databaseConfig
-  const configs = {
-    development: {
-      timeout: databaseConfig.timeouts.development,
-    },
-    production: {
-      timeout: databaseConfig.timeouts.production,
-    },
-    test: {
-      timeout: databaseConfig.timeouts.test,
-    },
-  }
-
-  return configs[env as keyof typeof configs] || configs.development
-}
-
-const dbConfig = getDatabaseConfig()
 
 // FIXED: Add retry logic and error handling for database connection
 const MAX_RETRIES = databaseConfig.retries.maxAttempts
@@ -47,15 +21,17 @@ function createPrismaClient(): PrismaClient {
   const attemptConnection = (): PrismaClient => {
     try {
       const client = new PrismaClient({
-        adapter: new PrismaBetterSqlite3({
-          url: databaseConfig.paths.defaultDb,
-          timeout: dbConfig.timeout,
-        }),
+        log:
+          process.env.NODE_ENV === 'development'
+            ? ['query', 'info', 'warn', 'error']
+            : ['error'],
       })
 
       // Log successful connection
       if (process.env.NODE_ENV !== 'test') {
-        console.log(`${LOG_PREFIX} Prisma client initialized successfully`)
+        console.log(
+          `${LOG_PREFIX} Prisma client initialized successfully with PostgreSQL`
+        )
       }
 
       return client
