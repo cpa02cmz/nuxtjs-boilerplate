@@ -142,6 +142,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
   /**
@@ -265,6 +266,12 @@ watch(progress, newProgress => {
     lastAnnouncedProgress.value = milestone
     progressAnnouncement.value = `${milestone}% reading progress`
 
+    // Palette's micro-UX delight: Haptic feedback at reading milestones
+    // Provides subtle tactile feedback as users progress through content
+    if (!prefersReducedMotion.value) {
+      hapticLight()
+    }
+
     // Clear announcement after screen reader has time to read it
     setTimeout(() => {
       progressAnnouncement.value = ''
@@ -282,6 +289,11 @@ watch(progress, newProgress => {
     progressAnnouncement.value =
       contentConfig.readingProgress?.completionAnnouncement ||
       'Reading complete! Congratulations!'
+
+    // Palette's micro-UX delight: Celebratory haptic feedback for 100% completion
+    // Double pulse pattern for achievement celebration
+    hapticLight()
+    setTimeout(() => hapticLight(), 150)
 
     // Clear any existing timeout
     if (celebrationTimeout) {
