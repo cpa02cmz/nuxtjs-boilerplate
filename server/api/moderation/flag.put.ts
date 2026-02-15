@@ -20,8 +20,7 @@ export default defineEventHandler(async event => {
 
     // Validate required fields
     if (!body.resourceId) {
-      sendBadRequestError(event, 'Resource ID is required')
-      return
+      return sendBadRequestError(event, 'Resource ID is required')
     }
 
     if (
@@ -29,13 +28,11 @@ export default defineEventHandler(async event => {
       typeof body.reason !== 'string' ||
       body.reason.trim().length === 0
     ) {
-      sendBadRequestError(event, 'Flag reason is required')
-      return
+      return sendBadRequestError(event, 'Flag reason is required')
     }
 
     if (!body.reportedBy) {
-      sendBadRequestError(event, 'Reporter ID is required')
-      return
+      return sendBadRequestError(event, 'Reporter ID is required')
     }
 
     const resourceExists = mockResources.some(
@@ -47,8 +44,7 @@ export default defineEventHandler(async event => {
     )
 
     if (!resourceExists) {
-      sendNotFoundError(event, 'Resource', body.resourceId)
-      return
+      return sendNotFoundError(event, 'Resource', body.resourceId)
     }
 
     // Create a flag

@@ -21,8 +21,7 @@ export default defineEventHandler(async event => {
     const resourceId = getRouterParam(event, 'id')
 
     if (!resourceId) {
-      sendBadRequestError(event, 'Resource ID is required')
-      return
+      return sendBadRequestError(event, 'Resource ID is required')
     }
 
     // Generate cache key
@@ -44,8 +43,7 @@ export default defineEventHandler(async event => {
     const resource = resources.find(r => r.id === resourceId)
 
     if (!resource) {
-      sendNotFoundError(event, 'Resource', resourceId)
-      return
+      return sendNotFoundError(event, 'Resource', resourceId)
     }
 
     // Get alternative resources based on alternatives field and similarity

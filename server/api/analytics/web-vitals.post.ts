@@ -5,6 +5,11 @@
 import { defineEventHandler, readBody, getRequestHeaders } from 'h3'
 import { z } from 'zod'
 import logger from '~/utils/logger'
+import {
+  sendSuccessResponse,
+  sendBadRequestError,
+  handleApiRouteError,
+} from '~/server/utils/api-response'
 
 // Validation schema for web vitals report
 const webVitalsSchema = z.object({
@@ -29,11 +34,9 @@ export default defineEventHandler(async event => {
     const result = webVitalsSchema.safeParse(body)
     if (!result.success) {
       logger.warn('Invalid web vitals data:', result.error.issues)
-      return {
-        success: false,
-        message: 'Invalid data format',
+      return sendBadRequestError(event, 'Invalid data format', {
         errors: result.error.issues,
-      }
+      })
     }
 
     const report = result.data
@@ -65,15 +68,11 @@ export default defineEventHandler(async event => {
       })
     }
 
-    return {
-      success: true,
+    return sendSuccessResponse(event, {
       message: 'Metric received',
-    }
+    })
   } catch (error) {
     logger.error('Web vitals API error:', error)
-    return {
-      success: false,
-      message: 'Internal server error',
-    }
+    return handleApiRouteError(event, error)
   }
 })
