@@ -1,9 +1,9 @@
 <template>
   <Transition
-    enter-active-class="transition-all duration-300 ease-out"
+    :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
     enter-from-class="opacity-0 translate-y-2"
     enter-to-class="opacity-100 translate-y-0"
-    leave-active-class="transition-all duration-200 ease-in"
+    :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
     leave-from-class="opacity-100 translate-y-0"
     leave-to-class="opacity-0 -translate-y-2"
   >
@@ -15,7 +15,10 @@
     >
       <!-- Header with icon -->
       <div class="related-searches__header">
-        <span class="related-searches__icon" aria-hidden="true">
+        <span
+          class="related-searches__icon"
+          aria-hidden="true"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             :class="['h-4 w-4', isSearching ? 'animate-spin' : '']"
@@ -43,13 +46,13 @@
         :aria-label="contentConfig.relatedSearches.aria.group"
       >
         <TransitionGroup
-          enter-active-class="transition-all duration-300 ease-out"
+          :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
           enter-from-class="opacity-0 scale-90 translate-y-2"
           enter-to-class="opacity-100 scale-100 translate-y-0"
-          leave-active-class="transition-all duration-200 ease-in"
+          :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
           leave-from-class="opacity-100 scale-100"
           leave-to-class="opacity-0 scale-90"
-          move-class="transition-transform duration-300"
+          :move-class="`transition-transform ${animationConfig.tailwindDurations.standard}`"
         >
           <button
             v-for="(search, index) in relatedSearches"
@@ -93,7 +96,10 @@
             </span>
 
             <!-- Search icon -->
-            <span class="button-icon" aria-hidden="true">
+            <span
+              class="button-icon"
+              aria-hidden="true"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-3 w-3"
@@ -139,7 +145,12 @@
       </div>
 
       <!-- Screen reader announcements -->
-      <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+      <div
+        class="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         {{ announcement }}
       </div>
     </div>
