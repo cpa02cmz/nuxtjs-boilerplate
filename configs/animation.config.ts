@@ -2609,8 +2609,16 @@ export const animationConfig = {
     cardEntranceDurationSec: `${parseInt(process.env.MODERATION_CARD_ENTRANCE_DURATION_MS || '500') / 1000}s`,
     // Activity entrance animation duration in seconds
     activityEntranceDurationSec: `${parseInt(process.env.MODERATION_ACTIVITY_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Base delay offset for activity animations (ms) - Flexy hates hardcoded 400ms!
+    activityDelayOffsetMs: parseInt(
+      process.env.MODERATION_ACTIVITY_DELAY_OFFSET_MS || '400'
+    ),
     // Action button entrance animation duration in seconds
     actionEntranceDurationSec: `${parseInt(process.env.MODERATION_ACTION_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Base delay offset for action button animations (ms) - Flexy hates hardcoded 600ms!
+    actionDelayOffsetMs: parseInt(
+      process.env.MODERATION_ACTION_DELAY_OFFSET_MS || '600'
+    ),
     // Trend pulse animation duration in seconds
     trendPulseDurationSec: `${parseInt(process.env.MODERATION_TREND_PULSE_DURATION_MS || '800') / 1000}s`,
     // Float animation duration in seconds (for empty state)
@@ -3068,6 +3076,38 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.SAVED_SEARCHES_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // Lazy Resource Card Animations - Palette's micro-UX delight! 🎨
+  // Smooth entrance and hover effects for lazy-loaded resource cards
+  lazyResourceCard: {
+    // Entrance animation duration (ms)
+    entranceDurationMs: parseInt(
+      process.env.LAZY_CARD_ENTRANCE_DURATION_MS || '400'
+    ),
+    // CSS duration string for v-bind()
+    entranceDurationSec: `${parseInt(process.env.LAZY_CARD_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Entrance easing function
+    entranceEasing:
+      process.env.LAZY_CARD_ENTRANCE_EASING ||
+      'cubic-bezier(0.34, 1.56, 0.64, 1)',
+    // Distance to translate from during entrance (px)
+    entranceDistancePx: parseInt(
+      process.env.LAZY_CARD_ENTRANCE_DISTANCE_PX || '16'
+    ),
+    // Starting scale for entrance animation
+    entranceStartScale: parseFloat(
+      process.env.LAZY_CARD_ENTRANCE_START_SCALE || '0.95'
+    ),
+    // Hover lift effect distance (px)
+    hoverLiftPx: parseInt(process.env.LAZY_CARD_HOVER_LIFT_PX || '-4'),
+    // Hover scale effect
+    hoverScale: parseFloat(process.env.LAZY_CARD_HOVER_SCALE || '1.02'),
+    // Skeleton shimmer animation duration (seconds)
+    shimmerDurationSec: `${parseInt(process.env.LAZY_CARD_SHIMMER_DURATION_MS || '1500') / 1000}s`,
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.LAZY_CARD_RESPECT_REDUCED_MOTION !== 'false',
   },
 
   // SVG Stroke Dasharray Values - Flexy hates hardcoded stroke-dasharray!
