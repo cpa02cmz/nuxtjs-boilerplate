@@ -55,7 +55,11 @@
     </div>
 
     <!-- Specifications Grid -->
-    <dl v-else :class="gridClass" class="specifications-grid">
+    <dl
+      v-else
+      :class="gridClass"
+      class="specifications-grid"
+    >
       <div
         v-for="(value, key, index) in specifications"
         :key="key"
@@ -168,7 +172,12 @@
     </div>
 
     <!-- Screen Reader Announcements -->
-    <div aria-atomic="true" aria-live="polite" class="sr-only" role="status">
+    <div
+      aria-atomic="true"
+      aria-live="polite"
+      class="sr-only"
+      role="status"
+    >
       {{ announcementText }}
     </div>
   </section>
