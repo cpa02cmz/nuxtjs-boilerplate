@@ -57,8 +57,8 @@ async function runPerformanceAudit(page, url, name) {
           })
         }
 
-        // Timeout after 2 seconds
-        setTimeout(() => resolve({}), 2000)
+        // Timeout after configured delay - Flexy hates hardcoded values!
+        setTimeout(() => resolve({}), monitoringConfig.delays.consoleWaitMs)
       })
     })
 

@@ -69,7 +69,7 @@ export function calculateBackoff(
   baseDelayMs: number = timeConfig.retry.baseDelayMs,
   maxDelayMs: number = timeConfig.retry.maxDelayMs,
   jitterEnabled: boolean = true,
-  jitterFactor: number = 0.1
+  jitterFactor: number = webhooksConfig.retry.jitterFactor
 ): number {
   let delay = baseDelayMs * Math.pow(2, attempt)
 
@@ -106,7 +106,7 @@ export async function retryWithBackoff<T>(
     maxRetries: webhooksConfig.retry.maxAttempts,
     baseDelayMs: webhooksConfig.retry.baseDelayMs,
     maxDelayMs: webhooksConfig.retry.maxDelayMs,
-    backoffMultiplier: 2,
+    backoffMultiplier: timeConfig.retry.exponentialBase,
     retryableErrors: [],
     jitterEnabled: true,
     jitterFactor: webhooksConfig.retry.jitterFactor,
@@ -176,7 +176,7 @@ export async function retryWithResult<T>(
     maxRetries: webhooksConfig.retry.maxAttempts,
     baseDelayMs: webhooksConfig.retry.baseDelayMs,
     maxDelayMs: webhooksConfig.retry.maxDelayMs,
-    backoffMultiplier: 2,
+    backoffMultiplier: timeConfig.retry.exponentialBase,
     retryableErrors: [],
     jitterEnabled: true,
     jitterFactor: webhooksConfig.retry.jitterFactor,
