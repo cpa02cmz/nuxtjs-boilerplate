@@ -68,6 +68,20 @@ export const animationConfig = {
     updateDebounceMs: parseInt(
       process.env.RELATIVE_TIME_UPDATE_DEBOUNCE_MS || '5000'
     ),
+    // Palette's micro-UX enhancement: New Item Flash Animation ✨
+    // Brief celebratory flash for items just posted (within seconds)
+    newItemFlash: {
+      // Threshold in seconds for "just posted" items
+      thresholdSec: parseInt(process.env.NEW_ITEM_FLASH_THRESHOLD_SEC || '30'),
+      // Duration of the flash animation (ms)
+      durationMs: parseInt(process.env.NEW_ITEM_FLASH_DURATION_MS || '800'),
+      // Scale effect on badge during flash
+      scalePeak: parseFloat(process.env.NEW_ITEM_FLASH_SCALE || '1.15'),
+      // Background color for the flash (green for "fresh")
+      flashColor: process.env.NEW_ITEM_FLASH_COLOR || 'rgba(34, 197, 94, 0.3)',
+      // Enable/disable the new item flash
+      enabled: process.env.NEW_ITEM_FLASH_ENABLED !== 'false',
+    },
   },
 
   // Skeleton/Loading Animations
