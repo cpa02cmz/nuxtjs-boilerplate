@@ -110,7 +110,7 @@ const getItemStyle = (index: number) => {
   if (prefersReducedMotion.value) return {}
 
   return {
-    '--item-index': index,
+    '--item-index': String(index),
     '--stagger-delay': `${index * animationConfig.featuresSection.staggerDelayMs}ms`,
   } as Record<string, string>
 }

@@ -36,17 +36,11 @@
 
     <!-- Custom Animated Dropdown -->
     <div class="flex items-center space-x-2">
-      <label
-        :for="selectId"
-        class="text-sm text-gray-800"
-      >{{
+      <label :for="selectId" class="text-sm text-gray-800">{{
         contentConfig.sort.label
       }}</label>
 
-      <div
-        ref="dropdownRef"
-        class="relative"
-      >
+      <div ref="dropdownRef" class="relative">
         <!-- Trigger Button -->
         <button
           :id="selectId"
@@ -203,12 +197,7 @@
     </div>
 
     <!-- Screen reader announcement for sort order changes -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ sortAnnouncement }}
     </div>
   </div>
@@ -332,7 +321,10 @@ const selectOption = (value: SortOption) => {
 
   // Palette's micro-UX delight: Haptic feedback for tactile confirmation
   // Provides subtle vibration on supported mobile devices
-  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+  if (
+    typeof navigator !== 'undefined' &&
+    typeof navigator.vibrate === 'function'
+  ) {
     hapticLight()
   }
 }

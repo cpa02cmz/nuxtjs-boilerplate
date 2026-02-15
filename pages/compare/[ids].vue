@@ -9,10 +9,7 @@
       </p>
     </div>
 
-    <div
-      v-if="loading"
-      class="flex justify-center items-center py-12"
-    >
+    <div v-if="loading" class="flex justify-center items-center py-12">
       <div
         class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"
         role="status"
@@ -52,7 +49,7 @@
     <ComparisonTable
       v-else-if="resources.length >= 2"
       :resources="resources"
-      :criteria="defaultCriteria"
+      :criteria="defaultCriteria as ComparisonCriteria[]"
       @remove-resource="handleRemoveResource"
     />
   </div>
@@ -62,6 +59,7 @@
 import ComparisonTable from '~/components/ComparisonTable.vue'
 import { useComparisonPage } from '~/composables/useComparisonPage'
 import { useRoute } from '#app'
+import type { ComparisonCriteria } from '~/types/comparison'
 
 const route = useRoute()
 const {

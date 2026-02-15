@@ -14,6 +14,8 @@ export interface Bookmark {
   addedAt: Date
   notes?: string
   category?: string
+  // Alias for addedAt as ISO string for component compatibility
+  dateAdded?: string
 }
 
 const BOOKMARKS_STORAGE_KEY = STORAGE_KEYS.BOOKMARKS
