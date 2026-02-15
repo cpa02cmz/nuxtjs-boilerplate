@@ -1065,8 +1065,9 @@ onMounted(() => {
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
-  animation: celebration-pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)
-    forwards;
+  animation: celebration-pop-in
+    v-bind('`${animationConfig.webhookManager.celebrationPopInSec}s`')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 @keyframes celebration-pop-in {
@@ -1096,7 +1097,9 @@ onMounted(() => {
 .checkmark-svg {
   width: 100%;
   height: 100%;
-  animation: icon-rotate-in 0.4s ease-out 0.2s both;
+  animation: icon-rotate-in
+    v-bind('`${animationConfig.webhookManager.iconRotateInSec}s`') ease-out
+    v-bind('`${animationConfig.webhookManager.iconRotateInSec / 2}s`') both;
 }
 
 @keyframes icon-rotate-in {
@@ -1113,7 +1116,9 @@ onMounted(() => {
 .checkmark-circle {
   fill: white;
   opacity: 0.9;
-  animation: circle-scale 0.3s ease-out 0.1s both;
+  animation: circle-scale
+    v-bind('`${animationConfig.webhookManager.circleScaleSec}s`') ease-out
+    v-bind('`${animationConfig.webhookManager.circleScaleSec / 3}s`') both;
 }
 
 @keyframes circle-scale {
@@ -1139,7 +1144,10 @@ onMounted(() => {
   stroke-linejoin: round;
   stroke-dasharray: 20;
   stroke-dashoffset: 20;
-  animation: checkmark-draw 0.4s ease-out 0.3s forwards;
+  animation: checkmark-draw
+    v-bind('`${animationConfig.webhookManager.checkmarkDrawSec}s`') ease-out
+    v-bind('`${animationConfig.webhookManager.checkmarkDrawSec * 0.75}s`')
+    forwards;
 }
 
 @keyframes checkmark-draw {
@@ -1155,7 +1163,9 @@ onMounted(() => {
   font-weight: 600;
   color: white;
   white-space: nowrap;
-  animation: text-fade-in 0.3s ease-out 0.4s both;
+  animation: text-fade-in
+    v-bind('`${animationConfig.webhookManager.textFadeInSec}s`') ease-out
+    v-bind('`${animationConfig.webhookManager.textFadeInSec * 1.33}s`') both;
 }
 
 @keyframes text-fade-in {
@@ -1188,7 +1198,9 @@ onMounted(() => {
   );
   border-radius: 50%;
   opacity: 0;
-  animation: sparkle-burst 0.8s ease-out forwards;
+  animation: sparkle-burst
+    v-bind('`${animationConfig.webhookManager.sparkleBurstSec}s`') ease-out
+    forwards;
   animation-delay: calc(
     var(--sparkle-index) *
       v-bind('animationConfig.webhookManager.sparkleStaggerDelaySec')

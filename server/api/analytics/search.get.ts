@@ -1,4 +1,5 @@
 import { defineEventHandler, getQuery } from 'h3'
+import { randomInt } from 'crypto'
 import { searchAnalyticsTracker } from '~/utils/searchAnalytics'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
@@ -64,8 +65,8 @@ export default defineEventHandler(async event => {
       date.setDate(date.getDate() - i)
       const dateString = date.toISOString().split('T')[0]
 
-      // Generate a sample count based on popularity
-      const sampleCount = Math.floor(Math.random() * 50) + 10
+      // Generate a sample count based on popularity (using crypto for security)
+      const sampleCount = randomInt(10, 61)
       searchTrends.push({
         date: dateString,
         count: sampleCount,

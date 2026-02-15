@@ -51,7 +51,7 @@ const charsets: Record<IdGenerationConfig['charset'], string> = {
 }
 
 /**
- * Generate a cryptographically secure random ID (when available) or Math.random-based ID
+ * Generate a cryptographically secure random ID
  * @param length - Length of the ID to generate
  * @param charset - Character set to use
  * @returns Generated ID string
@@ -60,7 +60,7 @@ function generateRandomString(length: number, charset: string): string {
   let result = ''
   const charsetLength = charset.length
 
-  // Try to use crypto.getRandomValues for better randomness (client-side)
+  // Use crypto.getRandomValues for cryptographically secure randomness
   if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
     const randomValues = new Uint32Array(length)
     crypto.getRandomValues(randomValues)
@@ -68,10 +68,9 @@ function generateRandomString(length: number, charset: string): string {
       result += charset[randomValues[i] % charsetLength]
     }
   } else {
-    // Fallback to Math.random
-    for (let i = 0; i < length; i++) {
-      result += charset[Math.floor(Math.random() * charsetLength)]
-    }
+    throw new Error(
+      'Crypto API not available. Cannot generate secure random ID.'
+    )
   }
 
   return result
