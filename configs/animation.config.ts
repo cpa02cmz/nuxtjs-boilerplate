@@ -3153,6 +3153,28 @@ export const animationConfig = {
       spinnerGap: process.env.SVG_SPINNER_GAP || '90, 150',
     },
   },
+
+  // ============================================
+  // Flexy ULW Loop - Page Transition Durations
+  // Eliminating hardcoded Tailwind duration classes! 🎯
+  // ============================================
+
+  // Page-Level CSS Transition Durations
+  // Centralized duration values for consistent page transitions
+  pageTransitions: {
+    // Fast duration for micro-interactions (100ms) - Flexy hates hardcoded duration-100!
+    fastMs: parseInt(process.env.PAGE_TRANSITION_FAST_MS || '100'),
+    fastSec: `${parseInt(process.env.PAGE_TRANSITION_FAST_MS || '100') / 1000}s`,
+    // Normal duration for standard transitions (200ms) - Flexy hates hardcoded duration-200!
+    normalMs: parseInt(process.env.PAGE_TRANSITION_NORMAL_MS || '200'),
+    normalSec: `${parseInt(process.env.PAGE_TRANSITION_NORMAL_MS || '200') / 1000}s`,
+    // Standard duration for most transitions (300ms) - Flexy hates hardcoded duration-300!
+    standardMs: parseInt(process.env.PAGE_TRANSITION_STANDARD_MS || '300'),
+    standardSec: `${parseInt(process.env.PAGE_TRANSITION_STANDARD_MS || '300') / 1000}s`,
+    // Slow duration for emphasis animations (500ms) - Flexy hates hardcoded duration-500!
+    slowMs: parseInt(process.env.PAGE_TRANSITION_SLOW_MS || '500'),
+    slowSec: `${parseInt(process.env.PAGE_TRANSITION_SLOW_MS || '500') / 1000}s`,
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

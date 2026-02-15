@@ -103,9 +103,9 @@
             isChecking
               ? 'opacity-80 cursor-wait'
               : [
-                tailwind.interactive.arbitrary.hoverScaleSubtle,
-                tailwind.interactive.arbitrary.activeScaleSubtle,
-              ],
+                  tailwind.interactive.arbitrary.hoverScaleSubtle,
+                  tailwind.interactive.arbitrary.activeScaleSubtle,
+                ],
           ]"
           :disabled="isChecking"
           :aria-label="
@@ -156,29 +156,23 @@
       </div>
 
       <!-- Auto-retry hint -->
-      <p
-        v-if="!isChecking"
-        class="mt-4 text-xs text-gray-400"
-      >
+      <p v-if="!isChecking" class="mt-4 text-xs text-gray-400">
         Tip: Press
         <kbd
           class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs"
-        >Space</kbd>
+          >Space</kbd
+        >
         or
         <kbd
           class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs"
-        >Enter</kbd>
+          >Enter</kbd
+        >
         to retry
       </p>
     </div>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -327,7 +321,8 @@ onUnmounted(() => {
 }
 
 .animate-icon-pulse {
-  animation: icon-pulse 3s ease-in-out infinite;
+  animation: icon-pulse v-bind('animationConfig.offlineAnim.pulseDurationSec')
+    ease-in-out infinite;
 }
 
 /* Glow pulse animation behind icon */
@@ -344,7 +339,8 @@ onUnmounted(() => {
 }
 
 .animate-glow-pulse {
-  animation: glow-pulse 3s ease-in-out infinite;
+  animation: glow-pulse v-bind('animationConfig.offlineAnim.pulseDurationSec')
+    ease-in-out infinite;
 }
 
 /* Subtle bounce for checking state */
@@ -359,7 +355,8 @@ onUnmounted(() => {
 }
 
 .animate-bounce-subtle {
-  animation: bounce-subtle 0.6s ease-in-out infinite;
+  animation: bounce-subtle
+    v-bind('animationConfig.offlineAnim.bounceDurationSec') ease-in-out infinite;
 }
 
 /* Keyboard shortcut styling */
