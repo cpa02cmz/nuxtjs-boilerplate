@@ -1721,6 +1721,12 @@ export const contentConfig = {
     },
   },
 
+  // Reading Configuration - Flexy hates hardcoded reading values!
+  reading: {
+    // Average words per minute for reading time calculation
+    wordsPerMinute: parseInt(process.env.READING_WORDS_PER_MINUTE || '200'),
+  },
+
   // Alias for readingProgress - some components use contentConfig.readingProgress
   get readingProgress() {
     return this.resource.readingProgress

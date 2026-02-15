@@ -107,6 +107,12 @@ export const searchConfig = {
     maxZeroResultSearches: parseInt(process.env.SEARCH_CACHE_MAX_ZERO || '50'),
     maxPerformanceHistory: parseInt(process.env.SEARCH_CACHE_MAX_PERF || '100'),
   },
+
+  // Recent Search Threshold - Flexy hates hardcoded time values!
+  // Time window for considering a search as "recent" (ms)
+  recentSearchThresholdMs: parseInt(
+    process.env.SEARCH_RECENT_THRESHOLD_MS || '3600000' // 1 hour default
+  ),
 } as const
 
 export type SearchConfig = typeof searchConfig

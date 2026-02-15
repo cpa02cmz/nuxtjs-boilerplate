@@ -23,6 +23,9 @@ interface HapticConfigType {
     error: number
     ultraLight: number
   }
+  delays: {
+    doublePulseIntervalMs: number
+  }
   patterns: {
     light: HapticPatternArray
     medium: HapticPatternArray
@@ -65,6 +68,14 @@ export const hapticConfig: HapticConfigType = {
     error: parseInt(process.env.HAPTIC_DURATION_ERROR || '40'),
     // Ultra-light feedback for subtle interactions (ms) - Palette's micro-UX!
     ultraLight: parseInt(process.env.HAPTIC_DURATION_ULTRA_LIGHT || '5'),
+  },
+
+  // Haptic delay intervals - Flexy hates hardcoded timing!
+  delays: {
+    // Delay between double-pulse haptic feedback (ms)
+    doublePulseIntervalMs: parseInt(
+      process.env.HAPTIC_DOUBLE_PULSE_INTERVAL_MS || '150'
+    ),
   },
 
   // Vibration patterns (arrays of ms: on, off, on, off...)

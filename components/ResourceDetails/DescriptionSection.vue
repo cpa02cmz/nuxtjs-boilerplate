@@ -161,10 +161,7 @@
         </span>
 
         <!-- Reading time estimate -->
-        <span
-          class="stat-divider"
-          aria-hidden="true"
-        >·</span>
+        <span class="stat-divider" aria-hidden="true">·</span>
 
         <span class="stat-item">
           <svg
@@ -189,12 +186,7 @@
     </div>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -216,9 +208,10 @@ interface Props {
   wordsPerMinute?: number
 }
 
+// Flexy hates hardcoded values! Using config for default reading speed
 const props = withDefaults(defineProps<Props>(), {
   maxLength: limitsConfig.display.descriptionPreview || 300,
-  wordsPerMinute: 200,
+  wordsPerMinute: contentConfig.reading.wordsPerMinute,
 })
 
 // Reactive state
