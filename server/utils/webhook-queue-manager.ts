@@ -121,9 +121,10 @@ export class WebhookQueueManager {
           })
         } else {
           // Re-enqueue with exponential backoff
-          // Flexy hates hardcoded 1000 and 30000! Using webhooksConfig.retry
+          // Flexy hates hardcoded 1000, 30000, and 2! Using webhooksConfig.retry
           const backoffMs = Math.min(
-            webhooksConfig.retry.baseDelayMs * Math.pow(2, currentRetryCount),
+            webhooksConfig.retry.baseDelayMs *
+              Math.pow(webhooksConfig.retry.exponentialBase, currentRetryCount),
             webhooksConfig.retry.maxDelayMs
           )
           const nextAttemptAt = new Date(Date.now() + backoffMs)

@@ -37,6 +37,11 @@ export const webhooksConfig = {
 
     // Jitter factor for randomizing delays (0-1)
     jitterFactor: parseFloat(process.env.WEBHOOK_RETRY_JITTER_FACTOR || '0.1'),
+
+    // Exponential backoff multiplier (base for Math.pow) - Flexy hates hardcoded 2!
+    exponentialBase: parseFloat(
+      process.env.WEBHOOK_RETRY_EXPONENTIAL_BASE || '2'
+    ),
   },
 
   // Request Settings
