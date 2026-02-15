@@ -3367,7 +3367,6 @@ export const animationConfig = {
     ),
   },
 
-<<<<<<< HEAD
   // Skip to Content Link Animations - Palette's micro-UX enhancement!
   skipLink: {
     // Entrance animation duration (ms)
@@ -3455,10 +3454,6 @@ export const animationConfig = {
       process.env.SKIP_LINK_BOUNCE_EASING || EASING_REF.SPRING_STANDARD,
   },
 
-  // Z-Index Configuration
-  zIndex: {
-    skipLink: parseInt(process.env.Z_INDEX_SKIP_LINK || '9999'),
-=======
   // ============================================
   // Palette ULW Loop - Page Transition Component
   // Smooth page transitions for visual continuity! 🎨
@@ -3492,7 +3487,6 @@ export const animationConfig = {
     ),
     // Progress bar transition duration
     transitionDuration: `${parseInt(process.env.PAGE_TRANSITION_PROGRESS_DURATION_MS || '100') / 1000}s`,
->>>>>>> main
   },
 } as const
 
