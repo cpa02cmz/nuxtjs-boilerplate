@@ -316,9 +316,12 @@ onMounted(() => {
   background-size: 200% 100%;
   animation:
     shimmer v-bind('shimmerDurationSec') ease-in-out infinite,
-    breathe v-bind('animationConfig.cssAnimations.longDurationSec') ease-in-out
-      infinite,
-    icon-pulse 4s ease-in-out infinite;
+    breathe
+      v-bind('animationConfig.resourceCardSkeleton.breatheDurationSec + "s"')
+      ease-in-out infinite,
+    icon-pulse
+      v-bind('animationConfig.resourceCardSkeleton.iconPulseDurationSec + "s"')
+      ease-in-out infinite;
   transition: transform v-bind('animationConfig.cssTransitions.slowSec')
     v-bind('easingValues.springSnappy');
 }
@@ -398,7 +401,9 @@ onMounted(() => {
   animation:
     shimmer v-bind('shimmerDurationSec') ease-in-out infinite,
     wave-pulse var(--wave-duration) ease-in-out infinite,
-    breathe 3s ease-in-out infinite;
+    breathe
+      v-bind('animationConfig.resourceCardSkeleton.breatheDurationSec + "s"')
+      ease-in-out infinite;
   animation-delay:
     calc(var(--wave-index) * var(--wave-stagger)),
     calc(var(--wave-index) * var(--wave-stagger)),
