@@ -110,7 +110,12 @@
     </div>
 
     <!-- Screen Reader Announcement for Copy Success -->
-    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >
       {{ screenReaderAnnouncement }}
     </div>
   </div>
