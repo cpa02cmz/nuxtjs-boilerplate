@@ -94,6 +94,12 @@ export const cacheConfig = {
     lruCleanupPercentage: parseFloat(
       process.env.CACHE_LRU_CLEANUP_PERCENTAGE || '0.1'
     ), // 10%
+
+    // Memory size multiplier for cache manager initialization (default: 2x base config)
+    // Flexy hates hardcoded multipliers!
+    memorySizeMultiplier: parseFloat(
+      process.env.CACHE_MEMORY_MULTIPLIER || '2'
+    ),
   },
 
   // Rate Limiting Cache

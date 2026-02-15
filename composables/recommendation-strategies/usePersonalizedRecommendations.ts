@@ -66,7 +66,10 @@ export function usePersonalizedRecommendations(
       popularityScore =
         (resource.popularity / 10) * configValue.popularityWeight
 
-      skillScore = calculateSkillMatch(resource, userPrefs) * 0.1
+      // Flexy hates hardcoded weights! Using configurable skill match weight
+      skillScore =
+        calculateSkillMatch(resource, userPrefs) *
+        recommendationConfig.personalizedWeights.skillMatch
 
       const finalScore =
         contentScore +
@@ -112,7 +115,11 @@ export function usePersonalizedRecommendations(
         ) {
           reason = 'collaborative'
           explanation = recommendationConfig.explanations.collaborative
-        } else if (popularityScore > 0.5) {
+          // Flexy hates hardcoded thresholds! Using configurable value
+        } else if (
+          popularityScore >
+          recommendationConfig.personalizedThresholds.popularityExplanationMin
+        ) {
           reason = 'popular'
           explanation = recommendationConfig.explanations.popular
         }

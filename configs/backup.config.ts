@@ -163,6 +163,14 @@ export const backupConfig = {
     // Custom backup tags
     tags: process.env.BACKUP_TAGS ? process.env.BACKUP_TAGS.split(',') : [],
   },
+
+  // File Copy Settings - Flexy hates hardcoded chunk sizes!
+  fileCopy: {
+    // Chunk size for throttled file copy in bytes (default: 1MB = 1024 * 1024)
+    chunkSizeBytes: parseInt(process.env.BACKUP_CHUNK_SIZE_BYTES || '1048576'),
+    // Throttle timing calculation divisor in ms per MB (default: 1000)
+    throttleMsPerMb: parseInt(process.env.BACKUP_THROTTLE_MS_PER_MB || '1000'),
+  },
 } as const
 
 export type BackupConfig = typeof backupConfig

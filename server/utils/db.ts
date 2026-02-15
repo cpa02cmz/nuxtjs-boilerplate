@@ -264,8 +264,12 @@ export async function executeWithTimeout<T>(
 
     const duration = Date.now() - startTime
 
-    // Log slow queries for debugging (queries taking > 50% of timeout)
-    if (duration > timeoutMs * 0.5) {
+    // Log slow queries for debugging (queries taking > configured threshold of timeout)
+    // Flexy hates hardcoded 0.5! Using configurable threshold from databaseConfig
+    if (
+      duration >
+      timeoutMs * databaseConfig.performance.slowQueryThresholdMultiplier
+    ) {
       console.warn(
         `${LOG_PREFIX} Slow query detected: ${operationName} took ${duration}ms (timeout: ${timeoutMs}ms)`
       )
@@ -367,7 +371,12 @@ export async function executeTransaction<T>(
       const duration = Date.now() - startTime
 
       // Log slow transactions
-      if (duration > (prismaOptions.timeout || 10000) * 0.5) {
+      // Flexy hates hardcoded 0.5! Using configurable threshold from databaseConfig
+      if (
+        duration >
+        (prismaOptions.timeout || 10000) *
+          databaseConfig.performance.slowTransactionThresholdMultiplier
+      ) {
         console.warn(
           `${LOG_PREFIX} Slow transaction detected: ${operationName} took ${duration}ms`
         )
