@@ -160,8 +160,9 @@ const triggerEntranceAnimation = () => {
           }, animationConfig.microInteractions.announcementDelayMs)
         }
       },
-      index * animationConfig.featuresSection.staggerDelayMs + 200
-    ) // +200ms delay after title
+      index * animationConfig.featuresSection.staggerDelayMs +
+        animationConfig.featuresSection.titleDelayMs
+    ) // Delay after title animation before features start
   })
 }
 

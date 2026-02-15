@@ -2756,6 +2756,8 @@ export const animationConfig = {
     staggerDelaySec: parseFloat(
       process.env.FEATURES_STAGGER_DELAY_SEC || '0.08'
     ),
+    // Delay after title animation before features start (ms) - Flexy hates hardcoded 200!
+    titleDelayMs: parseInt(process.env.FEATURES_TITLE_DELAY_MS || '200'),
     // Feature item entrance animation duration (ms)
     entranceDurationMs: parseInt(
       process.env.FEATURES_ENTRANCE_DURATION_MS || '500'
@@ -3108,6 +3110,68 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.LAZY_CARD_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // Mobile Filter Drawer Animations - Palette's micro-UX delight! 🎨
+  // Swipe gestures, magnetic handle, and spring physics for drawer interactions
+  mobileFilterDrawer: {
+    // Swipe threshold to trigger dismiss (px) - Flexy hates hardcoded 50!
+    swipeThresholdPx: parseInt(
+      process.env.MOBILE_DRAWER_SWIPE_THRESHOLD_PX || '80'
+    ),
+    // Velocity threshold for flick-to-dismiss (px/ms)
+    velocityThresholdPxMs: parseFloat(
+      process.env.MOBILE_DRAWER_VELOCITY_THRESHOLD || '0.5'
+    ),
+    // Spring animation duration for drawer return (ms)
+    springReturnDurationMs: parseInt(
+      process.env.MOBILE_DRAWER_SPRING_RETURN_MS || '400'
+    ),
+    // Spring easing for physics-based feel
+    springEasing:
+      process.env.MOBILE_DRAWER_SPRING_EASING ||
+      'cubic-bezier(0.34, 1.56, 0.64, 1)',
+    // Magnetic handle pull strength (0-1)
+    magneticStrength: parseFloat(
+      process.env.MOBILE_DRAWER_MAGNETIC_STRENGTH || '0.4'
+    ),
+    // Maximum magnetic displacement (px)
+    magneticMaxDisplacementPx: parseInt(
+      process.env.MOBILE_DRAWER_MAGNETIC_MAX_PX || '20'
+    ),
+    // Handle bounce animation duration (ms)
+    handleBounceDurationMs: parseInt(
+      process.env.MOBILE_DRAWER_HANDLE_BOUNCE_MS || '600'
+    ),
+    // Filter button pulse duration when filters change (ms)
+    filterButtonPulseMs: parseInt(
+      process.env.MOBILE_DRAWER_BUTTON_PULSE_MS || '800'
+    ),
+    // Filter button bounce scale
+    filterButtonBounceScale: parseFloat(
+      process.env.MOBILE_DRAWER_BUTTON_BOUNCE_SCALE || '1.15'
+    ),
+    // Drawer edge glow on swipe (px)
+    edgeGlowSpreadPx: parseInt(process.env.MOBILE_DRAWER_EDGE_GLOW_PX || '8'),
+    // Haptic feedback duration on open (ms)
+    hapticOpenDurationMs: parseInt(
+      process.env.MOBILE_DRAWER_HAPTIC_OPEN_MS || '20'
+    ),
+    // Haptic feedback duration on close (ms)
+    hapticCloseDurationMs: parseInt(
+      process.env.MOBILE_DRAWER_HAPTIC_CLOSE_MS || '15'
+    ),
+    // Drawer entrance spring tension
+    entranceTension: parseFloat(
+      process.env.MOBILE_DRAWER_ENTRANCE_TENSION || '300'
+    ),
+    // Drawer entrance friction
+    entranceFriction: parseFloat(
+      process.env.MOBILE_DRAWER_ENTRANCE_FRICTION || '25'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.MOBILE_DRAWER_RESPECT_REDUCED_MOTION !== 'false',
   },
 
   // SVG Stroke Dasharray Values - Flexy hates hardcoded stroke-dasharray!
