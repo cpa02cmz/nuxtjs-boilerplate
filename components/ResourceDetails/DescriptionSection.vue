@@ -161,7 +161,10 @@
         </span>
 
         <!-- Reading time estimate -->
-        <span class="stat-divider" aria-hidden="true">·</span>
+        <span
+          class="stat-divider"
+          aria-hidden="true"
+        >·</span>
 
         <span class="stat-item">
           <svg
@@ -186,7 +189,12 @@
     </div>
 
     <!-- Screen reader announcement -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ announcement }}
     </div>
   </div>
