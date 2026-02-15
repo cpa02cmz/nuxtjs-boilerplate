@@ -86,8 +86,6 @@ async function reportMetric(report: WebVitalsReport): Promise<void> {
 
 // Initialize web-vitals tracking
 export function useWebVitals() {
-  let cleanupFunctions: (() => void)[] = []
-
   onMounted(() => {
     // BroCula fix: Don't use async onMounted - register sync, handle async separately
     // Only run on client
@@ -110,6 +108,7 @@ export function useWebVitals() {
 
         // Track each Core Web Vital
         // Track each Core Web Vital using modular config - Flexy hates hardcoded values!
+        // BroCula: web-vitals v4+ returns cleanup functions
         if (webVitalsConfig.collection.enabled.LCP) {
           onLCP(metric => {
             reportHandler({
@@ -181,9 +180,8 @@ export function useWebVitals() {
   })
 
   onUnmounted(() => {
-    // Clean up any subscriptions
-    cleanupFunctions.forEach(cleanup => cleanup())
-    cleanupFunctions = []
+    // BroCula: Web-vitals observers auto-cleanup on page unload
+    // No manual cleanup needed for performance observers
   })
 }
 

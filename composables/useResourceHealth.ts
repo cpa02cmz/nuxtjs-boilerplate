@@ -81,8 +81,9 @@ export const useResourceHealth = (props: Props) => {
 
   onMounted(() => {
     // BroCula fix: Don't use async onMounted - register sync, handle async separately
-    loadHealthStatus().catch(err => {
-      console.error('Failed to load health status:', err)
+    // Silently ignore errors to prevent console noise - errors are already handled by $apiClient
+    loadHealthStatus().catch(() => {
+      // Failed to load health status - already handled
     })
   })
 
