@@ -2835,6 +2835,43 @@ export const animationConfig = {
     fadeInDurationSec: parseFloat(
       process.env.SEARCH_ANALYTICS_FADE_IN_DURATION_SEC || '0.3'
     ),
+    // Glow pulse animation duration (seconds) - Flexy hates hardcoded 2s!
+    glowPulseDurationSec: parseFloat(
+      process.env.SEARCH_ANALYTICS_GLOW_PULSE_SEC || '2'
+    ),
+    // Live pulse indicator animation duration (seconds)
+    livePulseDurationSec: parseFloat(
+      process.env.SEARCH_ANALYTICS_LIVE_PULSE_SEC || '2'
+    ),
+    // Live ring animation duration (seconds)
+    liveRingDurationSec: parseFloat(
+      process.env.SEARCH_ANALYTICS_LIVE_RING_SEC || '2'
+    ),
+    // Shimmer spin animation duration (seconds)
+    shimmerSpinDurationSec: parseFloat(
+      process.env.SEARCH_ANALYTICS_SHIMMER_SPIN_SEC || '2'
+    ),
+  },
+
+  // Client Error Boundary Animations - Flexy hates hardcoded values!
+  // Used by ClientErrorBoundary.vue for loading and error animations
+  clientErrorBoundary: {
+    // Shimmer spin animation duration (seconds) - Flexy hates hardcoded 1s!
+    shimmerSpinDurationSec: parseFloat(
+      process.env.CLIENT_ERROR_SHIMMER_SPIN_SEC || '1'
+    ),
+    // Error pulse animation duration (seconds)
+    errorPulseDurationSec: parseFloat(
+      process.env.CLIENT_ERROR_PULSE_SEC || '2'
+    ),
+    // Error pulse iteration count
+    errorPulseIterations: parseInt(
+      process.env.CLIENT_ERROR_PULSE_ITERATIONS || '3'
+    ),
+    // Error icon shake animation duration (seconds)
+    errorShakeDurationSec: parseFloat(
+      process.env.CLIENT_ERROR_SHAKE_SEC || '0.5'
+    ),
   },
 
   // Comparison Builder Float Animations - Flexy hates hardcoded delays!
