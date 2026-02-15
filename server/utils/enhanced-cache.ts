@@ -448,8 +448,10 @@ class CacheManager {
 }
 
 // Initialize cache manager with default configuration
+// Flexy hates hardcoded multipliers! Using configurable value from cacheConfig
 const cacheManager = new CacheManager({
-  maxMemorySize: cacheConfig.server.maxMemorySize * 2, // Increased default size (2x the base config)
+  maxMemorySize:
+    cacheConfig.server.maxMemorySize * cacheConfig.server.memorySizeMultiplier,
   enableRedis: !!process.env.REDIS_URL,
   enableAnalytics: true,
 })

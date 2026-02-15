@@ -179,8 +179,9 @@ async function copyFile(
   }
 
   // Simple throttled copy implementation
-  const chunkSize = 1024 * 1024 // 1MB chunks
-  const throttleMs = 1000 / throttleMbps // ms per MB
+  // Flexy hates hardcoded values! Using configurable settings from backupConfig
+  const chunkSize = backupConfig.fileCopy.chunkSizeBytes
+  const throttleMs = backupConfig.fileCopy.throttleMsPerMb / throttleMbps // ms per MB
 
   const sourceHandle = await fs.open(source, 'r')
   const destHandle = await fs.open(destination, 'w')

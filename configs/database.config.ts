@@ -39,6 +39,18 @@ export const databaseConfig = {
     maxResults: parseInt(process.env.DB_MAX_RESULTS || '1000'),
   },
 
+  // Performance Monitoring - Flexy hates hardcoded thresholds!
+  performance: {
+    // Threshold multiplier for slow query detection (default: 0.5 = 50% of timeout)
+    slowQueryThresholdMultiplier: parseFloat(
+      process.env.DB_SLOW_QUERY_MULTIPLIER || '0.5'
+    ),
+    // Threshold multiplier for slow transaction detection (default: 0.5 = 50% of timeout)
+    slowTransactionThresholdMultiplier: parseFloat(
+      process.env.DB_SLOW_TRANSACTION_MULTIPLIER || '0.5'
+    ),
+  },
+
   // Logging Prefix - Flexy hates hardcoded log prefixes!
   logging: {
     prefix: process.env.DB_LOG_PREFIX || '[Database]',

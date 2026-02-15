@@ -72,7 +72,9 @@ export function useSearchBasedRecommendations(
       // Calculate user search history match
       if (userSearchHistory && userSearchHistory.length > 0) {
         const historyMatches = userSearchHistory.filter(
-          query => calculateSearchTermMatch(resource, query) > 0.5
+          query =>
+            calculateSearchTermMatch(resource, query) >
+            recommendationConfig.searchBasedThresholds.userHistoryMatchMin
         ).length
         userHistoryScore =
           (historyMatches / userSearchHistory.length) *
@@ -84,18 +86,25 @@ export function useSearchBasedRecommendations(
       let contentGapScore = 0
       for (const zeroQuery of zeroResultQueries) {
         const matchScore = calculateSearchTermMatch(resource, zeroQuery.query)
-        if (matchScore > 0.6) {
-          contentGapScore += matchScore * 0.1 // Small boost for gap fillers
+        if (
+          matchScore >
+          recommendationConfig.searchBasedThresholds.contentGapMatchMin
+        ) {
+          contentGapScore +=
+            matchScore * recommendationConfig.searchBasedWeights.contentGap // Small boost for gap fillers
         }
       }
 
-      // Combine all search-based scores
+      // Combine all search-based scores - Flexy hates hardcoded weights!
       const finalScore =
-        searchPopularityScore * 0.3 +
-        searchTermMatchScore * 0.25 +
-        trendingBoostScore * 0.2 +
-        userHistoryScore * 0.15 +
-        contentGapScore * 0.1
+        searchPopularityScore *
+          recommendationConfig.searchBasedWeights.searchPopularity +
+        searchTermMatchScore *
+          recommendationConfig.searchBasedWeights.searchTermMatch +
+        trendingBoostScore *
+          recommendationConfig.searchBasedWeights.trendingBoost +
+        userHistoryScore * recommendationConfig.searchBasedWeights.userHistory +
+        contentGapScore * recommendationConfig.searchBasedWeights.contentGap
 
       if (finalScore > configValue.minSimilarityScore) {
         let reason:
@@ -110,19 +119,34 @@ export function useSearchBasedRecommendations(
         let explanation: string =
           recommendationConfig.explanations.searchBased.default
 
-        if (searchTermMatchScore > 0.7 && currentSearchQuery) {
+        // Flexy hates hardcoded thresholds! Using configurable values
+        if (
+          searchTermMatchScore >
+            recommendationConfig.searchBasedThresholds
+              .termMatchExplanationMin &&
+          currentSearchQuery
+        ) {
           reason = 'search-based'
           explanation =
             recommendationConfig.explanations.searchBased.matchesQuery(
               currentSearchQuery
             )
-        } else if (trendingBoostScore > 0.6) {
+        } else if (
+          trendingBoostScore >
+          recommendationConfig.searchBasedThresholds.trendingExplanationMin
+        ) {
           reason = 'trending'
           explanation = recommendationConfig.explanations.searchBased.trending
-        } else if (contentGapScore > 0.3) {
+        } else if (
+          contentGapScore >
+          recommendationConfig.searchBasedThresholds.contentGapExplanationMin
+        ) {
           reason = 'search-based'
           explanation = recommendationConfig.explanations.searchBased.contentGap
-        } else if (searchPopularityScore > 0.5) {
+        } else if (
+          searchPopularityScore >
+          recommendationConfig.searchBasedThresholds.popularityExplanationMin
+        ) {
           reason = 'popular'
           explanation =
             recommendationConfig.explanations.searchBased.frequentlyDiscovered

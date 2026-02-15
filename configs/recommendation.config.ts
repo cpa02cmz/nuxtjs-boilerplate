@@ -152,6 +152,68 @@ export const recommendationConfig = {
     maxRandomCount: parseInt(process.env.REC_ANALYTICS_MAX_COUNT || '50'),
   },
 
+  // Search-Based Recommendation Algorithm Weights - Flexy hates hardcoded weights!
+  searchBasedWeights: {
+    // Weight for search popularity score (default: 0.3)
+    searchPopularity: parseFloat(
+      process.env.REC_SEARCH_WEIGHT_POPULARITY || '0.3'
+    ),
+    // Weight for search term match score (default: 0.25)
+    searchTermMatch: parseFloat(
+      process.env.REC_SEARCH_WEIGHT_TERM_MATCH || '0.25'
+    ),
+    // Weight for trending boost score (default: 0.2)
+    trendingBoost: parseFloat(process.env.REC_SEARCH_WEIGHT_TRENDING || '0.2'),
+    // Weight for user history score (default: 0.15)
+    userHistory: parseFloat(
+      process.env.REC_SEARCH_WEIGHT_USER_HISTORY || '0.15'
+    ),
+    // Weight for content gap score (default: 0.1)
+    contentGap: parseFloat(process.env.REC_SEARCH_WEIGHT_CONTENT_GAP || '0.1'),
+  },
+
+  // Search-Based Recommendation Thresholds - Flexy hates hardcoded thresholds!
+  searchBasedThresholds: {
+    // Minimum match score for user search history (default: 0.5)
+    userHistoryMatchMin: parseFloat(
+      process.env.REC_SEARCH_THRESHOLD_USER_HISTORY || '0.5'
+    ),
+    // Minimum match score for content gap boost (default: 0.6)
+    contentGapMatchMin: parseFloat(
+      process.env.REC_SEARCH_THRESHOLD_CONTENT_GAP || '0.6'
+    ),
+    // Minimum search term match score for "matches query" explanation (default: 0.7)
+    termMatchExplanationMin: parseFloat(
+      process.env.REC_SEARCH_THRESHOLD_TERM_EXPLANATION || '0.7'
+    ),
+    // Minimum trending boost score for "trending" explanation (default: 0.6)
+    trendingExplanationMin: parseFloat(
+      process.env.REC_SEARCH_THRESHOLD_TRENDING || '0.6'
+    ),
+    // Minimum content gap score for "content gap" explanation (default: 0.3)
+    contentGapExplanationMin: parseFloat(
+      process.env.REC_SEARCH_THRESHOLD_GAP_EXPLANATION || '0.3'
+    ),
+    // Minimum search popularity score for "frequently discovered" explanation (default: 0.5)
+    popularityExplanationMin: parseFloat(
+      process.env.REC_SEARCH_THRESHOLD_POPULARITY || '0.5'
+    ),
+  },
+
+  // Personalized Recommendation Settings - Flexy hates hardcoded personalization values!
+  personalizedWeights: {
+    // Weight for skill match score (default: 0.1)
+    skillMatch: parseFloat(process.env.REC_PERSONALIZED_SKILL_MATCH || '0.1'),
+  },
+
+  // Personalized Recommendation Thresholds - Flexy hates hardcoded thresholds!
+  personalizedThresholds: {
+    // Minimum popularity score for "popular" explanation (default: 0.5)
+    popularityExplanationMin: parseFloat(
+      process.env.REC_PERSONALIZED_THRESHOLD_POPULARITY || '0.5'
+    ),
+  },
+
   // Explanation strings for recommendations - Flexy hates hardcoded strings!
   explanations: {
     personalized: {
