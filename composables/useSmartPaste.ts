@@ -74,8 +74,7 @@ export function useSmartPaste(
     showIndicator: options.showIndicator ?? true,
     indicatorDuration:
       options.indicatorDuration ||
-      animationConfig.smartPaste.indicatorDurationMs ||
-      1200,
+      animationConfig.smartPaste.indicatorDurationMs,
     onPaste: options.onPaste,
   }
 

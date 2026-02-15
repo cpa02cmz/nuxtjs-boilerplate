@@ -44,9 +44,8 @@ export function useRipple(
   // Flexy hates hardcoded values! Using config values for ripple defaults
   const config = {
     color: options.color || animationConfig.ripple.defaultColor,
-    duration:
-      options.duration || animationConfig.button.feedbackDurationMs || 600,
-    maxRadius: options.maxRadius || animationConfig.ripple.maxRadius || 100,
+    duration: options.duration || animationConfig.ripple.durationMs,
+    maxRadius: options.maxRadius || animationConfig.ripple.maxRadius,
     centered: options.centered ?? false,
   }
 
