@@ -1,4 +1,4 @@
-import { defineEventHandler, getHeader } from 'h3'
+import { defineEventHandler, getHeader, type H3Event } from 'h3'
 import {
   getAllCircuitBreakerStats,
   type CircuitBreakerStats,
@@ -65,7 +65,7 @@ function hasRequiredPermission(apiKey: { permissions?: string[] }): boolean {
  * Log access attempt for audit purposes
  */
 function logAccessAttempt(
-  event: ReturnType<typeof defineEventHandler>,
+  event: H3Event,
   success: boolean,
   reason?: string
 ): void {
