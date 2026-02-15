@@ -1,4 +1,4 @@
-import { prisma } from './db'
+import { prisma, executeTransaction } from './db'
 import { logger } from '~/utils/logger'
 import { limitsConfig } from '~/configs/limits.config'
 
@@ -53,47 +53,53 @@ export function createErrorTracker() {
         const source = payload.source || 'server'
         const errorHash = createErrorHash(payload.message, payload.stack)
 
-        // Wrap all database operations in a transaction to prevent race conditions
-        await prisma.$transaction(async tx => {
-          // Check for existing unresolved error with same hash
-          const existingError = await tx.trackedError.findFirst({
-            where: {
-              errorHash,
-              resolvedAt: null,
-            },
-          })
-
-          if (existingError) {
-            // Increment occurrence count
-            await tx.trackedError.update({
-              where: { id: existingError.id },
-              data: {
-                occurrenceCount: { increment: 1 },
-                lastSeenAt: new Date(),
-              },
-            })
-            logger.debug(
-              `[ErrorTracker] Incremented count for existing error: ${errorHash}`
-            )
-          } else {
-            // Create new error entry
-            await tx.trackedError.create({
-              data: {
-                message: payload.message,
-                stack: payload.stack,
-                component: payload.component,
-                severity,
-                url: payload.url,
-                userAgent: payload.userAgent,
-                ip: payload.ip,
-                source,
+        // Wrap all database operations in a transaction with retry logic
+        await executeTransaction(
+          async tx => {
+            // Check for existing unresolved error with same hash
+            const existingError = await tx.trackedError.findFirst({
+              where: {
                 errorHash,
-                occurrenceCount: 1,
+                resolvedAt: null,
               },
             })
-            logger.info(`[ErrorTracker] Created new error entry: ${errorHash}`)
-          }
-        })
+
+            if (existingError) {
+              // Increment occurrence count
+              await tx.trackedError.update({
+                where: { id: existingError.id },
+                data: {
+                  occurrenceCount: { increment: 1 },
+                  lastSeenAt: new Date(),
+                },
+              })
+              logger.debug(
+                `[ErrorTracker] Incremented count for existing error: ${errorHash}`
+              )
+            } else {
+              // Create new error entry
+              await tx.trackedError.create({
+                data: {
+                  message: payload.message,
+                  stack: payload.stack,
+                  component: payload.component,
+                  severity,
+                  url: payload.url,
+                  userAgent: payload.userAgent,
+                  ip: payload.ip,
+                  source,
+                  errorHash,
+                  occurrenceCount: 1,
+                },
+              })
+              logger.info(
+                `[ErrorTracker] Created new error entry: ${errorHash}`
+              )
+            }
+          },
+          { timeout: 5000, maxRetries: 3 },
+          'trackError'
+        )
 
         // Update error metrics (outside transaction for performance)
         await updateErrorMetrics(severity, source)
