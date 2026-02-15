@@ -13,7 +13,7 @@
       @before-leave="handleBeforeLeave"
     >
       <div
-        v-for="search in savedSearches"
+        v-for="(search, _index) in savedSearches"
         :key="search.query"
         class="saved-search-item group relative flex items-center justify-between p-2 rounded-lg overflow-hidden"
         :class="{
@@ -22,6 +22,7 @@
           'is-restoring': restoringItem === search.query,
         }"
         :data-query="search.query"
+        :style="getStaggeredEntranceStyle(_index)"
         @mouseenter="hoveredItem = search.query"
         @mouseleave="hoveredItem = null"
         @mousedown="handlePressStart(search.query)"
@@ -86,14 +87,29 @@
           </p>
         </div>
 
+        <!-- Palette's micro-UX enhancement: Particle burst container for delete celebration -->
+        <div
+          v-if="particlesActive.has(search.query) && !prefersReducedMotion"
+          class="particle-burst-container"
+          aria-hidden="true"
+        >
+          <span
+            v-for="n in animationConfig.savedSearches.particleCount"
+            :key="n"
+            class="particle"
+            :style="getParticleStyle(n)"
+          />
+        </div>
+
         <!-- Delete button with Palette's micro-UX enhancements -->
         <button
+          ref="deleteButtonRefs"
           class="delete-button ml-2 p-2.5 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 relative z-10"
           :class="{
             'is-pressed': deletePressed && activeDeleteItem === search.query,
           }"
           :aria-label="`Remove saved search: ${search.query}`"
-          @click.stop="onRemoveSavedSearch(search)"
+          @click.stop="onRemoveSavedSearch(search, index)"
           @mousedown="handleDeletePress(search.query)"
           @mouseup="handleDeleteRelease"
           @mouseleave="handleDeleteRelease"
@@ -124,7 +140,7 @@
       </div>
     </TransitionGroup>
 
-    <!-- Palette's micro-UX enhancement: Restore notification with undo action -->
+    <!-- Palette's micro-UX enhancement: Restore notification with undo action and progress bar -->
     <Transition
       enter-active-class="transition-all duration-300 ease-out"
       enter-from-class="opacity-0 translate-y-2"
@@ -135,9 +151,19 @@
     >
       <div
         v-if="lastDeletedSearch"
-        class="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between"
+        class="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between relative overflow-hidden"
       >
-        <div class="flex items-center gap-2 text-sm text-amber-800">
+        <!-- Palette's micro-UX enhancement: Undo timeout progress bar -->
+        <div
+          v-if="!prefersReducedMotion && undoProgressActive"
+          class="undo-progress-bar"
+          :style="undoProgressStyle"
+          aria-hidden="true"
+        />
+
+        <div
+          class="flex items-center gap-2 text-sm text-amber-800 relative z-10"
+        >
           <svg
             class="w-4 h-4 flex-shrink-0"
             fill="none"
@@ -156,7 +182,7 @@
           </span>
         </div>
         <button
-          class="restore-button text-sm font-medium text-amber-700 hover:text-amber-900 px-3 py-1 rounded-md hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-1 transition-all duration-200"
+          class="restore-button text-sm font-medium text-amber-700 hover:text-amber-900 px-3 py-1 rounded-md hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-1 transition-all duration-200 relative z-10"
           @click="restoreLastDeleted"
         >
           <span class="flex items-center gap-1">
@@ -237,6 +263,14 @@ onMounted(() => {
 const recentlyDeleted = ref<SavedSearch[]>([])
 const undoTimeouts = ref<Map<string, ReturnType<typeof setTimeout>>>(new Map())
 
+// Palette's micro-UX enhancement: Particle burst effect tracking
+const particlesActive = ref<Set<string>>(new Set())
+
+// Palette's micro-UX enhancement: Undo progress bar state
+const undoProgressActive = ref(false)
+const undoProgressPercent = ref(0)
+const undoProgressAnimationFrame = ref<number | null>(null)
+
 // Palette's micro-UX enhancement: Track the last deleted search for quick restore
 const lastDeletedSearch = computed(
   () => recentlyDeleted.value[recentlyDeleted.value.length - 1] || null
@@ -289,9 +323,18 @@ const handleBeforeLeave = (el: Element) => {
   htmlEl.style.height = `${height}px`
 }
 
-const onRemoveSavedSearch = (search: SavedSearch) => {
+const onRemoveSavedSearch = (search: SavedSearch, _index?: number) => {
   // Palette's micro-UX enhancement: Add to deleting set for animation
   deletingItems.value.add(search.query)
+
+  // Palette's micro-UX enhancement: Trigger particle burst celebration
+  if (!prefersReducedMotion.value) {
+    particlesActive.value.add(search.query)
+    // Remove particles after animation completes
+    setTimeout(() => {
+      particlesActive.value.delete(search.query)
+    }, animationConfig.savedSearches.particleBurstDurationMs)
+  }
 
   // Haptic feedback for deletion
   hapticError()
@@ -323,9 +366,37 @@ const onRemoveSavedSearch = (search: SavedSearch) => {
       s => s.query !== search.query
     )
     undoTimeouts.value.delete(search.query)
+    undoProgressActive.value = false
+    undoProgressPercent.value = 0
+    if (undoProgressAnimationFrame.value) {
+      cancelAnimationFrame(undoProgressAnimationFrame.value)
+    }
   }, uiConfig.toast.duration.info)
 
   undoTimeouts.value.set(search.query, timeout)
+
+  // Palette's micro-UX enhancement: Start undo progress bar animation
+  if (!prefersReducedMotion.value) {
+    undoProgressActive.value = true
+    undoProgressPercent.value = 100
+    const duration = uiConfig.toast.duration.info
+    const startTime = performance.now()
+
+    const animateProgress = (currentTime: number) => {
+      const elapsed = currentTime - startTime
+      const progress = Math.max(0, 100 - (elapsed / duration) * 100)
+      undoProgressPercent.value = progress
+
+      if (progress > 0) {
+        undoProgressAnimationFrame.value =
+          requestAnimationFrame(animateProgress)
+      } else {
+        undoProgressActive.value = false
+      }
+    }
+
+    undoProgressAnimationFrame.value = requestAnimationFrame(animateProgress)
+  }
 
   // Store undo callback globally for the toast action
   if (typeof window !== 'undefined') {
@@ -362,6 +433,14 @@ const restoreLastDeleted = () => {
     s => s.query !== search.query
   )
 
+  // Palette's micro-UX enhancement: Stop undo progress bar
+  undoProgressActive.value = false
+  undoProgressPercent.value = 0
+  if (undoProgressAnimationFrame.value) {
+    cancelAnimationFrame(undoProgressAnimationFrame.value)
+    undoProgressAnimationFrame.value = null
+  }
+
   // Clear restoring state after animation
   setTimeout(() => {
     restoringItem.value = null
@@ -395,6 +474,51 @@ const formatDate = (date: Date) => {
     year: 'numeric',
   })
 }
+
+// Palette's micro-UX enhancement: Generate particle burst styles
+const getParticleStyle = (particleIndex: number) => {
+  const config = animationConfig.savedSearches
+  const angle = (360 / config.particleCount) * particleIndex
+  const spread = config.particleSpreadPx
+  const size =
+    config.particleMinSizePx +
+    Math.random() * (config.particleMaxSizePx - config.particleMinSizePx)
+  const color =
+    config.particleColors[particleIndex % config.particleColors.length]
+
+  return {
+    '--particle-angle': `${angle}deg`,
+    '--particle-spread': `${spread}px`,
+    '--particle-size': `${size}px`,
+    '--particle-color': color,
+    '--particle-delay': `${particleIndex * 0.02}s`,
+  } as Record<string, string>
+}
+
+// Palette's micro-UX enhancement: Generate staggered entrance style
+const getStaggeredEntranceStyle = (index: number) => {
+  if (prefersReducedMotion.value) return {}
+
+  const config = animationConfig.savedSearches
+  const delay = Math.min(
+    index * config.staggerDelayMs,
+    config.maxStaggerDelayMs
+  )
+
+  return {
+    '--stagger-delay': `${delay}ms`,
+    'animation-delay': `${delay}ms`,
+  } as Record<string, string>
+}
+
+// Palette's micro-UX enhancement: Undo progress bar computed style
+const undoProgressStyle = computed(() => {
+  return {
+    width: `${undoProgressPercent.value}%`,
+    height: `${animationConfig.savedSearches.progressBarHeightPx}px`,
+    backgroundColor: animationConfig.savedSearches.progressBarColor,
+  }
+})
 </script>
 
 <style scoped>
@@ -546,6 +670,84 @@ const formatDate = (date: Date) => {
     v-bind('EASING.MATERIAL_STANDARD');
 }
 
+/* Palette's micro-UX enhancement: Particle burst container */
+.particle-burst-container {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  width: 2rem;
+  height: 2rem;
+  pointer-events: none;
+  z-index: v-bind('zIndexScale.medium[1]');
+}
+
+/* Palette's micro-UX enhancement: Individual particle styles */
+.particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  background-color: var(--particle-color);
+  border-radius: 50%;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  animation: particle-burst
+    v-bind('animationConfig.savedSearches.particleBurstDurationSec') ease-out
+    forwards;
+  animation-delay: var(--particle-delay);
+}
+
+/* Palette's micro-UX enhancement: Particle burst animation */
+@keyframes particle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+        calc(-50% + cos(var(--particle-angle)) * var(--particle-spread)),
+        calc(-50% + sin(var(--particle-angle)) * var(--particle-spread))
+      )
+      scale(0.5);
+  }
+}
+
+/* Palette's micro-UX enhancement: Undo progress bar */
+.undo-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-radius: 0 0 0 0.5rem;
+  transition: width 0.1s linear;
+}
+
+/* Palette's micro-UX enhancement: Staggered entrance animation */
+.saved-search-item {
+  animation: staggered-entrance
+    v-bind('animationConfig.savedSearches.entranceDurationSec') ease-out
+    forwards;
+  animation-delay: var(--stagger-delay, 0ms);
+  opacity: 0;
+}
+
+@keyframes staggered-entrance {
+  0% {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* Respect reduced motion preferences for accessibility */
 @media (prefers-reduced-motion: reduce) {
   .saved-search-item,
@@ -556,9 +758,12 @@ const formatDate = (date: Date) => {
     transition: none;
     transform: none;
     animation: none;
+    opacity: 1;
   }
 
-  .shimmer-sweep {
+  .shimmer-sweep,
+  .particle-burst-container,
+  .undo-progress-bar {
     display: none;
   }
 
