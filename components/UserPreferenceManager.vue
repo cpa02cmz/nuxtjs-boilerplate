@@ -7,12 +7,7 @@
     </h2>
 
     <!-- ARIA Live Region for Announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcementText }}
     </div>
 
@@ -38,6 +33,11 @@
               isAnimatingCategory === category && 'category-chip--animating',
             ]"
             :aria-pressed="selectedCategories.includes(category)"
+            :aria-label="
+              selectedCategories.includes(category)
+                ? `Remove ${category} from interests`
+                : `Add ${category} to interests`
+            "
             @click="toggleCategory(category)"
           >
             <span class="flex items-center gap-1">
@@ -84,6 +84,7 @@
               isAnimatingSkill === level.value && 'skill-level-btn--animating',
             ]"
             :aria-pressed="selectedSkillLevel === level.value"
+            :aria-label="`Set skill level to ${level.label}`"
             @click="selectSkillLevel(level.value)"
           >
             {{ level.label }}
@@ -106,7 +107,7 @@
               v-model="notificationSettings.resourceUpdates"
               type="checkbox"
               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600"
-            >
+            />
             <span class="ml-2 text-gray-700 dark:text-gray-300">
               Updates to resources you've bookmarked
             </span>
@@ -117,7 +118,7 @@
               v-model="notificationSettings.newContent"
               type="checkbox"
               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600"
-            >
+            />
             <span class="ml-2 text-gray-700 dark:text-gray-300">
               New content in your areas of interest
             </span>
@@ -128,7 +129,7 @@
               v-model="notificationSettings.weeklyDigest"
               type="checkbox"
               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600"
-            >
+            />
             <span class="ml-2 text-gray-700 dark:text-gray-300">
               Weekly digest of popular resources
             </span>
@@ -151,7 +152,7 @@
               v-model="privacySettings.allowPersonalization"
               type="checkbox"
               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600"
-            >
+            />
             <span class="ml-2 text-gray-700 dark:text-gray-300">
               Allow personalized recommendations
             </span>
@@ -162,7 +163,7 @@
               v-model="privacySettings.allowDataCollection"
               type="checkbox"
               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600"
-            >
+            />
             <span class="ml-2 text-gray-700 dark:text-gray-300">
               Allow usage data collection for improvements
             </span>
@@ -173,7 +174,7 @@
               v-model="privacySettings.allowRecommendationExplanations"
               type="checkbox"
               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600"
-            >
+            />
             <span class="ml-2 text-gray-700 dark:text-gray-300">
               Show explanations for why resources are recommended
             </span>
@@ -195,6 +196,13 @@
               : 'bg-indigo-600 hover:bg-indigo-700 text-white',
             isSavePressed && !showSuccessAnimation && 'save-button--pressed',
           ]"
+          :aria-label="
+            saving
+              ? 'Saving preferences...'
+              : showSuccessAnimation
+                ? 'Preferences saved successfully'
+                : 'Save your preferences'
+          "
           @click="savePreferences"
           @mousedown="isSavePressed = true"
           @mouseup="isSavePressed = false"
@@ -203,10 +211,7 @@
           @touchend="isSavePressed = false"
         >
           <!-- Loading State -->
-          <span
-            v-if="saving"
-            class="flex items-center justify-center gap-2"
-          >
+          <span v-if="saving" class="flex items-center justify-center gap-2">
             <svg
               class="animate-spin h-4 w-4"
               xmlns="http://www.w3.org/2000/svg"
@@ -252,10 +257,7 @@
             Saved!
           </span>
           <!-- Default State -->
-          <span
-            v-else
-            class="flex items-center justify-center gap-2"
-          >
+          <span v-else class="flex items-center justify-center gap-2">
             <svg
               class="w-4 h-4"
               fill="none"
