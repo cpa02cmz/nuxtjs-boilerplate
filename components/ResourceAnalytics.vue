@@ -462,7 +462,8 @@ import type { Ref } from 'vue'
 }
 
 .analytics-container--loaded {
-  animation: container-fade-in 0.4s ease-out;
+  animation: container-fade-in
+    v-bind('animationConfig.cssTransitions.normalSec') ease-out;
 }
 
 @keyframes container-fade-in {
@@ -492,7 +493,8 @@ import type { Ref } from 'vue'
   height: 8px;
   background: #22c55e;
   border-radius: 50%;
-  animation: live-pulse 2s ease-in-out infinite;
+  animation: live-pulse v-bind('animationConfig.liveIndicator.pulseDurationSec')
+    ease-in-out infinite;
 }
 
 .live-indicator__text {
@@ -556,7 +558,8 @@ import type { Ref } from 'vue'
 
 /* Skeleton Loading State - Palette's micro-UX delight! */
 .analytics-card--skeleton {
-  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  animation: skeleton-pulse
+    v-bind('animationConfig.skeleton.shimmerDurationSec') ease-in-out infinite;
   animation-delay: calc(
     var(--skeleton-index, 0) *
       v-bind('animationConfig.analytics.skeletonStaggerDelaySec')
@@ -580,7 +583,8 @@ import type { Ref } from 'vue'
   background-size: 200% 100%;
   border-radius: 4px;
   margin-bottom: 12px;
-  animation: skeleton-shimmer 1.5s infinite;
+  animation: skeleton-shimmer
+    v-bind('animationConfig.skeleton.shimmerDurationSec') infinite;
 }
 
 .skeleton-value {
@@ -589,7 +593,8 @@ import type { Ref } from 'vue'
   background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
   background-size: 200% 100%;
   border-radius: 6px;
-  animation: skeleton-shimmer 1.5s infinite;
+  animation: skeleton-shimmer
+    v-bind('animationConfig.skeleton.shimmerDurationSec') infinite;
 }
 
 @keyframes skeleton-shimmer {
@@ -658,7 +663,8 @@ import type { Ref } from 'vue'
 }
 
 .trend-icon--animate {
-  animation: trend-bounce 1s ease-out;
+  animation: trend-bounce v-bind('animationConfig.cssTransitions.slowerSec')
+    ease-out;
 }
 
 @keyframes trend-bounce {
@@ -728,7 +734,8 @@ import type { Ref } from 'vue'
   background: linear-gradient(to top, #3b82f6, #60a5fa);
   border-radius: 2px 2px 0 0;
   min-height: 20%;
-  animation: chart-grow 0.6s ease-out backwards;
+  animation: chart-grow v-bind('animationConfig.pageTransitions.standardSec')
+    ease-out backwards;
   animation-delay: var(--animation-delay, 0ms);
 }
 
@@ -755,7 +762,8 @@ import type { Ref } from 'vue'
 }
 
 .freshness-indicator--pulse .freshness-dot {
-  animation: freshness-pulse 1.5s ease-in-out infinite;
+  animation: freshness-pulse
+    v-bind('animationConfig.skeleton.shimmerDurationSec') ease-in-out infinite;
 }
 
 .freshness-dot {
