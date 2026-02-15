@@ -24,6 +24,7 @@
       '--scan-delay': `${scanConfig.delaySec}s`,
       '--scan-color': scanConfig.color,
       '--scan-opacity': scanConfig.opacity,
+      '--scan-z-index': scanConfig.zIndex,
     }"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
@@ -114,6 +115,7 @@
 import { ref, onUnmounted, computed, onMounted } from 'vue'
 import { EASING } from '~/configs/easing.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexScale } from '~/configs/z-index.config'
 
 // Skeleton loading component for ResourceCard
 // Enhanced with wave shimmer animation for better perceived performance
@@ -182,6 +184,7 @@ const scanConfig = computed(() => ({
   delaySec: animationConfig.skeleton?.scanLine?.delaySec ?? 0.5,
   color: animationConfig.skeleton?.scanLine?.color ?? 'rgba(59, 130, 246, 0.3)',
   opacity: animationConfig.skeleton?.scanLine?.opacity ?? 0.6,
+  zIndex: zIndexScale.low[10],
 }))
 
 // 🎨 Palette: Respect reduced motion preference
@@ -465,7 +468,7 @@ onMounted(() => {
   animation: scan-sweep var(--scan-duration) ease-in-out var(--scan-delay)
     infinite;
   pointer-events: none;
-  z-index: 10;
+  z-index: var(--scan-z-index);
   box-shadow:
     0 0 4px var(--scan-color),
     0 0 8px var(--scan-color),
