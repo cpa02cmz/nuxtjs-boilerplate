@@ -281,8 +281,17 @@ const getSafeUiConfig = () => {
   }
 }
 
+const getSafeZIndexConfig = () => {
+  try {
+    return zIndexConfig || { listItem: 10 }
+  } catch {
+    return { listItem: 10 }
+  }
+}
+
 const safeUiConfig = getSafeUiConfig()
 const safeTiming = (safeUiConfig as typeof uiConfig).timing || {}
+const safeZIndexConfig = getSafeZIndexConfig()
 
 // SSR-safe timing values (ms) with defaults
 const TIMING_FALLBACKS = {
@@ -999,7 +1008,7 @@ if (typeof window !== 'undefined') {
   width: 0;
   height: 0;
   pointer-events: none;
-  z-index: v-bind('zIndexConfig.listItem');
+  z-index: v-bind('safeZIndexConfig.listItem');
 }
 
 .particle {
