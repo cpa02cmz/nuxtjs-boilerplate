@@ -24,7 +24,7 @@ import {
   verifyBackup,
   cleanupOldBackups,
   getBackupHealth,
-} from '../../utils/backup/backup-manager'
+} from '../utils/backup/backup-manager'
 
 interface CommandLineArgs {
   command: string

@@ -515,6 +515,11 @@ export const componentColorsConfig = {
       600: process.env.BLUE_600 || '#2563eb',
       700: process.env.BLUE_700 || '#1d4ed8',
     },
+    purple: {
+      400: process.env.PURPLE_400 || '#c084fc',
+      500: process.env.PURPLE_500 || '#a855f7',
+      600: process.env.PURPLE_600 || '#9333ea',
+    },
     amber: {
       400: process.env.AMBER_400 || '#fbbf24',
       500: process.env.AMBER_500 || '#f59e0b',
@@ -637,6 +642,14 @@ export const componentColorsConfig = {
         end: process.env.COMMENTS_COUNTER_SUCCESS_END || '#34d399',
       },
     },
+  },
+
+  // Text Colors - Flexy hates hardcoded text colors!
+  text: {
+    primary: process.env.TEXT_PRIMARY || '#111827',
+    secondary: process.env.TEXT_SECONDARY || '#6b7280',
+    muted: process.env.TEXT_MUTED || '#9ca3af',
+    inverse: process.env.TEXT_INVERSE || '#ffffff',
   },
 } as const
 

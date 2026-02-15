@@ -555,6 +555,30 @@ export const animationConfig = {
         process.env.BOOKMARK_PARTICLE_DISTANCE_MAX || '1.3'
       ),
     },
+    // Newly Added Pulse Animation - Palette's micro-UX enhancement! 🎨
+    // A subtle expanding ring that helps users locate newly bookmarked items
+    newlyAdded: {
+      // Ring size in pixels
+      ringSizePx: parseInt(
+        process.env.BOOKMARK_NEWLY_ADDED_RING_SIZE_PX || '56'
+      ),
+      // Ring border width in pixels
+      ringWidthPx: parseInt(
+        process.env.BOOKMARK_NEWLY_ADDED_RING_WIDTH_PX || '3'
+      ),
+      // Pulse animation duration in milliseconds
+      pulseDurationMs: parseInt(
+        process.env.BOOKMARK_NEWLY_ADDED_PULSE_DURATION_MS || '600'
+      ),
+      // Starting opacity (1.0 = fully opaque)
+      startOpacity: parseFloat(
+        process.env.BOOKMARK_NEWLY_ADDED_START_OPACITY || '1'
+      ),
+      // Middle opacity during animation
+      midOpacity: parseFloat(
+        process.env.BOOKMARK_NEWLY_ADDED_MID_OPACITY || '0.6'
+      ),
+    },
   },
 
   // Empty State Animations
