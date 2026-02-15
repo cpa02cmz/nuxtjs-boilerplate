@@ -156,6 +156,9 @@ export const themeConfig = {
     warning: process.env.HEALTH_WARNING_COLOR || '#f59e0b',
     bad: process.env.HEALTH_BAD_COLOR || '#ef4444',
     unknown: process.env.HEALTH_UNKNOWN_COLOR || '#9ca3af',
+    // Glow colors for radial gradient effects
+    glowStart: process.env.HEALTH_GLOW_START || 'rgba(34, 197, 94, 0.3)',
+    glowEnd: process.env.HEALTH_GLOW_END || 'rgba(34, 197, 94, 0)',
   },
 
   // Scroll To Top Focus Colors

@@ -532,6 +532,8 @@ export const animationConfig = {
     shakeDurationMs: parseInt(
       process.env.VALIDATION_SHAKE_DURATION_MS || '500'
     ),
+    // Duration of shake animation in seconds (for CSS animations)
+    shakeDurationSec: `${parseInt(process.env.VALIDATION_SHAKE_DURATION_MS || '500') / 1000}s`,
     // Shake intensity in pixels (how far the element moves)
     shakeIntensityPx: parseInt(
       process.env.VALIDATION_SHAKE_INTENSITY_PX || '8'
@@ -1624,6 +1626,9 @@ export const animationConfig = {
     drawDurationSec: parseFloat(process.env.WEBHOOK_DRAW_DURATION_SEC || '1.5'),
     // Transition duration
     transitionDurationSec: `${parseInt(process.env.WEBHOOK_TRANSITION_DURATION_MS || '150') / 1000}s`,
+    transitionDurationMs: parseInt(
+      process.env.WEBHOOK_TRANSITION_DURATION_MS || '150'
+    ),
     // Colors
     colors: {
       gradientStart: process.env.WEBHOOK_GRADIENT_START || '#f3f4f6',
@@ -1665,6 +1670,16 @@ export const animationConfig = {
     celebrationBorderRadius: process.env.WEBHOOK_CELEBRATION_RADIUS || '12px',
     celebrationIconSize: process.env.WEBHOOK_CELEBRATION_ICON_SIZE || '28px',
     celebrationFontSize: process.env.WEBHOOK_CELEBRATION_FONT_SIZE || '14px',
+    // Animation timing for sparkles and effects
+    sparkleStaggerDelaySec: parseFloat(
+      process.env.WEBHOOK_SPARKLE_STAGGER_SEC || '0.05'
+    ),
+    // Stroke transition duration for SVG animations (ms)
+    strokeTransitionMs: parseInt(
+      process.env.WEBHOOK_STROKE_TRANSITION_MS || '300'
+    ),
+    // Reduced motion opacity transition (seconds)
+    reducedMotionOpacitySec: `${parseInt(process.env.WEBHOOK_REDUCED_MOTION_OPACITY_MS || '300') / 1000}s`,
   },
 
   // Zero Result Searches Component - Flexy hates hardcoded values!
@@ -1834,6 +1849,7 @@ export const animationConfig = {
     lg: parseInt(process.env.BORDER_RADIUS_LG || '6'),
     xl: parseInt(process.env.BORDER_RADIUS_XL || '8'),
     xxl: parseInt(process.env.BORDER_RADIUS_XXL || '12'),
+    full: process.env.BORDER_RADIUS_FULL || '9999px',
   },
 
   // Pixel Values - Flexy hates magic numbers!
@@ -2302,6 +2318,34 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.SUBMISSION_REVIEW_RESPECT_REDUCED_MOTION !== 'false',
+    // Success message configuration
+    successMessage: {
+      title: process.env.SUBMISSION_SUCCESS_TITLE || 'Success!',
+      button: process.env.SUBMISSION_SUCCESS_BUTTON || 'Continue',
+    },
+    // Celebration animation configuration
+    celebration: {
+      durationMs: parseInt(
+        process.env.SUBMISSION_CELEBRATION_DURATION_MS || '2500'
+      ),
+      durationSec: `${parseInt(process.env.SUBMISSION_CELEBRATION_DURATION_MS || '2500') / 1000}s`,
+      popInDurationSec: `${parseInt(process.env.SUBMISSION_REVIEW_POP_IN_MS || '500') / 1000}s`,
+      circleScaleDurationMs: parseInt(
+        process.env.SUBMISSION_REVIEW_CIRCLE_SCALE_MS || '300'
+      ),
+      checkmarkDrawDurationMs: parseInt(
+        process.env.SUBMISSION_REVIEW_CHECKMARK_DRAW_MS || '400'
+      ),
+      checkmarkDrawDelayMs: parseInt(
+        process.env.SUBMISSION_REVIEW_CHECKMARK_DELAY_MS || '200'
+      ),
+      confettiDurationMs: parseInt(
+        process.env.SUBMISSION_REVIEW_CONFETTI_DURATION_MS || '800'
+      ),
+      confettiDelayMs: parseInt(
+        process.env.SUBMISSION_REVIEW_CONFETTI_DELAY_MS || '100'
+      ),
+    },
   },
 
   // Comparison Empty State Animations - Palette's delightful micro-UX touch! 🎨
@@ -2496,6 +2540,10 @@ export const animationConfig = {
     actionEntranceDurationSec: `${parseInt(process.env.MODERATION_ACTION_ENTRANCE_DURATION_MS || '400') / 1000}s`,
     // Trend pulse animation duration in seconds
     trendPulseDurationSec: `${parseInt(process.env.MODERATION_TREND_PULSE_DURATION_MS || '800') / 1000}s`,
+    // Float animation duration in seconds (for empty state)
+    floatDurationSec: parseFloat(
+      process.env.MODERATION_FLOAT_DURATION_SEC || '3'
+    ),
   },
 
   // Resource Card Animations

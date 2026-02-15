@@ -9,10 +9,7 @@
     </header>
 
     <!-- Palette's micro-UX enhancement: Stat Cards with Counter Animation -->
-    <section
-      aria-label="Dashboard statistics"
-      class="dashboard-stats"
-    >
+    <section aria-label="Dashboard statistics" class="dashboard-stats">
       <article
         v-for="(stat, index) in stats"
         :key="stat.key"
@@ -35,7 +32,7 @@
           :class="{ 'is-counting': isCounting }"
           :aria-label="`Number of ${stat.key}`"
         >
-          {{ animatedValues[stat.key] }}
+          {{ getAnimatedValue(stat.key) }}
         </div>
 
         <!-- Palette's micro-UX enhancement: Trend indicators with pulse animation -->
@@ -118,10 +115,7 @@
             </div>
             <div class="activity-content">
               <p>{{ activity.message }}</p>
-              <time
-                class="activity-time"
-                :datetime="activity.timestamp"
-              >{{
+              <time class="activity-time" :datetime="activity.timestamp">{{
                 formatDate(activity.timestamp)
               }}</time>
             </div>
@@ -155,19 +149,12 @@
           enter-from-class="opacity-0 translate-y-4"
           enter-to-class="opacity-100 translate-y-0"
         >
-          <div
-            v-if="recentActivity.length === 0"
-            class="activity-empty-state"
-          >
+          <div v-if="recentActivity.length === 0" class="activity-empty-state">
             <div
               class="activity-empty-icon"
               :class="{ 'animate-float': !prefersReducedMotion }"
             >
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -184,17 +171,11 @@
       </section>
 
       <!-- Palette's micro-UX enhancement: Quick Actions with Press Effects -->
-      <section
-        class="quick-actions"
-        aria-labelledby="quick-actions-heading"
-      >
+      <section class="quick-actions" aria-labelledby="quick-actions-heading">
         <h2 id="quick-actions-heading">
           {{ config.dashboard.quickActions }}
         </h2>
-        <nav
-          class="action-buttons"
-          aria-label="Quick actions navigation"
-        >
+        <nav class="action-buttons" aria-label="Quick actions navigation">
           <NuxtLink
             v-for="(action, index) in quickActions"
             :key="action.route"
@@ -246,12 +227,7 @@
     </div>
 
     <!-- Palette's micro-UX enhancement: Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -370,6 +346,11 @@ const checkReducedMotion = () => {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
     return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// Helper to get animated value with proper typing
+const getAnimatedValue = (key: string): number => {
+  return animatedValues.value[key as keyof typeof animatedValues.value] ?? 0
 }
 
 // Palette's micro-UX enhancement: Counter animation with easeOutExpo

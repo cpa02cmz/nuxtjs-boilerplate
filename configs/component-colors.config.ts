@@ -603,6 +603,9 @@ export const componentColorsConfig = {
       process.env.MODERATION_EMPTY_STATE_BORDER || 'rgba(59, 130, 246, 0.2)',
     emptyStateIconColor:
       process.env.MODERATION_EMPTY_STATE_ICON_COLOR || '#3b82f6',
+    // Action button hover border
+    actionHoverBorder:
+      process.env.MODERATION_ACTION_HOVER_BORDER || 'rgba(59, 130, 246, 0.2)',
   },
 
   // Confetti Celebration Colors - Flexy hates hardcoded confetti colors!

@@ -25,6 +25,14 @@ export interface SortOption {
 }
 
 export const contentConfig = {
+  // Color references for content components - Flexy hates hardcoded colors!
+  colors: {
+    success: process.env.CONTENT_COLOR_SUCCESS || '#16a34a',
+    error: process.env.CONTENT_COLOR_ERROR || '#dc2626',
+    warning: process.env.CONTENT_COLOR_WARNING || '#f59e0b',
+    info: process.env.CONTENT_COLOR_INFO || '#3b82f6',
+  },
+
   // Data File Paths - Flexy hates hardcoded file paths!
   paths: {
     // Resources data file path
@@ -1498,11 +1506,17 @@ export const contentConfig = {
           process.env.CONTENT_REVIEW_ACTION_APPROVE_TITLE ||
           'Approve Submission',
         button: process.env.CONTENT_REVIEW_ACTION_APPROVE_BTN || 'Approve',
+        successMessage:
+          process.env.CONTENT_REVIEW_ACTION_APPROVE_SUCCESS ||
+          'Submission approved successfully',
       },
       reject: {
         title:
           process.env.CONTENT_REVIEW_ACTION_REJECT_TITLE || 'Reject Submission',
         button: process.env.CONTENT_REVIEW_ACTION_REJECT_BTN || 'Reject',
+        successMessage:
+          process.env.CONTENT_REVIEW_ACTION_REJECT_SUCCESS ||
+          'Submission rejected successfully',
       },
     },
     errors: {

@@ -2,10 +2,7 @@
   <ClientErrorBoundary component-name="ComparePage">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Confetti celebration when reaching max comparison limit -->
-      <ConfettiCelebration
-        ref="confettiRef"
-        intensity="heavy"
-      />
+      <ConfettiCelebration ref="confettiRef" intensity="heavy" />
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
           Resource Comparison
@@ -16,7 +13,7 @@
       </div>
 
       <ComparisonBuilder
-        :selected-resources="selectedResources"
+        :selected-resources="selectedResources as Resource[]"
         :max-resources="maxResources"
         @remove-resource="removeResource"
         @clear-comparison="clearComparison"
@@ -38,6 +35,7 @@ import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
 import { ROUTE_PATTERNS } from '~/configs/routes.config'
 import { contentConfig } from '~/configs/content.config'
+import type { Resource } from '~/types/resource'
 
 // Use the comparison composable
 const { selectedResources, removeResource, clearComparison } =
