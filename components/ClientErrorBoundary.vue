@@ -29,11 +29,7 @@
         >
           <div class="loading-shimmer__ring" />
         </div>
-        <div
-          v-else
-          class="loading-simple"
-          aria-hidden="true"
-        >
+        <div v-else class="loading-simple" aria-hidden="true">
           <div class="loading-simple__dot" />
         </div>
         <span class="sr-only">Loading...</span>
@@ -132,10 +128,7 @@
           enter-to-class="opacity-100 translate-y-0"
           appear
         >
-          <div
-            v-show="isInitialized"
-            class="client-error-boundary__content"
-          >
+          <div v-show="isInitialized" class="client-error-boundary__content">
             <slot />
           </div>
         </Transition>
@@ -143,12 +136,7 @@
     </ClientOnly>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcementText }}
     </div>
   </div>
@@ -330,7 +318,9 @@ onUnmounted(() => {
   border: 3px solid transparent;
   border-top-color: #3b82f6;
   border-right-color: #3b82f6;
-  animation: shimmer-spin 1s linear infinite;
+  animation: shimmer-spin
+    v-bind('animationConfig.clientErrorBoundary.shimmerSpinDurationSec + "s"')
+    linear infinite;
 }
 
 @keyframes shimmer-spin {
@@ -372,7 +362,10 @@ onUnmounted(() => {
 }
 
 .error-indicator--pulse {
-  animation: error-pulse 2s ease-in-out 3;
+  animation: error-pulse
+    v-bind('animationConfig.clientErrorBoundary.errorPulseDurationSec + "s"')
+    ease-in-out
+    v-bind('animationConfig.clientErrorBoundary.errorPulseIterations');
 }
 
 @keyframes error-pulse {
@@ -395,7 +388,9 @@ onUnmounted(() => {
 }
 
 .animate-error-icon {
-  animation: error-icon-shake 0.5s ease-in-out;
+  animation: error-icon-shake
+    v-bind('animationConfig.clientErrorBoundary.errorShakeDurationSec + "s"')
+    ease-in-out;
 }
 
 @keyframes error-icon-shake {
