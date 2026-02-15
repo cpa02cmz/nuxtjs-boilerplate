@@ -2911,6 +2911,76 @@ export const animationConfig = {
     ),
   },
 
+  // Saved Searches Micro-UX - Palette's delightful enhancement! ✨
+  // Particle burst celebration on delete, staggered entrance, and undo progress bar
+  savedSearches: {
+    // Particle burst animation duration (ms)
+    particleBurstDurationMs: parseInt(
+      process.env.SAVED_SEARCHES_PARTICLE_DURATION_MS || '600'
+    ),
+    // CSS duration string for particle burst
+    particleBurstDurationSec: `${parseInt(process.env.SAVED_SEARCHES_PARTICLE_DURATION_MS || '600') / 1000}s`,
+    // Number of particles in the burst
+    particleCount: parseInt(process.env.SAVED_SEARCHES_PARTICLE_COUNT || '8'),
+    // Particle spread distance (px)
+    particleSpreadPx: parseInt(
+      process.env.SAVED_SEARCHES_PARTICLE_SPREAD || '40'
+    ),
+    // Particle colors (red/gray theme for deletion)
+    particleColors: [
+      process.env.SAVED_SEARCHES_PARTICLE_COLOR_1 || '#ef4444', // red-500
+      process.env.SAVED_SEARCHES_PARTICLE_COLOR_2 || '#f87171', // red-400
+      process.env.SAVED_SEARCHES_PARTICLE_COLOR_3 || '#9ca3af', // gray-400
+      process.env.SAVED_SEARCHES_PARTICLE_COLOR_4 || '#d1d5db', // gray-300
+    ],
+    // Particle size range (px)
+    particleMinSizePx: parseInt(
+      process.env.SAVED_SEARCHES_PARTICLE_MIN_SIZE || '3'
+    ),
+    particleMaxSizePx: parseInt(
+      process.env.SAVED_SEARCHES_PARTICLE_MAX_SIZE || '6'
+    ),
+    // Delay before particles start disappearing (seconds)
+    particleFadeDelaySec: parseFloat(
+      process.env.SAVED_SEARCHES_PARTICLE_FADE_DELAY || '0.3'
+    ),
+    // Staggered entrance animation delay between items (ms)
+    staggerDelayMs: parseInt(process.env.SAVED_SEARCHES_STAGGER_MS || '80'),
+    // Maximum stagger delay to prevent long waits (ms)
+    maxStaggerDelayMs: parseInt(
+      process.env.SAVED_SEARCHES_MAX_STAGGER_MS || '500'
+    ),
+    // Entrance animation duration (ms)
+    entranceDurationMs: parseInt(
+      process.env.SAVED_SEARCHES_ENTRANCE_DURATION_MS || '400'
+    ),
+    // CSS duration string for entrance
+    entranceDurationSec: `${parseInt(process.env.SAVED_SEARCHES_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Distance items travel during entrance (px)
+    entranceDistancePx: parseInt(
+      process.env.SAVED_SEARCHES_ENTRANCE_DISTANCE || '15'
+    ),
+    // Undo notification progress bar duration (ms)
+    undoProgressDurationMs: parseInt(
+      process.env.SAVED_SEARCHES_UNDO_PROGRESS_MS || '5000'
+    ),
+    // CSS duration string for undo progress
+    undoProgressDurationSec: `${parseInt(process.env.SAVED_SEARCHES_UNDO_PROGRESS_MS || '5000') / 1000}s`,
+    // Progress bar color
+    progressBarColor:
+      process.env.SAVED_SEARCHES_PROGRESS_COLOR || 'rgba(245, 158, 11, 0.8)', // amber-500
+    // Progress bar background color
+    progressBarBgColor:
+      process.env.SAVED_SEARCHES_PROGRESS_BG_COLOR || 'rgba(245, 158, 11, 0.2)',
+    // Progress bar height (px)
+    progressBarHeightPx: parseInt(
+      process.env.SAVED_SEARCHES_PROGRESS_HEIGHT || '3'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SAVED_SEARCHES_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // SVG Stroke Dasharray Values - Flexy hates hardcoded stroke-dasharray!
   // Used for checkmark draw animations, progress rings, and loading spinners
   svg: {
