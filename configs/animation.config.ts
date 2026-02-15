@@ -2910,6 +2910,28 @@ export const animationConfig = {
       process.env.HEALTH_MONITOR_SPINNER_DURATION_MS || '1000'
     ),
   },
+
+  // SVG Stroke Dasharray Values - Flexy hates hardcoded stroke-dasharray!
+  // Used for checkmark draw animations, progress rings, and loading spinners
+  svg: {
+    strokeDasharray: {
+      // Extra small (10) - for small icons and micro indicators
+      xs: parseInt(process.env.SVG_STROKE_DASHARRAY_XS || '10'),
+      // Small (20) - for checkmarks and small icons
+      small: parseInt(process.env.SVG_STROKE_DASHARRAY_SMALL || '20'),
+      // Medium (24) - for standard checkmarks
+      medium: parseInt(process.env.SVG_STROKE_DASHARRAY_MEDIUM || '24'),
+      // Standard (30) - for progress indicators
+      standard: parseInt(process.env.SVG_STROKE_DASHARRAY_STANDARD || '30'),
+      // Large (60) - for larger animations
+      large: parseInt(process.env.SVG_STROKE_DASHARRAY_LARGE || '60'),
+      // Extra large (100) - for full circles and large progress rings
+      xlarge: parseInt(process.env.SVG_STROKE_DASHARRAY_XLARGE || '100'),
+      // Spinner values - comma-separated for dash patterns
+      spinnerDash: process.env.SVG_SPINNER_DASH || '1, 150',
+      spinnerGap: process.env.SVG_SPINNER_GAP || '90, 150',
+    },
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

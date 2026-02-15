@@ -72,10 +72,10 @@
       >
         <!-- Copy Feedback -->
         <Transition
-          enter-active-class="transition-all duration-200 ease-out"
+          :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
           enter-from-class="opacity-0 scale-90"
           enter-to-class="opacity-100 scale-100"
-          leave-active-class="transition-all duration-150 ease-in"
+          :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
           leave-from-class="opacity-100 scale-100"
           leave-to-class="opacity-0 scale-90"
         >
@@ -177,8 +177,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { easingConfig } from '~/configs/easing.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
-import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   specifications: Record<string, string>
@@ -330,7 +331,7 @@ onUnmounted(() => {
 
 .header-icon--animated {
   animation: icon-pop v-bind('animationConfig.cssTransitions.slowerSec')
-    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    v-bind('easingConfig.cubicBezier.spring') forwards;
 }
 
 @keyframes icon-pop {
@@ -450,23 +451,25 @@ onUnmounted(() => {
 
 .copy-feedback {
   position: absolute;
-  inset: 0;
+  top: 0.5rem;
+  right: 0.5rem;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background: rgba(34, 197, 94, 0.95);
-  border-radius: inherit;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: rgb(34, 197, 94);
   color: white;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  z-index: 10;
+  z-index: v-bind('zIndexConfig.tooltip');
 }
 
 .copy-feedback-icon {
   width: 1.25rem;
   height: 1.25rem;
-  stroke-dasharray: 24;
-  stroke-dashoffset: 24;
+  stroke-dasharray: v-bind('animationConfig.svg.strokeDasharray.medium');
+  stroke-dashoffset: v-bind('animationConfig.svg.strokeDasharray.medium');
   animation: draw-check v-bind('animationConfig.cssTransitions.standardSec')
     ease-out forwards;
 }
