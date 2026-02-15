@@ -186,6 +186,25 @@ export class CircuitBreaker {
   isOpen(): boolean {
     return this.state.isOpen
   }
+
+  /**
+   * Cleans up resources and prepares the circuit breaker for garbage collection.
+   * This method should be called before removing the circuit breaker from the registry
+   * to prevent memory leaks.
+   */
+  destroy(): void {
+    // Reset all state to clear references
+    this.state = {
+      isOpen: false,
+      isHalfOpen: false,
+      failureCount: 0,
+      lastFailureTime: null,
+      successCount: 0,
+    }
+    this.lastSuccessTime = null
+    // The mutex doesn't have explicit cleanup, but by ensuring no pending
+    // operations and clearing state, we allow GC to collect this instance
+  }
 }
 
 const circuitBreakers = new Map<string, CircuitBreaker>()
@@ -200,6 +219,10 @@ export function getCircuitBreaker(
     if (circuitBreakers.size >= MAX_CIRCUIT_BREAKERS) {
       const oldestKey = circuitBreakers.keys().next().value
       if (oldestKey) {
+        const oldestBreaker = circuitBreakers.get(oldestKey)
+        if (oldestBreaker) {
+          oldestBreaker.destroy()
+        }
         circuitBreakers.delete(oldestKey)
       }
     }
@@ -224,6 +247,18 @@ export function resetCircuitBreaker(key: string): void {
   const breaker = circuitBreakers.get(key)
   if (breaker) {
     breaker.reset()
+  }
+}
+
+/**
+ * Destroys and removes all circuit breakers from the registry.
+ * This should be called during application shutdown or testing cleanup
+ * to prevent memory leaks.
+ */
+export function destroyAllCircuitBreakers(): void {
+  for (const [key, breaker] of circuitBreakers.entries()) {
+    breaker.destroy()
+    circuitBreakers.delete(key)
   }
 }
 
