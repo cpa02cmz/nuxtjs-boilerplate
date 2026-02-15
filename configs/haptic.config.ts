@@ -12,6 +12,7 @@ interface HapticFeatureConfig {
   retryPattern?: string
   entrancePattern?: string
   enableEntranceHaptic?: boolean
+  doublePulseDelayMs?: number
 }
 
 interface HapticConfigType {
@@ -43,6 +44,7 @@ interface HapticConfigType {
     pwaInstall: HapticFeatureConfig
     offline: HapticFeatureConfig
     lazyResourceCard: HapticFeatureConfig
+    readingProgress: HapticFeatureConfig
   }
   getPattern(
     patternName: keyof HapticConfigType['patterns']
@@ -97,6 +99,15 @@ export const hapticConfig: HapticConfigType = {
     loadMore: {
       enabled: process.env.HAPTIC_LOAD_MORE_ENABLED !== 'false',
       pattern: process.env.HAPTIC_LOAD_MORE_PATTERN || 'light',
+    },
+    // Reading progress completion celebration haptic
+    readingProgress: {
+      enabled: process.env.HAPTIC_READING_PROGRESS_ENABLED !== 'false',
+      pattern: 'successEmphasis',
+      // Double pulse delay for celebration (ms) - Flexy hates hardcoded 150!
+      doublePulseDelayMs: parseInt(
+        process.env.HAPTIC_READING_PROGRESS_DOUBLE_PULSE_DELAY_MS || '150'
+      ),
     },
     // Bookmark toggle haptic
     bookmark: {

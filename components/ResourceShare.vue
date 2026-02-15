@@ -110,12 +110,7 @@
     </div>
 
     <!-- Screen Reader Announcement for Copy Success -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ screenReaderAnnouncement }}
     </div>
   </div>
@@ -289,12 +284,12 @@ const handleCopyClick = async (event: MouseEvent) => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: v-bind('`${animationConfig.pixels?.shareButtonPadding || 8}px`');
+  padding: v-bind('`${animationConfig.pixels.shareButtonPadding}px`');
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
-  transition: all
-    v-bind('`${animationConfig.button?.feedbackDurationMs || 150}ms`') ease-out;
+  transition: all v-bind('`${animationConfig.button.feedbackDurationMs}ms`')
+    ease-out;
   will-change: transform;
   backface-visibility: hidden;
 }
@@ -317,18 +312,15 @@ const handleCopyClick = async (event: MouseEvent) => {
 /* Ripple Effect - Material Design inspired */
 .share-button__ripple {
   position: absolute;
-  width: v-bind('`${(animationConfig.pixels?.rippleSize || 100)}px`');
-  height: v-bind('`${(animationConfig.pixels?.rippleSize || 100)}px`');
-  margin-left: v-bind(
-    '`${-(animationConfig.pixels?.rippleSize || 100) / 2}px`'
-  );
-  margin-top: v-bind('`${-(animationConfig.pixels?.rippleSize || 100) / 2}px`');
+  width: v-bind('`${animationConfig.pixels.rippleSize}px`');
+  height: v-bind('`${animationConfig.pixels.rippleSize}px`');
+  margin-left: v-bind('`${-animationConfig.pixels.rippleSize / 2}px`');
+  margin-top: v-bind('`${-animationConfig.pixels.rippleSize / 2}px`');
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.4);
   transform: scale(0);
   animation: ripple-animation
-    v-bind('`${animationConfig.button?.rippleDurationMs || 400}ms`') ease-out
-    forwards;
+    v-bind('`${animationConfig.button.rippleDurationMs}ms`') ease-out forwards;
   pointer-events: none;
   z-index: v-bind('zIndexScale.low[5]');
 }
@@ -362,8 +354,7 @@ const handleCopyClick = async (event: MouseEvent) => {
   justify-content: center;
   z-index: v-bind('zIndexScale.low[10]');
   animation: success-pop
-    v-bind('`${animationConfig.copyFeedback?.successPopDurationMs || 300}ms`')
-    ease-out;
+    v-bind('`${animationConfig.copyFeedback.successPopDurationMs}ms`') ease-out;
 }
 
 @keyframes success-pop {

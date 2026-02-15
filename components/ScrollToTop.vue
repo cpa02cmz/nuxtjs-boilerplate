@@ -315,7 +315,7 @@ const handleKeyboardShortcut = (event: KeyboardEvent) => {
           if (!wasVisible && window.scrollY <= SCROLL_THRESHOLD) {
             isVisible.value = false
           }
-        }, uiConfig.scrollToTop.keyboardShortcutFeedbackDurationMs || 600)
+        }, uiConfig.scrollToTop.keyboardShortcutFeedbackDurationMs)
       }
     }
   }

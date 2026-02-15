@@ -87,12 +87,7 @@
     </Transition>
 
     <!-- Screen reader announcement for progress changes -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ progressAnnouncement }}
     </div>
 
@@ -121,16 +116,8 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                class="checkmark-circle"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-              <path
-                class="checkmark-path"
-                d="M7 12l3 3 7-7"
-              />
+              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
           <span class="completion-text">{{
@@ -138,15 +125,8 @@
           }}</span>
         </div>
         <!-- Confetti burst effect -->
-        <div
-          class="confetti-container"
-          aria-hidden="true"
-        >
-          <span
-            v-for="n in 8"
-            :key="n"
-            class="confetti-piece"
-          />
+        <div class="confetti-container" aria-hidden="true">
+          <span v-for="n in 8" :key="n" class="confetti-piece" />
         </div>
       </div>
     </Transition>
@@ -163,6 +143,7 @@ import { contentConfig } from '~/configs/content.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { hapticLight } from '~/utils/hapticFeedback'
+import { hapticConfig } from '~/configs/haptic.config'
 
 interface Props {
   /**
@@ -311,9 +292,12 @@ watch(progress, newProgress => {
       'Reading complete! Congratulations!'
 
     // Palette's micro-UX delight: Celebratory haptic feedback for 100% completion
-    // Double pulse pattern for achievement celebration
+    // Double pulse pattern for achievement celebration - Flexy hates hardcoded values!
     hapticLight()
-    setTimeout(() => hapticLight(), 150)
+    setTimeout(
+      () => hapticLight(),
+      hapticConfig.features.readingProgress.doublePulseDelayMs
+    )
 
     // Clear any existing timeout
     if (celebrationTimeout) {
@@ -323,7 +307,7 @@ watch(progress, newProgress => {
     // Auto-hide celebration after delay
     celebrationTimeout = setTimeout(() => {
       showCompletionCelebration.value = false
-    }, animationConfig.readingProgress?.celebrationDurationMs || 3000)
+    }, animationConfig.readingProgress.celebrationDurationMs)
 
     // Clear announcement after screen reader has time to read it
     setTimeout(() => {
