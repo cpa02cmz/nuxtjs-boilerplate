@@ -68,16 +68,8 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                class="checkmark-circle"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-              <path
-                class="checkmark-path"
-                d="M7 12l3 3 7-7"
-              />
+              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
           <span class="celebration-text">
@@ -85,10 +77,7 @@
           </span>
         </div>
         <!-- Sparkle effects -->
-        <div
-          class="sparkle-container"
-          aria-hidden="true"
-        >
+        <div class="sparkle-container" aria-hidden="true">
           <span
             v-for="n in 6"
             :key="n"
@@ -99,7 +88,7 @@
       </div>
     </Transition>
 
-    <!-- Create Webhook Form -->
+    <!-- Create Webhook Form - Extracted to WebhookCreateForm component for better maintainability -->
     <WebhookCreateForm
       v-if="showCreateForm"
       v-model="newWebhook"
@@ -108,92 +97,6 @@
       @submit="handleCreateWebhook"
       @cancel="showCreateForm = false"
     />
-
-    <form
-      novalidate
-      @submit.prevent="handleCreateWebhook"
-    >
-      <div class="form-group">
-        <label for="webhook-url">{{ contentConfig.webhooks.form.urlLabel }}
-          <span aria-hidden="true">*</span>
-          <span class="sr-only">{{
-            contentConfig.webhooks.form.required
-          }}</span>
-        </label>
-        <input
-          id="webhook-url"
-          v-model="newWebhook.url"
-          type="url"
-          required
-          aria-required="true"
-          aria-describedby="webhook-url-description"
-          :placeholder="webhooksConfig.placeholders.url"
-          class="form-control"
-        >
-        <p
-          id="webhook-url-description"
-          class="mt-1 text-sm text-gray-500"
-        >
-          {{ contentConfig.webhooks.form.urlDescription }}
-        </p>
-      </div>
-
-      <div class="form-group">
-        <fieldset>
-          <legend class="font-medium mb-2">
-            {{ contentConfig.webhooks.form.eventsLabel }}
-          </legend>
-          <div
-            role="group"
-            :aria-label="contentConfig.webhooks.ariaLabels.eventsGroup"
-            class="event-checkboxes"
-          >
-            <label
-              v-for="event in availableEvents"
-              :key="event"
-              class="checkbox-label"
-            >
-              <input
-                v-model="newWebhook.events"
-                type="checkbox"
-                :value="event"
-                :aria-label="`Subscribe to ${event} event`"
-              >
-              {{ event }}
-            </label>
-          </div>
-        </fieldset>
-      </div>
-
-      <div class="form-group">
-        <label class="flex items-center gap-2">
-          <input
-            v-model="newWebhook.active"
-            type="checkbox"
-            :aria-label="contentConfig.webhooks.ariaLabels.enableWebhook"
-          >
-          {{ contentConfig.webhooks.form.activeLabel }}
-        </label>
-      </div>
-
-      <div class="form-actions">
-        <button
-          type="submit"
-          class="btn btn-primary"
-          :aria-label="contentConfig.webhooks.ariaLabels.submitCreate"
-        >
-          {{ contentConfig.webhooks.buttons.createSubmit }}
-        </button>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          :aria-label="contentConfig.webhooks.ariaLabels.cancelCreate"
-          @click="showCreateForm = false"
-        >
-          {{ contentConfig.webhooks.buttons.cancel }}
-        </button>
-      </div>
-    </form>
   </div>
 
   <!-- Webhooks List -->
@@ -208,10 +111,7 @@
       aria-live="polite"
     >
       <!-- Animated Illustration -->
-      <div
-        class="webhook-illustration"
-        aria-hidden="true"
-      >
+      <div class="webhook-illustration" aria-hidden="true">
         <!-- Background Circle -->
         <div
           class="webhook-bg-circle"
@@ -294,10 +194,7 @@
         {{ contentConfig.webhooks.empty.ctaButton }}
       </button>
     </div>
-    <div
-      v-else
-      class="webhook-items"
-    >
+    <div v-else class="webhook-items">
       <div
         v-for="webhook in webhooks"
         :key="webhook.id"
@@ -388,7 +285,7 @@
             :style="getPressAndHold(webhook.id, webhook).progressStyle"
             :aria-label="
               contentConfig.webhooks.ariaLabels.deleteWebhook +
-                ' (Press and hold to confirm)'
+              ' (Press and hold to confirm)'
             "
             @mousedown="getPressAndHold(webhook.id, webhook).startPress"
             @mouseup="getPressAndHold(webhook.id, webhook).endPress"
@@ -403,7 +300,7 @@
             <span
               v-if="
                 getPressAndHold(webhook.id, webhook).isPressing &&
-                  !reducedMotion
+                !reducedMotion
               "
               class="press-hold-ring"
               aria-hidden="true"
@@ -422,7 +319,7 @@
                   :r="
                     (animationConfig.pressAndHold.ringSize -
                       animationConfig.pressAndHold.strokeWidth) /
-                      2
+                    2
                   "
                   fill="none"
                   :stroke-width="animationConfig.pressAndHold.strokeWidth"
@@ -435,7 +332,7 @@
                   :r="
                     (animationConfig.pressAndHold.ringSize -
                       animationConfig.pressAndHold.strokeWidth) /
-                      2
+                    2
                   "
                   fill="none"
                   :stroke-width="animationConfig.pressAndHold.strokeWidth"
@@ -470,7 +367,6 @@ import type { Webhook } from '~/types/webhook'
 import { useWebhooksManager } from '~/composables/useWebhooksManager'
 import { usePressAndHold } from '~/composables/usePressAndHold'
 import { componentColorsConfig } from '~/configs/component-colors.config'
-import { webhooksConfig } from '~/configs/webhooks.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { zIndexConfig } from '~/configs/z-index.config'
