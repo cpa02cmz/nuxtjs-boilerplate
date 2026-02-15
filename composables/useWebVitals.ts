@@ -88,95 +88,96 @@ async function reportMetric(report: WebVitalsReport): Promise<void> {
 export function useWebVitals() {
   let cleanupFunctions: (() => void)[] = []
 
-  onMounted(async () => {
+  onMounted(() => {
+    // BroCula fix: Don't use async onMounted - register sync, handle async separately
     // Only run on client
     if (typeof window === 'undefined') return
 
-    try {
-      // Dynamic import to avoid SSR issues
-      const { onLCP, onINP, onCLS, onFCP, onTTFB } = await import('web-vitals')
-
-      const reportHandler = (metric: WebVitalsMetric) => {
-        const report: WebVitalsReport = {
-          metric,
-          timestamp: new Date().toISOString(),
-          url: window.location.href,
-          userAgent: navigator.userAgent,
-          connection: (navigator as NavigatorWithConnection).connection
-            ?.effectiveType,
+    // Dynamic import to avoid SSR issues
+    import('web-vitals')
+      .then(({ onLCP, onINP, onCLS, onFCP, onTTFB }) => {
+        const reportHandler = (metric: WebVitalsMetric) => {
+          const report: WebVitalsReport = {
+            metric,
+            timestamp: new Date().toISOString(),
+            url: window.location.href,
+            userAgent: navigator.userAgent,
+            connection: (navigator as NavigatorWithConnection).connection
+              ?.effectiveType,
+          }
+          reportMetric(report)
         }
-        reportMetric(report)
-      }
 
-      // Track each Core Web Vital
-      // Track each Core Web Vital using modular config - Flexy hates hardcoded values!
-      if (webVitalsConfig.collection.enabled.LCP) {
-        onLCP(metric => {
-          reportHandler({
-            name: 'LCP',
-            value: metric.value,
-            rating: getWebVitalsRating(metric.value, THRESHOLDS.LCP),
-            delta: metric.delta,
-            entries: metric.entries,
-            navigationType: metric.navigationType,
+        // Track each Core Web Vital
+        // Track each Core Web Vital using modular config - Flexy hates hardcoded values!
+        if (webVitalsConfig.collection.enabled.LCP) {
+          onLCP(metric => {
+            reportHandler({
+              name: 'LCP',
+              value: metric.value,
+              rating: getWebVitalsRating(metric.value, THRESHOLDS.LCP),
+              delta: metric.delta,
+              entries: metric.entries,
+              navigationType: metric.navigationType,
+            })
           })
-        })
-      }
+        }
 
-      if (webVitalsConfig.collection.enabled.INP) {
-        onINP(metric => {
-          reportHandler({
-            name: 'INP',
-            value: metric.value,
-            rating: getWebVitalsRating(metric.value, THRESHOLDS.INP),
-            delta: metric.delta,
-            entries: metric.entries,
-            navigationType: metric.navigationType,
+        if (webVitalsConfig.collection.enabled.INP) {
+          onINP(metric => {
+            reportHandler({
+              name: 'INP',
+              value: metric.value,
+              rating: getWebVitalsRating(metric.value, THRESHOLDS.INP),
+              delta: metric.delta,
+              entries: metric.entries,
+              navigationType: metric.navigationType,
+            })
           })
-        })
-      }
+        }
 
-      if (webVitalsConfig.collection.enabled.CLS) {
-        onCLS(metric => {
-          reportHandler({
-            name: 'CLS',
-            value: metric.value,
-            rating: getWebVitalsRating(metric.value, THRESHOLDS.CLS),
-            delta: metric.delta,
-            entries: metric.entries,
-            navigationType: metric.navigationType,
+        if (webVitalsConfig.collection.enabled.CLS) {
+          onCLS(metric => {
+            reportHandler({
+              name: 'CLS',
+              value: metric.value,
+              rating: getWebVitalsRating(metric.value, THRESHOLDS.CLS),
+              delta: metric.delta,
+              entries: metric.entries,
+              navigationType: metric.navigationType,
+            })
           })
-        })
-      }
+        }
 
-      if (webVitalsConfig.collection.enabled.FCP) {
-        onFCP(metric => {
-          reportHandler({
-            name: 'FCP',
-            value: metric.value,
-            rating: getWebVitalsRating(metric.value, THRESHOLDS.FCP),
-            delta: metric.delta,
-            entries: metric.entries,
-            navigationType: metric.navigationType,
+        if (webVitalsConfig.collection.enabled.FCP) {
+          onFCP(metric => {
+            reportHandler({
+              name: 'FCP',
+              value: metric.value,
+              rating: getWebVitalsRating(metric.value, THRESHOLDS.FCP),
+              delta: metric.delta,
+              entries: metric.entries,
+              navigationType: metric.navigationType,
+            })
           })
-        })
-      }
+        }
 
-      if (webVitalsConfig.collection.enabled.TTFB) {
-        onTTFB(metric => {
-          reportHandler({
-            name: 'TTFB',
-            value: metric.value,
-            rating: getWebVitalsRating(metric.value, THRESHOLDS.TTFB),
-            delta: metric.delta,
-            entries: metric.entries,
-            navigationType: metric.navigationType,
+        if (webVitalsConfig.collection.enabled.TTFB) {
+          onTTFB(metric => {
+            reportHandler({
+              name: 'TTFB',
+              value: metric.value,
+              rating: getWebVitalsRating(metric.value, THRESHOLDS.TTFB),
+              delta: metric.delta,
+              entries: metric.entries,
+              navigationType: metric.navigationType,
+            })
           })
-        })
-      }
-    } catch (error) {
-      logger.warn('Failed to initialize web-vitals:', error)
-    }
+        }
+      })
+      .catch(error => {
+        logger.warn('Failed to initialize web-vitals:', error)
+      })
   })
 
   onUnmounted(() => {
