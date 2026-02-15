@@ -42,6 +42,9 @@ const ACCEPTABLE_WARNINGS = [
   /\[HMR\]/,
   // Vue hydration warning on ssr: false pages - expected behavior
   /\[Vue warn\]: Attempting to hydrate existing markup but container is empty/,
+  // Vue lifecycle warnings during SSR - expected behavior, composables check getCurrentInstance()
+  /\[Vue warn\]: onMounted is called when there is no active component instance/,
+  /\[Vue warn\]: onUnmounted is called when there is no active component instance/,
 ]
 
 // Known acceptable errors (development only)
@@ -55,6 +58,8 @@ const ACCEPTABLE_ERRORS = [
   // Browser security policy - haptic feedback requires user gesture
   // This is a progressive enhancement that should silently fail
   /Blocked call to navigator\.vibrate because user hasn't tapped on the frame/,
+  // PWA/service worker 404 errors in development mode - expected behavior
+  /A bad HTTP response code \(404\) was received when fetching the script/,
 ]
 
 /**
