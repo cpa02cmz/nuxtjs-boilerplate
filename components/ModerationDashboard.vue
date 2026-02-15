@@ -789,9 +789,8 @@ watch(
   animation-delay: calc(
     var(--activity-delay, 0ms) +
       v-bind(
-        'animationConfig.moderationDashboard?.activityDelayOffsetMs || 400'
+        '(animationConfig.moderationDashboard?.activityDelayOffsetMs || 400) + "ms"'
       )
-      ms
   );
 }
 
@@ -969,8 +968,9 @@ watch(
     ease-out forwards;
   animation-delay: calc(
     var(--action-delay, 0ms) +
-      v-bind('animationConfig.moderationDashboard?.actionDelayOffsetMs || 600')
-      ms
+      v-bind(
+        '(animationConfig.moderationDashboard?.actionDelayOffsetMs || 600) + "ms"'
+      )
   );
 }
 
