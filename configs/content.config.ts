@@ -1801,6 +1801,18 @@ export const contentConfig = {
       process.env.CONTENT_RESOURCE_HEADER_OPENING ||
       'Opening Visit Resource in a new tab',
   },
+
+  // Page Transition - Palette's micro-UX enhancement!
+  // Smooth page transition animations for visual continuity during navigation
+  pageTransition: {
+    // Loading text displayed during transition
+    loadingText: process.env.CONTENT_PAGE_TRANSITION_LOADING || 'Loading...',
+    // Screen reader announcement when transition starts
+    announcement:
+      process.env.CONTENT_PAGE_TRANSITION_ANNOUNCE || 'Page loading',
+    // Completion message (optional, shown after transition)
+    complete: process.env.CONTENT_PAGE_TRANSITION_COMPLETE || 'Page loaded',
+  },
 } as const
 
 // Helper function to parse comma-separated suggestions

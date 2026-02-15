@@ -3341,6 +3341,41 @@ export const animationConfig = {
       process.env.CODEBLOCK_TOAST_DURATION_MS || '3000'
     ),
   },
+
+  // ============================================
+  // Palette ULW Loop - Page Transition Component
+  // Smooth page transitions for visual continuity! 🎨
+  // ============================================
+
+  // Page Transition Component Animations
+  pageTransition: {
+    // Duration of the shimmer effect (sec)
+    shimmerDurationSec: parseFloat(
+      process.env.PAGE_TRANSITION_SHIMMER_DURATION_SEC || '1.5'
+    ),
+    // Spinner rotation duration (sec)
+    spinnerDurationSec: parseFloat(
+      process.env.PAGE_TRANSITION_SPINNER_DURATION_SEC || '1.0'
+    ),
+    // Loader fade-in duration (ms)
+    loaderFadeInMs: parseInt(
+      process.env.PAGE_TRANSITION_LOADER_FADE_IN_MS || '200'
+    ),
+    // Text pulse animation duration (sec)
+    textPulseDurationSec: parseFloat(
+      process.env.PAGE_TRANSITION_TEXT_PULSE_SEC || '2.0'
+    ),
+    // Milestone interval for progress announcements (%)
+    milestoneInterval: parseInt(
+      process.env.PAGE_TRANSITION_MILESTONE_INTERVAL || '25'
+    ),
+    // Celebration duration when transition completes (ms)
+    celebrationDurationMs: parseInt(
+      process.env.PAGE_TRANSITION_CELEBRATION_MS || '3000'
+    ),
+    // Progress bar transition duration
+    transitionDuration: `${parseInt(process.env.PAGE_TRANSITION_PROGRESS_DURATION_MS || '100') / 1000}s`,
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
