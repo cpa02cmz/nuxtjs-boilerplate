@@ -1,6 +1,7 @@
 import { computed, type ComputedRef } from 'vue'
 import type { Resource, SortOption } from '~/types/resource'
 import { parseDate } from '~/utils/filter-utils'
+import { SORT_OPTIONS } from '~/configs/sort.config'
 
 // Composable for handling resource sorting
 export const useResourceSort = (
@@ -13,19 +14,19 @@ export const useResourceSort = (
   ): Resource[] => {
     const result = [...resourcesToSort]
 
-    if (currentSortOption === 'relevance') {
+    if (currentSortOption === SORT_OPTIONS.RELEVANCE) {
       return result
     }
 
     result.sort((a, b) => {
       switch (currentSortOption) {
-        case 'alphabetical-asc':
+        case SORT_OPTIONS.ALPHABETICAL_ASC:
           return a.title.localeCompare(b.title)
-        case 'alphabetical-desc':
+        case SORT_OPTIONS.ALPHABETICAL_DESC:
           return b.title.localeCompare(a.title)
-        case 'popularity-desc':
+        case SORT_OPTIONS.POPULARITY_DESC:
           return (b.popularity || 0) - (a.popularity || 0)
-        case 'date-added-desc':
+        case SORT_OPTIONS.DATE_ADDED_DESC:
           return parseDate(b.dateAdded) - parseDate(a.dateAdded)
         default:
           return 0

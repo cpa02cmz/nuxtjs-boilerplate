@@ -6,6 +6,7 @@
  */
 
 import { ref, onUnmounted, readonly } from 'vue'
+import { animationConfig } from '~/configs/animation.config'
 
 export interface UseIntervalOptions {
   /** Execute callback immediately when interval starts */
@@ -178,16 +179,19 @@ export function usePolling(): UseIntervalReturn {
  * animation.start(() => {
  *   // Update animation frame
  *   updatePosition()
- * }, 16) // ~60fps
+ * }, animationConfig.rafFallback.delayMs) // ~60fps - Flexy hates hardcoded 16!
  */
 export function useAnimationFrame(): UseIntervalReturn {
   const interval = useInterval({ autoReset: true })
 
   return {
     ...interval,
-    start: (callback: () => void, delay: number = 16) => {
-      // Ensure minimum 16ms for 60fps
-      const safeDelay = Math.max(delay, 16)
+    start: (
+      callback: () => void,
+      delay: number = animationConfig.rafFallback.delayMs
+    ) => {
+      // Ensure minimum delay for 60fps - Flexy hates hardcoded 16!
+      const safeDelay = Math.max(delay, animationConfig.rafFallback.delayMs)
       interval.start(callback, safeDelay)
     },
   }

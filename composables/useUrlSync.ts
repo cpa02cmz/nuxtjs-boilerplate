@@ -1,6 +1,7 @@
 import { watch, onMounted, onUnmounted, type Ref } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import type { FilterOptions, SortOption } from '~/types/resource'
+import { SORT_OPTIONS } from '~/configs/sort.config'
 
 export const useUrlSync = (
   filterOptions: Ref<FilterOptions>,
@@ -100,7 +101,7 @@ export const useUrlSync = (
       params.technologies = [...filterOptions.value.technologies]
     }
 
-    if (sortOption.value && sortOption.value !== 'popularity-desc') {
+    if (sortOption.value && sortOption.value !== SORT_OPTIONS.POPULARITY_DESC) {
       params.sort = sortOption.value
     }
 

@@ -16,6 +16,7 @@ import { apiConfig } from '~/configs/api.config'
 import { userConfig } from '~/configs/user.config'
 import { moderationConfig } from '~/configs/moderation.config'
 import { messagesConfig } from '~/configs/messages.config'
+import { STATUS } from '~/configs/status.config'
 
 export interface SubmissionReviewOptions {
   submissionId: string
@@ -86,7 +87,7 @@ export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
       })
 
       if (response.success) {
-        submission.value.status = 'approved'
+        submission.value.status = STATUS.APPROVED
         submission.value.reviewedBy = reviewedBy
         submission.value.reviewedAt = new Date().toISOString()
         return true
@@ -125,7 +126,7 @@ export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
       })
 
       if (response.success) {
-        submission.value.status = 'rejected'
+        submission.value.status = STATUS.REJECTED
         submission.value.reviewedBy = reviewedBy
         submission.value.reviewedAt = new Date().toISOString()
         submission.value.rejectionReason = reason

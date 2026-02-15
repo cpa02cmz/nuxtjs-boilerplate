@@ -14,6 +14,7 @@ import type {
   UserProfile,
   RemoveCommentByModeratorCallback,
 } from '~/types/community'
+import { STATUS } from '~/configs/status.config'
 
 export const useModeration = (
   initialFlags: Flag[] = [],
@@ -41,7 +42,7 @@ export const useModeration = (
       reason,
       details,
       reportedAt: new Date().toISOString(),
-      status: 'pending',
+      status: STATUS.PENDING,
     }
 
     addToArrayMap(flags, flagMap, flag)
@@ -64,7 +65,7 @@ export const useModeration = (
 
     const updatedFlag: Flag = {
       ...flag,
-      status: 'reviewed' as const,
+      status: STATUS.REVIEWED,
       moderator: currentUser.id,
       moderatorNote,
       actionTaken: action,
@@ -89,7 +90,10 @@ export const useModeration = (
   const getFlagsForTarget = (
     targetType: string,
     targetId: string,
-    status?: 'pending' | 'reviewed' | 'resolved'
+    status?:
+      | typeof STATUS.PENDING
+      | typeof STATUS.REVIEWED
+      | typeof STATUS.RESOLVED
   ): Flag[] => {
     // O(n) filter on flags array (acceptable for target-based queries)
     return flags.value.filter(
@@ -101,7 +105,10 @@ export const useModeration = (
   }
 
   const getFlagsByStatus = (
-    status: 'pending' | 'reviewed' | 'resolved'
+    status:
+      | typeof STATUS.PENDING
+      | typeof STATUS.REVIEWED
+      | typeof STATUS.RESOLVED
   ): Flag[] => {
     // O(n) filter on flags array (acceptable for status-based queries)
     return flags.value.filter(f => f.status === status)
@@ -118,7 +125,7 @@ export const useModeration = (
   }
 
   const pendingFlags = computed(() => {
-    return flags.value.filter(f => f.status === 'pending')
+    return flags.value.filter(f => f.status === STATUS.PENDING)
   })
 
   const resolveFlag = (
@@ -135,7 +142,7 @@ export const useModeration = (
 
     const updatedFlag = {
       ...flag,
-      status: 'resolved' as const,
+      status: STATUS.RESOLVED,
       moderator: currentUser.id,
       moderatorNote: resolutionNote || flag.moderatorNote,
     }
@@ -147,7 +154,10 @@ export const useModeration = (
 
   const updateFlagStatus = (
     flagId: string,
-    status: 'pending' | 'reviewed' | 'resolved'
+    status:
+      | typeof STATUS.PENDING
+      | typeof STATUS.REVIEWED
+      | typeof STATUS.RESOLVED
   ): boolean => {
     const flag = flagMap.value.get(flagId)
     if (!flag) return false
