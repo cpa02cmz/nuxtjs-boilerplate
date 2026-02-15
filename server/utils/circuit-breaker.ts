@@ -91,7 +91,13 @@ export class CircuitBreaker {
   /**
    * Determines if an error represents a server-side failure (5xx) or network error
    * that should count toward the circuit breaker failure threshold.
+   *
+   * FIX for Issue #2331 - Circuit Breaker Treats 4xx Client Errors as Service Failures:
    * 4xx client errors are NOT counted as they are client-side issues, not service failures.
+   * Only 5xx server errors and network errors trigger circuit breaker failures.
+   *
+   * @param error - The error to check
+   * @returns true if the error is a server-side failure (5xx) or network error
    */
   private isServerError(error: unknown): boolean {
     // Check for HTTP status code in error
@@ -189,8 +195,14 @@ export class CircuitBreaker {
 
   /**
    * Cleans up resources and prepares the circuit breaker for garbage collection.
+   *
+   * FIX for Issue #2331 - Circuit Breaker Memory Leak:
    * This method should be called before removing the circuit breaker from the registry
-   * to prevent memory leaks.
+   * to prevent memory leaks. When circuit breakers are evicted from the registry
+   * (due to maxInstances limit), destroy() is called to clear all state references
+   * and allow proper garbage collection.
+   *
+   * @see getCircuitBreaker() - Uses destroy() when evicting old instances
    */
   destroy(): void {
     // Reset all state to clear references
@@ -217,6 +229,9 @@ export function getCircuitBreaker(
 ): CircuitBreaker {
   if (!circuitBreakers.has(key)) {
     if (circuitBreakers.size >= MAX_CIRCUIT_BREAKERS) {
+      // FIX for Issue #2331 - Memory Leak Prevention:
+      // When max instances is reached, evict the oldest circuit breaker
+      // and call destroy() to clean up state references for proper GC
       const oldestKey = circuitBreakers.keys().next().value
       if (oldestKey) {
         const oldestBreaker = circuitBreakers.get(oldestKey)

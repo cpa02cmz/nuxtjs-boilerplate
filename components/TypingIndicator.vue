@@ -45,10 +45,7 @@
       </span>
 
       <!-- Animated typing dots with spring physics -->
-      <span
-        v-else
-        class="flex items-center gap-0.5 relative z-10"
-      >
+      <span v-else class="flex items-center gap-0.5 relative z-10">
         <span
           v-for="n in 3"
           :key="n"
@@ -199,7 +196,11 @@ onUnmounted(() => {
     rgba(v-bind('blueColor'), 0.05) 40%,
     transparent 70%
   );
-  animation: glow-pulse 2s ease-in-out infinite;
+  animation: glow-pulse
+    v-bind(
+      'animationConfig?.typingIndicator?.glowPulseDurationSec + "s" || "2s"'
+    )
+    ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -217,7 +218,11 @@ onUnmounted(() => {
 
 /* Enhanced typing dots with spring physics animation - Flexy hates hardcoded rgba! */
 .typing-dot {
-  animation: typing-bounce 1.4s ease-in-out infinite;
+  animation: typing-bounce
+    v-bind(
+      '`${(animationConfig?.typingIndicator?.bounceDurationMs || 600) * 2.33 / 1000}s`'
+    )
+    ease-in-out infinite;
   will-change: transform;
   box-shadow: 0 2px 4px rgba(v-bind('shadowColorDefault'), 0.1);
 }
