@@ -1448,6 +1448,21 @@ export const contentConfig = {
       approved: process.env.CONTENT_REVIEW_FILTER_APPROVED || 'Approved',
       rejected: process.env.CONTENT_REVIEW_FILTER_REJECTED || 'Rejected',
     },
+    // Palette's micro-UX enhancement: ARIA labels for accessibility
+    aria: {
+      statusFilter:
+        process.env.CONTENT_REVIEW_ARIA_STATUS_FILTER ||
+        'Filter submissions by status',
+      categoryFilter:
+        process.env.CONTENT_REVIEW_ARIA_CATEGORY_FILTER ||
+        'Filter submissions by category',
+      submissionsList:
+        process.env.CONTENT_REVIEW_ARIA_SUBMISSIONS_LIST ||
+        'List of resource submissions',
+      submissionCard:
+        process.env.CONTENT_REVIEW_ARIA_SUBMISSION_CARD ||
+        'Submission from {{submitter}} - {{title}}',
+    },
     loading: process.env.CONTENT_REVIEW_LOADING || 'Loading submissions...',
     emptyState:
       process.env.CONTENT_REVIEW_EMPTY ||

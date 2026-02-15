@@ -25,9 +25,11 @@
         </Transition>
       </div>
       <div class="queue-filters">
+        <!-- Palette's micro-UX enhancement: Added aria-label for accessibility -->
         <select
           v-model="statusFilter"
           class="filter-select"
+          :aria-label="contentConfig.reviewQueue.aria.statusFilter"
         >
           <option value="">
             {{ contentConfig.reviewQueue.filters.allStatuses }}
@@ -42,11 +44,13 @@
             {{ contentConfig.reviewQueue.filters.rejected }}
           </option>
         </select>
+        <!-- Palette's micro-UX enhancement: Added aria-label for accessibility -->
         <input
           v-model="categoryFilter"
           type="text"
           :placeholder="moderationConfig.ui.categoryFilterPlaceholder"
           class="filter-input"
+          :aria-label="contentConfig.reviewQueue.aria.categoryFilter"
         >
       </div>
     </div>
@@ -90,6 +94,8 @@
       tag="div"
       class="submissions-list"
       :class="{ 'reduced-motion': prefersReducedMotion }"
+      role="list"
+      :aria-label="contentConfig.reviewQueue.aria.submissionsList"
     >
       <div
         v-for="(submission, index) in filteredSubmissions"
@@ -100,6 +106,12 @@
           'submission-enter': !prefersReducedMotion,
         }"
         :style="getCardStyle(index)"
+        role="listitem"
+        :aria-label="
+          contentConfig.reviewQueue.aria.submissionCard
+            .replace('{{submitter}}', submission.submittedBy)
+            .replace('{{title}}', submission.resourceData?.title || 'Untitled')
+        "
         @mouseenter="hoveredCard = submission.id"
         @mouseleave="hoveredCard = null"
         @focusin="hoveredCard = submission.id"
