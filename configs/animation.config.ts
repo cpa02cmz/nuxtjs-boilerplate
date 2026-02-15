@@ -3217,6 +3217,51 @@ export const animationConfig = {
     slowMs: parseInt(process.env.PAGE_TRANSITION_SLOW_MS || '500'),
     slowSec: `${parseInt(process.env.PAGE_TRANSITION_SLOW_MS || '500') / 1000}s`,
   },
+
+  // ============================================
+  // Palette ULW Loop - About Page Animations
+  // Micro-UX delight for the About page! 🎨
+  // ============================================
+
+  // About Page Entrance Animations
+  about: {
+    // Initial delay before starting entrance animations (ms)
+    entranceDelayMs: parseInt(process.env.ABOUT_ENTRANCE_DELAY_MS || '100'),
+
+    // Title animation settings
+    titleDurationMs: parseInt(process.env.ABOUT_TITLE_DURATION_MS || '600'),
+    titleDelayMs: parseInt(process.env.ABOUT_TITLE_DELAY_MS || '0'),
+
+    // Card/container animation settings
+    cardDurationMs: parseInt(process.env.ABOUT_CARD_DURATION_MS || '700'),
+    cardDelayMs: parseInt(process.env.ABOUT_CARD_DELAY_MS || '150'),
+
+    // Section title animation settings
+    sectionDurationMs: parseInt(process.env.ABOUT_SECTION_DURATION_MS || '500'),
+    sectionDelayMs: parseInt(process.env.ABOUT_SECTION_DELAY_MS || '300'),
+
+    // Description animation settings
+    descDurationMs: parseInt(process.env.ABOUT_DESC_DURATION_MS || '500'),
+    descDelayMs: parseInt(process.env.ABOUT_DESC_DELAY_MS || '400'),
+
+    // Category item animation settings
+    categoryDurationMs: parseInt(
+      process.env.ABOUT_CATEGORY_DURATION_MS || '500'
+    ),
+    // Stagger delay between each category item (ms)
+    staggerDelayMs: parseInt(process.env.ABOUT_STAGGER_DELAY_MS || '100'),
+
+    // Checkmark draw animation settings
+    checkmarkDurationMs: parseInt(
+      process.env.ABOUT_CHECKMARK_DURATION_MS || '400'
+    ),
+    checkmarkBaseDelayMs: parseInt(
+      process.env.ABOUT_CHECKMARK_BASE_DELAY_MS || '600'
+    ),
+    checkmarkStaggerMs: parseInt(
+      process.env.ABOUT_CHECKMARK_STAGGER_MS || '100'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
