@@ -167,7 +167,13 @@ export const bulkStatusUpdateSchema = z.object({
     .array(z.string())
     .min(1, 'At least one resource ID is required')
     .max(limitsConfig.validation.bulkMaxResources, 'Too many resources'),
-  status: z.enum(['active', 'archived', 'deprecated']),
+  status: z.enum([
+    'active',
+    'deprecated',
+    'discontinued',
+    'updated',
+    'pending',
+  ]),
 })
 
 export const moderationActionSchema = z.object({
@@ -182,6 +188,27 @@ export const moderationActionSchema = z.object({
     .string()
     .max(limitsConfig.validation.moderationNotesMaxLength, 'Notes too long')
     .optional(),
+})
+
+export const resourceStatusUpdateSchema = z.object({
+  status: z.enum([
+    'active',
+    'deprecated',
+    'discontinued',
+    'updated',
+    'pending',
+  ]),
+  reason: z.string().optional(),
+  notes: z.string().optional(),
+})
+
+export const flagResourceSchema = z.object({
+  resourceId: z.string().min(1, 'Resource ID is required'),
+  reason: z
+    .string()
+    .min(1, 'Flag reason is required')
+    .max(500, 'Reason too long'),
+  reportedBy: z.string().min(1, 'Reporter ID is required'),
 })
 
 export const triggerWebhookSchema = z.object({

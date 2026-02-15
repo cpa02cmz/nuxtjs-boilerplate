@@ -6,6 +6,7 @@ import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { updateUserPreferencesSchema } from '~/server/utils/validation-schemas'
 import {
   sendBadRequestError,
+  sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { logger } from '~/utils/logger'
@@ -56,10 +57,9 @@ export default defineEventHandler(async event => {
       lastUpdated: new Date().toISOString(),
     }
 
-    return {
-      success: true,
+    return sendSuccessResponse(event, {
       preferences: updatedPreferences,
-    }
+    })
   } catch (error) {
     logger.error('Error updating user preferences:', error)
     return handleApiRouteError(event, error)
