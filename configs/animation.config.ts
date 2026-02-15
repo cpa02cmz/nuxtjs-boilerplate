@@ -2343,6 +2343,10 @@ export const animationConfig = {
     suggestionPopDurationMs: parseInt(
       process.env.COMPARISON_EMPTY_SUGGESTION_POP_MS || '400'
     ),
+    // Base animation delay before suggestions start animating (ms) - Flexy hates hardcoded 400ms!
+    suggestionBaseDelayMs: parseInt(
+      process.env.COMPARISON_EMPTY_SUGGESTION_BASE_DELAY_MS || '400'
+    ),
     // Stagger delay between suggestion buttons (ms)
     suggestionStaggerDelayMs: parseInt(
       process.env.COMPARISON_EMPTY_SUGGESTION_STAGGER_MS || '100'
@@ -2786,6 +2790,19 @@ export const animationConfig = {
     ),
     // CSS-compatible delay offset (seconds)
     delayOffsetSec: `${parseInt(process.env.FEATURES_ICON_POP_DELAY_OFFSET_MS || '150') / 1000}s`,
+  },
+
+  // Specifications Section Animations - Flexy hates hardcoded 50ms and 300ms!
+  // Used by SpecificationsSection.vue for staggered item entrance animations
+  specificationsSection: {
+    // Stagger delay multiplier per item index (ms)
+    staggerMultiplierMs: parseInt(
+      process.env.SPEC_SECTION_STAGGER_MULTIPLIER_MS || '50'
+    ),
+    // Maximum stagger delay cap (ms) - prevents excessive delays with many items
+    staggerMaxDelayMs: parseInt(
+      process.env.SPEC_SECTION_STAGGER_MAX_DELAY_MS || '300'
+    ),
   },
 
   // Health Monitor Animations - BugFixer's bug fix! 🐛

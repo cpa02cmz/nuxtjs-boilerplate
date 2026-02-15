@@ -121,20 +121,6 @@ import { animationConfig } from '~/configs/animation.config'
 // Palette enhanced with interactive hover states! 🎨
 // Flexy: All cubic-bezier values now use modular EASING config! 🎯
 
-// SSR-safe animation configuration with defaults
-// During SSR, we use these defaults; on client, we could enhance
-const SKELETON_CONFIG = {
-  staggerDelayMs: 0,
-  staggerIncrementMs: 75,
-  waveDurationSec: 2,
-  waveStaggerSec: 0.08,
-  shimmerDurationSec: '1.5s',
-  pulseDurationSec: '2s',
-  cardEnterDurationSec: '0.3s',
-  reducedMotionEnterDurationSec: '0.2s',
-  hoverTransitionSec: '0.3s',
-}
-
 // SSR-safe color configuration with defaults
 const SKELETON_COLORS = {
   light: {
@@ -153,13 +139,13 @@ const SKELETON_COLORS = {
   },
 }
 
-// Animation timing configuration
-const staggerBaseDelay = SKELETON_CONFIG.staggerDelayMs
-const staggerIncrement = SKELETON_CONFIG.staggerIncrementMs
+// Animation timing configuration - Flexy: Using modular animationConfig!
+const staggerBaseDelay = animationConfig.skeleton.staggerDelayMs
+const staggerIncrement = animationConfig.skeleton.staggerIncrementMs
 
 // Wave animation configuration - creates a flowing wave effect across all items
-const waveDuration = `${SKELETON_CONFIG.waveDurationSec}s`
-const waveStagger = `${SKELETON_CONFIG.waveStaggerSec}s`
+const waveDuration = `${animationConfig.skeleton.waveDurationSec}s`
+const waveStagger = `${animationConfig.skeleton.waveStaggerSec}s`
 
 // Calculate stagger delays for each item
 const getStaggerDelay = (index: number): string => {
@@ -169,12 +155,12 @@ const getStaggerDelay = (index: number): string => {
 // Skeleton colors
 const skeletonColors = SKELETON_COLORS
 
-// CSS duration values
-const shimmerDurationSec = SKELETON_CONFIG.shimmerDurationSec
-const pulseDurationSec = SKELETON_CONFIG.pulseDurationSec
-const cardEnterDurationSec = SKELETON_CONFIG.cardEnterDurationSec
+// CSS duration values - Flexy: All using modular animationConfig!
+const shimmerDurationSec = animationConfig.skeleton.shimmerDurationSec
+const pulseDurationSec = animationConfig.skeleton.pulseDurationSec
+const cardEnterDurationSec = animationConfig.skeleton.cardEnterDurationSec
 const reducedMotionEnterDurationSec =
-  SKELETON_CONFIG.reducedMotionEnterDurationSec
+  animationConfig.skeleton.reducedMotionEnterDurationSec
 
 // 🎯 Flexy: Modular easing values from config - no more hardcoded cubic-bezier!
 const easingValues = computed(() => ({
