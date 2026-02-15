@@ -17,6 +17,7 @@ import {
 import { executeTransaction } from '~/server/utils/db'
 import { safeJsonParse } from '~/server/utils/safeJsonParse'
 import { validationConfig } from '~/configs/validation.config'
+import { databaseConfig } from '~/configs/database.config'
 
 // Validation schema for approve submission request
 // Flexy hates hardcoded 1000! Using configurable validation limits
@@ -131,7 +132,12 @@ export default defineEventHandler(async event => {
           qualityScore,
         }
       },
-      { timeout: 10000, maxRetries: 3, isolationLevel: 'Serializable' },
+      // Flexy hates hardcoded values! Using config for transaction options
+      {
+        timeout: databaseConfig.transaction.moderation.timeoutMs,
+        maxRetries: databaseConfig.transaction.moderation.maxRetries,
+        isolationLevel: databaseConfig.transaction.moderation.isolationLevel,
+      },
       'approveSubmission'
     )
 

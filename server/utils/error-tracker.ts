@@ -1,6 +1,7 @@
 import { prisma, executeTransaction } from './db'
 import { logger } from '~/utils/logger'
 import { limitsConfig } from '~/configs/limits.config'
+import { databaseConfig } from '~/configs/database.config'
 
 export interface ErrorTrackingPayload {
   message: string
@@ -97,7 +98,11 @@ export function createErrorTracker() {
               )
             }
           },
-          { timeout: 5000, maxRetries: 3 },
+          // Flexy hates hardcoded values! Using config for transaction options
+          {
+            timeout: databaseConfig.transaction.errorTracking.timeoutMs,
+            maxRetries: databaseConfig.transaction.errorTracking.maxRetries,
+          },
           'trackError'
         )
 
