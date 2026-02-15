@@ -74,6 +74,24 @@ export const testTimingConfig = {
     // Batch update delay (ms)
     batchDelay: parseInt(process.env.TEST_PREFERENCES_BATCH_DELAY_MS || '10'),
   },
+
+  // Playwright browser automation timing
+  playwright: {
+    // Page load timeout for navigation (ms) - default 10 seconds
+    pageLoadTimeout: parseInt(
+      process.env.TEST_PLAYWRIGHT_PAGE_LOAD_TIMEOUT_MS || '10000'
+    ),
+
+    // Wait time after page load for async errors (ms) - default 2 seconds
+    asyncErrorWait: parseInt(
+      process.env.TEST_PLAYWRIGHT_ASYNC_ERROR_WAIT_MS || '2000'
+    ),
+
+    // Web server startup timeout (ms) - default 5 minutes (300000)
+    webServerTimeout: parseInt(
+      process.env.TEST_PLAYWRIGHT_WEBSERVER_TIMEOUT_MS || '300000'
+    ),
+  },
 } as const
 
 export type TestTimingConfig = typeof testTimingConfig
@@ -103,4 +121,9 @@ export const TEST_TIMING = {
   // Preferences timing
   PREFERENCES_STORAGE_DELAY: testTimingConfig.preferences.storageDelay,
   PREFERENCES_BATCH_DELAY: testTimingConfig.preferences.batchDelay,
+
+  // Playwright timing
+  PLAYWRIGHT_PAGE_LOAD_TIMEOUT: testTimingConfig.playwright.pageLoadTimeout,
+  PLAYWRIGHT_ASYNC_ERROR_WAIT: testTimingConfig.playwright.asyncErrorWait,
+  PLAYWRIGHT_WEBSERVER_TIMEOUT: testTimingConfig.playwright.webServerTimeout,
 } as const
