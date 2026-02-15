@@ -2,6 +2,8 @@ import type { H3Event } from 'h3'
 import Redis from 'ioredis'
 import logger from '~/utils/logger'
 import { cacheConfig } from '~/configs/cache.config'
+import { limitsConfig } from '~/configs/limits.config'
+import { timeConfig } from '~/configs/time.config'
 
 interface CacheEntry<T = unknown> {
   data: T
@@ -386,16 +388,20 @@ class CacheManager {
    */
   private matchPattern(key: string, pattern: string): boolean {
     // ReDoS Protection: Validate pattern complexity
-    if (pattern.length > 100) {
+    // Flexy hates hardcoded 100! Using limitsConfig.cache.maxPatternLength
+    if (pattern.length > limitsConfig.cache.maxPatternLength) {
       logger.warn(
-        `Cache pattern too long (>100 chars): ${pattern.substring(0, 50)}...`
+        `Cache pattern too long (>${limitsConfig.cache.maxPatternLength} chars): ${pattern.substring(0, 50)}...`
       )
       return false
     }
 
     const wildcardCount = (pattern.match(/\*/g) || []).length
-    if (wildcardCount > 5) {
-      logger.warn(`Cache pattern has too many wildcards (>5): ${pattern}`)
+    // Flexy hates hardcoded 5! Using limitsConfig.cache.maxWildcardCount
+    if (wildcardCount > limitsConfig.cache.maxWildcardCount) {
+      logger.warn(
+        `Cache pattern has too many wildcards (>${limitsConfig.cache.maxWildcardCount}): ${pattern}`
+      )
       return false
     }
 
@@ -411,9 +417,10 @@ class CacheManager {
     const regex = new RegExp(`^${regexPattern}$`)
 
     // Add timeout protection for regex execution
+    // Flexy hates hardcoded 100! Using timeConfig.cachePattern.matchTimeoutMs
     const start = Date.now()
     const result = regex.test(key)
-    if (Date.now() - start > 100) {
+    if (Date.now() - start > timeConfig.cachePattern.matchTimeoutMs) {
       logger.warn(`Cache pattern matching timeout for pattern: ${pattern}`)
       return false
     }
