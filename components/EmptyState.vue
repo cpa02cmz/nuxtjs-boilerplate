@@ -5,10 +5,7 @@
     aria-live="polite"
   >
     <!-- Animated Illustration -->
-    <div
-      class="relative w-48 h-48 mb-8"
-      aria-hidden="true"
-    >
+    <div class="relative w-48 h-48 mb-8" aria-hidden="true">
       <!-- Background Circle -->
       <div
         class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full animate-pulse-slow"
@@ -83,10 +80,7 @@
     </p>
 
     <!-- Suggestions Section -->
-    <div
-      v-if="suggestions.length"
-      class="w-full max-w-lg mb-8"
-    >
+    <div v-if="suggestions.length" class="w-full max-w-lg mb-8">
       <p
         class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4"
       >
@@ -97,11 +91,14 @@
           v-for="(suggestion, index) in suggestions"
           :key="index"
           :aria-label="`Search for ${suggestion}`"
-          class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 hover:scale-105 active:scale-95 active:bg-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          :class="[
+            'inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 hover:scale-105 active:scale-95 active:bg-gray-300 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500',
+            animationConfig.tailwindDurations.normal,
+            { 'animate-fade-in-up': !reducedMotion },
+          ]"
           :style="{
             animationDelay: `${index * animationConfig.emptyStateStagger.baseDelayMs}ms`,
           }"
-          :class="{ 'animate-fade-in-up': !reducedMotion }"
           @click="handleSuggestionClick(suggestion)"
         >
           <svg
@@ -126,7 +123,10 @@
     <div class="flex flex-col sm:flex-row gap-3">
       <button
         v-if="showReset"
-        class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+        :class="[
+          'inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all hover:-translate-y-0.5 active:translate-y-0',
+          animationConfig.tailwindDurations.normal,
+        ]"
         @click="handleReset"
       >
         <svg
@@ -147,7 +147,10 @@
 
       <button
         v-if="showBrowseAll"
-        class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-transparent hover:bg-gray-50 hover:border-gray-400 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
+        :class="[
+          'inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-transparent hover:bg-gray-50 hover:border-gray-400 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all',
+          animationConfig.tailwindDurations.normal,
+        ]"
         @click="handleBrowseAll"
       >
         <svg
@@ -168,10 +171,7 @@
     </div>
 
     <!-- Tips Section -->
-    <div
-      v-if="showTips"
-      class="mt-10 p-4 bg-gray-50 rounded-xl max-w-lg"
-    >
+    <div v-if="showTips" class="mt-10 p-4 bg-gray-50 rounded-xl max-w-lg">
       <div class="flex items-start">
         <svg
           class="w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0"

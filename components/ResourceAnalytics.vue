@@ -6,7 +6,9 @@
   >
     <!-- Header with live indicator -->
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-xl font-semibold text-gray-900">Resource Analytics</h2>
+      <h2 class="text-xl font-semibold text-gray-900">
+        Resource Analytics
+      </h2>
       <!-- Live indicator - Palette's micro-UX delight! -->
       <span
         v-if="!isLoading && !prefersReducedMotion"
@@ -19,7 +21,10 @@
     </div>
 
     <!-- Loading Skeleton State - Palette's micro-UX delight! -->
-    <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div
+      v-if="isLoading"
+      class="grid grid-cols-1 md:grid-cols-3 gap-4"
+    >
       <div
         v-for="n in 3"
         :key="n"
@@ -38,10 +43,10 @@
       tag="div"
       class="grid grid-cols-1 md:grid-cols-3 gap-4"
       :class="{ 'reduced-motion': prefersReducedMotion }"
-      enter-active-class="transition-all duration-500 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.slower} ease-out`"
       enter-from-class="opacity-0 translate-y-4 scale-95"
       enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition-all duration-300 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-in`"
       leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 translate-y-4 scale-95"
     >
@@ -164,7 +169,11 @@
           </span>
         </div>
         <!-- Mini chart visualization -->
-        <div v-if="!prefersReducedMotion" class="mini-chart" aria-hidden="true">
+        <div
+          v-if="!prefersReducedMotion"
+          class="mini-chart"
+          aria-hidden="true"
+        >
           <div
             v-for="n in 5"
             :key="n"
@@ -231,7 +240,12 @@
     </TransitionGroup>
 
     <!-- Screen reader announcement -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ announcementText }}
     </div>
   </div>
