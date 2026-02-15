@@ -45,10 +45,10 @@
 
     <!-- Max Reached Celebration - Palette's micro-UX delight! -->
     <Transition
-      enter-active-class="transition-all duration-500 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.slower} ease-out`"
       enter-from-class="opacity-0 scale-90 -translate-y-2"
       enter-to-class="opacity-100 scale-100 translate-y-0"
-      leave-active-class="transition-all duration-300 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-in`"
       leave-from-class="opacity-100 scale-100 translate-y-0"
       leave-to-class="opacity-0 scale-95 -translate-y-1"
     >
@@ -74,10 +74,10 @@
     <div class="flex flex-wrap gap-3">
       <!-- Clear All Button -->
       <Transition
-        enter-active-class="transition-all duration-300 ease-out"
+        :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
         enter-from-class="opacity-0 scale-90"
         enter-to-class="opacity-100 scale-100"
-        leave-active-class="transition-all duration-200 ease-in"
+        :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
         leave-from-class="opacity-100 scale-100"
         leave-to-class="opacity-0 scale-90"
       >
@@ -94,8 +94,11 @@
           @touchend="clearPressed"
         >
           <svg
-            class="w-4 h-4 mr-1.5 transition-transform duration-200"
-            :class="{ 'rotate-90': pressedButton === 'clear' }"
+            :class="[
+              'w-4 h-4 mr-1.5 transition-transform',
+              animationConfig.tailwindDurations.normal,
+              { 'rotate-90': pressedButton === 'clear' },
+            ]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -113,10 +116,10 @@
 
       <!-- Share Button -->
       <Transition
-        enter-active-class="transition-all duration-300 ease-out"
+        :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
         enter-from-class="opacity-0 scale-90"
         enter-to-class="opacity-100 scale-100"
-        leave-active-class="transition-all duration-200 ease-in"
+        :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
         leave-from-class="opacity-100 scale-100"
         leave-to-class="opacity-0 scale-90"
       >
@@ -152,10 +155,10 @@
 
     <!-- Selected Resources with Stagger Animation -->
     <Transition
-      enter-active-class="transition-all duration-500 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.slower} ease-out`"
       enter-from-class="opacity-0 translate-y-4"
       enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition-all duration-300 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-in`"
       leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 -translate-y-2"
     >
@@ -224,10 +227,7 @@
     />
 
     <!-- Enhanced Empty State - Palette's micro-UX delight! -->
-    <div
-      v-else
-      class="empty-state"
-    >
+    <div v-else class="empty-state">
       <div class="empty-state__illustration">
         <!-- Animated Background Circle -->
         <div
@@ -272,9 +272,7 @@
         />
       </div>
 
-      <h3 class="empty-state__title">
-        No resources selected
-      </h3>
+      <h3 class="empty-state__title">No resources selected</h3>
       <p class="empty-state__description">
         Add resources to compare them side-by-side and see detailed differences.
       </p>

@@ -308,6 +308,8 @@ export const contentConfig = {
       benefits: process.env.CONTENT_RESOURCE_BENEFITS_TITLE || 'Benefits',
       limitations:
         process.env.CONTENT_RESOURCE_LIMITATIONS_TITLE || 'Limitations',
+      screenshots:
+        process.env.CONTENT_RESOURCE_SCREENSHOTS_TITLE || 'Screenshots',
     },
     // Palette's micro-UX enhancement: Screenshots section content
     screenshots: {
@@ -329,6 +331,16 @@ export const contentConfig = {
       featureRevealed:
         process.env.CONTENT_RESOURCE_FEATURE_REVEALED || 'Feature: {feature}',
     },
+    // Palette's micro-UX enhancement: Screenshots section content
+    screenshotsTitle:
+      process.env.CONTENT_RESOURCE_SCREENSHOTS_TITLE || 'Screenshots',
+    viewScreenshot: process.env.CONTENT_RESOURCE_VIEW_SCREENSHOT || 'View',
+    closeLightbox:
+      process.env.CONTENT_RESOURCE_CLOSE_LIGHTBOX || 'Close screenshot viewer',
+    previousScreenshot:
+      process.env.CONTENT_RESOURCE_PREV_SCREENSHOT || 'Previous screenshot',
+    nextScreenshot:
+      process.env.CONTENT_RESOURCE_NEXT_SCREENSHOT || 'Next screenshot',
   },
 
   // Favorites Page - Flexy hates hardcoded page content!

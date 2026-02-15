@@ -2,10 +2,10 @@
   <Teleport to="body">
     <!-- Offline Banner -->
     <Transition
-      enter-active-class="transition-all duration-300 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
       enter-from-class="opacity-0 -translate-y-full"
       enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition-all duration-200 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
       leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 -translate-y-full"
     >
@@ -27,7 +27,10 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <!-- Animated offline icon with connection pulse - Palette's micro-UX enhancement! -->
-                <div class="relative flex-shrink-0 w-8 h-8" aria-hidden="true">
+                <div
+                  class="relative flex-shrink-0 w-8 h-8"
+                  aria-hidden="true"
+                >
                   <!-- Connection pulse rings (shown when reconnecting) -->
                   <template v-if="isReconnecting && !prefersReducedMotion">
                     <div
@@ -191,10 +194,10 @@
 
     <!-- Back Online Toast -->
     <Transition
-      enter-active-class="transition-all duration-300 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
       enter-from-class="opacity-0 translate-y-4 scale-95"
       enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition-all duration-200 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
       leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 translate-y-4 scale-95"
     >
@@ -237,7 +240,12 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ announcement }}
     </div>
   </Teleport>
