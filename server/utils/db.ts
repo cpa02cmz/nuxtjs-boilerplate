@@ -291,4 +291,113 @@ export async function executeWithTimeout<T>(
   }
 }
 
+/**
+ * Transaction configuration options
+ */
+export interface TransactionOptions {
+  maxWait?: number
+  timeout?: number
+  isolationLevel?: 'ReadCommitted' | 'RepeatableRead' | 'Serializable'
+  maxRetries?: number
+  retryDelayMs?: number
+}
+
+/**
+ * Default transaction options
+ */
+const DEFAULT_TRANSACTION_OPTIONS: TransactionOptions = {
+  maxWait: 5000,
+  timeout: 10000,
+  isolationLevel: 'ReadCommitted',
+  maxRetries: 3,
+  retryDelayMs: 100,
+}
+
+/**
+ * Check if error is retryable (deadlock, lock timeout, etc.)
+ */
+function isRetryableError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false
+  const message = error.message.toLowerCase()
+  return (
+    message.includes('deadlock') ||
+    message.includes('lock timeout') ||
+    message.includes('could not obtain lock') ||
+    message.includes('concurrent') ||
+    message.includes('transaction rollback')
+  )
+}
+
+/**
+ * Execute a transaction with proper configuration and retry logic
+ * Handles deadlocks, lock timeouts, and other transient errors
+ *
+ * @param operation - Transaction operation function
+ * @param options - Transaction configuration options
+ * @param operationName - Name for logging/debugging
+ * @returns Promise with transaction result
+ */
+export async function executeTransaction<T>(
+  operation: (tx: typeof prisma) => Promise<T>,
+  options: TransactionOptions = {},
+  operationName: string = 'database transaction'
+): Promise<T> {
+  const config = { ...DEFAULT_TRANSACTION_OPTIONS, ...options }
+  const { maxRetries, retryDelayMs, ...prismaOptions } = config
+
+  let lastError: Error | undefined
+
+  for (let attempt = 0; attempt < maxRetries!; attempt++) {
+    try {
+      const startTime = Date.now()
+
+      const result = await prisma.$transaction(
+        async tx => {
+          return await operation(tx as typeof prisma)
+        },
+        prismaOptions as {
+          maxWait?: number
+          timeout?: number
+          isolationLevel?: 'ReadCommitted' | 'RepeatableRead' | 'Serializable'
+        }
+      )
+
+      const duration = Date.now() - startTime
+
+      // Log slow transactions
+      if (duration > (prismaOptions.timeout || 10000) * 0.5) {
+        console.warn(
+          `${LOG_PREFIX} Slow transaction detected: ${operationName} took ${duration}ms`
+        )
+      }
+
+      return result
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error))
+
+      // Check if error is retryable
+      if (isRetryableError(lastError) && attempt < maxRetries! - 1) {
+        const delayMs = (retryDelayMs || 100) * Math.pow(2, attempt)
+        console.warn(
+          `${LOG_PREFIX} Transaction ${operationName} failed (attempt ${attempt + 1}/${maxRetries}), retrying in ${delayMs}ms:`,
+          lastError.message
+        )
+        await new Promise(resolve => setTimeout(resolve, delayMs))
+        continue
+      }
+
+      // Log final failure
+      console.error(
+        `${LOG_PREFIX} Transaction ${operationName} failed after ${attempt + 1} attempts:`
+      )
+      throw lastError
+    }
+  }
+
+  throw (
+    lastError ||
+    new Error(`Transaction ${operationName} failed after ${maxRetries} retries`)
+  )
+}
+
 export default prisma

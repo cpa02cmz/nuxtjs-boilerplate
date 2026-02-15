@@ -14,7 +14,7 @@ import {
   sendNotFoundError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
-import { prisma } from '~/server/utils/db'
+import { executeTransaction } from '~/server/utils/db'
 import { safeJsonParse } from '~/server/utils/safeJsonParse'
 import { validationConfig } from '~/configs/validation.config'
 
@@ -49,87 +49,91 @@ export default defineEventHandler(async event => {
     const { submissionId, reviewedBy, notes } = result.data
     const reviewedAt = new Date()
 
-    // Use interactive transaction for atomic approval process
+    // Use interactive transaction with retry logic for atomic approval process
     // Prevents race conditions where submission is modified between fetch and update
-    const approvalResult = await prisma.$transaction(async tx => {
-      // Fetch submission with implicit lock (SQLite doesn't support explicit row locks,
-      // but the transaction ensures atomicity)
-      const submission = await tx.submission.findUnique({
-        where: { id: submissionId },
-      })
+    const approvalResult = await executeTransaction(
+      async tx => {
+        // Fetch submission with implicit lock (SQLite doesn't support explicit row locks,
+        // but the transaction ensures atomicity)
+        const submission = await tx.submission.findUnique({
+          where: { id: submissionId },
+        })
 
-      if (!submission) {
-        return { error: 'not_found', message: 'Submission not found' }
-      }
-
-      // Check if already approved (idempotency check)
-      if (submission.status === 'approved') {
-        return {
-          error: 'already_approved',
-          message: 'Submission has already been approved',
+        if (!submission) {
+          return { error: 'not_found', message: 'Submission not found' }
         }
-      }
 
-      // Check if submission is in a valid state for approval
-      if (submission.status !== 'pending') {
-        return {
-          error: 'invalid_state',
-          message: `Cannot approve submission with status: ${submission.status}`,
+        // Check if already approved (idempotency check)
+        if (submission.status === 'approved') {
+          return {
+            error: 'already_approved',
+            message: 'Submission has already been approved',
+          }
         }
-      }
 
-      // Parse resource data from JSON safely
-      const resourceData = safeJsonParse<Partial<Resource>>(
-        submission.resourceData,
-        {}
-      )
+        // Check if submission is in a valid state for approval
+        if (submission.status !== 'pending') {
+          return {
+            error: 'invalid_state',
+            message: `Cannot approve submission with status: ${submission.status}`,
+          }
+        }
 
-      // Run quality checks on the resource (inside transaction for consistency)
-      const qualityChecks = runQualityChecks(resourceData as Resource)
-      const qualityScore = calculateQualityScore(qualityChecks)
+        // Parse resource data from JSON safely
+        const resourceData = safeJsonParse<Partial<Resource>>(
+          submission.resourceData,
+          {}
+        )
 
-      // Create the resource
-      const resource = await tx.resource.create({
-        data: {
-          title: resourceData.title || '',
-          description: resourceData.description || '',
-          benefits: JSON.stringify(resourceData.benefits || []),
-          url: resourceData.url || '',
-          category: resourceData.category || '',
-          pricingModel: resourceData.pricingModel || '',
-          difficulty: resourceData.difficulty || '',
-          tags: JSON.stringify(resourceData.tags || []),
-          technology: JSON.stringify(resourceData.technology || []),
-          status: 'approved',
-          submittedBy: submission.submittedBy,
-          reviewedBy,
-          reviewedAt,
-          qualityScore,
-          submission: {
-            connect: { id: submissionId },
+        // Run quality checks on the resource (inside transaction for consistency)
+        const qualityChecks = runQualityChecks(resourceData as Resource)
+        const qualityScore = calculateQualityScore(qualityChecks)
+
+        // Create the resource
+        const resource = await tx.resource.create({
+          data: {
+            title: resourceData.title || '',
+            description: resourceData.description || '',
+            benefits: JSON.stringify(resourceData.benefits || []),
+            url: resourceData.url || '',
+            category: resourceData.category || '',
+            pricingModel: resourceData.pricingModel || '',
+            difficulty: resourceData.difficulty || '',
+            tags: JSON.stringify(resourceData.tags || []),
+            technology: JSON.stringify(resourceData.technology || []),
+            status: 'approved',
+            submittedBy: submission.submittedBy,
+            reviewedBy,
+            reviewedAt,
+            qualityScore,
+            submission: {
+              connect: { id: submissionId },
+            },
           },
-        },
-      })
+        })
 
-      // Update submission status
-      const updatedSubmission = await tx.submission.update({
-        where: { id: submissionId },
-        data: {
-          status: 'approved',
-          reviewedBy,
-          reviewedAt,
-          notes: notes || '',
-        },
-      })
+        // Update submission status
+        const updatedSubmission = await tx.submission.update({
+          where: { id: submissionId },
+          data: {
+            status: 'approved',
+            reviewedBy,
+            reviewedAt,
+            notes: notes || '',
+          },
+        })
 
-      return {
-        error: null,
-        resource,
-        submission: updatedSubmission,
-        qualityChecks,
-        qualityScore,
-      }
-    })
+        return {
+          error: null,
+          resource,
+          submission: updatedSubmission,
+          qualityChecks,
+          qualityScore,
+        }
+      },
+      { timeout: 10000, maxRetries: 3, isolationLevel: 'Serializable' },
+      'approveSubmission'
+    )
 
     // Handle transaction errors
     if (approvalResult.error === 'not_found') {

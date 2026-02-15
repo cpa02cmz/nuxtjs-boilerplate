@@ -13,7 +13,7 @@ import type {
   WebhookQueue as PrismaWebhookQueue,
   DeadLetterWebhook as PrismaDeadLetterWebhook,
 } from '@prisma/client'
-import { prisma } from './db'
+import { prisma, executeTransaction } from './db'
 import { PAGINATION } from './constants'
 import { safeJsonParse } from './safeJsonParse'
 import { logger } from '~/utils/logger'
@@ -187,34 +187,38 @@ export const webhookStorage = {
 
   async updateWebhook(id: string, data: Partial<Webhook>) {
     try {
-      // Use interactive transaction to ensure atomic update+read
-      return await prisma.$transaction(async tx => {
-        // Encrypt secret before updating if provided
-        const encryptedSecret =
-          data.secret !== undefined
-            ? data.secret
-              ? encryptSecret(data.secret)
-              : null
-            : undefined
+      // Use interactive transaction with retry logic and timeout protection
+      return await executeTransaction(
+        async tx => {
+          // Encrypt secret before updating if provided
+          const encryptedSecret =
+            data.secret !== undefined
+              ? data.secret
+                ? encryptSecret(data.secret)
+                : null
+              : undefined
 
-        const updated = await tx.webhook.updateMany({
-          where: { id, deletedAt: null },
-          data: {
-            ...(data.url && { url: data.url }),
-            ...(encryptedSecret !== undefined && { secret: encryptedSecret }),
-            ...(data.active !== undefined && { active: data.active }),
-            ...(data.events && { events: JSON.stringify(data.events) }),
-          },
-        })
+          const updated = await tx.webhook.updateMany({
+            where: { id, deletedAt: null },
+            data: {
+              ...(data.url && { url: data.url }),
+              ...(encryptedSecret !== undefined && { secret: encryptedSecret }),
+              ...(data.active !== undefined && { active: data.active }),
+              ...(data.events && { events: JSON.stringify(data.events) }),
+            },
+          })
 
-        if (updated.count === 0) return null
+          if (updated.count === 0) return null
 
-        const webhook = await tx.webhook.findUnique({
-          where: { id },
-        })
+          const webhook = await tx.webhook.findUnique({
+            where: { id },
+          })
 
-        return webhook ? mapPrismaToWebhook(webhook) : null
-      })
+          return webhook ? mapPrismaToWebhook(webhook) : null
+        },
+        { timeout: 5000, maxRetries: 3 },
+        'updateWebhook'
+      )
     } catch (error) {
       handleStorageError(`update webhook ${id}`, error)
     }
@@ -306,29 +310,33 @@ export const webhookStorage = {
 
   async updateDelivery(id: string, data: Partial<WebhookDelivery>) {
     try {
-      // Use interactive transaction to ensure atomic update+read
-      return await prisma.$transaction(async tx => {
-        const updated = await tx.webhookDelivery.updateMany({
-          where: { id, deletedAt: null },
-          data: {
-            ...(data.status && { status: data.status }),
-            ...(data.statusCode && { statusCode: data.statusCode }),
-            ...(data.responseBody && {
-              responseBody: JSON.stringify(data.responseBody),
-            }),
-            ...(data.errorMessage && { errorMessage: data.errorMessage }),
-            ...(data.attemptCount && { attemptCount: data.attemptCount }),
-          },
-        })
+      // Use interactive transaction with retry logic and timeout protection
+      return await executeTransaction(
+        async tx => {
+          const updated = await tx.webhookDelivery.updateMany({
+            where: { id, deletedAt: null },
+            data: {
+              ...(data.status && { status: data.status }),
+              ...(data.statusCode && { statusCode: data.statusCode }),
+              ...(data.responseBody && {
+                responseBody: JSON.stringify(data.responseBody),
+              }),
+              ...(data.errorMessage && { errorMessage: data.errorMessage }),
+              ...(data.attemptCount && { attemptCount: data.attemptCount }),
+            },
+          })
 
-        if (updated.count === 0) return null
+          if (updated.count === 0) return null
 
-        const delivery = await tx.webhookDelivery.findUnique({
-          where: { id },
-        })
+          const delivery = await tx.webhookDelivery.findUnique({
+            where: { id },
+          })
 
-        return delivery ? mapPrismaToWebhookDelivery(delivery) : null
-      })
+          return delivery ? mapPrismaToWebhookDelivery(delivery) : null
+        },
+        { timeout: 5000, maxRetries: 3 },
+        'updateDelivery'
+      )
     } catch (error) {
       handleStorageError(`update delivery ${id}`, error)
     }
@@ -444,33 +452,37 @@ export const webhookStorage = {
 
   async updateApiKey(id: string, data: Partial<ApiKey>) {
     try {
-      // Use interactive transaction to ensure atomic update+read
-      return await prisma.$transaction(async tx => {
-        const updated = await tx.apiKey.updateMany({
-          where: { id, deletedAt: null },
-          data: {
-            ...(data.name && { name: data.name }),
-            ...(data.permissions && {
-              permissions: JSON.stringify(data.permissions),
-            }),
-            ...(data.active !== undefined && { active: data.active }),
-            ...(data.expiresAt !== undefined && {
-              expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
-            }),
-            ...(data.lastUsedAt !== undefined && {
-              lastUsedAt: data.lastUsedAt ? new Date(data.lastUsedAt) : null,
-            }),
-          },
-        })
+      // Use interactive transaction with retry logic and timeout protection
+      return await executeTransaction(
+        async tx => {
+          const updated = await tx.apiKey.updateMany({
+            where: { id, deletedAt: null },
+            data: {
+              ...(data.name && { name: data.name }),
+              ...(data.permissions && {
+                permissions: JSON.stringify(data.permissions),
+              }),
+              ...(data.active !== undefined && { active: data.active }),
+              ...(data.expiresAt !== undefined && {
+                expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
+              }),
+              ...(data.lastUsedAt !== undefined && {
+                lastUsedAt: data.lastUsedAt ? new Date(data.lastUsedAt) : null,
+              }),
+            },
+          })
 
-        if (updated.count === 0) return null
+          if (updated.count === 0) return null
 
-        const apiKey = await tx.apiKey.findUnique({
-          where: { id },
-        })
+          const apiKey = await tx.apiKey.findUnique({
+            where: { id },
+          })
 
-        return apiKey ? mapPrismaToApiKey(apiKey) : null
-      })
+          return apiKey ? mapPrismaToApiKey(apiKey) : null
+        },
+        { timeout: 5000, maxRetries: 3 },
+        'updateApiKey'
+      )
     } catch (error) {
       handleStorageError(`update API key ${id}`, error)
     }
@@ -561,50 +573,59 @@ export const webhookStorage = {
     workerId: string = `worker-${process.pid}-${Date.now()}`
   ): Promise<WebhookQueueItem | null> {
     try {
-      return await prisma.$transaction(async tx => {
-        const now = new Date()
+      // Use interactive transaction with retry logic for deadlock handling
+      return await executeTransaction(
+        async tx => {
+          const now = new Date()
 
-        // Atomically update the next available item, setting processingStartedAt
-        // This uses the database's row-level locking to prevent race conditions
-        const { count } = await tx.webhookQueue.updateMany({
-          where: {
-            deletedAt: null,
-            scheduledFor: { lte: now },
-            processingStartedAt: null, // Only select items not currently being processed
-          },
-          data: {
-            processingStartedAt: now,
-            processedBy: workerId,
-            updatedAt: now,
-          },
-        })
+          // Atomically update the next available item, setting processingStartedAt
+          // This uses the database's row-level locking to prevent race conditions
+          const { count } = await tx.webhookQueue.updateMany({
+            where: {
+              deletedAt: null,
+              scheduledFor: { lte: now },
+              processingStartedAt: null, // Only select items not currently being processed
+            },
+            data: {
+              processingStartedAt: now,
+              processedBy: workerId,
+              updatedAt: now,
+            },
+          })
 
-        if (count === 0) {
-          return null
-        }
+          if (count === 0) {
+            return null
+          }
 
-        // Fetch the item we just marked as processing
-        const item = await tx.webhookQueue.findFirst({
-          where: {
-            processingStartedAt: now,
-            processedBy: workerId,
-            deletedAt: null,
-          },
-          orderBy: [{ priority: 'asc' }, { scheduledFor: 'asc' }],
-        })
+          // Fetch the item we just marked as processing
+          const item = await tx.webhookQueue.findFirst({
+            where: {
+              processingStartedAt: now,
+              processedBy: workerId,
+              deletedAt: null,
+            },
+            orderBy: [{ priority: 'asc' }, { scheduledFor: 'asc' }],
+          })
 
-        if (!item) {
-          return null
-        }
+          if (!item) {
+            return null
+          }
 
-        // Soft delete the item atomically within the transaction
-        await tx.webhookQueue.update({
-          where: { id: item.id },
-          data: { deletedAt: now },
-        })
+          // Soft delete the item atomically within the transaction
+          await tx.webhookQueue.update({
+            where: { id: item.id },
+            data: { deletedAt: now },
+          })
 
-        return mapPrismaToWebhookQueueItem(item)
-      })
+          return mapPrismaToWebhookQueueItem(item)
+        },
+        {
+          timeout: 10000,
+          maxRetries: 5,
+          isolationLevel: 'Serializable',
+        },
+        'dequeueAtomic'
+      )
     } catch (error) {
       handleStorageError('atomic dequeue', error)
     }
@@ -683,45 +704,50 @@ export const webhookStorage = {
     expirationHours: number = 24
   ): Promise<WebhookDelivery> {
     try {
-      return await prisma.$transaction(async tx => {
-        // Create the delivery record
-        const created = await tx.webhookDelivery.create({
-          data: {
-            id: delivery.id,
-            webhookId: delivery.webhookId,
-            event: delivery.event,
-            payload: JSON.stringify(delivery.payload),
-            status: delivery.status,
-            statusCode: delivery.statusCode,
-            responseBody: delivery.responseBody
-              ? JSON.stringify(delivery.responseBody)
-              : null,
-            errorMessage: delivery.errorMessage,
-            attemptCount: delivery.attemptCount,
-            idempotencyKey: idempotencyKey,
-          },
-        })
+      // Use interactive transaction with retry logic for atomic delivery + idempotency key
+      return await executeTransaction(
+        async tx => {
+          // Create the delivery record
+          const created = await tx.webhookDelivery.create({
+            data: {
+              id: delivery.id,
+              webhookId: delivery.webhookId,
+              event: delivery.event,
+              payload: JSON.stringify(delivery.payload),
+              status: delivery.status,
+              statusCode: delivery.statusCode,
+              responseBody: delivery.responseBody
+                ? JSON.stringify(delivery.responseBody)
+                : null,
+              errorMessage: delivery.errorMessage,
+              attemptCount: delivery.attemptCount,
+              idempotencyKey: idempotencyKey,
+            },
+          })
 
-        // Calculate expiration time (default 24 hours)
-        const expiresAt = new Date()
-        expiresAt.setHours(expiresAt.getHours() + expirationHours)
+          // Calculate expiration time (default 24 hours)
+          const expiresAt = new Date()
+          expiresAt.setHours(expiresAt.getHours() + expirationHours)
 
-        // Store idempotency key reference atomically with TTL
-        await tx.idempotencyKey.upsert({
-          where: { key: idempotencyKey },
-          create: {
-            key: idempotencyKey,
-            deliveryId: delivery.id,
-            expiresAt,
-          },
-          update: {
-            deliveryId: delivery.id,
-            expiresAt,
-          },
-        })
+          // Store idempotency key reference atomically with TTL
+          await tx.idempotencyKey.upsert({
+            where: { key: idempotencyKey },
+            create: {
+              key: idempotencyKey,
+              deliveryId: delivery.id,
+              expiresAt,
+            },
+            update: {
+              deliveryId: delivery.id,
+              expiresAt,
+            },
+          })
 
-        return mapPrismaToWebhookDelivery(created)
-      })
+          return mapPrismaToWebhookDelivery(created)
+        },
+        { timeout: 5000, maxRetries: 3 },
+        'createDeliveryWithIdempotencyKey'
+      )
     } catch (error) {
       handleStorageError('create delivery with idempotency key', error)
     }
