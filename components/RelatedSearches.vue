@@ -1,9 +1,9 @@
 <template>
   <Transition
-    enter-active-class="transition-all duration-300 ease-out"
+    :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
     enter-from-class="opacity-0 translate-y-2"
     enter-to-class="opacity-100 translate-y-0"
-    leave-active-class="transition-all duration-200 ease-in"
+    :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
     leave-from-class="opacity-100 translate-y-0"
     leave-to-class="opacity-0 -translate-y-2"
   >
@@ -46,13 +46,13 @@
         :aria-label="contentConfig.relatedSearches.aria.group"
       >
         <TransitionGroup
-          enter-active-class="transition-all duration-300 ease-out"
+          :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
           enter-from-class="opacity-0 scale-90 translate-y-2"
           enter-to-class="opacity-100 scale-100 translate-y-0"
-          leave-active-class="transition-all duration-200 ease-in"
+          :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
           leave-from-class="opacity-100 scale-100"
           leave-to-class="opacity-0 scale-90"
-          move-class="transition-transform duration-300"
+          :move-class="`transition-transform ${animationConfig.tailwindDurations.standard}`"
         >
           <button
             v-for="(search, index) in relatedSearches"
