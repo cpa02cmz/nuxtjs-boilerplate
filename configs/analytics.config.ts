@@ -83,6 +83,22 @@ export const analyticsConfig = {
     maxDays: parseInt(process.env.ANALYTICS_RETENTION_MAX_DAYS || '365'),
   },
 
+  // Export Settings - Flexy hates hardcoded batch sizes!
+  export: {
+    // Maximum number of events to export in a single batch (default: 100000)
+    batchSize: parseInt(process.env.ANALYTICS_EXPORT_BATCH_SIZE || '100000'),
+
+    // Minimum batch size allowed
+    minBatchSize: parseInt(
+      process.env.ANALYTICS_EXPORT_MIN_BATCH_SIZE || '1000'
+    ),
+
+    // Maximum batch size allowed
+    maxBatchSize: parseInt(
+      process.env.ANALYTICS_EXPORT_MAX_BATCH_SIZE || '500000'
+    ),
+  },
+
   // Performance Tracking
   performance: {
     // Maximum performance history entries
