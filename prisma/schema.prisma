@@ -47,7 +47,7 @@ model Webhook {
   url         String
   secret      String?
   active      Boolean             @default(true)
-  events      String
+  events      String[]            // Fixed: Native PostgreSQL array instead of JSON string
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
   deletedAt   DateTime?
@@ -133,7 +133,7 @@ model ApiKey {
   keyPrefix   String    // First 8 chars of key for identification (not secret)
   userId      String?
   name        String
-  permissions String
+  permissions String[]  // Fixed: Native PostgreSQL array instead of JSON string
   active      Boolean   @default(true)
   expiresAt   DateTime?
   lastUsedAt  DateTime?
@@ -185,37 +185,38 @@ model Flag {
   @@index([deletedAt])
 }
 
+// Resource model - Fixed: Using PostgreSQL native array types instead of JSON strings
 model Resource {
   id              String    @id @default(cuid())
   title           String
   description     String
-  benefits        String    // JSON array of strings
+  benefits        String[]  // Fixed: Native PostgreSQL array instead of JSON string
   url             String
   category        String
   pricingModel    String
   difficulty      String
-  tags            String    // JSON array of strings
-  technology      String    // JSON array of strings
+  tags            String[]  // Fixed: Native PostgreSQL array instead of JSON string
+  technology      String[]  // Fixed: Native PostgreSQL array instead of JSON string
   dateAdded       DateTime  @default(now())
   lastUpdated     DateTime  @updatedAt
   popularity      Int       @default(0)
   viewCount       Int       @default(0)
   rating          Float?
-  screenshots     String?   // JSON array of URLs
-  specifications  String?   // JSON object
-  features        String?   // JSON array of strings
-  limitations     String?   // JSON array of strings
-  platforms       String?   // JSON array of strings
+  screenshots     String[]  // Fixed: Native PostgreSQL array instead of JSON string
+  specifications  Json?     // Fixed: Prisma native JSON type
+  features        String[]  // Fixed: Native PostgreSQL array instead of JSON string
+  limitations     String[]  // Fixed: Native PostgreSQL array instead of JSON string
+  platforms       String[]  // Fixed: Native PostgreSQL array instead of JSON string
   license         String?
   icon            String?
-  alternatives    String?   // JSON array of resource IDs
+  alternatives    String[]  // Fixed: Native PostgreSQL array instead of JSON string
   status          String    @default("approved")
   submittedBy     String?
   reviewedBy      String?
   reviewedAt      DateTime?
   rejectionReason String?
   qualityScore    Float?
-  statusHistory   String?   // JSON array of status change records
+  statusHistory   Json?     // Fixed: Prisma native JSON type
   deletedAt       DateTime?
   submission      Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
   submissionId    String?   @unique
@@ -228,6 +229,10 @@ model Resource {
   @@index([deletedAt])
   @@index([category, status])
   @@index([status, deletedAt])
+  // Fixed: Added index for array fields
+  @@index([tags])
+  @@index([technology])
+  @@index([platforms])
 }
 
 model Submission {
