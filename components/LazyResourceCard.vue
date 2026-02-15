@@ -66,7 +66,6 @@ import ResourceCardSkeleton from './ResourceCardSkeleton.vue'
 import { animationConfig } from '~/configs/animation.config'
 import { hapticConfig } from '~/configs/haptic.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
-import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
   title: string
