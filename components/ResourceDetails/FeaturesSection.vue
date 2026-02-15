@@ -78,6 +78,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { easingConfig } from '~/configs/easing.config'
 import { contentConfig } from '~/configs/content.config'
 import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 import { hapticLight } from '~/utils/hapticFeedback'
@@ -269,13 +270,13 @@ onUnmounted(() => {
   transform: scale(0);
   transition: transform
     v-bind('animationConfig.featuresSection.checkmarkScaleMs + "ms"')
-    cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    v-bind('easingConfig.cubicBezier.spring');
 }
 
 .feature-item--visible .feature-icon--animated {
   animation: icon-pop
     v-bind('animationConfig.featuresSection.checkmarkScaleMs + "ms"')
-    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    v-bind('easingConfig.cubicBezier.spring') forwards;
   animation-delay: calc(
     var(--stagger-delay, 0ms) +
       v-bind('animationConfig.featuresIconPop.delayOffsetMs + "ms"')
@@ -296,8 +297,8 @@ onUnmounted(() => {
 
 /* Checkmark Draw Animation */
 .checkmark-path {
-  stroke-dasharray: 30;
-  stroke-dashoffset: 30;
+  stroke-dasharray: v-bind('animationConfig.svg.strokeDasharray.standard');
+  stroke-dashoffset: v-bind('animationConfig.svg.strokeDasharray.standard');
 }
 
 .feature-item--visible .feature-icon--animated .checkmark-path {

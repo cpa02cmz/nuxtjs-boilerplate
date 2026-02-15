@@ -2835,6 +2835,43 @@ export const animationConfig = {
     fadeInDurationSec: parseFloat(
       process.env.SEARCH_ANALYTICS_FADE_IN_DURATION_SEC || '0.3'
     ),
+    // Glow pulse animation duration (seconds) - Flexy hates hardcoded 2s!
+    glowPulseDurationSec: parseFloat(
+      process.env.SEARCH_ANALYTICS_GLOW_PULSE_SEC || '2'
+    ),
+    // Live pulse indicator animation duration (seconds)
+    livePulseDurationSec: parseFloat(
+      process.env.SEARCH_ANALYTICS_LIVE_PULSE_SEC || '2'
+    ),
+    // Live ring animation duration (seconds)
+    liveRingDurationSec: parseFloat(
+      process.env.SEARCH_ANALYTICS_LIVE_RING_SEC || '2'
+    ),
+    // Shimmer spin animation duration (seconds)
+    shimmerSpinDurationSec: parseFloat(
+      process.env.SEARCH_ANALYTICS_SHIMMER_SPIN_SEC || '2'
+    ),
+  },
+
+  // Client Error Boundary Animations - Flexy hates hardcoded values!
+  // Used by ClientErrorBoundary.vue for loading and error animations
+  clientErrorBoundary: {
+    // Shimmer spin animation duration (seconds) - Flexy hates hardcoded 1s!
+    shimmerSpinDurationSec: parseFloat(
+      process.env.CLIENT_ERROR_SHIMMER_SPIN_SEC || '1'
+    ),
+    // Error pulse animation duration (seconds)
+    errorPulseDurationSec: parseFloat(
+      process.env.CLIENT_ERROR_PULSE_SEC || '2'
+    ),
+    // Error pulse iteration count
+    errorPulseIterations: parseInt(
+      process.env.CLIENT_ERROR_PULSE_ITERATIONS || '3'
+    ),
+    // Error icon shake animation duration (seconds)
+    errorShakeDurationSec: parseFloat(
+      process.env.CLIENT_ERROR_SHAKE_SEC || '0.5'
+    ),
   },
 
   // Comparison Builder Float Animations - Flexy hates hardcoded delays!
@@ -2909,6 +2946,98 @@ export const animationConfig = {
     spinnerDurationMs: parseInt(
       process.env.HEALTH_MONITOR_SPINNER_DURATION_MS || '1000'
     ),
+  },
+
+  // Saved Searches Micro-UX - Palette's delightful enhancement! ✨
+  // Particle burst celebration on delete, staggered entrance, and undo progress bar
+  savedSearches: {
+    // Particle burst animation duration (ms)
+    particleBurstDurationMs: parseInt(
+      process.env.SAVED_SEARCHES_PARTICLE_DURATION_MS || '600'
+    ),
+    // CSS duration string for particle burst
+    particleBurstDurationSec: `${parseInt(process.env.SAVED_SEARCHES_PARTICLE_DURATION_MS || '600') / 1000}s`,
+    // Number of particles in the burst
+    particleCount: parseInt(process.env.SAVED_SEARCHES_PARTICLE_COUNT || '8'),
+    // Particle spread distance (px)
+    particleSpreadPx: parseInt(
+      process.env.SAVED_SEARCHES_PARTICLE_SPREAD || '40'
+    ),
+    // Particle colors (red/gray theme for deletion)
+    particleColors: [
+      process.env.SAVED_SEARCHES_PARTICLE_COLOR_1 || '#ef4444', // red-500
+      process.env.SAVED_SEARCHES_PARTICLE_COLOR_2 || '#f87171', // red-400
+      process.env.SAVED_SEARCHES_PARTICLE_COLOR_3 || '#9ca3af', // gray-400
+      process.env.SAVED_SEARCHES_PARTICLE_COLOR_4 || '#d1d5db', // gray-300
+    ],
+    // Particle size range (px)
+    particleMinSizePx: parseInt(
+      process.env.SAVED_SEARCHES_PARTICLE_MIN_SIZE || '3'
+    ),
+    particleMaxSizePx: parseInt(
+      process.env.SAVED_SEARCHES_PARTICLE_MAX_SIZE || '6'
+    ),
+    // Delay before particles start disappearing (seconds)
+    particleFadeDelaySec: parseFloat(
+      process.env.SAVED_SEARCHES_PARTICLE_FADE_DELAY || '0.3'
+    ),
+    // Staggered entrance animation delay between items (ms)
+    staggerDelayMs: parseInt(process.env.SAVED_SEARCHES_STAGGER_MS || '80'),
+    // Maximum stagger delay to prevent long waits (ms)
+    maxStaggerDelayMs: parseInt(
+      process.env.SAVED_SEARCHES_MAX_STAGGER_MS || '500'
+    ),
+    // Entrance animation duration (ms)
+    entranceDurationMs: parseInt(
+      process.env.SAVED_SEARCHES_ENTRANCE_DURATION_MS || '400'
+    ),
+    // CSS duration string for entrance
+    entranceDurationSec: `${parseInt(process.env.SAVED_SEARCHES_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Distance items travel during entrance (px)
+    entranceDistancePx: parseInt(
+      process.env.SAVED_SEARCHES_ENTRANCE_DISTANCE || '15'
+    ),
+    // Undo notification progress bar duration (ms)
+    undoProgressDurationMs: parseInt(
+      process.env.SAVED_SEARCHES_UNDO_PROGRESS_MS || '5000'
+    ),
+    // CSS duration string for undo progress
+    undoProgressDurationSec: `${parseInt(process.env.SAVED_SEARCHES_UNDO_PROGRESS_MS || '5000') / 1000}s`,
+    // Progress bar color
+    progressBarColor:
+      process.env.SAVED_SEARCHES_PROGRESS_COLOR || 'rgba(245, 158, 11, 0.8)', // amber-500
+    // Progress bar background color
+    progressBarBgColor:
+      process.env.SAVED_SEARCHES_PROGRESS_BG_COLOR || 'rgba(245, 158, 11, 0.2)',
+    // Progress bar height (px)
+    progressBarHeightPx: parseInt(
+      process.env.SAVED_SEARCHES_PROGRESS_HEIGHT || '3'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SAVED_SEARCHES_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // SVG Stroke Dasharray Values - Flexy hates hardcoded stroke-dasharray!
+  // Used for checkmark draw animations, progress rings, and loading spinners
+  svg: {
+    strokeDasharray: {
+      // Extra small (10) - for small icons and micro indicators
+      xs: parseInt(process.env.SVG_STROKE_DASHARRAY_XS || '10'),
+      // Small (20) - for checkmarks and small icons
+      small: parseInt(process.env.SVG_STROKE_DASHARRAY_SMALL || '20'),
+      // Medium (24) - for standard checkmarks
+      medium: parseInt(process.env.SVG_STROKE_DASHARRAY_MEDIUM || '24'),
+      // Standard (30) - for progress indicators
+      standard: parseInt(process.env.SVG_STROKE_DASHARRAY_STANDARD || '30'),
+      // Large (60) - for larger animations
+      large: parseInt(process.env.SVG_STROKE_DASHARRAY_LARGE || '60'),
+      // Extra large (100) - for full circles and large progress rings
+      xlarge: parseInt(process.env.SVG_STROKE_DASHARRAY_XLARGE || '100'),
+      // Spinner values - comma-separated for dash patterns
+      spinnerDash: process.env.SVG_SPINNER_DASH || '1, 150',
+      spinnerGap: process.env.SVG_SPINNER_GAP || '90, 150',
+    },
   },
 } as const
 
