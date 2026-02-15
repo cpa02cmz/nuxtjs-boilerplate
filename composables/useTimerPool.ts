@@ -6,8 +6,10 @@
  */
 
 import { ref, onUnmounted, readonly } from 'vue'
-import { limitsConfig } from '~/configs/limits.config'
-import { timeConfig } from '~/configs/time.config'
+import {
+  TIMER_POOL_DEFAULTS,
+  createTimerPoolOptions,
+} from '~/configs/timerPool.config'
 
 interface PooledTimer {
   id: ReturnType<typeof setTimeout>
@@ -86,11 +88,12 @@ export interface UseTimerPoolReturn {
 export function useTimerPool(
   options: UseTimerPoolOptions = {}
 ): UseTimerPoolReturn {
-  // Flexy hates hardcoded values! Using config defaults
+  // Use modular config defaults - Flexy hates hardcoded values!
+  const configOptions = createTimerPoolOptions(options)
   const {
-    maxTimeoutPoolSize = limitsConfig.timerPool.maxTimeoutPoolSize,
-    maxIntervalPoolSize = limitsConfig.timerPool.maxIntervalPoolSize,
-    cleanupInterval = timeConfig.timerPool.cleanupIntervalMs,
+    maxTimeoutPoolSize = configOptions.maxTimeoutPoolSize,
+    maxIntervalPoolSize = configOptions.maxIntervalPoolSize,
+    cleanupInterval = configOptions.cleanupInterval,
   } = options
 
   const timeoutPool = ref<PooledTimer[]>([])
@@ -127,8 +130,7 @@ export function useTimerPool(
    */
   const cleanup = (): void => {
     const now = Date.now()
-    // Flexy hates hardcoded 60000! Using timeConfig.timerPool.maxAgeMs
-    const maxAge = timeConfig.timerPool.maxAgeMs
+    const maxAge = TIMER_POOL_DEFAULTS.maxAgeMs // Use modular config - Flexy hates hardcoded values!
 
     // Clean up old unused timeouts
     timeoutPool.value = timeoutPool.value.filter(timer => {
