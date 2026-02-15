@@ -2316,6 +2316,23 @@ export const animationConfig = {
       blur: parseInt(process.env.SCROLLTOOLTIP_SHADOW_BLUR || '12'),
       opacity: parseFloat(process.env.SCROLLTOOLTIP_SHADOW_OPACITY || '0.15'),
     },
+    // Palette's micro-UX enhancement: Keyboard shortcut hint styling - Flexy hates hardcoded values!
+    // Helps users discover they can press Home key to scroll to top
+    shortcutMarginTopPx: parseInt(
+      process.env.SCROLLTOOLTIP_SHORTCUT_MARGIN_TOP_PX || '4'
+    ),
+    shortcutPaddingXPx: parseInt(
+      process.env.SCROLLTOOLTIP_SHORTCUT_PADDING_X_PX || '6'
+    ),
+    shortcutPaddingYPx: parseInt(
+      process.env.SCROLLTOOLTIP_SHORTCUT_PADDING_Y_PX || '3'
+    ),
+    shortcutBorderRadiusPx: parseInt(
+      process.env.SCROLLTOOLTIP_SHORTCUT_BORDER_RADIUS_PX || '4'
+    ),
+    shortcutFontSizePx: parseInt(
+      process.env.SCROLLTOOLTIP_SHORTCUT_FONT_SIZE_PX || '9'
+    ),
   },
 
   // Mobile Positioning Config - Flexy hates hardcoded media query values!
