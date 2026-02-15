@@ -100,16 +100,10 @@
             </svg>
           </div>
           <div>
-            <h3
-              id="pwa-install-title"
-              class="font-medium text-gray-900"
-            >
+            <h3 id="pwa-install-title" class="font-medium text-gray-900">
               Install App
             </h3>
-            <p
-              id="pwa-install-description"
-              class="text-sm text-gray-500"
-            >
+            <p id="pwa-install-description" class="text-sm text-gray-500">
               Add to your home screen
             </p>
           </div>
@@ -133,7 +127,8 @@
               <kbd
                 class="hidden sm:inline-flex items-center px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded text-gray-500"
                 aria-hidden="true"
-              >Esc</kbd>
+                >Esc</kbd
+              >
             </span>
           </button>
           <button
@@ -197,12 +192,7 @@
   </Transition>
 
   <!-- Screen reader announcement -->
-  <div
-    class="sr-only"
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-  >
+  <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
     {{ announcement }}
   </div>
 </template>
@@ -477,6 +467,12 @@ onMounted(async () => {
     setTimeout(() => {
       dismissButtonRef.value?.focus()
     }, thresholdsConfig.focus.transitionFocusDelayMs)
+
+    // Palette's micro-UX enhancement: Announce prompt appearance to screen readers
+    // This helps users who rely on assistive technology understand what has appeared
+    setTimeout(() => {
+      announce(contentConfig.pwa.aria.promptAppeared)
+    }, animationConfig.pwaInstall.promptAnnouncementDelayMs)
 
     // Setup auto-dismiss if enabled
     setupAutoDismiss()
