@@ -38,10 +38,10 @@
       tag="div"
       class="grid grid-cols-1 md:grid-cols-3 gap-4"
       :class="{ 'reduced-motion': prefersReducedMotion }"
-      enter-active-class="transition-all duration-500 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
       enter-from-class="opacity-0 translate-y-4 scale-95"
       enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition-all duration-300 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.fast} ease-in`"
       leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 translate-y-4 scale-95"
     >
@@ -356,7 +356,7 @@ const getRandomBarHeight = (index: number) => {
 const animateCountUp = (
   target: number,
   current: Ref<number>,
-  duration: number = 1500
+  duration: number = animationConfig.counter.durationMs
 ) => {
   if (prefersReducedMotion.value) {
     current.value = target
@@ -405,9 +405,17 @@ watch(
       }, 3000)
 
       // Animate count up
-      animateCountUp(newData.viewCount, displayedViewCount, 1500)
+      animateCountUp(
+        newData.viewCount,
+        displayedViewCount,
+        animationConfig.counter.durationMs
+      )
       setTimeout(() => {
-        animateCountUp(newData.uniqueVisitors, displayedVisitorCount, 1200)
+        animateCountUp(
+          newData.uniqueVisitors,
+          displayedVisitorCount,
+          animationConfig.counter.durationMs * 0.8
+        )
       }, 200)
     }
   },

@@ -357,7 +357,8 @@ const getAnimatedValue = (key: string): number => {
 const animateCounter = (
   key: string,
   target: number,
-  duration: number = 1500
+  duration: number = animationConfig.moderationDashboard
+    .counterAnimationDurationMs
 ) => {
   const start = animatedValues.value[key as keyof typeof animatedValues.value]
   const startTime = performance.now()
