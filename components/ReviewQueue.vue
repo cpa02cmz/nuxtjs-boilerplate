@@ -51,12 +51,15 @@
           :placeholder="moderationConfig.ui.categoryFilterPlaceholder"
           class="filter-input"
           :aria-label="contentConfig.reviewQueue.aria.categoryFilter"
-        />
+        >
       </div>
     </div>
 
     <!-- Loading State with Skeleton Animation -->
-    <div v-if="loading" class="loading-state">
+    <div
+      v-if="loading"
+      class="loading-state"
+    >
       <div class="skeleton-wrapper">
         <div
           v-for="n in 3"
@@ -120,7 +123,10 @@
             :class="['status-badge', `status-${submission.status}`]"
             :aria-label="`Status: ${submission.status}`"
           >
-            <span class="status-icon" aria-hidden="true">
+            <span
+              class="status-icon"
+              aria-hidden="true"
+            >
               <svg
                 v-if="submission.status === 'pending'"
                 class="w-3 h-3"
@@ -270,7 +276,10 @@
     </TransitionGroup>
 
     <!-- Empty State with Illustration -->
-    <div v-else class="empty-state">
+    <div
+      v-else
+      class="empty-state"
+    >
       <div
         class="empty-illustration"
         :class="{ 'float-animation': !prefersReducedMotion }"
@@ -294,7 +303,9 @@
       <p class="empty-title">
         {{ contentConfig.reviewQueue.emptyState }}
       </p>
-      <p class="empty-subtitle">New submissions will appear here</p>
+      <p class="empty-subtitle">
+        New submissions will appear here
+      </p>
     </div>
   </div>
 </template>
