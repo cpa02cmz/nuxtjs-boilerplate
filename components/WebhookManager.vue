@@ -68,16 +68,8 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                class="checkmark-circle"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-              <path
-                class="checkmark-path"
-                d="M7 12l3 3 7-7"
-              />
+              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
           <span class="celebration-text">
@@ -85,10 +77,7 @@
           </span>
         </div>
         <!-- Sparkle effects -->
-        <div
-          class="sparkle-container"
-          aria-hidden="true"
-        >
+        <div class="sparkle-container" aria-hidden="true">
           <span
             v-for="n in 6"
             :key="n"
@@ -99,379 +88,274 @@
       </div>
     </Transition>
 
-    <!-- Create Webhook Form -->
-    <div
+    <!-- Create Webhook Form - Extracted to WebhookCreateForm component for better maintainability -->
+    <WebhookCreateForm
       v-if="showCreateForm"
-      class="webhook-form"
+      v-model="newWebhook"
+      :error-message="errorMessage"
+      :available-events="availableEvents"
+      @submit="handleCreateWebhook"
+      @cancel="showCreateForm = false"
+    />
+  </div>
+
+  <!-- Webhooks List -->
+  <div class="webhooks-list">
+    <h3>{{ contentConfig.webhooks.list.title }}</h3>
+
+    <!-- Enhanced Empty State -->
+    <div
+      v-if="webhooks.length === 0"
+      class="webhook-empty-state"
+      role="status"
+      aria-live="polite"
     >
-      <h3>{{ contentConfig.webhooks.form.title }}</h3>
-
-      <div
-        v-if="errorMessage"
-        class="error-message"
-        role="alert"
-        aria-live="assertive"
-      >
-        {{ errorMessage }}
-      </div>
-
-      <form
-        novalidate
-        @submit.prevent="handleCreateWebhook"
-      >
-        <div class="form-group">
-          <label for="webhook-url">{{ contentConfig.webhooks.form.urlLabel }}
-            <span aria-hidden="true">*</span>
-            <span class="sr-only">{{
-              contentConfig.webhooks.form.required
-            }}</span>
-          </label>
-          <input
-            id="webhook-url"
-            v-model="newWebhook.url"
-            type="url"
-            required
-            aria-required="true"
-            aria-describedby="webhook-url-description"
-            :placeholder="webhooksConfig.placeholders.url"
-            class="form-control"
-          >
-          <p
-            id="webhook-url-description"
-            class="mt-1 text-sm text-gray-500"
-          >
-            {{ contentConfig.webhooks.form.urlDescription }}
-          </p>
-        </div>
-
-        <div class="form-group">
-          <fieldset>
-            <legend class="font-medium mb-2">
-              {{ contentConfig.webhooks.form.eventsLabel }}
-            </legend>
-            <div
-              role="group"
-              :aria-label="contentConfig.webhooks.ariaLabels.eventsGroup"
-              class="event-checkboxes"
-            >
-              <label
-                v-for="event in availableEvents"
-                :key="event"
-                class="checkbox-label"
-              >
-                <input
-                  v-model="newWebhook.events"
-                  type="checkbox"
-                  :value="event"
-                  :aria-label="`Subscribe to ${event} event`"
-                >
-                {{ event }}
-              </label>
-            </div>
-          </fieldset>
-        </div>
-
-        <div class="form-group">
-          <label class="flex items-center gap-2">
-            <input
-              v-model="newWebhook.active"
-              type="checkbox"
-              :aria-label="contentConfig.webhooks.ariaLabels.enableWebhook"
-            >
-            {{ contentConfig.webhooks.form.activeLabel }}
-          </label>
-        </div>
-
-        <div class="form-actions">
-          <button
-            type="submit"
-            class="btn btn-primary"
-            :aria-label="contentConfig.webhooks.ariaLabels.submitCreate"
-          >
-            {{ contentConfig.webhooks.buttons.createSubmit }}
-          </button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            :aria-label="contentConfig.webhooks.ariaLabels.cancelCreate"
-            @click="showCreateForm = false"
-          >
-            {{ contentConfig.webhooks.buttons.cancel }}
-          </button>
-        </div>
-      </form>
-    </div>
-
-    <!-- Webhooks List -->
-    <div class="webhooks-list">
-      <h3>{{ contentConfig.webhooks.list.title }}</h3>
-
-      <!-- Enhanced Empty State -->
-      <div
-        v-if="webhooks.length === 0"
-        class="webhook-empty-state"
-        role="status"
-        aria-live="polite"
-      >
-        <!-- Animated Illustration -->
+      <!-- Animated Illustration -->
+      <div class="webhook-illustration" aria-hidden="true">
+        <!-- Background Circle -->
         <div
-          class="webhook-illustration"
-          aria-hidden="true"
-        >
-          <!-- Background Circle -->
-          <div
-            class="webhook-bg-circle"
-            :class="{ 'animate-pulse-slow': !reducedMotion }"
-          />
+          class="webhook-bg-circle"
+          :class="{ 'animate-pulse-slow': !reducedMotion }"
+        />
 
-          <!-- Webhook Icon Container -->
-          <div
-            class="webhook-icon-wrapper"
-            :class="{ 'animate-bounce-subtle': !reducedMotion }"
-          >
-            <svg
-              class="webhook-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <!-- Webhook/Link Icon -->
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="webhook-link-path"
-                :class="{ 'animate-draw': !reducedMotion }"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="webhook-link-path-delayed"
-                :class="{ 'animate-draw-delayed': !reducedMotion }"
-              />
-            </svg>
-          </div>
-
-          <!-- Floating Dots -->
-          <div
-            v-if="!reducedMotion"
-            class="webhook-float-dot webhook-float-dot-1"
-          />
-          <div
-            v-if="!reducedMotion"
-            class="webhook-float-dot webhook-float-dot-2"
-          />
-        </div>
-
-        <!-- Title -->
-        <h4 class="webhook-empty-title">
-          {{ contentConfig.webhooks.empty.title }}
-        </h4>
-
-        <!-- Description -->
-        <p class="webhook-empty-description">
-          {{ contentConfig.webhooks.empty.description }}
-        </p>
-
-        <!-- CTA Button -->
-        <button
-          class="btn btn-primary webhook-empty-cta"
-          :aria-label="contentConfig.webhooks.ariaLabels.createButton"
-          @click="showCreateForm = true"
+        <!-- Webhook Icon Container -->
+        <div
+          class="webhook-icon-wrapper"
+          :class="{ 'animate-bounce-subtle': !reducedMotion }"
         >
           <svg
-            class="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
+            class="webhook-icon"
             viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
           >
+            <!-- Webhook/Link Icon -->
             <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="currentColor"
+              stroke-width="2"
               stroke-linecap="round"
               stroke-linejoin="round"
+              class="webhook-link-path"
+              :class="{ 'animate-draw': !reducedMotion }"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="currentColor"
               stroke-width="2"
-              d="M12 4v16m8-8H4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="webhook-link-path-delayed"
+              :class="{ 'animate-draw-delayed': !reducedMotion }"
             />
           </svg>
-          {{ contentConfig.webhooks.empty.ctaButton }}
-        </button>
-      </div>
-      <div
-        v-else
-        class="webhook-items"
-      >
+        </div>
+
+        <!-- Floating Dots -->
         <div
-          v-for="webhook in webhooks"
-          :key="webhook.id"
-          class="webhook-item"
-          role="listitem"
+          v-if="!reducedMotion"
+          class="webhook-float-dot webhook-float-dot-1"
+        />
+        <div
+          v-if="!reducedMotion"
+          class="webhook-float-dot webhook-float-dot-2"
+        />
+      </div>
+
+      <!-- Title -->
+      <h4 class="webhook-empty-title">
+        {{ contentConfig.webhooks.empty.title }}
+      </h4>
+
+      <!-- Description -->
+      <p class="webhook-empty-description">
+        {{ contentConfig.webhooks.empty.description }}
+      </p>
+
+      <!-- CTA Button -->
+      <button
+        class="btn btn-primary webhook-empty-cta"
+        :aria-label="contentConfig.webhooks.ariaLabels.createButton"
+        @click="showCreateForm = true"
+      >
+        <svg
+          class="w-5 h-5 mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <div class="webhook-info">
-            <div class="webhook-url">
-              {{ webhook.url }}
-            </div>
-            <div
-              class="webhook-events"
-              :aria-label="contentConfig.webhooks.labels.subscribedEvents"
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+        {{ contentConfig.webhooks.empty.ctaButton }}
+      </button>
+    </div>
+    <div v-else class="webhook-items">
+      <div
+        v-for="webhook in webhooks"
+        :key="webhook.id"
+        class="webhook-item"
+        role="listitem"
+      >
+        <div class="webhook-info">
+          <div class="webhook-url">
+            {{ webhook.url }}
+          </div>
+          <div
+            class="webhook-events"
+            :aria-label="contentConfig.webhooks.labels.subscribedEvents"
+          >
+            <span
+              v-for="event in webhook.events"
+              :key="event"
+              class="event-tag"
             >
-              <span
-                v-for="event in webhook.events"
-                :key="event"
-                class="event-tag"
-              >
-                {{ event }}
-              </span>
-            </div>
-            <div class="webhook-status">
-              <span
-                :class="`status ${webhook.active ? 'active' : 'inactive'}`"
-                :aria-label="
-                  contentConfig.webhooks.ariaLabels.webhookStatus.replace(
-                    '{{ status }}',
-                    webhook.active
-                      ? contentConfig.webhooks.status.active
-                      : contentConfig.webhooks.status.inactive
-                  )
-                "
-              >
-                {{
+              {{ event }}
+            </span>
+          </div>
+          <div class="webhook-status">
+            <span
+              :class="`status ${webhook.active ? 'active' : 'inactive'}`"
+              :aria-label="
+                contentConfig.webhooks.ariaLabels.webhookStatus.replace(
+                  '{{ status }}',
                   webhook.active
                     ? contentConfig.webhooks.status.active
                     : contentConfig.webhooks.status.inactive
-                }}
-              </span>
-              <span
-                v-if="webhook.lastDeliveryStatus"
-                :class="`status ${webhook.lastDeliveryStatus}`"
-                :aria-label="
-                  contentConfig.webhooks.ariaLabels.deliveryStatus.replace(
-                    '{{ status }}',
-                    webhook.lastDeliveryStatus
-                  )
-                "
-              >
-                {{ contentConfig.webhooks.labels.lastDelivery }}
-                {{ webhook.lastDeliveryStatus }}
-              </span>
-            </div>
-          </div>
-          <div
-            class="webhook-actions"
-            role="group"
-            :aria-label="contentConfig.webhooks.ariaLabels.webhookActions"
-          >
-            <button
-              class="btn btn-sm"
-              :aria-label="
-                contentConfig.webhooks.ariaLabels.toggleWebhook
-                  .replace(
-                    '{{ action }}',
-                    webhook.active
-                      ? contentConfig.webhooks.buttons.deactivate
-                      : contentConfig.webhooks.buttons.activate
-                  )
-                  .replace('{{ url }}', webhook.url)
+                )
               "
-              @click="toggleWebhook(webhook)"
             >
               {{
                 webhook.active
-                  ? contentConfig.webhooks.buttons.deactivate
-                  : contentConfig.webhooks.buttons.activate
+                  ? contentConfig.webhooks.status.active
+                  : contentConfig.webhooks.status.inactive
               }}
-            </button>
-            <!-- Delete button with Press and Hold protection - Palette's micro-UX enhancement! -->
-            <button
-              class="btn btn-sm btn-danger press-hold-button"
-              :class="{
-                'is-pressing': getPressAndHold(webhook.id, webhook).isPressing,
-                'is-complete': getPressAndHold(webhook.id, webhook).isComplete,
-              }"
-              :style="getPressAndHold(webhook.id, webhook).progressStyle"
+            </span>
+            <span
+              v-if="webhook.lastDeliveryStatus"
+              :class="`status ${webhook.lastDeliveryStatus}`"
               :aria-label="
-                contentConfig.webhooks.ariaLabels.deleteWebhook +
-                  ' (Press and hold to confirm)'
-              "
-              @mousedown="getPressAndHold(webhook.id, webhook).startPress"
-              @mouseup="getPressAndHold(webhook.id, webhook).endPress"
-              @mouseleave="getPressAndHold(webhook.id, webhook).endPress"
-              @touchstart.prevent="
-                getPressAndHold(webhook.id, webhook).startPress
-              "
-              @touchend.prevent="getPressAndHold(webhook.id, webhook).endPress"
-              @touchcancel.prevent="
-                getPressAndHold(webhook.id, webhook).endPress
+                contentConfig.webhooks.ariaLabels.deliveryStatus.replace(
+                  '{{ status }}',
+                  webhook.lastDeliveryStatus
+                )
               "
             >
-              <!-- Progress Ring SVG -->
-              <span
-                v-if="
-                  getPressAndHold(webhook.id, webhook).isPressing &&
-                    !reducedMotion
-                "
-                class="press-hold-ring"
-                aria-hidden="true"
-              >
-                <svg
-                  class="progress-ring"
-                  :width="animationConfig.pressAndHold.ringSize"
-                  :height="animationConfig.pressAndHold.ringSize"
-                  :viewBox="`0 0 ${animationConfig.pressAndHold.ringSize} ${animationConfig.pressAndHold.ringSize}`"
-                >
-                  <!-- Background circle -->
-                  <circle
-                    class="progress-ring-bg"
-                    :cx="animationConfig.pressAndHold.ringSize / 2"
-                    :cy="animationConfig.pressAndHold.ringSize / 2"
-                    :r="
-                      (animationConfig.pressAndHold.ringSize -
-                        animationConfig.pressAndHold.strokeWidth) /
-                        2
-                    "
-                    fill="none"
-                    :stroke-width="animationConfig.pressAndHold.strokeWidth"
-                  />
-                  <!-- Progress circle -->
-                  <circle
-                    class="progress-ring-fill"
-                    :cx="animationConfig.pressAndHold.ringSize / 2"
-                    :cy="animationConfig.pressAndHold.ringSize / 2"
-                    :r="
-                      (animationConfig.pressAndHold.ringSize -
-                        animationConfig.pressAndHold.strokeWidth) /
-                        2
-                    "
-                    fill="none"
-                    :stroke-width="animationConfig.pressAndHold.strokeWidth"
-                    :stroke-dasharray="`var(--circumference)`"
-                    :stroke-dashoffset="`var(--progress-offset)`"
-                    stroke-linecap="round"
-                    :style="{
-                      transform: 'rotate(-90deg)',
-                      transformOrigin: 'center',
-                    }"
-                  />
-                </svg>
-              </span>
-              <!-- Button text changes during press -->
-              <span class="button-text">
-                <template
-                  v-if="getPressAndHold(webhook.id, webhook).isPressing"
-                >
-                  {{
-                    Math.round(getPressAndHold(webhook.id, webhook).progress)
-                  }}%
-                </template>
-                <template v-else>
-                  {{ contentConfig.webhooks.buttons.delete }}
-                </template>
-              </span>
-            </button>
+              {{ contentConfig.webhooks.labels.lastDelivery }}
+              {{ webhook.lastDeliveryStatus }}
+            </span>
           </div>
+        </div>
+        <div
+          class="webhook-actions"
+          role="group"
+          :aria-label="contentConfig.webhooks.ariaLabels.webhookActions"
+        >
+          <button
+            class="btn btn-sm"
+            :aria-label="
+              contentConfig.webhooks.ariaLabels.toggleWebhook
+                .replace(
+                  '{{ action }}',
+                  webhook.active
+                    ? contentConfig.webhooks.buttons.deactivate
+                    : contentConfig.webhooks.buttons.activate
+                )
+                .replace('{{ url }}', webhook.url)
+            "
+            @click="toggleWebhook(webhook)"
+          >
+            {{
+              webhook.active
+                ? contentConfig.webhooks.buttons.deactivate
+                : contentConfig.webhooks.buttons.activate
+            }}
+          </button>
+          <!-- Delete button with Press and Hold protection - Palette's micro-UX enhancement! -->
+          <button
+            class="btn btn-sm btn-danger press-hold-button"
+            :class="{
+              'is-pressing': getPressAndHold(webhook.id, webhook).isPressing,
+              'is-complete': getPressAndHold(webhook.id, webhook).isComplete,
+            }"
+            :style="getPressAndHold(webhook.id, webhook).progressStyle"
+            :aria-label="
+              contentConfig.webhooks.ariaLabels.deleteWebhook +
+              ' (Press and hold to confirm)'
+            "
+            @mousedown="getPressAndHold(webhook.id, webhook).startPress"
+            @mouseup="getPressAndHold(webhook.id, webhook).endPress"
+            @mouseleave="getPressAndHold(webhook.id, webhook).endPress"
+            @touchstart.prevent="
+              getPressAndHold(webhook.id, webhook).startPress
+            "
+            @touchend.prevent="getPressAndHold(webhook.id, webhook).endPress"
+            @touchcancel.prevent="getPressAndHold(webhook.id, webhook).endPress"
+          >
+            <!-- Progress Ring SVG -->
+            <span
+              v-if="
+                getPressAndHold(webhook.id, webhook).isPressing &&
+                !reducedMotion
+              "
+              class="press-hold-ring"
+              aria-hidden="true"
+            >
+              <svg
+                class="progress-ring"
+                :width="animationConfig.pressAndHold.ringSize"
+                :height="animationConfig.pressAndHold.ringSize"
+                :viewBox="`0 0 ${animationConfig.pressAndHold.ringSize} ${animationConfig.pressAndHold.ringSize}`"
+              >
+                <!-- Background circle -->
+                <circle
+                  class="progress-ring-bg"
+                  :cx="animationConfig.pressAndHold.ringSize / 2"
+                  :cy="animationConfig.pressAndHold.ringSize / 2"
+                  :r="
+                    (animationConfig.pressAndHold.ringSize -
+                      animationConfig.pressAndHold.strokeWidth) /
+                    2
+                  "
+                  fill="none"
+                  :stroke-width="animationConfig.pressAndHold.strokeWidth"
+                />
+                <!-- Progress circle -->
+                <circle
+                  class="progress-ring-fill"
+                  :cx="animationConfig.pressAndHold.ringSize / 2"
+                  :cy="animationConfig.pressAndHold.ringSize / 2"
+                  :r="
+                    (animationConfig.pressAndHold.ringSize -
+                      animationConfig.pressAndHold.strokeWidth) /
+                    2
+                  "
+                  fill="none"
+                  :stroke-width="animationConfig.pressAndHold.strokeWidth"
+                  :stroke-dasharray="`var(--circumference)`"
+                  :stroke-dashoffset="`var(--progress-offset)`"
+                  stroke-linecap="round"
+                  :style="{
+                    transform: 'rotate(-90deg)',
+                    transformOrigin: 'center',
+                  }"
+                />
+              </svg>
+            </span>
+            <!-- Button text changes during press -->
+            <span class="button-text">
+              <template v-if="getPressAndHold(webhook.id, webhook).isPressing">
+                {{ Math.round(getPressAndHold(webhook.id, webhook).progress) }}%
+              </template>
+              <template v-else>
+                {{ contentConfig.webhooks.buttons.delete }}
+              </template>
+            </span>
+          </button>
         </div>
       </div>
     </div>
@@ -483,13 +367,13 @@ import type { Webhook } from '~/types/webhook'
 import { useWebhooksManager } from '~/composables/useWebhooksManager'
 import { usePressAndHold } from '~/composables/usePressAndHold'
 import { componentColorsConfig } from '~/configs/component-colors.config'
-import { webhooksConfig } from '~/configs/webhooks.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { hapticSuccess, hapticLight } from '~/utils/hapticFeedback'
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
+import WebhookCreateForm from './webhook/WebhookCreateForm.vue'
 
 // Flexy hates hardcoded colors! Using config values for webhook UI colors
 const webhookColors = {

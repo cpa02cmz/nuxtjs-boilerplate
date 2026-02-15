@@ -171,6 +171,18 @@ export const backupConfig = {
     // Throttle timing calculation divisor in ms per MB (default: 1000)
     throttleMsPerMb: parseInt(process.env.BACKUP_THROTTLE_MS_PER_MB || '1000'),
   },
+
+  // Timestamp Format Settings - Flexy hates hardcoded slice lengths!
+  timestampFormat: {
+    // ISO string slice length for backup IDs (default: 19 = 'YYYY-MM-DDTHH-mm-ss')
+    sliceLength: parseInt(process.env.BACKUP_TIMESTAMP_SLICE_LENGTH || '19'),
+    // Backup ID prefix
+    prefix: process.env.BACKUP_ID_PREFIX || 'backup',
+    // Character to replace colons with
+    colonReplacement: process.env.BACKUP_TIMESTAMP_COLON_REPLACEMENT || '-',
+    // Character to replace dots with
+    dotReplacement: process.env.BACKUP_TIMESTAMP_DOT_REPLACEMENT || '-',
+  },
 } as const
 
 export type BackupConfig = typeof backupConfig

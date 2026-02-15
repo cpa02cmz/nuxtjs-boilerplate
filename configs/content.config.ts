@@ -108,6 +108,12 @@ export const contentConfig = {
         process.env.CONTENT_SEARCH_DEFAULT_SUGGESTIONS ||
           'AI Tools, Web Hosting, Databases, APIs, VPS'
       ),
+      // ARIA labels for accessibility - Pallete's micro-UX enhancement!
+      aria: {
+        newIndicator:
+          process.env.CONTENT_SEARCH_NEW_INDICATOR_ARIA ||
+          'New search from this session: {{term}}',
+      },
     },
     // Empty state configuration - Flexy hates hardcoded UX copy!
     emptyState: {

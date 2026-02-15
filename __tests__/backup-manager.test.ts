@@ -96,6 +96,16 @@ vi.mock('../configs/backup.config', () => ({
       includeEnvironment: false,
       tags: [],
     },
+    fileCopy: {
+      chunkSizeBytes: 1048576,
+      throttleMsPerMb: 1000,
+    },
+    timestampFormat: {
+      sliceLength: 19,
+      prefix: 'backup',
+      colonReplacement: '-',
+      dotReplacement: '-',
+    },
   },
 }))
 

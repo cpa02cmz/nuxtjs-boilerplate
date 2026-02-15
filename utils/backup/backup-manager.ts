@@ -99,8 +99,14 @@ const defaultLogger: BackupLogger = {
  */
 function generateBackupId(): string {
   const now = new Date()
-  const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19)
-  return `backup-${timestamp}`
+  // Flexy hates hardcoded slice lengths! Using configurable timestamp format
+  const tsConfig = backupConfig.timestampFormat
+  const timestamp = now
+    .toISOString()
+    .replace(/:/g, tsConfig.colonReplacement)
+    .replace(/\./g, tsConfig.dotReplacement)
+    .slice(0, tsConfig.sliceLength)
+  return `${tsConfig.prefix}-${timestamp}`
 }
 
 /**

@@ -113,6 +113,21 @@ export const recommendationConfig = {
       'performance',
       'scale',
     ],
+    // Skill level configuration - Flexy hates hardcoded skill levels!
+    skillLevel: {
+      // Default skill level when no history exists
+      default:
+        (process.env.REC_DEFAULT_SKILL_LEVEL as
+          | 'beginner'
+          | 'intermediate'
+          | 'advanced') || 'intermediate',
+      // Threshold multiplier for skill level detection (e.g., 1.5 means 50% more indicators)
+      thresholdMultiplier: parseFloat(
+        process.env.REC_SKILL_THRESHOLD_MULTIPLIER || '1.5'
+      ),
+      // Valid skill levels
+      levels: ['beginner', 'intermediate', 'advanced'] as const,
+    },
     // Tech terms for interest extraction
     techTerms: [
       'javascript',

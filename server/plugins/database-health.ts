@@ -23,9 +23,12 @@ export default defineNitroPlugin(async () => {
 
   /**
    * Calculate exponential backoff delay
+   * Flexy hates hardcoded 2! Using timeConfig.retry.exponentialBase
    */
   const getRetryDelay = (attempt: number): number => {
-    const delay = INITIAL_RETRY_DELAY_MS * Math.pow(2, attempt)
+    const delay =
+      INITIAL_RETRY_DELAY_MS *
+      Math.pow(timeConfig.retry.exponentialBase, attempt)
     return Math.min(delay, MAX_RETRY_DELAY_MS)
   }
 
