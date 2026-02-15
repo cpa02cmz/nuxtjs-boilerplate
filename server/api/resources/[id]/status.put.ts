@@ -1,7 +1,7 @@
-import type { Resource } from '~/types/resource'
 import { getRouterParam, readBody } from 'h3'
 import { randomUUID } from 'node:crypto'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+import { prisma } from '~/server/utils/db'
 import {
   sendSuccessResponse,
   sendBadRequestError,
@@ -10,10 +10,16 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { userConfig } from '~/configs/user.config'
-import { contentConfig } from '~/configs/content.config'
 
-// In-memory storage for resource status updates (in production, this would be a database)
-const resourceStatusHistory = new Map<string, unknown[]>()
+interface StatusChangeRecord {
+  id: string
+  fromStatus: string
+  toStatus: string
+  reason: string
+  changedBy: string
+  changedAt: string
+  notes: string
+}
 
 export default defineEventHandler(async event => {
   try {
@@ -21,10 +27,10 @@ export default defineEventHandler(async event => {
     const resourceId = getRouterParam(event, 'id') ?? ''
     const { status, reason, notes } = await readBody(event)
 
-    // Get resources from data file
-    const resourcesModule = await import(contentConfig.paths.resourcesData)
-    const resources: Resource[] = resourcesModule.default || []
-    const resource = resources.find((r: Resource) => r.id === resourceId)
+    // Get resource from database
+    const resource = await prisma.resource.findUnique({
+      where: { id: resourceId },
+    })
 
     if (!resource) {
       return sendNotFoundError(event, 'Resource', resourceId)
@@ -54,34 +60,35 @@ export default defineEventHandler(async event => {
     const userId = event.context.auth.userId ?? userConfig.defaults.systemId
 
     // Create status change record with cryptographically secure ID
-    const statusChange = {
+    const statusChange: StatusChangeRecord = {
       id: randomUUID(),
-      fromStatus: (resource.status ?? 'active') as string,
+      fromStatus: resource.status ?? 'active',
       toStatus: status,
-      reason: (reason ?? 'Status updated manually') as string,
-      changedBy: userId as string,
+      reason: reason ?? 'Status updated manually',
+      changedBy: userId,
       changedAt: new Date().toISOString(),
-      notes: (notes ?? '') as string,
+      notes: notes ?? '',
     }
 
-    // Add to history
-    if (!resourceStatusHistory.has(resourceId)) {
-      resourceStatusHistory.set(resourceId, [])
-    }
-    const existingHistory = resourceStatusHistory.get(resourceId) ?? []
+    // Parse existing history or create new array
+    const existingHistory: StatusChangeRecord[] = resource.statusHistory
+      ? JSON.parse(resource.statusHistory)
+      : []
     existingHistory.push(statusChange)
-    resourceStatusHistory.set(resourceId, existingHistory)
 
-    // Update resource with new status
-    resource.status = status
-    resource.lastUpdated = new Date().toISOString()
+    // Update resource in database with new status and history
+    const updatedResource = await prisma.resource.update({
+      where: { id: resourceId },
+      data: {
+        status,
+        statusHistory: JSON.stringify(existingHistory),
+      },
+    })
 
-    // In a real application, this would update resource in database
-    // For now, we'll return updated resource information
     return sendSuccessResponse(event, {
       resource: {
-        id: resource.id,
-        status: resource.status,
+        id: updatedResource.id,
+        status: updatedResource.status,
         statusHistory: existingHistory,
       },
       statusChange,

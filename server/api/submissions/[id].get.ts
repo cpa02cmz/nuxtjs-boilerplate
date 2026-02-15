@@ -1,9 +1,5 @@
-import type { Submission } from '~/types/submission'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
-
-// Mock data for demonstration - in a real application, this would come from a database
-const mockSubmissions: Submission[] = []
-
+import { prisma } from '~/server/utils/db'
 import {
   sendBadRequestError,
   sendNotFoundError,
@@ -20,8 +16,10 @@ export default defineEventHandler(async event => {
       return sendBadRequestError(event, 'Submission ID is required')
     }
 
-    // Find the submission
-    const submission = mockSubmissions.find(sub => sub.id === id)
+    // Find the submission from database
+    const submission = await prisma.submission.findUnique({
+      where: { id },
+    })
 
     if (!submission) {
       return sendNotFoundError(event, 'Submission', id)
