@@ -1087,6 +1087,11 @@ export const contentConfig = {
         process.env.CONTENT_API_KEYS_TOAST_COPIED ||
         '{{ name }} API key copied to clipboard',
     },
+    // ARIA labels for accessibility - Pallete's micro-UX enhancement!
+    aria: {
+      revokeButton:
+        process.env.CONTENT_API_KEYS_ARIA_REVOKE || 'Revoke API key: {{name}}',
+    },
   },
 
   // Comments - Flexy hates hardcoded comment strings!
