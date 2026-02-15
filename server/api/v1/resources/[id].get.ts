@@ -33,7 +33,11 @@ export default defineEventHandler(async event => {
     const cacheKey = `resource:${id}`
 
     // Try to get from cache first
-    const cachedResult = await cacheManager.get(cacheKey)
+    interface CachedResponse {
+      success: boolean
+      data: Resource
+    }
+    const cachedResult = await cacheManager.get<CachedResponse>(cacheKey)
     if (cachedResult?.data) {
       event.node.res?.setHeader('X-Cache', 'HIT')
       event.node.res?.setHeader('X-Cache-Key', cacheKey)

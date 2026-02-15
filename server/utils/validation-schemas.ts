@@ -167,13 +167,7 @@ export const bulkStatusUpdateSchema = z.object({
     .array(z.string())
     .min(1, 'At least one resource ID is required')
     .max(limitsConfig.validation.bulkMaxResources, 'Too many resources'),
-  status: z.enum([
-    'active',
-    'deprecated',
-    'discontinued',
-    'updated',
-    'pending',
-  ]),
+  status: z.enum(['pending', 'approved', 'rejected', 'deprecated']),
 })
 
 export const moderationActionSchema = z.object({
