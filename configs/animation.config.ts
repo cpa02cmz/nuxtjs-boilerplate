@@ -1509,6 +1509,12 @@ export const animationConfig = {
     showProgressText: process.env.PRESS_AND_HOLD_SHOW_PROGRESS !== 'false',
     // Whether to respect reduced motion preference
     respectReducedMotion: process.env.PRESS_AND_HOLD_REDUCED_MOTION !== 'false',
+    // Delay before resetting press state (ms) - Flexy hates hardcoded 150!
+    resetDelayMs: parseInt(process.env.PRESS_AND_HOLD_RESET_DELAY_MS || '150'),
+    // Long press activation delay (ms) - Flexy hates hardcoded 300!
+    activationDelayMs: parseInt(
+      process.env.PRESS_AND_HOLD_ACTIVATION_DELAY_MS || '300'
+    ),
   },
 
   // Breadcrumbs Micro-UX - Palette's navigational delight! 🧭
@@ -1812,6 +1818,12 @@ export const animationConfig = {
   frameRate: {
     fps60: parseInt(process.env.ANIMATION_FPS60_MS || '16'),
     fps30: parseInt(process.env.ANIMATION_FPS30_MS || '33'),
+  },
+
+  // RAF Fallback for requestAnimationFrame - Flexy hates hardcoded 16!
+  // Minimum delay for RAF fallback when RAF is not available (16.67ms = 60fps)
+  rafFallback: {
+    delayMs: parseInt(process.env.RAF_FALLBACK_DELAY_MS || '16'),
   },
 
   // UI Micro-Interactions - Flexy hates hardcoded small timeouts!

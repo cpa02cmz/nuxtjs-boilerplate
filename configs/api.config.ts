@@ -97,6 +97,11 @@ export const apiConfig = {
     resource: (id: string) => `/api/analytics/resource/${id}`,
     events: '/api/analytics/events',
   },
+
+  // Error reporting endpoint
+  errors: {
+    report: '/api/errors/report',
+  },
 } as const
 
 export type ApiConfig = typeof apiConfig
