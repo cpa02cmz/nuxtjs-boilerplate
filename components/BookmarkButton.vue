@@ -72,6 +72,23 @@
       />
     </TransitionGroup>
 
+    <!-- Newly Added Pulse Ring - Palette's micro-UX delight! 🎨
+         Shows a subtle pulse when bookmark is first added to help users locate it -->
+    <Transition
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="opacity-0 scale-50"
+      enter-to-class="opacity-100 scale-100"
+      leave-active-class="transition-all duration-500 ease-in"
+      leave-from-class="opacity-100 scale-100"
+      leave-to-class="opacity-0 scale-150"
+    >
+      <div
+        v-if="isNewlyAdded && !prefersReducedMotion"
+        class="newly-added-pulse-ring"
+        aria-hidden="true"
+      />
+    </Transition>
+
     <div
       :id="`bookmark-announcement-${resourceId}`"
       role="status"
@@ -159,6 +176,11 @@ const particleConfig = computed(() => animationConfig.bookmark.particleBurst)
 let animationTimeout: ReturnType<typeof setTimeout> | null = null
 let statusTimeout: ReturnType<typeof setTimeout> | null = null
 let particleTimeout: ReturnType<typeof setTimeout> | null = null
+let newlyAddedTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Palette's micro-UX enhancement: Track newly added state for visual feedback
+const isNewlyAdded = ref(false)
+const NEWLY_ADDED_DURATION_MS = 2000 // Show pulse for 2 seconds
 
 // Initialize ripple effect for tactile feedback
 // Flexy loves modularity! Using configurable animation duration from animationConfig
@@ -255,6 +277,13 @@ const handleBookmarkToggle = () => {
     $toast.success(
       contentConfig.bookmarkButton.toast.added.replace('{{title}}', props.title)
     )
+    // Palette's micro-UX enhancement: Show newly added pulse ring
+    // Helps users locate their newly saved items
+    isNewlyAdded.value = true
+    if (newlyAddedTimeout) clearTimeout(newlyAddedTimeout)
+    newlyAddedTimeout = setTimeout(() => {
+      isNewlyAdded.value = false
+    }, NEWLY_ADDED_DURATION_MS)
   } else {
     // Light haptic for removing bookmark
     hapticLight()
@@ -265,6 +294,12 @@ const handleBookmarkToggle = () => {
         props.title
       )
     )
+    // Clear newly added state when bookmark is removed
+    isNewlyAdded.value = false
+    if (newlyAddedTimeout) {
+      clearTimeout(newlyAddedTimeout)
+      newlyAddedTimeout = null
+    }
   }
 
   toggleBookmark({
@@ -290,6 +325,7 @@ onUnmounted(() => {
   if (animationTimeout) clearTimeout(animationTimeout)
   if (statusTimeout) clearTimeout(statusTimeout)
   if (particleTimeout) clearTimeout(particleTimeout)
+  if (newlyAddedTimeout) clearTimeout(newlyAddedTimeout)
 })
 
 // Handle click with ripple effect - Palette's micro-UX touch!
@@ -466,6 +502,60 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
 @media (prefers-contrast: high) {
   .particle {
     background: currentColor;
+  }
+}
+
+/* Palette's micro-UX enhancement: Newly Added Pulse Ring 🎨
+   A subtle expanding ring that helps users locate newly bookmarked items */
+.newly-added-pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: v-bind(
+    '`${animationConfig?.bookmark?.newlyAdded?.ringSizePx ?? 56}px`'
+  );
+  height: v-bind(
+    '`${animationConfig?.bookmark?.newlyAdded?.ringSizePx ?? 56}px`'
+  );
+  border-radius: 50%;
+  border: v-bind(
+      '`${animationConfig?.bookmark?.newlyAdded?.ringWidthPx ?? 3}px`'
+    )
+    solid v-bind('componentColorsConfig?.common?.amber?.[400] ?? "#fbbf24"');
+  pointer-events: none;
+  z-index: v-bind('zIndexScale?.low?.[5] ?? 5');
+  animation: newly-added-pulse
+    v-bind(
+      '`${animationConfig?.bookmark?.newlyAdded?.pulseDurationMs ?? 600}ms`'
+    )
+    v-bind('easingConfig?.cubicBezier?.easeOut ?? "cubic-bezier(0, 0, 0.2, 1)"');
+}
+
+@keyframes newly-added-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: v-bind('animationConfig?.bookmark?.newlyAdded?.startOpacity ?? 1');
+    border-width: v-bind(
+      '`${animationConfig?.bookmark?.newlyAdded?.ringWidthPx ?? 3}px`'
+    );
+  }
+  50% {
+    opacity: v-bind('animationConfig?.bookmark?.newlyAdded?.midOpacity ?? 0.6');
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.4);
+    opacity: 0;
+    border-width: v-bind(
+      '`${(animationConfig?.bookmark?.newlyAdded?.ringWidthPx ?? 3) / 2}px`'
+    );
+  }
+}
+
+/* Reduced motion support for newly added pulse */
+@media (prefers-reduced-motion: reduce) {
+  .newly-added-pulse-ring {
+    display: none;
   }
 }
 </style>
