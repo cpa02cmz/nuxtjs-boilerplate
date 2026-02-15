@@ -33,7 +33,14 @@
     "brocula:lighthouse": "tsx scripts/brocula/brocula.ts lighthouse",
     "brocula:full": "tsx scripts/brocula/brocula.ts full",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "backup:create": "tsx scripts/backup-cli.ts create",
+    "backup:restore": "tsx scripts/backup-cli.ts restore",
+    "backup:list": "tsx scripts/backup-cli.ts list",
+    "backup:verify": "tsx scripts/backup-cli.ts verify",
+    "backup:health": "tsx scripts/backup-cli.ts health",
+    "backup:cleanup": "tsx scripts/backup-cli.ts cleanup",
+    "backup:help": "tsx scripts/backup-cli.ts help"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.3",
