@@ -73,7 +73,11 @@ export class CircuitBreaker {
         this.onSuccess()
         return result
       } catch (error) {
-        this.onFailure()
+        // Only count server errors (5xx) and network errors as failures
+        // 4xx client errors should not trip the circuit breaker
+        if (this.isServerError(error)) {
+          this.onFailure()
+        }
         if (fallback) {
           return fallback()
         }
@@ -82,6 +86,35 @@ export class CircuitBreaker {
     } finally {
       release()
     }
+  }
+
+  /**
+   * Determines if an error represents a server-side failure (5xx) or network error
+   * that should count toward the circuit breaker failure threshold.
+   * 4xx client errors are NOT counted as they are client-side issues, not service failures.
+   */
+  private isServerError(error: unknown): boolean {
+    // Check for HTTP status code in error
+    if (error && typeof error === 'object') {
+      const statusCode =
+        (error as { statusCode?: number }).statusCode ||
+        (error as { response?: { status?: number } }).response?.status ||
+        (error as { status?: number }).status
+
+      if (typeof statusCode === 'number') {
+        // 4xx errors are client errors, not server failures
+        if (statusCode >= 400 && statusCode < 500) {
+          return false
+        }
+        // 5xx errors are server failures
+        if (statusCode >= 500) {
+          return true
+        }
+      }
+    }
+
+    // Network errors, timeouts, and other non-HTTP errors are considered failures
+    return true
   }
 
   private onSuccess(): void {

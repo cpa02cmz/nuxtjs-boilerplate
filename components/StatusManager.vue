@@ -4,10 +4,10 @@
       <h3>{{ contentConfig.statusManager.title }}</h3>
       <!-- Status Badge - Palette's micro-UX delight! -->
       <Transition
-        enter-active-class="transition-all duration-300 ease-out"
+        :enter-active-class="`transition-all ${tailwindClassesConfig.duration.medium} ease-out`"
         enter-from-class="opacity-0 scale-90"
         enter-to-class="opacity-100 scale-100"
-        leave-active-class="transition-all duration-200 ease-in"
+        :leave-active-class="`transition-all ${tailwindClassesConfig.duration.normal} ease-in`"
         leave-from-class="opacity-100 scale-100"
         leave-to-class="opacity-0 scale-90"
         mode="out-in"
@@ -54,10 +54,10 @@
           </select>
           <!-- Change indicator - Palette's micro-UX delight! -->
           <Transition
-            enter-active-class="transition-all duration-200 ease-out"
+            :enter-active-class="`transition-all ${tailwindClassesConfig.duration.normal} ease-out`"
             enter-from-class="opacity-0 scale-0"
             enter-to-class="opacity-100 scale-100"
-            leave-active-class="transition-all duration-150 ease-in"
+            :leave-active-class="`transition-all ${tailwindClassesConfig.duration.fast} ease-in`"
             leave-from-class="opacity-100 scale-100"
             leave-to-class="opacity-0 scale-0"
           >
@@ -95,7 +95,7 @@
           :placeholder="contentConfig.statusManager.placeholders.reason"
           class="reason-field"
           @keydown="handleKeydown"
-        >
+        />
       </div>
 
       <div class="notes-input">
@@ -123,10 +123,10 @@
       >
         <span class="update-button__content">
           <Transition
-            enter-active-class="transition-all duration-200 ease-out"
+            :enter-active-class="`transition-all ${tailwindClassesConfig.duration.normal} ease-out`"
             enter-from-class="opacity-0 scale-50"
             enter-to-class="opacity-100 scale-100"
-            leave-active-class="transition-all duration-150 ease-in"
+            :leave-active-class="`transition-all ${tailwindClassesConfig.duration.fast} ease-in`"
             leave-from-class="opacity-100 scale-100"
             leave-to-class="opacity-0 scale-50"
             mode="out-in"
@@ -155,11 +155,7 @@
               key="loading"
               class="update-button__icon update-button__icon--spin"
             >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle
                   class="opacity-25"
                   cx="12"
@@ -175,11 +171,7 @@
                 />
               </svg>
             </span>
-            <span
-              v-else
-              key="default"
-              class="update-button__icon"
-            >
+            <span v-else key="default" class="update-button__icon">
               <svg
                 class="w-4 h-4"
                 fill="none"
@@ -224,10 +216,10 @@
 
     <!-- Enhanced Result Message with Animation - Palette's micro-UX delight! -->
     <Transition
-      enter-active-class="transition-all duration-300 ease-out"
+      :enter-active-class="`transition-all ${tailwindClassesConfig.duration.medium} ease-out`"
       enter-from-class="opacity-0 -translate-y-2 scale-95"
       enter-to-class="opacity-100 translate-y-0 scale-100"
-      leave-active-class="transition-all duration-200 ease-in"
+      :leave-active-class="`transition-all ${tailwindClassesConfig.duration.normal} ease-in`"
       leave-from-class="opacity-100 translate-y-0 scale-100"
       leave-to-class="opacity-0 -translate-y-2 scale-95"
     >
@@ -288,12 +280,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -305,6 +292,7 @@ import { useResourceStatusManager } from '~/composables/useResourceStatusManager
 import { componentStylesConfig } from '~/configs/component-styles.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
