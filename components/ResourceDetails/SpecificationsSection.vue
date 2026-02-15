@@ -178,7 +178,6 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
-import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   specifications: Record<string, string>
