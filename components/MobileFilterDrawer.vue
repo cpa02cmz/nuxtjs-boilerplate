@@ -314,8 +314,14 @@ const previousFilterCount = ref(0)
 const isSwiping = ref(false)
 const swipeStartX = ref(0)
 const swipeCurrentX = ref(0)
-const swipeProgress = ref(0)
 const swipeVelocity = ref(0)
+
+// Computed swipe progress (derived from swipe position)
+const swipeProgress = computed(() => {
+  if (!isSwiping.value) return 0
+  const translateX = Math.max(0, swipeCurrentX.value - swipeStartX.value)
+  return Math.min(translateX / window.innerWidth, 1)
+})
 let swipeStartTime = 0
 let lastSwipeX = 0
 let lastSwipeTime = 0
@@ -326,8 +332,6 @@ const drawerStyle = computed(() => {
   if (!isSwiping.value || prefersReducedMotion.value) return {}
 
   const translateX = Math.max(0, swipeCurrentX.value - swipeStartX.value)
-  const progress = Math.min(translateX / window.innerWidth, 1)
-  swipeProgress.value = progress
 
   // Apply spring-like resistance
   const resistance = 0.8
@@ -464,7 +468,6 @@ const resetSwipeState = () => {
   isSwiping.value = false
   swipeStartX.value = 0
   swipeCurrentX.value = 0
-  swipeProgress.value = 0
   swipeVelocity.value = 0
 
   if (rafId) {
