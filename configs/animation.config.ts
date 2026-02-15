@@ -47,6 +47,29 @@ export const animationConfig = {
     ),
   },
 
+  // Relative Time Badge Animations - Palette's micro-UX delight! 🎨
+  // Visual feedback when relative time updates (e.g., "just now" → "1 min ago")
+  relativeTimeBadge: {
+    // Duration of the highlight animation when time updates (ms)
+    updateHighlightDurationMs: parseInt(
+      process.env.RELATIVE_TIME_UPDATE_HIGHLIGHT_MS || '600'
+    ),
+    // Background color for the highlight flash (tailwind color or hex)
+    updateHighlightColor:
+      process.env.RELATIVE_TIME_UPDATE_HIGHLIGHT_COLOR ||
+      'rgba(59, 130, 246, 0.15)',
+    // Scale effect on text when updating
+    updateTextScale: parseFloat(
+      process.env.RELATIVE_TIME_UPDATE_SCALE || '1.02'
+    ),
+    // Enable/disable the update animation
+    enableUpdateAnimation: process.env.RELATIVE_TIME_ENABLE_UPDATE !== 'false',
+    // Minimum time between updates to trigger animation (prevents spam) (ms)
+    updateDebounceMs: parseInt(
+      process.env.RELATIVE_TIME_UPDATE_DEBOUNCE_MS || '5000'
+    ),
+  },
+
   // Skeleton/Loading Animations
   skeleton: {
     shimmerDurationMs: parseInt(
@@ -2343,6 +2366,10 @@ export const animationConfig = {
     suggestionPopDurationMs: parseInt(
       process.env.COMPARISON_EMPTY_SUGGESTION_POP_MS || '400'
     ),
+    // Base animation delay before suggestions start animating (ms) - Flexy hates hardcoded 400ms!
+    suggestionBaseDelayMs: parseInt(
+      process.env.COMPARISON_EMPTY_SUGGESTION_BASE_DELAY_MS || '400'
+    ),
     // Stagger delay between suggestion buttons (ms)
     suggestionStaggerDelayMs: parseInt(
       process.env.COMPARISON_EMPTY_SUGGESTION_STAGGER_MS || '100'
@@ -2786,6 +2813,19 @@ export const animationConfig = {
     ),
     // CSS-compatible delay offset (seconds)
     delayOffsetSec: `${parseInt(process.env.FEATURES_ICON_POP_DELAY_OFFSET_MS || '150') / 1000}s`,
+  },
+
+  // Specifications Section Animations - Flexy hates hardcoded 50ms and 300ms!
+  // Used by SpecificationsSection.vue for staggered item entrance animations
+  specificationsSection: {
+    // Stagger delay multiplier per item index (ms)
+    staggerMultiplierMs: parseInt(
+      process.env.SPEC_SECTION_STAGGER_MULTIPLIER_MS || '50'
+    ),
+    // Maximum stagger delay cap (ms) - prevents excessive delays with many items
+    staggerMaxDelayMs: parseInt(
+      process.env.SPEC_SECTION_STAGGER_MAX_DELAY_MS || '300'
+    ),
   },
 
   // Health Monitor Animations - BugFixer's bug fix! 🐛

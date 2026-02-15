@@ -6,7 +6,12 @@
   >
     <span
       class="relative-time-badge"
-      :class="badgeClasses"
+      :class="[
+        ...badgeClasses,
+        {
+          'relative-time-badge--updating': isUpdating && !prefersReducedMotion,
+        },
+      ]"
       :aria-label="ariaLabel"
     >
       <!-- Live indicator dot - Palette's micro-UX delight! -->
@@ -22,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useTimeAgo } from '~/composables/useTimeAgo'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
@@ -58,6 +63,48 @@ const { timeAgo, fullDate, isRecent } = useTimeAgo(props.timestamp, {
 
 // Check for reduced motion preference
 const prefersReducedMotion = ref(false)
+
+// Palette's micro-UX enhancement: Track when time updates for visual feedback
+const isUpdating = ref(false)
+const lastUpdateTime = ref<number>(0)
+let updateTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Watch for timeAgo changes and trigger update animation
+watch(timeAgo, (newValue, oldValue) => {
+  // Skip if reduced motion is preferred or animation is disabled
+  if (
+    prefersReducedMotion.value ||
+    !animationConfig.relativeTimeBadge.enableUpdateAnimation
+  ) {
+    return
+  }
+
+  // Skip on initial load (oldValue is undefined)
+  if (!oldValue) {
+    return
+  }
+
+  // Debounce: Don't animate if we recently updated
+  const now = Date.now()
+  const debounceMs = animationConfig.relativeTimeBadge.updateDebounceMs
+  if (now - lastUpdateTime.value < debounceMs) {
+    return
+  }
+
+  // Trigger the update animation
+  isUpdating.value = true
+  lastUpdateTime.value = now
+
+  // Clear any existing timeout
+  if (updateTimeout) {
+    clearTimeout(updateTimeout)
+  }
+
+  // Reset animation state after duration
+  updateTimeout = setTimeout(() => {
+    isUpdating.value = false
+  }, animationConfig.relativeTimeBadge.updateHighlightDurationMs)
+})
 
 onMounted(() => {
   if (
@@ -193,5 +240,59 @@ const ariaLabel = computed(() => {
 
 .relative-time-text {
   white-space: nowrap;
+}
+
+/* Palette's micro-UX enhancement: Time update highlight animation
+   Gives visual feedback when relative time changes (e.g., "just now" → "1 min ago") */
+.relative-time-badge--updating {
+  animation: time-update-highlight
+    v-bind('`${animationConfig.relativeTimeBadge.updateHighlightDurationMs}ms`')
+    ease-out;
+}
+
+.relative-time-badge--updating .relative-time-text {
+  animation: time-update-scale
+    v-bind('`${animationConfig.relativeTimeBadge.updateHighlightDurationMs}ms`')
+    ease-out;
+}
+
+@keyframes time-update-highlight {
+  0% {
+    background-color: transparent;
+    box-shadow: 0 0 0 0 transparent;
+  }
+  20% {
+    background-color: v-bind(
+      'animationConfig.relativeTimeBadge.updateHighlightColor'
+    );
+    box-shadow: 0 0 0 2px
+      v-bind('animationConfig.relativeTimeBadge.updateHighlightColor');
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@keyframes time-update-scale {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(
+      v-bind('animationConfig.relativeTimeBadge.updateTextScale')
+    );
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Reduced motion support: Disable update animations */
+@media (prefers-reduced-motion: reduce) {
+  .relative-time-badge--updating,
+  .relative-time-badge--updating .relative-time-text {
+    animation: none;
+  }
 }
 </style>

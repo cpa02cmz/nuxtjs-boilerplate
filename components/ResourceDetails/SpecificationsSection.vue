@@ -44,7 +44,9 @@
         v-for="n in skeletonCount"
         :key="`skeleton-${n}`"
         :class="{ 'skeleton-shimmer': !prefersReducedMotion }"
-        :style="{ animationDelay: `${(n - 1) * 100}ms` }"
+        :style="{
+          animationDelay: `${(n - 1) * animationConfig.skeleton.staggerIncrementMs}ms`,
+        }"
         class="skeleton-item"
       >
         <div class="skeleton-label" />
@@ -53,11 +55,7 @@
     </div>
 
     <!-- Specifications Grid -->
-    <dl
-      v-else
-      :class="gridClass"
-      class="specifications-grid"
-    >
+    <dl v-else :class="gridClass" class="specifications-grid">
       <div
         v-for="(value, key, index) in specifications"
         :key="key"
@@ -170,12 +168,7 @@
     </div>
 
     <!-- Screen Reader Announcements -->
-    <div
-      aria-atomic="true"
-      aria-live="polite"
-      class="sr-only"
-      role="status"
-    >
+    <div aria-atomic="true" aria-live="polite" class="sr-only" role="status">
       {{ announcementText }}
     </div>
   </section>
@@ -183,7 +176,9 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { animationConfig } from '~/configs/animation.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   specifications: Record<string, string>
@@ -228,7 +223,10 @@ const checkReducedMotion = () => {
 // Get staggered animation style
 const getItemStyle = (index: number) => {
   if (prefersReducedMotion.value) return {}
-  const delay = Math.min(index * 50, 300)
+  const delay = Math.min(
+    index * animationConfig.specificationsSection.staggerMultiplierMs,
+    animationConfig.specificationsSection.staggerMaxDelayMs
+  )
   return { '--stagger-delay': `${delay}ms` }
 }
 
@@ -260,12 +258,12 @@ const handleCopy = async (key: string, value: string) => {
     announcementText.value = `${formatLabel(key)} copied to clipboard`
     setTimeout(() => {
       announcementText.value = ''
-    }, 1000)
+    }, animationConfig.smartPaste.announcementTimeoutMs)
 
     if (copyTimeout) clearTimeout(copyTimeout)
     copyTimeout = setTimeout(() => {
       copiedItem.value = null
-    }, 1500)
+    }, animationConfig.copyFeedback.durationMs)
   } catch {
     if (!prefersReducedMotion.value) {
       hapticLight()
@@ -331,7 +329,8 @@ onUnmounted(() => {
 }
 
 .header-icon--animated {
-  animation: icon-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  animation: icon-pop v-bind('animationConfig.cssTransitions.slowerSec')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 @keyframes icon-pop {
@@ -437,7 +436,8 @@ onUnmounted(() => {
 .specification-item--animated {
   opacity: 0;
   transform: translateY(20px);
-  animation: item-entrance 0.4s ease-out forwards;
+  animation: item-entrance v-bind('animationConfig.cssTransitions.slowSec')
+    ease-out forwards;
   animation-delay: var(--stagger-delay, 0ms);
 }
 
@@ -467,7 +467,8 @@ onUnmounted(() => {
   height: 1.25rem;
   stroke-dasharray: 24;
   stroke-dashoffset: 24;
-  animation: draw-check 0.3s ease-out forwards;
+  animation: draw-check v-bind('animationConfig.cssTransitions.standardSec')
+    ease-out forwards;
 }
 
 @keyframes draw-check {
@@ -495,8 +496,8 @@ onUnmounted(() => {
   color: rgb(156, 163, 175);
   transform: translateX(-4px);
   transition:
-    opacity 0.2s ease-out,
-    transform 0.2s ease-out;
+    opacity v-bind('animationConfig.cssTransitions.normalSec') ease-out,
+    transform v-bind('animationConfig.cssTransitions.normalSec') ease-out;
 }
 
 .copy-hint--visible {

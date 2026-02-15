@@ -27,8 +27,7 @@ export default defineEventHandler(async event => {
       const errorMessages = validationResult.error.issues
         .map(e => e.message)
         .join(', ')
-      sendBadRequestError(event, errorMessages)
-      return
+      return sendBadRequestError(event, errorMessages)
     }
 
     const validatedBody = validationResult.data
