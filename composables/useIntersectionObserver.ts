@@ -1,4 +1,5 @@
 import { ref, onUnmounted, type Ref } from 'vue'
+import { uiConfig } from '~/configs/ui.config'
 
 export interface UseIntersectionObserverOptions {
   root?: Element | null
@@ -43,7 +44,11 @@ export interface UseIntersectionObserverReturn {
 export function useIntersectionObserver(
   options: UseIntersectionObserverOptions = {}
 ): UseIntersectionObserverReturn {
-  const { root = null, rootMargin = '0px', threshold = 0.1 } = options
+  const {
+    root = null,
+    rootMargin = uiConfig.intersectionObserver.rootMargin,
+    threshold = uiConfig.intersectionObserver.threshold,
+  } = options
 
   const isIntersecting = ref(false)
   const isLoaded = ref(false)
