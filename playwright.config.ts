@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
 import { DEFAULT_DEV_URL } from './configs/url.config'
+import { testTimingConfig } from './configs/test-timing.config'
 
 /**
  * BroCula Playwright Configuration
@@ -55,6 +56,6 @@ export default defineConfig({
         command: 'npm run build && npm run preview',
         url: DEFAULT_DEV_URL,
         reuseExistingServer: true,
-        timeout: 300000,
+        timeout: testTimingConfig.playwright.webServerTimeout,
       },
 })

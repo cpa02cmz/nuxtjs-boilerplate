@@ -6,6 +6,7 @@
 import { chromium, type Browser, type Page } from 'playwright'
 import * as fs from 'fs'
 import * as path from 'path'
+import { testTimingConfig } from '../configs/test-timing.config'
 
 const PAGES = [
   { name: 'Home', path: '/' },
@@ -66,12 +67,12 @@ async function auditPage(browser: Browser, pageConfig: (typeof PAGES)[0]) {
   try {
     // Try to load the page (dev server might not be running)
     await page.goto(`http://localhost:3000${pageConfig.path}`, {
-      timeout: 10000,
+      timeout: testTimingConfig.playwright.pageLoadTimeout,
       waitUntil: 'networkidle',
     })
 
     // Wait a bit for any async errors
-    await page.waitForTimeout(2000)
+    await page.waitForTimeout(testTimingConfig.playwright.asyncErrorWait)
   } catch (e) {
     // Page might not be accessible, that's ok for static analysis
   }
