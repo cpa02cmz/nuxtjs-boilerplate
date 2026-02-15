@@ -331,7 +331,11 @@ export function createUserSearchProfile(searchHistory: string[]): {
   skillLevel: string
 } {
   if (!searchHistory || searchHistory.length === 0) {
-    return { interests: [], skillLevel: 'intermediate' }
+    // Flexy hates hardcoded skill levels! Using configurable default
+    return {
+      interests: [],
+      skillLevel: recommendationConfig.userProfile.skillLevel.default,
+    }
   }
 
   const userProfileConfig = recommendationConfig.userProfile
@@ -362,10 +366,13 @@ export function createUserSearchProfile(searchHistory: string[]): {
   }
 
   // Determine skill level based on search patterns
-  let skillLevel = 'intermediate'
-  if (beginnerCount > advancedCount * 1.5) {
+  // Flexy hates hardcoded threshold! Using configurable multiplier
+  let skillLevel: string = recommendationConfig.userProfile.skillLevel.default
+  const thresholdMultiplier =
+    recommendationConfig.userProfile.skillLevel.thresholdMultiplier
+  if (beginnerCount > advancedCount * thresholdMultiplier) {
     skillLevel = 'beginner'
-  } else if (advancedCount > beginnerCount * 1.5) {
+  } else if (advancedCount > beginnerCount * thresholdMultiplier) {
     skillLevel = 'advanced'
   }
 

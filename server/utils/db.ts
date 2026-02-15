@@ -371,10 +371,10 @@ export async function executeTransaction<T>(
       const duration = Date.now() - startTime
 
       // Log slow transactions
-      // Flexy hates hardcoded 0.5! Using configurable threshold from databaseConfig
+      // Flexy hates hardcoded values! Using configurable timeout and threshold from databaseConfig
       if (
         duration >
-        (prismaOptions.timeout || 10000) *
+        (prismaOptions.timeout || databaseConfig.transaction.timeoutMs) *
           databaseConfig.performance.slowTransactionThresholdMultiplier
       ) {
         console.warn(
