@@ -4,6 +4,11 @@
 
 import { onMounted, onUnmounted } from 'vue'
 import { analyticsConfig } from '~/configs/analytics.config'
+import {
+  webVitalsConfig,
+  WEB_VITALS_THRESHOLDS,
+  getWebVitalsRating,
+} from '~/configs/webVitals.config'
 import logger from '~/utils/logger'
 
 // Type for connection API
@@ -30,24 +35,8 @@ interface WebVitalsReport {
   connection?: string
 }
 
-// Thresholds per Core Web Vitals guidelines
-const THRESHOLDS = {
-  LCP: { good: 2500, poor: 4000 }, // milliseconds
-  INP: { good: 200, poor: 500 }, // milliseconds
-  CLS: { good: 0.1, poor: 0.25 }, // unitless
-  FCP: { good: 1800, poor: 3000 }, // milliseconds
-  TTFB: { good: 600, poor: 1800 }, // milliseconds
-}
-
-// Get rating based on value and thresholds
-function getRating(
-  value: number,
-  thresholds: { good: number; poor: number }
-): 'good' | 'needs-improvement' | 'poor' {
-  if (value <= thresholds.good) return 'good'
-  if (value <= thresholds.poor) return 'needs-improvement'
-  return 'poor'
-}
+// Thresholds imported from modular config - Flexy hates hardcoded values!
+const THRESHOLDS = WEB_VITALS_THRESHOLDS
 
 // Report metric to analytics endpoint
 async function reportMetric(report: WebVitalsReport): Promise<void> {
@@ -58,14 +47,17 @@ async function reportMetric(report: WebVitalsReport): Promise<void> {
     }
 
     // Batch metrics in session storage for efficiency
-    const storageKey = analyticsConfig.storage.prefix + 'metrics'
+    const storageKey =
+      analyticsConfig.storage.prefix +
+      webVitalsConfig.reporting.storagePrefix +
+      'metrics'
     const existing = sessionStorage.getItem(storageKey)
     const metrics: WebVitalsReport[] = existing ? JSON.parse(existing) : []
 
     metrics.push(report)
 
     // Keep only last N entries
-    const maxEntries = analyticsConfig.storage.maxEntries
+    const maxEntries = webVitalsConfig.reporting.maxEntries
     while (metrics.length > maxEntries) {
       metrics.shift()
     }
@@ -73,14 +65,14 @@ async function reportMetric(report: WebVitalsReport): Promise<void> {
     sessionStorage.setItem(storageKey, JSON.stringify(metrics))
 
     // Send to analytics API
-    const response = await fetch('/api/analytics/web-vitals', {
+    const response = await fetch(webVitalsConfig.reporting.endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(report),
       // Use keepalive to ensure data is sent even if page unloads
-      keepalive: true,
+      keepalive: webVitalsConfig.reporting.useKeepalive,
     })
 
     if (!response.ok) {
@@ -117,60 +109,71 @@ export function useWebVitals() {
       }
 
       // Track each Core Web Vital
-      onLCP(metric => {
-        reportHandler({
-          name: 'LCP',
-          value: metric.value,
-          rating: getRating(metric.value, THRESHOLDS.LCP),
-          delta: metric.delta,
-          entries: metric.entries,
-          navigationType: metric.navigationType,
+      // Track each Core Web Vital using modular config - Flexy hates hardcoded values!
+      if (webVitalsConfig.collection.enabled.LCP) {
+        onLCP(metric => {
+          reportHandler({
+            name: 'LCP',
+            value: metric.value,
+            rating: getWebVitalsRating(metric.value, THRESHOLDS.LCP),
+            delta: metric.delta,
+            entries: metric.entries,
+            navigationType: metric.navigationType,
+          })
         })
-      })
+      }
 
-      onINP(metric => {
-        reportHandler({
-          name: 'INP',
-          value: metric.value,
-          rating: getRating(metric.value, THRESHOLDS.INP),
-          delta: metric.delta,
-          entries: metric.entries,
-          navigationType: metric.navigationType,
+      if (webVitalsConfig.collection.enabled.INP) {
+        onINP(metric => {
+          reportHandler({
+            name: 'INP',
+            value: metric.value,
+            rating: getWebVitalsRating(metric.value, THRESHOLDS.INP),
+            delta: metric.delta,
+            entries: metric.entries,
+            navigationType: metric.navigationType,
+          })
         })
-      })
+      }
 
-      onCLS(metric => {
-        reportHandler({
-          name: 'CLS',
-          value: metric.value,
-          rating: getRating(metric.value, THRESHOLDS.CLS),
-          delta: metric.delta,
-          entries: metric.entries,
-          navigationType: metric.navigationType,
+      if (webVitalsConfig.collection.enabled.CLS) {
+        onCLS(metric => {
+          reportHandler({
+            name: 'CLS',
+            value: metric.value,
+            rating: getWebVitalsRating(metric.value, THRESHOLDS.CLS),
+            delta: metric.delta,
+            entries: metric.entries,
+            navigationType: metric.navigationType,
+          })
         })
-      })
+      }
 
-      onFCP(metric => {
-        reportHandler({
-          name: 'FCP',
-          value: metric.value,
-          rating: getRating(metric.value, THRESHOLDS.FCP),
-          delta: metric.delta,
-          entries: metric.entries,
-          navigationType: metric.navigationType,
+      if (webVitalsConfig.collection.enabled.FCP) {
+        onFCP(metric => {
+          reportHandler({
+            name: 'FCP',
+            value: metric.value,
+            rating: getWebVitalsRating(metric.value, THRESHOLDS.FCP),
+            delta: metric.delta,
+            entries: metric.entries,
+            navigationType: metric.navigationType,
+          })
         })
-      })
+      }
 
-      onTTFB(metric => {
-        reportHandler({
-          name: 'TTFB',
-          value: metric.value,
-          rating: getRating(metric.value, THRESHOLDS.TTFB),
-          delta: metric.delta,
-          entries: metric.entries,
-          navigationType: metric.navigationType,
+      if (webVitalsConfig.collection.enabled.TTFB) {
+        onTTFB(metric => {
+          reportHandler({
+            name: 'TTFB',
+            value: metric.value,
+            rating: getWebVitalsRating(metric.value, THRESHOLDS.TTFB),
+            delta: metric.delta,
+            entries: metric.entries,
+            navigationType: metric.navigationType,
+          })
         })
-      })
+      }
     } catch (error) {
       logger.warn('Failed to initialize web-vitals:', error)
     }
