@@ -12,17 +12,11 @@
 
       <!-- Search Bar -->
       <div class="mb-8">
-        <LazySearchBar
-          v-model="searchQuery"
-          @search="handleSearch"
-        />
+        <LazySearchBar v-model="searchQuery" @search="handleSearch" />
       </div>
 
       <!-- Loading State -->
-      <div
-        v-if="loading"
-        class="flex justify-center items-center py-12"
-      >
+      <div v-if="loading" class="flex justify-center items-center py-12">
         <div
           class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-800"
           role="status"
@@ -31,13 +25,8 @@
       </div>
 
       <!-- Error State -->
-      <div
-        v-else-if="error"
-        class="text-center py-12"
-      >
-        <p class="text-red-600 text-lg">
-          Error loading resources: {{ error }}
-        </p>
+      <div v-else-if="error" class="text-center py-12">
+        <p class="text-red-600 text-lg">Error loading resources: {{ error }}</p>
       </div>
 
       <!-- Resources Grid -->
@@ -70,7 +59,7 @@
 
         <!-- AI Resources Only -->
         <div class="space-y-8">
-          <LazyResourceCard
+          <LazyLoadResourceCard
             v-for="resource in aiResources"
             :id="resource.id"
             :key="resource.id"
@@ -84,10 +73,7 @@
         </div>
 
         <!-- No Results Message -->
-        <div
-          v-if="!hasAIResources && !loading"
-          class="text-center py-12"
-        >
+        <div v-if="!hasAIResources && !loading" class="text-center py-12">
           <h3 class="text-xl font-medium text-gray-900 mb-2">
             No AI resources found
           </h3>
