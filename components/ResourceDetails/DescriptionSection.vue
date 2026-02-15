@@ -74,8 +74,8 @@
     <!-- Description content with read more/less -->
     <div class="description-content-wrapper">
       <Transition
-        enter-active-class="transition-all duration-300 ease-out"
-        leave-active-class="transition-all duration-200 ease-in"
+        :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
+        :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
         @before-enter="onBeforeEnter"
         @enter="onEnter"
         @before-leave="onBeforeLeave"
@@ -161,10 +161,7 @@
         </span>
 
         <!-- Reading time estimate -->
-        <span
-          class="stat-divider"
-          aria-hidden="true"
-        >·</span>
+        <span class="stat-divider" aria-hidden="true">·</span>
 
         <span class="stat-item">
           <svg
@@ -189,12 +186,7 @@
     </div>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
