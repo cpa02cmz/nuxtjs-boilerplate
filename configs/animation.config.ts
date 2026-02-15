@@ -1352,6 +1352,12 @@ export const animationConfig = {
         process.env.TYPING_SOUNDWAVE_REDUCED_OPACITY || '0.8'
       ),
     },
+    // Glow pulse animation duration (ms) - Flexy hates hardcoded 2s!
+    glowPulseDurationMs: parseInt(
+      process.env.TYPING_INDICATOR_GLOW_PULSE_MS || '2000'
+    ),
+    // CSS duration string for v-bind
+    glowPulseDurationSec: `${parseInt(process.env.TYPING_INDICATOR_GLOW_PULSE_MS || '2000') / 1000}s`,
   },
 
   // 3D Card Tilt Micro-UX - Palette's premium delight! 🎨
@@ -1703,6 +1709,19 @@ export const animationConfig = {
     ),
     // Reduced motion opacity transition (seconds)
     reducedMotionOpacitySec: `${parseInt(process.env.WEBHOOK_REDUCED_MOTION_OPACITY_MS || '300') / 1000}s`,
+    // Celebration animation durations - Flexy hates hardcoded values!
+    celebrationPopInSec: parseFloat(
+      process.env.WEBHOOK_CELEBRATION_POP_IN_SEC || '0.5'
+    ),
+    iconRotateInSec: parseFloat(
+      process.env.WEBHOOK_ICON_ROTATE_IN_SEC || '0.4'
+    ),
+    circleScaleSec: parseFloat(process.env.WEBHOOK_CIRCLE_SCALE_SEC || '0.3'),
+    checkmarkDrawSec: parseFloat(
+      process.env.WEBHOOK_CHECKMARK_DRAW_SEC || '0.4'
+    ),
+    textFadeInSec: parseFloat(process.env.WEBHOOK_TEXT_FADE_IN_SEC || '0.3'),
+    sparkleBurstSec: parseFloat(process.env.WEBHOOK_SPARKLE_BURST_SEC || '0.8'),
   },
 
   // Zero Result Searches Component - Flexy hates hardcoded values!
@@ -2222,6 +2241,21 @@ export const animationConfig = {
     cardTransition: {
       durationSec: `${parseInt(process.env.RECOMMENDATIONS_CARD_TRANSITION_MS || '300') / 1000}s`,
     },
+    // Success checkmark animation durations - Flexy hates hardcoded values!
+    successCheckmark: {
+      // Circle scale animation duration (seconds)
+      circleScaleSec: parseFloat(
+        process.env.RECOMMENDATIONS_CIRCLE_SCALE_SEC || '0.3'
+      ),
+      // Checkmark draw animation duration (seconds)
+      drawSec: parseFloat(
+        process.env.RECOMMENDATIONS_CHECKMARK_DRAW_SEC || '0.3'
+      ),
+    },
+    // Refresh spin animation duration (seconds) - Flexy hates hardcoded 0.5s!
+    refreshSpinSec: parseFloat(
+      process.env.RECOMMENDATIONS_REFRESH_SPIN_SEC || '0.5'
+    ),
   },
   // VirtualList Component Animations - Palette's micro-UX enhancement!
   // Staggered entrance animations and smooth transitions for virtual scrolling
@@ -2301,6 +2335,14 @@ export const animationConfig = {
     // Filter transition duration (ms)
     filterTransitionMs: parseInt(
       process.env.REVIEW_QUEUE_FILTER_TRANSITION_MS || '200'
+    ),
+    // Badge pulse animation duration (ms) - Flexy hates hardcoded 0.6s!
+    badgeAnimationDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_BADGE_ANIMATION_MS || '600'
+    ),
+    // Pending pulse animation duration (ms) - Flexy hates hardcoded 2s!
+    pendingPulseDurationMs: parseInt(
+      process.env.REVIEW_QUEUE_PENDING_PULSE_MS || '2000'
     ),
     // Whether to respect reduced motion preference
     respectReducedMotion:
@@ -2493,6 +2535,10 @@ export const animationConfig = {
     circleOffsetTopPx: parseInt(
       process.env.COMPARISON_CIRCLE_OFFSET_TOP_PX || '-20'
     ),
+    // Suggestion button pop animation duration (seconds) - Flexy hates hardcoded 0.4s!
+    suggestionPopSec: parseFloat(
+      process.env.COMPARISON_SUGGESTION_POP_SEC || '0.4'
+    ),
   },
 
   // Offline Indicator Animations
@@ -2563,8 +2609,16 @@ export const animationConfig = {
     cardEntranceDurationSec: `${parseInt(process.env.MODERATION_CARD_ENTRANCE_DURATION_MS || '500') / 1000}s`,
     // Activity entrance animation duration in seconds
     activityEntranceDurationSec: `${parseInt(process.env.MODERATION_ACTIVITY_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Base delay offset for activity animations (ms) - Flexy hates hardcoded 400ms!
+    activityDelayOffsetMs: parseInt(
+      process.env.MODERATION_ACTIVITY_DELAY_OFFSET_MS || '400'
+    ),
     // Action button entrance animation duration in seconds
     actionEntranceDurationSec: `${parseInt(process.env.MODERATION_ACTION_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Base delay offset for action button animations (ms) - Flexy hates hardcoded 600ms!
+    actionDelayOffsetMs: parseInt(
+      process.env.MODERATION_ACTION_DELAY_OFFSET_MS || '600'
+    ),
     // Trend pulse animation duration in seconds
     trendPulseDurationSec: `${parseInt(process.env.MODERATION_TREND_PULSE_DURATION_MS || '800') / 1000}s`,
     // Float animation duration in seconds (for empty state)
@@ -2583,6 +2637,8 @@ export const animationConfig = {
   resourceComments: {
     // Avatar pulse duration (seconds)
     avatarPulseSec: parseFloat(process.env.COMMENTS_AVATAR_PULSE_SEC || '2'),
+    // Live indicator pulse duration (seconds) - Flexy hates hardcoded 2s!
+    livePulseSec: parseFloat(process.env.COMMENTS_LIVE_PULSE_SEC || '2'),
   },
 
   // Counter Animations - Flexy hates hardcoded values! 🎯
@@ -2851,6 +2907,10 @@ export const animationConfig = {
     shimmerSpinDurationSec: parseFloat(
       process.env.SEARCH_ANALYTICS_SHIMMER_SPIN_SEC || '2'
     ),
+    // Shimmer pulse animation duration (seconds) - Flexy hates hardcoded 1.5s!
+    shimmerPulseDurationSec: parseFloat(
+      process.env.SEARCH_ANALYTICS_SHIMMER_PULSE_SEC || '1.5'
+    ),
   },
 
   // Client Error Boundary Animations - Flexy hates hardcoded values!
@@ -3018,6 +3078,38 @@ export const animationConfig = {
       process.env.SAVED_SEARCHES_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // Lazy Resource Card Animations - Palette's micro-UX delight! 🎨
+  // Smooth entrance and hover effects for lazy-loaded resource cards
+  lazyResourceCard: {
+    // Entrance animation duration (ms)
+    entranceDurationMs: parseInt(
+      process.env.LAZY_CARD_ENTRANCE_DURATION_MS || '400'
+    ),
+    // CSS duration string for v-bind()
+    entranceDurationSec: `${parseInt(process.env.LAZY_CARD_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Entrance easing function
+    entranceEasing:
+      process.env.LAZY_CARD_ENTRANCE_EASING ||
+      'cubic-bezier(0.34, 1.56, 0.64, 1)',
+    // Distance to translate from during entrance (px)
+    entranceDistancePx: parseInt(
+      process.env.LAZY_CARD_ENTRANCE_DISTANCE_PX || '16'
+    ),
+    // Starting scale for entrance animation
+    entranceStartScale: parseFloat(
+      process.env.LAZY_CARD_ENTRANCE_START_SCALE || '0.95'
+    ),
+    // Hover lift effect distance (px)
+    hoverLiftPx: parseInt(process.env.LAZY_CARD_HOVER_LIFT_PX || '-4'),
+    // Hover scale effect
+    hoverScale: parseFloat(process.env.LAZY_CARD_HOVER_SCALE || '1.02'),
+    // Skeleton shimmer animation duration (seconds)
+    shimmerDurationSec: `${parseInt(process.env.LAZY_CARD_SHIMMER_DURATION_MS || '1500') / 1000}s`,
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.LAZY_CARD_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // SVG Stroke Dasharray Values - Flexy hates hardcoded stroke-dasharray!
   // Used for checkmark draw animations, progress rings, and loading spinners
   svg: {
@@ -3038,6 +3130,28 @@ export const animationConfig = {
       spinnerDash: process.env.SVG_SPINNER_DASH || '1, 150',
       spinnerGap: process.env.SVG_SPINNER_GAP || '90, 150',
     },
+  },
+
+  // ============================================
+  // Flexy ULW Loop - Page Transition Durations
+  // Eliminating hardcoded Tailwind duration classes! 🎯
+  // ============================================
+
+  // Page-Level CSS Transition Durations
+  // Centralized duration values for consistent page transitions
+  pageTransitions: {
+    // Fast duration for micro-interactions (100ms) - Flexy hates hardcoded duration-100!
+    fastMs: parseInt(process.env.PAGE_TRANSITION_FAST_MS || '100'),
+    fastSec: `${parseInt(process.env.PAGE_TRANSITION_FAST_MS || '100') / 1000}s`,
+    // Normal duration for standard transitions (200ms) - Flexy hates hardcoded duration-200!
+    normalMs: parseInt(process.env.PAGE_TRANSITION_NORMAL_MS || '200'),
+    normalSec: `${parseInt(process.env.PAGE_TRANSITION_NORMAL_MS || '200') / 1000}s`,
+    // Standard duration for most transitions (300ms) - Flexy hates hardcoded duration-300!
+    standardMs: parseInt(process.env.PAGE_TRANSITION_STANDARD_MS || '300'),
+    standardSec: `${parseInt(process.env.PAGE_TRANSITION_STANDARD_MS || '300') / 1000}s`,
+    // Slow duration for emphasis animations (500ms) - Flexy hates hardcoded duration-500!
+    slowMs: parseInt(process.env.PAGE_TRANSITION_SLOW_MS || '500'),
+    slowSec: `${parseInt(process.env.PAGE_TRANSITION_SLOW_MS || '500') / 1000}s`,
   },
 } as const
 

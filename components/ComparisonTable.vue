@@ -687,7 +687,9 @@ const getResourceValue = (resource: Resource, field: string) => {
 
 /* Suggestion button entrance animation */
 .comparison-empty-suggestion {
-  animation: comparisonSuggestionPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: comparisonSuggestionPop
+    v-bind('animationConfig.comparisonTable.suggestionPopSec + "s"')
+    cubic-bezier(0.16, 1, 0.3, 1) forwards;
   opacity: 0;
   transform: scale(0.8);
 }
