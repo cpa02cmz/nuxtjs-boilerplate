@@ -10,6 +10,8 @@ interface HapticFeatureConfig {
   removePattern?: string
   reconnectPattern?: string
   retryPattern?: string
+  entrancePattern?: string
+  enableEntranceHaptic?: boolean
 }
 
 interface HapticConfigType {
@@ -19,6 +21,7 @@ interface HapticConfigType {
     heavy: number
     success: number
     error: number
+    ultraLight: number
   }
   patterns: {
     light: HapticPatternArray
@@ -30,6 +33,7 @@ interface HapticConfigType {
     errorEmphasis: HapticPatternArray
     buttonPress: HapticPatternArray
     toggle: HapticPatternArray
+    ultraLight: HapticPatternArray
   }
   features: {
     loadMore: HapticFeatureConfig
@@ -38,6 +42,7 @@ interface HapticConfigType {
     button: HapticFeatureConfig
     pwaInstall: HapticFeatureConfig
     offline: HapticFeatureConfig
+    lazyResourceCard: HapticFeatureConfig
   }
   getPattern(
     patternName: keyof HapticConfigType['patterns']
@@ -58,6 +63,8 @@ export const hapticConfig: HapticConfigType = {
     success: parseInt(process.env.HAPTIC_DURATION_SUCCESS || '15'),
     // Error feedback pattern (ms)
     error: parseInt(process.env.HAPTIC_DURATION_ERROR || '40'),
+    // Ultra-light feedback for subtle interactions (ms) - Palette's micro-UX!
+    ultraLight: parseInt(process.env.HAPTIC_DURATION_ULTRA_LIGHT || '5'),
   },
 
   // Vibration patterns (arrays of ms: on, off, on, off...)
@@ -80,6 +87,8 @@ export const hapticConfig: HapticConfigType = {
     buttonPress: [10],
     // Toggle switch feedback
     toggle: [5, 25, 5],
+    // Ultra-light pattern for subtle interactions - Palette's micro-UX!
+    ultraLight: [5],
   },
 
   // Feature-specific haptic settings
@@ -115,6 +124,14 @@ export const hapticConfig: HapticConfigType = {
       enabled: process.env.HAPTIC_OFFLINE_ENABLED !== 'false',
       reconnectPattern: process.env.HAPTIC_OFFLINE_RECONNECT || 'success',
       retryPattern: process.env.HAPTIC_OFFLINE_RETRY || 'light',
+    },
+    // Lazy Resource Card haptic - Palette's micro-UX delight! 🎨
+    lazyResourceCard: {
+      enabled: process.env.HAPTIC_LAZY_CARD_ENABLED !== 'false',
+      entrancePattern:
+        process.env.HAPTIC_LAZY_CARD_ENTRANCE_PATTERN || 'ultraLight',
+      enableEntranceHaptic:
+        process.env.HAPTIC_LAZY_CARD_ENTRANCE_ENABLED !== 'false',
     },
   },
 
