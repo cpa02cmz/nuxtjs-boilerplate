@@ -6,6 +6,7 @@
  */
 
 import { ref, onUnmounted, readonly } from 'vue'
+import { thresholdsConfig } from '~/configs/thresholds.config'
 
 interface PooledTimer {
   id: ReturnType<typeof setTimeout>
@@ -84,10 +85,14 @@ export interface UseTimerPoolReturn {
 export function useTimerPool(
   options: UseTimerPoolOptions = {}
 ): UseTimerPoolReturn {
+  // Flexy hates hardcoded values! Using configurable defaults from thresholdsConfig
   const {
-    maxTimeoutPoolSize = 20,
-    maxIntervalPoolSize = 10,
-    cleanupInterval = 30000,
+    maxTimeoutPoolSize = options.maxTimeoutPoolSize ??
+      thresholdsConfig.timerPool.maxTimeoutPoolSize,
+    maxIntervalPoolSize = options.maxIntervalPoolSize ??
+      thresholdsConfig.timerPool.maxIntervalPoolSize,
+    cleanupInterval = options.cleanupInterval ??
+      thresholdsConfig.timerPool.cleanupIntervalMs,
   } = options
 
   const timeoutPool = ref<PooledTimer[]>([])
@@ -124,7 +129,8 @@ export function useTimerPool(
    */
   const cleanup = (): void => {
     const now = Date.now()
-    const maxAge = 60000 // 1 minute
+    // Flexy hates hardcoded values! Using configurable maxAge from config
+    const maxAge = thresholdsConfig.timerPool.maxAgeMs
 
     // Clean up old unused timeouts
     timeoutPool.value = timeoutPool.value.filter(timer => {

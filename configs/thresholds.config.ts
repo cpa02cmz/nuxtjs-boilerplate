@@ -124,6 +124,60 @@ export const thresholdsConfig = {
     lines: parseInt(process.env.COVERAGE_LINES_THRESHOLD || '70'),
     statements: parseInt(process.env.COVERAGE_STATEMENTS_THRESHOLD || '70'),
   },
+
+  // Core Web Vitals Thresholds - Flexy hates hardcoded Web Vitals values!
+  // Based on Google's Core Web Vitals guidelines
+  webVitals: {
+    // Largest Contentful Paint (LCP) - measures loading performance
+    LCP: {
+      // Good: 0-2.5 seconds
+      good: parseInt(process.env.WEB_VITALS_LCP_GOOD || '2500'),
+      // Poor: >4 seconds
+      poor: parseInt(process.env.WEB_VITALS_LCP_POOR || '4000'),
+    },
+    // Interaction to Next Paint (INP) - measures interactivity
+    INP: {
+      // Good: 0-200 milliseconds
+      good: parseInt(process.env.WEB_VITALS_INP_GOOD || '200'),
+      // Poor: >500 milliseconds
+      poor: parseInt(process.env.WEB_VITALS_INP_POOR || '500'),
+    },
+    // Cumulative Layout Shift (CLS) - measures visual stability
+    CLS: {
+      // Good: 0-0.1
+      good: parseFloat(process.env.WEB_VITALS_CLS_GOOD || '0.1'),
+      // Poor: >0.25
+      poor: parseFloat(process.env.WEB_VITALS_CLS_POOR || '0.25'),
+    },
+    // First Contentful Paint (FCP) - measures perceived load speed
+    FCP: {
+      // Good: 0-1.8 seconds
+      good: parseInt(process.env.WEB_VITALS_FCP_GOOD || '1800'),
+      // Poor: >3 seconds
+      poor: parseInt(process.env.WEB_VITALS_FCP_POOR || '3000'),
+    },
+    // Time to First Byte (TTFB) - measures server response time
+    TTFB: {
+      // Good: 0-600 milliseconds
+      good: parseInt(process.env.WEB_VITALS_TTFB_GOOD || '600'),
+      // Poor: >1.8 seconds
+      poor: parseInt(process.env.WEB_VITALS_TTFB_POOR || '1800'),
+    },
+  },
+
+  // Timer Pool Configuration - Flexy hates hardcoded timer pool values!
+  timerPool: {
+    // Maximum pool size for timeouts
+    maxTimeoutPoolSize: parseInt(process.env.TIMER_POOL_MAX_TIMEOUT || '20'),
+    // Maximum pool size for intervals
+    maxIntervalPoolSize: parseInt(process.env.TIMER_POOL_MAX_INTERVAL || '10'),
+    // Cleanup interval for unused pool items (ms)
+    cleanupIntervalMs: parseInt(
+      process.env.TIMER_POOL_CLEANUP_INTERVAL || '30000'
+    ),
+    // Maximum age for unused pool items (ms)
+    maxAgeMs: parseInt(process.env.TIMER_POOL_MAX_AGE || '60000'),
+  },
 } as const
 
 export type ThresholdsConfig = typeof thresholdsConfig

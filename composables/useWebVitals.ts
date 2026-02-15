@@ -1,9 +1,11 @@
 // composables/useWebVitals.ts
 // Core Web Vitals tracking using web-vitals library
 // Tracks LCP, INP, CLS, FCP, TTFB metrics for performance monitoring
+// Flexy hates hardcoded values! All thresholds are now configurable.
 
 import { onMounted, onUnmounted } from 'vue'
 import { analyticsConfig } from '~/configs/analytics.config'
+import { thresholdsConfig } from '~/configs/thresholds.config'
 import logger from '~/utils/logger'
 
 // Type for connection API
@@ -30,14 +32,9 @@ interface WebVitalsReport {
   connection?: string
 }
 
-// Thresholds per Core Web Vitals guidelines
-const THRESHOLDS = {
-  LCP: { good: 2500, poor: 4000 }, // milliseconds
-  INP: { good: 200, poor: 500 }, // milliseconds
-  CLS: { good: 0.1, poor: 0.25 }, // unitless
-  FCP: { good: 1800, poor: 3000 }, // milliseconds
-  TTFB: { good: 600, poor: 1800 }, // milliseconds
-}
+// Thresholds per Core Web Vitals guidelines - now from config!
+// Flexy hates hardcoded values! Using configurable thresholds.
+const THRESHOLDS = thresholdsConfig.webVitals
 
 // Get rating based on value and thresholds
 function getRating(
