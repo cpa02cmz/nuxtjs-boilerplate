@@ -39,6 +39,11 @@
           <div class="scroll-tooltip__content">
             <span class="scroll-tooltip__text">{{ scrollProgress }}%</span>
             <span class="scroll-tooltip__label">scrolled</span>
+            <!-- Palette's micro-UX enhancement: Keyboard shortcut hint - helps users discover the Home key shortcut! 🎨 -->
+            <kbd class="scroll-tooltip__shortcut">
+              <span class="shortcut-key">Home</span>
+              <span class="shortcut-label">to top</span>
+            </kbd>
           </div>
           <div class="scroll-tooltip__arrow" />
         </div>
@@ -722,6 +727,43 @@ onMounted(() => {
     solid transparent;
   border-top: v-bind('animationConfig.scrollToTopTooltip.arrowSizePx + "px"')
     solid v-bind('themeConfig.scrollToTop.tooltipBg');
+}
+
+/* Palette's micro-UX enhancement: Keyboard shortcut hint styles */
+.scroll-tooltip__shortcut {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: v-bind(
+    'animationConfig.scrollToTopTooltip.shortcutMarginTopPx + "px"'
+  );
+  padding: v-bind(
+      'animationConfig.scrollToTopTooltip.shortcutPaddingYPx + "px"'
+    )
+    v-bind('animationConfig.scrollToTopTooltip.shortcutPaddingXPx + "px"');
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: v-bind(
+    'animationConfig.scrollToTopTooltip.shortcutBorderRadiusPx + "px"'
+  );
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: v-bind(
+    'animationConfig.scrollToTopTooltip.shortcutFontSizePx + "px"'
+  );
+}
+
+.scroll-tooltip__shortcut .shortcut-key {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 600;
+  color: v-bind('themeConfig.scrollToTop.tooltipText');
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1px 4px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.scroll-tooltip__shortcut .shortcut-label {
+  color: v-bind('themeConfig.scrollToTop.tooltipLabel');
+  font-weight: 400;
 }
 
 /* Reduced motion support for tooltip */
