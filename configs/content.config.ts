@@ -730,6 +730,34 @@ export const contentConfig = {
     },
   },
 
+  // Copy Button - Palette's micro-UX enhancement! 🎨
+  // Provides accessible, delightful copy-to-clipboard functionality
+  copyButton: {
+    // Default button label
+    defaultLabel: process.env.CONTENT_COPY_LABEL || 'Copy to clipboard',
+    // Button text states
+    copy: process.env.CONTENT_COPY_TEXT || 'Copy',
+    copied: process.env.CONTENT_COPIED_TEXT || 'Copied!',
+    // Tooltip content
+    tooltip: {
+      copy: process.env.CONTENT_COPY_TOOLTIP || 'Click to copy',
+      copied: process.env.CONTENT_COPIED_TOOLTIP || 'Copied to clipboard!',
+    },
+    // ARIA labels for accessibility
+    aria: {
+      copy: process.env.CONTENT_COPY_ARIA || 'Copy to clipboard',
+      copied: process.env.CONTENT_COPIED_ARIA || 'Copied to clipboard',
+    },
+    // Screen reader announcements
+    announcement: {
+      success:
+        process.env.CONTENT_COPY_ANNOUNCE_SUCCESS ||
+        'Content copied to clipboard',
+      failed:
+        process.env.CONTENT_COPY_ANNOUNCE_FAILED || 'Failed to copy content',
+    },
+  },
+
   // Saved Searches - Flexy hates hardcoded saved search strings!
   savedSearches: {
     toast: {

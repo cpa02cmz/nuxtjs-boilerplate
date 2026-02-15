@@ -12,9 +12,18 @@
         class="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700"
       >
         <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-red-500" aria-hidden="true" />
-          <span class="w-3 h-3 rounded-full bg-yellow-500" aria-hidden="true" />
-          <span class="w-3 h-3 rounded-full bg-green-500" aria-hidden="true" />
+          <span
+            class="w-3 h-3 rounded-full bg-red-500"
+            aria-hidden="true"
+          />
+          <span
+            class="w-3 h-3 rounded-full bg-yellow-500"
+            aria-hidden="true"
+          />
+          <span
+            class="w-3 h-3 rounded-full bg-green-500"
+            aria-hidden="true"
+          />
           <span class="ml-2 text-xs text-gray-400 font-mono">{{ label }}</span>
         </div>
         <CopyButton
