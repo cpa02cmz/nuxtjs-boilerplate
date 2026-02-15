@@ -760,7 +760,9 @@ onUnmounted(() => {
     transparent 70%
   );
   opacity: 0;
-  animation: glow-pulse 2s ease-in-out infinite;
+  animation: glow-pulse
+    v-bind('animationConfig.searchAnalytics.glowPulseDurationSec + "s"')
+    ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -809,7 +811,9 @@ onUnmounted(() => {
   height: 12px;
   background: #10b981;
   border-radius: 50%;
-  animation: live-pulse 2s ease-in-out infinite;
+  animation: live-pulse
+    v-bind('animationConfig.searchAnalytics.livePulseDurationSec + "s"')
+    ease-in-out infinite;
 }
 
 .live-pulse-indicator::before {
@@ -819,7 +823,9 @@ onUnmounted(() => {
   border-radius: 50%;
   border: 2px solid #10b981;
   opacity: 0;
-  animation: live-ring 2s ease-out infinite;
+  animation: live-ring
+    v-bind('animationConfig.searchAnalytics.liveRingDurationSec + "s"') ease-out
+    infinite;
 }
 
 @keyframes live-pulse {
@@ -858,7 +864,8 @@ onUnmounted(() => {
   border-radius: 50%;
   border: 3px solid transparent;
   border-top-color: #3b82f6;
-  animation: shimmer-spin 1.5s linear infinite;
+  animation: shimmer-spin v-bind('animationConfig.skeleton.shimmerDurationSec')
+    linear infinite;
 }
 
 .shimmer-ring::before {
@@ -868,7 +875,9 @@ onUnmounted(() => {
   border-radius: 50%;
   border: 3px solid transparent;
   border-right-color: #60a5fa;
-  animation: shimmer-spin 2s linear infinite reverse;
+  animation: shimmer-spin
+    v-bind('animationConfig.searchAnalytics.shimmerSpinDurationSec + "s"')
+    linear infinite reverse;
 }
 
 .shimmer-dot {
@@ -880,7 +889,9 @@ onUnmounted(() => {
   height: 12px;
   background: linear-gradient(135deg, #3b82f6, #60a5fa);
   border-radius: 50%;
-  animation: shimmer-pulse 1.5s ease-in-out infinite;
+  animation: shimmer-pulse
+    v-bind('animationConfig.searchAnalytics.shimmerPulseDurationSec + "s"')
+    ease-in-out infinite;
 }
 
 @keyframes shimmer-spin {
