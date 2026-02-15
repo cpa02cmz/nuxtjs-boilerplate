@@ -426,6 +426,42 @@ export const animationConfig = {
     easing: process.env.ICON_INTERACTION_EASING || EASING_REF.SPRING_STANDARD,
   },
 
+  // Icon Entrance Animation - Palette's micro-UX delight! ✨
+  // Adds a subtle fade-in + scale entrance when icons first appear
+  iconEntrance: {
+    // Duration of the entrance animation (ms)
+    durationMs: parseInt(process.env.ICON_ENTRANCE_DURATION_MS || '400'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.ICON_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Starting scale (0.5 = 50% of final size)
+    startScale: parseFloat(process.env.ICON_ENTRANCE_START_SCALE || '0.7'),
+    // Ending scale (slight overshoot for bouncy feel)
+    endScale: parseFloat(process.env.ICON_ENTRANCE_END_SCALE || '1.05'),
+    // Final scale (returns to normal)
+    finalScale: parseFloat(process.env.ICON_ENTRANCE_FINAL_SCALE || '1.0'),
+    // Delay before animation starts (ms) - allows staggered reveals
+    delayMs: parseInt(process.env.ICON_ENTRANCE_DELAY_MS || '0'),
+    // CSS delay string for v-bind
+    delaySec: `${parseInt(process.env.ICON_ENTRANCE_DELAY_MS || '0') / 1000}s`,
+    // Cubic bezier easing for bouncy entrance
+    easing: process.env.ICON_ENTRANCE_EASING || EASING_REF.SPRING_STANDARD,
+  },
+
+  // Icon Wiggle Animation - Palette's micro-UX delight! 🎨
+  // Adds a playful wiggle on hover for extra delight
+  iconWiggle: {
+    // Duration of the wiggle animation (ms)
+    durationMs: parseInt(process.env.ICON_WIGGLE_DURATION_MS || '500'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.ICON_WIGGLE_DURATION_MS || '500') / 1000}s`,
+    // Rotation angle for wiggle (degrees)
+    rotationDeg: parseInt(process.env.ICON_WIGGLE_ROTATION_DEG || '10'),
+    // Number of wiggle cycles
+    cycles: parseInt(process.env.ICON_WIGGLE_CYCLES || '2'),
+    // Enable/disable wiggle on hover
+    enabled: process.env.ICON_WIGGLE_ENABLED !== 'false',
+  },
+
   // Search Tracking Delay
   analyticsTracking: {
     trackingDelayMs: parseInt(process.env.ANALYTICS_TRACKING_DELAY_MS || '500'),
