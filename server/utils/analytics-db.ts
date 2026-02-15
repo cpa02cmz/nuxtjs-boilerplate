@@ -460,10 +460,11 @@ export async function exportAnalyticsToCsv(
   endDate: Date
 ): Promise<string> {
   try {
+    // Flexy hates hardcoded 100000! Using analyticsConfig.export.batchSize
     const events = await getAnalyticsEventsByDateRange(
       startDate,
       endDate,
-      100000
+      analyticsConfig.export.batchSize
     )
 
     let csvContent =
@@ -594,7 +595,8 @@ export async function restoreSoftDeletedEvents(
 
 export async function exportSoftDeletedEventsToCsv(): Promise<string> {
   try {
-    const events = await getSoftDeletedEvents(100000)
+    // Flexy hates hardcoded 100000! Using analyticsConfig.export.batchSize
+    const events = await getSoftDeletedEvents(analyticsConfig.export.batchSize)
 
     let csvContent =
       'ID,Type,Resource ID,Category,URL,IP Address,Timestamp,Deleted At,Properties\n'
