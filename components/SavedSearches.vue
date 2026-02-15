@@ -109,7 +109,7 @@
             'is-pressed': deletePressed && activeDeleteItem === search.query,
           }"
           :aria-label="`Remove saved search: ${search.query}`"
-          @click.stop="onRemoveSavedSearch(search, index)"
+          @click.stop="onRemoveSavedSearch(search, _index)"
           @mousedown="handleDeletePress(search.query)"
           @mouseup="handleDeleteRelease"
           @mouseleave="handleDeleteRelease"
@@ -679,7 +679,7 @@ const undoProgressStyle = computed(() => {
   width: 2rem;
   height: 2rem;
   pointer-events: none;
-  z-index: v-bind('zIndexScale.medium[1]');
+  z-index: v-bind('zIndexScale.low[1]');
 }
 
 /* Palette's micro-UX enhancement: Individual particle styles */
