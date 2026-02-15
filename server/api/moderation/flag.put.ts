@@ -1,33 +1,30 @@
-import { readBody } from 'h3'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { prisma } from '~/server/utils/db'
 import {
-  sendBadRequestError,
   sendNotFoundError,
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { validateBody, z } from '~/server/utils/validation'
+
+// Zod schema for flag creation - Flexy hates manual validation!
+const flagSchema = z.object({
+  resourceId: z.string().min(1, 'Resource ID is required'),
+  reason: z
+    .string()
+    .min(1, 'Flag reason is required')
+    .max(500, 'Reason must be less than 500 characters'),
+  reportedBy: z.string().min(1, 'Reporter ID is required'),
+})
 
 export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
-    const body = await readBody(event)
 
-    // Validate required fields
-    if (!body.resourceId) {
-      return sendBadRequestError(event, 'Resource ID is required')
-    }
-
-    if (
-      !body.reason ||
-      typeof body.reason !== 'string' ||
-      body.reason.trim().length === 0
-    ) {
-      return sendBadRequestError(event, 'Flag reason is required')
-    }
-
-    if (!body.reportedBy) {
-      return sendBadRequestError(event, 'Reporter ID is required')
+    // Validate request body using Zod schema
+    const body = await validateBody(event, flagSchema)
+    if (!body) {
+      return // Error response already sent by validateBody
     }
 
     // Check if resource exists in database

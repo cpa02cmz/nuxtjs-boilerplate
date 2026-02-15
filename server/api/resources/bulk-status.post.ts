@@ -1,18 +1,41 @@
-import { defineEventHandler, readBody, getHeader } from 'h3'
+import { defineEventHandler, getHeader } from 'h3'
 import type { Resource } from '~/types/resource'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
-  sendBadRequestError,
   sendSuccessResponse,
   sendUnauthorizedError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { validateBody, z } from '~/server/utils/validation'
 import { paginationConfig } from '~/configs/pagination.config'
 import { contentConfig } from '~/configs/content.config'
 
 // Maximum number of resources that can be updated in a single bulk request
 // Flexy hates hardcoded limits! Using config instead
 const MAX_BULK_UPDATE_COUNT = paginationConfig.limits.maxBulkUpdateItems
+
+// Valid status values for bulk update
+const validStatuses = [
+  'active',
+  'deprecated',
+  'discontinued',
+  'updated',
+  'pending',
+] as const
+
+// Zod schema for bulk status update - Flexy hates manual validation!
+const bulkStatusSchema = z.object({
+  resourceIds: z
+    .array(z.string())
+    .min(1, 'At least one resource ID is required')
+    .max(
+      MAX_BULK_UPDATE_COUNT,
+      `Cannot update more than ${MAX_BULK_UPDATE_COUNT} resources at once`
+    ),
+  status: z.enum(validStatuses, {
+    message: 'Invalid status value',
+  }),
+})
 
 export default defineEventHandler(async event => {
   try {
@@ -24,35 +47,13 @@ export default defineEventHandler(async event => {
       return sendUnauthorizedError(event, 'API key required')
     }
 
-    const { resourceIds, status } = await readBody(event)
-
-    // Validate required fields
-    if (!Array.isArray(resourceIds) || !status) {
-      return sendBadRequestError(
-        event,
-        'resourceIds array and status are required'
-      )
+    // Validate request body using Zod schema
+    const body = await validateBody(event, bulkStatusSchema)
+    if (!body) {
+      return // Error response already sent by validateBody
     }
 
-    // Validate array length to prevent DoS via memory exhaustion
-    if (resourceIds.length > MAX_BULK_UPDATE_COUNT) {
-      return sendBadRequestError(
-        event,
-        `Cannot update more than ${MAX_BULK_UPDATE_COUNT} resources at once`
-      )
-    }
-
-    // Validate status value
-    const validStatuses = [
-      'active',
-      'deprecated',
-      'discontinued',
-      'updated',
-      'pending',
-    ]
-    if (!validStatuses.includes(status)) {
-      return sendBadRequestError(event, 'Invalid status value')
-    }
+    const { resourceIds, status } = body
 
     // Get all resources
     const resourcesModule = await import(contentConfig.paths.resourcesData)
@@ -75,7 +76,7 @@ export default defineEventHandler(async event => {
       // Update resource with new status
       const updatedResource: Resource = {
         ...resource,
-        status,
+        status: status as Resource['status'],
         lastUpdated: new Date().toISOString(),
       }
 
