@@ -114,6 +114,7 @@
 import { ref, onUnmounted, computed, onMounted } from 'vue'
 import { EASING } from '~/configs/easing.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 
 // Skeleton loading component for ResourceCard
 // Enhanced with wave shimmer animation for better perceived performance
@@ -465,7 +466,7 @@ onMounted(() => {
   animation: scan-sweep var(--scan-duration) ease-in-out var(--scan-delay)
     infinite;
   pointer-events: none;
-  z-index: 10;
+  z-index: v-bind('zIndexConfig.listItem');
   box-shadow:
     0 0 4px var(--scan-color),
     0 0 8px var(--scan-color),

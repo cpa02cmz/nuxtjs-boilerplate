@@ -19,10 +19,7 @@
       leave-from-class="opacity-100 scale-100"
       leave-to-class="opacity-0 scale-98"
     >
-      <div
-        v-if="!isIntersecting && !isLoaded"
-        class="skeleton-container"
-      >
+      <div v-if="!isIntersecting && !isLoaded" class="skeleton-container">
         <!-- Palette's micro-UX: Multi-layer shimmer for depth -->
         <div
           v-if="!prefersReducedMotion"
@@ -55,12 +52,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -74,6 +66,7 @@ import ResourceCardSkeleton from './ResourceCardSkeleton.vue'
 import { animationConfig } from '~/configs/animation.config'
 import { hapticConfig } from '~/configs/haptic.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 
 interface Props {
   title: string
@@ -227,7 +220,7 @@ onUnmounted(() => {
       v-bind('animationConfig.lazyResourceCard.hoverLiftPx + "px"')
     )
     scale(v-bind('animationConfig.lazyResourceCard.hoverScale'));
-  z-index: 10;
+  z-index: v-bind('zIndexConfig.listItem');
 }
 
 /* Skeleton container with shimmer */
@@ -251,7 +244,7 @@ onUnmounted(() => {
     v-bind('animationConfig.lazyResourceCard.shimmerDurationSec') ease-in-out
     infinite;
   pointer-events: none;
-  z-index: 1;
+  z-index: v-bind('zIndexConfig.floatingLabel');
 }
 
 @keyframes shimmer-sweep {

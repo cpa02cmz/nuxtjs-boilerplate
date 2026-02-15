@@ -241,6 +241,7 @@ import ResourceFilters from '~/components/ResourceFilters.vue'
 import { hapticConfig } from '~/configs/haptic.config'
 import { animationConfig } from '~/configs/animation.config'
 import { EASING } from '~/configs/easing.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 
 interface FacetCounts {
   [key: string]: number
@@ -888,7 +889,7 @@ onUnmounted(() => {
 /* Button text */
 .button-text {
   position: relative;
-  z-index: 1;
+  z-index: v-bind('zIndexConfig.floatingLabel');
 }
 
 /* Prevent body scroll when drawer is open */
