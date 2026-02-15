@@ -3344,8 +3344,6 @@ export const animationConfig = {
 
   // Skip to Content Link Animations - Palette's micro-UX enhancement!
   skipLink: {
-  // Skip to Content Link Animations - Palette's micro-UX enhancement!
-  skipLink: {
     // Entrance animation duration (ms)
     entranceDurationMs: parseInt(
       process.env.SKIP_LINK_ENTRANCE_DURATION_MS || '400'

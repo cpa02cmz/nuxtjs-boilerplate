@@ -23,7 +23,10 @@
       @keydown="handleKeyDown"
     >
       <!-- Icon -->
-      <span class="skip-link__icon" aria-hidden="true">
+      <span
+        class="skip-link__icon"
+        aria-hidden="true"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-4 w-4"
@@ -46,7 +49,10 @@
       </span>
 
       <!-- Keyboard Shortcut Hint -->
-      <kbd class="skip-link__shortcut" aria-hidden="true">
+      <kbd
+        class="skip-link__shortcut"
+        aria-hidden="true"
+      >
         {{ shortcutKey }}
       </kbd>
     </a>
@@ -60,7 +66,12 @@
   </div>
 
   <!-- Screen reader announcement -->
-  <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+  <div
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+    class="sr-only"
+  >
     {{ announcement }}
   </div>
 </template>
