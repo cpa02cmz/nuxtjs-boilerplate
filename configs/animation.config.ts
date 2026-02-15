@@ -2910,6 +2910,41 @@ export const animationConfig = {
       process.env.HEALTH_MONITOR_SPINNER_DURATION_MS || '1000'
     ),
   },
+
+  // Screenshots Section Animations - Palette's micro-UX delight! 🎨
+  // Used by ScreenshotsSection.vue for delightful image gallery interactions
+  screenshots: {
+    // Stagger delay between screenshot items (ms)
+    staggerDelayMs: parseInt(process.env.SCREENSHOTS_STAGGER_DELAY_MS || '100'),
+    // Entrance animation duration (ms)
+    entranceDurationMs: parseInt(
+      process.env.SCREENSHOTS_ENTRANCE_DURATION_MS || '600'
+    ),
+    // Skeleton shimmer animation duration (ms)
+    shimmerDurationMs: parseInt(
+      process.env.SCREENSHOTS_SHIMMER_DURATION_MS || '1500'
+    ),
+    // Image hover zoom scale
+    zoomScale: parseFloat(process.env.SCREENSHOTS_ZOOM_SCALE || '1.1'),
+    // Hover zoom animation duration (ms)
+    zoomDurationMs: parseInt(process.env.SCREENSHOTS_ZOOM_DURATION_MS || '300'),
+    // Hover duration for container lift effect (ms)
+    hoverDurationMs: parseInt(
+      process.env.SCREENSHOTS_HOVER_DURATION_MS || '200'
+    ),
+    // Overlay fade duration (ms)
+    overlayDurationMs: parseInt(
+      process.env.SCREENSHOTS_OVERLAY_DURATION_MS || '250'
+    ),
+    // Lightbox transition duration (ms)
+    lightboxTransitionMs: parseInt(
+      process.env.SCREENSHOTS_LIGHTBOX_TRANSITION_MS || '300'
+    ),
+    // Default image height in pixels
+    imageHeight: parseInt(process.env.SCREENSHOTS_IMAGE_HEIGHT || '192'),
+    // Mobile image height in pixels
+    mobileImageHeight: parseInt(process.env.SCREENSHOTS_MOBILE_HEIGHT || '160'),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
