@@ -12,7 +12,12 @@
   >
     <div
       class="reading-progress-bar"
-      :style="{ transform: `scaleX(${progress / 100})` }"
+      :class="{
+        'reading-progress-bar--scrolling': isScrolling && !prefersReducedMotion,
+        'reading-progress-bar--fast':
+          scrollSpeed === 'fast' && !prefersReducedMotion,
+      }"
+      :style="progressBarStyle"
       aria-hidden="true"
     />
 
@@ -82,12 +87,7 @@
     </Transition>
 
     <!-- Screen reader announcement for progress changes -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ progressAnnouncement }}
     </div>
 
@@ -116,16 +116,8 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                class="checkmark-circle"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-              <path
-                class="checkmark-path"
-                d="M7 12l3 3 7-7"
-              />
+              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
           <span class="completion-text">{{
@@ -133,15 +125,8 @@
           }}</span>
         </div>
         <!-- Confetti burst effect -->
-        <div
-          class="confetti-container"
-          aria-hidden="true"
-        >
-          <span
-            v-for="n in 8"
-            :key="n"
-            class="confetti-piece"
-          />
+        <div class="confetti-container" aria-hidden="true">
+          <span v-for="n in 8" :key="n" class="confetti-piece" />
         </div>
       </div>
     </Transition>
@@ -209,10 +194,36 @@ let isMounted = false
 // Completion celebration timeout
 let celebrationTimeout: ReturnType<typeof setTimeout> | null = null
 
+// Palette's micro-UX enhancement: Dynamic shimmer based on scroll speed
+const isScrolling = ref(false)
+const scrollSpeed = ref<'normal' | 'fast'>('normal')
+const lastScrollY = ref(0)
+const scrollVelocity = ref(0)
+let scrollSpeedTimeout: ReturnType<typeof setTimeout> | null = null
+let lastScrollTime = Date.now()
+
 // Computed tooltip style
 const tooltipStyle = computed(() => ({
   left: `${tooltipPosition.value}px`,
 }))
+
+// Palette's micro-UX enhancement: Dynamic progress bar style with shimmer speed
+const progressBarStyle = computed(() => {
+  // Base transform
+  const style: Record<string, string> = {
+    transform: `scaleX(${progress.value / 100})`,
+  }
+
+  // Add dynamic shimmer duration based on scroll speed
+  if (!prefersReducedMotion.value) {
+    const baseDuration = animationConfig.readingProgress.shimmerDurationSec
+    // Faster scroll = faster shimmer animation
+    const speedMultiplier = scrollSpeed.value === 'fast' ? 0.5 : 1
+    style['--shimmer-duration'] = `${baseDuration * speedMultiplier}s`
+  }
+
+  return style
+})
 
 // Progress announcement state
 const progressAnnouncement = ref('')
@@ -365,8 +376,50 @@ const handleScroll = () => {
 let scrollTimeout: ReturnType<typeof setTimeout> | null = null
 const SCROLL_TIMEOUT_MS = uiConfig.timing.scrollTimeoutMs || 1500 // Show time estimate for 1.5s after scroll stops
 
+// Palette's micro-UX enhancement: Track scroll speed for dynamic shimmer
+const SCROLL_SPEED_THRESHOLD = 50 // pixels per 100ms to trigger "fast" speed
+const SCROLL_SPEED_RESET_MS = 150 // Time before resetting speed to normal
+
 const handleScrollWithTimeEstimate = () => {
   handleScroll()
+
+  // Track scroll speed for dynamic shimmer - Palette's micro-UX delight!
+  if (typeof window !== 'undefined' && !prefersReducedMotion.value) {
+    const currentScrollY = window.scrollY
+    const currentTime = Date.now()
+    const timeDelta = currentTime - lastScrollTime
+
+    if (timeDelta > 0) {
+      const scrollDelta = Math.abs(currentScrollY - lastScrollY.value)
+      const velocity = (scrollDelta / timeDelta) * 100 // pixels per 100ms
+
+      // Update scroll state
+      isScrolling.value = true
+      scrollVelocity.value = velocity
+
+      // Determine scroll speed
+      const newSpeed = velocity > SCROLL_SPEED_THRESHOLD ? 'fast' : 'normal'
+      if (newSpeed !== scrollSpeed.value) {
+        scrollSpeed.value = newSpeed
+      }
+
+      // Update tracking values
+      lastScrollY.value = currentScrollY
+      lastScrollTime = currentTime
+
+      // Clear existing speed timeout
+      if (scrollSpeedTimeout) {
+        clearTimeout(scrollSpeedTimeout)
+      }
+
+      // Reset scroll state after delay
+      scrollSpeedTimeout = setTimeout(() => {
+        isScrolling.value = false
+        scrollSpeed.value = 'normal'
+        scrollVelocity.value = 0
+      }, SCROLL_SPEED_RESET_MS)
+    }
+  }
 
   // Show time estimate when actively scrolling
   if (progress.value > 5 && progress.value < 95) {
@@ -423,6 +476,11 @@ onUnmounted(() => {
   if (scrollTimeout) {
     clearTimeout(scrollTimeout)
   }
+
+  // Clean up scroll speed timeout - Palette's micro-UX enhancement
+  if (scrollSpeedTimeout) {
+    clearTimeout(scrollSpeedTimeout)
+  }
 })
 </script>
 
@@ -472,9 +530,28 @@ onUnmounted(() => {
     v-bind('themeConfig.readingProgress.shimmerColor') 50%,
     transparent 100%
   );
+  /* Palette's micro-UX enhancement: Dynamic shimmer duration based on scroll speed */
   animation: shimmer
-    v-bind('animationConfig.readingProgress.shimmerDurationSec + "s"')
+    var(
+      --shimmer-duration,
+      v-bind('animationConfig.readingProgress.shimmerDurationSec + "s"')
+    )
     ease-in-out infinite;
+  will-change: animation-duration;
+  transition: animation-duration 0.3s ease-out;
+}
+
+/* Enhanced shimmer for fast scrolling - Palette's micro-UX delight! */
+.reading-progress-bar--fast::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    v-bind('themeConfig.readingProgress.shimmerColor') 30%,
+    rgba(255, 255, 255, 0.8) 50%,
+    v-bind('themeConfig.readingProgress.shimmerColor') 70%,
+    transparent 100%
+  );
+  filter: brightness(1.3);
 }
 
 /* Reduced motion support */
@@ -484,6 +561,12 @@ onUnmounted(() => {
   }
 
   .reading-progress-bar::after {
+    animation: none;
+    display: none;
+  }
+
+  .reading-progress-bar--scrolling::after,
+  .reading-progress-bar--fast::after {
     animation: none;
     display: none;
   }
