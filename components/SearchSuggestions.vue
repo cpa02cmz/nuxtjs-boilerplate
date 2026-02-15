@@ -38,22 +38,36 @@
           @touchstart="handlePressStart('history', index)"
           @touchend="handlePressEnd"
         >
-          <div class="flex items-center">
-            <svg
-              :class="[uiConfig.iconSizes.suggestion, 'mr-2 text-gray-400']"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
+          <div class="flex items-center justify-between w-full">
+            <div class="flex items-center flex-1 min-w-0">
+              <svg
+                :class="[
+                  uiConfig.iconSizes.suggestion,
+                  'mr-2 text-gray-400 flex-shrink-0',
+                ]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span class="truncate">{{ history }}</span>
+            </div>
+            <!-- Palette's micro-UX: New indicator for recent searches from current session -->
+            <span
+              v-if="isRecentSearch(history)"
+              class="new-indicator"
+              :class="{ 'new-indicator--animated': !prefersReducedMotion() }"
+              aria-label="Recent search"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <span>{{ history }}</span>
+              new
+            </span>
           </div>
         </li>
       </ul>
@@ -418,6 +432,39 @@ const defaultSuggestions = computed(() => {
   )
 })
 
+// Palette's micro-UX: Track recent searches from current session
+const recentSearches = ref<Set<string>>(new Set())
+const RECENT_SEARCH_THRESHOLD_MS = 60 * 60 * 1000 // 1 hour
+
+// Check if a search is recent (from current session, within last hour)
+const isRecentSearch = (searchTerm: string): boolean => {
+  return recentSearches.value.has(searchTerm)
+}
+
+// Watch for new searches and mark them as recent
+watch(
+  () => props.searchHistory,
+  (newHistory, oldHistory) => {
+    if (!newHistory || !oldHistory) return
+
+    // Find new items that weren't in the old history
+    const newItems = newHistory.filter(item => !oldHistory.includes(item))
+
+    // Add new items to recent set
+    newItems.forEach(item => {
+      recentSearches.value.add(item)
+    })
+
+    // Clean up old entries after threshold
+    setTimeout(() => {
+      newItems.forEach(item => {
+        recentSearches.value.delete(item)
+      })
+    }, RECENT_SEARCH_THRESHOLD_MS)
+  },
+  { deep: true }
+)
+
 const selectDefaultSuggestion = (suggestion: string) => {
   emit('select-default-suggestion', suggestion)
 }
@@ -533,6 +580,64 @@ const handleKeyDown = (event: KeyboardEvent) => {
   .suggestion-item.is-pressed {
     outline: 2px solid currentColor;
     outline-offset: -2px;
+  }
+}
+
+/* Palette's micro-UX delight: New indicator badge for recent searches */
+.new-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  margin-left: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #3b82f6;
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-radius: 9999px;
+  border: 1px solid #93c5fd;
+  flex-shrink: 0;
+  transition: all 0.2s ease-out;
+}
+
+/* Animated new indicator with subtle pulse */
+.new-indicator--animated {
+  animation: new-pulse 2s ease-in-out infinite;
+}
+
+@keyframes new-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0);
+  }
+}
+
+/* Hover effect on the suggestion item enhances the new indicator */
+.suggestion-item:hover .new-indicator {
+  background: linear-gradient(135deg, #bfdbfe 0%, #a5d8ff 100%);
+  transform: scale(1.05);
+}
+
+/* Reduced motion support for new indicator */
+@media (prefers-reduced-motion: reduce) {
+  .new-indicator--animated {
+    animation: none;
+  }
+
+  .new-indicator {
+    transition: none;
+  }
+}
+
+/* High contrast mode support for new indicator */
+@media (prefers-contrast: high) {
+  .new-indicator {
+    border: 2px solid currentColor;
+    background: transparent;
   }
 }
 </style>
