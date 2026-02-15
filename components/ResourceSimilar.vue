@@ -88,7 +88,12 @@
       </TransitionGroup>
 
       <!-- Screen reader announcement -->
-      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        class="sr-only"
+      >
         {{ announcement }}
       </div>
     </section>
