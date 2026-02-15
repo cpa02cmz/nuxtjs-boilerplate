@@ -66,6 +66,23 @@ export const analyticsConfig = {
     msPerDay: 24 * 60 * 60 * 1000,
   },
 
+  // Retention Settings - Flexy hates hardcoded retention days!
+  retention: {
+    // Number of days to retain analytics events before cleanup (default: 30 days)
+    eventsDays: parseInt(process.env.ANALYTICS_RETENTION_EVENTS_DAYS || '30'),
+
+    // Number of days to retain dead letter queue items (default: 30 days)
+    deadLetterDays: parseInt(
+      process.env.ANALYTICS_RETENTION_DEAD_LETTER_DAYS || '30'
+    ),
+
+    // Minimum retention days allowed
+    minDays: parseInt(process.env.ANALYTICS_RETENTION_MIN_DAYS || '1'),
+
+    // Maximum retention days allowed
+    maxDays: parseInt(process.env.ANALYTICS_RETENTION_MAX_DAYS || '365'),
+  },
+
   // Performance Tracking
   performance: {
     // Maximum performance history entries
