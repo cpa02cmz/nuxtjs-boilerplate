@@ -2756,6 +2756,8 @@ export const animationConfig = {
     staggerDelaySec: parseFloat(
       process.env.FEATURES_STAGGER_DELAY_SEC || '0.08'
     ),
+    // Delay after title animation before features start (ms) - Flexy hates hardcoded 200!
+    titleDelayMs: parseInt(process.env.FEATURES_TITLE_DELAY_MS || '200'),
     // Feature item entrance animation duration (ms)
     entranceDurationMs: parseInt(
       process.env.FEATURES_ENTRANCE_DURATION_MS || '500'
