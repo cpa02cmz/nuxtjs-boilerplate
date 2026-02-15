@@ -202,6 +202,12 @@
           <div class="api-key-actions">
             <button
               class="btn btn-sm btn-danger"
+              :aria-label="
+                contentConfig.apiKeys.aria.revokeButton.replace(
+                  '{{name}}',
+                  key.name
+                )
+              "
               @click="revokeApiKey(key.id)"
             >
               {{ contentConfig.apiKeys.buttons.revoke }}
