@@ -6,6 +6,7 @@
  */
 
 import { ref, onUnmounted, readonly } from 'vue'
+import { timerPoolConfig } from '~/configs/timer-pool.config'
 
 interface PooledTimer {
   id: ReturnType<typeof setTimeout>
@@ -85,9 +86,9 @@ export function useTimerPool(
   options: UseTimerPoolOptions = {}
 ): UseTimerPoolReturn {
   const {
-    maxTimeoutPoolSize = 20,
-    maxIntervalPoolSize = 10,
-    cleanupInterval = 30000,
+    maxTimeoutPoolSize = timerPoolConfig.poolSize.maxTimeout,
+    maxIntervalPoolSize = timerPoolConfig.poolSize.maxInterval,
+    cleanupInterval = timerPoolConfig.cleanup.intervalMs,
   } = options
 
   const timeoutPool = ref<PooledTimer[]>([])
@@ -124,7 +125,7 @@ export function useTimerPool(
    */
   const cleanup = (): void => {
     const now = Date.now()
-    const maxAge = 60000 // 1 minute
+    const maxAge = timerPoolConfig.cleanup.maxAgeMs
 
     // Clean up old unused timeouts
     timeoutPool.value = timeoutPool.value.filter(timer => {

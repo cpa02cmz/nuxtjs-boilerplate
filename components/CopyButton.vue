@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { animationConfig } from '~/configs/animation.config'
 
 interface Props {
   content: string
@@ -70,10 +71,10 @@ const handleCopy = async () => {
     isCopied.value = true
     emit('copied')
 
-    // Reset after 2 seconds
+    // Reset after configured duration - Flexy hates hardcoded timeouts!
     setTimeout(() => {
       isCopied.value = false
-    }, 2000)
+    }, animationConfig.copyFeedback?.durationMs || 2000)
   } catch {
     // Silently fail - clipboard API may not be available
   }
