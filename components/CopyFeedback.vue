@@ -53,14 +53,31 @@
     </Teleport>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
+
+    <!-- Palette's micro-UX enhancement: Copy Success Particle Burst ✨
+         A delightful burst of particles to celebrate successful copy action -->
+    <TransitionGroup
+      v-if="showParticles && !prefersReducedMotion"
+      tag="div"
+      class="copy-particle-container"
+      aria-hidden="true"
+    >
+      <span
+        v-for="particle in particles"
+        :key="particle.id"
+        class="copy-particle"
+        :style="{
+          '--particle-x': `${particle.x}px`,
+          '--particle-y': `${particle.y}px`,
+          '--particle-color': particle.color,
+          '--particle-size': `${particle.size}px`,
+          '--particle-rotation': `${particle.rotation}deg`,
+        }"
+      />
+    </TransitionGroup>
   </div>
 </template>
 
@@ -134,6 +151,73 @@ const _uniqueId = generateId({ prefix: 'copy-feedback' })
 const announcementText = ref('')
 let hideTimeout: ReturnType<typeof setTimeout> | null = null
 
+// Palette's micro-UX enhancement: Copy success particle burst state
+const showParticles = ref(false)
+const particles = ref<
+  Array<{
+    id: number
+    x: number
+    y: number
+    color: string
+    size: number
+    rotation: number
+  }>
+>([])
+const prefersReducedMotion = ref(false)
+
+// Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (
+    typeof window === 'undefined' ||
+    typeof window.matchMedia !== 'function'
+  ) {
+    return false
+  }
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// Generate particles for copy success celebration
+const generateCopyParticles = () => {
+  const config = animationConfig.copyParticles
+  const count = config.particleCount
+  const newParticles = []
+
+  for (let i = 0; i < count; i++) {
+    const angle = (360 / count) * i + Math.random() * 30
+    const radians = (angle * Math.PI) / 180
+    const distance = config.spreadPx * (0.7 + Math.random() * 0.6)
+    const x = Math.cos(radians) * distance
+    const y = Math.sin(radians) * distance
+
+    newParticles.push({
+      id: Date.now() + i,
+      x,
+      y,
+      color: config.colors[Math.floor(Math.random() * config.colors.length)],
+      size:
+        config.minSizePx +
+        Math.random() * (config.maxSizePx - config.minSizePx),
+      rotation: Math.random() * 360,
+    })
+  }
+
+  return newParticles
+}
+
+// Trigger copy success particle burst
+const triggerCopyParticleBurst = () => {
+  if (checkReducedMotion()) return
+
+  particles.value = generateCopyParticles()
+  showParticles.value = true
+
+  // Hide particles after animation completes
+  setTimeout(() => {
+    showParticles.value = false
+    particles.value = []
+  }, animationConfig.copyParticles.durationMs + animationConfig.copyParticles.fadeDelayMs)
+}
+
 // Computed tooltip style for positioning
 const tooltipStyle = computed(() => ({
   left: `${tooltipPosition.value.x}px`,
@@ -196,6 +280,9 @@ const handleCopy = async (event?: MouseEvent | KeyboardEvent) => {
     if (props.hapticFeedback) {
       hapticSuccess()
     }
+
+    // Trigger particle burst for delightful feedback ✨
+    triggerCopyParticleBurst()
 
     emit('copied', props.textToCopy)
   } catch (err) {
@@ -381,6 +468,84 @@ defineExpose({
 @media (prefers-contrast: high) {
   .copy-feedback-content {
     border: 2px solid currentColor;
+  }
+}
+
+/* Palette's micro-UX enhancement: Copy Success Particle Burst Styles ✨ */
+.copy-particle-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.copy-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  background: var(--particle-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(var(--particle-rotation));
+  animation: copy-particle-burst
+    v-bind('`${animationConfig.copyParticles.durationMs}ms`') ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes copy-particle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(
+        calc(-50% + var(--particle-x) * 0.5),
+        calc(-50% + var(--particle-y) * 0.5)
+      )
+      scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+        calc(-50% + var(--particle-x)),
+        calc(-50% + var(--particle-y))
+      )
+      scale(0.2);
+  }
+}
+
+/* Alternative star-shaped particle variant */
+.copy-particle:nth-child(3n) {
+  border-radius: 0;
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+/* Alternative diamond-shaped particle variant */
+.copy-particle:nth-child(5n) {
+  border-radius: 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* Reduced motion support for particles */
+@media (prefers-reduced-motion: reduce) {
+  .copy-particle-container {
+    display: none;
   }
 }
 </style>
