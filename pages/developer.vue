@@ -528,7 +528,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { tailwindClassesConfig as tailwind } from '~/configs/tailwind-classes.config'
 
 // Reduced motion preference
@@ -616,6 +616,11 @@ onMounted(() => {
 
   // Listen for keyboard shortcuts
   document.addEventListener('keydown', handleKeydown)
+})
+
+// Cleanup event listener to prevent memory leaks
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown)
 })
 
 useHead({

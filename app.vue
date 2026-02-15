@@ -102,29 +102,26 @@ onMounted(() => {
     document.body.classList.add('mouse-nav')
   }
 
+  // Handle online/offline status
+  const handleOnline = () => {
+    // Online status change handler
+  }
+
+  const handleOffline = () => {
+    // Optionally redirect to offline page or show notification
+  }
+
   window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('mousedown', handleMouseDown)
+  window.addEventListener('online', handleOnline)
+  window.addEventListener('offline', handleOffline)
 
-  // Cleanup event listeners
+  // Cleanup event listeners to prevent memory leaks
   onUnmounted(() => {
     window.removeEventListener('keydown', handleKeyDown)
     window.removeEventListener('mousedown', handleMouseDown)
-  })
-
-  // Handle online/offline status
-  window.addEventListener('online', () => {})
-
-  window.addEventListener('offline', () => {
-    // Optionally redirect to offline page or show notification
-  })
-
-  // Cleanup event listeners
-  onUnmounted(() => {
-    window.removeEventListener('keydown', handleKeyDown)
-    window.removeEventListener('mousedown', handleMouseDown)
-    window.removeEventListener('beforeinstallprompt', () => {
-      // We can't remove the specific deferredPrompt function since it's in a closure
-    })
+    window.removeEventListener('online', handleOnline)
+    window.removeEventListener('offline', handleOffline)
   })
 })
 </script>
