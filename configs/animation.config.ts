@@ -1271,6 +1271,10 @@ export const animationConfig = {
     iconAnimationDurationMs: parseInt(
       process.env.RESOURCE_HEADER_ICON_DURATION_MS || '300'
     ),
+    // Announcement clear delay after button click (ms) - Flexy hates hardcoded 1000!
+    announcementClearDelayMs: parseInt(
+      process.env.RESOURCE_HEADER_ANNOUNCEMENT_CLEAR_MS || '1000'
+    ),
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.RESOURCE_HEADER_RESPECT_REDUCED_MOTION !== 'false',
@@ -3065,6 +3069,10 @@ export const animationConfig = {
     ),
     // CSS duration string for undo progress
     undoProgressDurationSec: `${parseInt(process.env.SAVED_SEARCHES_UNDO_PROGRESS_MS || '5000') / 1000}s`,
+    // Restore state clear delay after undo animation (ms) - Flexy hates hardcoded 500!
+    restoreStateClearDelayMs: parseInt(
+      process.env.SAVED_SEARCHES_RESTORE_CLEAR_MS || '500'
+    ),
     // Progress bar color
     progressBarColor:
       process.env.SAVED_SEARCHES_PROGRESS_COLOR || 'rgba(245, 158, 11, 0.8)', // amber-500
@@ -3168,6 +3176,10 @@ export const animationConfig = {
     // Drawer entrance friction
     entranceFriction: parseFloat(
       process.env.MOBILE_DRAWER_ENTRANCE_FRICTION || '25'
+    ),
+    // Filter count changed indicator reset delay (ms) - Flexy hates hardcoded 1000!
+    filterCountResetDelayMs: parseInt(
+      process.env.MOBILE_DRAWER_FILTER_RESET_MS || '1000'
     ),
     // Whether to respect reduced motion preference
     respectReducedMotion:
