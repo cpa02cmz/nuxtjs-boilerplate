@@ -59,7 +59,7 @@ export default defineEventHandler(async event => {
         })
 
         // Also add reverse relationship
-        let reverseAlternatives: string[] = alternativeResource.alternatives
+        const reverseAlternatives: string[] = alternativeResource.alternatives
           ? JSON.parse(alternativeResource.alternatives)
           : []
         if (!reverseAlternatives.includes(resourceId)) {
