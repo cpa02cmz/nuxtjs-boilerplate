@@ -15,7 +15,10 @@
     >
       <!-- Header with icon -->
       <div class="related-searches__header">
-        <span class="related-searches__icon" aria-hidden="true">
+        <span
+          class="related-searches__icon"
+          aria-hidden="true"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             :class="['h-4 w-4', isSearching ? 'animate-spin' : '']"
@@ -93,7 +96,10 @@
             </span>
 
             <!-- Search icon -->
-            <span class="button-icon" aria-hidden="true">
+            <span
+              class="button-icon"
+              aria-hidden="true"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-3 w-3"
@@ -139,7 +145,12 @@
       </div>
 
       <!-- Screen reader announcements -->
-      <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+      <div
+        class="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
         {{ announcement }}
       </div>
     </div>
