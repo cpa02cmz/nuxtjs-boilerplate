@@ -208,9 +208,8 @@ export default defineEventHandler(async event => {
     const total = resources.length
     const paginatedResources = resources.slice(offset, offset + limit)
 
-    // Prepare response
+    // Prepare response - data object only (success wrapper added by sendSuccessResponse)
     const response = {
-      success: true,
       data: paginatedResources,
       pagination: {
         total,
