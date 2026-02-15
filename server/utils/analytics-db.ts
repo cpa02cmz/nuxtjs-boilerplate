@@ -88,14 +88,28 @@ export async function insertAnalyticsEvent(
     const errorMessage = String(error)
 
     // Check if this is a "table not found" error
+    // BroCula: Enhanced detection for various Prisma error formats
     const isTableNotFound =
       errorMessage.includes('AnalyticsEvent') &&
       (errorMessage.includes('does not exist') ||
         errorMessage.includes('not found') ||
-        errorMessage.includes("Table '"))
+        errorMessage.includes("Table '") ||
+        errorMessage.includes('P2021') || // Prisma code for table not found
+        errorMessage.includes('P2003') || // Prisma code for foreign key constraint
+        (errorMessage.includes('relation') &&
+          errorMessage.includes('not found')))
 
-    if (isTableNotFound) {
-      logger.warn('AnalyticsEvent table not found in database')
+    // BroCula: Also check for Prisma error code property
+    const errObj = error as { code?: string; meta?: { table?: string } }
+    const hasPrismaTableError =
+      (error && typeof error === 'object' && errObj.code === 'P2021') ||
+      (errObj.meta?.table &&
+        String(errObj.meta.table).includes('AnalyticsEvent'))
+
+    if (isTableNotFound || hasPrismaTableError) {
+      logger.warn(
+        'AnalyticsEvent table not found in database - graceful degradation'
+      )
       return { success: false, error: errorMessage, tableNotFound: true }
     }
 

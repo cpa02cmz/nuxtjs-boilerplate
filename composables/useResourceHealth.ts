@@ -79,8 +79,11 @@ export const useResourceHealth = (props: Props) => {
     })
   }
 
-  onMounted(async () => {
-    await loadHealthStatus()
+  onMounted(() => {
+    // BroCula fix: Don't use async onMounted - register sync, handle async separately
+    loadHealthStatus().catch(err => {
+      console.error('Failed to load health status:', err)
+    })
   })
 
   return {
