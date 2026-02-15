@@ -786,7 +786,13 @@ watch(
       'animationConfig.moderationDashboard?.activityEntranceDurationSec || "0.4s"'
     )
     ease-out forwards;
-  animation-delay: calc(var(--activity-delay, 0ms) + 400ms);
+  animation-delay: calc(
+    var(--activity-delay, 0ms) +
+      v-bind(
+        'animationConfig.moderationDashboard?.activityDelayOffsetMs || 400'
+      )
+      ms
+  );
 }
 
 @keyframes activity-entrance {
@@ -961,7 +967,11 @@ watch(
       'animationConfig.moderationDashboard?.actionEntranceDurationSec || "0.4s"'
     )
     ease-out forwards;
-  animation-delay: calc(var(--action-delay, 0ms) + 600ms);
+  animation-delay: calc(
+    var(--action-delay, 0ms) +
+      v-bind('animationConfig.moderationDashboard?.actionDelayOffsetMs || 600')
+      ms
+  );
 }
 
 @keyframes action-entrance {

@@ -889,7 +889,9 @@ onUnmounted(() => {
   height: 12px;
   background: linear-gradient(135deg, #3b82f6, #60a5fa);
   border-radius: 50%;
-  animation: shimmer-pulse 1.5s ease-in-out infinite;
+  animation: shimmer-pulse
+    v-bind('animationConfig.searchAnalytics.shimmerPulseDurationSec + "s"')
+    ease-in-out infinite;
 }
 
 @keyframes shimmer-spin {

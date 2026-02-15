@@ -27,10 +27,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <!-- Animated offline icon with connection pulse - Palette's micro-UX enhancement! -->
-                <div
-                  class="relative flex-shrink-0 w-8 h-8"
-                  aria-hidden="true"
-                >
+                <div class="relative flex-shrink-0 w-8 h-8" aria-hidden="true">
                   <!-- Connection pulse rings (shown when reconnecting) -->
                   <template v-if="isReconnecting && !prefersReducedMotion">
                     <div
@@ -240,12 +237,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </Teleport>
@@ -491,7 +483,9 @@ onUnmounted(() => {
 }
 
 .animate-pulse-subtle {
-  animation: pulse-subtle 2s ease-in-out infinite;
+  animation: pulse-subtle
+    v-bind('animationConfig.offlineIndicator.pulseSubtleSec + "s"') ease-in-out
+    infinite;
 }
 
 /* Icon pulse animation */
@@ -508,7 +502,9 @@ onUnmounted(() => {
 }
 
 .animate-icon-pulse {
-  animation: icon-pulse 2s ease-in-out infinite;
+  animation: icon-pulse
+    v-bind('animationConfig.offlineIndicator.iconPulseSec + "s"') ease-in-out
+    infinite;
 }
 
 /* Icon press animation for retry button */
@@ -541,7 +537,8 @@ onUnmounted(() => {
 }
 
 .animate-bounce-subtle {
-  animation: bounce-subtle 0.5s ease-in-out;
+  animation: bounce-subtle
+    v-bind('animationConfig.offlineIndicator.bounceSubtleSec + "s"') ease-in-out;
 }
 
 /* Checkmark pop animation */
@@ -562,7 +559,8 @@ onUnmounted(() => {
 
 /* Flexy hates hardcoded values! Using configurable easing from easingConfig */
 .animate-check-pop {
-  animation: check-pop 0.4s
+  animation: check-pop
+    v-bind('animationConfig.offlineIndicator.checkPopSec + "s"')
     v-bind(
       'easingConfig?.cubicBezier?.spring ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
     );
