@@ -164,7 +164,7 @@
                 :overscan="uiConfig.virtualList.pageOverscan"
               >
                 <template #default="{ item: resource }">
-                  <LazyResourceCard
+                  <LazyLoadResourceCard
                     :id="resource.id"
                     :key="resource.id"
                     :title="resource.title"
