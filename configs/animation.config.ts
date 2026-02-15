@@ -334,6 +334,31 @@ export const animationConfig = {
     },
   },
 
+  // Copy Particles Animation - Palette's micro-UX delight! ✨
+  // Celebratory particle burst effect when content is successfully copied
+  copyParticles: {
+    // Number of particles in the burst
+    particleCount: parseInt(process.env.COPY_PARTICLES_COUNT || '10'),
+    // Spread distance of particles (px)
+    spreadPx: parseInt(process.env.COPY_PARTICLES_SPREAD_PX || '50'),
+    // Minimum particle size (px)
+    minSizePx: parseInt(process.env.COPY_PARTICLES_MIN_SIZE_PX || '4'),
+    // Maximum particle size (px)
+    maxSizePx: parseInt(process.env.COPY_PARTICLES_MAX_SIZE_PX || '8'),
+    // Animation duration (ms)
+    durationMs: parseInt(process.env.COPY_PARTICLES_DURATION_MS || '600'),
+    // Delay before particles fade out (ms)
+    fadeDelayMs: parseInt(process.env.COPY_PARTICLES_FADE_DELAY_MS || '100'),
+    // Particle colors - green and blue themed for copy action
+    colors: [
+      '#10b981', // emerald-500
+      '#3b82f6', // blue-500
+      '#06b6d4', // cyan-500
+      '#22c55e', // green-500
+      '#14b8a6', // teal-500
+    ],
+  },
+
   // Suggestion/Filter Animations - Palette's micro-UX delight!
   // Adds tactile press feedback and spring animations for delightful interactions
   suggestion: {
