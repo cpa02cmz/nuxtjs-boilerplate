@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { databaseConfig } from '~/configs/database.config'
+import { timeConfig } from '~/configs/time.config'
 
 // Flexy hates hardcoded values! Using config for log prefix
 const LOG_PREFIX = databaseConfig.logging.prefix
@@ -378,7 +379,9 @@ export async function executeTransaction<T>(
 
       // Check if error is retryable
       if (isRetryableError(lastError) && attempt < maxRetries! - 1) {
-        const delayMs = (retryDelayMs || 100) * Math.pow(2, attempt)
+        const delayMs =
+          (retryDelayMs || timeConfig.retry.baseDelayMs) *
+          Math.pow(timeConfig.retry.exponentialBase, attempt)
         console.warn(
           `${LOG_PREFIX} Transaction ${operationName} failed (attempt ${attempt + 1}/${maxRetries}), retrying in ${delayMs}ms:`,
           lastError.message

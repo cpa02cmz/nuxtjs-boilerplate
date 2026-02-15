@@ -598,6 +598,18 @@ export const uiConfig = {
       warning: process.env.CHAR_COUNTER_WARNING_COLOR || '#f59e0b',
     },
   },
+
+  // Intersection Observer Configuration - Flexy hates hardcoded thresholds!
+  intersectionObserver: {
+    // Default threshold for intersection detection (0-1)
+    // 0.1 means 10% of element must be visible to trigger
+    threshold: parseFloat(process.env.INTERSECTION_OBSERVER_THRESHOLD || '0.1'),
+    // Default root margin (css margin-like syntax)
+    rootMargin: process.env.INTERSECTION_OBSERVER_ROOT_MARGIN || '0px',
+    // Whether to unobserve after first intersection
+    unobserveOnIntersect:
+      process.env.INTERSECTION_OBSERVER_UNOBSERVE !== 'false',
+  },
 } as const
 
 export type UiConfig = typeof uiConfig
