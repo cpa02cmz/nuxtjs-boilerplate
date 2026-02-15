@@ -303,14 +303,15 @@ export interface TransactionOptions {
 }
 
 /**
- * Default transaction options
+ * Default transaction options - Flexy hates hardcoded values!
+ * All transaction settings now come from database.config.ts
  */
 const DEFAULT_TRANSACTION_OPTIONS: TransactionOptions = {
-  maxWait: 5000,
-  timeout: 10000,
-  isolationLevel: 'ReadCommitted',
-  maxRetries: 3,
-  retryDelayMs: 100,
+  maxWait: databaseConfig.transaction.maxWaitMs,
+  timeout: databaseConfig.transaction.timeoutMs,
+  isolationLevel: databaseConfig.transaction.isolationLevel,
+  maxRetries: databaseConfig.transaction.maxRetries,
+  retryDelayMs: databaseConfig.transaction.retryDelayMs,
 }
 
 /**

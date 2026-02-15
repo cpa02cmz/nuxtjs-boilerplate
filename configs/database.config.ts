@@ -71,6 +71,70 @@ export const databaseConfig = {
     // Connection idle timeout in milliseconds (reserved for future use)
     idleTimeoutMs: parseInt(process.env.DB_IDLE_TIMEOUT_MS || '10000'),
   },
+
+  // Transaction Settings - Flexy hates hardcoded transaction options!
+  transaction: {
+    // Maximum time to wait for a transaction to start (ms)
+    maxWaitMs: parseInt(process.env.DB_TRANSACTION_MAX_WAIT_MS || '5000'),
+    // Maximum time for transaction to complete (ms)
+    timeoutMs: parseInt(process.env.DB_TRANSACTION_TIMEOUT_MS || '10000'),
+    // Default isolation level for transactions
+    isolationLevel:
+      (process.env.DB_TRANSACTION_ISOLATION_LEVEL as
+        | 'ReadCommitted'
+        | 'RepeatableRead'
+        | 'Serializable') || 'ReadCommitted',
+    // Maximum retry attempts for failed transactions
+    maxRetries: parseInt(process.env.DB_TRANSACTION_MAX_RETRIES || '3'),
+    // Delay between retry attempts (ms)
+    retryDelayMs: parseInt(process.env.DB_TRANSACTION_RETRY_DELAY_MS || '100'),
+
+    // Webhook-specific transaction settings
+    webhook: {
+      // Timeout for webhook transactions (ms)
+      timeoutMs: parseInt(process.env.DB_WEBHOOK_TX_TIMEOUT_MS || '5000'),
+      // Max retries for webhook transactions
+      maxRetries: parseInt(process.env.DB_WEBHOOK_TX_MAX_RETRIES || '3'),
+      // Isolation level for critical webhook operations
+      criticalIsolationLevel:
+        (process.env.DB_WEBHOOK_TX_ISOLATION_LEVEL as
+          | 'ReadCommitted'
+          | 'RepeatableRead'
+          | 'Serializable') || 'Serializable',
+      // Timeout for critical webhook operations (ms)
+      criticalTimeoutMs: parseInt(
+        process.env.DB_WEBHOOK_TX_CRITICAL_TIMEOUT_MS || '10000'
+      ),
+      // Max retries for critical webhook operations
+      criticalMaxRetries: parseInt(
+        process.env.DB_WEBHOOK_TX_CRITICAL_MAX_RETRIES || '5'
+      ),
+    },
+
+    // Error tracking transaction settings
+    errorTracking: {
+      // Timeout for error tracking transactions (ms)
+      timeoutMs: parseInt(
+        process.env.DB_ERROR_TRACKING_TX_TIMEOUT_MS || '5000'
+      ),
+      // Max retries for error tracking transactions
+      maxRetries: parseInt(process.env.DB_ERROR_TRACKING_TX_MAX_RETRIES || '3'),
+    },
+
+    // Moderation transaction settings
+    moderation: {
+      // Timeout for moderation transactions (ms)
+      timeoutMs: parseInt(process.env.DB_MODERATION_TX_TIMEOUT_MS || '10000'),
+      // Max retries for moderation transactions
+      maxRetries: parseInt(process.env.DB_MODERATION_TX_MAX_RETRIES || '3'),
+      // Isolation level for moderation transactions
+      isolationLevel:
+        (process.env.DB_MODERATION_TX_ISOLATION_LEVEL as
+          | 'ReadCommitted'
+          | 'RepeatableRead'
+          | 'Serializable') || 'Serializable',
+    },
+  },
 } as const
 
 export type DatabaseConfig = typeof databaseConfig

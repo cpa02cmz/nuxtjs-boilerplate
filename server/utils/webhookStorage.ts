@@ -15,6 +15,7 @@ import type {
 } from '@prisma/client'
 import { prisma, executeTransaction } from './db'
 import { PAGINATION } from './constants'
+import { databaseConfig } from '~/configs/database.config'
 import { safeJsonParse } from './safeJsonParse'
 import { logger } from '~/utils/logger'
 import { encryptSecret, decryptSecret } from './encryption'
@@ -216,7 +217,11 @@ export const webhookStorage = {
 
           return webhook ? mapPrismaToWebhook(webhook) : null
         },
-        { timeout: 5000, maxRetries: 3 },
+        // Flexy hates hardcoded values! Using config for transaction options
+        {
+          timeout: databaseConfig.transaction.webhook.timeoutMs,
+          maxRetries: databaseConfig.transaction.webhook.maxRetries,
+        },
         'updateWebhook'
       )
     } catch (error) {
@@ -334,7 +339,11 @@ export const webhookStorage = {
 
           return delivery ? mapPrismaToWebhookDelivery(delivery) : null
         },
-        { timeout: 5000, maxRetries: 3 },
+        // Flexy hates hardcoded values! Using config for transaction options
+        {
+          timeout: databaseConfig.transaction.webhook.timeoutMs,
+          maxRetries: databaseConfig.transaction.webhook.maxRetries,
+        },
         'updateDelivery'
       )
     } catch (error) {
@@ -480,7 +489,11 @@ export const webhookStorage = {
 
           return apiKey ? mapPrismaToApiKey(apiKey) : null
         },
-        { timeout: 5000, maxRetries: 3 },
+        // Flexy hates hardcoded values! Using config for transaction options
+        {
+          timeout: databaseConfig.transaction.webhook.timeoutMs,
+          maxRetries: databaseConfig.transaction.webhook.maxRetries,
+        },
         'updateApiKey'
       )
     } catch (error) {
@@ -619,10 +632,12 @@ export const webhookStorage = {
 
           return mapPrismaToWebhookQueueItem(item)
         },
+        // Flexy hates hardcoded values! Using config for critical transaction options
         {
-          timeout: 10000,
-          maxRetries: 5,
-          isolationLevel: 'Serializable',
+          timeout: databaseConfig.transaction.webhook.criticalTimeoutMs,
+          maxRetries: databaseConfig.transaction.webhook.criticalMaxRetries,
+          isolationLevel:
+            databaseConfig.transaction.webhook.criticalIsolationLevel,
         },
         'dequeueAtomic'
       )
@@ -745,7 +760,11 @@ export const webhookStorage = {
 
           return mapPrismaToWebhookDelivery(created)
         },
-        { timeout: 5000, maxRetries: 3 },
+        // Flexy hates hardcoded values! Using config for transaction options
+        {
+          timeout: databaseConfig.transaction.webhook.timeoutMs,
+          maxRetries: databaseConfig.transaction.webhook.maxRetries,
+        },
         'createDeliveryWithIdempotencyKey'
       )
     } catch (error) {
