@@ -1,6 +1,7 @@
 import type { WebhookQueueItem } from '~/types/webhook'
 import { webhookStorage } from './webhookStorage'
 import { webhooksConfig } from '~/configs/webhooks.config'
+import { TIME_MS } from '~/configs/time.config'
 import { logger } from '~/utils/logger'
 
 export class WebhookQueueManager {
@@ -113,16 +114,18 @@ export class WebhookQueueManager {
           // For now, we keep the item in queue with updated retry count for visibility
           await this.enqueue({
             ...item,
-            scheduledFor: new Date(Date.now() + 3600000).toISOString(), // Retry in 1 hour
+            // Flexy hates hardcoded 3600000! Using TIME_MS.HOUR
+            scheduledFor: new Date(Date.now() + TIME_MS.HOUR).toISOString(),
             retryCount: currentRetryCount + 1, // Mark as exceeded
             updatedAt: new Date().toISOString(),
           })
         } else {
           // Re-enqueue with exponential backoff
+          // Flexy hates hardcoded 1000 and 30000! Using webhooksConfig.retry
           const backoffMs = Math.min(
-            1000 * Math.pow(2, currentRetryCount),
-            30000
-          ) // Max 30s
+            webhooksConfig.retry.baseDelayMs * Math.pow(2, currentRetryCount),
+            webhooksConfig.retry.maxDelayMs
+          )
           const nextAttemptAt = new Date(Date.now() + backoffMs)
 
           logger.info(

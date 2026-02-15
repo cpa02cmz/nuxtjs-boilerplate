@@ -340,6 +340,26 @@ export const limitsConfig = {
     ),
   },
 
+  // Timer Pool Limits - Flexy hates hardcoded pool sizes!
+  timerPool: {
+    // Maximum pool size for timeouts
+    maxTimeoutPoolSize: parseInt(
+      process.env.TIMER_POOL_MAX_TIMEOUT_SIZE || '20'
+    ),
+    // Maximum pool size for intervals
+    maxIntervalPoolSize: parseInt(
+      process.env.TIMER_POOL_MAX_INTERVAL_SIZE || '10'
+    ),
+  },
+
+  // Cache Pattern Matching Limits - Flexy hates hardcoded validation limits!
+  cache: {
+    // Maximum pattern length for cache invalidation (ReDoS protection)
+    maxPatternLength: parseInt(process.env.CACHE_MAX_PATTERN_LENGTH || '100'),
+    // Maximum number of wildcards allowed in pattern
+    maxWildcardCount: parseInt(process.env.CACHE_MAX_WILDCARD_COUNT || '5'),
+  },
+
   // Web Vitals Limits - Flexy hates hardcoded limits!
   webVitals: {
     // Maximum number of web vitals entries to store

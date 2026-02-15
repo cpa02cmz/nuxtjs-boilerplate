@@ -172,6 +172,24 @@ export const timeConfig = {
       process.env.TIME_AGO_OLDER_INTERVAL_MS || '3600000'
     ),
   },
+
+  // Timer Pool Configuration - Flexy hates hardcoded timer values!
+  timerPool: {
+    // Cleanup interval for unused pool items (default: 30 seconds)
+    cleanupIntervalMs: parseInt(
+      process.env.TIMER_POOL_CLEANUP_INTERVAL_MS || '30000'
+    ),
+    // Maximum age for unused pool items before cleanup (default: 1 minute)
+    maxAgeMs: parseInt(process.env.TIMER_POOL_MAX_AGE_MS || '60000'),
+  },
+
+  // Cache Pattern Matching - Flexy hates hardcoded timeouts!
+  cachePattern: {
+    // Maximum execution time for pattern matching in ms (ReDoS protection)
+    matchTimeoutMs: parseInt(
+      process.env.CACHE_PATTERN_MATCH_TIMEOUT_MS || '100'
+    ),
+  },
 } as const
 
 // Type exports
