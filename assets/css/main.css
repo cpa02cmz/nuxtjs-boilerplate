@@ -61,6 +61,11 @@
   --z-focus-spotlight: 9999;
   --z-focus-glow: 9998;
   --z-loading-overlay: 9999;
+
+  /* Text Selection Colors - Palette's micro-UX delight! */
+  /* Brand-colored selection for a more polished feel */
+  --selection-bg: rgba(59, 130, 246, 0.3);
+  --selection-text: inherit;
 }
 
 /* Custom styles can be added here */
@@ -83,6 +88,45 @@ body {
     'Open Sans',
     'Helvetica Neue',
     sans-serif;
+}
+
+/* ============================================
+   Custom Text Selection - Palette's micro-UX delight! ✨
+   Brand-colored selection for a polished, cohesive experience
+   ============================================ */
+
+/* Standard selection styling with brand colors */
+::selection {
+  background-color: var(--selection-bg);
+  color: var(--selection-text);
+}
+
+/* Firefox prefix support */
+::-moz-selection {
+  background-color: var(--selection-bg);
+  color: var(--selection-text);
+}
+
+/* Dark mode selection - slightly stronger opacity for visibility */
+html.dark ::selection {
+  background-color: rgba(96, 165, 250, 0.4);
+}
+
+html.dark ::-moz-selection {
+  background-color: rgba(96, 165, 250, 0.4);
+}
+
+/* High contrast mode - ensure visibility */
+@media (prefers-contrast: high) {
+  ::selection {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+
+  ::-moz-selection {
+    background-color: Highlight;
+    color: HighlightText;
+  }
 }
 
 /* Improved focus styles for keyboard navigation - Using CSS Variables */
