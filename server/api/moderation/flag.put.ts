@@ -7,44 +7,39 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { flagResourceSchema } from '~/server/utils/validation-schemas'
 
 export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
     const body = await readBody(event)
 
-    // Validate required fields
-    if (!body.resourceId) {
-      return sendBadRequestError(event, 'Resource ID is required')
+    // Validate using Zod schema
+    const validationResult = flagResourceSchema.safeParse(body)
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.issues
+        .map(e => e.message)
+        .join(', ')
+      return sendBadRequestError(event, errorMessage)
     }
 
-    if (
-      !body.reason ||
-      typeof body.reason !== 'string' ||
-      body.reason.trim().length === 0
-    ) {
-      return sendBadRequestError(event, 'Flag reason is required')
-    }
-
-    if (!body.reportedBy) {
-      return sendBadRequestError(event, 'Reporter ID is required')
-    }
+    const { resourceId, reason, reportedBy } = validationResult.data
 
     // Check if resource exists in database
     const resource = await prisma.resource.findUnique({
-      where: { id: body.resourceId },
+      where: { id: resourceId },
     })
 
     if (!resource) {
-      return sendNotFoundError(event, 'Resource', body.resourceId)
+      return sendNotFoundError(event, 'Resource', resourceId)
     }
 
     // Create a flag in database
     const newFlag = await prisma.flag.create({
       data: {
-        resourceId: body.resourceId,
-        reason: body.reason,
-        reportedBy: body.reportedBy,
+        resourceId,
+        reason,
+        reportedBy,
       },
     })
 

@@ -10,6 +10,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { userConfig } from '~/configs/user.config'
+import { resourceStatusUpdateSchema } from '~/server/utils/validation-schemas'
 
 interface StatusChangeRecord {
   id: string
@@ -25,7 +26,18 @@ export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
     const resourceId = getRouterParam(event, 'id') ?? ''
-    const { status, reason, notes } = await readBody(event)
+    const body = await readBody(event)
+
+    // Validate using Zod schema
+    const validationResult = resourceStatusUpdateSchema.safeParse(body)
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.issues
+        .map(e => e.message)
+        .join(', ')
+      return sendBadRequestError(event, errorMessage)
+    }
+
+    const { status, reason, notes } = validationResult.data
 
     // Get resource from database
     const resource = await prisma.resource.findUnique({
@@ -34,21 +46,6 @@ export default defineEventHandler(async event => {
 
     if (!resource) {
       return sendNotFoundError(event, 'Resource', resourceId)
-    }
-
-    // Validate status value
-    const validStatuses = [
-      'active',
-      'deprecated',
-      'discontinued',
-      'updated',
-      'pending',
-    ]
-    if (!validStatuses.includes(status)) {
-      return sendBadRequestError(
-        event,
-        `Invalid status value. Valid options: ${validStatuses.join(', ')}`
-      )
     }
 
     // Authentication check - verify auth context is valid

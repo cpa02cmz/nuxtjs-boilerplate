@@ -34,10 +34,10 @@ export default defineEventHandler(async event => {
 
     // Try to get from cache first
     const cachedResult = await cacheManager.get(cacheKey)
-    if (cachedResult) {
+    if (cachedResult?.data) {
       event.node.res?.setHeader('X-Cache', 'HIT')
       event.node.res?.setHeader('X-Cache-Key', cacheKey)
-      return cachedResult
+      return sendSuccessResponse(event, cachedResult.data)
     }
 
     // Import resources from JSON

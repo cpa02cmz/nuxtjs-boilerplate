@@ -9,6 +9,7 @@ import {
 } from '~/server/utils/api-response'
 import { paginationConfig } from '~/configs/pagination.config'
 import { contentConfig } from '~/configs/content.config'
+import { bulkStatusUpdateSchema } from '~/server/utils/validation-schemas'
 
 // Maximum number of resources that can be updated in a single bulk request
 // Flexy hates hardcoded limits! Using config instead
@@ -24,15 +25,18 @@ export default defineEventHandler(async event => {
       return sendUnauthorizedError(event, 'API key required')
     }
 
-    const { resourceIds, status } = await readBody(event)
+    const body = await readBody(event)
 
-    // Validate required fields
-    if (!Array.isArray(resourceIds) || !status) {
-      return sendBadRequestError(
-        event,
-        'resourceIds array and status are required'
-      )
+    // Validate using Zod schema
+    const validationResult = bulkStatusUpdateSchema.safeParse(body)
+    if (!validationResult.success) {
+      const errorMessage = validationResult.error.issues
+        .map(e => e.message)
+        .join(', ')
+      return sendBadRequestError(event, errorMessage)
     }
+
+    const { resourceIds, status } = validationResult.data
 
     // Validate array length to prevent DoS via memory exhaustion
     if (resourceIds.length > MAX_BULK_UPDATE_COUNT) {
@@ -40,18 +44,6 @@ export default defineEventHandler(async event => {
         event,
         `Cannot update more than ${MAX_BULK_UPDATE_COUNT} resources at once`
       )
-    }
-
-    // Validate status value
-    const validStatuses = [
-      'active',
-      'deprecated',
-      'discontinued',
-      'updated',
-      'pending',
-    ]
-    if (!validStatuses.includes(status)) {
-      return sendBadRequestError(event, 'Invalid status value')
     }
 
     // Get all resources
