@@ -158,9 +158,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import ResourceFilters from '~/components/ResourceFilters.vue'
 import { hapticConfig } from '~/configs/haptic.config'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 interface FacetCounts {
   [key: string]: number
@@ -219,6 +220,16 @@ const closeButtonRef = ref<HTMLButtonElement | null>(null)
 const filterButtonRef = ref<HTMLButtonElement | null>(null)
 let previouslyFocusedElement: HTMLElement | null = null
 
+// Palette's micro-UX enhancement: Track reduced motion preference for accessibility
+const prefersReducedMotion = ref(false)
+
+// Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
 const activeFiltersCount = computed(() => {
   let count = 0
   count += props.selectedCategories.length
@@ -238,6 +249,12 @@ const openDrawer = () => {
   isOpen.value = true
   document.body.style.overflow = 'hidden'
 
+  // Palette's micro-UX delight: Haptic feedback when opening drawer
+  // Provides subtle tactile confirmation on supported mobile devices
+  if (!prefersReducedMotion.value) {
+    hapticLight()
+  }
+
   nextTick(() => {
     closeButtonRef.value?.focus()
   })
@@ -246,6 +263,12 @@ const openDrawer = () => {
 const closeDrawer = () => {
   isOpen.value = false
   document.body.style.overflow = ''
+
+  // Palette's micro-UX delight: Haptic feedback when closing drawer
+  // Provides subtle tactile confirmation on supported mobile devices
+  if (!prefersReducedMotion.value) {
+    hapticLight()
+  }
 
   nextTick(() => {
     previouslyFocusedElement?.focus()
@@ -288,6 +311,9 @@ const handleFocusTrap = (event: KeyboardEvent) => {
 onMounted(() => {
   document.addEventListener('keydown', handleEscapeKey)
   document.addEventListener('keydown', handleFocusTrap)
+
+  // Check for reduced motion preference on mount
+  prefersReducedMotion.value = checkReducedMotion()
 })
 
 onUnmounted(() => {
