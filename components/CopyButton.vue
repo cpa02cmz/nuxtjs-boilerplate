@@ -13,9 +13,12 @@
           isCopied
             ? 'bg-green-100 text-green-700 focus:ring-green-500'
             : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800 focus:ring-gray-400',
+          { 'animate-focus-pulse': showFocusPulse && !prefersReducedMotion },
         ]"
         :aria-label="isCopied ? copiedAriaLabel : label"
         @click="handleCopyWithRipple"
+        @focus="handleFocus"
+        @blur="handleBlur"
       >
         <!-- Copy Icon -->
         <svg
@@ -60,12 +63,7 @@
     </Tooltip>
 
     <!-- Screen reader live region for copy status announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
 
@@ -94,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, type Ref } from 'vue'
+import { ref, onMounted, onUnmounted, type Ref } from 'vue'
 import Tooltip from './Tooltip.vue'
 import { useRipple } from '~/composables/useRipple'
 import { animationConfig } from '~/configs/animation.config'
@@ -125,6 +123,36 @@ const isHovering = ref(false)
 const announcementText = ref('')
 const prefersReducedMotion = ref(false)
 const buttonRef = ref<HTMLButtonElement | null>(null)
+
+// Palette's micro-UX enhancement: Keyboard focus pulse for accessibility
+const showFocusPulse = ref(false)
+let focusPulseTimeout: ReturnType<typeof setTimeout> | null = null
+const FOCUS_PULSE_DURATION_MS = 600
+
+const handleFocus = () => {
+  if (prefersReducedMotion.value) return
+
+  // Clear any existing timeout
+  if (focusPulseTimeout) {
+    clearTimeout(focusPulseTimeout)
+  }
+
+  // Trigger focus pulse animation
+  showFocusPulse.value = true
+
+  // Reset after animation completes
+  focusPulseTimeout = setTimeout(() => {
+    showFocusPulse.value = false
+  }, FOCUS_PULSE_DURATION_MS)
+}
+
+const handleBlur = () => {
+  showFocusPulse.value = false
+  if (focusPulseTimeout) {
+    clearTimeout(focusPulseTimeout)
+    focusPulseTimeout = null
+  }
+}
 
 // Tooltip text computed from props or config
 const copyTooltipText = contentConfig.copyButton.tooltip.copy
@@ -241,6 +269,13 @@ const handleCopy = async () => {
     }, animationConfig.copyFeedback.durationMs)
   }
 }
+
+// Cleanup on unmount to prevent memory leaks
+onUnmounted(() => {
+  if (focusPulseTimeout) {
+    clearTimeout(focusPulseTimeout)
+  }
+})
 </script>
 
 <style scoped>
@@ -371,6 +406,49 @@ const handleCopy = async () => {
 @media (prefers-reduced-motion: reduce) {
   .copy-particle-container {
     display: none;
+  }
+}
+
+/* Palette's micro-UX enhancement: Keyboard Focus Pulse Animation ✨
+   Provides delightful visual feedback when button receives keyboard focus */
+.animate-focus-pulse {
+  animation: focus-pulse-ring 600ms ease-out;
+}
+
+@keyframes focus-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+  }
+}
+
+/* Success state focus pulse uses green color */
+.bg-green-100.animate-focus-pulse {
+  animation: focus-pulse-ring-green 600ms ease-out;
+}
+
+@keyframes focus-pulse-ring-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+}
+
+/* Reduced motion support for focus pulse */
+@media (prefers-reduced-motion: reduce) {
+  .animate-focus-pulse,
+  .bg-green-100.animate-focus-pulse {
+    animation: none;
   }
 }
 </style>
