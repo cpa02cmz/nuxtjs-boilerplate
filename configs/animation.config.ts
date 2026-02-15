@@ -47,6 +47,29 @@ export const animationConfig = {
     ),
   },
 
+  // Relative Time Badge Animations - Palette's micro-UX delight! 🎨
+  // Visual feedback when relative time updates (e.g., "just now" → "1 min ago")
+  relativeTimeBadge: {
+    // Duration of the highlight animation when time updates (ms)
+    updateHighlightDurationMs: parseInt(
+      process.env.RELATIVE_TIME_UPDATE_HIGHLIGHT_MS || '600'
+    ),
+    // Background color for the highlight flash (tailwind color or hex)
+    updateHighlightColor:
+      process.env.RELATIVE_TIME_UPDATE_HIGHLIGHT_COLOR ||
+      'rgba(59, 130, 246, 0.15)',
+    // Scale effect on text when updating
+    updateTextScale: parseFloat(
+      process.env.RELATIVE_TIME_UPDATE_SCALE || '1.02'
+    ),
+    // Enable/disable the update animation
+    enableUpdateAnimation: process.env.RELATIVE_TIME_ENABLE_UPDATE !== 'false',
+    // Minimum time between updates to trigger animation (prevents spam) (ms)
+    updateDebounceMs: parseInt(
+      process.env.RELATIVE_TIME_UPDATE_DEBOUNCE_MS || '5000'
+    ),
+  },
+
   // Skeleton/Loading Animations
   skeleton: {
     shimmerDurationMs: parseInt(
