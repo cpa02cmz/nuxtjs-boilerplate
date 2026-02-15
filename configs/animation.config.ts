@@ -573,6 +573,19 @@ export const animationConfig = {
     ),
     tooltipAppearDuration:
       process.env.READING_PROGRESS_TOOLTIP_APPEAR || '0.2s',
+    // CSS Animation Durations for Keyframes - Flexy hates hardcoded values!
+    // Completion pop-in animation duration (seconds)
+    completionPopDurationSec: `${parseInt(process.env.READING_PROGRESS_COMPLETION_POP_MS || '500') / 1000}s`,
+    // Icon rotate-in animation duration (seconds)
+    iconRotateDurationSec: `${parseInt(process.env.READING_PROGRESS_ICON_ROTATE_MS || '400') / 1000}s`,
+    // Circle scale animation duration (seconds)
+    circleScaleDurationSec: `${parseInt(process.env.READING_PROGRESS_CIRCLE_SCALE_MS || '300') / 1000}s`,
+    // Reading time pop animation duration (seconds)
+    timePopDurationSec: `${parseInt(process.env.READING_PROGRESS_TIME_POP_MS || '300') / 1000}s`,
+    // Clock tick animation duration (seconds)
+    clockTickDurationSec: `${parseInt(process.env.READING_PROGRESS_CLOCK_TICK_MS || '2000') / 1000}s`,
+    // Complete pulse animation duration (seconds)
+    completePulseDurationSec: `${parseInt(process.env.READING_PROGRESS_COMPLETE_PULSE_MS || '1500') / 1000}s`,
     // Milestone interval for progress announcements (percent)
     milestoneInterval: parseInt(
       process.env.READING_PROGRESS_MILESTONE_INTERVAL || '25'
@@ -622,6 +635,8 @@ export const animationConfig = {
     successPulseDurationMs: parseInt(
       process.env.ERROR_BOUNDARY_SUCCESS_PULSE_DURATION_MS || '400'
     ),
+    // Focus pulse animation duration (seconds) - Flexy hates hardcoded 2s!
+    focusPulseDurationSec: `${parseInt(process.env.ERROR_BOUNDARY_FOCUS_PULSE_MS || '2000') / 1000}s`,
     // Countdown ring configuration for auto-retry
     countdownRing: {
       // Radius of the countdown ring in pixels
@@ -637,6 +652,30 @@ export const animationConfig = {
         process.env.ERROR_BOUNDARY_RING_TRACK_COLOR ||
         'rgba(59, 130, 246, 0.2)',
     },
+  },
+
+  // Deprecation Notice Animations - Flexy hates hardcoded pulse durations!
+  // Used for deprecation warning pulse animations
+  deprecationNotice: {
+    // Pulse subtle animation duration (seconds)
+    pulseDurationSec: `${parseInt(process.env.DEPRECATION_PULSE_MS || '2000') / 1000}s`,
+    // Icon attention duration (seconds)
+    iconAttentionDurationSec: `${parseInt(process.env.DEPRECATION_ICON_ATTENTION_MS || '2000') / 1000}s`,
+    // Icon attention delay (seconds)
+    iconAttentionDelaySec: `${parseInt(process.env.DEPRECATION_ICON_ATTENTION_DELAY_MS || '500') / 1000}s`,
+  },
+
+  // Filter Section Animations - Flexy hates hardcoded count pulse!
+  // Used for filter count badge pulse animations
+  filterSection: {
+    // Count pulse animation duration (seconds)
+    countPulseDurationSec: `${parseInt(process.env.FILTER_COUNT_PULSE_MS || '300') / 1000}s`,
+    // Checkbox bloom duration (ms)
+    checkboxBloomMs: parseInt(process.env.FILTER_CHECKBOX_BLOOM_MS || '400'),
+    // Section expand duration (ms)
+    sectionExpandMs: parseInt(process.env.FILTER_SECTION_EXPAND_MS || '300'),
+    // Badge pop scale
+    badgePopScale: parseFloat(process.env.FILTER_BADGE_POP_SCALE || '1.15'),
   },
 
   // API Keys Animations - Flexy hates hardcoded draw animation!

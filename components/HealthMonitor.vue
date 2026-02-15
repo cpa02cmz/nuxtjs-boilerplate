@@ -416,7 +416,9 @@ onUnmounted(() => {
 
 /* Status checking state */
 .status-checking {
-  animation: checking-pulse 1s ease-in-out infinite;
+  animation: checking-pulse
+    v-bind('animationConfig.healthMonitor.pulseDurationSec') ease-in-out
+    infinite;
 }
 
 @keyframes checking-pulse {
