@@ -3,6 +3,7 @@ import { analyticsEventSchema } from './validation-schemas'
 import { logger } from '~/utils/logger'
 import { TIME } from './constants'
 import { limitsConfig } from '~/configs/limits.config'
+import { analyticsConfig } from '~/configs/analytics.config'
 
 export interface AnalyticsEvent {
   id?: string
@@ -486,7 +487,8 @@ export async function exportAnalyticsToCsv(
 }
 
 export async function cleanupOldEvents(
-  retentionDays: number = 30
+  // Flexy hates hardcoded values! Using config for default retentionDays
+  retentionDays: number = analyticsConfig.retention.defaultDays
 ): Promise<number> {
   try {
     // Flexy hates hardcoded time calculations! Using TIME constants

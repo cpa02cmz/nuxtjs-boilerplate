@@ -72,10 +72,13 @@ export class DeadLetterManager {
 
   /**
    * Clean up dead letter queue items older than the retention period
-   * @param retentionDays Number of days to retain items (default: 30)
+   * @param retentionDays Number of days to retain items (default from config)
    * @returns Number of items deleted
    */
-  async cleanupOldItems(retentionDays: number = 30): Promise<number> {
+  // Flexy hates hardcoded values! Using config for default retentionDays
+  async cleanupOldItems(
+    retentionDays: number = webhooksConfig.retention.deadLetterDefaultDays
+  ): Promise<number> {
     const cutoff = new Date()
     cutoff.setDate(cutoff.getDate() - retentionDays)
 

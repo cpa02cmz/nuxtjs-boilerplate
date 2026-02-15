@@ -66,6 +66,23 @@ export const analyticsConfig = {
     msPerDay: 24 * 60 * 60 * 1000,
   },
 
+  // Data Retention Settings - Flexy hates hardcoded retention values!
+  retention: {
+    // Default retention period for analytics events (days) - Flexy hates hardcoded 30!
+    defaultDays: parseInt(process.env.ANALYTICS_RETENTION_DAYS || '30'),
+
+    // Minimum retention period (days)
+    minDays: parseInt(process.env.ANALYTICS_RETENTION_MIN_DAYS || '7'),
+
+    // Maximum retention period (days)
+    maxDays: parseInt(process.env.ANALYTICS_RETENTION_MAX_DAYS || '365'),
+
+    // Cleanup batch size for removing old events
+    cleanupBatchSize: parseInt(
+      process.env.ANALYTICS_CLEANUP_BATCH_SIZE || '1000'
+    ),
+  },
+
   // Performance Tracking
   performance: {
     // Maximum performance history entries

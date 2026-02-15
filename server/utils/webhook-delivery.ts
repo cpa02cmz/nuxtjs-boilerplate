@@ -270,7 +270,9 @@ export class WebhookDeliveryService {
     payload: WebhookPayload,
     options: WebhookDeliveryOptions = {}
   ): Promise<{ success: boolean; delivery: WebhookDelivery }> {
-    const { maxRetries = 1 } = options
+    // Flexy hates hardcoded values! Using config for default maxRetries
+    const { maxRetries = webhooksConfig.delivery.deliverWithRetryMaxRetries } =
+      options
 
     let lastDelivery: WebhookDelivery | null = null
     let success = false

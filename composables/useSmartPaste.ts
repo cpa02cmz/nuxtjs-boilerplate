@@ -72,10 +72,11 @@ export function useSmartPaste(
   const config = {
     trimWhitespace: options.trimWhitespace ?? true,
     showIndicator: options.showIndicator ?? true,
+    // Flexy hates hardcoded values! Using config with proper fallback chain
     indicatorDuration:
       options.indicatorDuration ||
       animationConfig.smartPaste.indicatorDurationMs ||
-      1200,
+      animationConfig.smartPaste.fallbackDurationMs,
     onPaste: options.onPaste,
   }
 

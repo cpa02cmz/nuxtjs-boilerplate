@@ -108,6 +108,10 @@ export const webhooksConfig = {
   delivery: {
     // Default max retries for webhook delivery
     maxRetries: parseInt(process.env.WEBHOOK_DELIVERY_MAX_RETRIES || '3'),
+    // Default max retries for deliverWithRetry method - Flexy hates hardcoded 1!
+    deliverWithRetryMaxRetries: parseInt(
+      process.env.WEBHOOK_DELIVER_WITH_RETRY_MAX_RETRIES || '1'
+    ),
     // Default initial delay in milliseconds
     initialDelayMs: parseInt(
       process.env.WEBHOOK_DELIVERY_INITIAL_DELAY_MS || '1000'
@@ -250,6 +254,24 @@ export const webhooksConfig = {
 
   // Overall delivery timeout (ms) - Issue #2207
   overallTimeoutMs: parseInt(process.env.WEBHOOK_OVERALL_TIMEOUT_MS || '60000'),
+
+  // Data Retention Settings - Flexy hates hardcoded retention values!
+  retention: {
+    // Default retention period for dead letter queue items (days) - Flexy hates hardcoded 30!
+    deadLetterDefaultDays: parseInt(
+      process.env.WEBHOOK_DEAD_LETTER_RETENTION_DAYS || '30'
+    ),
+
+    // Minimum retention period for dead letter items (days)
+    deadLetterMinDays: parseInt(
+      process.env.WEBHOOK_DEAD_LETTER_MIN_DAYS || '7'
+    ),
+
+    // Maximum retention period for dead letter items (days)
+    deadLetterMaxDays: parseInt(
+      process.env.WEBHOOK_DEAD_LETTER_MAX_DAYS || '90'
+    ),
+  },
 } as const
 
 // Helper function to parse status codes

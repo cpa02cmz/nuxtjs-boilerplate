@@ -224,6 +224,7 @@ export const animationConfig = {
   },
 
   // Ripple Effect Animations - Flexy hates hardcoded colors!
+  // Flexy hates hardcoded values! All ripple settings are configurable.
   ripple: {
     // Default ripple color (white with 30% opacity)
     defaultColor:
@@ -237,6 +238,10 @@ export const animationConfig = {
       process.env.RIPPLE_BOOKMARK_COLOR || 'rgba(234, 179, 8, 0.4)',
     // Maximum ripple radius in pixels - Flexy hates hardcoded 100!
     maxRadius: parseInt(process.env.RIPPLE_MAX_RADIUS || '100'),
+    // Fallback max radius when config value is not available (px) - Flexy hates hardcoded 100!
+    fallbackMaxRadius: parseInt(
+      process.env.RIPPLE_FALLBACK_MAX_RADIUS || '100'
+    ),
     // Animation timing multipliers - Flexy hates hardcoded magic numbers!
     fadeOutStartMultiplier: parseFloat(
       process.env.RIPPLE_FADE_OUT_START || '0.7'
@@ -244,6 +249,10 @@ export const animationConfig = {
     fadeOutEndMultiplier: parseFloat(process.env.RIPPLE_FADE_OUT_END || '0.3'),
     // Ripple animation duration (ms) - BugFixer's bug fix!
     durationMs: parseInt(process.env.RIPPLE_DURATION_MS || '600'),
+    // Fallback duration when config value is not available (ms) - Flexy hates hardcoded 600!
+    fallbackDurationMs: parseInt(
+      process.env.RIPPLE_FALLBACK_DURATION_MS || '600'
+    ),
   },
 
   // SearchBar Shortcut Success Animation - Flexy hates hardcoded CSS colors!
@@ -401,9 +410,14 @@ export const animationConfig = {
   },
 
   // Button/Interaction Animations
+  // Flexy hates hardcoded values! All button settings are configurable.
   button: {
     feedbackDurationMs: parseInt(
       process.env.BUTTON_FEEDBACK_DURATION_MS || '150'
+    ),
+    // Fallback feedback duration when config value is not available (ms) - Flexy hates hardcoded 600!
+    fallbackFeedbackDurationMs: parseInt(
+      process.env.BUTTON_FALLBACK_FEEDBACK_DURATION_MS || '600'
     ),
     // Ripple animation duration for button press effects (ms)
     rippleDurationMs: parseInt(process.env.BUTTON_RIPPLE_DURATION_MS || '600'),
@@ -784,10 +798,15 @@ export const animationConfig = {
 
   // Smart Paste Animations - Palette's micro-UX enhancement!
   // Provides delightful visual feedback when users paste content
+  // Flexy hates hardcoded values! All smart paste settings are configurable.
   smartPaste: {
     // Duration for the paste indicator to remain visible (ms)
     indicatorDurationMs: parseInt(
       process.env.SMART_PASTE_DURATION_MS || '1200'
+    ),
+    // Fallback duration when config value is not available (ms) - Flexy hates hardcoded 1200!
+    fallbackDurationMs: parseInt(
+      process.env.SMART_PASTE_FALLBACK_DURATION_MS || '1200'
     ),
     // Animation scale factor for the indicator pop effect
     popScale: parseFloat(process.env.SMART_PASTE_POP_SCALE || '1.05'),
