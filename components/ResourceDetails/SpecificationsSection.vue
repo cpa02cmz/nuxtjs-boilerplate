@@ -44,7 +44,9 @@
         v-for="n in skeletonCount"
         :key="`skeleton-${n}`"
         :class="{ 'skeleton-shimmer': !prefersReducedMotion }"
-        :style="{ animationDelay: `${(n - 1) * 100}ms` }"
+        :style="{
+          animationDelay: `${(n - 1) * animationConfig.skeleton.staggerIncrementMs}ms`,
+        }"
         class="skeleton-item"
       >
         <div class="skeleton-label" />
@@ -53,11 +55,7 @@
     </div>
 
     <!-- Specifications Grid -->
-    <dl
-      v-else
-      :class="gridClass"
-      class="specifications-grid"
-    >
+    <dl v-else :class="gridClass" class="specifications-grid">
       <div
         v-for="(value, key, index) in specifications"
         :key="key"
@@ -170,12 +168,7 @@
     </div>
 
     <!-- Screen Reader Announcements -->
-    <div
-      aria-atomic="true"
-      aria-live="polite"
-      class="sr-only"
-      role="status"
-    >
+    <div aria-atomic="true" aria-live="polite" class="sr-only" role="status">
       {{ announcementText }}
     </div>
   </section>
@@ -183,6 +176,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { animationConfig } from '~/configs/animation.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -228,7 +222,10 @@ const checkReducedMotion = () => {
 // Get staggered animation style
 const getItemStyle = (index: number) => {
   if (prefersReducedMotion.value) return {}
-  const delay = Math.min(index * 50, 300)
+  const delay = Math.min(
+    index * animationConfig.specificationsSection.staggerMultiplierMs,
+    animationConfig.specificationsSection.staggerMaxDelayMs
+  )
   return { '--stagger-delay': `${delay}ms` }
 }
 
