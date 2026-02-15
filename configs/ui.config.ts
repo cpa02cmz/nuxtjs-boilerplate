@@ -64,6 +64,7 @@ export const uiConfig = {
     modal: parseInt(process.env.Z_INDEX_MODAL || '9000'),
     dropdown: parseInt(process.env.Z_INDEX_DROPDOWN || '1000'),
     sticky: parseInt(process.env.Z_INDEX_STICKY || '100'),
+    pageTransition: parseInt(process.env.Z_INDEX_PAGE_TRANSITION || '9998'),
   },
 
   // Toast Styles - Flexy hates hardcoded CSS values!

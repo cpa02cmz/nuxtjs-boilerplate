@@ -605,6 +605,27 @@ export const componentStylesConfig = {
       margin: process.env.SWAGGER_INFO_MARGIN || '20px 0',
     },
   },
+
+  // PageTransition Component - Palette's micro-UX enhancement!
+  // Smooth page transition overlay styles
+  pageTransition: {
+    // Overlay background gradient
+    backgroundGradient:
+      process.env.PAGE_TRANSITION_BG_GRADIENT ||
+      'linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.98) 100%)',
+    // Progress bar height
+    progressHeight: process.env.PAGE_TRANSITION_PROGRESS_HEIGHT || '3px',
+    // Progress bar gradient
+    progressGradient:
+      process.env.PAGE_TRANSITION_PROGRESS_GRADIENT ||
+      'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)',
+    // Spinner size
+    spinnerSize: process.env.PAGE_TRANSITION_SPINNER_SIZE || '48px',
+    // Loading text font size
+    textFontSize: process.env.PAGE_TRANSITION_TEXT_SIZE || '0.875rem',
+    // Loading text color
+    textColor: process.env.PAGE_TRANSITION_TEXT_COLOR || '#6b7280',
+  },
 } as const
 
 export type ComponentStylesConfig = typeof componentStylesConfig

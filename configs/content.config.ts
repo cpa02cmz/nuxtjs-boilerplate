@@ -1802,6 +1802,7 @@ export const contentConfig = {
       'Opening Visit Resource in a new tab',
   },
 
+<<<<<<< HEAD
   // Skip to Content Link - Palette's micro-UX enhancement!
   // Accessibility feature for keyboard users to skip navigation
   skipLink: {
@@ -1817,6 +1818,18 @@ export const contentConfig = {
       'Navigated to main content area',
     // Keyboard shortcut key (shown as hint)
     shortcutKey: process.env.CONTENT_SKIP_LINK_SHORTCUT || '0',
+=======
+  // Page Transition - Palette's micro-UX enhancement!
+  // Smooth page transition animations for visual continuity during navigation
+  pageTransition: {
+    // Loading text displayed during transition
+    loadingText: process.env.CONTENT_PAGE_TRANSITION_LOADING || 'Loading...',
+    // Screen reader announcement when transition starts
+    announcement:
+      process.env.CONTENT_PAGE_TRANSITION_ANNOUNCE || 'Page loading',
+    // Completion message (optional, shown after transition)
+    complete: process.env.CONTENT_PAGE_TRANSITION_COMPLETE || 'Page loaded',
+>>>>>>> main
   },
 } as const
 

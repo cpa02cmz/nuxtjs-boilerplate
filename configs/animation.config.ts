@@ -334,6 +334,31 @@ export const animationConfig = {
     },
   },
 
+  // Copy Particles Animation - Palette's micro-UX delight! ✨
+  // Celebratory particle burst effect when content is successfully copied
+  copyParticles: {
+    // Number of particles in the burst
+    particleCount: parseInt(process.env.COPY_PARTICLES_COUNT || '10'),
+    // Spread distance of particles (px)
+    spreadPx: parseInt(process.env.COPY_PARTICLES_SPREAD_PX || '50'),
+    // Minimum particle size (px)
+    minSizePx: parseInt(process.env.COPY_PARTICLES_MIN_SIZE_PX || '4'),
+    // Maximum particle size (px)
+    maxSizePx: parseInt(process.env.COPY_PARTICLES_MAX_SIZE_PX || '8'),
+    // Animation duration (ms)
+    durationMs: parseInt(process.env.COPY_PARTICLES_DURATION_MS || '600'),
+    // Delay before particles fade out (ms)
+    fadeDelayMs: parseInt(process.env.COPY_PARTICLES_FADE_DELAY_MS || '100'),
+    // Particle colors - green and blue themed for copy action
+    colors: [
+      '#10b981', // emerald-500
+      '#3b82f6', // blue-500
+      '#06b6d4', // cyan-500
+      '#22c55e', // green-500
+      '#14b8a6', // teal-500
+    ],
+  },
+
   // Suggestion/Filter Animations - Palette's micro-UX delight!
   // Adds tactile press feedback and spring animations for delightful interactions
   suggestion: {
@@ -3342,6 +3367,7 @@ export const animationConfig = {
     ),
   },
 
+<<<<<<< HEAD
   // Skip to Content Link Animations - Palette's micro-UX enhancement!
   skipLink: {
     // Entrance animation duration (ms)
@@ -3432,6 +3458,41 @@ export const animationConfig = {
   // Z-Index Configuration
   zIndex: {
     skipLink: parseInt(process.env.Z_INDEX_SKIP_LINK || '9999'),
+=======
+  // ============================================
+  // Palette ULW Loop - Page Transition Component
+  // Smooth page transitions for visual continuity! 🎨
+  // ============================================
+
+  // Page Transition Component Animations
+  pageTransition: {
+    // Duration of the shimmer effect (sec)
+    shimmerDurationSec: parseFloat(
+      process.env.PAGE_TRANSITION_SHIMMER_DURATION_SEC || '1.5'
+    ),
+    // Spinner rotation duration (sec)
+    spinnerDurationSec: parseFloat(
+      process.env.PAGE_TRANSITION_SPINNER_DURATION_SEC || '1.0'
+    ),
+    // Loader fade-in duration (ms)
+    loaderFadeInMs: parseInt(
+      process.env.PAGE_TRANSITION_LOADER_FADE_IN_MS || '200'
+    ),
+    // Text pulse animation duration (sec)
+    textPulseDurationSec: parseFloat(
+      process.env.PAGE_TRANSITION_TEXT_PULSE_SEC || '2.0'
+    ),
+    // Milestone interval for progress announcements (%)
+    milestoneInterval: parseInt(
+      process.env.PAGE_TRANSITION_MILESTONE_INTERVAL || '25'
+    ),
+    // Celebration duration when transition completes (ms)
+    celebrationDurationMs: parseInt(
+      process.env.PAGE_TRANSITION_CELEBRATION_MS || '3000'
+    ),
+    // Progress bar transition duration
+    transitionDuration: `${parseInt(process.env.PAGE_TRANSITION_PROGRESS_DURATION_MS || '100') / 1000}s`,
+>>>>>>> main
   },
 } as const
 

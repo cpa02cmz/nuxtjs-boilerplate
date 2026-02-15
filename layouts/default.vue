@@ -440,8 +440,10 @@
         <div
           class="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <span>© {{ new Date().getFullYear() }} Free Stuff on the Internet. All
-            rights reserved.</span>
+          <span>
+            © {{ new Date().getFullYear() }} Free Stuff on the Internet. All
+            rights reserved.
+          </span>
           <button
             class="inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1 transition-colors duration-200"
             :aria-label="contentConfig.layout.ariaLabels.keyboardShortcuts"
@@ -455,9 +457,7 @@
             <span>Shortcuts</span>
           </button>
         </div>
-        <p class="sr-only">
-          Footer content ends
-        </p>
+        <p class="sr-only">Footer content ends</p>
       </div>
     </footer>
 
@@ -480,6 +480,11 @@
     <client-only>
       <OfflineIndicator />
     </client-only>
+
+    <!-- Page Transition - Palette's micro-UX enhancement! -->
+    <client-only>
+      <PageTransition />
+    </client-only>
   </div>
 </template>
 
@@ -496,6 +501,7 @@ import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
 import KeyboardShortcutsHelp from '~/components/KeyboardShortcutsHelp.vue'
 import OfflineIndicator from '~/components/OfflineIndicator.vue'
 import SkipToContent from '~/components/SkipToContent.vue'
+import PageTransition from '~/components/PageTransition.vue'
 
 // Theme state
 const { isDark, cycleTheme } = useTheme()
