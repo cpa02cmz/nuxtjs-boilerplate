@@ -64,22 +64,27 @@
       />
     </ClientOnly>
 
-    <!-- Quick Copy button with inline feedback -->
+    <!-- Quick Copy button with inline feedback and magnetic effect -->
     <div class="flex items-center">
       <button
         v-if="id"
+        ref="copyButtonRef"
         :class="[
-          `p-2 rounded-full transition-all ${transitionClasses.normal} ease-out`,
+          `p-2 rounded-full transition-all ${transitionClasses.normal} ease-out magnetic-button`,
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
           isCopied
             ? 'bg-green-100 text-green-600 scale-110'
             : isCopyError
               ? 'bg-red-100 text-red-600 scale-110'
               : 'text-gray-600 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-500 dark:hover:text-gray-200 dark:hover:bg-gray-800',
+          { 'is-magnetic': isCopyMagnetic && !prefersReducedMotion },
         ]"
         :aria-label="copyButtonAriaLabel"
         :title="copyButtonTitle"
+        :style="copyButtonStyle"
         @click="copyResourceUrl($event)"
+        @mousemove="handleCopyMouseMove"
+        @mouseleave="handleCopyMouseLeave"
       >
         <svg
           v-if="isCopyError"
@@ -161,22 +166,26 @@
       {{ copyStatus }}
     </div>
 
-    <!-- Compare button with inline feedback -->
+    <!-- Compare button with inline feedback and magnetic effect -->
     <div class="flex items-center">
       <button
         v-if="id"
         ref="compareButtonRef"
         :class="[
-          `p-2 rounded-full transition-all ${transitionClasses.normal} ease-out`,
+          `p-2 rounded-full transition-all ${transitionClasses.normal} ease-out magnetic-button`,
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
           isAddingToComparison
             ? 'bg-blue-100 text-blue-600 scale-110'
             : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 hover:scale-110 active:scale-95 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800',
+          { 'is-magnetic': isCompareMagnetic && !prefersReducedMotion },
         ]"
         :aria-label="compareButtonAriaLabel"
         :title="compareButtonTitle"
         :aria-pressed="isAddingToComparison"
+        :style="compareButtonStyle"
         @click="addResourceToComparison"
+        @mousemove="handleCompareMouseMove"
+        @mouseleave="handleCompareMouseLeave"
       >
         <svg
           v-if="!isAddingToComparison"
@@ -331,6 +340,118 @@ const transitionEnterNormal = computed(
 const transitionLeaveFast = computed(
   () => `transition-all ${transitionClasses.value.fast} ease-in`
 )
+
+// ============================================================
+// PALETTE'S MICRO-UX DELIGHT: Magnetic Button Effect
+// ============================================================
+// Buttons subtly follow the cursor with spring physics for
+// delightful tactile feedback. Respects reduced motion preference.
+
+import { ref, onMounted } from 'vue'
+
+// Check for reduced motion preference
+const prefersReducedMotion = ref(false)
+
+onMounted(() => {
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.value = mediaQuery.matches
+
+    // Listen for changes
+    mediaQuery.addEventListener('change', e => {
+      prefersReducedMotion.value = e.matches
+    })
+  }
+})
+
+// Magnetic button state for Copy button
+const copyButtonRef = ref<HTMLButtonElement | null>(null)
+const isCopyMagnetic = ref(false)
+const copyMagneticX = ref(0)
+const copyMagneticY = ref(0)
+
+// Magnetic button state for Compare button
+const compareButtonRef = ref<HTMLButtonElement | null>(null)
+const isCompareMagnetic = ref(false)
+const compareMagneticX = ref(0)
+const compareMagneticY = ref(0)
+
+// Magnetic effect configuration - Flexy hates hardcoded values!
+const MAGNETIC_STRENGTH = 0.3 // How much the button follows the cursor (0-1)
+const MAGNETIC_RADIUS = 60 // Radius in pixels where effect activates
+const SPRING_STIFFNESS = 0.15 // Spring physics stiffness
+
+// Copy button magnetic handlers
+const handleCopyMouseMove = (event: MouseEvent) => {
+  if (!copyButtonRef.value || prefersReducedMotion.value) return
+
+  const rect = copyButtonRef.value.getBoundingClientRect()
+  const centerX = rect.left + rect.width / 2
+  const centerY = rect.top + rect.height / 2
+
+  // Calculate distance from cursor to button center
+  const deltaX = event.clientX - centerX
+  const deltaY = event.clientY - centerY
+  const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+
+  // Only apply magnetic effect when cursor is within radius
+  if (distance < MAGNETIC_RADIUS) {
+    isCopyMagnetic.value = true
+    // Calculate magnetic pull (stronger when closer to center)
+    const pull = (1 - distance / MAGNETIC_RADIUS) * MAGNETIC_STRENGTH
+    copyMagneticX.value = deltaX * pull * SPRING_STIFFNESS
+    copyMagneticY.value = deltaY * pull * SPRING_STIFFNESS
+  } else {
+    handleCopyMouseLeave()
+  }
+}
+
+const handleCopyMouseLeave = () => {
+  isCopyMagnetic.value = false
+  copyMagneticX.value = 0
+  copyMagneticY.value = 0
+}
+
+// Compare button magnetic handlers
+const handleCompareMouseMove = (event: MouseEvent) => {
+  if (!compareButtonRef.value || prefersReducedMotion.value) return
+
+  const rect = compareButtonRef.value.getBoundingClientRect()
+  const centerX = rect.left + rect.width / 2
+  const centerY = rect.top + rect.height / 2
+
+  const deltaX = event.clientX - centerX
+  const deltaY = event.clientY - centerY
+  const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+
+  if (distance < MAGNETIC_RADIUS) {
+    isCompareMagnetic.value = true
+    const pull = (1 - distance / MAGNETIC_RADIUS) * MAGNETIC_STRENGTH
+    compareMagneticX.value = deltaX * pull * SPRING_STIFFNESS
+    compareMagneticY.value = deltaY * pull * SPRING_STIFFNESS
+  } else {
+    handleCompareMouseLeave()
+  }
+}
+
+const handleCompareMouseLeave = () => {
+  isCompareMagnetic.value = false
+  compareMagneticX.value = 0
+  compareMagneticY.value = 0
+}
+
+// Computed styles for magnetic transform
+const copyButtonStyle = computed(() => ({
+  transform: isCopyMagnetic.value
+    ? `translate(${copyMagneticX.value}px, ${copyMagneticY.value}px)`
+    : 'translate(0, 0)',
+}))
+
+const compareButtonStyle = computed(() => ({
+  transform: isCompareMagnetic.value
+    ? `translate(${compareMagneticX.value}px, ${compareMagneticY.value}px)`
+    : 'translate(0, 0)',
+}))
 </script>
 
 <style scoped>
@@ -430,6 +551,74 @@ const transitionLeaveFast = computed(
       v-bind('animationConfig?.cssTransitions?.ultraFastSec ?? "0.15s"')
       ease-out !important;
     transform: translateX(-50%) !important;
+  }
+}
+
+/* ============================================================
+   PALETTE'S MICRO-UX DELIGHT: Magnetic Button Styles
+   ============================================================ */
+
+/* Magnetic button base styles with smooth spring transition */
+.magnetic-button {
+  transition:
+    transform v-bind('animationConfig?.cssTransitions?.fastSec ?? "0.15s"')
+      v-bind(
+        'easingConfig?.cubicBezier?.spring ?? "cubic-bezier(0.175, 0.885, 0.32, 1.275)"'
+      ),
+    background-color
+      v-bind('animationConfig?.cssTransitions?.fastSec ?? "0.15s"') ease-out,
+    color v-bind('animationConfig?.cssTransitions?.fastSec ?? "0.15s"') ease-out,
+    box-shadow v-bind('animationConfig?.cssTransitions?.fastSec ?? "0.15s"')
+      ease-out;
+  will-change: transform;
+}
+
+/* Active magnetic state - subtle glow effect */
+.magnetic-button.is-magnetic {
+  box-shadow:
+    0 4px 12px rgba(59, 130, 246, 0.15),
+    0 2px 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Dark mode support for magnetic glow */
+@media (prefers-color-scheme: dark) {
+  .magnetic-button.is-magnetic {
+    box-shadow:
+      0 4px 12px rgba(96, 165, 250, 0.2),
+      0 2px 4px rgba(96, 165, 250, 0.15);
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .magnetic-button.is-magnetic {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+/* Reduced motion support - disable magnetic effect */
+@media (prefers-reduced-motion: reduce) {
+  .magnetic-button {
+    transition:
+      background-color
+        v-bind('animationConfig?.cssTransitions?.fastSec ?? "0.15s"') ease-out,
+      color v-bind('animationConfig?.cssTransitions?.fastSec ?? "0.15s"')
+        ease-out;
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .magnetic-button.is-magnetic {
+    box-shadow: none;
+  }
+}
+
+/* Ensure magnetic buttons don't interfere with touch scrolling on mobile */
+@media (hover: none) and (pointer: coarse) {
+  .magnetic-button {
+    transform: none !important;
+    will-change: auto;
   }
 }
 </style>
