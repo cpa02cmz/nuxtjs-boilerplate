@@ -114,9 +114,13 @@ export class WebhookQueueSystem {
     }
 
     await webhookQueueManager.enqueue(queueItem)
-    webhookQueueManager.startProcessor(async item => {
-      await this.processQueueItem(item)
-    })
+
+    // FIX #3058: Only start processor if not already running to prevent multiple processors
+    if (!webhookQueueManager.isRunning()) {
+      webhookQueueManager.startProcessor(async item => {
+        await this.processQueueItem(item)
+      })
+    }
 
     return true
   }
