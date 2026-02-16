@@ -3429,10 +3429,6 @@ export const animationConfig = {
     ),
     // Drawer edge glow on swipe (px)
     edgeGlowSpreadPx: parseInt(process.env.MOBILE_DRAWER_EDGE_GLOW_PX || '8'),
-    // Swipe resistance factor (0-1) - Flexy hates hardcoded 0.8!
-    swipeResistance: parseFloat(
-      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
-    ),
     // Haptic feedback duration on open (ms)
     hapticOpenDurationMs: parseInt(
       process.env.MOBILE_DRAWER_HAPTIC_OPEN_MS || '20'
@@ -3452,10 +3448,6 @@ export const animationConfig = {
     // Filter count changed indicator reset delay (ms) - Flexy hates hardcoded 1000!
     filterCountResetDelayMs: parseInt(
       process.env.MOBILE_DRAWER_FILTER_RESET_MS || '1000'
-    ),
-    // Swipe resistance factor (0-1) - Flexy hates hardcoded 0.8!
-    swipeResistance: parseFloat(
-      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
     ),
     // Whether to respect reduced motion preference
     respectReducedMotion:
