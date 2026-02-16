@@ -9,10 +9,7 @@
     </header>
 
     <!-- Palette's micro-UX enhancement: Stat Cards with Counter Animation -->
-    <section
-      aria-label="Dashboard statistics"
-      class="dashboard-stats"
-    >
+    <section aria-label="Dashboard statistics" class="dashboard-stats">
       <article
         v-for="(stat, index) in stats"
         :key="stat.key"
@@ -118,10 +115,7 @@
             </div>
             <div class="activity-content">
               <p>{{ activity.message }}</p>
-              <time
-                class="activity-time"
-                :datetime="activity.timestamp"
-              >{{
+              <time class="activity-time" :datetime="activity.timestamp">{{
                 formatDate(activity.timestamp)
               }}</time>
             </div>
@@ -155,19 +149,12 @@
           enter-from-class="opacity-0 translate-y-4"
           enter-to-class="opacity-100 translate-y-0"
         >
-          <div
-            v-if="recentActivity.length === 0"
-            class="activity-empty-state"
-          >
+          <div v-if="recentActivity.length === 0" class="activity-empty-state">
             <div
               class="activity-empty-icon"
               :class="{ 'animate-float': !prefersReducedMotion }"
             >
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -184,17 +171,11 @@
       </section>
 
       <!-- Palette's micro-UX enhancement: Quick Actions with Press Effects -->
-      <section
-        class="quick-actions"
-        aria-labelledby="quick-actions-heading"
-      >
+      <section class="quick-actions" aria-labelledby="quick-actions-heading">
         <h2 id="quick-actions-heading">
           {{ config.dashboard.quickActions }}
         </h2>
-        <nav
-          class="action-buttons"
-          aria-label="Quick actions navigation"
-        >
+        <nav class="action-buttons" aria-label="Quick actions navigation">
           <NuxtLink
             v-for="(action, index) in quickActions"
             :key="action.route"
@@ -246,12 +227,7 @@
     </div>
 
     <!-- Palette's micro-UX enhancement: Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -381,7 +357,8 @@ const getAnimatedValue = (key: string): number => {
 const animateCounter = (
   key: string,
   target: number,
-  duration: number = 1500
+  // Flexy hates hardcoded 1500! Using animationConfig.analyticsCounter.durationMs
+  duration: number = animationConfig.analyticsCounter.durationMs
 ) => {
   const start = animatedValues.value[key as keyof typeof animatedValues.value]
   const startTime = performance.now()
