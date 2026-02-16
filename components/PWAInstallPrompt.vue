@@ -100,16 +100,10 @@
             </svg>
           </div>
           <div>
-            <h3
-              id="pwa-install-title"
-              class="font-medium text-gray-900"
-            >
+            <h3 id="pwa-install-title" class="font-medium text-gray-900">
               Install App
             </h3>
-            <p
-              id="pwa-install-description"
-              class="text-sm text-gray-500"
-            >
+            <p id="pwa-install-description" class="text-sm text-gray-500">
               Add to your home screen
             </p>
           </div>
@@ -133,7 +127,8 @@
               <kbd
                 class="hidden sm:inline-flex items-center px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded text-gray-500"
                 aria-hidden="true"
-              >Esc</kbd>
+                >Esc</kbd
+              >
             </span>
           </button>
           <button
@@ -197,12 +192,7 @@
   </Transition>
 
   <!-- Screen reader announcement -->
-  <div
-    class="sr-only"
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-  >
+  <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
     {{ announcement }}
   </div>
 </template>
@@ -215,6 +205,7 @@ import { animationConfig } from '../configs/animation.config'
 import { uiConfig } from '~/configs/ui.config'
 import { thresholdsConfig } from '~/configs/thresholds.config'
 import { EASING } from '~/configs/easing.config'
+import { triggerHaptic } from '~/utils/hapticFeedback'
 
 // Storage key constants
 const STORAGE_KEYS = {
@@ -346,14 +337,7 @@ const prefersReducedMotion = (): boolean => {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-// Trigger haptic feedback if available - Flexy hates hardcoded values!
-const triggerHaptic = (
-  pattern: number | number[] = uiConfig.haptics.patterns.light
-): void => {
-  if (typeof navigator !== 'undefined' && navigator.vibrate) {
-    navigator.vibrate(pattern)
-  }
-}
+// BroCula fix: Using triggerHaptic from utils which checks user interaction first
 
 // Announce to screen readers
 const announce = (message: string): void => {

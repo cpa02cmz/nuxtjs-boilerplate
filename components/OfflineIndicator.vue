@@ -27,10 +27,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <!-- Animated offline icon with connection pulse - Palette's micro-UX enhancement! -->
-                <div
-                  class="relative flex-shrink-0 w-8 h-8"
-                  aria-hidden="true"
-                >
+                <div class="relative flex-shrink-0 w-8 h-8" aria-hidden="true">
                   <!-- Connection pulse rings (shown when reconnecting) -->
                   <template v-if="isReconnecting && !prefersReducedMotion">
                     <div
@@ -240,12 +237,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </Teleport>
@@ -258,6 +250,7 @@ import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { triggerHaptic } from '~/utils/hapticFeedback'
 
 // Reactive state
 const isOffline = ref(false)
@@ -302,14 +295,7 @@ const checkReducedMotion = () => {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-// Trigger haptic feedback if available - Flexy hates hardcoded values!
-const triggerHaptic = (
-  pattern: number | number[] = uiConfig.haptics.patterns.light
-): void => {
-  if (typeof navigator !== 'undefined' && navigator.vibrate) {
-    navigator.vibrate(pattern)
-  }
-}
+// BroCula fix: Using triggerHaptic from utils which checks user interaction first
 
 // Announce to screen readers
 const announce = (message: string): void => {
@@ -324,7 +310,7 @@ const handleOffline = () => {
   isOffline.value = true
   wasOffline.value = true
   isReconnecting.value = false
-  triggerHaptic([30, 50, 30]) // Alert pattern
+  triggerHaptic('warning') // BroCula fix: Using haptic type instead of custom pattern
   announce(contentConfig.offline.aria.offlineAlert)
 }
 
@@ -335,7 +321,7 @@ const handleOnline = () => {
   isOffline.value = false
   isReconnecting.value = false
   showBackOnline.value = true
-  triggerHaptic(20) // Success pattern
+  triggerHaptic('success') // BroCula fix: Using haptic type instead of custom pattern
   announce(contentConfig.offline.aria.backOnlineStatus)
 
   // Clear any existing timeout
@@ -361,8 +347,8 @@ const handleRetry = async () => {
   isRetrying.value = true
   isReconnecting.value = true
 
-  // Trigger haptic feedback
-  triggerHaptic([10, 20])
+  // Trigger haptic feedback - BroCula fix: Using haptic type instead of custom pattern
+  triggerHaptic('light')
 
   // Clear existing timeouts
   if (retryTimeout) {
@@ -377,7 +363,7 @@ const handleRetry = async () => {
     if (navigator.onLine) {
       // Success! Show success state briefly
       retrySuccess.value = true
-      triggerHaptic([20, 30, 20]) // Success pattern
+      triggerHaptic('success') // BroCula fix: Using haptic type instead of custom pattern
 
       // Clear success state after delay
       if (retrySuccessTimeout) {
@@ -393,7 +379,7 @@ const handleRetry = async () => {
     } else {
       // Still offline
       isReconnecting.value = false
-      triggerHaptic([40]) // Error pattern
+      triggerHaptic('error') // BroCula fix: Using haptic type instead of custom pattern
       announce(contentConfig.offline.retryFailed)
     }
   }, animationConfig.offlineRetry.spinDurationMs)
