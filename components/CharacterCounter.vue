@@ -245,6 +245,13 @@ const counterId = ref(
   `character-counter-${Math.random().toString(36).substr(2, 9)}`
 )
 
+// Accessibility: Track reduced motion preference
+const prefersReducedMotion = ref(false)
+
+onMounted(() => {
+  prefersReducedMotion.value = checkReducedMotion()
+})
+
 // Palette's micro-UX enhancement: Haptic feedback on state transitions
 // Track previous state to trigger feedback only on transitions, not continuously
 const previousState = ref<'normal' | 'warning' | 'complete' | 'error'>('normal')
