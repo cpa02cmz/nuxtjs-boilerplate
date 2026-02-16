@@ -39,6 +39,28 @@
       </div>
     </Transition>
 
+    <!-- Palette's micro-UX enhancement: Copy Success Particle Burst ✨
+         A delightful burst of particles to celebrate successful copy action -->
+    <TransitionGroup
+      v-if="showParticles && !prefersReducedMotion"
+      tag="div"
+      class="share-particle-container"
+      aria-hidden="true"
+    >
+      <span
+        v-for="particle in particles"
+        :key="particle.id"
+        class="share-particle"
+        :style="{
+          '--particle-x': `${particle.x}px`,
+          '--particle-y': `${particle.y}px`,
+          '--particle-color': particle.color,
+          '--particle-size': `${particle.size}px`,
+          '--particle-rotation': `${particle.rotation}deg`,
+        }"
+      />
+    </TransitionGroup>
+
     <!-- Share button -->
     <button
       ref="shareButtonRef"
@@ -46,9 +68,9 @@
         copySuccess
           ? contentConfig.share.ariaLabels.copySuccess
           : contentConfig.share.ariaLabels.shareTitle.replace(
-            '{{title}}',
-            title
-          )
+              '{{title}}',
+              title
+            )
       "
       :aria-expanded="showShareMenu"
       :class="[
@@ -111,10 +133,7 @@
         aria-labelledby="share-menu"
         @keydown="handleMenuKeydown"
       >
-        <div
-          class="py-1"
-          role="none"
-        >
+        <div class="py-1" role="none">
           <!-- Twitter -->
           <a
             :href="twitterUrl"
@@ -240,10 +259,7 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path
-                class="checkmark-path"
-                d="M4 10l4 4 8-8"
-              />
+              <path class="checkmark-path" d="M4 10l4 4 8-8" />
             </svg>
             {{
               copySuccess
@@ -276,6 +292,7 @@ import { contentConfig } from '~/configs/content.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 import { useRipple } from '~/composables/useRipple'
 import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
+import { zIndexScale } from '~/configs/z-index.config'
 
 interface Props {
   title?: string
@@ -300,6 +317,78 @@ let copySuccessTimeout: ReturnType<typeof setTimeout> | null = null
 const showCopiedTooltip = ref(false)
 const copiedTooltipPosition = ref({ x: 0, y: 0 })
 let copiedTooltipTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Palette's micro-UX enhancement: Copy success particle burst state ✨
+const showParticles = ref(false)
+const particles = ref<
+  Array<{
+    id: number
+    x: number
+    y: number
+    color: string
+    size: number
+    rotation: number
+  }>
+>([])
+let particleTimeout: ReturnType<typeof setTimeout> | null = null
+const prefersReducedMotion = ref(false)
+
+// Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// Particle configuration from animation config
+const particleConfig = computed(() => animationConfig.copyParticles)
+
+// Generate particles for copy success celebration
+const generateParticles = () => {
+  const config = particleConfig.value
+  const count = config.particleCount
+  const newParticles = []
+
+  for (let i = 0; i < count; i++) {
+    const angle = (360 / count) * i + Math.random() * 30
+    const radians = (angle * Math.PI) / 180
+    const distance = config.spreadPx * (0.7 + Math.random() * 0.6)
+    const x = Math.cos(radians) * distance
+    const y = Math.sin(radians) * distance
+
+    newParticles.push({
+      id: Date.now() + i,
+      x,
+      y,
+      color: config.colors[Math.floor(Math.random() * config.colors.length)],
+      size:
+        config.minSizePx +
+        Math.random() * (config.maxSizePx - config.minSizePx),
+      rotation: Math.random() * 360,
+    })
+  }
+
+  return newParticles
+}
+
+// Trigger copy success particle burst
+const triggerParticleBurst = () => {
+  if (prefersReducedMotion.value) return
+
+  particles.value = generateParticles()
+  showParticles.value = true
+
+  // Hide particles after animation completes
+  const totalDuration =
+    (particleConfig.value.durationSec + particleConfig.value.fadeDelaySec) *
+    1000
+
+  if (particleTimeout) clearTimeout(particleTimeout)
+  particleTimeout = setTimeout(() => {
+    showParticles.value = false
+    particles.value = []
+  }, totalDuration)
+}
 
 // Computed style for the copied tooltip position
 const copiedTooltipStyle = computed(() => ({
@@ -519,6 +608,9 @@ const showCopySuccess = async () => {
   // Haptic feedback for successful copy
   hapticSuccess()
 
+  // Trigger particle burst for delightful feedback - Palette's micro-UX delight! ✨
+  triggerParticleBurst()
+
   // Show the copied tooltip at cursor position for immediate feedback
   showCopiedTooltip.value = true
 
@@ -548,6 +640,8 @@ const showCopySuccess = async () => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  // Check reduced motion preference
+  prefersReducedMotion.value = checkReducedMotion()
 })
 
 onUnmounted(() => {
@@ -557,6 +651,9 @@ onUnmounted(() => {
   }
   if (copySuccessTimeout) {
     clearTimeout(copySuccessTimeout)
+  }
+  if (particleTimeout) {
+    clearTimeout(particleTimeout)
   }
 })
 </script>
@@ -593,6 +690,77 @@ onUnmounted(() => {
     0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
+/* Palette's micro-UX enhancement: Copy Success Particle Burst Styles ✨ */
+.share-particle-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: v-bind('zIndexScale.high[50]');
+}
+
+.share-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  background: var(--particle-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(var(--particle-rotation));
+  animation: share-particle-burst
+    v-bind('`${animationConfig.copyParticles.durationMs}ms`') ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes share-particle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(
+        calc(-50% + var(--particle-x) * 0.5),
+        calc(-50% + var(--particle-y) * 0.5)
+      )
+      scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+        calc(-50% + var(--particle-x)),
+        calc(-50% + var(--particle-y))
+      )
+      scale(0.2);
+  }
+}
+
+/* Alternative star-shaped particle variant */
+.share-particle:nth-child(3n) {
+  border-radius: 0;
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+/* Alternative diamond-shaped particle variant */
+.share-particle:nth-child(5n) {
+  border-radius: 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
 /* Reduced motion support for copied tooltip */
 @media (prefers-reduced-motion: reduce) {
   .checkmark-path {
@@ -608,6 +776,11 @@ onUnmounted(() => {
     transition: opacity v-bind('animationConfig.cssTransitions.quickSec')
       ease-out !important;
     transform: translateX(-50%) !important;
+  }
+
+  /* Hide particles for reduced motion users */
+  .share-particle-container {
+    display: none;
   }
 }
 </style>
