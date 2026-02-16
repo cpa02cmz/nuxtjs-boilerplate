@@ -325,16 +325,16 @@ export const contentConfig = {
       featureRevealed:
         process.env.CONTENT_RESOURCE_FEATURE_REVEALED || 'Feature: {feature}',
     },
-    // Palette's micro-UX enhancement: Screenshots section content
-    screenshotsTitle:
-      process.env.CONTENT_RESOURCE_SCREENSHOTS_TITLE || 'Screenshots',
-    viewScreenshot: process.env.CONTENT_RESOURCE_VIEW_SCREENSHOT || 'View',
-    closeLightbox:
-      process.env.CONTENT_RESOURCE_CLOSE_LIGHTBOX || 'Close screenshot viewer',
-    previousScreenshot:
-      process.env.CONTENT_RESOURCE_PREV_SCREENSHOT || 'Previous screenshot',
-    nextScreenshot:
-      process.env.CONTENT_RESOURCE_NEXT_SCREENSHOT || 'Next screenshot',
+  },
+
+  // Screenshots Section - Pallete's micro-UX delight! 🎨
+  screenshotsSection: {
+    title: process.env.CONTENT_SCREENSHOTS_TITLE || 'Screenshots',
+    emptyState:
+      process.env.CONTENT_SCREENSHOTS_EMPTY || 'No screenshots available',
+    viewLabel: process.env.CONTENT_SCREENSHOTS_VIEW || 'Click to view',
+    imageLabel: process.env.CONTENT_SCREENSHOTS_IMAGE || 'screenshot',
+    ofLabel: process.env.CONTENT_SCREENSHOTS_OF || 'of',
   },
 
   // Favorites Page - Flexy hates hardcoded page content!
