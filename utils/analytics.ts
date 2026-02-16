@@ -5,6 +5,7 @@ import { apiConfig } from '~/configs/api.config'
 import { patternsConfig } from '~/configs/patterns.config'
 import { appConfig } from '~/configs/app.config'
 import { categoriesConfig } from '~/configs/categories.config'
+import { analyticsConfig } from '~/configs/analytics.config'
 
 export interface AnalyticsEvent {
   type: string
@@ -24,6 +25,12 @@ function getCsrfToken(): string | null {
 // Track an analytics event
 export async function trackEvent(event: AnalyticsEvent): Promise<boolean> {
   try {
+    // BroCula: Skip tracking if analytics API is disabled (e.g., static builds)
+    // This prevents 404 console errors when API is not available
+    if (!analyticsConfig.apiEnabled) {
+      return true
+    }
+
     // In development, log events to console
     if (process.env.NODE_ENV === 'development') {
       // Development logging removed for production
