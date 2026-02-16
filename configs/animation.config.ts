@@ -3123,6 +3123,15 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.FEATURES_RESPECT_REDUCED_MOTION !== 'false',
+    // IntersectionObserver threshold (0-1) - Flexy hates hardcoded 0.2!
+    intersectionThreshold: parseFloat(
+      process.env.FEATURES_INTERSECTION_THRESHOLD || '0.2'
+    ),
+    // IntersectionObserver rootMargin - Flexy hates hardcoded margins!
+    intersectionRootMargin:
+      process.env.FEATURES_INTERSECTION_ROOT_MARGIN || '0px 0px -50px 0px',
+    // Maximum items to announce to screen readers - Flexy hates hardcoded 3!
+    maxAnnounceItems: parseInt(process.env.FEATURES_MAX_ANNOUNCE_ITEMS || '3'),
   },
 
   // Comparison Builder Animations - Palette's micro-UX delight! 🎨

@@ -325,6 +325,12 @@ export const contentConfig = {
       featureRevealed:
         process.env.CONTENT_RESOURCE_FEATURE_REVEALED || 'Feature: {feature}',
     },
+    // Flexy hates hardcoded limits! Maximum items to announce for accessibility
+    accessibility: {
+      maxAnnounceItems: parseInt(
+        process.env.CONTENT_RESOURCE_MAX_ANNOUNCE_ITEMS || '3'
+      ),
+    },
   },
 
   // Screenshots Section - Pallete's micro-UX delight! 🎨
