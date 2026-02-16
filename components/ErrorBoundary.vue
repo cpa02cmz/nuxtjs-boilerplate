@@ -61,9 +61,18 @@
             </details>
           </div>
           <!-- Palette's micro-UX: Auto-retry countdown UI -->
+          <!--
+            🎨 Pallete's micro-UX enhancement: Auto-retry countdown with visual progress indicator
+            - Shows countdown ring with smooth animation
+            - Pauses on hover/focus for user control
+            - Screen reader announcements for accessibility
+          -->
           <div
             v-if="isAutoRetryActive && enableAutoRetry"
             class="auto-retry-container"
+            role="timer"
+            :aria-label="`Auto-retry in ${autoRetryCountdown} seconds`"
+            aria-live="polite"
             @mouseenter="pauseAutoRetry"
             @mouseleave="resumeAutoRetry"
             @focusin="pauseAutoRetry"
@@ -104,8 +113,14 @@
                   transform="rotate(-90 20 20)"
                 />
               </svg>
-              <!-- Countdown text -->
-              <span class="countdown-ring__text">{{ autoRetryCountdown }}</span>
+              <!-- Countdown text with screen reader support -->
+              <span
+                class="countdown-ring__text"
+                aria-hidden="true"
+              >{{
+                autoRetryCountdown
+              }}</span>
+              <span class="sr-only">{{ autoRetryCountdown }} seconds remaining</span>
             </div>
 
             <!-- Auto-retry status -->
