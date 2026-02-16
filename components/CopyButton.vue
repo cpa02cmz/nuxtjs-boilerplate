@@ -63,12 +63,7 @@
     </Tooltip>
 
     <!-- Screen reader live region for copy status announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
 
@@ -132,7 +127,8 @@ const buttonRef = ref<HTMLButtonElement | null>(null)
 // Palette's micro-UX enhancement: Keyboard focus pulse for accessibility
 const showFocusPulse = ref(false)
 let focusPulseTimeout: ReturnType<typeof setTimeout> | null = null
-const FOCUS_PULSE_DURATION_MS = 600
+// Flexy hates hardcoded 600! Using animationConfig.focus.pulseDurationMs
+const FOCUS_PULSE_DURATION_MS = animationConfig.focus.pulseDurationMs
 
 const handleFocus = () => {
   if (prefersReducedMotion.value) return
