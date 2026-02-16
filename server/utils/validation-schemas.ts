@@ -185,13 +185,7 @@ export const moderationActionSchema = z.object({
 })
 
 export const resourceStatusUpdateSchema = z.object({
-  status: z.enum([
-    'active',
-    'deprecated',
-    'discontinued',
-    'updated',
-    'pending',
-  ]),
+  status: z.enum(['pending', 'approved', 'rejected', 'deprecated']),
   reason: z.string().optional(),
   notes: z.string().optional(),
 })
