@@ -3453,6 +3453,10 @@ export const animationConfig = {
     filterCountResetDelayMs: parseInt(
       process.env.MOBILE_DRAWER_FILTER_RESET_MS || '1000'
     ),
+    // Swipe resistance factor (0-1) - Flexy hates hardcoded 0.8!
+    swipeResistance: parseFloat(
+      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
+    ),
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.MOBILE_DRAWER_RESPECT_REDUCED_MOTION !== 'false',
