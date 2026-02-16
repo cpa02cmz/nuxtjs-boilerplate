@@ -764,6 +764,11 @@ const getSearchItemStyle = (index: number) => {
 // Media query refs for cleanup
 let mediaQueryRef: MediaQueryList | null = null
 
+// BugFixer: Named handler for proper cleanup
+const handleMotionChange = (e: MediaQueryListEvent) => {
+  prefersReducedMotion.value = e.matches
+}
+
 // Lifecycle
 onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
@@ -771,18 +776,15 @@ onMounted(() => {
   // Listen for reduced motion preference changes
   if (typeof window !== 'undefined' && window.matchMedia) {
     mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
-    mediaQueryRef.addEventListener('change', e => {
-      prefersReducedMotion.value = e.matches
-    })
+    mediaQueryRef.addEventListener('change', handleMotionChange)
   }
 })
 
 onUnmounted(() => {
   // Cleanup media query listener
   if (mediaQueryRef) {
-    mediaQueryRef.removeEventListener('change', e => {
-      prefersReducedMotion.value = e.matches
-    })
+    // BugFixer: Use same function reference for proper removal
+    mediaQueryRef.removeEventListener('change', handleMotionChange)
     mediaQueryRef = null
   }
 })

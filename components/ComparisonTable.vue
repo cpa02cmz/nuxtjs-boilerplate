@@ -397,6 +397,11 @@ const popularResources = computed<Resource[]>(() => {
   return []
 })
 
+// BugFixer: Named handler for proper cleanup
+const handleMotionChange = (e: MediaQueryListEvent) => {
+  prefersReducedMotion.value = e.matches
+}
+
 // Check for reduced motion preference
 onMounted(() => {
   if (typeof window !== 'undefined') {
@@ -406,16 +411,15 @@ onMounted(() => {
     prefersReducedMotion.value = reducedMotionMediaQuery.value.matches
 
     // Listen for changes
-    reducedMotionMediaQuery.value.addEventListener('change', e => {
-      prefersReducedMotion.value = e.matches
-    })
+    reducedMotionMediaQuery.value.addEventListener('change', handleMotionChange)
   }
 })
 
 // Cleanup media query listener on unmount (Issue #2333 - Memory leak fix)
 onUnmounted(() => {
   if (reducedMotionMediaQuery.value) {
-    reducedMotionMediaQuery.value.removeEventListener('change', () => {})
+    // BugFixer: Use same function reference for proper removal
+    reducedMotionMediaQuery.value.removeEventListener('change', handleMotionChange)
     reducedMotionMediaQuery.value = null
   }
 })

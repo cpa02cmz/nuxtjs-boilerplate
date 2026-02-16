@@ -244,7 +244,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useResourceCardActions } from '~/composables/useResourceCardActions'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
@@ -350,15 +350,27 @@ const transitionLeaveFast = computed(
 // Check for reduced motion preference
 const prefersReducedMotion = ref(false)
 
+// BugFixer: Store references for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+const handleMotionChange = (e: MediaQueryListEvent) => {
+  prefersReducedMotion.value = e.matches
+}
+
 onMounted(() => {
   if (typeof window !== 'undefined' && window.matchMedia) {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    prefersReducedMotion.value = mediaQuery.matches
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.value = mediaQueryRef.matches
 
     // Listen for changes
-    mediaQuery.addEventListener('change', e => {
-      prefersReducedMotion.value = e.matches
-    })
+    mediaQueryRef.addEventListener('change', handleMotionChange)
+  }
+})
+
+// BugFixer: Cleanup event listener to prevent memory leak
+onUnmounted(() => {
+  if (mediaQueryRef) {
+    mediaQueryRef.removeEventListener('change', handleMotionChange)
+    mediaQueryRef = null
   }
 })
 

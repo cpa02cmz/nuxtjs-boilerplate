@@ -578,6 +578,11 @@ export const animationConfig = {
       midOpacity: parseFloat(
         process.env.BOOKMARK_NEWLY_ADDED_MID_OPACITY || '0.6'
       ),
+      // Duration to show the pulse ring before hiding (ms)
+      // Flexy hates hardcoded 2000! Now configurable via env var
+      displayDurationMs: parseInt(
+        process.env.BOOKMARK_NEWLY_ADDED_DISPLAY_DURATION_MS || '2000'
+      ),
     },
   },
 
@@ -674,6 +679,18 @@ export const animationConfig = {
     ),
     // Number of shake cycles
     shakeCycles: parseInt(process.env.VALIDATION_SHAKE_CYCLES || '3'),
+    // Palette's micro-UX: Success checkmark pop animation duration (ms)
+    successPopDurationMs: parseInt(
+      process.env.VALIDATION_SUCCESS_POP_DURATION_MS || '400'
+    ),
+    // Palette's micro-UX: Success checkmark draw animation duration (ms)
+    successDrawDurationMs: parseInt(
+      process.env.VALIDATION_SUCCESS_DRAW_DURATION_MS || '300'
+    ),
+    // Palette's micro-UX: Completion pulse animation duration (ms)
+    completionPulseDurationMs: parseInt(
+      process.env.VALIDATION_COMPLETION_PULSE_DURATION_MS || '600'
+    ),
   },
 
   // Reading Progress Animations

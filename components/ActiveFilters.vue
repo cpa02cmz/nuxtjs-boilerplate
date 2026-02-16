@@ -1047,6 +1047,14 @@ const getChipSpringStyle = (type: string, value: string) => {
   }
 }
 
+// BugFixer: Store mediaQuery reference for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+
+// BugFixer: Named handler for proper cleanup
+const handleMotionChange = (e: MediaQueryListEvent) => {
+  prefersReducedMotion.value = e.matches
+}
+
 // Setup and cleanup keyboard event listeners
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
@@ -1054,11 +1062,8 @@ onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
   // Listen for changes
   if (typeof window.matchMedia === 'function') {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleMotionChange = (e: MediaQueryListEvent) => {
-      prefersReducedMotion.value = e.matches
-    }
-    mediaQuery.addEventListener('change', handleMotionChange)
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    mediaQueryRef.addEventListener('change', handleMotionChange)
   }
 })
 
@@ -1068,6 +1073,11 @@ const tooltipEasing = computed(() => EASING.MATERIAL_STANDARD)
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
   clearUndoState()
+  // BugFixer: Cleanup mediaQuery listener to prevent memory leak
+  if (mediaQueryRef) {
+    mediaQueryRef.removeEventListener('change', handleMotionChange)
+    mediaQueryRef = null
+  }
 })
 </script>
 

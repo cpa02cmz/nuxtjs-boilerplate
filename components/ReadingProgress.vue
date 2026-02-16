@@ -472,6 +472,14 @@ const handleScrollWithTimeEstimate = () => {
   }
 }
 
+// BugFixer: Store mediaQuery reference for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+
+// BugFixer: Named handler for proper cleanup
+const handleMotionChange = (e: MediaQueryListEvent) => {
+  prefersReducedMotion.value = e.matches
+}
+
 // Lifecycle hooks
 onMounted(() => {
   isMounted = true
@@ -487,14 +495,11 @@ onMounted(() => {
     typeof window !== 'undefined' &&
     typeof window.matchMedia === 'function'
   ) {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    prefersReducedMotion.value = mediaQuery.matches
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.value = mediaQueryRef.matches
 
     // Listen for changes
-    const handleMotionChange = (e: MediaQueryListEvent) => {
-      prefersReducedMotion.value = e.matches
-    }
-    mediaQuery.addEventListener('change', handleMotionChange)
+    mediaQueryRef.addEventListener('change', handleMotionChange)
   }
 })
 
@@ -515,6 +520,12 @@ onUnmounted(() => {
   // Clean up scroll speed timeout - Palette's micro-UX enhancement
   if (scrollSpeedTimeout) {
     clearTimeout(scrollSpeedTimeout)
+  }
+
+  // BugFixer: Cleanup mediaQuery listener to prevent memory leak
+  if (mediaQueryRef) {
+    mediaQueryRef.removeEventListener('change', handleMotionChange)
+    mediaQueryRef = null
   }
 })
 </script>
