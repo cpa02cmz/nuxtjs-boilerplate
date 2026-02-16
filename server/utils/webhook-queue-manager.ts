@@ -116,13 +116,28 @@ export class WebhookQueueManager {
           )
           // Note: Item will remain in queue but marked as failed - DeadLetterManager handles detailed tracking
           // For now, we keep the item in queue with updated retry count for visibility
-          await this.enqueue({
-            ...item,
-            // Flexy hates hardcoded 3600000! Using TIME_MS.HOUR
-            scheduledFor: new Date(Date.now() + TIME_MS.HOUR).toISOString(),
-            retryCount: currentRetryCount + 1, // Mark as exceeded
-            updatedAt: new Date().toISOString(),
-          })
+          // FIX #3061: Add try-catch with error logging around enqueue call
+          try {
+            await this.enqueue({
+              ...item,
+              // Flexy hates hardcoded 3600000! Using TIME_MS.HOUR
+              scheduledFor: new Date(Date.now() + TIME_MS.HOUR).toISOString(),
+              retryCount: currentRetryCount + 1, // Mark as exceeded
+              updatedAt: new Date().toISOString(),
+            })
+          } catch (enqueueError) {
+            logger.error(
+              `CRITICAL: Failed to re-enqueue exhausted queue item ${item.id}. Item may be lost.`,
+              {
+                error:
+                  enqueueError instanceof Error
+                    ? enqueueError.message
+                    : String(enqueueError),
+                webhookId: item.webhookId,
+                event: item.event,
+              }
+            )
+          }
         } else {
           // Re-enqueue with exponential backoff using shared utility
           // Flexy hates hardcoded 1000, 30000, and 2! Using webhooksConfig.retry
@@ -139,12 +154,28 @@ export class WebhookQueueManager {
             `Re-enqueueing item ${item.id} with retry count ${currentRetryCount + 1}, next attempt at ${nextAttemptAt.toISOString()}`
           )
 
-          await this.enqueue({
-            ...item,
-            scheduledFor: nextAttemptAt.toISOString(),
-            retryCount: currentRetryCount + 1,
-            updatedAt: new Date().toISOString(),
-          })
+          // FIX #3061: Add try-catch with error logging around enqueue call
+          try {
+            await this.enqueue({
+              ...item,
+              scheduledFor: nextAttemptAt.toISOString(),
+              retryCount: currentRetryCount + 1,
+              updatedAt: new Date().toISOString(),
+            })
+          } catch (enqueueError) {
+            logger.error(
+              `CRITICAL: Failed to re-enqueue queue item ${item.id} for retry. Item may be lost.`,
+              {
+                error:
+                  enqueueError instanceof Error
+                    ? enqueueError.message
+                    : String(enqueueError),
+                webhookId: item.webhookId,
+                event: item.event,
+                nextAttemptAt: nextAttemptAt.toISOString(),
+              }
+            )
+          }
         }
       } finally {
         // FIX #3056: Clear timeout to prevent memory leak
