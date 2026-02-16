@@ -5,10 +5,7 @@
     aria-live="polite"
   >
     <!-- Animated Illustration -->
-    <div
-      class="relative w-48 h-48 mb-8"
-      aria-hidden="true"
-    >
+    <div class="relative w-48 h-48 mb-8" aria-hidden="true">
       <!-- Background Circle -->
       <div
         class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full animate-pulse-slow"
@@ -82,11 +79,13 @@
       {{ description }}
     </p>
 
+    <!-- Screen reader announcement for suggestion clicks -->
+    <div aria-live="polite" aria-atomic="true" class="sr-only">
+      {{ suggestionAnnouncement }}
+    </div>
+
     <!-- Suggestions Section -->
-    <div
-      v-if="suggestions.length"
-      class="w-full max-w-lg mb-8"
-    >
+    <div v-if="suggestions.length" class="w-full max-w-lg mb-8">
       <p
         class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4"
       >
@@ -177,10 +176,7 @@
     </div>
 
     <!-- Tips Section -->
-    <div
-      v-if="showTips"
-      class="mt-10 p-4 bg-gray-50 rounded-xl max-w-lg"
-    >
+    <div v-if="showTips" class="mt-10 p-4 bg-gray-50 rounded-xl max-w-lg">
       <div class="flex items-start">
         <svg
           class="w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0"
@@ -211,7 +207,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { animationConfig } from '../configs/animation.config'
 import { contentConfig } from '../configs/content.config'
 import { componentStylesConfig } from '../configs/component-styles.config'
@@ -244,9 +240,18 @@ const emit = defineEmits<{
   (e: 'suggestion-click', suggestion: string): void
 }>()
 
+// Screen reader announcement for suggestion clicks
+const suggestionAnnouncement = ref('')
+
 // Haptic feedback wrapper functions for better mobile UX
 const handleSuggestionClick = (suggestion: string) => {
   hapticLight()
+  // Announce to screen readers that suggestion was clicked
+  suggestionAnnouncement.value = `Searching for ${suggestion}`
+  // Clear announcement after screen reader has time to read it
+  setTimeout(() => {
+    suggestionAnnouncement.value = ''
+  }, 1000)
   emit('suggestion-click', suggestion)
 }
 
