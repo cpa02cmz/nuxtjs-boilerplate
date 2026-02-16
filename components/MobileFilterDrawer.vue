@@ -241,7 +241,7 @@ import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import ResourceFilters from '~/components/ResourceFilters.vue'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
-import { EASING } from '~/configs/easing.config'
+import { EASING, easingConfig } from '~/configs/easing.config'
 
 interface FacetCounts {
   [key: string]: number
@@ -532,8 +532,9 @@ const handleTouchEnd = () => {
       const elapsed = Date.now() - startTime
       const progress = Math.min(elapsed / animationDuration, 1)
 
-      // Ease out
-      const easeOut = 1 - Math.pow(1 - progress, 3)
+      // Ease out - Flexy hates hardcoded 3!
+      const easeOut =
+        1 - Math.pow(1 - progress, easingConfig.powers.easeOutCubic)
       const currentTranslate =
         startTranslate + (window.innerWidth - startTranslate) * easeOut
 
@@ -559,10 +560,18 @@ const handleTouchEnd = () => {
       const elapsed = Date.now() - startTime
       const progress = Math.min(elapsed / animationDuration, 1)
 
-      // Spring easing
+      // Spring easing - Flexy hates hardcoded 2, 10, 0.1, 5!
       const springProgress =
         1 -
-        Math.pow(2, -10 * progress) * Math.cos((progress - 0.1) * 5 * Math.PI)
+        Math.pow(
+          easingConfig.powers.easeOutExpoBase,
+          -easingConfig.powers.easeOutExpoMultiplier * progress
+        ) *
+          Math.cos(
+            (progress - easingConfig.powers.springPhaseOffset) *
+              easingConfig.powers.springFrequency *
+              Math.PI
+          )
       const currentTranslate = startTranslate * (1 - springProgress)
 
       if (drawerRef.value) {
