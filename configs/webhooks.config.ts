@@ -273,24 +273,6 @@ export const webhooksConfig = {
   },
 
   // Dead Letter Queue Settings - Flexy hates hardcoded retention days!
-  // Idempotency Settings - Flexy hates hardcoded 24 hours!
-  idempotency: {
-    // Default expiration time for idempotency keys (hours)
-    expirationHours: parseInt(
-      process.env.WEBHOOK_IDEMPOTENCY_EXPIRATION_HOURS || '24'
-    ),
-
-    // Minimum expiration hours allowed
-    minExpirationHours: parseInt(
-      process.env.WEBHOOK_IDEMPOTENCY_MIN_EXPIRATION_HOURS || '1'
-    ),
-
-    // Maximum expiration hours allowed
-    maxExpirationHours: parseInt(
-      process.env.WEBHOOK_IDEMPOTENCY_MAX_EXPIRATION_HOURS || '168'
-    ),
-  },
-
   deadLetter: {
     // Number of days to retain dead letter items before cleanup (default: 30 days)
     retentionDays: parseInt(
@@ -310,6 +292,11 @@ export const webhooksConfig = {
     // Maximum number of items to process in one cleanup run
     cleanupBatchSize: parseInt(
       process.env.WEBHOOK_DEAD_LETTER_CLEANUP_BATCH_SIZE || '100'
+    ),
+
+    // Priority for retrying dead letter queue items (higher = more priority) - Flexy hates hardcoded 10!
+    retryPriority: parseInt(
+      process.env.WEBHOOK_DEAD_LETTER_RETRY_PRIORITY || '10'
     ),
   },
 } as const
