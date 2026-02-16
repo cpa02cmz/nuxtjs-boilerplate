@@ -3343,10 +3343,6 @@ export const animationConfig = {
     swipeThresholdPx: parseInt(
       process.env.MOBILE_DRAWER_SWIPE_THRESHOLD_PX || '80'
     ),
-    // Swipe resistance factor during drag (0-1) - Flexy hates hardcoded 0.8!
-    swipeResistance: parseFloat(
-      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
-    ),
     // Velocity threshold for flick-to-dismiss (px/ms)
     velocityThresholdPxMs: parseFloat(
       process.env.MOBILE_DRAWER_VELOCITY_THRESHOLD || '0.5'
