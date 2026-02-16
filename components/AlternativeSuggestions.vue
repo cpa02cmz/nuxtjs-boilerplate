@@ -110,7 +110,7 @@
         class="alternative-suggestions__card-wrapper"
         :style="getCardStyle(index)"
       >
-        <LazyLoadResourceCard
+        <ResourceCardLazy
           :title="alternative.resource.title"
           :description="alternative.resource.description"
           :benefits="[...alternative.resource.benefits]"
