@@ -7,6 +7,10 @@ import { randomUUID } from 'node:crypto'
 import { webhookStorage } from './webhookStorage'
 import { webhooksConfig } from '~/configs/webhooks.config'
 import logger from '~/utils/logger'
+import {
+  deadLetterEventEmitter,
+  checkDeadLetterThresholds,
+} from './dead-letter-alerts'
 
 export class DeadLetterManager {
   async addToDeadLetter(
@@ -36,6 +40,9 @@ export class DeadLetterManager {
       }
 
       await webhookStorage.addToDeadLetterQueue(deadLetterItem)
+
+      // Emit dead letter alert events (Issue #2724)
+      await checkDeadLetterThresholds(deadLetterItem, deadLetterEventEmitter)
     } catch (dlqError) {
       logger.error(
         `CRITICAL: Failed to add webhook ${webhook.id} to dead letter queue. Failed webhook data may be lost.`,
@@ -153,6 +160,62 @@ export class DeadLetterManager {
 
     await enqueueCallback(queueItem)
     return true
+  }
+
+  /**
+   * Get dead letter queue metrics for health monitoring (Issue #2724)
+   * @returns Metrics including count, recent items, and webhook-specific stats
+   */
+  async getMetrics(timeWindowMinutes: number = 60): Promise<{
+    totalCount: number
+    recentCount: number
+    webhookStats: Map<string, number>
+    oldestItemAge: number | null
+    alertThresholdExceeded: boolean
+  }> {
+    const allItems = await webhookStorage.getDeadLetterQueue()
+    const cutoff = new Date()
+    cutoff.setMinutes(cutoff.getMinutes() - timeWindowMinutes)
+
+    const recentItems = allItems.filter(
+      item => new Date(item.createdAt) > cutoff
+    )
+
+    // Calculate webhook-specific stats
+    const webhookStats = new Map<string, number>()
+    for (const item of allItems) {
+      const count = webhookStats.get(item.webhookId) || 0
+      webhookStats.set(item.webhookId, count + 1)
+    }
+
+    // Find oldest item age in hours
+    let oldestItemAge: number | null = null
+    if (allItems.length > 0) {
+      const oldestItem = allItems.reduce((oldest, item) =>
+        new Date(item.createdAt) < new Date(oldest.createdAt) ? item : oldest
+      )
+      oldestItemAge = Math.floor(
+        (Date.now() - new Date(oldestItem.createdAt).getTime()) /
+          (1000 * 60 * 60)
+      )
+    }
+
+    // Check if alert thresholds are exceeded
+    const config = deadLetterEventEmitter.getConfig()
+    const alertThresholdExceeded =
+      config.enabled &&
+      (allItems.length >= config.thresholds.totalCount ||
+        Array.from(webhookStats.values()).some(
+          count => count >= config.thresholds.webhookSpecificCount
+        ))
+
+    return {
+      totalCount: allItems.length,
+      recentCount: recentItems.length,
+      webhookStats,
+      oldestItemAge,
+      alertThresholdExceeded,
+    }
   }
 }
 
