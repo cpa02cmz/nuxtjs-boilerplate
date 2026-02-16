@@ -17,10 +17,29 @@ const DEFAULT_TIMEOUT_MS = webhooksConfig.request.timeoutMs
 /**
  * Validates webhook URL to prevent SSRF attacks
  * Blocks private IP ranges, cloud metadata endpoints, and non-HTTPS in production
+ *
+ * FIX #3059: Enhanced SSRF protection against multiple bypass vectors:
+ * - URL-encoded IPs (e.g., %31%32%37%2e%30%2e%30%2e%31)
+ * - IPv6 loopback variants (::1, ::ffff:127.0.0.1)
+ * - Octal/hex IP representations (0177.0.0.1, 0x7f.0.0.1)
  */
 function validateWebhookUrl(url: string): void {
   try {
-    const parsedUrl = new URL(url)
+    // FIX #3059: Decode URL to prevent encoded bypasses
+    let decodedUrl = url
+    try {
+      // Decode multiple times to handle double/triple encoding
+      for (let i = 0; i < 3; i++) {
+        const newUrl = decodeURIComponent(decodedUrl)
+        if (newUrl === decodedUrl) break
+        decodedUrl = newUrl
+      }
+    } catch {
+      // If decoding fails, use original URL
+      decodedUrl = url
+    }
+
+    const parsedUrl = new URL(decodedUrl)
 
     // Enforce HTTPS in production
     if (
@@ -30,22 +49,50 @@ function validateWebhookUrl(url: string): void {
       throw new Error('Webhook URL must use HTTPS in production')
     }
 
-    const hostname = parsedUrl.hostname.toLowerCase()
+    let hostname = parsedUrl.hostname.toLowerCase()
+
+    // FIX #3059: Remove IPv6 brackets if present
+    hostname = hostname.replace(/^\[/, '').replace(/\]$/, '')
 
     // Block localhost and loopback addresses
     if (
       hostname === 'localhost' ||
       hostname === '127.0.0.1' ||
-      hostname === '::1'
+      hostname === '::1' ||
+      hostname === '0:0:0:0:0:0:0:1' ||
+      hostname === '0000:0000:0000:0000:0000:0000:0000:0001'
     ) {
       throw new Error(
         'Webhook URL cannot target localhost or loopback addresses'
       )
     }
 
+    // FIX #3059: Block IPv4-mapped IPv6 loopback addresses
+    if (
+      hostname === '::ffff:127.0.0.1' ||
+      hostname === '::ffff:7f00:1' ||
+      hostname.startsWith('::ffff:127.') ||
+      hostname.startsWith('0:0:0:0:0:ffff:127.')
+    ) {
+      throw new Error(
+        'Webhook URL cannot target IPv4-mapped IPv6 loopback addresses'
+      )
+    }
+
     // Block cloud metadata endpoints
     if (hostname === '169.254.169.254' || hostname === '169.254.170.2') {
       throw new Error('Webhook URL cannot target cloud metadata endpoints')
+    }
+
+    // FIX #3059: Block octal/hex IP representations
+    // Octal IPs like 0177.0.0.1 (127.0.0.1) or 010.0.0.1 (8.0.0.1)
+    const octalHexMatch = hostname.match(
+      /^(0[0-7]+|0x[0-9a-f]+)\.(\d+|0[0-7]+|0x[0-9a-f]+)\.(\d+|0[0-7]+|0x[0-9a-f]+)\.(\d+|0[0-7]+|0x[0-9a-f]+)$/i
+    )
+    if (octalHexMatch) {
+      throw new Error(
+        'Webhook URL cannot use octal or hexadecimal IP representations'
+      )
     }
 
     // Block private IP ranges
@@ -91,15 +138,29 @@ function validateWebhookUrl(url: string): void {
           'Webhook URL cannot target loopback addresses (127.0.0.0/8)'
         )
       }
+      // FIX #3059: Block 0.0.0.0/8
+      if (a === 0) {
+        throw new Error(
+          'Webhook URL cannot target zero-range addresses (0.0.0.0/8)'
+        )
+      }
     }
 
-    // Block IPv6 loopback and link-local
+    // FIX #3059: Enhanced IPv6 blocking
     if (
+      hostname === '::1' ||
+      hostname === '0:0:0:0:0:0:0:1' ||
       hostname.startsWith('fe80:') ||
       hostname.startsWith('fc') ||
-      hostname.startsWith('fd')
+      hostname.startsWith('fd') ||
+      hostname.startsWith('::ffff:')
     ) {
       throw new Error('Webhook URL cannot target private IPv6 ranges')
+    }
+
+    // FIX #3059: Block short IPv6 loopback variations
+    if (/^::1$/.test(hostname) || hostname === ':1' || hostname === ':1:') {
+      throw new Error('Webhook URL cannot target IPv6 loopback addresses')
     }
   } catch (error) {
     if (error instanceof Error && error.message.includes('Webhook URL')) {
