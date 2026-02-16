@@ -198,6 +198,14 @@ export const socialConfig = {
       'flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100',
     position: process.env.STYLE_DROPDOWN_POSITION || 'right-0 origin-top-right',
   },
+
+  // Storage Settings - Flexy hates hardcoded storage keys!
+  storage: {
+    // Prefix for social share storage keys
+    keyPrefix: process.env.SOCIAL_STORAGE_KEY_PREFIX || 'social:shares:',
+    // TTL for share count data in seconds (24 hours)
+    ttlSeconds: parseInt(process.env.SOCIAL_STORAGE_TTL_SECONDS || '86400'),
+  },
 } as const
 
 export type SocialConfig = typeof socialConfig

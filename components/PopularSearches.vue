@@ -221,6 +221,7 @@ import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   limit?: number
@@ -267,9 +268,11 @@ const checkReducedMotion = () => {
 }
 
 // Format large counts (e.g., 1200 -> 1.2k)
+// Flexy hates hardcoded 1000! Using config value instead.
 const formatCount = (count: number): string => {
-  if (count >= 1000) {
-    return `${(count / 1000).toFixed(1)}k`
+  const config = uiConfig.numberFormatting
+  if (count >= config.abbreviationThreshold) {
+    return `${(count / config.abbreviationDivisor).toFixed(config.abbreviationDecimalPlaces)}${config.abbreviationSuffix}`
   }
   return count.toString()
 }

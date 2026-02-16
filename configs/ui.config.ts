@@ -610,6 +610,24 @@ export const uiConfig = {
     unobserveOnIntersect:
       process.env.INTERSECTION_OBSERVER_UNOBSERVE !== 'false',
   },
+
+  // Number Formatting - Flexy hates hardcoded formatting values!
+  numberFormatting: {
+    // Threshold for abbreviating large numbers (e.g., 1000 -> 1k)
+    abbreviationThreshold: parseInt(
+      process.env.NUMBER_ABBREVIATION_THRESHOLD || '1000'
+    ),
+    // Divisor for abbreviation (e.g., 1000 for k, 1000000 for M)
+    abbreviationDivisor: parseInt(
+      process.env.NUMBER_ABBREVIATION_DIVISOR || '1000'
+    ),
+    // Suffix for abbreviated numbers
+    abbreviationSuffix: process.env.NUMBER_ABBREVIATION_SUFFIX || 'k',
+    // Decimal places for abbreviated numbers
+    abbreviationDecimalPlaces: parseInt(
+      process.env.NUMBER_ABBREVIATION_DECIMALS || '1'
+    ),
+  },
 } as const
 
 export type UiConfig = typeof uiConfig
