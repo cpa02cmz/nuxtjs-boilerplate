@@ -3449,10 +3449,6 @@ export const animationConfig = {
     magneticMaxDisplacementPx: parseInt(
       process.env.MOBILE_DRAWER_MAGNETIC_MAX_PX || '20'
     ),
-    // Swipe resistance factor (0-1) - Flexy hates hardcoded 0.8!
-    swipeResistance: parseFloat(
-      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
-    ),
     // Handle bounce animation duration (ms)
     handleBounceDurationMs: parseInt(
       process.env.MOBILE_DRAWER_HANDLE_BOUNCE_MS || '600'
