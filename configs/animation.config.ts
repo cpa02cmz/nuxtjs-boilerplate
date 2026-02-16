@@ -3394,6 +3394,11 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.MOBILE_DRAWER_RESPECT_REDUCED_MOTION !== 'false',
+    // Swipe resistance factor (0-1) - Flexy hates hardcoded 0.8!
+    // Lower values make the drawer feel heavier, higher values feel lighter
+    swipeResistance: parseFloat(
+      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
+    ),
   },
 
   // SVG Stroke Dasharray Values - Flexy hates hardcoded stroke-dasharray!
