@@ -19,10 +19,7 @@
       leave-from-class="opacity-100 scale-100"
       leave-to-class="opacity-0 scale-98"
     >
-      <div
-        v-if="!isIntersecting && !isLoaded"
-        class="skeleton-container"
-      >
+      <div v-if="!isIntersecting && !isLoaded" class="skeleton-container">
         <!-- Palette's micro-UX: Multi-layer shimmer for depth -->
         <div
           v-if="!prefersReducedMotion"
@@ -55,12 +52,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -73,6 +65,7 @@ import ResourceCard from './ResourceCard.vue'
 import ResourceCardSkeleton from './ResourceCardSkeleton.vue'
 import { animationConfig } from '~/configs/animation.config'
 import { hapticConfig } from '~/configs/haptic.config'
+import { triggerHaptic } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
@@ -163,13 +156,11 @@ const handleAfterEnter = () => {
 watch(isIntersecting, (newValue, oldValue) => {
   // Only trigger on first intersection
   if (newValue && !oldValue && !prefersReducedMotion.value) {
-    // Palette's micro-UX: Haptic feedback when card becomes visible
+    // BroCula fix: Haptic feedback when card becomes visible (checks user interaction)
     if (
-      typeof navigator !== 'undefined' &&
-      navigator.vibrate &&
       hapticConfig.features.lazyResourceCard?.enableEntranceHaptic !== false
     ) {
-      navigator.vibrate(hapticConfig.duration.ultraLight)
+      triggerHaptic('light')
     }
 
     // Announce to screen readers

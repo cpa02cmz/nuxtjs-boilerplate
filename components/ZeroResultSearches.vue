@@ -59,11 +59,7 @@
             :class="`flex-shrink-0 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors ${animationConfig.tailwindDurations.normal}`"
             aria-hidden="true"
           >
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -123,10 +119,7 @@
         class="text-center text-gray-500 py-8 flex flex-col items-center"
       >
         <!-- Animated Illustration Container -->
-        <div
-          class="relative w-20 h-20 mb-4"
-          aria-hidden="true"
-        >
+        <div class="relative w-20 h-20 mb-4" aria-hidden="true">
           <!-- Background Circle with subtle pulse -->
           <div
             class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full"
@@ -206,12 +199,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -224,7 +212,7 @@ import { useResourceData } from '~/composables/useResourceData'
 import { contentConfig } from '~/configs/content.config'
 import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
-import { hapticConfig } from '~/configs/haptic.config'
+import { triggerHaptic } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
@@ -293,13 +281,9 @@ const handleClick = (query: string, index: number, event: MouseEvent) => {
     clickedIndex.value = null
   }, uiTimingConfig.clickFeedback.resetDelay)
 
-  // Haptic feedback - Palette loves tactile feedback!
-  if (
-    typeof navigator !== 'undefined' &&
-    navigator.vibrate &&
-    !prefersReducedMotion.value
-  ) {
-    navigator.vibrate(hapticConfig.duration.light)
+  // Haptic feedback - BroCula fix: Use triggerHaptic to check user interaction
+  if (!prefersReducedMotion.value) {
+    triggerHaptic('light')
   }
 
   // Announce for screen readers

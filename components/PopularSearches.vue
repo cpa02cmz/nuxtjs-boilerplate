@@ -191,7 +191,7 @@ import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSear
 import { useResourceData } from '~/composables/useResourceData'
 import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
-import { hapticConfig } from '~/configs/haptic.config'
+import { triggerHaptic } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 interface Props {
@@ -266,13 +266,9 @@ const handleClick = (query: string, index: number, event: MouseEvent) => {
     clickedIndex.value = null
   }, uiTimingConfig.clickFeedback.resetDelay)
 
-  // Haptic feedback
-  if (
-    typeof navigator !== 'undefined' &&
-    navigator.vibrate &&
-    !prefersReducedMotion.value
-  ) {
-    navigator.vibrate(hapticConfig.duration.light)
+  // Haptic feedback - BroCula fix: Use triggerHaptic to check user interaction
+  if (!prefersReducedMotion.value) {
+    triggerHaptic('light')
   }
 
   // 🎨 Pallete: Enhanced screen reader announcement with loading state

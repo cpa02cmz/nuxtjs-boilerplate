@@ -106,10 +106,7 @@
           @mouseenter="isHandleHovered = true"
           @mouseleave="isHandleHovered = false"
         >
-          <div
-            class="drawer-handle-bar"
-            :style="handleStyle"
-          />
+          <div class="drawer-handle-bar" :style="handleStyle" />
           <div
             v-if="!prefersReducedMotion && swipeProgress > 0"
             class="drawer-handle-glow"
@@ -211,7 +208,11 @@
             @touchstart="isResultsButtonPressed = true"
             @touchend="isResultsButtonPressed = false"
           >
-            <span class="button-text">Show {{ resultsCount }} result{{ resultsCount === 1 ? "" : "s" }}</span>
+            <span class="button-text"
+              >Show {{ resultsCount }} result{{
+                resultsCount === 1 ? '' : 's'
+              }}</span
+            >
             <svg
               v-if="resultsCount > 0"
               class="ml-2 w-4 h-4 arrow-icon"
@@ -237,7 +238,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import ResourceFilters from '~/components/ResourceFilters.vue'
-import { hapticConfig } from '~/configs/haptic.config'
+import { triggerHaptic } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
 import { EASING } from '~/configs/easing.config'
 
@@ -411,22 +412,13 @@ watch(activeFiltersCount, (newCount, oldCount) => {
       hasFilterCountChanged.value = false
     }, animationConfig.mobileFilterDrawer.filterCountResetDelayMs)
 
-    // Haptic feedback
-    triggerHaptic(hapticConfig.patterns.light)
+    // Haptic feedback - BroCula fix: Using haptic type instead of custom pattern
+    triggerHaptic('light')
   }
   previousFilterCount.value = newCount
 })
 
-// Enhanced haptic feedback
-const triggerHaptic = (pattern: number | number[]) => {
-  const navigatorExtended = navigator as Navigator & {
-    vibrate?: (pattern: number | number[]) => boolean
-  }
-
-  if (navigatorExtended.vibrate && !prefersReducedMotion.value) {
-    navigatorExtended.vibrate(pattern)
-  }
-}
+// BroCula fix: Using triggerHaptic from utils which checks user interaction first
 
 // Open drawer with haptic feedback
 const openDrawer = () => {
@@ -434,12 +426,8 @@ const openDrawer = () => {
   isOpen.value = true
   document.body.style.overflow = 'hidden'
 
-  // Enhanced haptic feedback on open
-  triggerHaptic([
-    animationConfig.mobileFilterDrawer.hapticOpenDurationMs,
-    30,
-    animationConfig.mobileFilterDrawer.hapticOpenDurationMs,
-  ])
+  // Enhanced haptic feedback on open - BroCula fix: Using haptic type instead of custom pattern
+  triggerHaptic('medium')
 
   nextTick(() => {
     closeButtonRef.value?.focus()
@@ -451,8 +439,8 @@ const closeDrawer = () => {
   isOpen.value = false
   document.body.style.overflow = ''
 
-  // Haptic feedback on close
-  triggerHaptic(animationConfig.mobileFilterDrawer.hapticCloseDurationMs)
+  // Haptic feedback on close - BroCula fix: Using haptic type instead of custom pattern
+  triggerHaptic('light')
 
   // Reset swipe state
   resetSwipeState()
