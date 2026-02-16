@@ -1,6 +1,6 @@
 /**
  * Backup Manager - Database Backup and Recovery System
- * Provides automated backup creation, verification, and restoration for SQLite databases
+ * Provides automated backup creation, verification, and restoration for PostgreSQL databases
  */
 
 import { promises as fs, constants } from 'fs'
@@ -450,39 +450,42 @@ export async function verifyBackup(
       }
     }
 
-    // Verify by attempting to read as SQLite (if enabled)
+    // Verify PostgreSQL backup file format (if enabled)
     if (backupConfig.verification.verifyIntegrity) {
-      const tempDir = join(backupConfig.paths.tempDir, `verify-${Date.now()}`)
-      await ensureDir(tempDir)
-
       try {
-        let dbPath = backupPath
+        let dumpPath = backupPath
 
-        // Decompress if needed
+        // Decompress if needed to verify the SQL dump
         if (metadata.compressed) {
-          dbPath = join(tempDir, 'verify.db')
-          await decompressBackup(backupPath, dbPath)
+          const tempDir = join(
+            backupConfig.paths.tempDir,
+            `verify-${Date.now()}`
+          )
+          await ensureDir(tempDir)
+          dumpPath = join(tempDir, 'verify.sql')
+          await decompressBackup(backupPath, dumpPath)
         }
 
-        // Try to open and query the database
-        const { exec } = await import('child_process')
-        const { promisify } = await import('util')
-        const execAsync = promisify(exec)
+        // Verify it's a valid PostgreSQL dump by checking the header
+        const dumpContent = await fs.readFile(dumpPath, 'utf-8')
+        const isValidPostgresDump =
+          dumpContent.includes('PostgreSQL database dump') ||
+          dumpContent.includes('pg_dump') ||
+          dumpContent.includes('CREATE TABLE') ||
+          dumpContent.includes('INSERT INTO')
 
-        const { stderr } = await execAsync(
-          `sqlite3 "${dbPath}" "PRAGMA integrity_check;"`,
-          { timeout: backupConfig.verification.timeoutSeconds * 1000 }
-        )
-
-        if (stderr && stderr.includes('error')) {
+        if (!isValidPostgresDump) {
           return {
             valid: false,
-            error: `Database integrity check failed: ${stderr}`,
+            error: 'Backup file does not appear to be a valid PostgreSQL dump',
           }
         }
 
-        // Clean up temp files
-        await fs.rm(tempDir, { recursive: true, force: true })
+        // Clean up temp files if we decompressed
+        if (metadata.compressed) {
+          const tempDir = dirname(dumpPath)
+          await fs.rm(tempDir, { recursive: true, force: true })
+        }
       } catch (verifyError) {
         const errorMsg =
           verifyError instanceof Error
