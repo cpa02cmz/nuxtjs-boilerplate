@@ -7,6 +7,7 @@
 
 import { ref, onUnmounted, readonly } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { logger } from '~/utils/logger'
 
 export interface UseIntervalOptions {
   /** Execute callback immediately when interval starts */
@@ -79,7 +80,7 @@ export function useInterval(
     if (autoReset) {
       stop()
     } else if (isRunning.value) {
-      console.warn(
+      logger.warn(
         '[useInterval] Interval already running. Use stop() first or enable autoReset.'
       )
       return
@@ -87,7 +88,7 @@ export function useInterval(
 
     // Don't set zero or negative delays
     if (delay <= 0) {
-      console.warn('[useInterval] Delay must be positive. Skipping interval.')
+      logger.warn('[useInterval] Delay must be positive. Skipping interval.')
       return
     }
 
