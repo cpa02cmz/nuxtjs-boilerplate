@@ -387,9 +387,11 @@ const compareMagneticX = ref(0)
 const compareMagneticY = ref(0)
 
 // Magnetic effect configuration - Flexy hates hardcoded values!
-const MAGNETIC_STRENGTH = 0.3 // How much the button follows the cursor (0-1)
-const MAGNETIC_RADIUS = 60 // Radius in pixels where effect activates
-const SPRING_STIFFNESS = 0.15 // Spring physics stiffness
+// Now using configurable values from animationConfig
+const magneticConfig = animationConfig.magneticButton
+const MAGNETIC_STRENGTH = magneticConfig.strength // How much the button follows the cursor (0-1)
+const MAGNETIC_RADIUS = magneticConfig.radiusPx // Radius in pixels where effect activates
+const SPRING_STIFFNESS = magneticConfig.springStiffness // Spring physics stiffness
 
 // Copy button magnetic handlers
 const handleCopyMouseMove = (event: MouseEvent) => {

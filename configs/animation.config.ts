@@ -1620,10 +1620,16 @@ export const animationConfig = {
   // Magnetic Button Effect - Palette's premium micro-UX delight! 🧲
   // Creates a subtle "magnetic" pull that draws buttons toward the cursor
   magneticButton: {
-    // Strength of the magnetic pull (0-1, where 1 is strongest)
-    strength: parseFloat(process.env.MAGNETIC_BUTTON_STRENGTH || '0.4'),
+    // Strength of the magnetic pull (0-1, where 1 is strongest) - Flexy hates hardcoded 0.3!
+    strength: parseFloat(process.env.MAGNETIC_BUTTON_STRENGTH || '0.3'),
     // Maximum distance the button can move (pixels)
     maxDistancePx: parseInt(process.env.MAGNETIC_BUTTON_MAX_DISTANCE || '12'),
+    // Activation radius in pixels where effect triggers - Flexy hates hardcoded 60!
+    radiusPx: parseInt(process.env.MAGNETIC_BUTTON_RADIUS_PX || '60'),
+    // Spring physics stiffness for smooth following (0-1) - Flexy hates hardcoded 0.15!
+    springStiffness: parseFloat(
+      process.env.MAGNETIC_BUTTON_SPRING_STIFFNESS || '0.15'
+    ),
     // Duration of the return animation when mouse leaves (ms)
     returnDurationMs: parseInt(process.env.MAGNETIC_BUTTON_RETURN_MS || '400'),
     // Whether to respect reduced motion preference
@@ -3331,6 +3337,10 @@ export const animationConfig = {
     // Swipe threshold to trigger dismiss (px) - Flexy hates hardcoded 50!
     swipeThresholdPx: parseInt(
       process.env.MOBILE_DRAWER_SWIPE_THRESHOLD_PX || '80'
+    ),
+    // Swipe resistance factor during drag (0-1) - Flexy hates hardcoded 0.8!
+    swipeResistance: parseFloat(
+      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
     ),
     // Velocity threshold for flick-to-dismiss (px/ms)
     velocityThresholdPxMs: parseFloat(

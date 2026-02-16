@@ -9,10 +9,7 @@
     </header>
 
     <!-- Palette's micro-UX enhancement: Stat Cards with Counter Animation -->
-    <section
-      aria-label="Dashboard statistics"
-      class="dashboard-stats"
-    >
+    <section aria-label="Dashboard statistics" class="dashboard-stats">
       <article
         v-for="(stat, index) in stats"
         :key="stat.key"
@@ -118,10 +115,7 @@
             </div>
             <div class="activity-content">
               <p>{{ activity.message }}</p>
-              <time
-                class="activity-time"
-                :datetime="activity.timestamp"
-              >{{
+              <time class="activity-time" :datetime="activity.timestamp">{{
                 formatDate(activity.timestamp)
               }}</time>
             </div>
@@ -155,19 +149,12 @@
           enter-from-class="opacity-0 translate-y-4"
           enter-to-class="opacity-100 translate-y-0"
         >
-          <div
-            v-if="recentActivity.length === 0"
-            class="activity-empty-state"
-          >
+          <div v-if="recentActivity.length === 0" class="activity-empty-state">
             <div
               class="activity-empty-icon"
               :class="{ 'animate-float': !prefersReducedMotion }"
             >
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -184,17 +171,11 @@
       </section>
 
       <!-- Palette's micro-UX enhancement: Quick Actions with Press Effects -->
-      <section
-        class="quick-actions"
-        aria-labelledby="quick-actions-heading"
-      >
+      <section class="quick-actions" aria-labelledby="quick-actions-heading">
         <h2 id="quick-actions-heading">
           {{ config.dashboard.quickActions }}
         </h2>
-        <nav
-          class="action-buttons"
-          aria-label="Quick actions navigation"
-        >
+        <nav class="action-buttons" aria-label="Quick actions navigation">
           <NuxtLink
             v-for="(action, index) in quickActions"
             :key="action.route"
@@ -246,12 +227,7 @@
     </div>
 
     <!-- Palette's micro-UX enhancement: Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -263,6 +239,7 @@ import { useModerationDashboard } from '~/composables/useModerationDashboard'
 import { contentConfig } from '~/configs/content.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
+import { easingConfig } from '~/configs/easing.config'
 import { uiConfig } from '~/configs/ui.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
@@ -388,7 +365,14 @@ const animateCounter = (
   const startTime = performance.now()
 
   const easeOutExpo = (t: number) => {
-    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t)
+    // Flexy hates hardcoded 2 and 10!
+    return t === 1
+      ? 1
+      : 1 -
+          Math.pow(
+            easingConfig.powers.easeOutExpoBase,
+            -easingConfig.powers.easeOutExpoMultiplier * t
+          )
   }
 
   const updateCounter = (currentTime: number) => {

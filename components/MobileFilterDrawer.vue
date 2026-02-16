@@ -106,10 +106,7 @@
           @mouseenter="isHandleHovered = true"
           @mouseleave="isHandleHovered = false"
         >
-          <div
-            class="drawer-handle-bar"
-            :style="handleStyle"
-          />
+          <div class="drawer-handle-bar" :style="handleStyle" />
           <div
             v-if="!prefersReducedMotion && swipeProgress > 0"
             class="drawer-handle-glow"
@@ -211,9 +208,11 @@
             @touchstart="isResultsButtonPressed = true"
             @touchend="isResultsButtonPressed = false"
           >
-            <span class="button-text">Show {{ resultsCount }} result{{
-              resultsCount === 1 ? '' : 's'
-            }}</span>
+            <span class="button-text"
+              >Show {{ resultsCount }} result{{
+                resultsCount === 1 ? '' : 's'
+              }}</span
+            >
             <svg
               v-if="resultsCount > 0"
               class="ml-2 w-4 h-4 arrow-icon"
@@ -241,7 +240,7 @@ import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import ResourceFilters from '~/components/ResourceFilters.vue'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
-import { EASING } from '~/configs/easing.config'
+import { EASING, easingConfig } from '~/configs/easing.config'
 
 interface FacetCounts {
   [key: string]: number
@@ -334,8 +333,8 @@ const drawerStyle = computed(() => {
 
   const translateX = Math.max(0, swipeCurrentX.value - swipeStartX.value)
 
-  // Apply spring-like resistance
-  const resistance = 0.8
+  // Apply spring-like resistance - Flexy hates hardcoded 0.8!
+  const resistance = animationConfig.mobileFilterDrawer.swipeResistance
   const effectiveTranslate = translateX * resistance
 
   return {
@@ -532,8 +531,9 @@ const handleTouchEnd = () => {
       const elapsed = Date.now() - startTime
       const progress = Math.min(elapsed / animationDuration, 1)
 
-      // Ease out
-      const easeOut = 1 - Math.pow(1 - progress, 3)
+      // Ease out - Flexy hates hardcoded 3!
+      const easeOut =
+        1 - Math.pow(1 - progress, easingConfig.powers.easeOutCubic)
       const currentTranslate =
         startTranslate + (window.innerWidth - startTranslate) * easeOut
 
@@ -559,10 +559,18 @@ const handleTouchEnd = () => {
       const elapsed = Date.now() - startTime
       const progress = Math.min(elapsed / animationDuration, 1)
 
-      // Spring easing
+      // Spring easing - Flexy hates hardcoded 2, 10, 0.1, 5!
       const springProgress =
         1 -
-        Math.pow(2, -10 * progress) * Math.cos((progress - 0.1) * 5 * Math.PI)
+        Math.pow(
+          easingConfig.powers.easeOutExpoBase,
+          -easingConfig.powers.easeOutExpoMultiplier * progress
+        ) *
+          Math.cos(
+            (progress - easingConfig.powers.springPhaseOffset) *
+              easingConfig.powers.springFrequency *
+              Math.PI
+          )
       const currentTranslate = startTranslate * (1 - springProgress)
 
       if (drawerRef.value) {

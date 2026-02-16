@@ -467,6 +467,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useSearchAnalytics } from '~/composables/useSearchAnalytics'
 import { animationConfig } from '~/configs/animation.config'
+import { easingConfig } from '~/configs/easing.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 
 const {
@@ -550,8 +551,8 @@ const animateValue = (
     const elapsed = currentTime - startTime
     const progress = Math.min(elapsed / duration, 1)
 
-    // Easing function (ease-out)
-    const easeOut = 1 - Math.pow(1 - progress, 3)
+    // Easing function (ease-out) - Flexy hates hardcoded 3!
+    const easeOut = 1 - Math.pow(1 - progress, easingConfig.powers.easeOutCubic)
     const current = Math.floor(start + (target - start) * easeOut)
 
     setter(current)
