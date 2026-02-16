@@ -1436,6 +1436,34 @@ export const animationConfig = {
       process.env.LIMITATIONS_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // Screenshots Section Micro-UX - Pallete's delightful enhancement! 🎨
+  // Staggered entrance, hover effects, and loading states
+  screenshotsSection: {
+    // Duration of each screenshot card's entrance animation (ms) - Pallete hates hardcoded 400!
+    entranceDurationMs: parseInt(
+      process.env.SCREENSHOTS_ENTRANCE_DURATION_MS || '400'
+    ),
+    // CSS duration string
+    entranceDurationSec: `${parseInt(process.env.SCREENSHOTS_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Delay between each card's entrance (stagger effect) (ms) - Pallete hates hardcoded 80!
+    staggerDelayMs: parseInt(process.env.SCREENSHOTS_STAGGER_MS || '80'),
+    // Maximum stagger delay to prevent long waits (ms) - Pallete hates hardcoded 400!
+    maxStaggerDelayMs: parseInt(
+      process.env.SCREENSHOTS_MAX_STAGGER_MS || '400'
+    ),
+    // Duration of count update animation (ms) - Pallete hates hardcoded 600!
+    countUpdateDurationMs: parseInt(
+      process.env.SCREENSHOTS_COUNT_UPDATE_MS || '600'
+    ),
+    // Hover lift distance (px) - Pallete hates hardcoded 4!
+    hoverLiftPx: parseInt(process.env.SCREENSHOTS_HOVER_LIFT_PX || '4'),
+    // Hover scale factor - Pallete hates hardcoded 1.02!
+    hoverScale: parseFloat(process.env.SCREENSHOTS_HOVER_SCALE || '1.02'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.SCREENSHOTS_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // Similar Resources Micro-UX - Palette's delightful enhancement! ✨
   // Staggered card entrance with lift and press effects
   similarResources: {
@@ -3448,10 +3476,6 @@ export const animationConfig = {
     // Maximum magnetic displacement (px)
     magneticMaxDisplacementPx: parseInt(
       process.env.MOBILE_DRAWER_MAGNETIC_MAX_PX || '20'
-    ),
-    // Swipe resistance factor (0-1) - Flexy hates hardcoded 0.8!
-    swipeResistance: parseFloat(
-      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
     ),
     // Handle bounce animation duration (ms)
     handleBounceDurationMs: parseInt(
