@@ -99,6 +99,10 @@ export const timeConfig = {
       process.env.RETRY_MAX_DELAY_MS || `${TIME_MS.MINUTE * 5}`
     ),
     exponentialBase: parseInt(process.env.RETRY_EXPONENTIAL_BASE || '2'),
+    // Initial error tracking delay (ms) - Flexy hates hardcoded 0!
+    initialErrorDelayMs: parseInt(
+      process.env.RETRY_INITIAL_ERROR_DELAY_MS || '0'
+    ),
   },
 
   // Polling intervals

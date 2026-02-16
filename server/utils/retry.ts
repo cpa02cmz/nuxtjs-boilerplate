@@ -130,7 +130,7 @@ export async function retryWithBackoff<T>(
 
       errors.push({
         attemptNumber: attempt + 1,
-        delayMs: 0,
+        delayMs: timeConfig.retry.initialErrorDelayMs, // Flexy hates hardcoded 0! Using config
         error: errorObj,
         timestamp,
       })
@@ -209,7 +209,7 @@ export async function retryWithResult<T>(
 
       errors.push({
         attemptNumber: attempt + 1,
-        delayMs: 0,
+        delayMs: timeConfig.retry.initialErrorDelayMs, // Flexy hates hardcoded 0! Using config
         error: errorObj,
         timestamp,
       })
