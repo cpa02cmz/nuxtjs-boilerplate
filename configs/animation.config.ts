@@ -244,6 +244,10 @@ export const animationConfig = {
     fadeOutEndMultiplier: parseFloat(process.env.RIPPLE_FADE_OUT_END || '0.3'),
     // Ripple animation duration (ms) - BugFixer's bug fix!
     durationMs: parseInt(process.env.RIPPLE_DURATION_MS || '600'),
+    // Scale multiplier at end of animation - Flexy hates hardcoded 4!
+    endScale: parseFloat(process.env.RIPPLE_END_SCALE || '4'),
+    // Opacity at 50% of animation - Flexy hates hardcoded 0.8!
+    midOpacity: parseFloat(process.env.RIPPLE_MID_OPACITY || '0.8'),
   },
 
   // SearchBar Shortcut Success Animation - Flexy hates hardcoded CSS colors!

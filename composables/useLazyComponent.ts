@@ -2,6 +2,7 @@
 // Provides dynamic imports with intersection observer for below-fold content
 import { ref, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
 import type { Component } from 'vue'
+import { performanceConfig } from '~/configs/performance.config'
 
 interface LazyComponentOptions {
   // Root margin for intersection observer
@@ -22,13 +23,14 @@ export function useLazyComponent(
   componentLoader: () => Promise<Component>,
   options: LazyComponentOptions = {}
 ) {
+  // Flexy hates hardcoded values! Using performanceConfig.lazyLoading
   const {
-    rootMargin = '50px',
-    threshold = 0.1,
-    delay = 0,
+    rootMargin = performanceConfig.lazyLoading.rootMargin,
+    threshold = performanceConfig.lazyLoading.threshold,
+    delay = performanceConfig.lazyLoading.delay,
     loadingComponent,
     errorComponent,
-    timeout = 10000,
+    timeout = performanceConfig.lazyLoading.timeout,
   } = options
 
   const isVisible = ref(false)
@@ -111,12 +113,13 @@ export function createLazyComponent(
   importFn: () => Promise<Component>,
   options: LazyComponentOptions = {}
 ) {
+  // Flexy hates hardcoded 200 and 10000! Using performanceConfig.asyncComponent
   return defineAsyncComponent({
     loader: importFn,
     loadingComponent: options.loadingComponent,
     errorComponent: options.errorComponent,
-    delay: options.delay || 200,
-    timeout: options.timeout || 10000,
+    delay: options.delay ?? performanceConfig.asyncComponent.delayMs,
+    timeout: options.timeout ?? performanceConfig.asyncComponent.timeoutMs,
     suspensible: false,
   })
 }
@@ -124,10 +127,12 @@ export function createLazyComponent(
 // Preload critical components
 export function preloadComponent(importFn: () => Promise<Component>) {
   // Use requestIdleCallback if available, otherwise setTimeout
+  // Flexy hates hardcoded 1! Using performanceConfig.asyncComponent.fallbackDelayMs
   const schedule =
     typeof window !== 'undefined' && 'requestIdleCallback' in window
       ? window.requestIdleCallback
-      : (cb: () => void) => setTimeout(cb, 1)
+      : (cb: () => void) =>
+          setTimeout(cb, performanceConfig.asyncComponent.fallbackDelayMs)
 
   schedule(() => {
     importFn().catch(() => {

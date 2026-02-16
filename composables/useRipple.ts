@@ -165,6 +165,7 @@ export function useRipple(
 /**
  * Global ripple animation styles
  * Add this to your global CSS or component styles
+ * Flexy hates hardcoded 0.8 and scale(4)! Using animationConfig.ripple
  */
 export const rippleStyles = `
 @keyframes ripple-animation {
@@ -173,10 +174,10 @@ export const rippleStyles = `
     opacity: 1;
   }
   50% {
-    opacity: 0.8;
+    opacity: ${animationConfig.ripple.midOpacity};
   }
   100% {
-    transform: scale(4);
+    transform: scale(${animationConfig.ripple.endScale});
     opacity: 0;
   }
 }

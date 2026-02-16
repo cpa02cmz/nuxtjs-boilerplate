@@ -24,6 +24,16 @@ export const performanceConfig = {
     },
   },
 
+  // Async Component Configuration - Flexy hates hardcoded delays!
+  asyncComponent: {
+    // Default delay before showing loading state (ms)
+    delayMs: parseInt(process.env.PERF_ASYNC_DELAY_MS || '200'),
+    // Default timeout for async component loading (ms)
+    timeoutMs: parseInt(process.env.PERF_ASYNC_TIMEOUT_MS || '10000'),
+    // Fallback delay for requestIdleCallback polyfill (ms)
+    fallbackDelayMs: parseInt(process.env.PERF_FALLBACK_DELAY_MS || '1'),
+  },
+
   // Image Loading Optimization
   images: {
     // Use native lazy loading
