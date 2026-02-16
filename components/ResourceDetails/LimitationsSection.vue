@@ -26,10 +26,7 @@
           />
         </svg>
       </div>
-      <h2
-        :id="sectionId"
-        class="limitations-section__title"
-      >
+      <h2 :id="sectionId" class="limitations-section__title">
         {{ contentConfig.resourceDetails.sections.limitations }}
       </h2>
     </div>
@@ -67,12 +64,7 @@
     </TransitionGroup>
 
     <!-- Screen Reader Announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -83,6 +75,7 @@ import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { EASING } from '~/configs/easing.config'
+import { limitsConfig } from '~/configs/limits.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
@@ -92,7 +85,8 @@ interface Props {
 const props = defineProps<Props>()
 
 // Generate unique section ID for accessibility
-const sectionId = `limitations-section-${Math.random().toString(36).substring(2, 9)}`
+// Flexy hates hardcoded 9! Using limitsConfig.displayLength.sectionIdLength
+const sectionId = `limitations-section-${Math.random().toString(36).substring(2, limitsConfig.displayLength.sectionIdLength)}`
 
 // Track reduced motion preference
 const prefersReducedMotion = ref(false)
