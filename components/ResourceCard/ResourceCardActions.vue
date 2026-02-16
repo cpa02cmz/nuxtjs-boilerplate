@@ -244,7 +244,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useResourceCardActions } from '~/composables/useResourceCardActions'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
@@ -346,8 +346,6 @@ const transitionLeaveFast = computed(
 // ============================================================
 // Buttons subtly follow the cursor with spring physics for
 // delightful tactile feedback. Respects reduced motion preference.
-
-import { ref, onMounted } from 'vue'
 
 // Check for reduced motion preference
 const prefersReducedMotion = ref(false)

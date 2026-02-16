@@ -722,7 +722,7 @@ async function sendNotification(
   // Log notification
   logger.info(`Notification: ${message}`)
 
-  // TODO: Implement webhook/email notifications
+  // Send webhook notification if configured
   if (backupConfig.notifications.webhookUrl) {
     try {
       await fetch(backupConfig.notifications.webhookUrl, {

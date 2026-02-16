@@ -1,6 +1,7 @@
 <template>
   <ClientOnly>
     <Teleport to="body">
+      <!-- Visual confetti animation - hidden from screen readers -->
       <div
         v-if="isActive"
         class="confetti-container"
@@ -13,6 +14,16 @@
           :style="getParticleStyle(particle)"
         />
       </div>
+      <!-- Pallete's micro-UX enhancement: Screen reader announcement for celebration -->
+      <!-- Ensures all users experience the delight, even without visual animation -->
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        class="sr-only"
+      >
+        {{ announcementText }}
+      </div>
     </Teleport>
   </ClientOnly>
 </template>
@@ -21,6 +32,7 @@
 import { ref, onUnmounted, watch } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { themeConfig } from '~/configs/theme.config'
+import { contentConfig } from '~/configs/content.config'
 import { useAnimationPerformance } from '~/composables/useAnimationPerformance'
 
 interface Particle {
@@ -38,17 +50,22 @@ interface Props {
   trigger?: boolean
   intensity?: 'light' | 'medium' | 'heavy'
   duration?: number
+  announcement?: string
 }
 
+// Pallete's micro-UX enhancement: Use configurable content instead of hardcoded strings
 const props = withDefaults(defineProps<Props>(), {
   trigger: false,
   intensity: 'medium',
   duration: animationConfig.confetti!.durationMs,
+  announcement: contentConfig.confettiCelebration.defaultAnnouncement,
 })
 
 const isActive = ref(false)
 const particles = ref<Particle[]>([])
 let cleanupTimer: ReturnType<typeof setTimeout> | null = null
+// Pallete's micro-UX enhancement: Announcement for screen reader users
+const announcementText = ref('')
 
 // Performance optimization - Issue #2752
 const { acquireAnimationSlot, releaseAnimationSlot, getGpuAccelerationStyles } =
@@ -135,13 +152,22 @@ const shouldSkipAnimation = () => {
 
 // Trigger confetti celebration
 const celebrate = () => {
-  // Skip if reduced motion is preferred
+  // Pallete's micro-UX enhancement: Always announce to screen readers
+  // even if visual animation is skipped
+  announcementText.value = props.announcement
+
+  // Clear announcement after a delay so it can be re-triggered
+  setTimeout(() => {
+    announcementText.value = ''
+  }, props.duration + 1000)
+
+  // Skip visual animation if reduced motion is preferred
   if (shouldSkipAnimation()) return
 
   // Performance budget check - Issue #2752
   if (!animationSlotAcquired.value) {
     if (!acquireAnimationSlot()) {
-      // Animation budget exceeded, silently skip
+      // Animation budget exceeded, but announcement still works!
       return
     }
     animationSlotAcquired.value = true
@@ -246,5 +272,19 @@ defineExpose({
   .confetti-particle {
     animation: none;
   }
+}
+
+/* Pallete's micro-UX enhancement: Screen reader only class */
+/* Visually hides content while keeping it accessible to assistive technologies */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 </style>

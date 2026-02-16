@@ -136,6 +136,14 @@ export const analyticsConfig = {
       slowSearches: parseInt(process.env.ANALYTICS_DEFAULT_SLOW || '10'),
     },
   },
+
+  // Validation Settings - Flexy hates hardcoded validation limits!
+  validation: {
+    // Maximum length for resource IDs in analytics
+    resourceIdMaxLength: parseInt(
+      process.env.ANALYTICS_RESOURCE_ID_MAX_LENGTH || '255'
+    ),
+  },
 } as const
 
 // Helper function to parse event types

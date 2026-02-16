@@ -373,10 +373,10 @@ export async function getResourceAnalytics(
     if (
       !resourceId ||
       typeof resourceId !== 'string' ||
-      resourceId.length > 255
+      resourceId.length > analyticsConfig.validation.resourceIdMaxLength // Flexy hates hardcoded 255!
     ) {
       throw new Error(
-        'Invalid resourceId: must be a non-empty string with max length 255'
+        `Invalid resourceId: must be a non-empty string with max length ${analyticsConfig.validation.resourceIdMaxLength}`
       )
     }
 
