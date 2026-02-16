@@ -1,16 +1,10 @@
 <template>
-  <fieldset
-    class="mb-6"
-    @keydown="handleKeydown"
-  >
+  <fieldset class="mb-6" @keydown="handleKeydown">
     <div class="flex items-center justify-between mb-3">
       <legend class="text-sm font-medium text-gray-900">
         {{ label }}
       </legend>
-      <div
-        v-if="options.length > 1"
-        class="flex items-center gap-2"
-      >
+      <div v-if="options.length > 1" class="flex items-center gap-2">
         <span
           class="text-xs text-gray-500 transition-all duration-200"
           :class="{ 'text-blue-600 font-medium': selectedOptions.length > 0 }"
@@ -51,7 +45,7 @@
       <div
         v-for="option in options"
         :key="option"
-        class="filter-option flex items-center rounded-md transition-all duration-200 ease-out"
+        class="filter-option flex items-center rounded-md transition-all duration-200 ease-out relative overflow-hidden"
         :class="{
           'justify-between': showCount,
           'bg-gray-50': selectedOptions.includes(option),
@@ -66,7 +60,20 @@
         }"
         :style="getCheckboxBloomStyle(option)"
         @click="!isOptionDisabled(option) && toggleOption(option)"
+        @mouseenter="handleMouseEnter(option, $event)"
+        @mouseleave="handleMouseLeave(option)"
       >
+        <!-- Hover Ripple Effect - Palette's micro-UX delight! -->
+        <span
+          v-if="!prefersReducedMotion && hoverRipple.option === option"
+          class="hover-ripple"
+          :class="{ 'hover-ripple--active': hoverRipple.active }"
+          :style="{
+            left: `${hoverRipple.x}px`,
+            top: `${hoverRipple.y}px`,
+          }"
+          aria-hidden="true"
+        />
         <div class="flex items-center flex-1 py-2 px-2">
           <div class="relative flex items-center">
             <div class="checkbox-wrapper relative">
@@ -74,7 +81,7 @@
               <span
                 v-if="
                   !prefersReducedMotion &&
-                    (recentlySelected === option || recentlyDeselected === option)
+                  (recentlySelected === option || recentlyDeselected === option)
                 "
                 class="checkbox-bloom absolute inset-0 rounded pointer-events-none"
                 :class="{
@@ -103,7 +110,7 @@
                 }"
                 @change="toggleOption(option)"
                 @click.stop
-              >
+              />
             </div>
             <label
               :for="`${id}-${option}`"
@@ -178,6 +185,20 @@ const recentlySelected = ref<string | null>(null)
 const recentlyDeselected = ref<string | null>(null)
 const animationTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 
+// Hover ripple state - Palette's micro-UX enhancement!
+const hoverRipple = ref<{
+  option: string | null
+  x: number
+  y: number
+  active: boolean
+}>({
+  option: null,
+  x: 0,
+  y: 0,
+  active: false,
+})
+let hoverRippleTimeout: ReturnType<typeof setTimeout> | null = null
+
 const scrollableClass = computed(() =>
   props.scrollable ? 'max-h-40 overflow-y-auto' : ''
 )
@@ -206,6 +227,43 @@ const getCheckboxBloomStyle = (option: string) => {
 const isOptionDisabled = (option: string): boolean => {
   if (!props.showCount || !props.getCountForOption) return false
   return props.getCountForOption(option) === 0
+}
+
+// Handle mouse enter for hover ripple effect - Palette's micro-UX enhancement!
+const handleMouseEnter = (option: string, event: MouseEvent) => {
+  if (isOptionDisabled(option) || prefersReducedMotion.value) return
+
+  const target = event.currentTarget as HTMLElement
+  if (!target) return
+
+  const rect = target.getBoundingClientRect()
+  hoverRipple.value = {
+    option,
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top,
+    active: true,
+  }
+
+  // Clear any existing timeout
+  if (hoverRippleTimeout) {
+    clearTimeout(hoverRippleTimeout)
+    hoverRippleTimeout = null
+  }
+}
+
+// Handle mouse leave to clear ripple - Palette's micro-UX enhancement!
+const handleMouseLeave = (option: string) => {
+  if (hoverRipple.value.option !== option) return
+
+  // Deactivate ripple with a small delay for smooth transition
+  hoverRipple.value.active = false
+
+  // Clear ripple after transition completes
+  hoverRippleTimeout = setTimeout(() => {
+    if (hoverRipple.value.option === option) {
+      hoverRipple.value.option = null
+    }
+  }, animationConfig.cssTransitions.fastMs)
 }
 
 const toggleOption = (option: string) => {
@@ -323,6 +381,9 @@ onMounted(() => {
 onUnmounted(() => {
   if (animationTimeout.value) {
     clearTimeout(animationTimeout.value)
+  }
+  if (hoverRippleTimeout) {
+    clearTimeout(hoverRippleTimeout)
   }
 })
 </script>
@@ -539,6 +600,36 @@ button:hover {
   100% {
     background-color: rgb(249, 250, 251);
   }
+}
+
+/* Hover Ripple Effect - Palette's micro-UX delight!
+   Creates a subtle expanding circle on hover for tactile feedback */
+.hover-ripple {
+  position: absolute;
+  width: v-bind('animationConfig.checkbox.rippleSizePx + "px"');
+  height: v-bind('animationConfig.checkbox.rippleSizePx + "px"');
+  margin-left: calc(
+    v-bind('animationConfig.checkbox.rippleSizePx + "px"') / -2
+  );
+  margin-top: calc(v-bind('animationConfig.checkbox.rippleSizePx + "px"') / -2);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, v-bind('animationConfig.checkbox.rippleOpacity')) 0%,
+    rgba(59, 130, 246, 0) 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+  transform: scale(0);
+  opacity: 0;
+  transition:
+    transform v-bind('animationConfig.cssTransitions.slowSec') ease-out,
+    opacity v-bind('animationConfig.cssTransitions.normalSec') ease-out;
+}
+
+.hover-ripple--active {
+  transform: scale(v-bind('animationConfig.checkbox.rippleScale'));
+  opacity: 1;
 }
 
 /* Reduced motion support */

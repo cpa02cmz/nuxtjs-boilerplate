@@ -1214,6 +1214,13 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.CHECKBOX_RESPECT_REDUCED_MOTION !== 'false',
+    // Hover ripple effect configuration - Palette's micro-UX enhancement!
+    // Size of the hover ripple in pixels
+    rippleSizePx: parseInt(process.env.CHECKBOX_RIPPLE_SIZE_PX || '80'),
+    // Scale factor for ripple expansion
+    rippleScale: parseFloat(process.env.CHECKBOX_RIPPLE_SCALE || '2.5'),
+    // Ripple opacity (0-1)
+    rippleOpacity: parseFloat(process.env.CHECKBOX_RIPPLE_OPACITY || '0.15'),
   },
 
   // Spring Physics Micro-Interaction - Palette's delightful micro-UX touch!
