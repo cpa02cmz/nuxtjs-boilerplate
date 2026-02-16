@@ -44,8 +44,13 @@ export default defineEventHandler(async event => {
     // Get search analytics data
     // In a real implementation, this would come from a database
     // For now, we'll use in-memory tracker and generate some sample data
-    const popularSearches = searchAnalyticsTracker.getPopularSearches(10)
-    const zeroResultSearches = searchAnalyticsTracker.getZeroResultSearches(10)
+    // Flexy hates hardcoded 10! Using configurable limits from analyticsConfig
+    const popularSearches = searchAnalyticsTracker.getPopularSearches(
+      analyticsConfig.searchLimits.popularSearches
+    )
+    const zeroResultSearches = searchAnalyticsTracker.getZeroResultSearches(
+      analyticsConfig.searchLimits.zeroResultSearches
+    )
     const performanceMetrics = searchAnalyticsTracker.getOverallPerformance()
 
     // Calculate success rate based on zero-result searches

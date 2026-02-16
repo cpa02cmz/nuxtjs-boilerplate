@@ -26,7 +26,7 @@ export default defineEventHandler(async event => {
     }
 
     // Remove webhook
-    const deleted = webhookStorage.deleteWebhook(id as string)
+    const deleted = await webhookStorage.deleteWebhook(id as string)
     if (!deleted) {
       return sendNotFoundError(event, 'Webhook', id)
     }
