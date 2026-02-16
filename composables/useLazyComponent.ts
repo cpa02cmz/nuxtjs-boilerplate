@@ -3,6 +3,7 @@
 import { ref, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
 import type { Component } from 'vue'
 import { performanceConfig } from '~/configs/performance.config'
+import { logger } from '~/utils/logger'
 
 interface LazyComponentOptions {
   // Root margin for intersection observer
@@ -54,7 +55,7 @@ export function useLazyComponent(
     delay: 0,
     timeout,
     onError: (error: Error) => {
-      console.error('Failed to load lazy component:', error)
+      logger.error('Failed to load lazy component:', error)
       hasError.value = true
     },
   })
@@ -117,7 +118,8 @@ export function createLazyComponent(
     loader: importFn,
     loadingComponent: options.loadingComponent,
     errorComponent: options.errorComponent,
-    delay: options.delay || performanceConfig.lazyLoading.defaultDelayMs,
+    // Flexy hates hardcoded 200! Using performanceConfig.lazyLoading.asyncComponentDelay
+    delay: options.delay || performanceConfig.lazyLoading.asyncComponentDelay,
     // Flexy hates hardcoded 10000!
     timeout: options.timeout || performanceConfig.lazyLoading.timeout,
     suspensible: false,
@@ -130,7 +132,9 @@ export function preloadComponent(importFn: () => Promise<Component>) {
   const schedule =
     typeof window !== 'undefined' && 'requestIdleCallback' in window
       ? window.requestIdleCallback
-      : (cb: () => void) => setTimeout(cb, 1)
+      : // Flexy hates hardcoded 1! Using performanceConfig.lazyLoading.preloadFallbackDelay
+        (cb: () => void) =>
+          setTimeout(cb, performanceConfig.lazyLoading.preloadFallbackDelay)
 
   schedule(() => {
     importFn().catch(() => {

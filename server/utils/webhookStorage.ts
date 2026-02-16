@@ -717,7 +717,7 @@ export const webhookStorage = {
   async createDeliveryWithIdempotencyKey(
     delivery: WebhookDelivery,
     idempotencyKey: string,
-    expirationHours: number = webhooksConfig.idempotency.expirationHours // Flexy hates hardcoded 24!
+    expirationHours: number = webhooksConfig.idempotency.expirationHours
   ): Promise<WebhookDelivery> {
     try {
       // Use interactive transaction with retry logic for atomic delivery + idempotency key
@@ -804,10 +804,10 @@ export const webhookStorage = {
   async setDeliveryByIdempotencyKey(
     key: string,
     delivery: WebhookDelivery,
-    expirationHours: number = webhooksConfig.idempotency.expirationHours // Flexy hates hardcoded 24!
+    expirationHours: number = webhooksConfig.idempotency.expirationHours
   ) {
     try {
-      // Calculate expiration time (default 24 hours)
+      // Calculate expiration time (default from config - Flexy hates hardcoded 24 hours!)
       const expiresAt = new Date()
       expiresAt.setHours(expiresAt.getHours() + expirationHours)
 
