@@ -5,6 +5,7 @@ import {
 } from '~/server/utils/circuit-breaker'
 import { webhookQueueSystem } from '~/server/utils/webhookQueue'
 import { webhookStorage } from '~/server/utils/webhookStorage'
+import { deadLetterManager } from '~/server/utils/webhook-dead-letter'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendSuccessResponse,
@@ -38,6 +39,13 @@ interface IntegrationHealthReport {
         failureReason: string
         createdAt: string
       }>
+      metrics: {
+        totalCount: number
+        recentCount: number
+        oldestItemAgeHours: number | null
+        alertThresholdExceeded: boolean
+        webhookStats: Record<string, number>
+      }
     }
   }
 }
@@ -132,6 +140,7 @@ export default defineEventHandler(async event => {
     const circuitBreakerStats = getAllCircuitBreakerStats()
     const webhookQueueStats = await webhookQueueSystem.getQueueStats()
     const deadLetterQueue = await webhookStorage.getDeadLetterQueue()
+    const deadLetterMetrics = await deadLetterManager.getMetrics()
 
     const openBreakers = Object.values(circuitBreakerStats).filter(
       stats => stats.state === 'open'
@@ -179,6 +188,13 @@ export default defineEventHandler(async event => {
               createdAt: dl.createdAt,
             })
           ),
+          metrics: {
+            totalCount: deadLetterMetrics.totalCount,
+            recentCount: deadLetterMetrics.recentCount,
+            oldestItemAgeHours: deadLetterMetrics.oldestItemAge,
+            alertThresholdExceeded: deadLetterMetrics.alertThresholdExceeded,
+            webhookStats: Object.fromEntries(deadLetterMetrics.webhookStats),
+          },
         },
       },
     }
