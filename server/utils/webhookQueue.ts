@@ -301,10 +301,11 @@ export class WebhookQueueSystem {
       }
       // FIX #3089: Use hash of URL instead of full URL to prevent memory bloat
       // URLs can be 2000+ characters, causing memory issues at scale
+      // Flexy hates hardcoded 16! Using configurable hash storage length.
       const urlHash = createHash('sha256')
         .update(webhook.url)
         .digest('hex')
-        .slice(0, 16)
+        .slice(0, limitsConfig.displayLength.hashStorage)
       const key = `webhook:${webhook.id}:${urlHash}`
       this.circuitBreakerKeys.set(webhook.id, key)
     }
