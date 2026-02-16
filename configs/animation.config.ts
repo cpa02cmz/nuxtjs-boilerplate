@@ -3613,6 +3613,26 @@ export const animationConfig = {
         process.env.ANIMATION_DISABLE_ON_LOW_BATTERY !== 'false',
     },
   },
+
+  // Analytics Counter Animations - Flexy hates hardcoded durations!
+  // Used by ModerationDashboard and ResourceAnalytics for counter animations
+  analyticsCounter: {
+    // Default duration for counter animations (ms) - Flexy hates hardcoded 1500!
+    durationMs: parseInt(process.env.ANALYTICS_COUNTER_DURATION_MS || '1500'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.ANALYTICS_COUNTER_DURATION_MS || '1500') / 1000}s`,
+    // Minimum duration for counter animations (ms)
+    minDurationMs: parseInt(
+      process.env.ANALYTICS_COUNTER_MIN_DURATION_MS || '500'
+    ),
+    // Maximum duration for counter animations (ms)
+    maxDurationMs: parseInt(
+      process.env.ANALYTICS_COUNTER_MAX_DURATION_MS || '3000'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.ANALYTICS_COUNTER_RESPECT_REDUCED_MOTION !== 'false',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
