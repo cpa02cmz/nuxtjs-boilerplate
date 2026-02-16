@@ -117,6 +117,35 @@
     >
       {{ loadingAnnouncement }}
     </span>
+
+    <!-- 🎨 Palette's micro-UX enhancement: Loading Dots Indicator ✨
+         Explicit visual feedback that content is actively loading.
+         The dots pulse rhythmically to create a sense of progress and activity. -->
+    <div
+      v-if="!prefersReducedMotion"
+      class="skeleton-loading-indicator"
+      aria-hidden="true"
+    >
+      <span class="skeleton-loading-text">Loading</span>
+      <span class="skeleton-loading-dots">
+        <span
+          v-for="i in 3"
+          :key="i"
+          class="skeleton-loading-dot"
+          :style="{
+            animationDelay: `${(i - 1) * loadingDotsConfig.staggerDelayMs}ms`,
+          }"
+        />
+      </span>
+    </div>
+    <!-- Reduced motion fallback - static text only -->
+    <div
+      v-else
+      class="skeleton-loading-indicator skeleton-loading-indicator--static"
+      aria-hidden="true"
+    >
+      <span class="skeleton-loading-text">Loading...</span>
+    </div>
   </article>
 </template>
 
@@ -212,6 +241,23 @@ const scanConfig = computed(() => ({
   delaySec: animationConfig.skeleton?.scanLine?.delaySec ?? 0.5,
   color: animationConfig.skeleton?.scanLine?.color ?? 'rgba(59, 130, 246, 0.3)',
   opacity: animationConfig.skeleton?.scanLine?.opacity ?? 0.6,
+}))
+
+// 🎨 Palette's micro-UX enhancement: Loading dots configuration
+// Explicit visual feedback with rhythmic dot animation
+const loadingDotsConfig = computed(() => ({
+  // Animation duration for one complete dot pulse cycle (ms)
+  pulseDurationMs:
+    animationConfig.skeleton?.loadingDots?.pulseDurationMs ?? 900,
+  // Stagger delay between each dot (ms) - creates wave effect
+  staggerDelayMs: animationConfig.skeleton?.loadingDots?.staggerDelayMs ?? 150,
+  // Dot size (px)
+  dotSizePx: animationConfig.skeleton?.loadingDots?.dotSizePx ?? 6,
+  // Dot color
+  dotColor: animationConfig.skeleton?.loadingDots?.dotColor ?? '#9ca3af',
+  // Active dot color (brighter)
+  dotActiveColor:
+    animationConfig.skeleton?.loadingDots?.dotActiveColor ?? '#6b7280',
 }))
 
 // 🎨 Palette: Respect reduced motion preference
@@ -616,6 +662,123 @@ onMounted(() => {
     }
     50% {
       opacity: 0.6;
+    }
+  }
+}
+
+/* 🎨 Palette's micro-UX enhancement: Loading Dots Indicator Styles ✨
+   Provides explicit visual feedback that content is actively loading */
+.skeleton-loading-indicator {
+  position: absolute;
+  bottom: v-bind(
+    'animationConfig.skeleton?.loadingDots?.bottomOffsetPx ?? 12 + "px"'
+  );
+  right: v-bind(
+    'animationConfig.skeleton?.loadingDots?.rightOffsetPx ?? 16 + "px"'
+  );
+  display: flex;
+  align-items: center;
+  gap: v-bind('animationConfig.skeleton?.loadingDots?.gapPx ?? 4 + "px"');
+  font-size: v-bind(
+    'animationConfig.skeleton?.loadingDots?.fontSizePx ?? 11 + "px"'
+  );
+  font-weight: 500;
+  color: v-bind('loadingDotsConfig.dotColor');
+  letter-spacing: v-bind(
+    'animationConfig.skeleton?.loadingDots?.letterSpacingPx ?? 0.5 + "px"'
+  );
+  text-transform: uppercase;
+  pointer-events: none;
+  user-select: none;
+  z-index: 5;
+  transition: opacity v-bind('animationConfig.cssTransitions.fastSec') ease;
+}
+
+.skeleton-loading-indicator--static {
+  opacity: 0.8;
+}
+
+.skeleton-loading-text {
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+.skeleton-loading-dots {
+  display: flex;
+  align-items: center;
+  gap: v-bind('animationConfig.skeleton?.loadingDots?.dotGapPx ?? 3 + "px"');
+}
+
+.skeleton-loading-dot {
+  width: v-bind('loadingDotsConfig.dotSizePx + "px"');
+  height: v-bind('loadingDotsConfig.dotSizePx + "px"');
+  border-radius: 50%;
+  background-color: v-bind('loadingDotsConfig.dotColor');
+  animation: loading-dot-pulse
+    v-bind('loadingDotsConfig.pulseDurationMs + "ms"') ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes loading-dot-pulse {
+  0%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+    background-color: v-bind('loadingDotsConfig.dotColor');
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+    background-color: v-bind('loadingDotsConfig.dotActiveColor');
+  }
+}
+
+/* 🎨 Palette: Pause loading dots animation on hover for cleaner UX */
+.skeleton-interactive:hover .skeleton-loading-indicator .skeleton-loading-dot {
+  animation-play-state: paused;
+  opacity: 0.6;
+}
+
+/* 🎨 Palette: Reduced motion support for loading dots */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-loading-indicator {
+    display: none;
+  }
+
+  .skeleton-loading-indicator--static {
+    display: flex;
+    animation: none;
+  }
+
+  .skeleton-loading-dot {
+    animation: none;
+    opacity: 0.6;
+    transform: scale(0.8);
+  }
+}
+
+/* 🎨 Palette: High contrast mode support for loading dots */
+@media (prefers-contrast: high) {
+  .skeleton-loading-indicator {
+    color: currentColor;
+  }
+
+  .skeleton-loading-dot {
+    background-color: currentColor;
+    animation: highContrastDotPulse
+      v-bind('loadingDotsConfig.pulseDurationMs + "ms"') ease-in-out infinite;
+  }
+
+  @keyframes highContrastDotPulse {
+    0%,
+    100% {
+      transform: scale(0.6);
+      opacity: 0.7;
+    }
+    50% {
+      transform: scale(1);
+      opacity: 1;
     }
   }
 }

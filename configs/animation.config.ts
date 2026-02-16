@@ -136,6 +136,43 @@ export const animationConfig = {
       color: process.env.SKELETON_SCAN_COLOR || 'rgba(59, 130, 246, 0.3)',
       opacity: parseFloat(process.env.SKELETON_SCAN_OPACITY || '0.6'),
     },
+    // 🎨 Palette's micro-UX enhancement: Loading Dots Indicator Configuration ✨
+    // Provides explicit visual feedback with rhythmic dot animation during loading
+    loadingDots: {
+      // Animation duration for one complete dot pulse cycle (ms)
+      pulseDurationMs: parseInt(
+        process.env.SKELETON_LOADING_DOTS_PULSE_MS || '900'
+      ),
+      // Stagger delay between each dot (ms) - creates wave effect
+      staggerDelayMs: parseInt(
+        process.env.SKELETON_LOADING_DOTS_STAGGER_MS || '150'
+      ),
+      // Dot size (px)
+      dotSizePx: parseInt(process.env.SKELETON_LOADING_DOTS_SIZE_PX || '6'),
+      // Dot color (gray-400)
+      dotColor: process.env.SKELETON_LOADING_DOTS_COLOR || '#9ca3af',
+      // Active dot color (gray-500) - brighter when pulsing
+      dotActiveColor:
+        process.env.SKELETON_LOADING_DOTS_ACTIVE_COLOR || '#6b7280',
+      // Spacing between dots (px)
+      dotGapPx: parseInt(process.env.SKELETON_LOADING_DOTS_GAP_PX || '3'),
+      // Gap between text and dots (px)
+      gapPx: parseInt(process.env.SKELETON_LOADING_TEXT_GAP_PX || '4'),
+      // Bottom offset from card edge (px)
+      bottomOffsetPx: parseInt(
+        process.env.SKELETON_LOADING_BOTTOM_OFFSET_PX || '12'
+      ),
+      // Right offset from card edge (px)
+      rightOffsetPx: parseInt(
+        process.env.SKELETON_LOADING_RIGHT_OFFSET_PX || '16'
+      ),
+      // Font size (px)
+      fontSizePx: parseInt(process.env.SKELETON_LOADING_FONT_SIZE_PX || '11'),
+      // Letter spacing (px)
+      letterSpacingPx: parseFloat(
+        process.env.SKELETON_LOADING_LETTER_SPACING_PX || '0.5'
+      ),
+    },
   },
 
   // OptimizedImage Component Animations - Palette's micro-UX enhancement!
