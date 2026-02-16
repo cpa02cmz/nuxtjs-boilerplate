@@ -345,6 +345,7 @@ watch(
 watch(focusedIndex, newIndex => {
   if (newIndex >= 0) {
     nextTick(() => {
+      if (typeof window === 'undefined') return // BugFixer: Add SSR guard
       const focusedElement = document.querySelector(
         `[data-suggestion-index="${newIndex}"]`
       )

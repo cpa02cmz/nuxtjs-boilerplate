@@ -15,10 +15,7 @@
     >
       <!-- Header with icon -->
       <div class="related-searches__header">
-        <span
-          class="related-searches__icon"
-          aria-hidden="true"
-        >
+        <span class="related-searches__icon" aria-hidden="true">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             :class="['h-4 w-4', isSearching ? 'animate-spin' : '']"
@@ -70,9 +67,9 @@
               loadingIndex === index
                 ? `Loading search results for ${search}`
                 : contentConfig.relatedSearches.aria.button.replace(
-                  '{query}',
-                  search
-                )
+                    '{query}',
+                    search
+                  )
             "
             :aria-busy="loadingIndex === index ? 'true' : 'false'"
             :disabled="loadingIndex === index"
@@ -101,10 +98,7 @@
             </span>
 
             <!-- Search icon -->
-            <span
-              class="button-icon"
-              aria-hidden="true"
-            >
+            <span class="button-icon" aria-hidden="true">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-3 w-3"
@@ -179,12 +173,7 @@
       </div>
 
       <!-- Screen reader announcements -->
-      <div
-        class="sr-only"
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-      >
+      <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
         {{ announcement }}
       </div>
     </div>
@@ -312,6 +301,9 @@ const handleMouseLeave = () => {
   hoverIndex.value = null
 }
 
+// Reduced motion preference change handler - BugFixer: Moved outside onMounted to prevent memory leak
+let mediaQueryChangeHandler: ((e: MediaQueryListEvent) => void) | null = null
+
 // Focus handlers
 const handleFocus = (index: number) => {
   focusedIndex.value = index
@@ -357,17 +349,17 @@ onMounted(() => {
   // Listen for reduced motion preference changes
   if (typeof window !== 'undefined') {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleChange = (e: MediaQueryListEvent) => {
+    mediaQueryChangeHandler = (e: MediaQueryListEvent) => {
       prefersReducedMotion.value = e.matches
     }
-    mediaQuery.addEventListener('change', handleChange)
+    mediaQuery.addEventListener('change', mediaQueryChangeHandler)
   }
 })
 
 onUnmounted(() => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== 'undefined' && mediaQueryChangeHandler) {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    mediaQuery.removeEventListener('change', () => {})
+    mediaQuery.removeEventListener('change', mediaQueryChangeHandler)
   }
 })
 </script>
