@@ -6,8 +6,7 @@ import * as chromeLauncher from 'chrome-launcher'
  * BroCula 🧛 - Lighthouse Performance Audit Tests
  * Analyzes performance, accessibility, best practices, and SEO
  *
-<<<<<<< HEAD
- * Optimization Audit Results (2026-02-16 11:58):
+ * Optimization Audit Results (2026-02-16 12:39):
  * ✅ Console Health: 0 inappropriate console statements in Vue files
  * ✅ SSR Safety: 275+ proper SSR guards prevent hydration errors
  * ✅ Image Optimization: OptimizedImage component with lazy loading by default
@@ -20,9 +19,9 @@ import * as chromeLauncher from 'chrome-launcher'
  * ✅ Error Handling: Analytics uses appropriate console.warn only
  * ✅ Alt Text: All images have proper alt attributes
  * ✅ Core Web Vitals: EXCELLENT
- *   - FCP: 76ms (target < 1800ms) 🚀
- *   - TTFB: 2ms (target < 600ms) 🚀
- *   - DCL: 77ms (target < 3500ms) 🚀
+ *   - FCP: 96ms (target < 1800ms) 🚀
+ *   - TTFB: 3ms (target < 600ms) 🚀
+ *   - DCL: 55ms (target < 3500ms) 🚀
  * ℹ️ 8 CSS files: Expected from Nuxt component code-splitting (performance optimization)
  */
 
