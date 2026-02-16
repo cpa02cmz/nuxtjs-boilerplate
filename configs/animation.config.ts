@@ -1434,6 +1434,14 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.LIMITATIONS_RESPECT_REDUCED_MOTION !== 'false',
+    // Accessibility: Delay before announcing limitations to screen readers (ms) - Flexy hates hardcoded 500!
+    announcementDelayMs: parseInt(
+      process.env.LIMITATIONS_ANNOUNCEMENT_DELAY_MS || '500'
+    ),
+    // Accessibility: How long to keep announcement visible (ms) - Flexy hates hardcoded 3000!
+    announcementClearDelayMs: parseInt(
+      process.env.LIMITATIONS_ANNOUNCEMENT_CLEAR_MS || '3000'
+    ),
   },
 
   // Similar Resources Micro-UX - Palette's delightful enhancement! ✨
