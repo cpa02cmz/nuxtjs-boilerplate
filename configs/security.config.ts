@@ -39,6 +39,8 @@ export const securityConfig = {
     frameSrc: parseCspDirective(
       process.env.CSP_FRAME_SRC || "'self' blob: data:"
     ),
+    // BroCula fix: Add worker-src to allow blob workers (fixes CSP violation on About page)
+    workerSrc: parseCspDirective(process.env.CSP_WORKER_SRC || "'self' blob:"),
     frameAncestors: parseCspDirective(
       process.env.CSP_FRAME_ANCESTORS || "'none'"
     ),
