@@ -1,5 +1,5 @@
 # Test Dockerfile for Integration Tests
-FROM node:20-alpine
+FROM node:25-alpine
 
 # Install dependencies for Prisma and testing
 RUN apk add --no-cache \
