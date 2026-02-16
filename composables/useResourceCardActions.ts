@@ -1,5 +1,5 @@
 import { ref, computed, onUnmounted } from 'vue'
-import { useRuntimeConfig, useNuxtApp } from '#imports'
+import { useRuntimeConfig, useNuxtApp, navigateTo } from '#imports'
 import { useResourceComparison } from '~/composables/useResourceComparison'
 import { useVisitedResources } from '~/composables/useVisitedResources'
 import { copyToClipboard } from '~/utils/clipboard'
