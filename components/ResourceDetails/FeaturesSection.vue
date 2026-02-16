@@ -159,8 +159,8 @@ const triggerEntranceAnimation = () => {
       () => {
         visibleItems.value.add(index)
 
-        // Announce for screen readers on first few items
-        if (index < 3) {
+        // Announce for screen readers on first few items - Flexy hates hardcoded 3!
+        if (index < animationConfig.featuresSection.maxAnnounceItems) {
           announcement.value =
             contentConfig.resourceDetails.announcements.featureRevealed.replace(
               '{feature}',
@@ -200,8 +200,9 @@ const setupIntersectionObserver = () => {
       })
     },
     {
-      threshold: 0.2,
-      rootMargin: '0px 0px -50px 0px',
+      // Flexy hates hardcoded IntersectionObserver values! Using config instead
+      threshold: animationConfig.featuresSection.intersectionThreshold,
+      rootMargin: animationConfig.featuresSection.intersectionRootMargin,
     }
   )
 

@@ -5,6 +5,7 @@ import { performance } from 'node:perf_hooks'
  * BroCula 🧛 - Browser Console Monitoring Tests
  * Detects and reports all console errors and warnings
  *
+<<<<<<< HEAD
  * Audit Results (2026-02-16 11:58):
  * ✅ Console Health: 0 inappropriate console statements in Vue files
  * ✅ SSR Safety: 275+ proper SSR guards protecting window/document access
