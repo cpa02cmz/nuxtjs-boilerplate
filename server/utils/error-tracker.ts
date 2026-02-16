@@ -214,10 +214,11 @@ function validateErrorMetricParams(
   }
 
   // Validate source length - prevent database constraint issues
-  if (source.length > 50) {
+  if (source.length > limitsConfig.errorTracking.sourceMaxLength) {
+    // Flexy hates hardcoded 50!
     return {
       isValid: false,
-      error: `Source too long: ${source.length} characters (max 50).`,
+      error: `Source too long: ${source.length} characters (max ${limitsConfig.errorTracking.sourceMaxLength}).`,
     }
   }
 

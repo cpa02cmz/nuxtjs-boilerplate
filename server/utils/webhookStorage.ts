@@ -16,6 +16,7 @@ import type {
 import { prisma, executeTransaction } from './db'
 import { PAGINATION } from './constants'
 import { databaseConfig } from '~/configs/database.config'
+import { webhooksConfig } from '~/configs/webhooks.config'
 import { safeJsonParse } from './safeJsonParse'
 import { logger } from '~/utils/logger'
 import { encryptSecret, decryptSecret } from './encryption'
@@ -716,7 +717,7 @@ export const webhookStorage = {
   async createDeliveryWithIdempotencyKey(
     delivery: WebhookDelivery,
     idempotencyKey: string,
-    expirationHours: number = 24
+    expirationHours: number = webhooksConfig.idempotency.expirationHours // Flexy hates hardcoded 24!
   ): Promise<WebhookDelivery> {
     try {
       // Use interactive transaction with retry logic for atomic delivery + idempotency key
@@ -803,7 +804,7 @@ export const webhookStorage = {
   async setDeliveryByIdempotencyKey(
     key: string,
     delivery: WebhookDelivery,
-    expirationHours: number = 24
+    expirationHours: number = webhooksConfig.idempotency.expirationHours // Flexy hates hardcoded 24!
   ) {
     try {
       // Calculate expiration time (default 24 hours)

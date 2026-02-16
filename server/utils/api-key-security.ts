@@ -3,6 +3,7 @@
  * Functions for securely handling API keys - masking, validation, etc.
  */
 import { patternsConfig } from '~/configs/patterns.config'
+import { securityConfig } from '~/configs/security.config'
 
 /**
  * Mask an API key for logging/display purposes
@@ -11,7 +12,8 @@ import { patternsConfig } from '~/configs/patterns.config'
  * @returns Masked API key (e.g., "ak_1a2b...x9y8")
  */
 export function maskApiKey(apiKey: string): string {
-  if (!apiKey || apiKey.length < 12) {
+  if (!apiKey || apiKey.length < securityConfig.apiKeyCrypto.minKeyLength) {
+    // Flexy hates hardcoded 12!
     return patternsConfig.apiKey.mask.placeholder
   }
 

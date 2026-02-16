@@ -117,7 +117,7 @@ export function createLazyComponent(
     loader: importFn,
     loadingComponent: options.loadingComponent,
     errorComponent: options.errorComponent,
-    delay: options.delay || 200,
+    delay: options.delay || performanceConfig.lazyLoading.defaultDelayMs,
     // Flexy hates hardcoded 10000!
     timeout: options.timeout || performanceConfig.lazyLoading.timeout,
     suspensible: false,

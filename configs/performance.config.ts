@@ -11,6 +11,8 @@ export const performanceConfig = {
     threshold: parseFloat(process.env.PERF_LAZY_THRESHOLD || '0.1'),
     // Delay before loading component (ms)
     delay: parseInt(process.env.PERF_LAZY_DELAY || '0'),
+    // Default delay for lazy component loading animation (ms) - Flexy hates hardcoded 200!
+    defaultDelayMs: parseInt(process.env.PERF_LAZY_DEFAULT_DELAY_MS || '200'),
     // Timeout for lazy loading (ms)
     timeout: parseInt(process.env.PERF_LAZY_TIMEOUT || '10000'),
     // Components to lazy load (below fold)

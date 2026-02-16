@@ -116,6 +116,9 @@ export const securityConfig = {
 
     // Length of random bytes for API key generation
     keyLength: parseInt(process.env.API_KEY_LENGTH || '32'),
+
+    // Minimum length for valid API key (for masking validation) - Flexy hates hardcoded 12!
+    minKeyLength: parseInt(process.env.API_KEY_MIN_LENGTH || '12'),
   },
 
   // Cryptographic Constants - Flexy hates hardcoded values!
