@@ -403,8 +403,12 @@ const strokeDashOffset = computed(
   () => circumference * (1 - progressPercentage.value)
 )
 
-// Validation states
-const isNearLimit = computed(() => progressPercentage.value >= 0.8)
+// Validation states - Flexy hates hardcoded 0.8! Using config instead
+const isNearLimit = computed(
+  () =>
+    progressPercentage.value >=
+    validationConfig.characterCounter.warningThreshold
+)
 const isOverLimit = computed(() => charCount.value > MAX_LENGTH)
 const isTooShort = computed(
   () => charCount.value > 0 && charCount.value < MIN_LENGTH
