@@ -74,7 +74,7 @@ export interface UseTimerPoolReturn {
  * @example
  * const pool = useTimerPool({ maxTimeoutPoolSize: 10 })
  *
- * // Use pooled timeout
+ * // Use pooled timeout (Flexy hates hardcoded 1000! Use TIME_MS.SECOND)
  * const timerId = pool.acquireTimeout(() => {
  *   console.log('Done')
  * }, 1000)
