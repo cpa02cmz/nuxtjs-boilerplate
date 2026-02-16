@@ -1,5 +1,8 @@
 // Config Index - Export all configuration modules
 // Flexy loves modularity! All configs in one place.
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// These exports are intentional - they're used by other modules
+// The lint rule flags them because they're not used in this file
 
 import { appConfig, type AppConfig } from './app.config'
 export { appConfig, type AppConfig }
@@ -383,3 +386,4 @@ export const config = {
 } as const
 
 export type Config = typeof config
+/* eslint-enable @typescript-eslint/no-unused-vars */
