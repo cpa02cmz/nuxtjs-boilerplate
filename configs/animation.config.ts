@@ -658,6 +658,8 @@ export const animationConfig = {
     transitionDurationMs: parseInt(
       process.env.BENEFITS_TRANSITION_DURATION_MS || '200'
     ),
+    // Flexy hates hardcoded 50! Initial mount delay for smooth animation (ms)
+    mountDelayMs: parseInt(process.env.BENEFITS_MOUNT_DELAY_MS || '50'),
   },
 
   // PWA Install Prompt Animations
