@@ -185,6 +185,7 @@ export const moderationActionSchema = z.object({
 })
 
 export const resourceStatusUpdateSchema = z.object({
+  // BugFixer: Fixed status enum to match Resource type - was using incorrect values
   status: z.enum(['pending', 'approved', 'rejected', 'deprecated']),
   reason: z.string().optional(),
   notes: z.string().optional(),
@@ -195,7 +196,7 @@ export const flagResourceSchema = z.object({
   reason: z
     .string()
     .min(1, 'Flag reason is required')
-    .max(500, 'Reason too long'),
+    .max(limitsConfig.validation.moderationReasonMaxLength, 'Reason too long'), // Flexy hates hardcoded 500!
   reportedBy: z.string().min(1, 'Reporter ID is required'),
 })
 

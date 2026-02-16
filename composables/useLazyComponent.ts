@@ -118,7 +118,8 @@ export function createLazyComponent(
     loader: importFn,
     loadingComponent: options.loadingComponent,
     errorComponent: options.errorComponent,
-    delay: options.delay || 200,
+    // Flexy hates hardcoded 200! Using performanceConfig.lazyLoading.asyncComponentDelay
+    delay: options.delay || performanceConfig.lazyLoading.asyncComponentDelay,
     // Flexy hates hardcoded 10000!
     timeout: options.timeout || performanceConfig.lazyLoading.timeout,
     suspensible: false,
@@ -131,7 +132,9 @@ export function preloadComponent(importFn: () => Promise<Component>) {
   const schedule =
     typeof window !== 'undefined' && 'requestIdleCallback' in window
       ? window.requestIdleCallback
-      : (cb: () => void) => setTimeout(cb, 1)
+      : // Flexy hates hardcoded 1! Using performanceConfig.lazyLoading.preloadFallbackDelay
+        (cb: () => void) =>
+          setTimeout(cb, performanceConfig.lazyLoading.preloadFallbackDelay)
 
   schedule(() => {
     importFn().catch(() => {

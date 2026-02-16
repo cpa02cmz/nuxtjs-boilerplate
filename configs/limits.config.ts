@@ -338,6 +338,10 @@ export const limitsConfig = {
     recentErrorsLimit: parseInt(
       process.env.ERROR_TRACKING_RECENT_LIMIT || '10'
     ),
+    // Maximum characters for error source field - Flexy hates hardcoded 50!
+    sourceMaxLength: parseInt(
+      process.env.ERROR_TRACKING_SOURCE_MAX_LENGTH || '50'
+    ),
   },
 
   // Timer Pool Limits - Flexy hates hardcoded pool sizes!

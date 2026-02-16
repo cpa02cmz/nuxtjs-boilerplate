@@ -1,8 +1,6 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">
-      Popular Searches
-    </h3>
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Popular Searches</h3>
     <TransitionGroup
       tag="div"
       class="space-y-3"
@@ -24,8 +22,15 @@
             ? 'bg-gray-50 shadow-md -translate-y-0.5'
             : 'bg-white hover:bg-gray-50 hover:shadow-sm',
           clickedIndex === index ? 'scale-98' : 'scale-100',
+          loadingIndex === index ? 'cursor-wait' : 'cursor-pointer',
         ]"
-        :aria-label="`Search for ${search.query} (${search.count} results)`"
+        :aria-label="
+          loadingIndex === index
+            ? `Loading search results for ${search.query}`
+            : `Search for ${search.query} (${search.count} results)`
+        "
+        :aria-busy="loadingIndex === index ? 'true' : 'false'"
+        :disabled="loadingIndex === index"
         @click="handleClick(search.query, index, $event)"
         @mouseenter="handleMouseEnter(index)"
         @mouseleave="handleMouseLeave"
@@ -69,11 +74,7 @@
             class="flex-shrink-0 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200"
             aria-hidden="true"
           >
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -84,18 +85,48 @@
           </span>
           <span
             class="text-gray-800 truncate group-hover:text-gray-900 transition-colors duration-200 font-medium"
-          >{{ search.query }}</span>
+            >{{ search.query }}</span
+          >
         </div>
 
         <!-- Result count with animated background -->
         <div class="flex items-center gap-2 z-10">
+          <!-- 🎨 Pallete: Loading spinner for async operations -->
           <span
+            v-if="loadingIndex === index"
+            class="loading-spinner"
+            aria-hidden="true"
+          >
+            <svg
+              class="w-4 h-4 text-gray-400 animate-spin"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              />
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+          </span>
+          <span
+            v-else
             class="text-xs font-medium bg-gray-100 text-gray-600 rounded-full px-2.5 py-1 transition-all duration-300 group-hover:bg-gray-800 group-hover:text-white"
           >
             {{ formatCount(search.count) }}
           </span>
-          <!-- Arrow indicator on hover -->
+          <!-- Arrow indicator on hover (hidden when loading) -->
           <span
+            v-if="loadingIndex !== index"
             class="text-gray-400 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0"
             aria-hidden="true"
           >
@@ -131,11 +162,7 @@
         class="text-center text-gray-500 py-8 flex flex-col items-center"
       >
         <div class="w-12 h-12 mb-3 text-gray-300 animate-pulse-subtle">
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -144,9 +171,7 @@
             />
           </svg>
         </div>
-        <p class="text-sm">
-          No popular searches yet
-        </p>
+        <p class="text-sm">No popular searches yet</p>
         <p class="text-xs text-gray-400 mt-1">
           Start exploring to see trending queries
         </p>
@@ -154,12 +179,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -192,6 +212,7 @@ const { getPopularSearches } = useAdvancedResourceSearch(resources.value)
 // Reactive state
 const hoverIndex = ref<number | null>(null)
 const clickedIndex = ref<number | null>(null)
+const loadingIndex = ref<number | null>(null) // 🎨 Pallete: Loading state for async operations
 const ripples = ref<{ [key: number]: { x: number; y: number; size: number } }>(
   {}
 )
@@ -224,7 +245,7 @@ const formatCount = (count: number): string => {
   return count.toString()
 }
 
-// Handle click with ripple effect
+// Handle click with ripple effect and loading state
 const handleClick = (query: string, index: number, event: MouseEvent) => {
   const button = event.currentTarget as HTMLButtonElement
   const rect = button.getBoundingClientRect()
@@ -235,6 +256,9 @@ const handleClick = (query: string, index: number, event: MouseEvent) => {
     y: event.clientY - rect.top,
     size,
   }
+
+  // 🎨 Pallete: Set loading state to provide visual feedback during async operation
+  loadingIndex.value = index
 
   // Click feedback animation
   clickedIndex.value = index
@@ -251,11 +275,8 @@ const handleClick = (query: string, index: number, event: MouseEvent) => {
     navigator.vibrate(hapticConfig.duration.light)
   }
 
-  // Announce for screen readers
-  announcement.value = `Searching for ${query}`
-  setTimeout(() => {
-    announcement.value = ''
-  }, uiTimingConfig.accessibility.announcementDuration)
+  // 🎨 Pallete: Enhanced screen reader announcement with loading state
+  announcement.value = `Loading search results for ${query}`
 
   // Remove ripple after animation
   setTimeout(() => {
@@ -303,6 +324,11 @@ const handleKeydown = (event: KeyboardEvent, currentIndex: number) => {
   }
 }
 
+// 🎨 Pallete: Reset loading state after async operation completes
+const resetLoadingState = () => {
+  loadingIndex.value = null
+}
+
 // Lifecycle
 onMounted(() => {
   checkReducedMotion()
@@ -319,6 +345,12 @@ onUnmounted(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     mediaQuery.removeEventListener('change', checkReducedMotion)
   }
+})
+
+// 🎨 Pallete: Expose methods for parent component
+// This allows parent to reset loading state after search completes
+defineExpose({
+  resetLoadingState,
 })
 </script>
 
@@ -428,6 +460,38 @@ onUnmounted(() => {
   border-width: 0;
 }
 
+/* 🎨 Pallete: Loading spinner animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Loading spinner container */
+.loading-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+/* Cursor styles */
+.cursor-wait {
+  cursor: wait;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .space-y-3 > * {
@@ -442,6 +506,11 @@ onUnmounted(() => {
   .animate-ripple {
     animation: none;
     opacity: 0;
+  }
+
+  .animate-spin {
+    animation: none;
+    opacity: 0.5;
   }
 
   .group {

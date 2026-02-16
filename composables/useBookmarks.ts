@@ -1,4 +1,11 @@
-import { ref, computed, readonly, onMounted, getCurrentInstance } from 'vue'
+import {
+  ref,
+  computed,
+  readonly,
+  onMounted,
+  getCurrentInstance,
+  type Ref,
+} from 'vue'
 import { createStorageWithDateSerialization } from '~/utils/storage'
 import { emitEvent } from '~/utils/event-emitter'
 import { STORAGE_KEYS } from '~/server/utils/constants'

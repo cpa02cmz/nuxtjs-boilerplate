@@ -8,6 +8,7 @@
  * This component handles the form for creating new webhooks.
  */
 
+import { computed } from 'vue'
 import { contentConfig } from '~/configs/content.config'
 import { webhooksConfig } from '~/configs/webhooks.config'
 
@@ -59,12 +60,10 @@ const handleCancel = () => {
       {{ errorMessage }}
     </div>
 
-    <form
-      novalidate
-      @submit.prevent="handleSubmit"
-    >
+    <form novalidate @submit.prevent="handleSubmit">
       <div class="form-group">
-        <label for="webhook-url">{{ contentConfig.webhooks.form.urlLabel }}
+        <label for="webhook-url"
+          >{{ contentConfig.webhooks.form.urlLabel }}
           <span aria-hidden="true">*</span>
           <span class="sr-only">{{
             contentConfig.webhooks.form.required
@@ -79,11 +78,8 @@ const handleCancel = () => {
           aria-describedby="webhook-url-description"
           :placeholder="webhooksConfig.placeholders.url"
           class="form-control"
-        >
-        <p
-          id="webhook-url-description"
-          class="mt-1 text-sm text-gray-500"
-        >
+        />
+        <p id="webhook-url-description" class="mt-1 text-sm text-gray-500">
           {{ contentConfig.webhooks.form.urlDescription }}
         </p>
       </div>
@@ -108,7 +104,7 @@ const handleCancel = () => {
                 type="checkbox"
                 :value="event"
                 :aria-label="`Subscribe to ${event} event`"
-              >
+              />
               {{ event }}
             </label>
           </div>
@@ -121,7 +117,7 @@ const handleCancel = () => {
             v-model="formData.active"
             type="checkbox"
             :aria-label="contentConfig.webhooks.ariaLabels.enableWebhook"
-          >
+          />
           {{ contentConfig.webhooks.form.activeLabel }}
         </label>
       </div>
