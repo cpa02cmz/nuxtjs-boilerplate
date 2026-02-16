@@ -45,7 +45,7 @@ jobs:
 
       - name: Checkout PR
         if: steps.forkcheck.outputs.fork != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -105,7 +105,7 @@ jobs:
     steps:
       - name: Update PR #${{ matrix.pr.number }}
         if: matrix.pr.number != 0
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ matrix.pr.repo }}
           ref: ${{ matrix.pr.head_ref }}
@@ -149,7 +149,7 @@ jobs:
 
       - name: Perform Update
         if: fromJson(steps.pr.outputs.result).fork == false
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ fromJson(steps.pr.outputs.result).repo }}
           ref: ${{ fromJson(steps.pr.outputs.result).head_ref }}
