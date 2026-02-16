@@ -548,6 +548,11 @@ const formatDate = (dateString?: string) => {
 // Media query refs for cleanup
 let mediaQueryRef: MediaQueryList | null = null
 
+// BugFixer: Named handler for proper cleanup
+const handleMotionChange = () => {
+  prefersReducedMotion.value = checkReducedMotion()
+}
+
 onMounted(() => {
   fetchSubmission()
   prefersReducedMotion.value = checkReducedMotion()
@@ -555,18 +560,15 @@ onMounted(() => {
   // Listen for reduced motion preference changes
   if (typeof window !== 'undefined') {
     mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
-    mediaQueryRef.addEventListener('change', () => {
-      prefersReducedMotion.value = checkReducedMotion()
-    })
+    mediaQueryRef.addEventListener('change', handleMotionChange)
   }
 })
 
 // Cleanup on unmount
 onUnmounted(() => {
   if (mediaQueryRef) {
-    mediaQueryRef.removeEventListener('change', () => {
-      prefersReducedMotion.value = checkReducedMotion()
-    })
+    // BugFixer: Use same function reference for proper removal
+    mediaQueryRef.removeEventListener('change', handleMotionChange)
     mediaQueryRef = null
   }
 })
