@@ -100,16 +100,10 @@
             </svg>
           </div>
           <div>
-            <h3
-              id="pwa-install-title"
-              class="font-medium text-gray-900"
-            >
+            <h3 id="pwa-install-title" class="font-medium text-gray-900">
               Install App
             </h3>
-            <p
-              id="pwa-install-description"
-              class="text-sm text-gray-500"
-            >
+            <p id="pwa-install-description" class="text-sm text-gray-500">
               Add to your home screen
             </p>
           </div>
@@ -133,56 +127,64 @@
               <kbd
                 class="hidden sm:inline-flex items-center px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded text-gray-500"
                 aria-hidden="true"
-              >Esc</kbd>
-            </span>
-          </button>
-          <button
-            ref="installButtonRef"
-            :class="[
-              'px-3 py-1 bg-blue-600 text-white text-sm rounded-md',
-              'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-              'transition-all ease-out',
-              'hover:shadow-md',
-              isInstalling && 'opacity-75 cursor-wait',
-            ]"
-            :style="magneticStyle"
-            :aria-label="contentConfig.pwa.aria.installButton"
-            :disabled="isInstalling"
-            @click="installPWA"
-            @mouseenter="handleMouseEnter"
-            @mouseleave="handleMouseLeave"
-            @mousemove="handleMouseMove"
-          >
-            <span class="flex items-center gap-1">
-              <svg
-                v-if="isInstalling"
-                class="animate-spin h-4 w-4"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
+                >Esc</kbd
               >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                />
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              {{
-                isInstalling
-                  ? contentConfig.pwa.installing
-                  : contentConfig.pwa.install
-              }}
             </span>
           </button>
+          <!-- Palette's micro-UX enhancement: Tooltip explaining install benefits -->
+          <Tooltip
+            :content="contentConfig.pwa.installTooltip"
+            position="top"
+            :delay="animationConfig.tooltip.showDelayMs"
+          >
+            <button
+              ref="installButtonRef"
+              :class="[
+                'px-3 py-1 bg-blue-600 text-white text-sm rounded-md',
+                'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                'transition-all ease-out',
+                'hover:shadow-md',
+                isInstalling && 'opacity-75 cursor-wait',
+              ]"
+              :style="magneticStyle"
+              :aria-label="contentConfig.pwa.aria.installButton"
+              :disabled="isInstalling"
+              @click="installPWA"
+              @mouseenter="handleMouseEnter"
+              @mouseleave="handleMouseLeave"
+              @mousemove="handleMouseMove"
+            >
+              <span class="flex items-center gap-1">
+                <svg
+                  v-if="isInstalling"
+                  class="animate-spin h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  />
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                {{
+                  isInstalling
+                    ? contentConfig.pwa.installing
+                    : contentConfig.pwa.install
+                }}
+              </span>
+            </button>
+          </Tooltip>
         </div>
       </div>
 
@@ -197,12 +199,7 @@
   </Transition>
 
   <!-- Screen reader announcement -->
-  <div
-    class="sr-only"
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-  >
+  <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
     {{ announcement }}
   </div>
 </template>
@@ -216,6 +213,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { thresholdsConfig } from '~/configs/thresholds.config'
 import { EASING } from '~/configs/easing.config'
 import { triggerHaptic } from '~/utils/hapticFeedback'
+import Tooltip from './Tooltip.vue'
 
 // Storage key constants
 const STORAGE_KEYS = {
