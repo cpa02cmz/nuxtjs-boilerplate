@@ -255,6 +255,9 @@ const checkReducedMotion = () => {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+// Computed property for reduced motion preference (used in template)
+const prefersReducedMotion = computed(() => checkReducedMotion())
+
 // Watch for state changes and trigger haptic feedback
 watch(
   [isNearLimit, isOverLimit, isComplete],
