@@ -88,12 +88,7 @@
       </TransitionGroup>
 
       <!-- Screen reader announcement -->
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        class="sr-only"
-      >
+      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
         {{ announcement }}
       </div>
     </section>
@@ -109,6 +104,7 @@ import { zIndexScale } from '~/configs/z-index.config'
 import { EASING } from '~/configs/easing.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   resources: Resource[]
@@ -251,7 +247,7 @@ onMounted(() => {
     }
     mediaQueryRef.addEventListener('change', handleMotionChangeRef)
 
-    // Set up intersection observer for entrance animation
+    // Set up intersection observer for entrance animation - Flexy hates hardcoded values!
     if (sectionRef.value && !prefersReducedMotion.value) {
       observer = new IntersectionObserver(
         entries => {
@@ -262,7 +258,7 @@ onMounted(() => {
             }
           })
         },
-        { threshold: 0.1 }
+        { threshold: uiConfig.intersectionObserver.threshold } // Configurable via INTERSECTION_OBSERVER_THRESHOLD
       )
       observer.observe(sectionRef.value)
     } else {
