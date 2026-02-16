@@ -29,6 +29,8 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
   const loading = ref(true)
   // Pallete: Separate loading state for creation to enable granular UI feedback
   const isCreating = ref(false)
+  // Pallete: Loading state for revoke operation to provide visual feedback
+  const isRevoking = ref(false)
   const { error, handleError, clearError } = useErrorHandler()
 
   const fetchApiKeys = async (): Promise<void> => {
@@ -107,7 +109,8 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
 
   const revokeApiKey = async (keyId: string): Promise<boolean> => {
     try {
-      loading.value = true
+      // Pallete: Use specific loading state for revoke feedback
+      isRevoking.value = true
       clearError()
 
       const client = getClient()
@@ -133,7 +136,8 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
 
       return false
     } finally {
-      loading.value = false
+      // Pallete: Reset revoke loading state
+      isRevoking.value = false
     }
   }
 
@@ -142,6 +146,8 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
     loading,
     // Pallete: Export creation loading state for granular UI feedback
     isCreating: readonly(isCreating),
+    // Pallete: Export revoke loading state for granular UI feedback
+    isRevoking: readonly(isRevoking),
     error,
     handleError,
     clearError,
