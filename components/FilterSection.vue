@@ -1,16 +1,10 @@
 <template>
-  <fieldset
-    class="mb-6"
-    @keydown="handleKeydown"
-  >
+  <fieldset class="mb-6" @keydown="handleKeydown">
     <div class="flex items-center justify-between mb-3">
       <legend class="text-sm font-medium text-gray-900">
         {{ label }}
       </legend>
-      <div
-        v-if="options.length > 1"
-        class="flex items-center gap-2"
-      >
+      <div v-if="options.length > 1" class="flex items-center gap-2">
         <span
           class="text-xs text-gray-500 transition-all duration-200"
           :class="{ 'text-blue-600 font-medium': selectedOptions.length > 0 }"
@@ -24,6 +18,7 @@
           type="button"
           class="text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded px-1"
           :aria-label="`Select all ${options.length} ${label} filters`"
+          :aria-controls="`${id}-checkbox-group`"
           @click="selectAll"
         >
           Select All
@@ -33,6 +28,7 @@
           type="button"
           class="text-xs text-gray-500 hover:text-gray-700 font-medium transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-1 rounded px-1"
           :aria-label="`Clear all ${selectedOptions.length} selected ${label} filters`"
+          :aria-controls="`${id}-checkbox-group`"
           @click="clearAll"
         >
           Clear
@@ -40,6 +36,7 @@
       </div>
     </div>
     <div
+      :id="`${id}-checkbox-group`"
       role="group"
       :aria-label="ariaLabel"
       class="space-y-1"
@@ -71,7 +68,7 @@
               <span
                 v-if="
                   !prefersReducedMotion &&
-                    (recentlySelected === option || recentlyDeselected === option)
+                  (recentlySelected === option || recentlyDeselected === option)
                 "
                 class="checkbox-bloom absolute inset-0 rounded pointer-events-none"
                 :class="{
@@ -100,7 +97,7 @@
                 }"
                 @change="toggleOption(option)"
                 @click.stop
-              >
+              />
             </div>
             <label
               :for="`${id}-${option}`"
