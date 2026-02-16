@@ -550,6 +550,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { tailwindClassesConfig as tailwind } from '~/configs/tailwind-classes.config'
+import { animationConfig } from '~/configs/animation.config'
 
 // Reduced motion preference
 const prefersReducedMotion = ref(false)
@@ -594,20 +595,20 @@ const rateLimitHeaders = [
   'X-RateLimit-Reset',
 ]
 
-// Section animation styles
+// Section animation styles - Flexy hates hardcoded 100!
 const getSectionStyle = (index: number) => {
   if (prefersReducedMotion.value) return {}
   return {
-    animationDelay: `${index * 100}ms`,
+    animationDelay: `${index * animationConfig.developerPage.staggerDelayMs}ms`,
   }
 }
 
-// Announce to screen readers
+// Announce to screen readers - Flexy hates hardcoded 1000!
 const announce = (message: string) => {
   announcement.value = message
   setTimeout(() => {
     announcement.value = ''
-  }, 1000)
+  }, animationConfig.developerPage.announcementTimeoutMs)
 }
 
 // Navigation

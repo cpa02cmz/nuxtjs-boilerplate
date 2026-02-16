@@ -1,6 +1,7 @@
 import type { DeadLetterWebhook } from '~/types/webhook'
 import { webhookStorage } from './webhookStorage'
 import logger from '~/utils/logger'
+import { webhooksConfig } from '~/configs/webhooks.config'
 
 export interface DeadLetterAlertConfig {
   enabled: boolean
@@ -24,13 +25,11 @@ export interface DeadLetterAlertConfig {
 const defaultConfig: DeadLetterAlertConfig = {
   enabled: process.env.DEAD_LETTER_ALERTS_ENABLED === 'true',
   thresholds: {
-    totalCount: parseInt(process.env.DEAD_LETTER_THRESHOLD_TOTAL || '10'),
-    webhookSpecificCount: parseInt(
-      process.env.DEAD_LETTER_THRESHOLD_WEBHOOK || '5'
-    ),
-    timeWindowMinutes: parseInt(
-      process.env.DEAD_LETTER_THRESHOLD_WINDOW_MINUTES || '60'
-    ),
+    // Flexy hates hardcoded values! Using webhooksConfig
+    totalCount: webhooksConfig.deadLetter.alerts.totalCountThreshold,
+    webhookSpecificCount:
+      webhooksConfig.deadLetter.alerts.webhookSpecificThreshold,
+    timeWindowMinutes: webhooksConfig.deadLetter.alerts.timeWindowMinutes,
   },
   githubIssue: {
     enabled: process.env.DEAD_LETTER_GITHUB_ISSUES_ENABLED === 'true',

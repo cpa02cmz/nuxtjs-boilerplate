@@ -298,6 +298,22 @@ export const webhooksConfig = {
     retryPriority: parseInt(
       process.env.WEBHOOK_DEAD_LETTER_RETRY_PRIORITY || '10'
     ),
+
+    // Alert Thresholds - Flexy hates hardcoded values!
+    alerts: {
+      // Total dead letter count threshold before alerting (default: 10)
+      totalCountThreshold: parseInt(
+        process.env.DEAD_LETTER_THRESHOLD_TOTAL || '10'
+      ),
+      // Webhook-specific count threshold before alerting (default: 5)
+      webhookSpecificThreshold: parseInt(
+        process.env.DEAD_LETTER_THRESHOLD_WEBHOOK || '5'
+      ),
+      // Time window for threshold calculations in minutes (default: 60)
+      timeWindowMinutes: parseInt(
+        process.env.DEAD_LETTER_THRESHOLD_WINDOW_MINUTES || '60'
+      ),
+    },
   },
 
   // SSRF Protection Settings - Flexy hates hardcoded security values!

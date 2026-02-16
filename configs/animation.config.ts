@@ -303,6 +303,16 @@ export const animationConfig = {
     resetDelayMs: parseInt(process.env.COPY_ERROR_RESET_MS || '2500'),
   },
 
+  // Developer Page Animations - Flexy hates hardcoded values!
+  developerPage: {
+    // Stagger delay between section animations (ms)
+    staggerDelayMs: parseInt(process.env.DEVELOPER_PAGE_STAGGER_MS || '100'),
+    // Screen reader announcement timeout (ms)
+    announcementTimeoutMs: parseInt(
+      process.env.DEVELOPER_PAGE_ANNOUNCEMENT_TIMEOUT_MS || '1000'
+    ),
+  },
+
   // Copy Feedback Animation - Palette's delightful micro-UX touch!
   // Provides satisfying visual feedback when users copy text to clipboard
   copyFeedback: {
