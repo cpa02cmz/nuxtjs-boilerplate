@@ -674,6 +674,18 @@ export const animationConfig = {
     ),
     // Number of shake cycles
     shakeCycles: parseInt(process.env.VALIDATION_SHAKE_CYCLES || '3'),
+    // Palette's micro-UX: Success checkmark pop animation duration (ms)
+    successPopDurationMs: parseInt(
+      process.env.VALIDATION_SUCCESS_POP_DURATION_MS || '400'
+    ),
+    // Palette's micro-UX: Success checkmark draw animation duration (ms)
+    successDrawDurationMs: parseInt(
+      process.env.VALIDATION_SUCCESS_DRAW_DURATION_MS || '300'
+    ),
+    // Palette's micro-UX: Completion pulse animation duration (ms)
+    completionPulseDurationMs: parseInt(
+      process.env.VALIDATION_COMPLETION_PULSE_DURATION_MS || '600'
+    ),
   },
 
   // Reading Progress Animations
