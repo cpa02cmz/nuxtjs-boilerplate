@@ -1,9 +1,10 @@
 <template>
+  <!-- 🎨 Pallete: Enhanced accessibility with live region for screen reader announcements -->
   <article
     ref="skeletonRef"
     class="bg-white p-6 rounded-lg shadow skeleton-card skeleton-interactive relative"
     aria-busy="true"
-    aria-label="Loading resource card"
+    :aria-label="ariaLabelText"
     :style="{
       '--skeleton-light-start': skeletonColors.light.start,
       '--skeleton-light-mid': skeletonColors.light.middle,
@@ -107,6 +108,15 @@
         </div>
       </div>
     </div>
+    <!-- 🎨 Pallete: Live region for screen reader announcements - announces loading state -->
+    <span
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {{ loadingAnnouncement }}
+    </span>
   </article>
 </template>
 
@@ -115,11 +125,31 @@ import { ref, onUnmounted, computed, onMounted } from 'vue'
 import { EASING } from '~/configs/easing.config'
 import { animationConfig } from '~/configs/animation.config'
 
+// 🎨 Pallete: Props for contextual accessibility
+interface Props {
+  /** Type of resource being loaded (e.g., 'article', 'product', 'resource') */
+  resourceType?: string
+  /** Optional resource name/identifier for specific context */
+  resourceName?: string
+  /** Index in a list for position context */
+  index?: number
+  /** Total count in list for position context */
+  totalItems?: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  resourceType: 'resource',
+  resourceName: '',
+  index: undefined,
+  totalItems: undefined,
+})
+
 // Skeleton loading component for ResourceCard
 // Enhanced with wave shimmer animation for better perceived performance
 // BroCula fixed SSR issues! 🦇 All values are now SSR-safe.
 // Palette enhanced with interactive hover states! 🎨
 // Flexy: All cubic-bezier values now use modular EASING config! 🎯
+// 🎨 Pallete: Enhanced accessibility with contextual aria-labels and live region!
 
 // SSR-safe color configuration with defaults
 const SKELETON_COLORS = {
@@ -191,6 +221,36 @@ const checkReducedMotion = () => {
     return false
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
+
+// 🎨 Pallete: Enhanced accessibility - contextual aria-label with resource type
+const ariaLabelText = computed((): string => {
+  const type = props.resourceType.toLowerCase()
+  const name = props.resourceName
+  const position =
+    props.index !== undefined && props.totalItems !== undefined
+      ? ` ${props.index + 1} of ${props.totalItems}`
+      : ''
+
+  if (name) {
+    return `Loading ${type} "${name}"${position}, please wait`
+  }
+  return `Loading ${type} card${position}, please wait`
+})
+
+// 🎨 Pallete: Live region announcement for screen readers
+const loadingAnnouncement = computed((): string => {
+  const type = props.resourceType.toLowerCase()
+  const name = props.resourceName
+  const position =
+    props.index !== undefined && props.totalItems !== undefined
+      ? ` (${props.index + 1} of ${props.totalItems})`
+      : ''
+
+  if (name) {
+    return `Loading ${type} "${name}"${position}. Content will appear shortly.`
+  }
+  return `Loading ${type}${position}. Content will appear shortly.`
+})
 
 const handleMouseEnter = (): void => {
   isHovering.value = true

@@ -71,7 +71,8 @@ export function calculateBackoff(
   jitterEnabled: boolean = true,
   jitterFactor: number = webhooksConfig.retry.jitterFactor
 ): number {
-  let delay = baseDelayMs * Math.pow(2, attempt)
+  // Flexy hates hardcoded 2! Using configurable exponential base
+  let delay = baseDelayMs * Math.pow(timeConfig.retry.exponentialBase, attempt)
 
   delay = Math.min(delay, maxDelayMs)
 

@@ -192,8 +192,8 @@ import { animationConfig, type AnimationConfig } from './animation.config'
 export { animationConfig, type AnimationConfig }
 import { thresholdsConfig, type ThresholdsConfig } from './thresholds.config'
 export { thresholdsConfig, type ThresholdsConfig }
-// Import only - re-export is at line 280
-import { networkConfig } from './network.config'
+import { networkConfig, type NetworkConfig } from './network.config'
+export { networkConfig, type NetworkConfig }
 
 // Re-export analytics demo config - Flexy hates hardcoded mock data!
 import {
@@ -274,8 +274,8 @@ export {
   type DevPorts,
 }
 
-// Re-export Network config - Flexy hates hardcoded network errors!
-export { networkConfig, type NetworkConfig } from './network.config'
+// Network config - Flexy hates hardcoded network errors!
+// Imported at top of file
 
 // Messages config - Flexy hates hardcoded error messages!
 import { messagesConfig, type MessagesConfig } from './messages.config'
