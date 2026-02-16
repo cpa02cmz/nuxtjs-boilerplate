@@ -2,10 +2,7 @@
   <div class="api-keys-manager">
     <div class="api-keys-header">
       <h2>{{ contentConfig.apiKeys.title }}</h2>
-      <button
-        class="btn btn-primary"
-        @click="showCreateForm = true"
-      >
+      <button class="btn btn-primary" @click="showCreateForm = true">
         {{ contentConfig.apiKeys.buttons.create }}
       </button>
     </div>
@@ -27,7 +24,7 @@
             required
             :placeholder="contentConfig.apiKeys.placeholders.keyNameAlt"
             class="form-control"
-          >
+          />
         </div>
 
         <div class="form-group">
@@ -117,10 +114,7 @@
         aria-live="polite"
       >
         <!-- Animated Illustration -->
-        <div
-          class="api-key-illustration"
-          aria-hidden="true"
-        >
+        <div class="api-key-illustration" aria-hidden="true">
           <!-- Background Circle -->
           <div
             class="api-key-bg-circle"
@@ -193,15 +187,8 @@
           {{ contentConfig.apiKeys.empty.ctaButton }}
         </button>
       </div>
-      <div
-        v-else
-        class="api-key-items"
-      >
-        <div
-          v-for="key in apiKeys"
-          :key="key.id"
-          class="api-key-item"
-        >
+      <div v-else class="api-key-items">
+        <div v-for="key in apiKeys" :key="key.id" class="api-key-item">
           <div class="api-key-info">
             <div class="api-key-name">
               {{ key.name }}
@@ -232,15 +219,47 @@
           <div class="api-key-actions">
             <button
               class="btn btn-sm btn-danger"
+              :class="{ 'btn--revoking': revokingKeyId === key.id }"
               :aria-label="
-                contentConfig.apiKeys.aria.revokeButton.replace(
-                  '{{name}}',
-                  key.name
-                )
+                revokingKeyId === key.id
+                  ? `Revoking API key: ${key.name}`
+                  : contentConfig.apiKeys.aria.revokeButton.replace(
+                      '{{name}}',
+                      key.name
+                    )
               "
+              :disabled="revokingKeyId === key.id"
+              :aria-busy="revokingKeyId === key.id"
               @click="revokeApiKey(key.id)"
             >
-              {{ contentConfig.apiKeys.buttons.revoke }}
+              <!-- Pallete: Loading spinner for revoke feedback -->
+              <svg
+                v-if="revokingKeyId === key.id"
+                class="animate-spin -ml-1 mr-1.5 h-3.5 w-3.5 text-white inline-block"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                />
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+              {{
+                revokingKeyId === key.id
+                  ? contentConfig.apiKeys.buttons.revoking
+                  : contentConfig.apiKeys.buttons.revoke
+              }}
             </button>
           </div>
         </div>
@@ -248,11 +267,7 @@
     </div>
 
     <!-- API Key Created Modal -->
-    <div
-      v-if="showKeyCreatedModal"
-      class="modal-overlay"
-      @click="closeModal"
-    >
+    <div v-if="showKeyCreatedModal" class="modal-overlay" @click="closeModal">
       <div
         ref="modalContent"
         class="modal-content"
@@ -267,10 +282,7 @@
           {{ contentConfig.apiKeys.buttons.create }}
         </h3>
         <p><strong>Key:</strong> {{ createdApiKey?.key }}</p>
-        <p
-          class="warning"
-          role="alert"
-        >
+        <p class="warning" role="alert">
           Make sure to copy this key now. You won't be able to see it again.
         </p>
         <div class="form-actions">
@@ -317,10 +329,7 @@
                 : contentConfig.messages.clipboard.copy
             }}
           </button>
-          <button
-            class="btn btn-secondary"
-            @click="closeModal"
-          >
+          <button class="btn btn-secondary" @click="closeModal">
             {{ contentConfig.apiKeys.buttons.cancel }}
           </button>
         </div>
@@ -371,6 +380,8 @@ const showKeyCreatedModal = ref(false)
 const createdApiKey = ref<ApiKey | null>(null)
 const modalContent = ref<HTMLElement | null>(null)
 const copySuccess = ref(false)
+// Pallete: Track which key is being revoked for granular loading feedback
+const revokingKeyId = ref<string | null>(null)
 
 // Store previously focused element
 let previousActiveElement: HTMLElement | null = null
@@ -453,10 +464,13 @@ const createApiKey = async () => {
   }
 }
 
-// Revoke API key
+// Revoke API key with loading state feedback
 const revokeApiKey = async (id: string) => {
   if (confirm('Are you sure you want to revoke this API key?')) {
+    // Pallete: Track which key is being revoked for loading feedback
+    revokingKeyId.value = id
     const success = await revokeApiKeys(id)
+    revokingKeyId.value = null
     if (!success) {
       logger.error('Failed to revoke API key')
     }

@@ -1046,6 +1046,8 @@ export const contentConfig = {
       creating: process.env.CONTENT_API_KEYS_BTN_CREATING || 'Creating...',
       generate: process.env.CONTENT_API_KEYS_BTN_GENERATE || 'Generate API Key',
       revoke: process.env.CONTENT_API_KEYS_BTN_REVOKE || 'Revoke',
+      // Pallete: Loading button text for revoke feedback
+      revoking: process.env.CONTENT_API_KEYS_BTN_REVOKING || 'Revoking...',
       cancel: process.env.CONTENT_API_KEYS_BTN_CANCEL || 'Cancel',
     },
     permissions: {
