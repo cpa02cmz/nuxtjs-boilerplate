@@ -369,14 +369,14 @@ const installPWA = async (): Promise<void> => {
   if (isInstalling.value) return
 
   isInstalling.value = true
-  triggerHaptic([20, 30, 20]) // Success pattern
+  triggerHaptic('success') // Success pattern
   announce('Installing app...')
 
   try {
     await pwa?.installPWA()
     // Show success celebration
     showSuccess.value = true
-    triggerHaptic([50, 100, 50]) // Celebration pattern
+    triggerHaptic('success') // Celebration pattern
     announce(contentConfig.pwa.installSuccess)
 
     // Auto-dismiss success toast after configured delay
@@ -395,7 +395,7 @@ const cancelInstall = (): void => {
   if (isDismissing.value) return
 
   // Trigger haptic feedback
-  triggerHaptic(10) // Light tap
+  triggerHaptic('light') // Light tap
 
   // Start dismissal animation
   isDismissing.value = true
