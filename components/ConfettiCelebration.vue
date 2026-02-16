@@ -1,11 +1,7 @@
 <template>
   <ClientOnly>
     <Teleport to="body">
-      <div
-        v-if="isActive"
-        class="confetti-container"
-        aria-hidden="true"
-      >
+      <div v-if="isActive" class="confetti-container" aria-hidden="true">
         <div
           v-for="(particle, index) in particles"
           :key="index"
@@ -18,9 +14,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onUnmounted, watch } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { themeConfig } from '~/configs/theme.config'
+import { useAnimationPerformance } from '~/composables/useAnimationPerformance'
 
 interface Particle {
   id: number
@@ -48,6 +45,14 @@ const props = withDefaults(defineProps<Props>(), {
 const isActive = ref(false)
 const particles = ref<Particle[]>([])
 let cleanupTimer: ReturnType<typeof setTimeout> | null = null
+
+// Performance optimization - Issue #2752
+const { acquireAnimationSlot, releaseAnimationSlot, getGpuAccelerationStyles } =
+  useAnimationPerformance()
+const animationSlotAcquired = ref(false)
+
+// GPU acceleration styles
+const gpuStyles = getGpuAccelerationStyles()
 
 // Brand colors for confetti - Flexy gets them from config, no hardcoding!
 // No fallback needed - config always provides default values
@@ -97,6 +102,7 @@ const generateParticles = (): Particle[] => {
 }
 
 // Get particle styles - Flexy calculates dimensions from config!
+// Issue #2752: Added GPU acceleration for smooth 60fps animations
 const getParticleStyle = (particle: Particle) => {
   const isRectangle = particle.shape === 'rectangle'
   const rectangleRatio = animationConfig.confetti?.rectangleHeightRatio ?? 0.6
@@ -110,7 +116,9 @@ const getParticleStyle = (particle: Particle) => {
     animationDelay: `${particle.delay}s`,
     animationDuration: `${particle.duration}s`,
     borderRadius: particle.shape === 'circle' ? '50%' : '2px',
-    transform: `rotate(${particle.rotation}deg)`,
+    transform: `rotate(${particle.rotation}deg) translateZ(0)`,
+    willChange: 'transform, opacity',
+    ...gpuStyles,
   }
 }
 
@@ -126,12 +134,21 @@ const celebrate = () => {
   // Skip if reduced motion is preferred
   if (shouldSkipAnimation()) return
 
+  // Performance budget check - Issue #2752
+  if (!animationSlotAcquired.value) {
+    if (!acquireAnimationSlot()) {
+      // Animation budget exceeded, silently skip
+      return
+    }
+    animationSlotAcquired.value = true
+  }
+
   // Clear any existing timer
   if (cleanupTimer) {
     clearTimeout(cleanupTimer)
   }
 
-  // Generate new particles
+  // Generate new particles (respecting particle budget)
   particles.value = generateParticles()
   isActive.value = true
 
@@ -140,6 +157,11 @@ const celebrate = () => {
   cleanupTimer = setTimeout(() => {
     isActive.value = false
     particles.value = []
+    // Release animation slot
+    if (animationSlotAcquired.value) {
+      releaseAnimationSlot()
+      animationSlotAcquired.value = false
+    }
   }, props.duration + cleanupBufferMs)
 }
 
@@ -157,6 +179,10 @@ watch(
 onUnmounted(() => {
   if (cleanupTimer) {
     clearTimeout(cleanupTimer)
+  }
+  // Release animation slot if still held - Issue #2752
+  if (animationSlotAcquired.value) {
+    releaseAnimationSlot()
   }
 })
 
@@ -184,6 +210,10 @@ defineExpose({
   top: -20px;
   animation: confetti-fall linear forwards;
   opacity: 0;
+  /* Issue #2752: GPU acceleration for smooth animations */
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 @keyframes confetti-fall {

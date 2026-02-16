@@ -59,11 +59,7 @@
             :class="`flex-shrink-0 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors ${animationConfig.tailwindDurations.normal}`"
             aria-hidden="true"
           >
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -123,10 +119,7 @@
         class="text-center text-gray-500 py-8 flex flex-col items-center"
       >
         <!-- Animated Illustration Container -->
-        <div
-          class="relative w-20 h-20 mb-4"
-          aria-hidden="true"
-        >
+        <div class="relative w-20 h-20 mb-4" aria-hidden="true">
           <!-- Background Circle with subtle pulse -->
           <div
             class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full"
@@ -206,12 +199,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -378,11 +366,15 @@ onUnmounted(() => {
 
 <style scoped>
 /* Staggered entrance animation - Palette's micro-UX enhancement! */
+/* Issue #2752: GPU acceleration for smooth 60fps animations */
 .space-y-2 > * {
   animation: stagger-entrance
     v-bind('animationConfig.zeroResultSearches.staggerDurationSec') ease-out
     backwards;
   animation-delay: calc(var(--stagger-delay) * var(--index, 0));
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .space-y-2 > *:nth-child(1) {
@@ -439,6 +431,9 @@ onUnmounted(() => {
   animation: ripple
     v-bind('animationConfig.zeroResultSearches.rippleDurationSec') ease-out
     forwards;
+  /* Issue #2752: GPU acceleration for ripple effect */
+  will-change: transform, opacity;
+  transform: translateZ(0);
 }
 
 /* Subtle pulse for empty state icon */

@@ -3496,6 +3496,94 @@ export const animationConfig = {
     // Progress bar transition duration
     transitionDuration: `${parseInt(process.env.PAGE_TRANSITION_PROGRESS_DURATION_MS || '100') / 1000}s`,
   },
+
+  // Performance Optimization & GPU Acceleration - Issue #2752 Fix
+  // GPU acceleration settings for smooth 60fps animations on all devices
+  performance: {
+    // GPU Acceleration - Force hardware acceleration on animated elements
+    gpuAcceleration: {
+      // Enable translateZ(0) hack for GPU promotion
+      enabled: process.env.ANIMATION_GPU_ACCELERATION_ENABLED !== 'false',
+      // CSS will-change property strategy
+      willChangeStrategy: process.env.ANIMATION_WILL_CHANGE_STRATEGY || 'auto', // 'auto' | 'always' | 'never'
+      // Elements to apply will-change to
+      willChangeProperties:
+        process.env.ANIMATION_WILL_CHANGE_PROPS || 'transform, opacity',
+      // Use transform: translateZ(0) for GPU promotion
+      useTranslateZ: process.env.ANIMATION_USE_TRANSLATE_Z !== 'false',
+    },
+
+    // Animation Budget - Limit concurrent animations to prevent frame drops
+    animationBudget: {
+      // Max concurrent animations per viewport
+      maxConcurrent: parseInt(process.env.ANIMATION_MAX_CONCURRENT || '3'),
+      // Max particle effects at once
+      maxParticles: parseInt(process.env.ANIMATION_MAX_PARTICLES || '50'),
+      // Max simultaneous toast notifications
+      maxVisibleToasts: parseInt(
+        process.env.ANIMATION_MAX_VISIBLE_TOASTS || '3'
+      ),
+      // Stagger delay between animations (ms)
+      staggerDelayMs: parseInt(process.env.ANIMATION_STAGGER_DELAY_MS || '100'),
+      // Disable animations below this frame rate
+      minFpsThreshold: parseInt(
+        process.env.ANIMATION_MIN_FPS_THRESHOLD || '30'
+      ),
+    },
+
+    // Low-end device detection thresholds
+    lowEndDetection: {
+      // Memory limit in MB for low-end detection
+      memoryLimitMB: parseInt(
+        process.env.ANIMATION_LOW_END_MEMORY_MB || '2048'
+      ),
+      // CPU core threshold
+      cpuCoreThreshold: parseInt(
+        process.env.ANIMATION_CPU_CORE_THRESHOLD || '4'
+      ),
+      // Connection type to reduce animations on
+      slowConnections: (
+        process.env.ANIMATION_SLOW_CONNECTIONS || '2g,3g,slow-2g'
+      ).split(','),
+      // Enable low-end mode automatically
+      autoDetect: process.env.ANIMATION_AUTO_DETECT_LOW_END !== 'false',
+    },
+
+    // Intersection Observer settings for scroll-triggered animations
+    intersectionObserver: {
+      // Root margin for triggering animations early
+      rootMargin: process.env.ANIMATION_IO_ROOT_MARGIN || '50px',
+      // Threshold for triggering (0-1)
+      threshold: parseFloat(process.env.ANIMATION_IO_THRESHOLD || '0.1'),
+      // Disable animations when off-screen
+      disableOffscreen: process.env.ANIMATION_DISABLE_OFFSCREEN !== 'false',
+    },
+
+    // Frame rate monitoring
+    frameRateMonitoring: {
+      // Enable FPS monitoring
+      enabled: process.env.ANIMATION_FPS_MONITORING_ENABLED === 'true',
+      // Sample interval in ms
+      sampleIntervalMs: parseInt(
+        process.env.ANIMATION_FPS_SAMPLE_INTERVAL_MS || '1000'
+      ),
+      // Report threshold (warn if below)
+      warnThreshold: parseInt(process.env.ANIMATION_FPS_WARN_THRESHOLD || '30'),
+    },
+
+    // Battery-aware animations
+    batteryAware: {
+      // Reduce animations when battery is low
+      enabled: process.env.ANIMATION_BATTERY_AWARE_ENABLED !== 'false',
+      // Battery level threshold (0-1)
+      lowBatteryThreshold: parseFloat(
+        process.env.ANIMATION_LOW_BATTERY_THRESHOLD || '0.2'
+      ),
+      // Disable non-essential animations on low battery
+      disableOnLowBattery:
+        process.env.ANIMATION_DISABLE_ON_LOW_BATTERY !== 'false',
+    },
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
