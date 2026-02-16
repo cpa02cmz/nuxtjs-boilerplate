@@ -24,6 +24,7 @@
       :class="{
         'character-counter-ring--focused': isFocused,
         'character-counter-ring--visible': characterCount > 0 || alwaysShow,
+        'character-counter-ring--complete': isComplete,
       }"
       :title="counterTooltip"
     >
@@ -57,16 +58,37 @@
           :style="progressStyle"
         />
       </svg>
-      <!-- Character Count Text -->
+      <!-- Character Count Text or Checkmark -->
       <span
         class="character-counter-ring__text"
         :class="{
-          'character-counter-ring__text--warning': isNearLimit && !isOverLimit,
+          'character-counter-ring__text--warning':
+            isNearLimit && !isOverLimit && !isComplete,
           'character-counter-ring__text--error': isOverLimit,
+          'character-counter-ring__text--complete': isComplete,
         }"
         aria-hidden="true"
       >
-        {{ remainingCount }}
+        <template v-if="isComplete && !prefersReducedMotion">
+          <!-- Palette's micro-UX: Checkmark icon for completion celebration -->
+          <svg
+            class="character-counter__checkmark"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              class="character-counter__checkmark-path"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </template>
+        <template v-else>
+          {{ remainingCount }}
+        </template>
       </span>
     </div>
 
@@ -90,7 +112,7 @@ import { componentColorsConfig } from '~/configs/component-colors.config'
 import { validationConfig } from '~/configs/validation.config'
 import { zIndexScale } from '~/configs/z-index.config'
 import { uiConfig } from '~/configs/ui.config'
-import { hapticLight, hapticError } from '~/utils/hapticFeedback'
+import { hapticLight, hapticError, hapticSuccess } from '~/utils/hapticFeedback'
 
 interface Props {
   /** Current character count */
@@ -148,6 +170,11 @@ const isOverLimit = computed(() => {
   return props.characterCount > props.maxLength
 })
 
+// Palette's micro-UX enhancement: Complete state when exactly at max length
+const isComplete = computed(() => {
+  return props.characterCount === props.maxLength
+})
+
 // Accessibility: Input props for aria-invalid and aria-describedby binding
 const inputProps = computed(() => ({
   'aria-invalid': isOverLimit.value ? true : undefined,
@@ -161,6 +188,9 @@ const inputProps = computed(() => ({
 const progressColor = computed(() => {
   if (isOverLimit.value) {
     return 'var(--counter-color-error, #ef4444)'
+  }
+  if (isComplete.value) {
+    return 'var(--counter-color-success, #22c55e)'
   }
   if (isNearLimit.value) {
     return 'var(--counter-color-warning, #f59e0b)'
@@ -180,6 +210,9 @@ const counterTooltip = computed(() => {
   if (isOverLimit.value) {
     return `${Math.abs(remainingCount.value)} characters over limit`
   }
+  if (isComplete.value) {
+    return 'Character limit reached! Great job!'
+  }
   return `${remainingCount.value} characters remaining`
 })
 
@@ -189,6 +222,9 @@ const screenReaderAnnouncement = computed(() => {
 
   if (isOverLimit.value) {
     return `Character limit exceeded. You are ${Math.abs(remainingCount.value)} characters over the ${props.maxLength} character limit.`
+  }
+  if (isComplete.value) {
+    return `Character limit reached! You've used all ${props.maxLength} characters.`
   }
   if (isNearLimit.value) {
     return `${remainingCount.value} characters remaining out of ${props.maxLength}.`
@@ -203,9 +239,10 @@ const counterId = ref(
 
 // Palette's micro-UX enhancement: Haptic feedback on state transitions
 // Track previous state to trigger feedback only on transitions, not continuously
-const previousState = ref<'normal' | 'warning' | 'error'>('normal')
+const previousState = ref<'normal' | 'warning' | 'complete' | 'error'>('normal')
 const hasTriggeredWarning = ref(false)
 const hasTriggeredError = ref(false)
+const hasTriggeredComplete = ref(false)
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
@@ -219,40 +256,52 @@ const checkReducedMotion = () => {
 }
 
 // Watch for state changes and trigger haptic feedback
-watch([isNearLimit, isOverLimit], ([newIsNearLimit, newIsOverLimit]) => {
-  // Skip haptic feedback if user prefers reduced motion
-  if (checkReducedMotion()) return
+watch(
+  [isNearLimit, isOverLimit, isComplete],
+  ([newIsNearLimit, newIsOverLimit, newIsComplete]) => {
+    // Skip haptic feedback if user prefers reduced motion
+    if (checkReducedMotion()) return
 
-  const currentState = newIsOverLimit
-    ? 'error'
-    : newIsNearLimit
-      ? 'warning'
-      : 'normal'
+    const currentState = newIsOverLimit
+      ? 'error'
+      : newIsComplete
+        ? 'complete'
+        : newIsNearLimit
+          ? 'warning'
+          : 'normal'
 
-  // Trigger haptic feedback on state transitions
-  if (currentState === 'error' && !hasTriggeredError.value) {
-    // Strong feedback when exceeding limit
-    hapticError()
-    hasTriggeredError.value = true
-    hasTriggeredWarning.value = true // Error includes warning state
-  } else if (
-    currentState === 'warning' &&
-    !hasTriggeredWarning.value &&
-    !newIsOverLimit
-  ) {
-    // Light feedback when approaching limit
-    hapticLight()
-    hasTriggeredWarning.value = true
+    // Trigger haptic feedback on state transitions
+    if (currentState === 'error' && !hasTriggeredError.value) {
+      // Strong feedback when exceeding limit
+      hapticError()
+      hasTriggeredError.value = true
+      hasTriggeredWarning.value = true // Error includes warning state
+    } else if (currentState === 'complete' && !hasTriggeredComplete.value) {
+      // Success feedback when reaching exactly max characters
+      hapticSuccess()
+      hasTriggeredComplete.value = true
+      hasTriggeredWarning.value = true
+    } else if (
+      currentState === 'warning' &&
+      !hasTriggeredWarning.value &&
+      !newIsOverLimit &&
+      !newIsComplete
+    ) {
+      // Light feedback when approaching limit
+      hapticLight()
+      hasTriggeredWarning.value = true
+    }
+
+    // Reset flags when returning to normal state
+    if (currentState === 'normal') {
+      hasTriggeredWarning.value = false
+      hasTriggeredError.value = false
+      hasTriggeredComplete.value = false
+    }
+
+    previousState.value = currentState
   }
-
-  // Reset flags when returning to normal state
-  if (currentState === 'normal') {
-    hasTriggeredWarning.value = false
-    hasTriggeredError.value = false
-  }
-
-  previousState.value = currentState
-})
+)
 
 // Flexy hates hardcoded rgba! Using configurable shadow color
 const shadowColorDefault = computed(
@@ -341,6 +390,72 @@ const shadowColorDefault = computed(
     v-bind('animationConfig.validation.shakeDurationMs + "ms"') ease-in-out;
 }
 
+.character-counter-ring__text--complete {
+  color: var(--counter-color-success, #22c55e);
+}
+
+/* Palette's micro-UX: Checkmark animation for completion celebration */
+.character-counter__checkmark {
+  width: 60%;
+  height: 60%;
+  animation: checkmark-pop
+    v-bind('animationConfig.validation.successPopDurationMs + "ms"') ease-out
+    forwards;
+}
+
+.character-counter__checkmark-path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: checkmark-draw
+    v-bind('animationConfig.validation.successDrawDurationMs + "ms"') ease-out
+    forwards;
+  animation-delay: v-bind(
+    'animationConfig.validation.successPopDurationMs / 2 + "ms"'
+  );
+}
+
+@keyframes checkmark-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes checkmark-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Completion celebration ring animation */
+.character-counter-ring--complete {
+  animation: completion-pulse
+    v-bind('animationConfig.validation.completionPulseDurationMs + "ms"')
+    ease-out;
+}
+
+@keyframes completion-pulse {
+  0% {
+    transform: translateY(-50%) scale(1);
+    filter: drop-shadow(0 0 0 rgba(34, 197, 94, 0));
+  }
+  50% {
+    transform: translateY(-50%) scale(1.15);
+    filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.5));
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+    filter: drop-shadow(0 2px 4px rgba(v-bind('shadowColorDefault'), 0.1));
+  }
+}
+
 /* Animations */
 @keyframes pulse-warning {
   0%,
@@ -392,8 +507,20 @@ const shadowColorDefault = computed(
   }
 
   .character-counter-ring__text--warning,
-  .character-counter-ring__text--error {
+  .character-counter-ring__text--error,
+  .character-counter-ring--complete {
     animation: none;
+  }
+
+  .character-counter__checkmark {
+    animation: none;
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .character-counter__checkmark-path {
+    animation: none;
+    stroke-dashoffset: 0;
   }
 }
 
