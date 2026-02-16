@@ -1,10 +1,16 @@
 // CSP Violation Reporting Endpoint
 // Receives and logs Content Security Policy violation reports
 // Issue #2212: Added input validation and sanitization
+// Issue #3219: Standardized error handling
 // Flexy update: Using centralized limits config - no more hardcoded values!
 
 import { defineEventHandler, readBody } from 'h3'
 import { limitsConfig } from '~/configs/limits.config'
+import {
+  sendMethodNotAllowedError,
+  sendBadRequestError,
+  handleApiRouteError,
+} from '~/server/utils/api-response'
 
 interface SanitizedCspReport {
   documentUri: string
@@ -76,10 +82,7 @@ function sanitizeCspReport(report: unknown): SanitizedCspReport | null {
 export default defineEventHandler(async event => {
   // Only accept POST requests
   if (event.method !== 'POST') {
-    throw createError({
-      statusCode: 405,
-      statusMessage: 'Method Not Allowed',
-    })
+    return sendMethodNotAllowedError(event, 'POST')
   }
 
   try {
@@ -88,10 +91,11 @@ export default defineEventHandler(async event => {
     // Issue #2212: Validate and sanitize the CSP report
     const report = sanitizeCspReport(body)
     if (!report) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: 'Bad Request: Invalid CSP report format',
-      })
+      return sendBadRequestError(
+        event,
+        'Invalid CSP report format',
+        'The provided CSP report is malformed or missing required fields'
+      )
     }
 
     // Log the CSP violation for monitoring (now with validated data)
@@ -107,15 +111,6 @@ export default defineEventHandler(async event => {
     event.node.res.statusCode = 204
     return null
   } catch (error) {
-    console.error('[CSP Report Error]', error)
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Bad Request',
-    })
+    return handleApiRouteError(event, error)
   }
 })
-
-// Helper function to create errors
-function createError(options: { statusCode: number; statusMessage: string }) {
-  return Object.assign(new Error(options.statusMessage), options)
-}
