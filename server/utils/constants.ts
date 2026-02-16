@@ -193,12 +193,33 @@ export const CACHE_CONFIG = {
 
 // HTTP status code ranges - internal constants
 export const HTTP_STATUS = {
+  // Success codes
+  OK: 200,
+  CREATED: 201,
+  NO_CONTENT: 204,
   OK_MIN: 200,
   OK_MAX: 399,
+
+  // Redirect codes
   REDIRECT_MIN: 300,
   REDIRECT_MAX: 399,
+
+  // Client error codes
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  METHOD_NOT_ALLOWED: 405,
+  CONFLICT: 409,
+  UNPROCESSABLE_ENTITY: 422,
+  TOO_MANY_REQUESTS: 429,
   CLIENT_ERROR_MIN: 400,
   CLIENT_ERROR_MAX: 499,
+
+  // Server error codes
+  INTERNAL_SERVER_ERROR: 500,
+  BAD_GATEWAY: 502,
+  SERVICE_UNAVAILABLE: 503,
   SERVER_ERROR_MIN: 500,
 } as const
 

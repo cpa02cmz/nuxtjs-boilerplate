@@ -5,6 +5,7 @@
 
 import { defineEventHandler, readBody } from 'h3'
 import { limitsConfig } from '~/configs/limits.config'
+import { HTTP_STATUS } from '~/server/utils/constants'
 
 interface SanitizedCspReport {
   documentUri: string
@@ -77,7 +78,7 @@ export default defineEventHandler(async event => {
   // Only accept POST requests
   if (event.method !== 'POST') {
     throw createError({
-      statusCode: 405,
+      statusCode: HTTP_STATUS.METHOD_NOT_ALLOWED,
       statusMessage: 'Method Not Allowed',
     })
   }
@@ -89,7 +90,7 @@ export default defineEventHandler(async event => {
     const report = sanitizeCspReport(body)
     if (!report) {
       throw createError({
-        statusCode: 400,
+        statusCode: HTTP_STATUS.BAD_REQUEST,
         statusMessage: 'Bad Request: Invalid CSP report format',
       })
     }
@@ -104,12 +105,12 @@ export default defineEventHandler(async event => {
     // await storeCspViolation(report)
 
     // Return 204 No Content (as per CSP reporting spec)
-    event.node.res.statusCode = 204
+    event.node.res.statusCode = HTTP_STATUS.NO_CONTENT
     return null
   } catch (error) {
     console.error('[CSP Report Error]', error)
     throw createError({
-      statusCode: 400,
+      statusCode: HTTP_STATUS.BAD_REQUEST,
       statusMessage: 'Bad Request',
     })
   }
