@@ -1,5 +1,6 @@
 import { ref, onUnmounted } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { triggerHaptic as triggerHapticFeedback } from '~/utils/hapticFeedback'
 
 interface TypingIndicatorOptions {
   /**
@@ -59,18 +60,15 @@ export const useTypingIndicator = (options: TypingIndicatorOptions = {}) => {
 
   /**
    * Trigger light haptic feedback
+   * BroCula fix: Use triggerHapticFeedback to check user interaction first
    */
   const triggerHaptic = () => {
-    if (
-      !hapticFeedback ||
-      typeof navigator === 'undefined' ||
-      !navigator.vibrate
-    ) {
+    if (!hapticFeedback) {
       return
     }
 
-    // Very light tap - using config value instead of hardcoded 5ms
-    navigator.vibrate(animationConfig.typingIndicator.hapticDurationMs)
+    // Very light tap - BroCula fix: Use utility that checks user interaction
+    triggerHapticFeedback('light')
   }
 
   /**

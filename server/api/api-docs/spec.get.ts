@@ -3,6 +3,9 @@ import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
 import { apiConfig } from '~/configs/api.config'
 import { webhooksConfig } from '~/configs/webhooks.config'
+import { paginationConfig } from '~/configs/pagination.config'
+import { limitsConfig } from '~/configs/limits.config'
+import { recommendationConfig } from '~/configs/recommendation.config'
 import { handleApiRouteError } from '~/server/utils/api-response'
 
 export default defineEventHandler(async event => {
@@ -69,25 +72,25 @@ export default defineEventHandler(async event => {
               {
                 name: 'limit',
                 in: 'query',
-                description:
-                  'Number of resources to return (default: 20, max: 100)',
+                // Flexy hates hardcoded defaults! Using pagination config
+                description: `Number of resources to return (default: ${paginationConfig.defaults.pageSize}, max: ${paginationConfig.limits.maxPageSize})`,
                 required: false,
                 schema: {
                   type: 'integer',
                   minimum: 1,
-                  maximum: 100,
-                  default: 20,
+                  maximum: paginationConfig.limits.maxPageSize,
+                  default: paginationConfig.defaults.pageSize,
                 },
               },
               {
                 name: 'offset',
                 in: 'query',
-                description: 'Number of resources to skip (default: 0)',
+                description: `Number of resources to skip (default: ${paginationConfig.defaults.offset})`,
                 required: false,
                 schema: {
                   type: 'integer',
                   minimum: 0,
-                  default: 0,
+                  default: paginationConfig.defaults.offset,
                 },
               },
               {
@@ -244,7 +247,12 @@ export default defineEventHandler(async event => {
                 name: 'limit',
                 in: 'query',
                 description: 'Number of recommendations',
-                schema: { type: 'integer', default: 10, maximum: 50 },
+                // Flexy hates hardcoded limits! Using recommendation config
+                schema: {
+                  type: 'integer',
+                  default: recommendationConfig.limits.maxRecommendations,
+                  maximum: recommendationConfig.limits.maxRecommendationsLimit,
+                },
               },
               {
                 name: 'strategy',
@@ -315,7 +323,12 @@ export default defineEventHandler(async event => {
                 name: 'limit',
                 in: 'query',
                 description: 'Number of suggestions',
-                schema: { type: 'integer', default: 10, maximum: 20 },
+                // Flexy hates hardcoded limits! Using limits config
+                schema: {
+                  type: 'integer',
+                  default: limitsConfig.search.defaultSuggestionsLimit,
+                  maximum: limitsConfig.search.maxSuggestionsLimit,
+                },
               },
             ],
             responses: {
@@ -552,7 +565,12 @@ export default defineEventHandler(async event => {
                 name: 'limit',
                 in: 'query',
                 description: 'Number of alternatives',
-                schema: { type: 'integer', default: 5, maximum: 20 },
+                // Flexy hates hardcoded limits! Using limits config
+                schema: {
+                  type: 'integer',
+                  default: limitsConfig.suggestions.maxAlternatives,
+                  maximum: limitsConfig.suggestions.maxAlternatives,
+                },
               },
             ],
             responses: {
@@ -624,25 +642,25 @@ export default defineEventHandler(async event => {
               {
                 name: 'limit',
                 in: 'query',
-                description:
-                  'Number of resources to return (default: 20, max: 100)',
+                // Flexy hates hardcoded defaults! Using pagination config
+                description: `Number of resources to return (default: ${paginationConfig.search.defaultLimit}, max: ${paginationConfig.search.maxLimit})`,
                 required: false,
                 schema: {
                   type: 'integer',
                   minimum: 1,
-                  maximum: 100,
-                  default: 20,
+                  maximum: paginationConfig.search.maxLimit,
+                  default: paginationConfig.search.defaultLimit,
                 },
               },
               {
                 name: 'offset',
                 in: 'query',
-                description: 'Number of resources to skip (default: 0)',
+                description: `Number of resources to skip (default: ${paginationConfig.defaults.offset})`,
                 required: false,
                 schema: {
                   type: 'integer',
                   minimum: 0,
-                  default: 0,
+                  default: paginationConfig.defaults.offset,
                 },
               },
               {
@@ -739,8 +757,8 @@ export default defineEventHandler(async event => {
             'x-circuitBreaker': { enabled: true, scope: 'per-hostname' },
             'x-retry': {
               strategy: 'exponential-backoff',
-              maxRetries: 3,
-              maxDelay: '30s',
+              maxRetries: webhooksConfig.retry.maxAttempts,
+              maxDelay: `${webhooksConfig.retry.maxDelayMs}ms`,
             },
             'x-rateLimit': { config: 'standard', limit: 50, window: '5 min' },
             requestBody: {
@@ -758,19 +776,18 @@ export default defineEventHandler(async event => {
                       },
                       timeout: {
                         type: 'integer',
-                        description: 'Timeout in milliseconds (default: 10000)',
-                        default: 10000,
+                        description: `Timeout in milliseconds (default: ${webhooksConfig.request.timeoutMs})`,
+                        default: webhooksConfig.request.timeoutMs,
                       },
                       retries: {
                         type: 'integer',
-                        description: 'Number of retry attempts (default: 3)',
-                        default: 3,
+                        description: `Number of retry attempts (default: ${webhooksConfig.retry.maxAttempts})`,
+                        default: webhooksConfig.retry.maxAttempts,
                       },
                       retryDelay: {
                         type: 'integer',
-                        description:
-                          'Initial retry delay in milliseconds (default: 1000)',
-                        default: 1000,
+                        description: `Initial retry delay in milliseconds (default: ${webhooksConfig.retry.baseDelayMs})`,
+                        default: webhooksConfig.retry.baseDelayMs,
                       },
                       useCircuitBreaker: {
                         type: 'boolean',
@@ -1342,7 +1359,12 @@ export default defineEventHandler(async event => {
                 in: 'query',
                 description: 'Number of deliveries to return',
                 required: false,
-                schema: { type: 'integer', default: 50, maximum: 100 },
+                // Flexy hates hardcoded limits! Using pagination config
+                schema: {
+                  type: 'integer',
+                  default: paginationConfig.api.defaultLimit,
+                  maximum: paginationConfig.api.maxLimit,
+                },
               },
             ],
             responses: {
@@ -2510,13 +2532,21 @@ export default defineEventHandler(async event => {
                 name: 'limit',
                 in: 'query',
                 description: 'Items per page',
-                schema: { type: 'integer', default: 50, maximum: 100 },
+                // Flexy hates hardcoded limits! Using pagination config
+                schema: {
+                  type: 'integer',
+                  default: paginationConfig.submissions.defaultLimit,
+                  maximum: paginationConfig.submissions.maxLimit,
+                },
               },
               {
                 name: 'offset',
                 in: 'query',
                 description: 'Items to skip',
-                schema: { type: 'integer', default: 0 },
+                schema: {
+                  type: 'integer',
+                  default: paginationConfig.defaults.offset,
+                },
               },
             ],
             responses: {
@@ -2768,13 +2798,21 @@ export default defineEventHandler(async event => {
                 name: 'limit',
                 in: 'query',
                 description: 'Number of submissions to return',
-                schema: { type: 'integer', default: 50 },
+                // Flexy hates hardcoded limits! Using pagination config
+                schema: {
+                  type: 'integer',
+                  default: paginationConfig.moderation.defaultLimit,
+                  maximum: paginationConfig.moderation.maxLimit,
+                },
               },
               {
                 name: 'offset',
                 in: 'query',
                 description: 'Number of submissions to skip',
-                schema: { type: 'integer', default: 0 },
+                schema: {
+                  type: 'integer',
+                  default: paginationConfig.defaults.offset,
+                },
               },
             ],
             responses: {

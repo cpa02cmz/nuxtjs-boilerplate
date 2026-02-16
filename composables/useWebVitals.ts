@@ -2,7 +2,7 @@
 // Core Web Vitals tracking using web-vitals library
 // Tracks LCP, INP, CLS, FCP, TTFB metrics for performance monitoring
 
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, getCurrentInstance } from 'vue'
 import { analyticsConfig } from '~/configs/analytics.config'
 import {
   webVitalsConfig,
@@ -86,8 +86,11 @@ async function reportMetric(report: WebVitalsReport): Promise<void> {
 
 // Initialize web-vitals tracking
 export function useWebVitals() {
-  onMounted(() => {
-    // BroCula fix: Don't use async onMounted - register sync, handle async separately
+  // BroCula fix: Check if we're in a Vue component context
+  const hasVueInstance = getCurrentInstance()
+
+  // Core logic to initialize web vitals
+  const initializeWebVitals = () => {
     // Only run on client
     if (typeof window === 'undefined') return
 
@@ -177,12 +180,22 @@ export function useWebVitals() {
       .catch(error => {
         logger.warn('Failed to initialize web-vitals:', error)
       })
-  })
+  }
 
-  onUnmounted(() => {
-    // BroCula: Web-vitals observers auto-cleanup on page unload
-    // No manual cleanup needed for performance observers
-  })
+  if (hasVueInstance) {
+    // In Vue component context - use lifecycle hooks
+    onMounted(() => {
+      initializeWebVitals()
+    })
+
+    onUnmounted(() => {
+      // BroCula: Web-vitals observers auto-cleanup on page unload
+      // No manual cleanup needed for performance observers
+    })
+  } else {
+    // Outside Vue component context (e.g., plugin) - run immediately
+    initializeWebVitals()
+  }
 }
 
 export default useWebVitals
