@@ -1142,6 +1142,8 @@ export const contentConfig = {
       create: process.env.CONTENT_WEBHOOKS_BTN_CREATE || 'Create Webhook',
       createSubmit:
         process.env.CONTENT_WEBHOOKS_BTN_CREATE_SUBMIT || 'Create Webhook',
+      // Pallete: Loading state for better UX during async operations
+      creating: process.env.CONTENT_WEBHOOKS_BTN_CREATING || 'Creating...',
       activate: process.env.CONTENT_WEBHOOKS_BTN_ACTIVATE || 'Activate',
       deactivate: process.env.CONTENT_WEBHOOKS_BTN_DEACTIVATE || 'Deactivate',
       delete: process.env.CONTENT_WEBHOOKS_BTN_DELETE || 'Delete',
