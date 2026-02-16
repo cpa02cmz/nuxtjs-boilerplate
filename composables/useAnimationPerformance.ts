@@ -34,7 +34,9 @@ type NavigatorExtended = Navigator & {
 
 // Track global animation budget
 const globalAnimationCount = ref(0)
-const lastFrameTime = ref(performance.now())
+// BugFixer: Fixed SSR bug - performance.now() is not available on server
+// Use 0 as initial value, will be set properly in onMounted
+const lastFrameTime = ref(0)
 const frameCount = ref(0)
 const currentFps = ref(60)
 
@@ -140,6 +142,9 @@ export function useAnimationPerformance() {
   let fpsRafId: number | null = null
   const monitorFrameRate = () => {
     if (!animationConfig.performance.frameRateMonitoring.enabled) return
+
+    // BugFixer: Initialize lastFrameTime here when performance API is available
+    lastFrameTime.value = performance.now()
 
     const checkFps = () => {
       const now = performance.now()

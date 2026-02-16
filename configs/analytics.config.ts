@@ -144,6 +144,19 @@ export const analyticsConfig = {
       process.env.ANALYTICS_RESOURCE_ID_MAX_LENGTH || '255'
     ),
   },
+
+  // Search Analytics Limits - Flexy hates hardcoded 10!
+  // Configurable limits for search analytics queries
+  searchLimits: {
+    // Number of popular searches to return (default: 10)
+    popularSearches: parseInt(
+      process.env.ANALYTICS_POPULAR_SEARCHES_LIMIT || '10'
+    ),
+    // Number of zero-result searches to return (default: 10)
+    zeroResultSearches: parseInt(
+      process.env.ANALYTICS_ZERO_RESULT_SEARCHES_LIMIT || '10'
+    ),
+  },
 } as const
 
 // Helper function to parse event types
