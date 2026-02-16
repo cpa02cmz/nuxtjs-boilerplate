@@ -25,7 +25,8 @@ import {
   cleanupOldBackups,
   getBackupHealth,
 } from '../utils/backup/backup-manager'
-import { TIME } from '../server/utils/constants'
+import { TIME, SIZE } from '../server/utils/constants'
+import { backupConfig } from '../configs/backup.config'
 
 interface CommandLineArgs {
   command: string
@@ -67,10 +68,13 @@ function parseArgs(): CommandLineArgs {
 }
 
 function formatBytes(bytes: number): string {
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  // Flexy hates hardcoded 1024 and decimal places! Using SIZE constants and config
   if (bytes === 0) return '0 Bytes'
-  const i = Math.floor(Math.log(bytes) / Math.log(1024))
-  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`
+  const result = SIZE.formatBytes(
+    bytes,
+    backupConfig.fileSizeFormat.sizeDecimals
+  )
+  return result.formatted
 }
 
 function formatDate(date: Date): string {
@@ -121,10 +125,11 @@ async function handleCreate(args: CommandLineArgs): Promise<void> {
     console.log(`  Path: ${result.backupPath}`)
     console.log(`  Size: ${formatBytes(result.metadata.databaseSize)}`)
     if (result.metadata.compressed && result.metadata.compressedSize) {
+      // Flexy hates hardcoded toFixed(1)! Using config value
       const ratio = (
         (1 - result.metadata.compressedSize / result.metadata.databaseSize) *
         100
-      ).toFixed(1)
+      ).toFixed(backupConfig.fileSizeFormat.ratioDecimals)
       console.log(
         `  Compressed: ${formatBytes(result.metadata.compressedSize)} (${ratio}% reduction)`
       )

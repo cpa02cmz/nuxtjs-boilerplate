@@ -239,6 +239,40 @@ export const TIME = {
   msToDays: (ms: number): number => Math.floor(ms / (24 * 60 * 60 * 1000)),
 } as const
 
+// File size constants - Flexy hates hardcoded 1024 values!
+export const SIZE = {
+  // Bytes per unit
+  BYTES_PER_KB: 1024,
+  BYTES_PER_MB: 1024 * 1024,
+  BYTES_PER_GB: 1024 * 1024 * 1024,
+  BYTES_PER_TB: 1024 * 1024 * 1024 * 1024,
+
+  // Helper functions for common conversions
+  bytesToKb: (bytes: number): number => bytes / 1024,
+  bytesToMb: (bytes: number): number => bytes / (1024 * 1024),
+  bytesToGb: (bytes: number): number => bytes / (1024 * 1024 * 1024),
+  kbToBytes: (kb: number): number => kb * 1024,
+  mbToBytes: (mb: number): number => mb * 1024 * 1024,
+  gbToBytes: (gb: number): number => gb * 1024 * 1024 * 1024,
+
+  // Formatting helpers
+  formatBytes: (
+    bytes: number,
+    decimals: number = 2
+  ): { value: number; unit: string; formatted: string } => {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+    if (bytes === 0) return { value: 0, unit: 'Bytes', formatted: '0 Bytes' }
+    const i = Math.floor(Math.log(bytes) / Math.log(1024))
+    const value = bytes / Math.pow(1024, i)
+    const unit = sizes[i] || 'TB'
+    return {
+      value,
+      unit,
+      formatted: `${value.toFixed(decimals)} ${unit}`,
+    }
+  },
+} as const
+
 // UI layout constants (in pixels) - now configurable via env vars
 // Flexy hates hardcoded values! All layout values now use uiConfig
 export const UI_LAYOUT = {

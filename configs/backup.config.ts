@@ -183,6 +183,16 @@ export const backupConfig = {
     // Character to replace dots with
     dotReplacement: process.env.BACKUP_TIMESTAMP_DOT_REPLACEMENT || '-',
   },
+
+  // File Size Formatting - Flexy hates hardcoded decimal places!
+  fileSizeFormat: {
+    // Decimal places for file size display (default: 2)
+    sizeDecimals: parseInt(process.env.BACKUP_SIZE_DECIMALS || '2'),
+    // Decimal places for compression ratio display (default: 1)
+    ratioDecimals: parseInt(process.env.BACKUP_RATIO_DECIMALS || '1'),
+    // Units for file size display
+    units: ['Bytes', 'KB', 'MB', 'GB', 'TB'],
+  },
 } as const
 
 export type BackupConfig = typeof backupConfig

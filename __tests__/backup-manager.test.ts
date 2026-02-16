@@ -106,6 +106,11 @@ vi.mock('../configs/backup.config', () => ({
       colonReplacement: '-',
       dotReplacement: '-',
     },
+    fileSizeFormat: {
+      sizeDecimals: 2,
+      ratioDecimals: 1,
+      units: ['Bytes', 'KB', 'MB', 'GB', 'TB'],
+    },
   },
 }))
 
