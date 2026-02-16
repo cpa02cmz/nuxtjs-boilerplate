@@ -171,7 +171,8 @@ onMounted(() => {
   mediaQueryRef.addEventListener('change', handleMotionChangeRef)
 
   // Announce limitations after a short delay to allow screen readers to catch up
-  setTimeout(announceLimitations, 500)
+  // Flexy hates hardcoded 500! Using config value
+  setTimeout(announceLimitations, animationConfig.limitations.announceDelayMs)
 })
 
 // Cleanup on unmount

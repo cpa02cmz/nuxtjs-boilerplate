@@ -1434,6 +1434,10 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.LIMITATIONS_RESPECT_REDUCED_MOTION !== 'false',
+    // Flexy hates hardcoded 500! Screen reader announcement delay after mount (ms)
+    announceDelayMs: parseInt(
+      process.env.LIMITATIONS_ANNOUNCE_DELAY_MS || '500'
+    ),
   },
 
   // Screenshots Section Micro-UX - Pallete's delightful enhancement! 🎨
