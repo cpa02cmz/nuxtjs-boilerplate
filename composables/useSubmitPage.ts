@@ -22,6 +22,7 @@ interface FormErrors {
   description?: string
   url?: string
   category?: string
+  [key: string]: string | undefined
 }
 
 export interface UseSubmitPageOptions {

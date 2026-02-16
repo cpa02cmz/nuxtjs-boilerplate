@@ -832,7 +832,7 @@ const handleSubmitWithShake = async () => {
         url: urlFieldRef,
         category: categoryFieldRef,
       }
-      const inputRefs: Record<string, Ref<HTMLInputElement | null>> = {
+      const inputRefs: Record<string, Ref<HTMLElement | null>> = {
         title: titleInput,
         description: descriptionInput,
         url: urlInputRef,
