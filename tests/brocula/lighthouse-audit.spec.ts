@@ -23,13 +23,10 @@ import * as chromeLauncher from 'chrome-launcher'
  * ✅ Image Dimensions: All images have width/height attributes for CLS prevention
  * ✅ Skeleton Screens: 338 skeleton patterns for perceived performance
  * ✅ Loading States: 38 loading state patterns implemented
-<<<<<<< HEAD
  * ✅ Type Safety: Fixed @octokit/rest type declaration error
-=======
  * ✅ Lint: 0 errors, 0 warnings
  * ✅ Tests: 1,298 tests passing
  * ✅ Security: 0 vulnerabilities
->>>>>>> e8be8507 (docs: BroCula ULW Loop - Browser Console & Lighthouse Audit 2026-02-16 19:25)
  * ✅ Core Web Vitals: TTFB < 600ms, FCP < 1.8s, DCL < 3.5s
  *
  * Bug Fixes Applied (BroCula ULW Loop 2026-02-16 16:40):
