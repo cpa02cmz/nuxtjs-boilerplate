@@ -1595,6 +1595,10 @@ export const animationConfig = {
     badgeTransitionMs: parseInt(
       process.env.POPULAR_SEARCHES_BADGE_TRANSITION_MS || '300'
     ),
+    // Palette's micro-UX enhancement: Keyboard hint tooltip appear animation (ms)
+    hintAppearMs: parseInt(
+      process.env.POPULAR_SEARCHES_HINT_APPEAR_MS || '200'
+    ),
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.POPULAR_SEARCHES_REDUCED_MOTION !== 'false',
