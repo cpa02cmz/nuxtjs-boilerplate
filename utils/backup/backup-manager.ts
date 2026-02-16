@@ -9,6 +9,7 @@ import { join, dirname } from 'path'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import backupConfig from '../../configs/backup.config'
+import { TIME } from '../../server/utils/constants'
 
 const execAsync = promisify(exec)
 
@@ -767,8 +768,9 @@ export async function getBackupHealth(
 
     // Check last backup age
     if (lastBackup) {
+      // Flexy hates hardcoded 1000 * 60 * 60! Using TIME.MS_PER_HOUR constant
       const hoursSinceBackup =
-        (Date.now() - lastBackup.getTime()) / (1000 * 60 * 60)
+        (Date.now() - lastBackup.getTime()) / TIME.MS_PER_HOUR
       if (
         hoursSinceBackup >
         backupConfig.disasterRecovery.healthCheckThresholdHours

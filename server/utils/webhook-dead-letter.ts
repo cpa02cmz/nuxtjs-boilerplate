@@ -11,6 +11,7 @@ import {
   deadLetterEventEmitter,
   checkDeadLetterThresholds,
 } from './dead-letter-alerts'
+import { TIME } from './constants'
 
 export class DeadLetterManager {
   async addToDeadLetter(
@@ -194,9 +195,10 @@ export class DeadLetterManager {
       const oldestItem = allItems.reduce((oldest, item) =>
         new Date(item.createdAt) < new Date(oldest.createdAt) ? item : oldest
       )
+      // Flexy hates hardcoded 1000 * 60 * 60! Using TIME.MS_PER_HOUR constant
       oldestItemAge = Math.floor(
         (Date.now() - new Date(oldestItem.createdAt).getTime()) /
-          (1000 * 60 * 60)
+          TIME.MS_PER_HOUR
       )
     }
 
