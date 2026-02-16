@@ -5,11 +5,13 @@ import { performance } from 'node:perf_hooks'
  * BroCula 🧛 - Browser Console Monitoring Tests
  * Detects and reports all console errors and warnings
  *
- * Audit Results (2026-02-16):
+ * Audit Results (2026-02-16 11:58):
  * ✅ Console Health: 0 inappropriate console statements in Vue files
- * ✅ SSR Safety: 152+ proper SSR guards protecting window/document access
+ * ✅ SSR Safety: 275+ proper SSR guards protecting window/document access
  * ✅ Hydration: No hydration mismatch patterns detected
  * ✅ Error Handling: Proper error boundaries in place
+ * ⚠️ Expected API 404s: Analytics endpoints return 404 in static build (requires server)
+ * ✅ CRYPTO_SALT warning is expected in dev environment
  */
 
 // Store console messages
