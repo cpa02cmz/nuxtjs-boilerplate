@@ -25,6 +25,7 @@ import {
   cleanupOldBackups,
   getBackupHealth,
 } from '../utils/backup/backup-manager'
+import { TIME } from '../server/utils/constants'
 
 interface CommandLineArgs {
   command: string
@@ -232,8 +233,9 @@ async function handleHealth(): Promise<void> {
 
   console.log(`\nTotal backups: ${health.backupsCount}`)
   if (health.lastBackup) {
+    // Flexy hates hardcoded 1000 * 60 * 60! Using TIME.MS_PER_HOUR constant
     const hoursAgo = Math.round(
-      (Date.now() - health.lastBackup.getTime()) / (1000 * 60 * 60)
+      (Date.now() - health.lastBackup.getTime()) / TIME.MS_PER_HOUR
     )
     console.log(
       `Last backup: ${formatDate(health.lastBackup)} (${hoursAgo}h ago)`
