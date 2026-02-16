@@ -6,6 +6,7 @@ import { getCircuitBreaker } from './circuit-breaker'
 import { createCircuitBreakerError } from './api-error'
 import { webhooksConfig } from '~/configs/webhooks.config'
 import { timeConfig } from '~/configs/time.config'
+import { logger } from '~/utils/logger'
 
 export interface WebhookDeliveryOptions {
   maxRetries?: number
@@ -372,6 +373,19 @@ export class WebhookDeliveryService {
           )
         }
       } catch (error) {
+        // FIX #3087: Log retry attempt errors for debugging
+        const errorMessage =
+          error instanceof Error ? error.message : String(error)
+        logger.warn(`Webhook delivery attempt ${attempt + 1} failed`, {
+          attempt: attempt + 1,
+          maxRetries: maxRetries + 1,
+          webhookId: webhook.id,
+          url: webhook.url,
+          error: errorMessage,
+          nextAttemptDelay:
+            attempt < maxRetries ? this.calculateRetryDelay(attempt) : 0,
+        })
+
         if (attempt === maxRetries) {
           throw error
         }
