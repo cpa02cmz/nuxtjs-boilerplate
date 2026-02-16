@@ -1,10 +1,7 @@
 <template>
   <div class="py-12">
     <!-- Confetti celebration for successful submission -->
-    <ConfettiCelebration
-      ref="confettiRef"
-      intensity="medium"
-    />
+    <ConfettiCelebration ref="confettiRef" intensity="medium" />
 
     <!-- Smart Paste indicator - Palette's micro-UX enhancement! -->
     <!-- Note: No <ClientOnly> needed here because the page has ssr: false in definePageMeta -->
@@ -66,7 +63,7 @@
           novalidate
           @submit.prevent="handleSubmitWithShake"
         >
-          <div>
+          <div ref="titleFieldRef">
             <!-- Floating Label Container - Palette's micro-UX delight! -->
             <div
               class="floating-label-container relative"
@@ -76,10 +73,7 @@
                 'has-success': formData.title && !errors.title,
               }"
             >
-              <label
-                for="title"
-                class="floating-label"
-              >
+              <label for="title" class="floating-label">
                 Resource Title <span aria-hidden="true">*</span>
                 <span class="sr-only">(required)</span>
               </label>
@@ -115,7 +109,7 @@
                     ]"
                     @focus="isTitleFocused = true"
                     @blur="handleTitleBlur"
-                  >
+                  />
                 </template>
               </CharacterCounter>
               <!-- Validation checkmark - Palette's micro-UX delight! -->
@@ -151,10 +145,7 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="title-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="title-description" class="mt-1 text-sm text-gray-500">
               The name of the resource or service
             </p>
             <!-- Character limit progress bar for visual feedback -->
@@ -182,7 +173,7 @@
             </div>
           </div>
 
-          <div>
+          <div ref="descriptionFieldRef">
             <label
               for="description"
               class="block text-sm font-medium text-gray-700 mb-1"
@@ -193,6 +184,7 @@
             <div class="relative">
               <textarea
                 id="description"
+                ref="descriptionInput"
                 v-model="formData.description"
                 required
                 :rows="uiConfig.form.textareaRows"
@@ -253,10 +245,7 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="description-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="description-description" class="mt-1 text-sm text-gray-500">
               {{ descriptionHelperText }}
             </p>
             <!-- Character limit progress bar for visual feedback -->
@@ -284,7 +273,7 @@
             </div>
           </div>
 
-          <div>
+          <div ref="urlFieldRef">
             <!-- Floating Label Container - Palette's micro-UX delight! -->
             <div
               class="floating-label-container relative"
@@ -294,10 +283,7 @@
                 'has-success': formData.url && !errors.url,
               }"
             >
-              <label
-                for="url"
-                class="floating-label"
-              >
+              <label for="url" class="floating-label">
                 URL <span aria-hidden="true">*</span>
                 <span class="sr-only">(required)</span>
               </label>
@@ -320,7 +306,7 @@
                 ]"
                 @blur="handleUrlBlur"
                 @paste="handleSmartPaste"
-              >
+              />
               <!-- Validation checkmark - Palette's micro-UX delight! -->
               <Transition
                 enter-active-class="transition-all duration-200 ease-out"
@@ -364,7 +350,7 @@
             </div>
           </div>
 
-          <div>
+          <div ref="categoryFieldRef">
             <label
               for="category"
               class="block text-sm font-medium text-gray-700 mb-1"
@@ -375,6 +361,7 @@
             <div class="relative">
               <select
                 id="category"
+                ref="categoryInput"
                 v-model="formData.category"
                 required
                 aria-required="true"
@@ -390,12 +377,7 @@
                 ]"
                 @blur="handleCategoryBlur"
               >
-                <option
-                  value=""
-                  disabled
-                >
-                  Select a category
-                </option>
+                <option value="" disabled>Select a category</option>
                 <option
                   v-for="category in categoryOptions"
                   :key="category.value"
@@ -453,10 +435,7 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="category-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="category-description" class="mt-1 text-sm text-gray-500">
               Choose the most appropriate category for this resource
             </p>
             <div
@@ -477,22 +456,16 @@
                 'has-value': tagsInput.length > 0,
               }"
             >
-              <label
-                for="tags"
-                class="floating-label"
-              > Tags (Optional) </label>
+              <label for="tags" class="floating-label"> Tags (Optional) </label>
               <input
                 id="tags"
                 v-model="tagsInput"
                 type="text"
                 aria-describedby="tags-description"
                 class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
-              >
+              />
             </div>
-            <p
-              id="tags-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="tags-description" class="mt-1 text-sm text-gray-500">
               Add relevant tags to help categorize this resource (e.g., "api,
               free-tier, openai")
             </p>
@@ -536,7 +509,9 @@
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <span class="relative z-10">Draft saved {{ lastSavedText }}</span>
+                  <span class="relative z-10"
+                    >Draft saved {{ lastSavedText }}</span
+                  >
                   >
                 </div>
                 <div
@@ -560,10 +535,7 @@
               <span v-if="!isSubmitting">{{
                 contentConfig.submit.button.submit
               }}</span>
-              <span
-                v-else
-                class="flex items-center"
-              >
+              <span v-else class="flex items-center">
                 <svg
                   class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                   xmlns="http://www.w3.org/2000/svg"
@@ -667,7 +639,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onUnmounted } from 'vue'
+import { ref, watch, computed, onUnmounted, nextTick, type Ref } from 'vue'
 import { useNuxtApp } from '#app'
 import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
@@ -819,6 +791,50 @@ const handleSubmitWithShake = async () => {
     shakeTimeout.value = setTimeout(() => {
       shakeFields.value = {}
     }, animationConfig.validation.shakeDurationMs)
+
+    // Pallete's micro-UX enhancement: Scroll to first error for better accessibility
+    // This ensures users can immediately see and fix validation errors
+    nextTick(() => {
+      const fieldOrder = ['title', 'description', 'url', 'category']
+      const fieldRefs: Record<string, Ref<HTMLElement | null>> = {
+        title: titleFieldRef,
+        description: descriptionFieldRef,
+        url: urlFieldRef,
+        category: categoryFieldRef,
+      }
+      const inputRefs: Record<string, Ref<HTMLInputElement | null>> = {
+        title: titleInput,
+        description: descriptionInput,
+        url: urlInputRef,
+        category: categoryInput,
+      }
+
+      // Find the first field with an error in the defined order
+      const firstErrorField = fieldOrder.find(field => errors.value[field])
+
+      if (firstErrorField) {
+        const fieldElement = fieldRefs[firstErrorField]?.value
+        const inputElement = inputRefs[firstErrorField]?.value
+
+        if (fieldElement) {
+          // Smooth scroll to the field with error
+          fieldElement.scrollIntoView({
+            behavior: prefersReducedMotion.value ? 'auto' : 'smooth',
+            block: 'center',
+          })
+
+          // Focus the input after scroll completes for keyboard accessibility
+          setTimeout(
+            () => {
+              inputElement?.focus()
+            },
+            prefersReducedMotion.value
+              ? 0
+              : animationConfig.validation.scrollToErrorDelayMs
+          )
+        }
+      }
+    })
   }
 
   // Proceed with submission if valid
@@ -843,6 +859,18 @@ const maxTitleLength = validationConfig.resource.name.maxLength
 const maxDescriptionLength = validationConfig.resource.description.maxLength
 
 const titleInput = ref<HTMLInputElement | null>(null)
+
+// Pallete's micro-UX enhancement: Input refs for focus management
+// Enables keyboard focus when scrolling to validation errors
+const descriptionInput = ref<HTMLTextAreaElement | null>(null)
+const categoryInput = ref<HTMLSelectElement | null>(null)
+
+// Pallete's micro-UX enhancement: Template refs for form field containers
+// Enables smooth scroll-to-error functionality for better accessibility
+const titleFieldRef = ref<HTMLElement | null>(null)
+const descriptionFieldRef = ref<HTMLElement | null>(null)
+const urlFieldRef = ref<HTMLElement | null>(null)
+const categoryFieldRef = ref<HTMLElement | null>(null)
 
 // Focus states for character counters
 const isTitleFocused = ref(false)

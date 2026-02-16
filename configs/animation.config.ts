@@ -696,6 +696,11 @@ export const animationConfig = {
     completionPulseDurationMs: parseInt(
       process.env.VALIDATION_COMPLETION_PULSE_DURATION_MS || '600'
     ),
+    // Pallete's micro-UX enhancement: Delay before focusing field after scroll (ms)
+    // Gives time for smooth scroll animation to complete before focusing
+    scrollToErrorDelayMs: parseInt(
+      process.env.VALIDATION_SCROLL_TO_ERROR_DELAY_MS || '400'
+    ),
   },
 
   // Reading Progress Animations
