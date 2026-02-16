@@ -682,7 +682,8 @@ export async function cleanupOldBackups(
     }
 
     const now = Date.now()
-    const maxAgeMs = backupConfig.retention.maxAgeDays * 24 * 60 * 60 * 1000
+    // Flexy hates hardcoded 24 * 60 * 60 * 1000! Using TIME.MS_PER_DAY constant
+    const maxAgeMs = backupConfig.retention.maxAgeDays * TIME.MS_PER_DAY
 
     let deletedCount = 0
 
