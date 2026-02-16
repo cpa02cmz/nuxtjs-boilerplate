@@ -269,7 +269,6 @@ const checkReducedMotion = () => {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-const prefersReducedMotion = ref(false)
 // Unique ID for accessibility associations
 const counterId = ref(
   `character-counter-${Math.random().toString(36).substr(2, 9)}`
@@ -296,15 +295,6 @@ const hasTriggeredWarning = ref(false)
 const hasTriggeredError = ref(false)
 const hasTriggeredComplete = ref(false)
 
-// Initialize reduced motion preference on client side
-if (typeof window !== 'undefined') {
-  prefersReducedMotion.value = checkReducedMotion()
-  // Listen for changes
-  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-  mediaQuery.addEventListener('change', e => {
-    prefersReducedMotion.value = e.matches
-  })
-}
 // Watch for state changes and trigger haptic feedback
 watch(
   [isNearLimit, isOverLimit, isComplete],
