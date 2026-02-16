@@ -1853,6 +1853,30 @@ export const contentConfig = {
     // Completion message (optional, shown after transition)
     complete: process.env.CONTENT_PAGE_TRANSITION_COMPLETE || 'Page loaded',
   },
+
+  // Confetti Celebration - Pallete's micro-UX delight! 🎉
+  // Screen reader announcements for celebration animations
+  confettiCelebration: {
+    // Default announcement text for celebrations
+    defaultAnnouncement:
+      process.env.CONTENT_CONFETTI_ANNOUNCEMENT ||
+      'Celebration! Achievement unlocked',
+    // Announcement for bookmark milestones
+    bookmarkMilestone:
+      process.env.CONTENT_CONFETTI_BOOKMARK_MILESTONE ||
+      'Congratulations! You have saved {{count}} resources',
+    // Announcement for scroll completion
+    scrollComplete:
+      process.env.CONTENT_CONFETTI_SCROLL_COMPLETE ||
+      'You have reached the end of the page',
+    // Announcement for submission approval
+    submissionApproved:
+      process.env.CONTENT_CONFETTI_SUBMISSION_APPROVED ||
+      'Submission approved successfully',
+    // Aria label for the celebration container
+    ariaLabel:
+      process.env.CONTENT_CONFETTI_ARIA_LABEL || 'Celebration animation',
+  },
 } as const
 
 // Helper function to parse comma-separated suggestions
