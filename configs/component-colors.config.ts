@@ -493,6 +493,28 @@ export const componentColorsConfig = {
     },
   },
 
+  // 🎨 Pallete's micro-UX enhancement: Limitations Section Colors
+  // Color scheme for the limitations component with accessibility in mind
+  limitations: {
+    icon: {
+      gradientStart: process.env.LIMITATIONS_ICON_GRADIENT_START || '#f87171',
+      gradientEnd: process.env.LIMITATIONS_ICON_GRADIENT_END || '#ef4444',
+      shadow: process.env.LIMITATIONS_ICON_SHADOW || 'rgba(239, 68, 68, 0.3)',
+      shadowHover:
+        process.env.LIMITATIONS_ICON_SHADOW_HOVER || 'rgba(239, 68, 68, 0.4)',
+    },
+    title: process.env.LIMITATIONS_TITLE || '#111827',
+    bullet: process.env.LIMITATIONS_BULLET || '#ef4444',
+    text: process.env.LIMITATIONS_TEXT || '#374151',
+    item: {
+      background: process.env.LIMITATIONS_ITEM_BG || '#fef2f2',
+      borderColor: process.env.LIMITATIONS_ITEM_BORDER || '#fecaca',
+      hoverBackground: process.env.LIMITATIONS_ITEM_HOVER_BG || '#fee2e2',
+      hoverShadow:
+        process.env.LIMITATIONS_ITEM_HOVER_SHADOW || 'rgba(239, 68, 68, 0.1)',
+    },
+  },
+
   // Common UI Colors - Flexy hates hardcoded common colors!
   common: {
     white: process.env.COMMON_WHITE || '#ffffff',

@@ -1404,6 +1404,38 @@ export const animationConfig = {
       process.env.ALTERNATIVES_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // 🎨 Pallete's micro-UX enhancement: Limitations Section Animations
+  // Staggered entrance animations and icon pulse for visual interest
+  limitations: {
+    // Duration of each item's entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.LIMITATIONS_ENTRANCE_DURATION_MS || '400'
+    ),
+    // CSS duration string
+    entranceDurationSec: `${parseInt(process.env.LIMITATIONS_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Delay between each item's entrance (stagger effect) (ms)
+    staggerDelayMs: parseInt(process.env.LIMITATIONS_STAGGER_MS || '80'),
+    // Maximum stagger delay to prevent long waits (ms)
+    maxStaggerDelayMs: parseInt(
+      process.env.LIMITATIONS_MAX_STAGGER_MS || '400'
+    ),
+    // Icon pulse animation duration (seconds)
+    iconPulseDurationSec: parseFloat(
+      process.env.LIMITATIONS_ICON_PULSE_SEC || '2'
+    ),
+    // Item hover transition duration (seconds)
+    itemTransitionSec: parseFloat(
+      process.env.LIMITATIONS_ITEM_TRANSITION_SEC || '0.2'
+    ),
+    // Reduced motion transition duration (seconds)
+    reducedMotionTransitionSec: parseFloat(
+      process.env.LIMITATIONS_REDUCED_MOTION_SEC || '0.15'
+    ),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.LIMITATIONS_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
   // Similar Resources Micro-UX - Palette's delightful enhancement! ✨
   // Staggered card entrance with lift and press effects
   similarResources: {
