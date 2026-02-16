@@ -68,6 +68,11 @@ export const animationConfig = {
     updateDebounceMs: parseInt(
       process.env.RELATIVE_TIME_UPDATE_DEBOUNCE_MS || '5000'
     ),
+    // Threshold in seconds for "recent" items (default: 300 = 5 minutes)
+    // Used to determine when to show the live indicator dot
+    recentThresholdSec: parseInt(
+      process.env.RELATIVE_TIME_RECENT_THRESHOLD_SEC || '300'
+    ),
     // Palette's micro-UX enhancement: New Item Flash Animation ✨
     // Brief celebratory flash for items just posted (within seconds)
     newItemFlash: {
