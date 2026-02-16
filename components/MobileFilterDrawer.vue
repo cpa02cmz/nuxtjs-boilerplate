@@ -333,7 +333,7 @@ const drawerStyle = computed(() => {
 
   const translateX = Math.max(0, swipeCurrentX.value - swipeStartX.value)
 
-  // Apply spring-like resistance - Flexy hates hardcoded 0.8!
+  // Apply spring-like resistance - Flexy hates hardcoded 0.8! Using config instead
   const resistance = animationConfig.mobileFilterDrawer.swipeResistance
   const effectiveTranslate = translateX * resistance
 

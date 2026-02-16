@@ -696,6 +696,11 @@ export const animationConfig = {
     completionPulseDurationMs: parseInt(
       process.env.VALIDATION_COMPLETION_PULSE_DURATION_MS || '600'
     ),
+    // Pallete's micro-UX enhancement: Delay before focusing field after scroll (ms)
+    // Gives time for smooth scroll animation to complete before focusing
+    scrollToErrorDelayMs: parseInt(
+      process.env.VALIDATION_SCROLL_TO_ERROR_DELAY_MS || '400'
+    ),
   },
 
   // Reading Progress Animations
@@ -3399,6 +3404,11 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.MOBILE_DRAWER_RESPECT_REDUCED_MOTION !== 'false',
+    // Swipe resistance factor (0-1) - Flexy hates hardcoded 0.8!
+    // Lower values make the drawer feel heavier, higher values feel lighter
+    swipeResistance: parseFloat(
+      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
+    ),
   },
 
   // SVG Stroke Dasharray Values - Flexy hates hardcoded stroke-dasharray!
