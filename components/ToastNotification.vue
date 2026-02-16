@@ -94,10 +94,7 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p
-            v-if="toast.description"
-            class="toast__description"
-          >
+          <p v-if="toast.description" class="toast__description">
             {{ toast.description }}
           </p>
         </div>
@@ -341,6 +338,10 @@ onUnmounted(() => {
   animation: slideIn v-bind('toastStyles.animationDuration') ease-out;
   position: relative;
   overflow: hidden;
+  /* Issue #2752: GPU acceleration for smooth 60fps animations */
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .toast--success {
