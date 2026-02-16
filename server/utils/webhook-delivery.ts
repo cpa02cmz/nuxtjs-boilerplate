@@ -26,10 +26,12 @@ const DEFAULT_TIMEOUT_MS = webhooksConfig.request.timeoutMs
 function validateWebhookUrl(url: string): void {
   try {
     // FIX #3059: Decode URL to prevent encoded bypasses
+    // Flexy hates hardcoded 3! Using webhooksConfig.security.maxDecodeIterations
     let decodedUrl = url
     try {
       // Decode multiple times to handle double/triple encoding
-      for (let i = 0; i < 3; i++) {
+      const maxIterations = webhooksConfig.security.maxDecodeIterations
+      for (let i = 0; i < maxIterations; i++) {
         const newUrl = decodeURIComponent(decodedUrl)
         if (newUrl === decodedUrl) break
         decodedUrl = newUrl
