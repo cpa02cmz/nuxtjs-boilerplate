@@ -396,6 +396,31 @@ export const animationConfig = {
     bgTransitionMs: parseInt(process.env.SUGGESTION_BG_TRANSITION_MS || '150'),
   },
 
+  // Search Suggestion Particle Burst - Palette's micro-UX delight! ✨
+  // Celebratory particle burst when selecting search suggestions
+  searchParticles: {
+    // Enable/disable particle burst
+    enabled: process.env.SEARCH_PARTICLE_ENABLED !== 'false',
+    // Number of particles in the burst
+    particleCount: parseInt(process.env.SEARCH_PARTICLE_COUNT || '8'),
+    // Animation duration in seconds
+    durationSec: parseFloat(process.env.SEARCH_PARTICLE_DURATION || '0.5'),
+    // Particle spread distance in pixels
+    spreadPx: parseInt(process.env.SEARCH_PARTICLE_SPREAD || '40'),
+    // Particle colors (blue theme for search)
+    colors: [
+      process.env.SEARCH_PARTICLE_COLOR_1 || '#3b82f6', // blue-500
+      process.env.SEARCH_PARTICLE_COLOR_2 || '#60a5fa', // blue-400
+      process.env.SEARCH_PARTICLE_COLOR_3 || '#93c5fd', // blue-300
+      process.env.SEARCH_PARTICLE_COLOR_4 || '#2563eb', // blue-600
+    ],
+    // Particle size range in pixels
+    minSizePx: parseInt(process.env.SEARCH_PARTICLE_MIN_SIZE || '3'),
+    maxSizePx: parseInt(process.env.SEARCH_PARTICLE_MAX_SIZE || '6'),
+    // Delay before particles start disappearing
+    fadeDelaySec: parseFloat(process.env.SEARCH_PARTICLE_FADE_DELAY || '0.1'),
+  },
+
   // Navigation/Transition Animations
   navigation: {
     reducedMotionDelayMs: parseInt(
@@ -3394,13 +3419,13 @@ export const animationConfig = {
   // Mobile Filter Drawer Animations - Palette's micro-UX delight! 🎨
   // Swipe gestures, magnetic handle, and spring physics for drawer interactions
   mobileFilterDrawer: {
+    // Swipe resistance factor (0-1) - Flexy hates hardcoded 0.8!
+    swipeResistance: parseFloat(
+      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
+    ),
     // Swipe threshold to trigger dismiss (px) - Flexy hates hardcoded 50!
     swipeThresholdPx: parseInt(
       process.env.MOBILE_DRAWER_SWIPE_THRESHOLD_PX || '80'
-    ),
-    // Swipe resistance factor during drag (0-1) - Flexy hates hardcoded 0.8!
-    swipeResistance: parseFloat(
-      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
     ),
     // Velocity threshold for flick-to-dismiss (px/ms)
     velocityThresholdPxMs: parseFloat(
@@ -3436,6 +3461,10 @@ export const animationConfig = {
     ),
     // Drawer edge glow on swipe (px)
     edgeGlowSpreadPx: parseInt(process.env.MOBILE_DRAWER_EDGE_GLOW_PX || '8'),
+    // Swipe resistance factor (0-1) - Flexy hates hardcoded 0.8!
+    swipeResistance: parseFloat(
+      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
+    ),
     // Haptic feedback duration on open (ms)
     hapticOpenDurationMs: parseInt(
       process.env.MOBILE_DRAWER_HAPTIC_OPEN_MS || '20'
@@ -3455,6 +3484,10 @@ export const animationConfig = {
     // Filter count changed indicator reset delay (ms) - Flexy hates hardcoded 1000!
     filterCountResetDelayMs: parseInt(
       process.env.MOBILE_DRAWER_FILTER_RESET_MS || '1000'
+    ),
+    // Swipe resistance factor (0-1) - Flexy hates hardcoded 0.8!
+    swipeResistance: parseFloat(
+      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
     ),
     // Whether to respect reduced motion preference
     respectReducedMotion:

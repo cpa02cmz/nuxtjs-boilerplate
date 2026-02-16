@@ -5,6 +5,7 @@
 
 import { createStorage, type Storage } from 'unstorage'
 import memoryDriver from 'unstorage/drivers/memory'
+import { socialConfig } from '~/configs/social.config'
 
 // Share count data structure
 interface ShareCountData {
@@ -17,7 +18,8 @@ const storage: Storage = createStorage({
   driver: memoryDriver(),
 })
 
-const STORAGE_KEY_PREFIX = 'social:shares:'
+// Flexy hates hardcoded 'social:shares:'! Using config value instead.
+const STORAGE_KEY_PREFIX = socialConfig.storage.keyPrefix
 
 /**
  * Get share counts for a URL

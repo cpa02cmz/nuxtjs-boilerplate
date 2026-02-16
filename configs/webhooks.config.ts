@@ -299,6 +299,25 @@ export const webhooksConfig = {
       process.env.WEBHOOK_DEAD_LETTER_RETRY_PRIORITY || '10'
     ),
   },
+
+  // SSRF Protection Settings - Flexy hates hardcoded security values!
+  security: {
+    // Maximum number of URL decode iterations to prevent encoded bypasses (Issue #3059)
+    // Higher values handle more levels of encoding but increase processing time
+    maxDecodeIterations: parseInt(
+      process.env.WEBHOOK_MAX_DECODE_ITERATIONS || '3'
+    ),
+
+    // Minimum decode iterations (must be at least 1)
+    minDecodeIterations: parseInt(
+      process.env.WEBHOOK_MIN_DECODE_ITERATIONS || '1'
+    ),
+
+    // Maximum decode iterations allowed (prevents excessive processing)
+    maxDecodeIterationsLimit: parseInt(
+      process.env.WEBHOOK_MAX_DECODE_ITERATIONS_LIMIT || '10'
+    ),
+  },
 } as const
 
 // Helper function to parse status codes
