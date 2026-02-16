@@ -186,7 +186,22 @@ export class WebhookQueueManager {
     } else {
       // FIX #3056: Item is not due yet, put it back with the scheduled time preserved
       // This prevents busy-wait loop by not immediately re-processing
-      await this.enqueue(item)
+      // FIX #3088: Add error handling for enqueue failures to prevent silent data loss
+      try {
+        await this.enqueue(item)
+      } catch (enqueueError) {
+        logger.error('Failed to re-enqueue item not due yet', {
+          itemId: item.id,
+          webhookId: item.webhookId,
+          scheduledFor: item.scheduledFor,
+          error:
+            enqueueError instanceof Error
+              ? enqueueError.message
+              : String(enqueueError),
+        })
+        // Re-throw to trigger item failure handling (dead letter queue)
+        throw enqueueError
+      }
     }
   }
 
