@@ -42,7 +42,8 @@ export default defineEventHandler(async event => {
 
     // Validate and parse limit parameter
     let limit = limitsConfig.search.defaultSuggestionsLimit // default from config
-    const maxSuggestionsLimit = limitsConfig.search.maxSuggestionsLimit || 10
+    // Flexy hates hardcoded fallback! Config already has default value.
+    const maxSuggestionsLimit = limitsConfig.search.maxSuggestionsLimit
     if (query.limit !== undefined) {
       const parsedLimit = parseInt(query.limit as string)
       if (!isNaN(parsedLimit) && parsedLimit > 0) {
