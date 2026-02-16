@@ -2,6 +2,7 @@
   <div
     v-if="suggestions.length > 0 || searchHistory.length > 0 || hasQuery"
     :id="id"
+    ref="particleContainerRef"
     :class="[
       'absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 overflow-auto border border-gray-200',
       uiConfig.dropdown.maxHeight,
@@ -10,6 +11,27 @@
     :aria-label="contentConfig.search.suggestions.title"
     @keydown="handleKeyDown"
   >
+    <!-- Palette's micro-UX delight: Particle burst celebration for selection feedback -->
+    <TransitionGroup
+      v-if="showParticles && !prefersReducedMotion()"
+      tag="div"
+      class="particle-container"
+      aria-hidden="true"
+    >
+      <span
+        v-for="particle in particles"
+        :key="particle.id"
+        class="particle"
+        :style="{
+          left: `${particle.x}px`,
+          top: `${particle.y}px`,
+          width: `${particle.size}px`,
+          height: `${particle.size}px`,
+          backgroundColor: particle.color,
+          transform: `translate(-50%, -50%) rotate(${particle.rotation}deg)`,
+        }"
+      />
+    </TransitionGroup>
     <!-- Search History Section -->
     <div v-if="searchHistory.length > 0">
       <div
@@ -379,6 +401,20 @@ const pressedItem = ref<{
   index: number
 } | null>(null)
 
+// Palette's micro-UX delight: Particle burst celebration for selection feedback
+const showParticles = ref(false)
+const particles = ref<
+  Array<{
+    id: number
+    x: number
+    y: number
+    color: string
+    size: number
+    rotation: number
+  }>
+>([])
+const particleContainerRef = ref<HTMLDivElement | null>(null)
+
 // Check for reduced motion preference
 const prefersReducedMotion = () => {
   if (
@@ -401,19 +437,23 @@ const handlePressEnd = () => {
   pressedItem.value = null
 }
 
-// Enhanced selection handlers with haptic feedback
-const selectHistoryWithFeedback = (history: string, _index: number) => {
+// Enhanced selection handlers with haptic feedback and particle celebration
+const selectHistoryWithFeedback = (history: string, index: number) => {
   // Trigger haptic feedback for mobile users
   hapticLight()
+  // Trigger particle burst for delightful visual feedback
+  triggerParticleBurst(index)
   selectHistory(history)
 }
 
 const selectSuggestionWithFeedback = (
   suggestion: SuggestionItem,
-  _index: number
+  index: number
 ) => {
   // Trigger haptic feedback for mobile users
   hapticLight()
+  // Trigger particle burst for delightful visual feedback
+  triggerParticleBurst(props.searchHistory.length + index)
   selectSuggestion(suggestion)
 }
 
@@ -421,6 +461,75 @@ const clearHistoryWithFeedback = () => {
   // Trigger haptic feedback for destructive action
   hapticLight()
   clearHistory()
+}
+
+// Palette's micro-UX delight: Generate particles for selection celebration
+const generateParticles = () => {
+  const particleConfig = animationConfig.searchParticles
+  const count = particleConfig?.particleCount || 8
+  const newParticles = []
+
+  for (let i = 0; i < count; i++) {
+    const angle = (360 / count) * i + Math.random() * 30
+    const radians = (angle * Math.PI) / 180
+    const distance =
+      (particleConfig?.spreadPx || 30) * (0.7 + Math.random() * 0.6)
+    const x = Math.cos(radians) * distance
+    const y = Math.sin(radians) * distance
+
+    newParticles.push({
+      id: Date.now() + i,
+      x,
+      y,
+      color:
+        particleConfig?.colors?.[
+          Math.floor(Math.random() * (particleConfig?.colors?.length || 3))
+        ] || '#3b82f6',
+      size:
+        (particleConfig?.minSizePx || 3) +
+        Math.random() *
+          ((particleConfig?.maxSizePx || 6) - (particleConfig?.minSizePx || 3)),
+      rotation: Math.random() * 360,
+    })
+  }
+
+  return newParticles
+}
+
+// Palette's micro-UX delight: Trigger particle burst at specific item index
+const triggerParticleBurst = (index: number) => {
+  if (prefersReducedMotion()) return
+
+  // Get the DOM element for the clicked item
+  nextTick(() => {
+    const element = document.querySelector(`[data-suggestion-index="${index}"]`)
+    if (!element) return
+
+    const rect = element.getBoundingClientRect()
+    const containerRect = particleContainerRef.value?.getBoundingClientRect()
+
+    if (containerRect) {
+      // Calculate relative position within the dropdown
+      particles.value = generateParticles().map(particle => ({
+        ...particle,
+        // Center the burst on the clicked item
+        x: particle.x + rect.left - containerRect.left + rect.width / 2,
+        y: particle.y + rect.top - containerRect.top + rect.height / 2,
+      }))
+      showParticles.value = true
+
+      // Hide particles after animation
+      setTimeout(
+        () => {
+          showParticles.value = false
+          particles.value = []
+        },
+        ((animationConfig.searchParticles?.durationSec || 0.5) +
+          (animationConfig.searchParticles?.fadeDelaySec || 0.1)) *
+          1000
+      )
+    }
+  })
 }
 
 // Get item class with press animation states
@@ -648,6 +757,78 @@ const handleKeyDown = (event: KeyboardEvent) => {
   .new-indicator {
     border: 2px solid currentColor;
     background: transparent;
+  }
+}
+
+/* Palette's micro-UX delight: Particle burst celebration styles */
+.particle-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  overflow: visible;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: particle-burst
+    v-bind('`${(animationConfig.searchParticles?.durationSec || 0.5)}s`')
+    ease-out forwards;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+@keyframes particle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(
+        calc(-50% + var(--particle-x, 0) * 0.5),
+        calc(-50% + var(--particle-y, 0) * 0.5)
+      )
+      scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+        calc(-50% + var(--particle-x, 0)),
+        calc(-50% + var(--particle-y, 0))
+      )
+      scale(0.3);
+  }
+}
+
+/* Alternative diamond particle shape */
+.particle:nth-child(3n) {
+  border-radius: 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* Alternative star particle shape */
+.particle:nth-child(5n) {
+  border-radius: 0;
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+/* Reduced motion support - disable particle animations */
+@media (prefers-reduced-motion: reduce) {
+  .particle-container {
+    display: none;
   }
 }
 </style>
