@@ -381,7 +381,8 @@ const getAnimatedValue = (key: string): number => {
 const animateCounter = (
   key: string,
   target: number,
-  duration: number = 1500
+  // Flexy hates hardcoded 1500! Using animationConfig.analyticsCounter.durationMs
+  duration: number = animationConfig.analyticsCounter.durationMs
 ) => {
   const start = animatedValues.value[key as keyof typeof animatedValues.value]
   const startTime = performance.now()
