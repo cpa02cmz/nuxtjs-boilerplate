@@ -578,6 +578,11 @@ export const animationConfig = {
       midOpacity: parseFloat(
         process.env.BOOKMARK_NEWLY_ADDED_MID_OPACITY || '0.6'
       ),
+      // Duration to show the pulse ring before hiding (ms)
+      // Flexy hates hardcoded 2000! Now configurable via env var
+      displayDurationMs: parseInt(
+        process.env.BOOKMARK_NEWLY_ADDED_DISPLAY_DURATION_MS || '2000'
+      ),
     },
   },
 
