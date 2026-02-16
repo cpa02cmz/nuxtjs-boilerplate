@@ -172,6 +172,19 @@ export const animationConfig = {
       letterSpacingPx: parseFloat(
         process.env.SKELETON_LOADING_LETTER_SPACING_PX || '0.5'
       ),
+      // 🎨 Palette: Sidebar-specific positioning for FilterSidebarSkeleton
+      // Margin top from content above (px)
+      sidebarMarginTopPx: parseInt(
+        process.env.SKELETON_SIDEBAR_LOADING_MARGIN_TOP_PX || '16'
+      ),
+      // Padding top for visual separation (px)
+      sidebarPaddingTopPx: parseInt(
+        process.env.SKELETON_SIDEBAR_LOADING_PADDING_TOP_PX || '12'
+      ),
+      // Font size for sidebar context (px) - slightly larger for sidebar
+      sidebarFontSizePx: parseInt(
+        process.env.SKELETON_SIDEBAR_LOADING_FONT_SIZE_PX || '11'
+      ),
     },
   },
 

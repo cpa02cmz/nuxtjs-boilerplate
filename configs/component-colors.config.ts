@@ -25,6 +25,8 @@ export const componentColorsConfig = {
       light: process.env.SKELETON_REDUCED_LIGHT || '#e5e7eb',
       icon: process.env.SKELETON_REDUCED_ICON || '#d1d5db',
     },
+    // 🎨 Palette: Divider color for loading indicators in skeleton components
+    divider: process.env.SKELETON_DIVIDER_COLOR || '#e5e7eb',
   },
 
   // Focus Ring Colors - Flexy hates hardcoded focus ring colors!
