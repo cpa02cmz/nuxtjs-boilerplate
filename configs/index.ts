@@ -187,8 +187,8 @@ export {
   type DevPorts,
 }
 
-// Re-export Network config - Flexy hates hardcoded network errors!
-export { networkConfig, type NetworkConfig } from './network.config'
+// Network config - Flexy hates hardcoded network errors!
+// Imported at top of file
 
 // Messages config - Flexy hates hardcoded error messages!
 import { messagesConfig, type MessagesConfig } from './messages.config'
