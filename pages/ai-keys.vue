@@ -70,7 +70,7 @@
 
         <!-- AI Resources Only -->
         <div class="space-y-8">
-          <LazyLoadResourceCard
+          <ResourceCardLazy
             v-for="resource in aiResources"
             :id="resource.id"
             :key="resource.id"

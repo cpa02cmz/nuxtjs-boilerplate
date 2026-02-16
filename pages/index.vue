@@ -166,7 +166,7 @@
                   animationDelay: `${Math.min(index * animationConfig.card.staggerDelayMs, animationConfig.card.maxDelayMs)}ms`,
                 }"
               >
-                <LazyLoadResourceCard
+                <ResourceCardLazy
                   :id="resource.id"
                   :title="resource.title"
                   :description="resource.description"
@@ -359,7 +359,7 @@
                   animationDelay: `${Math.min(index * animationConfig.card.staggerDelayMs, animationConfig.card.maxDelayMs)}ms`,
                 }"
               >
-                <LazyLoadResourceCard
+                <ResourceCardLazy
                   :title="resource.title"
                   :description="resource.description"
                   :benefits="[...resource.benefits]"
