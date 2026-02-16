@@ -75,7 +75,7 @@
           @mousedown="handleCardPress(resource.id)"
           @mouseup="handleCardRelease"
         >
-          <LazyLoadResourceCard
+          <ResourceCardLazy
             :title="resource.title"
             :description="resource.description"
             :benefits="[...resource.benefits]"

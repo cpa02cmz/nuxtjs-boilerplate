@@ -142,7 +142,11 @@ export function useAnimationPerformance() {
       const now = performance.now()
       frameCount.value++
 
-      if (now - lastFrameTime.value >= 1000) {
+      // Flexy hates hardcoded 1000!
+      if (
+        now - lastFrameTime.value >=
+        animationConfig.performance.frameRateMonitoring.sampleIntervalMs
+      ) {
         currentFps.value = frameCount.value
         frameCount.value = 0
         lastFrameTime.value = now

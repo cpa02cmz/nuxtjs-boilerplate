@@ -82,6 +82,15 @@
       {{ description }}
     </p>
 
+    <!-- Screen reader announcement for suggestion clicks -->
+    <div
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >
+      {{ suggestionAnnouncement }}
+    </div>
+
     <!-- Suggestions Section -->
     <div
       v-if="suggestions.length"
@@ -211,7 +220,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { animationConfig } from '../configs/animation.config'
 import { contentConfig } from '../configs/content.config'
 import { componentStylesConfig } from '../configs/component-styles.config'
@@ -244,9 +253,18 @@ const emit = defineEmits<{
   (e: 'suggestion-click', suggestion: string): void
 }>()
 
+// Screen reader announcement for suggestion clicks
+const suggestionAnnouncement = ref('')
+
 // Haptic feedback wrapper functions for better mobile UX
 const handleSuggestionClick = (suggestion: string) => {
   hapticLight()
+  // Announce to screen readers that suggestion was clicked
+  suggestionAnnouncement.value = `Searching for ${suggestion}`
+  // Clear announcement after screen reader has time to read it
+  setTimeout(() => {
+    suggestionAnnouncement.value = ''
+  }, 1000)
   emit('suggestion-click', suggestion)
 }
 

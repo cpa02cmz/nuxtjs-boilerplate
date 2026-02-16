@@ -24,6 +24,7 @@
           type="button"
           class="text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded px-1"
           :aria-label="`Select all ${options.length} ${label} filters`"
+          :aria-controls="`${id}-checkbox-group`"
           @click="selectAll"
         >
           Select All
@@ -33,6 +34,7 @@
           type="button"
           class="text-xs text-gray-500 hover:text-gray-700 font-medium transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-1 rounded px-1"
           :aria-label="`Clear all ${selectedOptions.length} selected ${label} filters`"
+          :aria-controls="`${id}-checkbox-group`"
           @click="clearAll"
         >
           Clear
@@ -40,6 +42,7 @@
       </div>
     </div>
     <div
+      :id="`${id}-checkbox-group`"
       role="group"
       :aria-label="ariaLabel"
       class="space-y-1"

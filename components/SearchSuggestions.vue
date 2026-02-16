@@ -23,8 +23,8 @@
       <ul>
         <li
           v-for="(history, index) in searchHistory"
-          :key="'history-' + index"
           :id="`${id}-item-${index}`"
+          :key="'history-' + index"
           :data-suggestion-index="index"
           role="option"
           :aria-selected="focusedIndex === index"
@@ -127,8 +127,8 @@
       <ul>
         <li
           v-for="(suggestion, index) in suggestions"
-          :key="suggestion.id"
           :id="`${id}-item-${searchHistory.length + index}`"
+          :key="suggestion.id"
           :data-suggestion-index="searchHistory.length + index"
           role="option"
           :aria-selected="focusedIndex === searchHistory.length + index"

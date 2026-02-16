@@ -292,7 +292,7 @@
 
           <!-- Bookmarks grid -->
           <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <LazyLoadResourceCard
+            <ResourceCardLazy
               v-for="bookmark in getAllBookmarks"
               :id="bookmark.id"
               :key="bookmark.id"
@@ -331,7 +331,7 @@
                   </svg>
                 </button>
               </template>
-            </LazyLoadResourceCard>
+            </ResourceCardLazy>
           </div>
         </div>
       </div>
