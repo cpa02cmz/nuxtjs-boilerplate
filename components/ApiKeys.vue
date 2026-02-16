@@ -2,7 +2,10 @@
   <div class="api-keys-manager">
     <div class="api-keys-header">
       <h2>{{ contentConfig.apiKeys.title }}</h2>
-      <button class="btn btn-primary" @click="showCreateForm = true">
+      <button
+        class="btn btn-primary"
+        @click="showCreateForm = true"
+      >
         {{ contentConfig.apiKeys.buttons.create }}
       </button>
     </div>
@@ -24,7 +27,7 @@
             required
             :placeholder="contentConfig.apiKeys.placeholders.keyNameAlt"
             class="form-control"
-          />
+          >
         </div>
 
         <div class="form-group">
@@ -56,7 +59,10 @@
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary">
+          <button
+            type="submit"
+            class="btn btn-primary"
+          >
             {{ contentConfig.apiKeys.buttons.create }}
           </button>
           <button
@@ -82,7 +88,10 @@
         aria-live="polite"
       >
         <!-- Animated Illustration -->
-        <div class="api-key-illustration" aria-hidden="true">
+        <div
+          class="api-key-illustration"
+          aria-hidden="true"
+        >
           <!-- Background Circle -->
           <div
             class="api-key-bg-circle"
@@ -155,8 +164,15 @@
           {{ contentConfig.apiKeys.empty.ctaButton }}
         </button>
       </div>
-      <div v-else class="api-key-items">
-        <div v-for="key in apiKeys" :key="key.id" class="api-key-item">
+      <div
+        v-else
+        class="api-key-items"
+      >
+        <div
+          v-for="key in apiKeys"
+          :key="key.id"
+          class="api-key-item"
+        >
           <div class="api-key-info">
             <div class="api-key-name">
               {{ key.name }}
@@ -203,7 +219,11 @@
     </div>
 
     <!-- API Key Created Modal -->
-    <div v-if="showKeyCreatedModal" class="modal-overlay" @click="closeModal">
+    <div
+      v-if="showKeyCreatedModal"
+      class="modal-overlay"
+      @click="closeModal"
+    >
       <div
         ref="modalContent"
         class="modal-content"
@@ -217,7 +237,10 @@
           {{ contentConfig.apiKeys.buttons.create }}
         </h3>
         <p><strong>Key:</strong> {{ createdApiKey?.key }}</p>
-        <p class="warning" role="alert">
+        <p
+          class="warning"
+          role="alert"
+        >
           Make sure to copy this key now. You won't be able to see it again.
         </p>
         <div class="form-actions">
@@ -264,7 +287,10 @@
                 : contentConfig.messages.clipboard.copy
             }}
           </button>
-          <button class="btn btn-secondary" @click="closeModal">
+          <button
+            class="btn btn-secondary"
+            @click="closeModal"
+          >
             {{ contentConfig.apiKeys.buttons.cancel }}
           </button>
         </div>
