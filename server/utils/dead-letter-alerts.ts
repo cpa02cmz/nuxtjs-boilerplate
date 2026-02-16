@@ -185,12 +185,10 @@ class DeadLetterEventEmitter {
 
     try {
       // Import dynamically to avoid issues if Octokit is not installed
-      // BugFixer: Using any type to avoid TypeScript errors when @octokit/rest is not installed
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // BroCula: Using dynamic import wrapped in try-catch to avoid TS errors
       let Octokit: any
       try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore - Module may not be installed, handled by catch block
+        // @ts-ignore - Dynamic import for optional dependency
         const octokitModule = await import('@octokit/rest')
         Octokit = octokitModule.Octokit
       } catch {
