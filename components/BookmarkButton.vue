@@ -180,7 +180,9 @@ let newlyAddedTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Palette's micro-UX enhancement: Track newly added state for visual feedback
 const isNewlyAdded = ref(false)
-const NEWLY_ADDED_DURATION_MS = 2000 // Show pulse for 2 seconds
+// Flexy hates hardcoded 2000! Using animationConfig.bookmark.newlyAdded.pulseDurationMs
+const NEWLY_ADDED_DURATION_MS =
+  animationConfig.bookmark.newlyAdded.pulseDurationMs
 
 // Initialize ripple effect for tactile feedback
 // Flexy loves modularity! Using configurable animation duration from animationConfig
