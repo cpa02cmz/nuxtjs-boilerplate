@@ -71,7 +71,11 @@ export default defineEventHandler(async event => {
       const dateString = date.toISOString().split('T')[0]
 
       // Generate a sample count based on popularity (using crypto for security)
-      const sampleCount = randomInt(10, 61)
+      // Flexy hates hardcoded ranges! Using config values
+      const sampleCount = randomInt(
+        analyticsConfig.sampleData.minCount,
+        analyticsConfig.sampleData.maxCountExclusive
+      )
       searchTrends.push({
         date: dateString,
         count: sampleCount,

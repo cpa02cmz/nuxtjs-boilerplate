@@ -6,6 +6,7 @@ import { webhooksConfig } from '~/configs/webhooks.config'
 import { paginationConfig } from '~/configs/pagination.config'
 import { limitsConfig } from '~/configs/limits.config'
 import { recommendationConfig } from '~/configs/recommendation.config'
+import { rateLimitConfig } from '~/configs/rate-limit.config'
 import { handleApiRouteError } from '~/server/utils/api-response'
 
 export default defineEventHandler(async event => {
@@ -67,7 +68,12 @@ export default defineEventHandler(async event => {
               'Protected by rate limiting (token bucket algorithm).',
             operationId: 'getResources',
             tags: ['Resources'],
-            'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
+            // Flexy hates hardcoded rate limit examples! Using config
+            'x-rateLimit': {
+              config: 'api',
+              limit: rateLimitConfig.docs.standardLimit,
+              window: `${rateLimitConfig.docs.standardWindowMinutes} min`,
+            },
             parameters: [
               {
                 name: 'limit',
@@ -760,7 +766,12 @@ export default defineEventHandler(async event => {
               maxRetries: webhooksConfig.retry.maxAttempts,
               maxDelay: `${webhooksConfig.retry.maxDelayMs}ms`,
             },
-            'x-rateLimit': { config: 'standard', limit: 50, window: '5 min' },
+            // Flexy hates hardcoded rate limit examples! Using config
+            'x-rateLimit': {
+              config: 'standard',
+              limit: rateLimitConfig.docs.standardLimit,
+              window: `${rateLimitConfig.docs.standardWindowMinutes} min`,
+            },
             requestBody: {
               required: true,
               content: {
@@ -880,7 +891,12 @@ export default defineEventHandler(async event => {
               'Retrieve all registered webhooks for the authenticated user.',
             operationId: 'listWebhooks',
             tags: ['Webhooks'],
-            'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
+            // Flexy hates hardcoded rate limit examples! Using config
+            'x-rateLimit': {
+              config: 'api',
+              limit: rateLimitConfig.docs.standardLimit,
+              window: `${rateLimitConfig.docs.standardWindowMinutes} min`,
+            },
             responses: {
               '200': {
                 description: 'Successful response',
@@ -931,7 +947,12 @@ export default defineEventHandler(async event => {
             },
             'x-idempotency': { supported: true, header: 'X-Idempotency-Key' },
             'x-queue': { asyncDelivery: true, deadLetterQueue: true },
-            'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
+            // Flexy hates hardcoded rate limit examples! Using config
+            'x-rateLimit': {
+              config: 'api',
+              limit: rateLimitConfig.docs.standardLimit,
+              window: `${rateLimitConfig.docs.standardWindowMinutes} min`,
+            },
             requestBody: {
               required: true,
               content: {
@@ -1132,7 +1153,12 @@ export default defineEventHandler(async event => {
               maxDelay: '30s',
             },
             'x-queue': { asyncDelivery: true },
-            'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
+            // Flexy hates hardcoded rate limit examples! Using config
+            'x-rateLimit': {
+              config: 'api',
+              limit: rateLimitConfig.docs.standardLimit,
+              window: `${rateLimitConfig.docs.standardWindowMinutes} min`,
+            },
             requestBody: {
               required: true,
               content: {
@@ -1208,7 +1234,12 @@ export default defineEventHandler(async event => {
               'Provides visibility into webhook delivery health and retry status.',
             operationId: 'getWebhookQueue',
             tags: ['Webhooks'],
-            'x-rateLimit': { config: 'api', limit: 50, window: '5 min' },
+            // Flexy hates hardcoded rate limit examples! Using config
+            'x-rateLimit': {
+              config: 'api',
+              limit: rateLimitConfig.docs.standardLimit,
+              window: `${rateLimitConfig.docs.standardWindowMinutes} min`,
+            },
             responses: {
               '200': {
                 description: 'Webhook queue data',
@@ -3534,7 +3565,12 @@ export default defineEventHandler(async event => {
               'Use this endpoint for proactive monitoring and incident response.',
             operationId: 'getIntegrationHealth',
             tags: ['Integration'],
-            'x-rateLimit': { config: 'standard', limit: 100, window: '15 min' },
+            // Flexy hates hardcoded rate limit examples! Using config
+            'x-rateLimit': {
+              config: 'standard',
+              limit: rateLimitConfig.docs.extendedLimit,
+              window: `${rateLimitConfig.docs.extendedWindowMinutes} min`,
+            },
             responses: {
               '200': {
                 description: 'Integration health report',

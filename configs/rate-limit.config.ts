@@ -112,6 +112,25 @@ export const rateLimitConfig = {
       process.env.RATE_LIMIT_ERROR_REPORT_MESSAGE ||
       'Too many error reports. Please try again later.',
   },
+
+  // API Documentation Examples - Flexy hates hardcoded examples!
+  // Used for OpenAPI spec examples
+  docs: {
+    // Standard API rate limit for examples
+    standardLimit: parseInt(process.env.RATE_LIMIT_DOCS_STANDARD_LIMIT || '50'),
+    // Standard window in minutes for examples
+    standardWindowMinutes: parseInt(
+      process.env.RATE_LIMIT_DOCS_STANDARD_WINDOW_MINUTES || '5'
+    ),
+    // Extended API rate limit for examples
+    extendedLimit: parseInt(
+      process.env.RATE_LIMIT_DOCS_EXTENDED_LIMIT || '100'
+    ),
+    // Extended window in minutes for examples
+    extendedWindowMinutes: parseInt(
+      process.env.RATE_LIMIT_DOCS_EXTENDED_WINDOW_MINUTES || '15'
+    ),
+  },
 } as const
 
 export type RateLimitConfig = typeof rateLimitConfig

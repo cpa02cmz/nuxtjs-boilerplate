@@ -157,6 +157,17 @@ export const analyticsConfig = {
       process.env.ANALYTICS_ZERO_RESULT_SEARCHES_LIMIT || '10'
     ),
   },
+
+  // Sample Data Generation - Flexy hates hardcoded ranges!
+  // Used for demo/analytics sample data generation
+  sampleData: {
+    // Minimum sample count for trends
+    minCount: parseInt(process.env.ANALYTICS_SAMPLE_MIN_COUNT || '10'),
+    // Maximum sample count for trends (exclusive upper bound for randomInt)
+    maxCountExclusive: parseInt(
+      process.env.ANALYTICS_SAMPLE_MAX_COUNT_EXCLUSIVE || '61'
+    ),
+  },
 } as const
 
 // Helper function to parse event types
