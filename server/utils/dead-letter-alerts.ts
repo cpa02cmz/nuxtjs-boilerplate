@@ -185,8 +185,10 @@ class DeadLetterEventEmitter {
 
     try {
       // Import dynamically to avoid issues if Octokit is not installed
-      let Octokit: typeof import('@octokit/rest').Octokit
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let Octokit: any
       try {
+        // @ts-expect-error - Optional runtime dependency, gracefully handled
         const octokitModule = await import('@octokit/rest')
         Octokit = octokitModule.Octokit
       } catch {
