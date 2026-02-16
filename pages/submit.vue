@@ -7,50 +7,49 @@
     />
 
     <!-- Smart Paste indicator - Palette's micro-UX enhancement! -->
-    <ClientOnly>
-      <Teleport to="body">
-        <Transition
-          enter-active-class="transition-all duration-200 ease-out"
-          enter-from-class="opacity-0 scale-75 translate-y-2"
-          enter-to-class="opacity-100 scale-100 translate-y-0"
-          leave-active-class="transition-all duration-150 ease-in"
-          leave-from-class="opacity-100 scale-100 translate-y-0"
-          leave-to-class="opacity-0 scale-75 -translate-y-1"
+    <!-- Note: No <ClientOnly> needed here because the page has ssr: false in definePageMeta -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition-all duration-200 ease-out"
+        enter-from-class="opacity-0 scale-75 translate-y-2"
+        enter-to-class="opacity-100 scale-100 translate-y-0"
+        leave-active-class="transition-all duration-150 ease-in"
+        leave-from-class="opacity-100 scale-100 translate-y-0"
+        leave-to-class="opacity-0 scale-75 -translate-y-1"
+      >
+        <div
+          v-if="smartPasteState.showIndicator"
+          class="paste-indicator fixed z-50 px-3 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg shadow-lg pointer-events-none whitespace-nowrap"
+          :style="{
+            left: `${smartPasteState.indicatorPosition.x}px`,
+            top: `${smartPasteState.indicatorPosition.y}px`,
+          }"
+          role="status"
+          aria-live="polite"
         >
-          <div
-            v-if="smartPasteState.showIndicator"
-            class="paste-indicator fixed z-50 px-3 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg shadow-lg pointer-events-none whitespace-nowrap"
-            :style="{
-              left: `${smartPasteState.indicatorPosition.x}px`,
-              top: `${smartPasteState.indicatorPosition.y}px`,
-            }"
-            role="status"
-            aria-live="polite"
-          >
-            <span class="flex items-center gap-1.5">
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-              {{ smartPasteState.indicatorMessage }}
-            </span>
-            <!-- Arrow pointing down -->
-            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5">
-              <div class="w-2 h-2 bg-teal-600 transform rotate-45" />
-            </div>
+          <span class="flex items-center gap-1.5">
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+            {{ smartPasteState.indicatorMessage }}
+          </span>
+          <!-- Arrow pointing down -->
+          <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5">
+            <div class="w-2 h-2 bg-teal-600 transform rotate-45" />
           </div>
-        </Transition>
-      </Teleport>
-    </ClientOnly>
+        </div>
+      </Transition>
+    </Teleport>
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
@@ -517,14 +516,12 @@
                   v-if="showSavedIndicator && lastSavedTimestamp"
                   class="flex items-center text-xs text-green-600 relative"
                 >
-                  <!-- Pulse ring animation container - ClientOnly to prevent hydration mismatch -->
-                  <ClientOnly>
-                    <div
-                      v-if="showDraftPulse && !prefersReducedMotion"
-                      class="draft-save-pulse-ring"
-                      aria-hidden="true"
-                    />
-                  </ClientOnly>
+                  <!-- Pulse ring animation container - No ClientOnly needed as page has ssr: false -->
+                  <div
+                    v-if="showDraftPulse && !prefersReducedMotion"
+                    class="draft-save-pulse-ring"
+                    aria-hidden="true"
+                  />
                   <svg
                     class="w-3.5 h-3.5 mr-1.5 relative z-10"
                     fill="none"
