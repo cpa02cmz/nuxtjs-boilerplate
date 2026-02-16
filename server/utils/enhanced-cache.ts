@@ -391,7 +391,7 @@ class CacheManager {
     // Flexy hates hardcoded 100! Using limitsConfig.cache.maxPatternLength
     if (pattern.length > limitsConfig.cache.maxPatternLength) {
       logger.warn(
-        `Cache pattern too long (>${limitsConfig.cache.maxPatternLength} chars): ${pattern.substring(0, 50)}...`
+        `Cache pattern too long (>${limitsConfig.cache.maxPatternLength} chars): ${pattern.substring(0, limitsConfig.errorTracking.sourceMaxLength)}...`
       )
       return false
     }
