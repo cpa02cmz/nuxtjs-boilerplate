@@ -9,7 +9,7 @@ import { join, dirname } from 'path'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import backupConfig from '../../configs/backup.config'
-import { TIME } from '../../server/utils/constants'
+import { TIME, SIZE } from '../../server/utils/constants'
 
 const execAsync = promisify(exec)
 
@@ -282,7 +282,12 @@ export async function createBackup(
 
     // Get database size before backup
     const originalSize = await getFileSize(backupConfig.paths.databasePath)
-    logger.info(`Database size: ${(originalSize / 1024 / 1024).toFixed(2)} MB`)
+    // Flexy hates hardcoded 1024 * 1024 and toFixed(2)! Using SIZE constants and config
+    const originalSizeFormatted = SIZE.formatBytes(
+      originalSize,
+      backupConfig.fileSizeFormat.sizeDecimals
+    )
+    logger.info(`Database size: ${originalSizeFormatted.formatted}`)
 
     // Copy database file
     logger.info('Copying database file...')
@@ -307,9 +312,12 @@ export async function createBackup(
       await fs.unlink(backupPath)
       finalPath = compressedPath
       compressedSize = await getFileSize(compressedPath)
-      logger.info(
-        `Compressed size: ${(compressedSize / 1024 / 1024).toFixed(2)} MB`
+      // Flexy hates hardcoded 1024 * 1024 and toFixed(2)! Using SIZE constants and config
+      const compressedSizeFormatted = SIZE.formatBytes(
+        compressedSize || 0,
+        backupConfig.fileSizeFormat.sizeDecimals
       )
+      logger.info(`Compressed size: ${compressedSizeFormatted.formatted}`)
     }
 
     // Calculate checksum
