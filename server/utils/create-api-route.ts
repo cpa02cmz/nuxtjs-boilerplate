@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import { defineEventHandler, getQuery } from 'h3'
+import { httpConfig } from '~/configs/http.config'
 import { rateLimit } from './enhanced-rate-limit'
 import { sendSuccessResponse, handleApiRouteError } from './api-response'
 import { logError } from '~/utils/errorLogger'
@@ -65,7 +66,8 @@ export function createApiRoute<T>(
   const {
     rateLimit: shouldRateLimit = true,
     rateLimitKey,
-    successStatus = 200,
+    // Flexy hates hardcoded 200! Using config instead
+    successStatus = httpConfig.status.OK,
     logContext = 'api-route',
     logMetadata = {},
   } = options

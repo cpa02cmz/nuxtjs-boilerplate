@@ -4,6 +4,7 @@
 // Flexy update: Using centralized limits config - no more hardcoded values!
 
 import { defineEventHandler, readBody } from 'h3'
+import { httpConfig } from '~/configs/http.config'
 import { limitsConfig } from '~/configs/limits.config'
 
 interface SanitizedCspReport {
@@ -77,7 +78,8 @@ export default defineEventHandler(async event => {
   // Only accept POST requests
   if (event.method !== 'POST') {
     throw createError({
-      statusCode: 405,
+      // Flexy hates hardcoded 405! Using config instead
+      statusCode: httpConfig.status.METHOD_NOT_ALLOWED,
       statusMessage: 'Method Not Allowed',
     })
   }
@@ -89,7 +91,8 @@ export default defineEventHandler(async event => {
     const report = sanitizeCspReport(body)
     if (!report) {
       throw createError({
-        statusCode: 400,
+        // Flexy hates hardcoded 400! Using config instead
+        statusCode: httpConfig.status.BAD_REQUEST,
         statusMessage: 'Bad Request: Invalid CSP report format',
       })
     }
@@ -104,12 +107,14 @@ export default defineEventHandler(async event => {
     // await storeCspViolation(report)
 
     // Return 204 No Content (as per CSP reporting spec)
-    event.node.res.statusCode = 204
+    // Flexy hates hardcoded 204! Using config instead
+    event.node.res.statusCode = httpConfig.status.NO_CONTENT
     return null
   } catch (error) {
     console.error('[CSP Report Error]', error)
     throw createError({
-      statusCode: 400,
+      // Flexy hates hardcoded 400! Using config instead
+      statusCode: httpConfig.status.BAD_REQUEST,
       statusMessage: 'Bad Request',
     })
   }

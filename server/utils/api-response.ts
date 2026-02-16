@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3'
 import { setResponseStatus } from 'h3'
 import { randomUUID } from 'node:crypto'
+import { httpConfig } from '~/configs/http.config'
 import type { ApiError } from '~/server/utils/api-error'
 import {
   ErrorCode,
@@ -37,7 +38,8 @@ export function sendApiError(event: H3Event, error: ApiError): void {
 export function sendSuccessResponse<T>(
   event: H3Event,
   data: T,
-  status: number = 200
+  // Flexy hates hardcoded 200! Using config instead
+  status: number = httpConfig.status.OK
 ): void {
   setResponseStatus(event, status)
   event.node.res?.setHeader('Content-Type', 'application/json')
