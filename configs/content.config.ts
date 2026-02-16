@@ -876,6 +876,9 @@ export const contentConfig = {
       copyFailed:
         process.env.CONTENT_MSG_CLIPBOARD_FAILED ||
         'Failed to copy to clipboard',
+      // Palette's micro-UX enhancement: Button text variants for ResponseCard
+      copyButton: process.env.CONTENT_MSG_CLIPBOARD_COPY_BTN || 'Copy',
+      copiedButton: process.env.CONTENT_MSG_CLIPBOARD_COPIED_BTN || 'Copied!',
     },
   },
 
