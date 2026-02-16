@@ -22,6 +22,27 @@
       <div
         class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
       >
+        <!-- Search Complete Particle Burst - Palette's micro-UX delight! ✨ -->
+        <TransitionGroup
+          v-if="showSearchCompleteParticles && !prefersReducedMotion"
+          tag="div"
+          class="search-complete-particle-container"
+          aria-hidden="true"
+        >
+          <span
+            v-for="particle in searchCompleteParticles"
+            :key="particle.id"
+            class="search-complete-particle"
+            :style="{
+              '--particle-x': `${particle.x}px`,
+              '--particle-y': `${particle.y}px`,
+              '--particle-color': particle.color,
+              '--particle-size': `${particle.size}px`,
+              '--particle-rotation': `${particle.rotation}deg`,
+            }"
+          />
+        </TransitionGroup>
+
         <!-- Loading spinner shown during debounce -->
         <Transition
           :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
@@ -127,7 +148,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint with idle pulse animation -->
       <div
         v-if="!modelValue && !isFocused"
@@ -363,6 +384,20 @@ const particles = ref<
   }>
 >([])
 
+// Palette's micro-UX delight: Search complete celebration particles! 🎨
+// Burst of particles to celebrate successful search completion
+const showSearchCompleteParticles = ref(false)
+const searchCompleteParticles = ref<
+  Array<{
+    id: number
+    x: number
+    y: number
+    color: string
+    size: number
+    rotation: number
+  }>
+>([])
+
 // Initialize magnetic button effect for clear button
 const { transformStyle: magneticTransformStyle } = useMagneticButton({
   strength: animationConfig.magneticButton.strength,
@@ -405,6 +440,13 @@ const handleInput = (event: Event) => {
     // Only show when there's actual input to provide meaningful feedback
     if (value.length > 0 && !prefersReducedMotion.value) {
       showSearchComplete.value = true
+
+      // Palette's micro-UX delight: Trigger particle burst celebration! ✨
+      triggerSearchCompleteParticles()
+
+      // Haptic feedback for mobile users
+      hapticSuccess()
+
       if (searchCompleteTimeout) {
         clearTimeout(searchCompleteTimeout)
       }
@@ -502,6 +544,50 @@ const triggerParticleBurst = () => {
     () => {
       showParticles.value = false
       particles.value = []
+    },
+    (particleConfig.durationSec + particleConfig.fadeDelaySec) * 1000
+  )
+}
+
+// Palette's micro-UX delight: Generate particle burst for search complete! 🎨
+// Celebrates successful search with a burst of blue-themed particles
+const triggerSearchCompleteParticles = () => {
+  if (prefersReducedMotion.value) return
+
+  const particleConfig = animationConfig.searchParticles
+  const count = particleConfig.enabled ? particleConfig.particleCount : 0
+  const newParticles = []
+
+  for (let i = 0; i < count; i++) {
+    const angle = (360 / count) * i + Math.random() * 30
+    const radians = (angle * Math.PI) / 180
+    const distance = particleConfig.spreadPx * (0.7 + Math.random() * 0.6)
+    const x = Math.cos(radians) * distance
+    const y = Math.sin(radians) * distance
+
+    newParticles.push({
+      id: Date.now() + i,
+      x,
+      y,
+      color:
+        particleConfig.colors[
+          Math.floor(Math.random() * particleConfig.colors.length)
+        ],
+      size:
+        particleConfig.minSizePx +
+        Math.random() * (particleConfig.maxSizePx - particleConfig.minSizePx),
+      rotation: Math.random() * 360,
+    })
+  }
+
+  searchCompleteParticles.value = newParticles
+  showSearchCompleteParticles.value = true
+
+  // Hide particles after animation
+  setTimeout(
+    () => {
+      showSearchCompleteParticles.value = false
+      searchCompleteParticles.value = []
     },
     (particleConfig.durationSec + particleConfig.fadeDelaySec) * 1000
   )
@@ -1077,6 +1163,78 @@ if (typeof window !== 'undefined') {
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
+/* Search Complete Particle Burst Styles - Palette's micro-UX delight! ✨ */
+.search-complete-particle-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: v-bind('safeZIndexConfig.listItem');
+}
+
+.search-complete-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  background: var(--particle-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(var(--particle-rotation));
+  animation: search-complete-particle-burst
+    v-bind('`${animationConfig.searchParticles.durationSec}s`') ease-out
+    forwards;
+  opacity: 0;
+}
+
+@keyframes search-complete-particle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(
+        calc(-50% + var(--particle-x) * 0.5),
+        calc(-50% + var(--particle-y) * 0.5)
+      )
+      scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+        calc(-50% + var(--particle-x)),
+        calc(-50% + var(--particle-y))
+      )
+      scale(0.2);
+  }
+}
+
+/* Alternative star-shaped particle variant for search complete */
+.search-complete-particle:nth-child(3n) {
+  border-radius: 0;
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+/* Alternative diamond-shaped particle variant for search complete */
+.search-complete-particle:nth-child(5n) {
+  border-radius: 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
 /* Reduced motion support for magnetic button and particles */
 @media (prefers-reduced-motion: reduce) {
   .magnetic-button.magnetic-active {
@@ -1090,6 +1248,10 @@ if (typeof window !== 'undefined') {
   }
 
   .particle-container {
+    display: none;
+  }
+
+  .search-complete-particle-container {
     display: none;
   }
 }
