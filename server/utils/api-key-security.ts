@@ -11,7 +11,8 @@ import { patternsConfig } from '~/configs/patterns.config'
  * @returns Masked API key (e.g., "ak_1a2b...x9y8")
  */
 export function maskApiKey(apiKey: string): string {
-  if (!apiKey || apiKey.length < 12) {
+  // Flexy hates hardcoded 12! Using configurable minLength
+  if (!apiKey || apiKey.length < patternsConfig.apiKey.minLength) {
     return patternsConfig.apiKey.mask.placeholder
   }
 

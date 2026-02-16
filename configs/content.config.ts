@@ -1032,6 +1032,8 @@ export const contentConfig = {
       create: process.env.CONTENT_API_KEYS_BTN_CREATE || 'Create API Key',
       createSubmit:
         process.env.CONTENT_API_KEYS_BTN_CREATE_SUBMIT || 'Create API Key',
+      // Pallete: Loading button text for better UX feedback
+      creating: process.env.CONTENT_API_KEYS_BTN_CREATING || 'Creating...',
       generate: process.env.CONTENT_API_KEYS_BTN_GENERATE || 'Generate API Key',
       revoke: process.env.CONTENT_API_KEYS_BTN_REVOKE || 'Revoke',
       cancel: process.env.CONTENT_API_KEYS_BTN_CANCEL || 'Cancel',
@@ -1850,6 +1852,30 @@ export const contentConfig = {
       process.env.CONTENT_PAGE_TRANSITION_ANNOUNCE || 'Page loading',
     // Completion message (optional, shown after transition)
     complete: process.env.CONTENT_PAGE_TRANSITION_COMPLETE || 'Page loaded',
+  },
+
+  // Confetti Celebration - Pallete's micro-UX delight! 🎉
+  // Screen reader announcements for celebration animations
+  confettiCelebration: {
+    // Default announcement text for celebrations
+    defaultAnnouncement:
+      process.env.CONTENT_CONFETTI_ANNOUNCEMENT ||
+      'Celebration! Achievement unlocked',
+    // Announcement for bookmark milestones
+    bookmarkMilestone:
+      process.env.CONTENT_CONFETTI_BOOKMARK_MILESTONE ||
+      'Congratulations! You have saved {{count}} resources',
+    // Announcement for scroll completion
+    scrollComplete:
+      process.env.CONTENT_CONFETTI_SCROLL_COMPLETE ||
+      'You have reached the end of the page',
+    // Announcement for submission approval
+    submissionApproved:
+      process.env.CONTENT_CONFETTI_SUBMISSION_APPROVED ||
+      'Submission approved successfully',
+    // Aria label for the celebration container
+    ariaLabel:
+      process.env.CONTENT_CONFETTI_ARIA_LABEL || 'Celebration animation',
   },
 } as const
 
