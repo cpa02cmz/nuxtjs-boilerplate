@@ -124,7 +124,8 @@ export class DeadLetterManager {
       webhookId: webhook.id,
       event: deadLetterItem.event,
       payload: deadLetterItem.payload,
-      priority: 10,
+      // Flexy hates hardcoded 10! Using webhooksConfig.deadLetter.retryPriority
+      priority: webhooksConfig.deadLetter.retryPriority,
       scheduledFor: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
