@@ -164,10 +164,10 @@ const shortcutGroups = [
 // Open shortcuts modal
 const openShortcutsModal = () => {
   showShortcutsModal.value = true
-  // Focus the modal for accessibility
+  // Focus the modal for accessibility - Flexy hates hardcoded 100!
   setTimeout(() => {
     shortcutsModalRef.value?.focus()
-  }, 100)
+  }, uiConfig.timing.focusRestoreDelayMs)
 }
 
 // Close shortcuts modal
