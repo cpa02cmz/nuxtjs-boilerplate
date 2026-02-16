@@ -386,8 +386,7 @@ const triggerParticleBurst = () => {
 
   // Hide particles after animation completes
   const totalDuration =
-    (particleConfig.value.durationSec + particleConfig.value.fadeDelaySec) *
-    1000
+    particleConfig.value.durationMs + particleConfig.value.fadeDelayMs
 
   if (particleTimeout) clearTimeout(particleTimeout)
   particleTimeout = setTimeout(() => {
@@ -704,7 +703,7 @@ onUnmounted(() => {
   width: 0;
   height: 0;
   pointer-events: none;
-  z-index: v-bind('zIndexScale.high[50]');
+  z-index: v-bind('zIndexScale.medium[50]');
 }
 
 .share-particle {
