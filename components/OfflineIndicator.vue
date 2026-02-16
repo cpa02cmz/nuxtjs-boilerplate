@@ -418,6 +418,14 @@ const handleConnectionChange = () => {
   }
 }
 
+// BugFixer: Store mediaQuery reference for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+
+// BugFixer: Named handler for proper cleanup
+const handleMotionChange = (e: MediaQueryListEvent) => {
+  prefersReducedMotion.value = e.matches
+}
+
 onMounted(() => {
   // Check initial state
   prefersReducedMotion.value = checkReducedMotion()
@@ -437,11 +445,8 @@ onMounted(() => {
 
   // Listen for reduced motion preference changes
   if (typeof window.matchMedia !== 'function') return
-  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-  const handleMotionChange = (e: MediaQueryListEvent) => {
-    prefersReducedMotion.value = e.matches
-  }
-  mediaQuery.addEventListener('change', handleMotionChange)
+  mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+  mediaQueryRef.addEventListener('change', handleMotionChange)
 })
 
 onUnmounted(() => {
@@ -454,6 +459,12 @@ onUnmounted(() => {
   ).connection
   if (connection && 'removeEventListener' in connection) {
     connection.removeEventListener('change', handleConnectionChange)
+  }
+
+  // BugFixer: Cleanup mediaQuery listener to prevent memory leak
+  if (mediaQueryRef) {
+    mediaQueryRef.removeEventListener('change', handleMotionChange)
+    mediaQueryRef = null
   }
 
   // Clear timeouts

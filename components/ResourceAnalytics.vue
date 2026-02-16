@@ -429,17 +429,22 @@ watch(
   { immediate: true }
 )
 
+// BugFixer: Store mediaQuery reference for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+
+// BugFixer: Named handler for proper cleanup
+const handleMotionChange = (e: MediaQueryListEvent) => {
+  prefersReducedMotion.value = e.matches
+}
+
 // Initialize on mount
 onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 
   // Listen for reduced motion preference changes
   if (typeof window !== 'undefined' && window.matchMedia) {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleChange = (e: MediaQueryListEvent) => {
-      prefersReducedMotion.value = e.matches
-    }
-    mediaQuery.addEventListener('change', handleChange)
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    mediaQueryRef.addEventListener('change', handleMotionChange)
   }
 
   // Initial values if data already exists
@@ -453,6 +458,11 @@ onMounted(() => {
 onUnmounted(() => {
   if (viewCountInterval) clearInterval(viewCountInterval)
   if (visitorCountInterval) clearInterval(visitorCountInterval)
+  // BugFixer: Cleanup mediaQuery listener to prevent memory leak
+  if (mediaQueryRef) {
+    mediaQueryRef.removeEventListener('change', handleMotionChange)
+    mediaQueryRef = null
+  }
 })
 
 // Import Ref type
