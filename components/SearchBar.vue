@@ -127,7 +127,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      />
+      >
       <!-- Keyboard shortcut hint with idle pulse animation -->
       <div
         v-if="!modelValue && !isFocused"
