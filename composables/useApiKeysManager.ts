@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, readonly } from 'vue'
 import { useNuxtApp } from '#app'
 import { useErrorHandler } from '~/composables/useErrorHandler'
 import type { ApiClient } from '~/utils/api-client'
@@ -27,6 +27,8 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
   }
   const apiKeys = ref<ApiKey[]>([])
   const loading = ref(true)
+  // Pallete: Separate loading state for creation to enable granular UI feedback
+  const isCreating = ref(false)
   const { error, handleError, clearError } = useErrorHandler()
 
   const fetchApiKeys = async (): Promise<void> => {
@@ -64,7 +66,8 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
 
   const createApiKey = async (newApiKey: NewApiKey): Promise<ApiKey | null> => {
     try {
-      loading.value = true
+      // Pallete: Use specific loading state for creation feedback
+      isCreating.value = true
       clearError()
 
       const client = getClient()
@@ -97,7 +100,8 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
 
       return null
     } finally {
-      loading.value = false
+      // Pallete: Reset creation loading state
+      isCreating.value = false
     }
   }
 
@@ -136,6 +140,8 @@ export const useApiKeysManager = (options: UseApiKeysManagerOptions = {}) => {
   return {
     apiKeys,
     loading,
+    // Pallete: Export creation loading state for granular UI feedback
+    isCreating: readonly(isCreating),
     error,
     handleError,
     clearError,
