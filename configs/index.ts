@@ -8,6 +8,7 @@ export { themeConfig, type ThemeConfig }
 import { seoConfig, type SeoConfig } from './seo.config'
 export { seoConfig, type SeoConfig }
 import { searchConfig, type SearchConfig } from './search.config'
+export { searchConfig, type SearchConfig }
 import {
   securityConfig,
   generateCsp,
@@ -21,23 +22,40 @@ import {
   type RateLimitConfig,
   type RateLimitTier,
 } from './rate-limit.config'
+export {
+  rateLimitConfig,
+  getRateLimitTier,
+  type RateLimitConfig,
+  type RateLimitTier,
+}
 import { cacheConfig, type CacheConfig } from './cache.config'
 export { cacheConfig, type CacheConfig }
 import { webhooksConfig, type WebhooksConfig } from './webhooks.config'
+export { webhooksConfig, type WebhooksConfig }
 import { paginationConfig, type PaginationConfig } from './pagination.config'
+export { paginationConfig, type PaginationConfig }
 import { validationConfig, type ValidationConfig } from './validation.config'
+export { validationConfig, type ValidationConfig }
 import { analyticsConfig, type AnalyticsConfig } from './analytics.config'
+export { analyticsConfig, type AnalyticsConfig }
 import { uiConfig, type UiConfig } from './ui.config'
+export { uiConfig, type UiConfig }
 import { pwaConfig, type PwaConfig } from './pwa.config'
 export { pwaConfig, type PwaConfig }
 import { apiConfig, type ApiConfig } from './api.config'
+export { apiConfig, type ApiConfig }
 import { contentConfig, type ContentConfig } from './content.config'
+export { contentConfig, type ContentConfig }
 import { limitsConfig, type LimitsConfig } from './limits.config'
+export { limitsConfig, type LimitsConfig }
 import { comparisonConfig, type ComparisonConfig } from './comparison.config'
+export { comparisonConfig, type ComparisonConfig }
 
 // New modular configs - Flexy loves modularity!
 import { socialConfig, type SocialConfig } from './social.config'
+export { socialConfig, type SocialConfig }
 import { dateConfig, type DateConfig } from './date.config'
+export { dateConfig, type DateConfig }
 import {
   csrfConfig,
   isSafeMethod,
@@ -47,6 +65,15 @@ import {
   type SafeMethod,
   type StateChangingMethod,
 } from './csrf.config'
+export {
+  csrfConfig,
+  isSafeMethod,
+  isStateChangingMethod,
+  requiresCsrfProtection,
+  type CsrfConfig,
+  type SafeMethod,
+  type StateChangingMethod,
+}
 import {
   httpConfig,
   isSuccessStatus,
@@ -60,6 +87,19 @@ import {
   type HttpHeader,
   type ContentType,
 } from './http.config'
+export {
+  httpConfig,
+  isSuccessStatus,
+  isRedirectStatus,
+  isClientErrorStatus,
+  isServerErrorStatus,
+  isErrorStatus,
+  type HttpConfig,
+  type HttpMethod,
+  type HttpStatus,
+  type HttpHeader,
+  type ContentType,
+}
 import {
   TIME_MS,
   TIME_SECONDS,
@@ -74,6 +114,20 @@ import {
   type TimeSeconds,
   type TimeConfig,
 } from './time.config'
+export {
+  TIME_MS,
+  TIME_SECONDS,
+  timeConfig,
+  toMilliseconds,
+  toSeconds,
+  toMinutes,
+  toHours,
+  toDays,
+  formatDuration,
+  type TimeMs,
+  type TimeSeconds,
+  type TimeConfig,
+}
 import {
   cacheTagsConfig,
   generateCacheTags,
@@ -81,6 +135,13 @@ import {
   getSearchCacheTags,
   type CacheTagsConfig,
 } from './cache-tags.config'
+export {
+  cacheTagsConfig,
+  generateCacheTags,
+  getResourceCacheTags,
+  getSearchCacheTags,
+  type CacheTagsConfig,
+}
 import {
   sitemapConfig,
   getStaticPages,
@@ -88,7 +149,15 @@ import {
   type SitemapConfig,
   type SitemapPageEntry,
 } from './sitemap.config'
+export {
+  sitemapConfig,
+  getStaticPages,
+  getResourceSitemapDefaults,
+  type SitemapConfig,
+  type SitemapPageEntry,
+}
 import { iconsConfig, type IconsConfig } from './icons.config'
+export { iconsConfig, type IconsConfig }
 import {
   ROUTE_PATTERNS,
   routesConfig,
@@ -100,13 +169,31 @@ import {
   type RoutePatterns,
   type RoutesConfig,
 } from './routes.config'
+export {
+  ROUTE_PATTERNS,
+  routesConfig,
+  isApiRoute,
+  isProtectedApiRoute,
+  isPublicApiRoute,
+  isStaticBuildPath,
+  isCacheablePage,
+  type RoutePatterns,
+  type RoutesConfig,
+}
 import { memoizeConfig, type MemoizeConfig } from './memoize.config'
+export { memoizeConfig, type MemoizeConfig }
 import { performanceConfig } from './performance.config'
+export { performanceConfig }
 import { bookmarksConfig, type BookmarksConfig } from './bookmarks.config'
+export { bookmarksConfig, type BookmarksConfig }
 import { categoriesConfig, type CategoriesConfig } from './categories.config'
+export { categoriesConfig, type CategoriesConfig }
 import { animationConfig, type AnimationConfig } from './animation.config'
+export { animationConfig, type AnimationConfig }
 import { thresholdsConfig, type ThresholdsConfig } from './thresholds.config'
+export { thresholdsConfig, type ThresholdsConfig }
 import { networkConfig, type NetworkConfig } from './network.config'
+export { networkConfig, type NetworkConfig }
 
 // Re-export analytics demo config - Flexy hates hardcoded mock data!
 import {
