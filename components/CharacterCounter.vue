@@ -106,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref, onMounted } from 'vue'
+import { computed, watch, ref } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { validationConfig } from '~/configs/validation.config'
@@ -236,14 +236,6 @@ const screenReaderAnnouncement = computed(() => {
   return ''
 })
 
-// Check for reduced motion preference
-const prefersReducedMotion = ref(false)
-
-// Update reduced motion preference
-const updateReducedMotion = () => {
-  prefersReducedMotion.value = checkReducedMotion()
-}
-
 // Unique ID for accessibility associations
 const counterId = ref(
   `character-counter-${Math.random().toString(36).substr(2, 9)}`
@@ -256,23 +248,12 @@ const hasTriggeredWarning = ref(false)
 const hasTriggeredError = ref(false)
 const hasTriggeredComplete = ref(false)
 
-// Check for reduced motion preference
-const checkReducedMotion = () => {
-  if (
-    typeof window === 'undefined' ||
-    typeof window.matchMedia !== 'function'
-  ) {
-    return false
-  }
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-}
-
 // Watch for state changes and trigger haptic feedback
 watch(
   [isNearLimit, isOverLimit, isComplete],
   ([newIsNearLimit, newIsOverLimit, newIsComplete]) => {
     // Skip haptic feedback if user prefers reduced motion
-    if (checkReducedMotion()) return
+    if (prefersReducedMotion.value) return
 
     const currentState = newIsOverLimit
       ? 'error'
@@ -314,11 +295,6 @@ watch(
     previousState.value = currentState
   }
 )
-
-// Initialize reduced motion preference on mount
-onMounted(() => {
-  updateReducedMotion()
-})
 
 // Flexy hates hardcoded rgba! Using configurable shadow color
 const shadowColorDefault = computed(
