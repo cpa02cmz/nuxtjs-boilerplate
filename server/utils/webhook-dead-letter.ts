@@ -14,24 +14,42 @@ export class DeadLetterManager {
     webhook: Webhook,
     error: Error | null
   ): Promise<void> {
-    const deliveries = await webhookStorage.getDeliveriesByWebhookId(webhook.id)
-    const failedDeliveries = deliveries
-      .filter(d => d.webhookId === webhook.id && d.status === 'failed')
-      .slice(-item.retryCount)
+    // FIX #3064: Add try-catch around addToDeadLetterQueue call with error logging
+    try {
+      const deliveries = await webhookStorage.getDeliveriesByWebhookId(
+        webhook.id
+      )
+      const failedDeliveries = deliveries
+        .filter(d => d.webhookId === webhook.id && d.status === 'failed')
+        .slice(-item.retryCount)
 
-    const deadLetterItem: DeadLetterWebhook = {
-      id: `dl_${randomUUID()}`,
-      webhookId: webhook.id,
-      event: item.event,
-      payload: item.payload,
-      failureReason: error?.message || 'Max retries exceeded',
-      lastAttemptAt: new Date().toISOString(),
-      createdAt: item.createdAt,
-      updatedAt: new Date().toISOString(),
-      deliveryAttempts: failedDeliveries,
+      const deadLetterItem: DeadLetterWebhook = {
+        id: `dl_${randomUUID()}`,
+        webhookId: webhook.id,
+        event: item.event,
+        payload: item.payload,
+        failureReason: error?.message || 'Max retries exceeded',
+        lastAttemptAt: new Date().toISOString(),
+        createdAt: item.createdAt,
+        updatedAt: new Date().toISOString(),
+        deliveryAttempts: failedDeliveries,
+      }
+
+      await webhookStorage.addToDeadLetterQueue(deadLetterItem)
+    } catch (dlqError) {
+      logger.error(
+        `CRITICAL: Failed to add webhook ${webhook.id} to dead letter queue. Failed webhook data may be lost.`,
+        {
+          webhookId: webhook.id,
+          queueItemId: item.id,
+          event: item.event,
+          error:
+            dlqError instanceof Error ? dlqError.message : String(dlqError),
+        }
+      )
+      // Re-throw to allow caller to handle the failure
+      throw dlqError
     }
-
-    await webhookStorage.addToDeadLetterQueue(deadLetterItem)
   }
 
   async removeFromDeadLetter(id: string): Promise<void> {

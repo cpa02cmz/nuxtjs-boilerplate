@@ -515,6 +515,26 @@ export const componentColorsConfig = {
     },
   },
 
+  // 🎨 Pallete's micro-UX enhancement: Screenshots Section Colors
+  // Color scheme for the screenshots component with accessibility in mind
+  screenshotsSection: {
+    focusOutline: process.env.SCREENSHOTS_FOCUS_OUTLINE || '#3b82f6',
+    overlayBg: process.env.SCREENSHOTS_OVERLAY_BG || 'rgba(0, 0, 0, 0.7)',
+    counterBg: process.env.SCREENSHOTS_COUNTER_BG || 'rgba(0, 0, 0, 0.6)',
+    counterText: process.env.SCREENSHOTS_COUNTER_TEXT || '#ffffff',
+    skeleton: {
+      base: process.env.SCREENSHOTS_SKELETON_BASE || '#f3f4f6',
+      shimmer:
+        process.env.SCREENSHOTS_SKELETON_SHIMMER || 'rgba(255, 255, 255, 0.4)',
+    },
+    emptyState: {
+      icon: process.env.SCREENSHOTS_EMPTY_ICON || '#9ca3af',
+      text: process.env.SCREENSHOTS_EMPTY_TEXT || '#6b7280',
+      bg: process.env.SCREENSHOTS_EMPTY_BG || '#f9fafb',
+      border: process.env.SCREENSHOTS_EMPTY_BORDER || '#e5e7eb',
+    },
+  },
+
   // Common UI Colors - Flexy hates hardcoded common colors!
   common: {
     white: process.env.COMMON_WHITE || '#ffffff',

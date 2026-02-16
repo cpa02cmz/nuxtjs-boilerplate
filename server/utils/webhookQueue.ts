@@ -200,7 +200,20 @@ export class WebhookQueueSystem {
     item.retryCount++
 
     if (item.retryCount >= item.maxRetries && webhook) {
-      deadLetterManager.addToDeadLetter(item, webhook, error)
+      // FIX #3084: Add await and wrap in try-catch with proper error logging
+      try {
+        await deadLetterManager.addToDeadLetter(item, webhook, error)
+      } catch (dlqError) {
+        logger.error(
+          `CRITICAL: Failed to add item ${item.id} to dead letter queue. Webhook data may be lost.`,
+          {
+            webhookId: webhook.id,
+            event: item.event,
+            error:
+              dlqError instanceof Error ? dlqError.message : String(dlqError),
+          }
+        )
+      }
       try {
         await webhookQueueManager.remove(item.id)
       } catch (removeError) {

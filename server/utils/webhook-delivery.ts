@@ -253,7 +253,12 @@ export class WebhookDeliveryService {
           const lastFailureTimeIso = lastFailureTime
             ? new Date(lastFailureTime).toISOString()
             : undefined
-          throw createCircuitBreakerError(webhook.url, lastFailureTimeIso)
+          // FIX #3060: Include circuit breaker stats in error for better debugging
+          const stats = circuitBreaker.getStats()
+          throw createCircuitBreakerError(
+            webhook.url,
+            `${lastFailureTimeIso || 'N/A'} (Failures: ${stats.failureCount}, Successes: ${stats.successCount})`
+          )
         }
       )
 
@@ -262,14 +267,13 @@ export class WebhookDeliveryService {
       responseMessage = webhooksConfig.delivery.successMessage
       success = true
     } catch (error: unknown) {
-      const err = error as {
-        status?: number
-        message?: string
-        code?: string
-        name?: string
-      }
+      // FIX #3062: Add type guards to validate error structure before accessing properties
+      const err = this.normalizeError(error)
       responseCode = err.status || 0
       success = false
+
+      // Ensure responseCode is a valid number for comparison
+      const statusCode = responseCode || 0
 
       // Categorize error types for better retry logic and monitoring
       if (
@@ -295,10 +299,10 @@ export class WebhookDeliveryService {
         err.code === 'UNABLE_TO_VERIFY_LEAF_SIGNATURE'
       ) {
         responseMessage = `SSL/TLS error: ${err.message || 'SSL certificate verification failed'}`
-      } else if (responseCode >= 400 && responseCode < 500) {
-        responseMessage = `Client error ${responseCode}: ${err.message || 'HTTP client error'}`
-      } else if (responseCode >= 500) {
-        responseMessage = `Server error ${responseCode}: ${err.message || 'HTTP server error'}`
+      } else if (statusCode >= 400 && statusCode < 500) {
+        responseMessage = `Client error ${statusCode}: ${err.message || 'HTTP client error'}`
+      } else if (statusCode >= 500) {
+        responseMessage = `Server error ${statusCode}: ${err.message || 'HTTP server error'}`
       } else if (err.message?.includes('Circuit breaker is OPEN')) {
         responseMessage = `Circuit breaker open: ${err.message || 'Service temporarily unavailable'}`
       } else {
@@ -379,6 +383,39 @@ export class WebhookDeliveryService {
     }
 
     return { success, delivery: lastDelivery! }
+  }
+
+  // FIX #3062: Type guard to safely normalize error objects
+  private normalizeError(error: unknown): {
+    status?: number
+    message?: string
+    code?: string
+    name?: string
+  } {
+    if (error === null || error === undefined) {
+      return {}
+    }
+
+    if (error instanceof Error) {
+      return {
+        message: error.message,
+        name: error.name,
+      }
+    }
+
+    if (typeof error === 'object') {
+      const err = error as Record<string, unknown>
+      return {
+        status: typeof err.status === 'number' ? err.status : undefined,
+        message: typeof err.message === 'string' ? err.message : undefined,
+        code: typeof err.code === 'string' ? err.code : undefined,
+        name: typeof err.name === 'string' ? err.name : undefined,
+      }
+    }
+
+    return {
+      message: String(error),
+    }
   }
 
   private isRetryableError(responseMessage?: string): boolean {
