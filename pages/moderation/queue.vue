@@ -111,6 +111,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { uiTimingConfig } from '~/configs/ui-timing.config'
 
 definePageMeta({
   layout: 'default',
@@ -167,7 +168,7 @@ const openShortcutsModal = () => {
   // Focus the modal for accessibility - Flexy hates hardcoded 100!
   setTimeout(() => {
     shortcutsModalRef.value?.focus()
-  }, uiConfig.timing.focusRestoreDelayMs)
+  }, uiTimingConfig.modalFocus.delayMs)
 }
 
 // Close shortcuts modal

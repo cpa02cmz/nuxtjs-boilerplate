@@ -132,6 +132,12 @@ export const uiTimingConfig = {
     badgeTimeout: parseInt(process.env.UI_REVIEW_QUEUE_BADGE_TIMEOUT || '2000'),
   },
 
+  // Modal focus - Flexy hates hardcoded values!
+  modalFocus: {
+    // Delay before focusing modal for accessibility (ms)
+    delayMs: parseInt(process.env.UI_MODAL_FOCUS_DELAY || '100'),
+  },
+
   // Virtual list - Flexy hates hardcoded values!
   virtualList: {
     // Staggered entrance animation delay (ms)
