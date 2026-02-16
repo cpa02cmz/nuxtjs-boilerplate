@@ -106,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref } from 'vue'
+import { computed, watch, ref, onMounted } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { validationConfig } from '~/configs/validation.config'
@@ -232,6 +232,14 @@ const screenReaderAnnouncement = computed(() => {
   return ''
 })
 
+// Check for reduced motion preference
+const prefersReducedMotion = ref(false)
+
+// Update reduced motion preference
+const updateReducedMotion = () => {
+  prefersReducedMotion.value = checkReducedMotion()
+}
+
 // Unique ID for accessibility associations
 const counterId = ref(
   `character-counter-${Math.random().toString(36).substr(2, 9)}`
@@ -302,6 +310,11 @@ watch(
     previousState.value = currentState
   }
 )
+
+// Initialize reduced motion preference on mount
+onMounted(() => {
+  updateReducedMotion()
+})
 
 // Flexy hates hardcoded rgba! Using configurable shadow color
 const shadowColorDefault = computed(
