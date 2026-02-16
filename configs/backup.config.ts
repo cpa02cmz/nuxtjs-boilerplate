@@ -9,6 +9,8 @@ export const backupConfig = {
     // PostgreSQL database connection string (for pg_dump)
     databaseUrl:
       process.env.DATABASE_URL || process.env.BACKUP_DATABASE_URL || '',
+    // Path to the database file (for SQLite backups)
+    databasePath: process.env.BACKUP_DB_PATH || './prisma/data/dev.db',
     // Temporary directory for backup operations
     tempDir: process.env.BACKUP_TEMP_DIR || './tmp/backups',
   },
