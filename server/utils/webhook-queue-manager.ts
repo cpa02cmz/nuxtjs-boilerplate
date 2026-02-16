@@ -88,17 +88,20 @@ export class WebhookQueueManager {
 
     // Only process if the item is due
     if (scheduledFor <= now) {
+      let timeoutId: NodeJS.Timeout
+
       try {
         // Wrap processCallback in timeout to prevent queue blocking (Issue #2206)
+        // FIX #3056: Clear timeout in finally block to prevent memory leak
         const WEBHOOK_QUEUE_TIMEOUT_MS = webhooksConfig.queue.processTimeoutMs
         await Promise.race([
           this.processCallback(item),
-          new Promise<void>((_, reject) =>
-            setTimeout(
+          new Promise<void>((_, reject) => {
+            timeoutId = setTimeout(
               () => reject(new Error('Webhook queue item processing timeout')),
               WEBHOOK_QUEUE_TIMEOUT_MS
             )
-          ),
+          }),
         ])
       } catch (error) {
         logger.error(`Error processing queue item ${item.id}:`, error)
@@ -143,9 +146,15 @@ export class WebhookQueueManager {
             updatedAt: new Date().toISOString(),
           })
         }
+      } finally {
+        // FIX #3056: Clear timeout to prevent memory leak
+        if (timeoutId!) {
+          clearTimeout(timeoutId)
+        }
       }
     } else {
-      // Item is not due yet, re-enqueue it
+      // FIX #3056: Item is not due yet, put it back with the scheduled time preserved
+      // This prevents busy-wait loop by not immediately re-processing
       await this.enqueue(item)
     }
   }
