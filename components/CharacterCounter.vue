@@ -7,12 +7,13 @@
       'character-counter--warning': isNearLimit && !isOverLimit,
     }"
   >
-    <!-- Input Slot - allows flexible input integration -->
+    <!-- Input Slot - allows flexible input integration with accessibility props -->
     <div class="character-counter-input-wrapper">
       <slot
         :character-count="characterCount"
         :is-near-limit="isNearLimit"
         :is-over-limit="isOverLimit"
+        :input-props="inputProps"
       />
     </div>
 
@@ -71,6 +72,7 @@
 
     <!-- Screen Reader Announcement -->
     <div
+      :id="counterId"
       class="sr-only"
       role="status"
       aria-live="polite"
@@ -146,6 +148,15 @@ const isOverLimit = computed(() => {
   return props.characterCount > props.maxLength
 })
 
+// Accessibility: Input props for aria-invalid and aria-describedby binding
+const inputProps = computed(() => ({
+  'aria-invalid': isOverLimit.value ? true : undefined,
+  'aria-describedby':
+    isOverLimit.value || isNearLimit.value
+      ? `character-counter-${counterId.value}`
+      : undefined,
+}))
+
 // Progress ring color based on state
 const progressColor = computed(() => {
   if (isOverLimit.value) {
@@ -184,6 +195,11 @@ const screenReaderAnnouncement = computed(() => {
   }
   return ''
 })
+
+// Unique ID for accessibility associations
+const counterId = ref(
+  `character-counter-${Math.random().toString(36).substr(2, 9)}`
+)
 
 // Palette's micro-UX enhancement: Haptic feedback on state transitions
 // Track previous state to trigger feedback only on transitions, not continuously
