@@ -5,7 +5,10 @@
     aria-live="polite"
   >
     <!-- Animated Illustration -->
-    <div class="relative w-48 h-48 mb-8" aria-hidden="true">
+    <div
+      class="relative w-48 h-48 mb-8"
+      aria-hidden="true"
+    >
       <!-- Background Circle -->
       <div
         class="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full animate-pulse-slow"
@@ -80,12 +83,19 @@
     </p>
 
     <!-- Screen reader announcement for suggestion clicks -->
-    <div aria-live="polite" aria-atomic="true" class="sr-only">
+    <div
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >
       {{ suggestionAnnouncement }}
     </div>
 
     <!-- Suggestions Section -->
-    <div v-if="suggestions.length" class="w-full max-w-lg mb-8">
+    <div
+      v-if="suggestions.length"
+      class="w-full max-w-lg mb-8"
+    >
       <p
         class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4"
       >
@@ -176,7 +186,10 @@
     </div>
 
     <!-- Tips Section -->
-    <div v-if="showTips" class="mt-10 p-4 bg-gray-50 rounded-xl max-w-lg">
+    <div
+      v-if="showTips"
+      class="mt-10 p-4 bg-gray-50 rounded-xl max-w-lg"
+    >
       <div class="flex items-start">
         <svg
           class="w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0"

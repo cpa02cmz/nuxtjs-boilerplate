@@ -1,7 +1,11 @@
 <template>
   <ClientOnly>
     <Teleport to="body">
-      <div v-if="isActive" class="confetti-container" aria-hidden="true">
+      <div
+        v-if="isActive"
+        class="confetti-container"
+        aria-hidden="true"
+      >
         <div
           v-for="(particle, index) in particles"
           :key="index"
