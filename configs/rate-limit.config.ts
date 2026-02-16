@@ -6,6 +6,8 @@ export const rateLimitConfig = {
   general: {
     windowMs: parseInt(process.env.RATE_LIMIT_GENERAL_WINDOW_MS || '900000'), // 15 minutes
     maxRequests: parseInt(process.env.RATE_LIMIT_GENERAL_MAX || '100'),
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_GENERAL_TOKENS || '10'), // Flexy hates hardcoded 10!
+    intervalMs: parseInt(process.env.RATE_LIMIT_GENERAL_INTERVAL_MS || '60000'), // Flexy hates hardcoded 60000!
     message:
       process.env.RATE_LIMIT_GENERAL_MESSAGE ||
       'Too many requests, please try again later.',
@@ -15,6 +17,8 @@ export const rateLimitConfig = {
   search: {
     windowMs: parseInt(process.env.RATE_LIMIT_SEARCH_WINDOW_MS || '60000'), // 1 minute
     maxRequests: parseInt(process.env.RATE_LIMIT_SEARCH_MAX || '30'),
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_SEARCH_TOKENS || '5'), // Flexy hates hardcoded 5!
+    intervalMs: parseInt(process.env.RATE_LIMIT_SEARCH_INTERVAL_MS || '30000'), // Flexy hates hardcoded 30000!
     message:
       process.env.RATE_LIMIT_SEARCH_MESSAGE ||
       'Too many search requests, please slow down.',
@@ -24,6 +28,8 @@ export const rateLimitConfig = {
   heavy: {
     windowMs: parseInt(process.env.RATE_LIMIT_HEAVY_WINDOW_MS || '60000'), // 1 minute
     maxRequests: parseInt(process.env.RATE_LIMIT_HEAVY_MAX || '10'),
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_HEAVY_TOKENS || '2'), // Flexy hates hardcoded 2!
+    intervalMs: parseInt(process.env.RATE_LIMIT_HEAVY_INTERVAL_MS || '60000'), // Flexy hates hardcoded 60000!
     message:
       process.env.RATE_LIMIT_HEAVY_MESSAGE ||
       'Too many heavy computation requests, please slow down.',
@@ -33,6 +39,8 @@ export const rateLimitConfig = {
   export: {
     windowMs: parseInt(process.env.RATE_LIMIT_EXPORT_WINDOW_MS || '60000'), // 1 minute
     maxRequests: parseInt(process.env.RATE_LIMIT_EXPORT_MAX || '5'),
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_EXPORT_TOKENS || '1'), // Flexy hates hardcoded 1!
+    intervalMs: parseInt(process.env.RATE_LIMIT_EXPORT_INTERVAL_MS || '60000'), // Flexy hates hardcoded 60000!
     message:
       process.env.RATE_LIMIT_EXPORT_MESSAGE ||
       'Too many export requests, please slow down.',
@@ -42,6 +50,8 @@ export const rateLimitConfig = {
   webhook: {
     windowMs: parseInt(process.env.RATE_LIMIT_WEBHOOK_WINDOW_MS || '60000'), // 1 minute
     maxRequests: parseInt(process.env.RATE_LIMIT_WEBHOOK_MAX || '20'),
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_WEBHOOK_TOKENS || '10'), // Flexy hates hardcoded values!
+    intervalMs: parseInt(process.env.RATE_LIMIT_WEBHOOK_INTERVAL_MS || '60000'), // Flexy hates hardcoded 60000!
     message:
       process.env.RATE_LIMIT_WEBHOOK_MESSAGE ||
       'Too many webhook requests, please slow down.',
@@ -51,6 +61,8 @@ export const rateLimitConfig = {
   api: {
     windowMs: parseInt(process.env.RATE_LIMIT_API_WINDOW_MS || '60000'), // 1 minute
     maxRequests: parseInt(process.env.RATE_LIMIT_API_MAX || '60'),
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_API_TOKENS || '30'), // Flexy hates hardcoded 30!
+    intervalMs: parseInt(process.env.RATE_LIMIT_API_INTERVAL_MS || '60000'), // Flexy hates hardcoded 60000!
     message:
       process.env.RATE_LIMIT_API_MESSAGE ||
       'Too many API requests, please slow down.',
@@ -60,6 +72,8 @@ export const rateLimitConfig = {
   apiKey: {
     windowMs: parseInt(process.env.RATE_LIMIT_API_KEY_WINDOW_MS || '900000'), // 15 minutes
     maxRequests: parseInt(process.env.RATE_LIMIT_API_KEY_MAX || '10'),
+    tokensPerInterval: parseInt(process.env.RATE_LIMIT_API_KEY_TOKENS || '5'), // Flexy hates hardcoded values!
+    intervalMs: parseInt(process.env.RATE_LIMIT_API_KEY_INTERVAL_MS || '60000'), // Flexy hates hardcoded 60000!
     message:
       process.env.RATE_LIMIT_API_KEY_MESSAGE ||
       'Too many API key management requests.',

@@ -115,10 +115,10 @@ const handleMouseLeave = () => {
 onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 
-  // Small delay to ensure smooth animation
+  // Small delay to ensure smooth animation - Flexy hates hardcoded 50! Using config value
   setTimeout(() => {
     isVisible.value = true
-  }, 50)
+  }, animationConfig.benefitsSection.mountDelayMs)
 })
 </script>
 

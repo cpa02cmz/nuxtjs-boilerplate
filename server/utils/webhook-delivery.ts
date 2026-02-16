@@ -17,10 +17,49 @@ const DEFAULT_TIMEOUT_MS = webhooksConfig.request.timeoutMs
 /**
  * Validates webhook URL to prevent SSRF attacks
  * Blocks private IP ranges, cloud metadata endpoints, and non-HTTPS in production
+ *
+ * FIX #3059: Enhanced SSRF protection against multiple bypass vectors:
+ * - URL-encoded IPs (e.g., %31%32%37%2e%30%2e%30%2e%31)
+ * - IPv6 loopback variants (::1, ::ffff:127.0.0.1)
+ * - Octal/hex IP representations (0177.0.0.1, 0x7f.0.0.1)
  */
-function validateWebhookUrl(url: string): void {
+export function validateWebhookUrl(url: string): void {
   try {
-    const parsedUrl = new URL(url)
+    // FIX #3059: Extract hostname from URL before decoding (to catch octal IPs)
+    // This must be done before URL parsing because URL() converts octal to decimal
+    const urlMatch = url.match(/^https?:\/\/([^/]+)/i)
+    if (!urlMatch) {
+      throw new Error('Invalid webhook URL format')
+    }
+    const originalHostname = urlMatch[1]?.toLowerCase() || ''
+
+    // Check for octal/hex IP representations in ORIGINAL hostname
+    const octalHexMatch = originalHostname.match(
+      /^(0[0-7]+|0x[0-9a-f]+)\.(\d+|0[0-7]+|0x[0-9a-f]+)\.(\d+|0[0-7]+|0x[0-9a-f]+)\.(\d+|0[0-7]+|0x[0-9a-f]+)$/i
+    )
+    if (octalHexMatch) {
+      throw new Error(
+        'Webhook URL cannot use octal or hexadecimal IP representations'
+      )
+    }
+
+    // FIX #3059: Decode URL to prevent encoded bypasses
+    // Flexy hates hardcoded 3! Using webhooksConfig.security.maxDecodeIterations
+    let decodedUrl = url
+    try {
+      // Decode multiple times to handle double/triple encoding
+      const maxIterations = webhooksConfig.security.maxDecodeIterations
+      for (let i = 0; i < maxIterations; i++) {
+        const newUrl = decodeURIComponent(decodedUrl)
+        if (newUrl === decodedUrl) break
+        decodedUrl = newUrl
+      }
+    } catch {
+      // If decoding fails, use original URL
+      decodedUrl = url
+    }
+
+    const parsedUrl = new URL(decodedUrl)
 
     // Enforce HTTPS in production
     if (
@@ -30,16 +69,33 @@ function validateWebhookUrl(url: string): void {
       throw new Error('Webhook URL must use HTTPS in production')
     }
 
-    const hostname = parsedUrl.hostname.toLowerCase()
+    let hostname = parsedUrl.hostname.toLowerCase()
+
+    // FIX #3059: Remove IPv6 brackets if present
+    hostname = hostname.replace(/^\[/, '').replace(/\]$/, '')
 
     // Block localhost and loopback addresses
     if (
       hostname === 'localhost' ||
       hostname === '127.0.0.1' ||
-      hostname === '::1'
+      hostname === '::1' ||
+      hostname === '0:0:0:0:0:0:0:1' ||
+      hostname === '0000:0000:0000:0000:0000:0000:0000:0001'
     ) {
       throw new Error(
         'Webhook URL cannot target localhost or loopback addresses'
+      )
+    }
+
+    // FIX #3059: Block IPv4-mapped IPv6 loopback addresses
+    if (
+      hostname === '::ffff:127.0.0.1' ||
+      hostname === '::ffff:7f00:1' ||
+      hostname.startsWith('::ffff:127.') ||
+      hostname.startsWith('0:0:0:0:0:ffff:127.')
+    ) {
+      throw new Error(
+        'Webhook URL cannot target IPv4-mapped IPv6 loopback addresses'
       )
     }
 
@@ -91,15 +147,29 @@ function validateWebhookUrl(url: string): void {
           'Webhook URL cannot target loopback addresses (127.0.0.0/8)'
         )
       }
+      // FIX #3059: Block 0.0.0.0/8
+      if (a === 0) {
+        throw new Error(
+          'Webhook URL cannot target zero-range addresses (0.0.0.0/8)'
+        )
+      }
     }
 
-    // Block IPv6 loopback and link-local
+    // FIX #3059: Enhanced IPv6 blocking
     if (
+      hostname === '::1' ||
+      hostname === '0:0:0:0:0:0:0:1' ||
       hostname.startsWith('fe80:') ||
       hostname.startsWith('fc') ||
-      hostname.startsWith('fd')
+      hostname.startsWith('fd') ||
+      hostname.startsWith('::ffff:')
     ) {
       throw new Error('Webhook URL cannot target private IPv6 ranges')
+    }
+
+    // FIX #3059: Block short IPv6 loopback variations
+    if (/^::1$/.test(hostname) || hostname === ':1' || hostname === ':1:') {
+      throw new Error('Webhook URL cannot target IPv6 loopback addresses')
     }
   } catch (error) {
     if (error instanceof Error && error.message.includes('Webhook URL')) {
@@ -122,15 +192,16 @@ export class WebhookDeliveryService {
     // Overall timeout wrapper for entire delivery process (Issue #2207)
     const OVERALL_TIMEOUT_MS = webhooksConfig.overallTimeoutMs
 
-    return Promise.race([
-      this.executeDelivery(webhook, payload),
-      new Promise<never>((_, reject) =>
-        setTimeout(
-          () => reject(new Error('Overall delivery timeout')),
-          OVERALL_TIMEOUT_MS
-        )
-      ),
-    ])
+    return new Promise<WebhookDelivery>((resolve, reject) => {
+      const timeoutId: NodeJS.Timeout = setTimeout(() => {
+        reject(new Error('Overall delivery timeout'))
+      }, OVERALL_TIMEOUT_MS)
+
+      this.executeDelivery(webhook, payload).then(result => {
+        clearTimeout(timeoutId)
+        resolve(result)
+      })
+    })
   }
 
   private async executeDelivery(

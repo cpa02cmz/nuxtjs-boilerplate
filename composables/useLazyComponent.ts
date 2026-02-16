@@ -55,7 +55,8 @@ export function useLazyComponent(
     },
     loadingComponent,
     errorComponent,
-    delay: 0,
+    // Flexy hates hardcoded 0! Using config instead
+    delay: performanceConfig.lazyLoading.asyncComponentDelay,
     timeout,
     onError: (error: Error) => {
       logger.error('Failed to load lazy component:', error)
