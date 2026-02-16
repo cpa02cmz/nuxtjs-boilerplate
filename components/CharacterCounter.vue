@@ -255,6 +255,16 @@ const screenReaderAnnouncement = computed(() => {
 })
 
 // Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (
+    typeof window === 'undefined' ||
+    typeof window.matchMedia !== 'function'
+  ) {
+    return false
+  }
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
 const prefersReducedMotion = ref(false)
 
 // Update reduced motion preference
@@ -282,31 +292,12 @@ const celebrationParticles = ref<
 let celebrationTimeout: ReturnType<typeof setTimeout> | null = null
 const hasCelebrated = ref(false)
 
-// Accessibility: Track reduced motion preference
-const prefersReducedMotion = ref(false)
-
-onMounted(() => {
-  prefersReducedMotion.value = checkReducedMotion()
-})
-
 // Palette's micro-UX enhancement: Haptic feedback on state transitions
 // Track previous state to trigger feedback only on transitions, not continuously
 const previousState = ref<'normal' | 'warning' | 'complete' | 'error'>('normal')
 const hasTriggeredWarning = ref(false)
 const hasTriggeredError = ref(false)
 const hasTriggeredComplete = ref(false)
-
-// Check for reduced motion preference
-const prefersReducedMotion = ref(false)
-const checkReducedMotion = () => {
-  if (
-    typeof window === 'undefined' ||
-    typeof window.matchMedia !== 'function'
-  ) {
-    return false
-  }
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-}
 
 // Initialize reduced motion preference on client side
 if (typeof window !== 'undefined') {
@@ -383,8 +374,7 @@ const shadowColorDefault = computed(
 
 // Palette's micro-UX enhancement: Generate celebration particles when reaching limit
 const generateCelebrationParticles = () => {
-  const config =
-    animationConfig.celebrationParticles || animationConfig.copyParticles
+  const config = animationConfig.copyParticles
   const count = config.particleCount
   const newParticles = []
 
@@ -423,12 +413,8 @@ const triggerCelebration = () => {
 
   // Hide particles after animation completes
   const duration =
-    (animationConfig.celebrationParticles?.durationMs ||
-      animationConfig.copyParticles?.durationMs ||
-      800) +
-    (animationConfig.celebrationParticles?.fadeDelayMs ||
-      animationConfig.copyParticles?.fadeDelayMs ||
-      200)
+    (animationConfig.copyParticles?.durationMs || 800) +
+    (animationConfig.copyParticles?.fadeDelayMs || 200)
 
   if (celebrationTimeout) clearTimeout(celebrationTimeout)
   celebrationTimeout = setTimeout(() => {
@@ -676,7 +662,7 @@ const triggerCelebration = () => {
   width: 0;
   height: 0;
   pointer-events: none;
-  z-index: v-bind('zIndexScale.high[10]');
+  z-index: v-bind('zIndexScale.low[10]');
 }
 
 .celebration-particle {
@@ -689,10 +675,8 @@ const triggerCelebration = () => {
   border-radius: 50%;
   transform: translate(-50%, -50%) rotate(var(--particle-rotation));
   animation: celebration-particle-burst
-    v-bind(
-      '`${animationConfig.celebrationParticles?.durationMs || animationConfig.copyParticles?.durationMs || 800}ms`'
-    )
-    ease-out forwards;
+    v-bind('`${animationConfig.copyParticles?.durationMs || 800}ms`') ease-out
+    forwards;
   opacity: 0;
 }
 
