@@ -11,7 +11,7 @@
  * - ApiClient can be injected for testing
  * - Falls back to useNuxtApp() for production use
  */
-import { ref, reactive, onUnmounted } from 'vue'
+import { ref, reactive, readonly, onUnmounted } from 'vue'
 import { useNuxtApp } from '#app'
 import logger from '~/utils/logger'
 import { UI_FEEDBACK_DURATION } from '~/server/utils/constants'
