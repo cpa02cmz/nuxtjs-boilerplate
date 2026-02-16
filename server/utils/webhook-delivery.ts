@@ -122,15 +122,16 @@ export class WebhookDeliveryService {
     // Overall timeout wrapper for entire delivery process (Issue #2207)
     const OVERALL_TIMEOUT_MS = webhooksConfig.overallTimeoutMs
 
-    return Promise.race([
-      this.executeDelivery(webhook, payload),
-      new Promise<never>((_, reject) =>
-        setTimeout(
-          () => reject(new Error('Overall delivery timeout')),
-          OVERALL_TIMEOUT_MS
-        )
-      ),
-    ])
+    return new Promise<WebhookDelivery>((resolve, reject) => {
+      const timeoutId: NodeJS.Timeout = setTimeout(() => {
+        reject(new Error('Overall delivery timeout'))
+      }, OVERALL_TIMEOUT_MS)
+
+      this.executeDelivery(webhook, payload).then(result => {
+        clearTimeout(timeoutId)
+        resolve(result)
+      })
+    })
   }
 
   private async executeDelivery(
