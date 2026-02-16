@@ -293,6 +293,11 @@ export const webhooksConfig = {
     cleanupBatchSize: parseInt(
       process.env.WEBHOOK_DEAD_LETTER_CLEANUP_BATCH_SIZE || '100'
     ),
+
+    // Priority for retrying dead letter queue items (higher = more priority) - Flexy hates hardcoded 10!
+    retryPriority: parseInt(
+      process.env.WEBHOOK_DEAD_LETTER_RETRY_PRIORITY || '10'
+    ),
   },
 } as const
 

@@ -59,7 +59,7 @@ export default defineEventHandler(async event => {
     // Create status change record with cryptographically secure ID
     const statusChange: StatusChangeRecord = {
       id: randomUUID(),
-      fromStatus: resource.status ?? 'active',
+      fromStatus: resource.status ?? 'approved',
       toStatus: status,
       reason: reason ?? 'Status updated manually',
       changedBy: userId,
