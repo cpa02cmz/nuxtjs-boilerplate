@@ -396,6 +396,31 @@ export const animationConfig = {
     bgTransitionMs: parseInt(process.env.SUGGESTION_BG_TRANSITION_MS || '150'),
   },
 
+  // Search Suggestion Particle Burst - Palette's micro-UX delight! ✨
+  // Celebratory particle burst when selecting search suggestions
+  searchParticles: {
+    // Enable/disable particle burst
+    enabled: process.env.SEARCH_PARTICLE_ENABLED !== 'false',
+    // Number of particles in the burst
+    particleCount: parseInt(process.env.SEARCH_PARTICLE_COUNT || '8'),
+    // Animation duration in seconds
+    durationSec: parseFloat(process.env.SEARCH_PARTICLE_DURATION || '0.5'),
+    // Particle spread distance in pixels
+    spreadPx: parseInt(process.env.SEARCH_PARTICLE_SPREAD || '40'),
+    // Particle colors (blue theme for search)
+    colors: [
+      process.env.SEARCH_PARTICLE_COLOR_1 || '#3b82f6', // blue-500
+      process.env.SEARCH_PARTICLE_COLOR_2 || '#60a5fa', // blue-400
+      process.env.SEARCH_PARTICLE_COLOR_3 || '#93c5fd', // blue-300
+      process.env.SEARCH_PARTICLE_COLOR_4 || '#2563eb', // blue-600
+    ],
+    // Particle size range in pixels
+    minSizePx: parseInt(process.env.SEARCH_PARTICLE_MIN_SIZE || '3'),
+    maxSizePx: parseInt(process.env.SEARCH_PARTICLE_MAX_SIZE || '6'),
+    // Delay before particles start disappearing
+    fadeDelaySec: parseFloat(process.env.SEARCH_PARTICLE_FADE_DELAY || '0.1'),
+  },
+
   // Navigation/Transition Animations
   navigation: {
     reducedMotionDelayMs: parseInt(
