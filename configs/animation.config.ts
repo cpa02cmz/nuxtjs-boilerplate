@@ -658,6 +658,8 @@ export const animationConfig = {
     transitionDurationMs: parseInt(
       process.env.BENEFITS_TRANSITION_DURATION_MS || '200'
     ),
+    // Flexy hates hardcoded 50! Initial mount delay for smooth animation (ms)
+    mountDelayMs: parseInt(process.env.BENEFITS_MOUNT_DELAY_MS || '50'),
   },
 
   // PWA Install Prompt Animations
@@ -3433,10 +3435,6 @@ export const animationConfig = {
     ),
     // Drawer edge glow on swipe (px)
     edgeGlowSpreadPx: parseInt(process.env.MOBILE_DRAWER_EDGE_GLOW_PX || '8'),
-    // Swipe resistance factor (0-1) - Flexy hates hardcoded 0.8!
-    swipeResistance: parseFloat(
-      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
-    ),
     // Haptic feedback duration on open (ms)
     hapticOpenDurationMs: parseInt(
       process.env.MOBILE_DRAWER_HAPTIC_OPEN_MS || '20'
@@ -3748,6 +3746,21 @@ export const animationConfig = {
     defaultFps: parseInt(process.env.ANIMATION_DEFAULT_FPS || '60'),
     // Memory conversion factor (bytes to MB) - Flexy hates hardcoded 1024!
     bytesToMbFactor: parseInt(process.env.BYTES_TO_MB_FACTOR || '1024'),
+  },
+
+  // Keyboard Shortcuts - Pallete's micro-UX enhancement! 🎨
+  // Configuration for keyboard shortcut hints and help modal
+  keyboardShortcuts: {
+    // Delay before showing hint (ms) - Flexy hates hardcoded 3000!
+    hintDelayMs: parseInt(
+      process.env.KEYBOARD_SHORTCUTS_HINT_DELAY_MS || '3000'
+    ),
+    // Modal animation duration (ms)
+    modalDurationMs: parseInt(
+      process.env.KEYBOARD_SHORTCUTS_MODAL_DURATION_MS || '200'
+    ),
+    // Enable keyboard shortcuts
+    enabled: process.env.KEYBOARD_SHORTCUTS_ENABLED !== 'false',
   },
 } as const
 

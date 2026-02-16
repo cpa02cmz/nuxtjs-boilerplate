@@ -23,13 +23,33 @@ const DEFAULT_TIMEOUT_MS = webhooksConfig.request.timeoutMs
  * - IPv6 loopback variants (::1, ::ffff:127.0.0.1)
  * - Octal/hex IP representations (0177.0.0.1, 0x7f.0.0.1)
  */
-function validateWebhookUrl(url: string): void {
+export function validateWebhookUrl(url: string): void {
   try {
+    // FIX #3059: Extract hostname from URL before decoding (to catch octal IPs)
+    // This must be done before URL parsing because URL() converts octal to decimal
+    const urlMatch = url.match(/^https?:\/\/([^/]+)/i)
+    if (!urlMatch) {
+      throw new Error('Invalid webhook URL format')
+    }
+    const originalHostname = urlMatch[1]?.toLowerCase() || ''
+
+    // Check for octal/hex IP representations in ORIGINAL hostname
+    const octalHexMatch = originalHostname.match(
+      /^(0[0-7]+|0x[0-9a-f]+)\.(\d+|0[0-7]+|0x[0-9a-f]+)\.(\d+|0[0-7]+|0x[0-9a-f]+)\.(\d+|0[0-7]+|0x[0-9a-f]+)$/i
+    )
+    if (octalHexMatch) {
+      throw new Error(
+        'Webhook URL cannot use octal or hexadecimal IP representations'
+      )
+    }
+
     // FIX #3059: Decode URL to prevent encoded bypasses
+    // Flexy hates hardcoded 3! Using webhooksConfig.security.maxDecodeIterations
     let decodedUrl = url
     try {
       // Decode multiple times to handle double/triple encoding
-      for (let i = 0; i < 3; i++) {
+      const maxIterations = webhooksConfig.security.maxDecodeIterations
+      for (let i = 0; i < maxIterations; i++) {
         const newUrl = decodeURIComponent(decodedUrl)
         if (newUrl === decodedUrl) break
         decodedUrl = newUrl
@@ -82,17 +102,6 @@ function validateWebhookUrl(url: string): void {
     // Block cloud metadata endpoints
     if (hostname === '169.254.169.254' || hostname === '169.254.170.2') {
       throw new Error('Webhook URL cannot target cloud metadata endpoints')
-    }
-
-    // FIX #3059: Block octal/hex IP representations
-    // Octal IPs like 0177.0.0.1 (127.0.0.1) or 010.0.0.1 (8.0.0.1)
-    const octalHexMatch = hostname.match(
-      /^(0[0-7]+|0x[0-9a-f]+)\.(\d+|0[0-7]+|0x[0-9a-f]+)\.(\d+|0[0-7]+|0x[0-9a-f]+)\.(\d+|0[0-7]+|0x[0-9a-f]+)$/i
-    )
-    if (octalHexMatch) {
-      throw new Error(
-        'Webhook URL cannot use octal or hexadecimal IP representations'
-      )
     }
 
     // Block private IP ranges
