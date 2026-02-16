@@ -96,6 +96,10 @@ export class CircuitBreaker {
    * 4xx client errors are NOT counted as they are client-side issues, not service failures.
    * Only 5xx server errors and network errors trigger circuit breaker failures.
    *
+   * FIX for Issue #3068 - Circuit breaker treats programming errors as server errors:
+   * Programming errors (TypeError, ReferenceError, etc.) should NOT trip the circuit breaker
+   * as they are code bugs, not service failures. Only network/HTTP errors count.
+   *
    * @param error - The error to check
    * @returns true if the error is a server-side failure (5xx) or network error
    */
@@ -117,10 +121,38 @@ export class CircuitBreaker {
           return true
         }
       }
+
+      // Check for network error codes (Issue #3068)
+      const errorCode = (error as { code?: string }).code
+      if (errorCode) {
+        const networkErrorCodes = [
+          'ECONNREFUSED',
+          'ETIMEDOUT',
+          'ENOTFOUND',
+          'ECONNRESET',
+          'EPIPE',
+          'EAI_AGAIN',
+        ]
+        if (networkErrorCodes.includes(errorCode)) {
+          return true
+        }
+      }
     }
 
-    // Network errors, timeouts, and other non-HTTP errors are considered failures
-    return true
+    // Check if it's a programming error - these should NOT trip circuit breaker
+    if (
+      error instanceof TypeError ||
+      error instanceof ReferenceError ||
+      error instanceof SyntaxError ||
+      error instanceof RangeError
+    ) {
+      // Log programming errors separately but don't count as server failure
+      return false
+    }
+
+    // For other errors without specific codes, don't count as server error
+    // to prevent false positives from programming errors
+    return false
   }
 
   private onSuccess(): void {
