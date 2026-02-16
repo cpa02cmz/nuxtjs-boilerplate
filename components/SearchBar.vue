@@ -118,11 +118,16 @@
         :aria-expanded="showSuggestions"
         aria-controls="search-suggestions-dropdown"
         aria-autocomplete="list"
+        :aria-activedescendant="
+          activeIndex >= 0
+            ? `search-suggestions-dropdown-item-${activeIndex}`
+            : undefined
+        "
         @input="handleInput"
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint with idle pulse animation -->
       <div
         v-if="!modelValue && !isFocused"

@@ -8,9 +8,6 @@
     ]"
     role="listbox"
     :aria-label="contentConfig.search.suggestions.title"
-    :aria-activedescendant="
-      focusedIndex >= 0 ? `${id}-item-${focusedIndex}` : undefined
-    "
     @keydown="handleKeyDown"
   >
     <!-- Search History Section -->
