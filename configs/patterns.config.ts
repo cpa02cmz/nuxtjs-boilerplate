@@ -19,6 +19,10 @@ export const patternsConfig = {
         'api[_-]?key|key|token|secret|password',
       'i'
     ),
+    // Minimum length for API key to be considered valid for masking
+    // Flexy hates hardcoded 12!
+    minLength: parseInt(process.env.API_KEY_MIN_LENGTH || '12'),
+
     // Masking display
     mask: {
       placeholder: process.env.API_KEY_MASK_PLACEHOLDER || '***',
