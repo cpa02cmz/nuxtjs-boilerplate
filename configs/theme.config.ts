@@ -113,6 +113,8 @@ export const themeConfig = {
         process.env.RELATED_SEARCHES_BUTTON_HOVER_BORDER || '#3b82f6',
       hoverText: process.env.RELATED_SEARCHES_BUTTON_HOVER_TEXT || '#1d4ed8',
       focusRing: process.env.RELATED_SEARCHES_BUTTON_FOCUS_RING || '#3b82f6',
+      // 🎨 Pallete: Loading state background color
+      loadingBg: process.env.RELATED_SEARCHES_BUTTON_LOADING_BG || '#f3f4f6',
     },
   },
 
