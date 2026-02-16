@@ -1,5 +1,5 @@
 import type { Webhook, WebhookPayload, WebhookDelivery } from '~/types/webhook'
-import { randomUUID } from 'node:crypto'
+import { randomUUID, createHash } from 'node:crypto'
 import { webhookStorage } from './webhookStorage'
 import { webhookSigner } from './webhook-signer'
 import { getCircuitBreaker } from './circuit-breaker'
@@ -501,7 +501,13 @@ export class WebhookDeliveryService {
     }
 
     if (!this.circuitBreakerKeys.has(webhook.id)) {
-      const key = `webhook:${webhook.id}:${webhook.url}`
+      // FIX #3089: Use hash of URL instead of full URL to prevent memory bloat
+      // URLs can be 2000+ characters, causing memory issues at scale
+      const urlHash = createHash('sha256')
+        .update(webhook.url)
+        .digest('hex')
+        .slice(0, 16)
+      const key = `webhook:${webhook.id}:${urlHash}`
       this.circuitBreakerKeys.set(webhook.id, key)
     }
     return this.circuitBreakerKeys.get(webhook.id)!
