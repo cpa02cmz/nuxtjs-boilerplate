@@ -106,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref, onMounted } from 'vue'
+import { computed, watch, ref } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { validationConfig } from '~/configs/validation.config'
@@ -235,22 +235,10 @@ const screenReaderAnnouncement = computed(() => {
 // Check for reduced motion preference
 const prefersReducedMotion = ref(false)
 
-// Update reduced motion preference
-const updateReducedMotion = () => {
-  prefersReducedMotion.value = checkReducedMotion()
-}
-
 // Unique ID for accessibility associations
 const counterId = ref(
   `character-counter-${Math.random().toString(36).substr(2, 9)}`
 )
-
-// Accessibility: Track reduced motion preference
-const prefersReducedMotion = ref(false)
-
-onMounted(() => {
-  prefersReducedMotion.value = checkReducedMotion()
-})
 
 // Palette's micro-UX enhancement: Haptic feedback on state transitions
 // Track previous state to trigger feedback only on transitions, not continuously
@@ -317,11 +305,6 @@ watch(
     previousState.value = currentState
   }
 )
-
-// Initialize reduced motion preference on mount
-onMounted(() => {
-  updateReducedMotion()
-})
 
 // Flexy hates hardcoded rgba! Using configurable shadow color
 const shadowColorDefault = computed(
