@@ -236,8 +236,24 @@ export class WebhookQueueSystem {
       ...item,
       scheduledFor: nextRetryAt,
     }
-    await webhookQueueManager.remove(item.id)
-    await webhookQueueManager.enqueue(updatedItem)
+
+    // FIX #3086: Reorder operations to prevent data loss on process crash
+    // Enqueue the updated item FIRST, then remove the old item
+    // If process crashes between operations, item exists in queue (may be duplicate)
+    // If we removed first and crashed, item would be permanently lost
+    try {
+      await webhookQueueManager.enqueue(updatedItem)
+      await webhookQueueManager.remove(item.id)
+    } catch (error) {
+      // If enqueue fails, log error and re-throw to trigger failure handling
+      logger.error(`CRITICAL: Failed to schedule retry for item ${item.id}`, {
+        webhookId: item.webhookId,
+        event: item.event,
+        retryCount: item.retryCount,
+        error: error instanceof Error ? error.message : String(error),
+      })
+      throw error
+    }
   }
 
   private calculateRetryDelay(retryCount: number): number {
