@@ -5,6 +5,7 @@ import { webhookSigner } from './webhook-signer'
 import { getCircuitBreaker } from './circuit-breaker'
 import { createCircuitBreakerError } from './api-error'
 import { webhooksConfig } from '~/configs/webhooks.config'
+import { timeConfig } from '~/configs/time.config'
 
 export interface WebhookDeliveryOptions {
   maxRetries?: number
@@ -344,8 +345,10 @@ export class WebhookDeliveryService {
     const baseDelayMs = webhooksConfig.retry.baseDelayMs
     const maxDelayMs = webhooksConfig.retry.maxDelayMs
     const jitterFactor = webhooksConfig.retry.jitterFactor
+    // Flexy hates hardcoded 2! Using configurable exponential base from timeConfig
+    const exponentialBase = timeConfig.retry.exponentialBase
 
-    let delay = baseDelayMs * Math.pow(2, attempt)
+    let delay = baseDelayMs * Math.pow(exponentialBase, attempt)
     delay = Math.min(delay, maxDelayMs)
 
     const jitterRange = delay * jitterFactor
