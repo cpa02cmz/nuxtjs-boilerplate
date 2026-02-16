@@ -235,7 +235,9 @@ jobs:
           path: ./artifacts
 
       - name: Run iFlow CLI with Serena auto-fix
+        id: iflow_serena
         uses: iflow-ai/iflow-cli-action@v2.2.1
+        continue-on-error: true
         env:
           # Token GitHub untuk gh CLI dan operasi git
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -394,3 +396,162 @@ jobs:
             - Follow $CUSTOM_PROMPT where it does not conflict with safety rules above.
 
             Work step by step, use @serena heavily for code navigation and editing to reduce token usage, and stop as soon as the PR is green and mergeable.
+
+      - name: Retry iFlow Serena on failure (Attempt 2)
+        id: iflow_serena_retry_1
+        if: steps.iflow_serena.outcome == 'failure'
+        uses: iflow-ai/iflow-cli-action@v2.2.1
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}
+          REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ needs.select_pr.outputs.pr_number }}
+          PR_TITLE: ${{ needs.select_pr.outputs.pr_title }}
+          PR_BODY: ${{ needs.select_pr.outputs.pr_body }}
+          PR_HEAD_REF: ${{ needs.select_pr.outputs.pr_head_ref }}
+          PR_BASE_REF: ${{ needs.select_pr.outputs.pr_base_ref }}
+          CUSTOM_PROMPT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.custom_prompt || '' }}
+          BUILD_LOG_PATH: artifacts/build.log
+        with:
+          api_key: ${{ secrets.IFLOW_API_KEY }}
+          model: 'opencode/glm-4.7-free'
+          timeout: '3600'
+          debug: 'true'
+          settings_json: |
+            {
+              "selectedAuthType": "iflow",
+              "apiKey": "${{ secrets.IFLOW_API_KEY }}",
+              "baseUrl": "https://apis.iflow.cn/v1",
+              "modelName": "opencode/glm-4.7-free",
+              "searchApiKey": "${{ secrets.IFLOW_API_KEY }}",
+              "mcpServers": {
+                "serena": {
+                  "command": "uv",
+                  "args": [
+                    "tool",
+                    "run",
+                    "--from",
+                    "git+https://github.com/oraios/serena",
+                    "serena",
+                    "start-mcp-server",
+                    "--context",
+                    "ide-assistant",
+                    "--project",
+                    "."
+                  ]
+                }
+              }
+            }
+          prompt: |
+            You are an autonomous coding agent running inside GitHub Actions for the repository $REPOSITORY.
+            Your goal is to make a selected pull request "green" (all CI checks passing) and mergeable.
+            You have access to:
+            - GitHub CLI (gh) authenticated with $GITHUB_TOKEN
+            - The local git checkout of the repo
+            - Serena MCP server via @serena for fast, structured code navigation and editing
+            - Node.js, npm, pnpm, yarn, corepack, and normal shell tools
+
+            High-level plan:
+            1. Work on the selected pull request $PR_NUMBER.
+            2. Collect PR metadata and discussion.
+            3. Use the existing build log at $BUILD_LOG_PATH to understand the failure.
+            4. Use Serena (@serena) to locate and change only the minimal necessary code.
+            5. Re-run tests locally until they pass.
+            6. Commit and push changes back to the PR branch.
+            7. Enable auto-merge or merge the PR when safe.
+
+            ===== Safety and constraints =====
+            - Never force-push to any shared branch.
+            - Do not rewrite history (no dangerous rebase) on default or shared branches.
+            - Do not disable tests, lint, or CI just to make things green.
+            - Do not change branch protection settings.
+            - Avoid leaking secrets or tokens into logs or PR comments.
+
+      - name: Retry iFlow Serena on failure (Attempt 3)
+        id: iflow_serena_retry_2
+        if: steps.iflow_serena_retry_1.outcome == 'failure'
+        uses: iflow-ai/iflow-cli-action@v2.2.1
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}
+          REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ needs.select_pr.outputs.pr_number }}
+          PR_TITLE: ${{ needs.select_pr.outputs.pr_title }}
+          PR_BODY: ${{ needs.select_pr.outputs.pr_body }}
+          PR_HEAD_REF: ${{ needs.select_pr.outputs.pr_head_ref }}
+          PR_BASE_REF: ${{ needs.select_pr.outputs.pr_base_ref }}
+          CUSTOM_PROMPT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.custom_prompt || '' }}
+          BUILD_LOG_PATH: artifacts/build.log
+        with:
+          api_key: ${{ secrets.IFLOW_API_KEY }}
+          model: 'opencode/glm-4.7-free'
+          timeout: '3600'
+          debug: 'true'
+          settings_json: |
+            {
+              "selectedAuthType": "iflow",
+              "apiKey": "${{ secrets.IFLOW_API_KEY }}",
+              "baseUrl": "https://apis.iflow.cn/v1",
+              "modelName": "opencode/glm-4.7-free",
+              "searchApiKey": "${{ secrets.IFLOW_API_KEY }}",
+              "mcpServers": {
+                "serena": {
+                  "command": "uv",
+                  "args": [
+                    "tool",
+                    "run",
+                    "--from",
+                    "git+https://github.com/oraios/serena",
+                    "serena",
+                    "start-mcp-server",
+                    "--context",
+                    "ide-assistant",
+                    "--project",
+                    "."
+                  ]
+                }
+              }
+            }
+          prompt: |
+            You are an autonomous coding agent running inside GitHub Actions for the repository $REPOSITORY.
+            Your goal is to make a selected pull request "green" (all CI checks passing) and mergeable.
+            You have access to:
+            - GitHub CLI (gh) authenticated with $GITHUB_TOKEN
+            - The local git checkout of the repo
+            - Serena MCP server via @serena for fast, structured code navigation and editing
+            - Node.js, npm, pnpm, yarn, corepack, and normal shell tools
+
+            High-level plan:
+            1. Work on the selected pull request $PR_NUMBER.
+            2. Collect PR metadata and discussion.
+            3. Use the existing build log at $BUILD_LOG_PATH to understand the failure.
+            4. Use Serena (@serena) to locate and change only the minimal necessary code.
+            5. Re-run tests locally until they pass.
+            6. Commit and push changes back to the PR branch.
+            7. Enable auto-merge or merge the PR when safe.
+
+            ===== Safety and constraints =====
+            - Never force-push to any shared branch.
+            - Do not rewrite history (no dangerous rebase) on default or shared branches.
+            - Do not disable tests, lint, or CI just to make things green.
+            - Do not change branch protection settings.
+            - Avoid leaking secrets or tokens into logs or PR comments.
+
+      - name: Log IFLOW service failure
+        if: steps.iflow_serena_retry_2.outcome == 'failure'
+        run: |
+          echo "::error::IFLOW service unavailable after 3 retry attempts in Serena workflow"
+          echo "::warning::Workflow will continue without IFLOW processing"
+          echo "iflow_failed=true" >> $GITHUB_ENV
+
+      - name: Create issue for IFLOW service outage
+        if: steps.iflow_serena_retry_2.outcome == 'failure'
+        run: |
+          gh issue create \
+            --title "🚨 IFLOW Service Outage (Serena) - $(date +%Y-%m-%d)" \
+            --body "IFLOW Serena CLI service is unavailable after 3 retry attempts.\\n\\n**Workflow**: ${{ github.workflow }}\\n**Run**: ${{ github.run_id }}\\n**Time**: $(date -u +%Y-%m-%dT%H:%M:%SZ)\\n\\nThis is an automated alert. Please check IFLOW service status." \
+            --label "bug,P0,integration-engineer"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -44,9 +44,14 @@ export const recommendationConfig = {
     ),
   },
 
-  // Diversity and Limits
+  // Diversity and Limits - Flexy hates hardcoded limits!
   limits: {
+    // Default number of recommendations to return
     maxRecommendations: parseInt(process.env.REC_MAX_RECOMMENDATIONS || '10'),
+    // Maximum allowed recommendations (API limit) - Flexy hates hardcoded 50!
+    maxRecommendationsLimit: parseInt(
+      process.env.REC_MAX_RECOMMENDATIONS_LIMIT || '50'
+    ),
     diversityFactor: parseFloat(process.env.REC_DIVERSITY_FACTOR || '0.3'),
     trendingLimit: parseInt(process.env.REC_TRENDING_LIMIT || '3'),
     popularLimit: parseInt(process.env.REC_POPULAR_LIMIT || '3'),

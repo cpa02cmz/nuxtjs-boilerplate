@@ -1,4 +1,4 @@
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, getCurrentInstance } from 'vue'
 import { patternsConfig } from '~/configs/patterns.config'
 
 type Theme = 'light' | 'dark' | 'system'
@@ -65,35 +65,38 @@ export function useTheme() {
   }
 
   // Watch for system preference changes
-  onMounted(() => {
-    isMounted.value = true
+  // BroCula fix: Only call onMounted if there's an active Vue instance
+  if (getCurrentInstance()) {
+    onMounted(() => {
+      isMounted.value = true
 
-    if (typeof localStorage !== 'undefined') {
-      const saved = localStorage.getItem(STORAGE_KEY) as Theme | null
-      if (saved && ['light', 'dark', 'system'].includes(saved)) {
-        theme.value = saved
+      if (typeof localStorage !== 'undefined') {
+        const saved = localStorage.getItem(STORAGE_KEY) as Theme | null
+        if (saved && ['light', 'dark', 'system'].includes(saved)) {
+          theme.value = saved
+        }
       }
-    }
 
-    updateThemeClass()
+      updateThemeClass()
 
-    // Listen for system preference changes
-    if (typeof window.matchMedia !== 'function') return
-    const mediaQuery = window.matchMedia(
-      patternsConfig.mediaQueries.prefersDark
-    )
-    const handleChange = () => {
-      if (theme.value === 'system') {
-        updateThemeClass()
+      // Listen for system preference changes
+      if (typeof window.matchMedia !== 'function') return
+      const mediaQuery = window.matchMedia(
+        patternsConfig.mediaQueries.prefersDark
+      )
+      const handleChange = () => {
+        if (theme.value === 'system') {
+          updateThemeClass()
+        }
       }
-    }
 
-    mediaQuery.addEventListener('change', handleChange)
+      mediaQuery.addEventListener('change', handleChange)
 
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange)
-    }
-  })
+      return () => {
+        mediaQuery.removeEventListener('change', handleChange)
+      }
+    })
+  }
 
   return {
     theme,

@@ -63,14 +63,19 @@
               'is-hovering': hoverIndex === index && !prefersReducedMotion,
               'is-pressed': pressedIndex === index,
               'is-focused': focusedIndex === index,
+              'is-loading': loadingIndex === index,
             }"
             :style="getButtonStyle(index)"
             :aria-label="
-              contentConfig.relatedSearches.aria.button.replace(
-                '{query}',
-                search
-              )
+              loadingIndex === index
+                ? `Loading search results for ${search}`
+                : contentConfig.relatedSearches.aria.button.replace(
+                  '{query}',
+                  search
+                )
             "
+            :aria-busy="loadingIndex === index ? 'true' : 'false'"
+            :disabled="loadingIndex === index"
             @click="handleClick(search, index, $event)"
             @mouseenter="handleMouseEnter(index)"
             @mouseleave="handleMouseLeave"
@@ -119,8 +124,37 @@
             <!-- Search text -->
             <span class="button-text">{{ search }}</span>
 
-            <!-- Arrow indicator on hover -->
+            <!-- Loading spinner for active search -->
             <span
+              v-if="loadingIndex === index"
+              class="button-loading"
+              aria-hidden="true"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-3 w-3 animate-spin"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                />
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+            </span>
+
+            <!-- Arrow indicator on hover (hidden when loading) -->
+            <span
+              v-else
               class="button-arrow"
               aria-hidden="true"
               :class="{ 'is-visible': hoverIndex === index }"
@@ -186,6 +220,7 @@ const { getRelatedSearches } = useAdvancedResourceSearch(resources.value)
 const hoverIndex = ref<number | null>(null)
 const pressedIndex = ref<number | null>(null)
 const focusedIndex = ref<number | null>(null)
+const loadingIndex = ref<number | null>(null) // 🎨 Pallete: Track loading state per button
 const ripples = ref<{ [key: number]: { x: number; y: number; size: number } }>(
   {}
 )
@@ -218,6 +253,9 @@ const getButtonStyle = (index: number) => {
 
 // Handle click with ripple and haptic feedback
 const handleClick = (search: string, index: number, event: MouseEvent) => {
+  // 🎨 Pallete: Set loading state for immediate visual feedback
+  loadingIndex.value = index
+
   // Create ripple effect
   const button = event.currentTarget as HTMLButtonElement
   const rect = button.getBoundingClientRect()
@@ -238,7 +276,7 @@ const handleClick = (search: string, index: number, event: MouseEvent) => {
   // Haptic feedback
   hapticLight()
 
-  // Announce for screen readers
+  // Announce for screen readers with loading state
   announcement.value =
     contentConfig.relatedSearches.announcement.searching.replace(
       '{query}',
@@ -255,7 +293,10 @@ const handleClick = (search: string, index: number, event: MouseEvent) => {
 
   // Show searching state
   isSearching.value = true
+
+  // 🎨 Pallete: Reset loading state after search duration
   setTimeout(() => {
+    loadingIndex.value = null
     isSearching.value = false
   }, uiTimingConfig.relatedSearches.searchDuration)
 
@@ -449,6 +490,19 @@ onUnmounted(() => {
   transition-duration: v-bind('animationConfig.cssTransitions.fastSec');
 }
 
+/* 🎨 Pallete: Loading state with visual feedback */
+.related-searches__button.is-loading {
+  cursor: wait;
+  opacity: 0.8;
+  background: v-bind('themeConfig.relatedSearches.button.loadingBg');
+}
+
+/* Disabled state */
+.related-searches__button:disabled {
+  cursor: wait;
+  pointer-events: none;
+}
+
 /* Focused state */
 .related-searches__button:focus {
   outline: none;
@@ -580,6 +634,53 @@ onUnmounted(() => {
 
   .animate-spin {
     animation: none;
+  }
+}
+
+/* 🎨 Pallete: Loading spinner styles for button feedback */
+.button-loading {
+  display: inline-flex;
+  align-items: center;
+  animation: loading-fade-in v-bind('animationConfig.cssTransitions.fastSec')
+    ease-out;
+}
+
+@keyframes loading-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Spin animation for loading state */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin
+    v-bind('animationConfig.optimizedImage.spinnerRotateDurationSec') linear
+    infinite;
+}
+
+/* Reduced motion support for loading spinner */
+@media (prefers-reduced-motion: reduce) {
+  .button-loading {
+    animation: none;
+  }
+
+  .animate-spin {
+    animation: none;
+    opacity: 0.5;
   }
 }
 
