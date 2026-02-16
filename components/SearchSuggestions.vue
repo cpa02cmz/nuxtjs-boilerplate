@@ -8,6 +8,9 @@
     ]"
     role="listbox"
     :aria-label="contentConfig.search.suggestions.title"
+    :aria-activedescendant="
+      focusedIndex >= 0 ? `${id}-item-${focusedIndex}` : undefined
+    "
     @keydown="handleKeyDown"
   >
     <!-- Search History Section -->
@@ -21,6 +24,7 @@
         <li
           v-for="(history, index) in searchHistory"
           :key="'history-' + index"
+          :id="`${id}-item-${index}`"
           :data-suggestion-index="index"
           role="option"
           :aria-selected="focusedIndex === index"
@@ -124,6 +128,7 @@
         <li
           v-for="(suggestion, index) in suggestions"
           :key="suggestion.id"
+          :id="`${id}-item-${searchHistory.length + index}`"
           :data-suggestion-index="searchHistory.length + index"
           role="option"
           :aria-selected="focusedIndex === searchHistory.length + index"
