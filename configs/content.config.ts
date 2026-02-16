@@ -445,6 +445,10 @@ export const contentConfig = {
     installSuccess:
       process.env.CONTENT_PWA_INSTALL_SUCCESS ||
       'App installed successfully! 🎉',
+    // Palette's micro-UX enhancement: Tooltip explaining PWA install benefits
+    installTooltip:
+      process.env.CONTENT_PWA_INSTALL_TOOLTIP ||
+      'Install this app for quick access from your home screen, even when offline',
     // ARIA labels
     aria: {
       installPrompt:

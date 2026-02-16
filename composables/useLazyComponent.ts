@@ -25,12 +25,15 @@ export function useLazyComponent(
   options: LazyComponentOptions = {}
 ) {
   const {
-    rootMargin = '50px',
-    threshold = 0.1,
-    delay = 0,
+    // Flexy hates hardcoded '50px'! Using config instead
+    rootMargin = performanceConfig.lazyLoading.rootMargin,
+    // Flexy hates hardcoded 0.1! Using config instead
+    threshold = performanceConfig.lazyLoading.threshold,
+    // Flexy hates hardcoded 0! Using config instead
+    delay = performanceConfig.lazyLoading.delay,
     loadingComponent,
     errorComponent,
-    // Flexy hates hardcoded 10000!
+    // Flexy hates hardcoded 10000! Using config instead
     timeout = performanceConfig.lazyLoading.timeout,
   } = options
 

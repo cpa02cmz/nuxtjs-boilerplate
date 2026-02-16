@@ -54,7 +54,8 @@ const props = withDefaults(defineProps<Props>(), {
   tooltipPosition: 'top',
   tooltipDelay: animationConfig.tooltip.showDelayMs,
   showLiveIndicator: true,
-  recentThresholdSec: 300,
+  // Flexy hates hardcoded 300! Using config instead
+  recentThresholdSec: animationConfig.relativeTimeBadge.recentThresholdSec,
   size: 'small',
 })
 
