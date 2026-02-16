@@ -1,15 +1,10 @@
 import { computed } from 'vue'
 import { useResources } from '~/composables/useResources'
+import { categoriesConfig } from '~/configs/categories.config'
 
-const AI_CATEGORIES = [
-  'AI Tools',
-  'AI & Machine Learning',
-  'ai tools',
-  'AI/ML',
-] as const
-
+// Flexy hates hardcoded AI categories! Now using categoriesConfig.ai.categories
 function isAICategory(category: string): boolean {
-  return AI_CATEGORIES.some(aiCategory =>
+  return categoriesConfig.ai.categories.some(aiCategory =>
     category.toLowerCase().includes(aiCategory.toLowerCase())
   )
 }
