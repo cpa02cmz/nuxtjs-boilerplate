@@ -1032,6 +1032,8 @@ export const contentConfig = {
       create: process.env.CONTENT_API_KEYS_BTN_CREATE || 'Create API Key',
       createSubmit:
         process.env.CONTENT_API_KEYS_BTN_CREATE_SUBMIT || 'Create API Key',
+      // Pallete: Loading button text for better UX feedback
+      creating: process.env.CONTENT_API_KEYS_BTN_CREATING || 'Creating...',
       generate: process.env.CONTENT_API_KEYS_BTN_GENERATE || 'Generate API Key',
       revoke: process.env.CONTENT_API_KEYS_BTN_REVOKE || 'Revoke',
       cancel: process.env.CONTENT_API_KEYS_BTN_CANCEL || 'Cancel',
