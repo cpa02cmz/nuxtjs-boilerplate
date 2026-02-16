@@ -7,50 +7,49 @@
     />
 
     <!-- Smart Paste indicator - Palette's micro-UX enhancement! -->
-    <ClientOnly>
-      <Teleport to="body">
-        <Transition
-          enter-active-class="transition-all duration-200 ease-out"
-          enter-from-class="opacity-0 scale-75 translate-y-2"
-          enter-to-class="opacity-100 scale-100 translate-y-0"
-          leave-active-class="transition-all duration-150 ease-in"
-          leave-from-class="opacity-100 scale-100 translate-y-0"
-          leave-to-class="opacity-0 scale-75 -translate-y-1"
+    <!-- Note: No <ClientOnly> needed here because the page has ssr: false in definePageMeta -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition-all duration-200 ease-out"
+        enter-from-class="opacity-0 scale-75 translate-y-2"
+        enter-to-class="opacity-100 scale-100 translate-y-0"
+        leave-active-class="transition-all duration-150 ease-in"
+        leave-from-class="opacity-100 scale-100 translate-y-0"
+        leave-to-class="opacity-0 scale-75 -translate-y-1"
+      >
+        <div
+          v-if="smartPasteState.showIndicator"
+          class="paste-indicator fixed z-50 px-3 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg shadow-lg pointer-events-none whitespace-nowrap"
+          :style="{
+            left: `${smartPasteState.indicatorPosition.x}px`,
+            top: `${smartPasteState.indicatorPosition.y}px`,
+          }"
+          role="status"
+          aria-live="polite"
         >
-          <div
-            v-if="smartPasteState.showIndicator"
-            class="paste-indicator fixed z-50 px-3 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg shadow-lg pointer-events-none whitespace-nowrap"
-            :style="{
-              left: `${smartPasteState.indicatorPosition.x}px`,
-              top: `${smartPasteState.indicatorPosition.y}px`,
-            }"
-            role="status"
-            aria-live="polite"
-          >
-            <span class="flex items-center gap-1.5">
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-              {{ smartPasteState.indicatorMessage }}
-            </span>
-            <!-- Arrow pointing down -->
-            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5">
-              <div class="w-2 h-2 bg-teal-600 transform rotate-45" />
-            </div>
+          <span class="flex items-center gap-1.5">
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+            {{ smartPasteState.indicatorMessage }}
+          </span>
+          <!-- Arrow pointing down -->
+          <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5">
+            <div class="w-2 h-2 bg-teal-600 transform rotate-45" />
           </div>
-        </Transition>
-      </Teleport>
-    </ClientOnly>
+        </div>
+      </Transition>
+    </Teleport>
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-12">
         <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
@@ -67,7 +66,7 @@
           novalidate
           @submit.prevent="handleSubmitWithShake"
         >
-          <div>
+          <div ref="titleFieldRef">
             <!-- Floating Label Container - Palette's micro-UX delight! -->
             <div
               class="floating-label-container relative"
@@ -183,7 +182,7 @@
             </div>
           </div>
 
-          <div>
+          <div ref="descriptionFieldRef">
             <label
               for="description"
               class="block text-sm font-medium text-gray-700 mb-1"
@@ -194,6 +193,7 @@
             <div class="relative">
               <textarea
                 id="description"
+                ref="descriptionInput"
                 v-model="formData.description"
                 required
                 :rows="uiConfig.form.textareaRows"
@@ -285,7 +285,7 @@
             </div>
           </div>
 
-          <div>
+          <div ref="urlFieldRef">
             <!-- Floating Label Container - Palette's micro-UX delight! -->
             <div
               class="floating-label-container relative"
@@ -365,7 +365,7 @@
             </div>
           </div>
 
-          <div>
+          <div ref="categoryFieldRef">
             <label
               for="category"
               class="block text-sm font-medium text-gray-700 mb-1"
@@ -376,6 +376,7 @@
             <div class="relative">
               <select
                 id="category"
+                ref="categoryInput"
                 v-model="formData.category"
                 required
                 aria-required="true"
@@ -517,14 +518,12 @@
                   v-if="showSavedIndicator && lastSavedTimestamp"
                   class="flex items-center text-xs text-green-600 relative"
                 >
-                  <!-- Pulse ring animation container - ClientOnly to prevent hydration mismatch -->
-                  <ClientOnly>
-                    <div
-                      v-if="showDraftPulse && !prefersReducedMotion"
-                      class="draft-save-pulse-ring"
-                      aria-hidden="true"
-                    />
-                  </ClientOnly>
+                  <!-- Pulse ring animation container - No ClientOnly needed as page has ssr: false -->
+                  <div
+                    v-if="showDraftPulse && !prefersReducedMotion"
+                    class="draft-save-pulse-ring"
+                    aria-hidden="true"
+                  />
                   <svg
                     class="w-3.5 h-3.5 mr-1.5 relative z-10"
                     fill="none"
@@ -670,7 +669,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onUnmounted } from 'vue'
+import { ref, watch, computed, onUnmounted, nextTick, type Ref } from 'vue'
 import { useNuxtApp } from '#app'
 import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
@@ -822,6 +821,50 @@ const handleSubmitWithShake = async () => {
     shakeTimeout.value = setTimeout(() => {
       shakeFields.value = {}
     }, animationConfig.validation.shakeDurationMs)
+
+    // Pallete's micro-UX enhancement: Scroll to first error for better accessibility
+    // This ensures users can immediately see and fix validation errors
+    nextTick(() => {
+      const fieldOrder = ['title', 'description', 'url', 'category']
+      const fieldRefs: Record<string, Ref<HTMLElement | null>> = {
+        title: titleFieldRef,
+        description: descriptionFieldRef,
+        url: urlFieldRef,
+        category: categoryFieldRef,
+      }
+      const inputRefs: Record<string, Ref<HTMLInputElement | null>> = {
+        title: titleInput,
+        description: descriptionInput,
+        url: urlInputRef,
+        category: categoryInput,
+      }
+
+      // Find the first field with an error in the defined order
+      const firstErrorField = fieldOrder.find(field => errors.value[field])
+
+      if (firstErrorField) {
+        const fieldElement = fieldRefs[firstErrorField]?.value
+        const inputElement = inputRefs[firstErrorField]?.value
+
+        if (fieldElement) {
+          // Smooth scroll to the field with error
+          fieldElement.scrollIntoView({
+            behavior: prefersReducedMotion.value ? 'auto' : 'smooth',
+            block: 'center',
+          })
+
+          // Focus the input after scroll completes for keyboard accessibility
+          setTimeout(
+            () => {
+              inputElement?.focus()
+            },
+            prefersReducedMotion.value
+              ? 0
+              : animationConfig.validation.scrollToErrorDelayMs
+          )
+        }
+      }
+    })
   }
 
   // Proceed with submission if valid
@@ -846,6 +889,18 @@ const maxTitleLength = validationConfig.resource.name.maxLength
 const maxDescriptionLength = validationConfig.resource.description.maxLength
 
 const titleInput = ref<HTMLInputElement | null>(null)
+
+// Pallete's micro-UX enhancement: Input refs for focus management
+// Enables keyboard focus when scrolling to validation errors
+const descriptionInput = ref<HTMLTextAreaElement | null>(null)
+const categoryInput = ref<HTMLSelectElement | null>(null)
+
+// Pallete's micro-UX enhancement: Template refs for form field containers
+// Enables smooth scroll-to-error functionality for better accessibility
+const titleFieldRef = ref<HTMLElement | null>(null)
+const descriptionFieldRef = ref<HTMLElement | null>(null)
+const urlFieldRef = ref<HTMLElement | null>(null)
+const categoryFieldRef = ref<HTMLElement | null>(null)
 
 // Focus states for character counters
 const isTitleFocused = ref(false)
