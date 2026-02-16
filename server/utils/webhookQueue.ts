@@ -37,10 +37,17 @@ export class WebhookQueueSystem {
     } = options
 
     if (async) {
+      // Return promise so caller can await or catch errors - Integration Engineer fix for issue #3091
       return this.queueWebhook(webhook, payload, {
         maxRetries,
         initialDelayMs,
         priority,
+      }).catch(error => {
+        logger.error('Async webhook enqueue failed', {
+          webhookId: webhook.id,
+          error: error instanceof Error ? error.message : String(error),
+        })
+        return false
       })
     }
 
@@ -114,9 +121,13 @@ export class WebhookQueueSystem {
     }
 
     await webhookQueueManager.enqueue(queueItem)
-    webhookQueueManager.startProcessor(async item => {
-      await this.processQueueItem(item)
-    })
+
+    // FIX #3058: Only start processor if not already running to prevent multiple processors
+    if (!webhookQueueManager.isRunning()) {
+      webhookQueueManager.startProcessor(async item => {
+        await this.processQueueItem(item)
+      })
+    }
 
     return true
   }

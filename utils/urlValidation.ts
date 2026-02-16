@@ -198,9 +198,10 @@ async function fetchUrlWithTimeout(
 ): Promise<UrlValidationResult> {
   const startTime = Date.now()
 
-  // Create a timeout promise
+  // FIX #3085: Store timeout ID to clear it later and prevent memory leak
+  let timeoutId: NodeJS.Timeout
   const timeoutPromise = new Promise<never>((_, reject) => {
-    setTimeout(() => {
+    timeoutId = setTimeout(() => {
       reject(new Error(`Request timeout after ${timeout}ms`))
     }, timeout)
   })
@@ -218,10 +219,21 @@ async function fetchUrlWithTimeout(
       timeoutPromise,
     ])
 
+    // FIX #3085: Clear timeout when request succeeds to prevent memory leak
+    clearTimeout(timeoutId!)
+
     const responseTime = Date.now() - startTime
 
     // If HEAD method is not allowed, try GET request
     if (response.status === 405) {
+      // FIX #3085: Create new timeout for the GET request
+      let getTimeoutId: NodeJS.Timeout
+      const getTimeoutPromise = new Promise<never>((_, reject) => {
+        getTimeoutId = setTimeout(() => {
+          reject(new Error(`Request timeout after ${timeout}ms`))
+        }, timeout)
+      })
+
       const getResponse = await Promise.race([
         fetch(url, {
           method: 'GET',
@@ -230,8 +242,11 @@ async function fetchUrlWithTimeout(
             'User-Agent': httpConfig.userAgent.full,
           },
         }),
-        timeoutPromise,
+        getTimeoutPromise,
       ])
+
+      // FIX #3085: Clear timeout when GET request succeeds
+      clearTimeout(getTimeoutId!)
 
       const getResponseTime = Date.now() - startTime
 
@@ -257,7 +272,18 @@ async function fetchUrlWithTimeout(
       timestamp: new Date().toISOString(),
     }
   } catch {
+    // FIX #3085: Clear original timeout before trying GET request
+    clearTimeout(timeoutId!)
+
     try {
+      // FIX #3085: Create new timeout for the fallback GET request
+      let fallbackTimeoutId: NodeJS.Timeout
+      const fallbackTimeoutPromise = new Promise<never>((_, reject) => {
+        fallbackTimeoutId = setTimeout(() => {
+          reject(new Error(`Request timeout after ${timeout}ms`))
+        }, timeout)
+      })
+
       const getResponse = await Promise.race([
         fetch(url, {
           method: 'GET',
@@ -266,8 +292,11 @@ async function fetchUrlWithTimeout(
             'User-Agent': httpConfig.userAgent.full,
           },
         }),
-        timeoutPromise,
+        fallbackTimeoutPromise,
       ])
+
+      // FIX #3085: Clear timeout when fallback request succeeds
+      clearTimeout(fallbackTimeoutId!)
 
       const responseTime = Date.now() - startTime
 
