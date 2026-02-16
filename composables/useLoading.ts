@@ -1,4 +1,4 @@
-import { reactive, readonly, onUnmounted, ref } from 'vue'
+import { reactive, readonly, onUnmounted, ref, getCurrentInstance } from 'vue'
 import { UI_FEEDBACK_DURATION } from '~/server/utils/constants'
 import { messagesConfig } from '~/configs/messages.config'
 
@@ -98,10 +98,13 @@ export const useLoading = () => {
   }
 
   // Cleanup all timeouts on component unmount
-  onUnmounted(() => {
-    timeoutIds.value.forEach(id => clearTimeout(id))
-    timeoutIds.value = []
-  })
+  // BugFixer: Only register onUnmounted if we're in a component context
+  if (getCurrentInstance()) {
+    onUnmounted(() => {
+      timeoutIds.value.forEach(id => clearTimeout(id))
+      timeoutIds.value = []
+    })
+  }
 
   return {
     loadingState: readonly(loadingState),
