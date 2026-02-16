@@ -3883,6 +3883,29 @@ export const animationConfig = {
     // Button glow pulse duration (seconds)
     btnGlowDurationSec: `${parseInt(process.env.WEBHOOK_FORM_BTN_GLOW_DURATION_MS || '2000') / 1000}s`,
   },
+
+  // Resource Filters Animations - Pallete's micro-UX enhancement! 🎨
+  // Entrance animations and micro-interactions for the resource filters panel
+  resourceFilters: {
+    // Initial delay before entrance animation starts (ms)
+    entranceDelayMs: parseInt(
+      process.env.RESOURCE_FILTERS_ENTRANCE_DELAY_MS || '100'
+    ),
+    // Duration of each section's entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.RESOURCE_FILTERS_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Stagger delay between filter sections (ms)
+    staggerDelayMs: parseInt(
+      process.env.RESOURCE_FILTERS_STAGGER_DELAY_MS || '80'
+    ),
+    // Maximum stagger delay to prevent excessive waiting (ms)
+    maxStaggerDelayMs: parseInt(
+      process.env.RESOURCE_FILTERS_MAX_STAGGER_DELAY_MS || '400'
+    ),
+    // Easing function for entrance animations
+    entranceEasing: EASING_REF.SPRING_SNAPPY,
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
