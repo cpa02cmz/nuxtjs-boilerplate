@@ -3,6 +3,7 @@
 import { ref, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
 import type { Component } from 'vue'
 import { performanceConfig } from '~/configs/performance.config'
+import { logger } from '~/utils/logger'
 
 interface LazyComponentOptions {
   // Root margin for intersection observer
@@ -54,7 +55,7 @@ export function useLazyComponent(
     delay: 0,
     timeout,
     onError: (error: Error) => {
-      console.error('Failed to load lazy component:', error)
+      logger.error('Failed to load lazy component:', error)
       hasError.value = true
     },
   })
