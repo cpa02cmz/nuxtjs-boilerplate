@@ -106,10 +106,7 @@
           @mouseenter="isHandleHovered = true"
           @mouseleave="isHandleHovered = false"
         >
-          <div
-            class="drawer-handle-bar"
-            :style="handleStyle"
-          />
+          <div class="drawer-handle-bar" :style="handleStyle" />
           <div
             v-if="!prefersReducedMotion && swipeProgress > 0"
             class="drawer-handle-glow"
@@ -211,9 +208,11 @@
             @touchstart="isResultsButtonPressed = true"
             @touchend="isResultsButtonPressed = false"
           >
-            <span class="button-text">Show {{ resultsCount }} result{{
-              resultsCount === 1 ? '' : 's'
-            }}</span>
+            <span class="button-text"
+              >Show {{ resultsCount }} result{{
+                resultsCount === 1 ? '' : 's'
+              }}</span
+            >
             <svg
               v-if="resultsCount > 0"
               class="ml-2 w-4 h-4 arrow-icon"
@@ -334,8 +333,8 @@ const drawerStyle = computed(() => {
 
   const translateX = Math.max(0, swipeCurrentX.value - swipeStartX.value)
 
-  // Apply spring-like resistance
-  const resistance = 0.8
+  // Apply spring-like resistance - Flexy hates hardcoded 0.8! Using config instead
+  const resistance = animationConfig.mobileFilterDrawer.swipeResistance
   const effectiveTranslate = translateX * resistance
 
   return {
