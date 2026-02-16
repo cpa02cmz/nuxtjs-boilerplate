@@ -113,6 +113,7 @@ import { validationConfig } from '~/configs/validation.config'
 import { zIndexScale } from '~/configs/z-index.config'
 import { uiConfig } from '~/configs/ui.config'
 import { hapticLight, hapticError, hapticSuccess } from '~/utils/hapticFeedback'
+import { useReducedMotion } from '~/composables/useReducedMotion'
 
 interface Props {
   /** Current character count */
@@ -141,6 +142,9 @@ const props = withDefaults(defineProps<Props>(), {
   strokeWidth: validationConfig.characterCounter.strokeWidthPx,
   isFocused: false,
 })
+
+// Accessibility: Check for reduced motion preference
+const { prefersReducedMotion } = useReducedMotion()
 
 // Computed values for SVG
 const svgSize = computed(() => props.ringSize)
