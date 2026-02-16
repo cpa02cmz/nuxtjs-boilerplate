@@ -17,6 +17,28 @@
       />
     </div>
 
+    <!-- Palette's micro-UX enhancement: Character Limit Celebration Particle Burst 🎉
+         A delightful burst of particles when user reaches the exact character limit -->
+    <TransitionGroup
+      v-if="showCelebrationParticles && !prefersReducedMotion"
+      tag="div"
+      class="celebration-particle-container"
+      aria-hidden="true"
+    >
+      <span
+        v-for="particle in celebrationParticles"
+        :key="particle.id"
+        class="celebration-particle"
+        :style="{
+          '--particle-x': `${particle.x}px`,
+          '--particle-y': `${particle.y}px`,
+          '--particle-color': particle.color,
+          '--particle-size': `${particle.size}px`,
+          '--particle-rotation': `${particle.rotation}deg`,
+        }"
+      />
+    </TransitionGroup>
+
     <!-- Visual Progress Ring Counter - Palette's micro-UX delight! -->
     <div
       v-if="showCounter"
@@ -233,21 +255,6 @@ const screenReaderAnnouncement = computed(() => {
 })
 
 // Check for reduced motion preference
-const prefersReducedMotion = ref(false)
-
-// Unique ID for accessibility associations
-const counterId = ref(
-  `character-counter-${Math.random().toString(36).substr(2, 9)}`
-)
-
-// Palette's micro-UX enhancement: Haptic feedback on state transitions
-// Track previous state to trigger feedback only on transitions, not continuously
-const previousState = ref<'normal' | 'warning' | 'complete' | 'error'>('normal')
-const hasTriggeredWarning = ref(false)
-const hasTriggeredError = ref(false)
-const hasTriggeredComplete = ref(false)
-
-// Check for reduced motion preference
 const checkReducedMotion = () => {
   if (
     typeof window === 'undefined' ||
@@ -256,6 +263,45 @@ const checkReducedMotion = () => {
     return false
   }
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+const prefersReducedMotion = ref(false)
+
+// Unique ID for accessibility associations
+const counterId = ref(
+  `character-counter-${Math.random().toString(36).substr(2, 9)}`
+)
+
+// Palette's micro-UX enhancement: Character limit celebration particle burst state 🎉
+const showCelebrationParticles = ref(false)
+const celebrationParticles = ref<
+  Array<{
+    id: number
+    x: number
+    y: number
+    color: string
+    size: number
+    rotation: number
+  }>
+>([])
+let celebrationTimeout: ReturnType<typeof setTimeout> | null = null
+const hasCelebrated = ref(false)
+
+// Palette's micro-UX enhancement: Haptic feedback on state transitions
+// Track previous state to trigger feedback only on transitions, not continuously
+const previousState = ref<'normal' | 'warning' | 'complete' | 'error'>('normal')
+const hasTriggeredWarning = ref(false)
+const hasTriggeredError = ref(false)
+const hasTriggeredComplete = ref(false)
+
+// Initialize reduced motion preference on client side
+if (typeof window !== 'undefined') {
+  prefersReducedMotion.value = checkReducedMotion()
+  // Listen for changes
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  mediaQuery.addEventListener('change', e => {
+    prefersReducedMotion.value = e.matches
+  })
 }
 
 // Watch for state changes and trigger haptic feedback
@@ -279,11 +325,15 @@ watch(
       hapticError()
       hasTriggeredError.value = true
       hasTriggeredWarning.value = true // Error includes warning state
+      // Reset celebration flag when going over limit
+      hasCelebrated.value = false
     } else if (currentState === 'complete' && !hasTriggeredComplete.value) {
       // Success feedback when reaching exactly max characters
       hapticSuccess()
       hasTriggeredComplete.value = true
       hasTriggeredWarning.value = true
+      // Trigger particle burst celebration! 🎉
+      triggerCelebration()
     } else if (
       currentState === 'warning' &&
       !hasTriggeredWarning.value &&
@@ -300,6 +350,7 @@ watch(
       hasTriggeredWarning.value = false
       hasTriggeredError.value = false
       hasTriggeredComplete.value = false
+      hasCelebrated.value = false
     }
 
     previousState.value = currentState
@@ -310,6 +361,57 @@ watch(
 const shadowColorDefault = computed(
   () => componentColorsConfig.shadows.light.default
 )
+
+// Palette's micro-UX enhancement: Generate celebration particles when reaching limit
+const generateCelebrationParticles = () => {
+  const config = animationConfig.copyParticles
+  const count = config.particleCount
+  const newParticles = []
+
+  for (let i = 0; i < count; i++) {
+    const angle = (360 / count) * i + Math.random() * 30
+    const radians = (angle * Math.PI) / 180
+    const distance = config.spreadPx * (0.7 + Math.random() * 0.6)
+    const x = Math.cos(radians) * distance
+    const y = Math.sin(radians) * distance
+
+    newParticles.push({
+      id: Date.now() + i,
+      x,
+      y,
+      color: config.colors[Math.floor(Math.random() * config.colors.length)],
+      size:
+        config.minSizePx +
+        Math.random() * (config.maxSizePx - config.minSizePx),
+      rotation: Math.random() * 360,
+    })
+  }
+
+  return newParticles
+}
+
+// Trigger character limit celebration with particle burst
+const triggerCelebration = () => {
+  if (checkReducedMotion() || hasCelebrated.value) return
+
+  hasCelebrated.value = true
+  celebrationParticles.value = generateCelebrationParticles()
+  showCelebrationParticles.value = true
+
+  // Haptic feedback for celebration
+  hapticSuccess()
+
+  // Hide particles after animation completes
+  const duration =
+    (animationConfig.copyParticles?.durationMs || 800) +
+    (animationConfig.copyParticles?.fadeDelayMs || 200)
+
+  if (celebrationTimeout) clearTimeout(celebrationTimeout)
+  celebrationTimeout = setTimeout(() => {
+    showCelebrationParticles.value = false
+    celebrationParticles.value = []
+  }, duration)
+}
 </script>
 
 <style scoped>
@@ -538,5 +640,86 @@ const shadowColorDefault = computed(
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+/* Palette's micro-UX enhancement: Character Limit Celebration Particle Burst Styles 🎉 */
+.celebration-particle-container {
+  position: absolute;
+  top: 50%;
+  right: v-bind(
+    'validationConfig.characterCounter.positionOffsetPx + 12 + "px"'
+  );
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: v-bind('zIndexScale.low[10]');
+}
+
+.celebration-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  background: var(--particle-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(var(--particle-rotation));
+  animation: celebration-particle-burst
+    v-bind('`${animationConfig.copyParticles?.durationMs || 800}ms`') ease-out
+    forwards;
+  opacity: 0;
+}
+
+@keyframes celebration-particle-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(
+        calc(-50% + var(--particle-x) * 0.5),
+        calc(-50% + var(--particle-y) * 0.5)
+      )
+      scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+        calc(-50% + var(--particle-x)),
+        calc(-50% + var(--particle-y))
+      )
+      scale(0.2);
+  }
+}
+
+/* Star-shaped particle variant */
+.celebration-particle:nth-child(3n) {
+  border-radius: 0;
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+
+/* Diamond-shaped particle variant */
+.celebration-particle:nth-child(5n) {
+  border-radius: 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* Reduced motion support for celebration particles */
+@media (prefers-reduced-motion: reduce) {
+  .celebration-particle-container {
+    display: none;
+  }
 }
 </style>
