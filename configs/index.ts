@@ -95,157 +95,7 @@ import {
   type RoutesConfig,
 } from './routes.config'
 import { memoizeConfig, type MemoizeConfig } from './memoize.config'
-import {
-  categoriesConfig,
-  type CategoriesConfig,
-  type CategoryOption,
-} from './categories.config'
-import { animationConfig, type AnimationConfig } from './animation.config'
-import { thresholdsConfig, type ThresholdsConfig } from './thresholds.config'
-import { bookmarksConfig, type BookmarksConfig } from './bookmarks.config'
-
-// Analytics demo data config - Flexy hates hardcoded mock data!
-import {
-  analyticsDemoData,
-  getAnalyticsDemoData,
-  type AnalyticsDemoData,
-} from './analytics-demo.config'
-
-// New configs - Flexy hates hardcoded values!
-import { userConfig, type UserConfig } from './user.config'
-import { moderationConfig, type ModerationConfig } from './moderation.config'
-import { permissionsConfig, type PermissionsConfig } from './permissions.config'
-import {
-  componentColorsConfig,
-  type ComponentColorsConfig,
-} from './component-colors.config'
-import {
-  componentStylesConfig,
-  type ComponentStylesConfig,
-} from './component-styles.config'
-import { shadowsConfig, type ShadowsConfig } from './shadows.config'
-
-// Z-Index config - Flexy hates hardcoded z-index values!
-import {
-  zIndexConfig,
-  zIndexScale,
-  generateZIndexCSSVariables,
-  type ZIndexConfig,
-  type ZIndexScale,
-} from './z-index.config'
-
-// URL config - Flexy hates hardcoded URLs!
-import {
-  urlConfig,
-  DEFAULT_DEV_URL,
-  DEFAULT_PROD_URL,
-  DEV_PORTS,
-  getBaseUrl,
-  getFallbackUrl,
-  buildUrl,
-  buildApiUrl,
-  isLocalhost,
-  getSeoUrl,
-  type UrlConfig,
-  type DevPorts,
-} from './url.config'
-
-// Network config - Flexy hates hardcoded network errors!
-import { networkConfig } from './network.config'
-
-// Re-export individual configs
-export { appConfig, type AppConfig }
-export { themeConfig, type ThemeConfig }
-export { seoConfig, type SeoConfig }
-export { searchConfig, type SearchConfig }
-export { securityConfig, generateCsp, getSecurityHeaders, type SecurityConfig }
-export {
-  rateLimitConfig,
-  getRateLimitTier,
-  type RateLimitConfig,
-  type RateLimitTier,
-}
-export { cacheConfig, type CacheConfig }
-export { webhooksConfig, type WebhooksConfig }
-export { paginationConfig, type PaginationConfig }
-export { validationConfig, type ValidationConfig }
-export { analyticsConfig, type AnalyticsConfig }
-export { uiConfig, type UiConfig }
-export { pwaConfig, type PwaConfig }
-export { apiConfig, type ApiConfig }
-export { contentConfig, type ContentConfig }
-export { limitsConfig, type LimitsConfig }
-export { comparisonConfig, type ComparisonConfig }
-
-// Re-export new modular configs
-export { socialConfig, type SocialConfig }
-export { dateConfig, type DateConfig }
-export {
-  csrfConfig,
-  isSafeMethod,
-  isStateChangingMethod,
-  requiresCsrfProtection,
-  type CsrfConfig,
-  type SafeMethod,
-  type StateChangingMethod,
-}
-export {
-  httpConfig,
-  isSuccessStatus,
-  isRedirectStatus,
-  isClientErrorStatus,
-  isServerErrorStatus,
-  isErrorStatus,
-  type HttpConfig,
-  type HttpMethod,
-  type HttpStatus,
-  type HttpHeader,
-  type ContentType,
-}
-export {
-  TIME_MS,
-  TIME_SECONDS,
-  timeConfig,
-  toMilliseconds,
-  toSeconds,
-  toMinutes,
-  toHours,
-  toDays,
-  formatDuration,
-  type TimeMs,
-  type TimeSeconds,
-  type TimeConfig,
-}
-export {
-  cacheTagsConfig,
-  generateCacheTags,
-  getResourceCacheTags,
-  getSearchCacheTags,
-  type CacheTagsConfig,
-}
-export {
-  sitemapConfig,
-  getStaticPages,
-  getResourceSitemapDefaults,
-  type SitemapConfig,
-  type SitemapPageEntry,
-}
-export { iconsConfig, type IconsConfig }
-export {
-  ROUTE_PATTERNS,
-  routesConfig,
-  isApiRoute,
-  isProtectedApiRoute,
-  isPublicApiRoute,
-  isStaticBuildPath,
-  isCacheablePage,
-  type RoutePatterns,
-  type RoutesConfig,
-}
-export { memoizeConfig, type MemoizeConfig }
-export { categoriesConfig, type CategoriesConfig, type CategoryOption }
-export { animationConfig, type AnimationConfig }
-export { thresholdsConfig, type ThresholdsConfig }
+import { performanceConfig } from './performance.config'
 export { bookmarksConfig, type BookmarksConfig }
 
 // Re-export analytics demo config - Flexy hates hardcoded mock data!
@@ -362,6 +212,8 @@ export const config = {
   categories: categoriesConfig,
   animation: animationConfig,
   thresholds: thresholdsConfig,
+  // Issue #2404: Performance optimization config for Lighthouse 90+ score
+  performance: performanceConfig,
   // URL config - Flexy hates hardcoded URLs!
   url: urlConfig,
   // Bookmarks config - Flexy hates hardcoded bookmark values!
