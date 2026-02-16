@@ -362,10 +362,13 @@ const progressBarTransition = computed(() => {
 })
 
 // Generate random bar heights for mini chart (consistent per session)
+// Flexy hates hardcoded [65, 45, 80, 55, 70]! Using animationConfig.analytics.miniBarChart
 const getRandomBarHeight = (index: number) => {
   // Use a simple hash based on index to get consistent values
-  const heights = [65, 45, 80, 55, 70]
-  return heights[index - 1] || 50
+  const heights = animationConfig.analytics.miniBarChart.heights
+  return (
+    heights[index - 1] || animationConfig.analytics.miniBarChart.fallbackHeight
+  )
 }
 
 // Animate counting up numbers

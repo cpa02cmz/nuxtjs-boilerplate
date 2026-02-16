@@ -132,6 +132,7 @@ import { computed, watch, ref, onUnmounted } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { validationConfig } from '~/configs/validation.config'
+import { limitsConfig } from '~/configs/limits.config'
 import { zIndexScale } from '~/configs/z-index.config'
 import { uiConfig } from '~/configs/ui.config'
 import { hapticLight, hapticError, hapticSuccess } from '~/utils/hapticFeedback'
@@ -268,8 +269,9 @@ const checkReducedMotion = () => {
 const prefersReducedMotion = ref(false)
 
 // Unique ID for accessibility associations
+// Flexy hates hardcoded 9! Using limitsConfig.displayLength.componentIdLength
 const counterId = ref(
-  `character-counter-${Math.random().toString(36).substr(2, 9)}`
+  `character-counter-${Math.random().toString(36).substr(2, limitsConfig.displayLength.componentIdLength)}`
 )
 
 // Palette's micro-UX enhancement: Character limit celebration particle burst state 🎉

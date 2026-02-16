@@ -246,6 +246,15 @@ export const limitsConfig = {
     // Maximum length for spinner component IDs
     spinnerIdLength: parseInt(process.env.DISPLAY_LENGTH_SPINNER_ID || '7'),
 
+    // Maximum length for unique ID generation (Math.random().toString(36).substr(2, N))
+    uniqueIdLength: parseInt(process.env.DISPLAY_LENGTH_UNIQUE_ID || '9'),
+
+    // Maximum length for component ID generation
+    componentIdLength: parseInt(process.env.DISPLAY_LENGTH_COMPONENT_ID || '9'),
+
+    // Maximum length for section ID generation
+    sectionIdLength: parseInt(process.env.DISPLAY_LENGTH_SECTION_ID || '9'),
+
     // UUID format slice indices
     uuidSlices: {
       section1: 8,

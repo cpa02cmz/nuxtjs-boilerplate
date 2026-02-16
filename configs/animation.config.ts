@@ -3242,6 +3242,17 @@ export const animationConfig = {
         process.env.ANALYTICS_PROGRESS_EASING ||
         EASING_CONFIG.cubicBezier.spring,
     },
+    // Mini bar chart visualization - Flexy hates hardcoded bar heights!
+    miniBarChart: {
+      // Default bar heights for mini chart visualization (percentages)
+      heights: process.env.ANALYTICS_MINI_BAR_HEIGHTS
+        ? process.env.ANALYTICS_MINI_BAR_HEIGHTS.split(',').map(Number)
+        : [65, 45, 80, 55, 70],
+      // Fallback height when index is out of range
+      fallbackHeight: parseInt(
+        process.env.ANALYTICS_MINI_BAR_FALLBACK_HEIGHT || '50'
+      ),
+    },
   },
 
   // Search Analytics Animations - Flexy hates hardcoded timing values!

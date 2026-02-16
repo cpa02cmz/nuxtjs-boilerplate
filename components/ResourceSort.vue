@@ -221,6 +221,7 @@ import { contentConfig } from '~/configs/content.config'
 import { EASING, easingConfig } from '~/configs/easing.config'
 import { animationConfig } from '~/configs/animation.config'
 import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
+import { limitsConfig } from '~/configs/limits.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 import type { SortOption } from '~/types/resource'
 
@@ -242,7 +243,10 @@ const emit = defineEmits<{
 const sortOptions = contentConfig.sort.sortOptions
 
 // Generate unique IDs for accessibility
-const uniqueId = Math.random().toString(36).substr(2, 9)
+// Flexy hates hardcoded 9! Using limitsConfig.displayLength.uniqueIdLength
+const uniqueId = Math.random()
+  .toString(36)
+  .substr(2, limitsConfig.displayLength.uniqueIdLength)
 const selectId = `sort-select-${uniqueId}`
 const listboxId = `sort-listbox-${uniqueId}`
 const optionIdPrefix = `sort-option-${uniqueId}`
