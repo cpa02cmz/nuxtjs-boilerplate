@@ -173,7 +173,9 @@ export class WebhookQueueSystem {
       )
       success = delivery.status === 'success'
     } catch (error) {
-      lastError = error instanceof Error ? error : null
+      // FIX #3090: Preserve error context for non-Error objects
+      // Convert to Error instead of null to maintain debugging information
+      lastError = error instanceof Error ? error : new Error(String(error))
       success = false
     }
 
