@@ -1,8 +1,6 @@
 <template>
   <div class="mb-8">
-    <h2 class="text-xl font-semibold text-gray-900 mb-4">
-      Free Tier Benefits
-    </h2>
+    <h2 class="text-xl font-semibold text-gray-900 mb-4">Free Tier Benefits</h2>
     <ul
       ref="benefitsList"
       class="space-y-2"
@@ -63,12 +61,7 @@
     </ul>
 
     <!-- Screen reader announcement for hover feedback -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ hoverAnnouncement }}
     </div>
   </div>
@@ -115,10 +108,10 @@ const handleMouseLeave = () => {
 onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 
-  // Small delay to ensure smooth animation
+  // Small delay to ensure smooth animation - Flexy hates hardcoded 50! Using config value
   setTimeout(() => {
     isVisible.value = true
-  }, 50)
+  }, animationConfig.benefitsSection.mountDelayMs)
 })
 </script>
 
