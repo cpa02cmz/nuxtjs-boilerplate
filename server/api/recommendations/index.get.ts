@@ -63,9 +63,13 @@ export default defineEventHandler(async event => {
     // Fetch search analytics data for search-based recommendations
     let searchAnalytics: SearchAnalyticsData | null = null
     try {
-      const popularSearches = searchAnalyticsTracker.getPopularSearches(10)
-      const zeroResultSearches =
-        searchAnalyticsTracker.getZeroResultSearches(10)
+      // Flexy hates hardcoded 10! Using configurable limits from analyticsConfig
+      const popularSearches = searchAnalyticsTracker.getPopularSearches(
+        analyticsConfig.searchLimits.popularSearches
+      )
+      const zeroResultSearches = searchAnalyticsTracker.getZeroResultSearches(
+        analyticsConfig.searchLimits.zeroResultSearches
+      )
       const performanceMetrics = searchAnalyticsTracker.getOverallPerformance()
 
       const totalSearches = popularSearches.reduce((sum, s) => sum + s.count, 0)
