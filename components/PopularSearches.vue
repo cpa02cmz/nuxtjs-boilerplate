@@ -1,8 +1,6 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">
-      Popular Searches
-    </h3>
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Popular Searches</h3>
     <TransitionGroup
       tag="div"
       class="space-y-3"
@@ -36,6 +34,8 @@
         @click="handleClick(search.query, index, $event)"
         @mouseenter="handleMouseEnter(index)"
         @mouseleave="handleMouseLeave"
+        @focus="handleFocus(index)"
+        @blur="handleBlur"
         @keydown="handleKeydown($event, index)"
       >
         <!-- Ripple effect container -->
@@ -76,11 +76,7 @@
             class="flex-shrink-0 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200"
             aria-hidden="true"
           >
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -91,8 +87,35 @@
           </span>
           <span
             class="text-gray-800 truncate group-hover:text-gray-900 transition-colors duration-200 font-medium"
-          >{{ search.query }}</span>
+            >{{ search.query }}</span
+          >
         </div>
+
+        <!-- Palette's micro-UX enhancement: Keyboard shortcut hint tooltip -->
+        <Transition
+          :enter-active-class="`transition-all ${animationConfig.tailwindDurations.fast} ease-out`"
+          enter-from-class="opacity-0 scale-95 -translate-y-1"
+          enter-to-class="opacity-100 scale-100 translate-y-0"
+          :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
+          leave-from-class="opacity-100 scale-100 translate-y-0"
+          leave-to-class="opacity-0 scale-95 -translate-y-1"
+        >
+          <div
+            v-if="
+              (hoverIndex === index || focusedIndex === index) &&
+              !prefersReducedMotion &&
+              loadingIndex !== index
+            "
+            class="absolute right-16 top-1/2 -translate-y-1/2 z-20 pointer-events-none"
+            role="tooltip"
+            aria-hidden="true"
+          >
+            <div class="keyboard-hint">
+              <kbd class="keyboard-hint__key">Enter</kbd>
+              <span class="keyboard-hint__text">to search</span>
+            </div>
+          </div>
+        </Transition>
 
         <!-- Result count with animated background -->
         <div class="flex items-center gap-2 z-10">
@@ -167,11 +190,7 @@
         class="text-center text-gray-500 py-8 flex flex-col items-center"
       >
         <div class="w-12 h-12 mb-3 text-gray-300 animate-pulse-subtle">
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -180,9 +199,7 @@
             />
           </svg>
         </div>
-        <p class="text-sm">
-          No popular searches yet
-        </p>
+        <p class="text-sm">No popular searches yet</p>
         <p class="text-xs text-gray-400 mt-1">
           Start exploring to see trending queries
         </p>
@@ -190,12 +207,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -227,6 +239,7 @@ const { getPopularSearches } = useAdvancedResourceSearch(resources.value)
 
 // Reactive state
 const hoverIndex = ref<number | null>(null)
+const focusedIndex = ref<number | null>(null) // Palette's micro-UX enhancement: Track focused item
 const clickedIndex = ref<number | null>(null)
 const loadingIndex = ref<number | null>(null) // 🎨 Pallete: Loading state for async operations
 const ripples = ref<{ [key: number]: { x: number; y: number; size: number } }>(
@@ -305,6 +318,15 @@ const handleMouseEnter = (index: number) => {
 
 const handleMouseLeave = () => {
   hoverIndex.value = null
+}
+
+// Palette's micro-UX enhancement: Focus handlers for keyboard navigation
+const handleFocus = (index: number) => {
+  focusedIndex.value = index
+}
+
+const handleBlur = () => {
+  focusedIndex.value = null
 }
 
 // Enhanced keyboard navigation
@@ -502,6 +524,59 @@ defineExpose({
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+/* Palette's micro-UX enhancement: Keyboard shortcut hint tooltip styles */
+.keyboard-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  background: linear-gradient(
+    135deg,
+    rgba(31, 41, 55, 0.95) 0%,
+    rgba(55, 65, 81, 0.95) 100%
+  );
+  border-radius: 0.375rem;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  font-size: 0.75rem;
+  color: rgb(243, 244, 246);
+  white-space: nowrap;
+  animation: hint-appear
+    v-bind('`${animationConfig.popularSearches.hintAppearMs}ms`') ease-out;
+}
+
+@keyframes hint-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+.keyboard-hint__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem 0.375rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: rgb(31, 41, 55);
+  background: rgb(243, 244, 246);
+  border: 1px solid rgb(209, 213, 219);
+  border-radius: 0.25rem;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.keyboard-hint__text {
+  font-weight: 500;
+  color: rgb(209, 213, 219);
 }
 
 /* Reduced motion support */

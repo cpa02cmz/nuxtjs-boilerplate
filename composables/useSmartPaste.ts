@@ -9,7 +9,7 @@
  * - Respects reduced motion preferences
  */
 
-import { reactive, readonly, nextTick, onUnmounted } from 'vue'
+import { reactive, readonly, nextTick, onUnmounted, type Ref } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { EASING } from '~/configs/easing.config'
 
