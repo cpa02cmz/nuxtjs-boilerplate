@@ -3123,6 +3123,15 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.FEATURES_RESPECT_REDUCED_MOTION !== 'false',
+    // IntersectionObserver threshold (0-1) - Flexy hates hardcoded 0.2!
+    intersectionThreshold: parseFloat(
+      process.env.FEATURES_INTERSECTION_THRESHOLD || '0.2'
+    ),
+    // IntersectionObserver rootMargin - Flexy hates hardcoded margins!
+    intersectionRootMargin:
+      process.env.FEATURES_INTERSECTION_ROOT_MARGIN || '0px 0px -50px 0px',
+    // Maximum items to announce to screen readers - Flexy hates hardcoded 3!
+    maxAnnounceItems: parseInt(process.env.FEATURES_MAX_ANNOUNCE_ITEMS || '3'),
   },
 
   // Comparison Builder Animations - Palette's micro-UX delight! 🎨
@@ -3821,6 +3830,35 @@ export const animationConfig = {
     ),
     // Enable keyboard shortcuts
     enabled: process.env.KEYBOARD_SHORTCUTS_ENABLED !== 'false',
+  },
+
+  // Webhook Form Animations - Pallete's micro-UX enhancement! 🎨
+  // Delightful animations for the webhook creation form
+  webhookForm: {
+    // Form entrance animation duration (seconds)
+    entranceDurationSec: `${parseInt(process.env.WEBHOOK_FORM_ENTRANCE_DURATION_MS || '400') / 1000}s`,
+    // Delay before form entrance animation starts (ms)
+    entranceDelayMs: parseInt(
+      process.env.WEBHOOK_FORM_ENTRANCE_DELAY_MS || '50'
+    ),
+    // Individual field entrance duration (seconds)
+    fieldEntranceDurationSec: `${parseInt(process.env.WEBHOOK_FORM_FIELD_ENTRANCE_DURATION_MS || '300') / 1000}s`,
+    // Title entrance animation duration (seconds)
+    titleEntranceDurationSec: `${parseInt(process.env.WEBHOOK_FORM_TITLE_ENTRANCE_DURATION_MS || '500') / 1000}s`,
+    // Stagger delay between fields (ms)
+    staggerDelayMs: parseInt(process.env.WEBHOOK_FORM_STAGGER_DELAY_MS || '80'),
+    // Maximum stagger delay to prevent long waits (ms)
+    maxStaggerDelayMs: parseInt(
+      process.env.WEBHOOK_FORM_MAX_STAGGER_DELAY_MS || '400'
+    ),
+    // Error shake animation duration (ms)
+    shakeDurationMs: parseInt(
+      process.env.WEBHOOK_FORM_SHAKE_DURATION_MS || '500'
+    ),
+    // Checkmark draw animation duration (seconds)
+    checkmarkDrawSec: `${parseInt(process.env.WEBHOOK_FORM_CHECKMARK_DRAW_MS || '300') / 1000}s`,
+    // Button glow pulse duration (seconds)
+    btnGlowDurationSec: `${parseInt(process.env.WEBHOOK_FORM_BTN_GLOW_DURATION_MS || '2000') / 1000}s`,
   },
 } as const
 
