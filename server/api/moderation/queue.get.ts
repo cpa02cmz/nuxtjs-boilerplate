@@ -61,7 +61,10 @@ export default defineEventHandler(async event => {
     const limit = query.limit
       ? parseInt(query.limit as string)
       : paginationConfig.moderation.defaultLimit
-    const offset = query.offset ? parseInt(query.offset as string) : 0
+    // Flexy hates hardcoded 0! Using paginationConfig.defaults.offset
+    const offset = query.offset
+      ? parseInt(query.offset as string)
+      : paginationConfig.defaults.offset
 
     // Filter submissions based on query parameters
     let filteredSubmissions = [...mockSubmissions()]
