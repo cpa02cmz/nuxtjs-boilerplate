@@ -1,6 +1,19 @@
 <!-- eslint-disable vue/no-v-html -->
+<!--
+  SECURITY NOTE:
+  This component uses v-html directives in ResourceCardBase for rendering
+  highlighted search results. All content is sanitized using sanitizeAndHighlight()
+  from ~/utils/sanitize.ts which implements:
+  - DOMPurify sanitization with configurable allowed tags/attributes
+  - Pre-processing to remove script tags and dangerous content
+  - Post-processing to remove event handlers and javascript: URLs
+  - CSP headers are configured in server/plugins/security-headers.ts
+  
+  The sanitization configuration is defined in configs/security.config.ts
+  and enforced consistently across all components using v-html.
+-->
 <template>
-  <!-- 
+  <!--
     🎨 Pallete's micro-UX enhancement: Entrance animation wrapper
     Creates delightful cascading effect when cards appear in lists
     - Staggered animations based on card index
