@@ -263,6 +263,7 @@ import { useModerationDashboard } from '~/composables/useModerationDashboard'
 import { contentConfig } from '~/configs/content.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
+import { easingConfig } from '~/configs/easing.config'
 import { uiConfig } from '~/configs/ui.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
@@ -388,7 +389,14 @@ const animateCounter = (
   const startTime = performance.now()
 
   const easeOutExpo = (t: number) => {
-    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t)
+    // Flexy hates hardcoded 2 and 10!
+    return t === 1
+      ? 1
+      : 1 -
+          Math.pow(
+            easingConfig.powers.easeOutExpoBase,
+            -easingConfig.powers.easeOutExpoMultiplier * t
+          )
   }
 
   const updateCounter = (currentTime: number) => {

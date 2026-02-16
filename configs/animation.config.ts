@@ -396,6 +396,31 @@ export const animationConfig = {
     bgTransitionMs: parseInt(process.env.SUGGESTION_BG_TRANSITION_MS || '150'),
   },
 
+  // Search Suggestion Particle Burst - Palette's micro-UX delight! ✨
+  // Celebratory particle burst when selecting search suggestions
+  searchParticles: {
+    // Enable/disable particle burst
+    enabled: process.env.SEARCH_PARTICLE_ENABLED !== 'false',
+    // Number of particles in the burst
+    particleCount: parseInt(process.env.SEARCH_PARTICLE_COUNT || '8'),
+    // Animation duration in seconds
+    durationSec: parseFloat(process.env.SEARCH_PARTICLE_DURATION || '0.5'),
+    // Particle spread distance in pixels
+    spreadPx: parseInt(process.env.SEARCH_PARTICLE_SPREAD || '40'),
+    // Particle colors (blue theme for search)
+    colors: [
+      process.env.SEARCH_PARTICLE_COLOR_1 || '#3b82f6', // blue-500
+      process.env.SEARCH_PARTICLE_COLOR_2 || '#60a5fa', // blue-400
+      process.env.SEARCH_PARTICLE_COLOR_3 || '#93c5fd', // blue-300
+      process.env.SEARCH_PARTICLE_COLOR_4 || '#2563eb', // blue-600
+    ],
+    // Particle size range in pixels
+    minSizePx: parseInt(process.env.SEARCH_PARTICLE_MIN_SIZE || '3'),
+    maxSizePx: parseInt(process.env.SEARCH_PARTICLE_MAX_SIZE || '6'),
+    // Delay before particles start disappearing
+    fadeDelaySec: parseFloat(process.env.SEARCH_PARTICLE_FADE_DELAY || '0.1'),
+  },
+
   // Navigation/Transition Animations
   navigation: {
     reducedMotionDelayMs: parseInt(
@@ -612,6 +637,29 @@ export const animationConfig = {
     staggerDelayMs: parseInt(process.env.EMPTY_STAGGER_DELAY_MS || '100'),
   },
 
+  // Benefits Section Animations - Palette's micro-UX delight! 🎨
+  // Staggered entrance animations and hover effects for benefit lists
+  benefitsSection: {
+    // Delay between each benefit item's entrance animation (ms)
+    staggerDelayMs: parseInt(process.env.BENEFITS_STAGGER_DELAY_MS || '100'),
+    // Duration of the entrance animation for each item (ms)
+    entranceDurationMs: parseInt(
+      process.env.BENEFITS_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Duration of hover transition effects (ms)
+    hoverDurationMs: parseInt(process.env.BENEFITS_HOVER_DURATION_MS || '200'),
+    // Delay before checkmark drawing animation starts (ms)
+    checkmarkDelayMs: parseInt(
+      process.env.BENEFITS_CHECKMARK_DELAY_MS || '150'
+    ),
+    // Duration of checkmark path drawing animation (ms)
+    checkmarkDrawMs: parseInt(process.env.BENEFITS_CHECKMARK_DRAW_MS || '300'),
+    // General transition duration for CSS transitions (ms)
+    transitionDurationMs: parseInt(
+      process.env.BENEFITS_TRANSITION_DURATION_MS || '200'
+    ),
+  },
+
   // PWA Install Prompt Animations
   pwaInstall: {
     iconPulseDurationSec: parseInt(
@@ -695,6 +743,11 @@ export const animationConfig = {
     // Palette's micro-UX: Completion pulse animation duration (ms)
     completionPulseDurationMs: parseInt(
       process.env.VALIDATION_COMPLETION_PULSE_DURATION_MS || '600'
+    ),
+    // Pallete's micro-UX enhancement: Delay before focusing field after scroll (ms)
+    // Gives time for smooth scroll animation to complete before focusing
+    scrollToErrorDelayMs: parseInt(
+      process.env.VALIDATION_SCROLL_TO_ERROR_DELAY_MS || '400'
     ),
   },
 
@@ -1595,6 +1648,10 @@ export const animationConfig = {
     badgeTransitionMs: parseInt(
       process.env.POPULAR_SEARCHES_BADGE_TRANSITION_MS || '300'
     ),
+    // Palette's micro-UX enhancement: Keyboard hint tooltip appear animation (ms)
+    hintAppearMs: parseInt(
+      process.env.POPULAR_SEARCHES_HINT_APPEAR_MS || '200'
+    ),
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.POPULAR_SEARCHES_REDUCED_MOTION !== 'false',
@@ -1616,10 +1673,16 @@ export const animationConfig = {
   // Magnetic Button Effect - Palette's premium micro-UX delight! 🧲
   // Creates a subtle "magnetic" pull that draws buttons toward the cursor
   magneticButton: {
-    // Strength of the magnetic pull (0-1, where 1 is strongest)
-    strength: parseFloat(process.env.MAGNETIC_BUTTON_STRENGTH || '0.4'),
+    // Strength of the magnetic pull (0-1, where 1 is strongest) - Flexy hates hardcoded 0.3!
+    strength: parseFloat(process.env.MAGNETIC_BUTTON_STRENGTH || '0.3'),
     // Maximum distance the button can move (pixels)
     maxDistancePx: parseInt(process.env.MAGNETIC_BUTTON_MAX_DISTANCE || '12'),
+    // Activation radius in pixels where effect triggers - Flexy hates hardcoded 60!
+    radiusPx: parseInt(process.env.MAGNETIC_BUTTON_RADIUS_PX || '60'),
+    // Spring physics stiffness for smooth following (0-1) - Flexy hates hardcoded 0.15!
+    springStiffness: parseFloat(
+      process.env.MAGNETIC_BUTTON_SPRING_STIFFNESS || '0.15'
+    ),
     // Duration of the return animation when mouse leaves (ms)
     returnDurationMs: parseInt(process.env.MAGNETIC_BUTTON_RETURN_MS || '400'),
     // Whether to respect reduced motion preference
@@ -3324,6 +3387,10 @@ export const animationConfig = {
   // Mobile Filter Drawer Animations - Palette's micro-UX delight! 🎨
   // Swipe gestures, magnetic handle, and spring physics for drawer interactions
   mobileFilterDrawer: {
+    // Swipe resistance factor (0-1) - Flexy hates hardcoded 0.8!
+    swipeResistance: parseFloat(
+      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
+    ),
     // Swipe threshold to trigger dismiss (px) - Flexy hates hardcoded 50!
     swipeThresholdPx: parseInt(
       process.env.MOBILE_DRAWER_SWIPE_THRESHOLD_PX || '80'
@@ -3632,6 +3699,47 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.ANALYTICS_COUNTER_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // Page Transition Animation Steps - Flexy hates hardcoded 60!
+  // Number of animation steps for smooth progress bar animation
+  pageTransitionSteps: parseInt(process.env.PAGE_TRANSITION_STEPS || '60'),
+
+  // Page Transition Progress Threshold - Flexy hates hardcoded 90!
+  // Maximum progress percentage before completion (prevents jumping to 100%)
+  pageTransitionProgressThreshold: parseInt(
+    process.env.PAGE_TRANSITION_PROGRESS_THRESHOLD || '90'
+  ),
+
+  // Search Analytics Progress Ring - Flexy hates hardcoded pixel values!
+  // Progress ring size and radius for analytics displays
+  searchAnalyticsProgressRing: {
+    // Ring size in pixels
+    sizePx: parseInt(process.env.SEARCH_ANALYTICS_RING_SIZE_PX || '56'),
+    // Ring radius in pixels
+    radiusPx: parseInt(process.env.SEARCH_ANALYTICS_RING_RADIUS_PX || '20'),
+  },
+
+  // Search Response Time Thresholds - Flexy hates hardcoded 200ms!
+  // Thresholds for categorizing search response times
+  searchResponseTime: {
+    // Threshold for "fast" response time in ms
+    fastThresholdMs: parseInt(
+      process.env.SEARCH_RESPONSE_FAST_THRESHOLD_MS || '200'
+    ),
+    // Threshold for "medium" response time in ms
+    mediumThresholdMs: parseInt(
+      process.env.SEARCH_RESPONSE_MEDIUM_THRESHOLD_MS || '500'
+    ),
+  },
+
+  // Animation Performance Defaults - Flexy hates hardcoded 60 FPS!
+  // Default values for animation performance monitoring
+  animationPerformanceDefaults: {
+    // Default target FPS
+    defaultFps: parseInt(process.env.ANIMATION_DEFAULT_FPS || '60'),
+    // Memory conversion factor (bytes to MB) - Flexy hates hardcoded 1024!
+    bytesToMbFactor: parseInt(process.env.BYTES_TO_MB_FACTOR || '1024'),
   },
 } as const
 

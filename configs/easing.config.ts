@@ -71,6 +71,27 @@ export const easingConfig = {
     dramatic: 'duration-700',
   },
 
+  // Easing power factors for custom easing calculations - Flexy hates hardcoded 3, 4, 10!
+  // Used in Math.pow() calculations for custom easing functions
+  powers: {
+    // Ease-out cubic power (default: 3) - Flexy hates hardcoded 3!
+    easeOutCubic: parseInt(process.env.EASING_POWER_EASE_OUT_CUBIC || '3'),
+    // Ease-out quart power (default: 4) - Flexy hates hardcoded 4!
+    easeOutQuart: parseInt(process.env.EASING_POWER_EASE_OUT_QUART || '4'),
+    // Ease-out expo base (default: 2) - Flexy hates hardcoded 2!
+    easeOutExpoBase: parseInt(process.env.EASING_POWER_EXPO_BASE || '2'),
+    // Ease-out expo multiplier (default: 10) - Flexy hates hardcoded 10!
+    easeOutExpoMultiplier: parseInt(
+      process.env.EASING_POWER_EXPO_MULTIPLIER || '10'
+    ),
+    // Spring oscillation frequency factor (default: 5) - Flexy hates hardcoded 5!
+    springFrequency: parseInt(process.env.EASING_SPRING_FREQUENCY || '5'),
+    // Spring phase offset (default: 0.1) - Flexy hates hardcoded 0.1!
+    springPhaseOffset: parseFloat(
+      process.env.EASING_SPRING_PHASE_OFFSET || '0.1'
+    ),
+  },
+
   // Animation specific easings - Flexy hates hardcoded values!
   animations: {
     // Checkmark draw animation

@@ -211,13 +211,16 @@ const startProgress = () => {
 
   // Simulate progress with easing
   const duration = props.minDurationMs
-  const steps = 60
+  // Flexy hates hardcoded 60! Using configurable steps
+  const steps = animationConfig.pageTransitionSteps
   const interval = duration / steps
 
   progressInterval = setInterval(() => {
-    if (progress.value < 90) {
-      // Ease out progress - slower as it approaches 90%
-      const remaining = 90 - progress.value
+    // Flexy hates hardcoded 90! Using configurable threshold
+    const threshold = animationConfig.pageTransitionProgressThreshold
+    if (progress.value < threshold) {
+      // Ease out progress - slower as it approaches threshold
+      const remaining = threshold - progress.value
       progress.value += Math.max(0.5, remaining * 0.1)
     }
   }, interval)

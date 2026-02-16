@@ -128,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref } from 'vue'
+import { computed, watch, ref, onUnmounted } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { validationConfig } from '~/configs/validation.config'
@@ -295,14 +295,25 @@ const hasTriggeredError = ref(false)
 const hasTriggeredComplete = ref(false)
 
 // Initialize reduced motion preference on client side
+let mediaQuery: MediaQueryList | null = null
+let mediaQueryChangeHandler: ((e: MediaQueryListEvent) => void) | null = null
+
 if (typeof window !== 'undefined') {
   prefersReducedMotion.value = checkReducedMotion()
   // Listen for changes
-  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-  mediaQuery.addEventListener('change', e => {
+  mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  mediaQueryChangeHandler = (e: MediaQueryListEvent) => {
     prefersReducedMotion.value = e.matches
-  })
+  }
+  mediaQuery.addEventListener('change', mediaQueryChangeHandler)
 }
+
+// Cleanup on component unmount to prevent memory leak
+onUnmounted(() => {
+  if (mediaQuery && mediaQueryChangeHandler) {
+    mediaQuery.removeEventListener('change', mediaQueryChangeHandler)
+  }
+})
 
 // Watch for state changes and trigger haptic feedback
 watch(

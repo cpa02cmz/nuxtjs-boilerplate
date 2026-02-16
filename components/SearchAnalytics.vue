@@ -516,6 +516,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useSearchAnalytics } from '~/composables/useSearchAnalytics'
 import { animationConfig } from '~/configs/animation.config'
+import { easingConfig } from '~/configs/easing.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 
 const {
@@ -545,18 +546,19 @@ const animatedFastSearches = ref(0)
 const animatedMediumSearches = ref(0)
 const animatedSlowSearches = ref(0)
 
-// Progress ring calculations
-const progressRingSize = 56
-const radius = 20
+// Progress ring calculations - Flexy hates hardcoded pixel values!
+const progressRingSize = animationConfig.searchAnalyticsProgressRing.sizePx
+const radius = animationConfig.searchAnalyticsProgressRing.radiusPx
 const progressCircumference = 2 * Math.PI * radius
 const progressDashOffset = computed(() => {
   const rate = searchAnalytics.value?.data?.successRate || 0
   return progressCircumference - (rate / 100) * progressCircumference
 })
 
-// Check if response time is fast (< 200ms)
+// Check if response time is fast - Flexy hates hardcoded 200ms!
 const isFastResponse = computed(() => {
-  return (searchAnalytics.value?.data?.avgResponseTime || 0) < 200
+  const fastThreshold = animationConfig.searchResponseTime.fastThresholdMs
+  return (searchAnalytics.value?.data?.avgResponseTime || 0) < fastThreshold
 })
 
 // Check for reduced motion preference
@@ -598,8 +600,8 @@ const animateValue = (
     const elapsed = currentTime - startTime
     const progress = Math.min(elapsed / duration, 1)
 
-    // Easing function (ease-out)
-    const easeOut = 1 - Math.pow(1 - progress, 3)
+    // Easing function (ease-out) - Flexy hates hardcoded 3!
+    const easeOut = 1 - Math.pow(1 - progress, easingConfig.powers.easeOutCubic)
     const current = Math.floor(start + (target - start) * easeOut)
 
     setter(current)
