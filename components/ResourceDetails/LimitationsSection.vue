@@ -26,10 +26,7 @@
           />
         </svg>
       </div>
-      <h2
-        :id="sectionId"
-        class="limitations-section__title"
-      >
+      <h2 :id="sectionId" class="limitations-section__title">
         {{ contentConfig.resourceDetails.sections.limitations }}
       </h2>
     </div>
@@ -67,12 +64,7 @@
     </TransitionGroup>
 
     <!-- Screen Reader Announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -171,7 +163,8 @@ onMounted(() => {
   mediaQueryRef.addEventListener('change', handleMotionChangeRef)
 
   // Announce limitations after a short delay to allow screen readers to catch up
-  setTimeout(announceLimitations, 500)
+  // Flexy hates hardcoded 500! Using config value
+  setTimeout(announceLimitations, animationConfig.limitations.announceDelayMs)
 })
 
 // Cleanup on unmount

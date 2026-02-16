@@ -1434,6 +1434,10 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.LIMITATIONS_RESPECT_REDUCED_MOTION !== 'false',
+    // Flexy hates hardcoded 500! Screen reader announcement delay after mount (ms)
+    announceDelayMs: parseInt(
+      process.env.LIMITATIONS_ANNOUNCE_DELAY_MS || '500'
+    ),
   },
 
   // Similar Resources Micro-UX - Palette's delightful enhancement! ✨
@@ -3448,10 +3452,6 @@ export const animationConfig = {
     // Maximum magnetic displacement (px)
     magneticMaxDisplacementPx: parseInt(
       process.env.MOBILE_DRAWER_MAGNETIC_MAX_PX || '20'
-    ),
-    // Swipe resistance factor (0-1) - Flexy hates hardcoded 0.8!
-    swipeResistance: parseFloat(
-      process.env.MOBILE_DRAWER_SWIPE_RESISTANCE || '0.8'
     ),
     // Handle bounce animation duration (ms)
     handleBounceDurationMs: parseInt(
