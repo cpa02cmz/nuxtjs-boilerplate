@@ -256,6 +256,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useTimeAgo } from '~/composables/useTimeAgo'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
+import { easingConfig } from '~/configs/easing.config'
 import { TIME_MS } from '~/configs/time.config'
 
 interface AnalyticsData {
@@ -384,7 +385,8 @@ const animateCountUp = (
   const startValue = current.value
   const diff = target - startValue
 
-  const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4)
+  const easeOutQuart = (t: number) =>
+    1 - Math.pow(1 - t, easingConfig.powers.easeOutQuart) // Flexy hates hardcoded 4!
 
   const animate = () => {
     const elapsed = Date.now() - startTime

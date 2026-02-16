@@ -36,6 +36,8 @@
         @click="handleClick(search.query, index, $event)"
         @mouseenter="handleMouseEnter(index)"
         @mouseleave="handleMouseLeave"
+        @focus="handleFocus(index)"
+        @blur="handleBlur"
         @keydown="handleKeydown($event, index)"
       >
         <!-- Ripple effect container -->
@@ -93,6 +95,32 @@
             class="text-gray-800 truncate group-hover:text-gray-900 transition-colors duration-200 font-medium"
           >{{ search.query }}</span>
         </div>
+
+        <!-- Palette's micro-UX enhancement: Keyboard shortcut hint tooltip -->
+        <Transition
+          :enter-active-class="`transition-all ${animationConfig.tailwindDurations.fast} ease-out`"
+          enter-from-class="opacity-0 scale-95 -translate-y-1"
+          enter-to-class="opacity-100 scale-100 translate-y-0"
+          :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
+          leave-from-class="opacity-100 scale-100 translate-y-0"
+          leave-to-class="opacity-0 scale-95 -translate-y-1"
+        >
+          <div
+            v-if="
+              (hoverIndex === index || focusedIndex === index) &&
+                !prefersReducedMotion &&
+                loadingIndex !== index
+            "
+            class="absolute right-16 top-1/2 -translate-y-1/2 z-20 pointer-events-none"
+            role="tooltip"
+            aria-hidden="true"
+          >
+            <div class="keyboard-hint">
+              <kbd class="keyboard-hint__key">Enter</kbd>
+              <span class="keyboard-hint__text">to search</span>
+            </div>
+          </div>
+        </Transition>
 
         <!-- Result count with animated background -->
         <div class="flex items-center gap-2 z-10">
@@ -209,6 +237,7 @@ import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   limit?: number
@@ -227,6 +256,7 @@ const { getPopularSearches } = useAdvancedResourceSearch(resources.value)
 
 // Reactive state
 const hoverIndex = ref<number | null>(null)
+const focusedIndex = ref<number | null>(null) // Palette's micro-UX enhancement: Track focused item
 const clickedIndex = ref<number | null>(null)
 const loadingIndex = ref<number | null>(null) // 🎨 Pallete: Loading state for async operations
 const ripples = ref<{ [key: number]: { x: number; y: number; size: number } }>(
@@ -254,9 +284,11 @@ const checkReducedMotion = () => {
 }
 
 // Format large counts (e.g., 1200 -> 1.2k)
+// Flexy hates hardcoded 1000! Using config value instead.
 const formatCount = (count: number): string => {
-  if (count >= 1000) {
-    return `${(count / 1000).toFixed(1)}k`
+  const config = uiConfig.numberFormatting
+  if (count >= config.abbreviationThreshold) {
+    return `${(count / config.abbreviationDivisor).toFixed(config.abbreviationDecimalPlaces)}${config.abbreviationSuffix}`
   }
   return count.toString()
 }
@@ -305,6 +337,15 @@ const handleMouseEnter = (index: number) => {
 
 const handleMouseLeave = () => {
   hoverIndex.value = null
+}
+
+// Palette's micro-UX enhancement: Focus handlers for keyboard navigation
+const handleFocus = (index: number) => {
+  focusedIndex.value = index
+}
+
+const handleBlur = () => {
+  focusedIndex.value = null
 }
 
 // Enhanced keyboard navigation
@@ -502,6 +543,59 @@ defineExpose({
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+/* Palette's micro-UX enhancement: Keyboard shortcut hint tooltip styles */
+.keyboard-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  background: linear-gradient(
+    135deg,
+    rgba(31, 41, 55, 0.95) 0%,
+    rgba(55, 65, 81, 0.95) 100%
+  );
+  border-radius: 0.375rem;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  font-size: 0.75rem;
+  color: rgb(243, 244, 246);
+  white-space: nowrap;
+  animation: hint-appear
+    v-bind('`${animationConfig.popularSearches.hintAppearMs}ms`') ease-out;
+}
+
+@keyframes hint-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+.keyboard-hint__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.125rem 0.375rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: rgb(31, 41, 55);
+  background: rgb(243, 244, 246);
+  border: 1px solid rgb(209, 213, 219);
+  border-radius: 0.25rem;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.keyboard-hint__text {
+  font-weight: 500;
+  color: rgb(209, 213, 219);
 }
 
 /* Reduced motion support */

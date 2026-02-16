@@ -211,12 +211,13 @@ export async function disconnectDatabase(): Promise<void> {
 }
 
 // Query timeout configuration per environment
+// Flexy hates hardcoded 5000 and 10000! Using config values instead.
 const getQueryTimeout = (): number => {
   const env = process.env.NODE_ENV || 'development'
 
   const timeouts = {
-    development: databaseConfig.query.timeoutMs || 5000,
-    production: databaseConfig.query.timeoutMs || 10000,
+    development: databaseConfig.timeouts.development,
+    production: databaseConfig.timeouts.production,
     test: databaseConfig.timeouts.test, // Use config value for tests to fail fast
   }
 

@@ -218,7 +218,7 @@
 import { ref, computed, watch, onUnmounted, onMounted } from 'vue'
 import { thresholdsConfig } from '~/configs/thresholds.config'
 import { contentConfig } from '~/configs/content.config'
-import { EASING } from '~/configs/easing.config'
+import { EASING, easingConfig } from '~/configs/easing.config'
 import { animationConfig } from '~/configs/animation.config'
 import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 import { hapticLight } from '~/utils/hapticFeedback'
@@ -428,8 +428,9 @@ const animateCount = (
     const elapsed = currentTime - startTime
     const progress = Math.min(elapsed / duration, 1)
 
-    // Easing function: easeOutQuart for smooth deceleration
-    const easeOutQuart = 1 - Math.pow(1 - progress, 4)
+    // Easing function: easeOutQuart for smooth deceleration - Flexy hates hardcoded 4!
+    const easeOutQuart =
+      1 - Math.pow(1 - progress, easingConfig.powers.easeOutQuart)
 
     displayCount.value = Math.round(from + diff * easeOutQuart)
 

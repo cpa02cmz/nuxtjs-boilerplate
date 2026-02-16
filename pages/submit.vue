@@ -66,7 +66,7 @@
           novalidate
           @submit.prevent="handleSubmitWithShake"
         >
-          <div>
+          <div ref="titleFieldRef">
             <!-- Floating Label Container - Palette's micro-UX delight! -->
             <div
               class="floating-label-container relative"
@@ -182,7 +182,7 @@
             </div>
           </div>
 
-          <div>
+          <div ref="descriptionFieldRef">
             <label
               for="description"
               class="block text-sm font-medium text-gray-700 mb-1"
@@ -193,6 +193,7 @@
             <div class="relative">
               <textarea
                 id="description"
+                ref="descriptionInput"
                 v-model="formData.description"
                 required
                 :rows="uiConfig.form.textareaRows"
@@ -284,7 +285,7 @@
             </div>
           </div>
 
-          <div>
+          <div ref="urlFieldRef">
             <!-- Floating Label Container - Palette's micro-UX delight! -->
             <div
               class="floating-label-container relative"
@@ -364,7 +365,7 @@
             </div>
           </div>
 
-          <div>
+          <div ref="categoryFieldRef">
             <label
               for="category"
               class="block text-sm font-medium text-gray-700 mb-1"
@@ -375,6 +376,7 @@
             <div class="relative">
               <select
                 id="category"
+                ref="categoryInput"
                 v-model="formData.category"
                 required
                 aria-required="true"
@@ -667,7 +669,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onUnmounted } from 'vue'
+import { ref, watch, computed, onUnmounted, nextTick, type Ref } from 'vue'
 import { useNuxtApp } from '#app'
 import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
@@ -819,6 +821,50 @@ const handleSubmitWithShake = async () => {
     shakeTimeout.value = setTimeout(() => {
       shakeFields.value = {}
     }, animationConfig.validation.shakeDurationMs)
+
+    // Pallete's micro-UX enhancement: Scroll to first error for better accessibility
+    // This ensures users can immediately see and fix validation errors
+    nextTick(() => {
+      const fieldOrder = ['title', 'description', 'url', 'category']
+      const fieldRefs: Record<string, Ref<HTMLElement | null>> = {
+        title: titleFieldRef,
+        description: descriptionFieldRef,
+        url: urlFieldRef,
+        category: categoryFieldRef,
+      }
+      const inputRefs: Record<string, Ref<HTMLElement | null>> = {
+        title: titleInput,
+        description: descriptionInput,
+        url: urlInputRef,
+        category: categoryInput,
+      }
+
+      // Find the first field with an error in the defined order
+      const firstErrorField = fieldOrder.find(field => errors.value[field])
+
+      if (firstErrorField) {
+        const fieldElement = fieldRefs[firstErrorField]?.value
+        const inputElement = inputRefs[firstErrorField]?.value
+
+        if (fieldElement) {
+          // Smooth scroll to the field with error
+          fieldElement.scrollIntoView({
+            behavior: prefersReducedMotion.value ? 'auto' : 'smooth',
+            block: 'center',
+          })
+
+          // Focus the input after scroll completes for keyboard accessibility
+          setTimeout(
+            () => {
+              inputElement?.focus()
+            },
+            prefersReducedMotion.value
+              ? 0
+              : animationConfig.validation.scrollToErrorDelayMs
+          )
+        }
+      }
+    })
   }
 
   // Proceed with submission if valid
@@ -843,6 +889,18 @@ const maxTitleLength = validationConfig.resource.name.maxLength
 const maxDescriptionLength = validationConfig.resource.description.maxLength
 
 const titleInput = ref<HTMLInputElement | null>(null)
+
+// Pallete's micro-UX enhancement: Input refs for focus management
+// Enables keyboard focus when scrolling to validation errors
+const descriptionInput = ref<HTMLTextAreaElement | null>(null)
+const categoryInput = ref<HTMLSelectElement | null>(null)
+
+// Pallete's micro-UX enhancement: Template refs for form field containers
+// Enables smooth scroll-to-error functionality for better accessibility
+const titleFieldRef = ref<HTMLElement | null>(null)
+const descriptionFieldRef = ref<HTMLElement | null>(null)
+const urlFieldRef = ref<HTMLElement | null>(null)
+const categoryFieldRef = ref<HTMLElement | null>(null)
 
 // Focus states for character counters
 const isTitleFocused = ref(false)
