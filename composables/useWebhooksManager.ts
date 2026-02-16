@@ -43,6 +43,8 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
 
   const webhooks = ref<Webhook[]>([])
   const loading = ref(true)
+  // Pallete: Separate loading state for create operation for better UX feedback
+  const isCreating = ref(false)
   const errorMessage = ref('')
   const announcement = ref('')
   const timeouts = ref<ReturnType<typeof setTimeout>[]>([])
@@ -98,6 +100,9 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
       return false
     }
 
+    // Pallete: Set loading state for better UX feedback during creation
+    isCreating.value = true
+
     try {
       const client = getClient()
       const response = await client.post(apiConfig.webhooks.base, webhookData)
@@ -122,6 +127,9 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
       logger.error('Error creating webhook:', error)
       errorMessage.value = validationConfig.messages.error.createWebhook
       return false
+    } finally {
+      // Pallete: Reset loading state after creation completes
+      isCreating.value = false
     }
   }
 
@@ -200,6 +208,8 @@ export const useWebhooksManager = (options: UseWebhooksManagerOptions = {}) => {
   return {
     webhooks,
     loading,
+    // Pallete: Export creating state for loading feedback in UI
+    isCreating: readonly(isCreating),
     errorMessage,
     announcement,
     newWebhook,

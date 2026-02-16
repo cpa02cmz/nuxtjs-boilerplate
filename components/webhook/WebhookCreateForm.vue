@@ -21,6 +21,8 @@ const props = defineProps<{
   modelValue: WebhookFormData
   errorMessage: string
   availableEvents: readonly string[]
+  // Pallete: Loading state for better UX feedback during submission
+  isSubmitting?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -57,12 +59,10 @@ const handleCancel = () => {
       {{ errorMessage }}
     </div>
 
-    <form
-      novalidate
-      @submit.prevent="handleSubmit"
-    >
+    <form novalidate @submit.prevent="handleSubmit">
       <div class="form-group">
-        <label for="webhook-url">{{ contentConfig.webhooks.form.urlLabel }}
+        <label for="webhook-url"
+          >{{ contentConfig.webhooks.form.urlLabel }}
           <span aria-hidden="true">*</span>
           <span class="sr-only">{{
             contentConfig.webhooks.form.required
@@ -77,11 +77,8 @@ const handleCancel = () => {
           aria-describedby="webhook-url-description"
           :placeholder="webhooksConfig.placeholders.url"
           class="form-control"
-        >
-        <p
-          id="webhook-url-description"
-          class="mt-1 text-sm text-gray-500"
-        >
+        />
+        <p id="webhook-url-description" class="mt-1 text-sm text-gray-500">
           {{ contentConfig.webhooks.form.urlDescription }}
         </p>
       </div>
@@ -106,7 +103,7 @@ const handleCancel = () => {
                 type="checkbox"
                 :value="event"
                 :aria-label="`Subscribe to ${event} event`"
-              >
+              />
               {{ event }}
             </label>
           </div>
@@ -119,7 +116,7 @@ const handleCancel = () => {
             v-model="formData.active"
             type="checkbox"
             :aria-label="contentConfig.webhooks.ariaLabels.enableWebhook"
-          >
+          />
           {{ contentConfig.webhooks.form.activeLabel }}
         </label>
       </div>
@@ -129,8 +126,37 @@ const handleCancel = () => {
           type="submit"
           class="btn btn-primary"
           :aria-label="contentConfig.webhooks.ariaLabels.submitCreate"
+          :disabled="isSubmitting"
+          :aria-busy="isSubmitting"
         >
-          {{ contentConfig.webhooks.buttons.createSubmit }}
+          <!-- Pallete: Loading spinner for better UX during async operations -->
+          <svg
+            v-if="isSubmitting"
+            class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            />
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
+          {{
+            isSubmitting
+              ? contentConfig.webhooks.buttons.creating
+              : contentConfig.webhooks.buttons.createSubmit
+          }}
         </button>
         <button
           type="button"
@@ -227,6 +253,35 @@ const handleCancel = () => {
 
 .btn-primary:hover {
   background: var(--webhook-btn-primary-hover, #2563eb);
+}
+
+/* Pallete: Disabled state for loading feedback */
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-primary:disabled {
+  background: var(--webhook-btn-primary, #3b82f6);
+}
+
+/* Pallete: Spinner animation for loading state */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.inline-block {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .btn-secondary {
