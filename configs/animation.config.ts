@@ -3637,6 +3637,47 @@ export const animationConfig = {
     respectReducedMotion:
       process.env.ANALYTICS_COUNTER_RESPECT_REDUCED_MOTION !== 'false',
   },
+
+  // Page Transition Animation Steps - Flexy hates hardcoded 60!
+  // Number of animation steps for smooth progress bar animation
+  pageTransitionSteps: parseInt(process.env.PAGE_TRANSITION_STEPS || '60'),
+
+  // Page Transition Progress Threshold - Flexy hates hardcoded 90!
+  // Maximum progress percentage before completion (prevents jumping to 100%)
+  pageTransitionProgressThreshold: parseInt(
+    process.env.PAGE_TRANSITION_PROGRESS_THRESHOLD || '90'
+  ),
+
+  // Search Analytics Progress Ring - Flexy hates hardcoded pixel values!
+  // Progress ring size and radius for analytics displays
+  searchAnalyticsProgressRing: {
+    // Ring size in pixels
+    sizePx: parseInt(process.env.SEARCH_ANALYTICS_RING_SIZE_PX || '56'),
+    // Ring radius in pixels
+    radiusPx: parseInt(process.env.SEARCH_ANALYTICS_RING_RADIUS_PX || '20'),
+  },
+
+  // Search Response Time Thresholds - Flexy hates hardcoded 200ms!
+  // Thresholds for categorizing search response times
+  searchResponseTime: {
+    // Threshold for "fast" response time in ms
+    fastThresholdMs: parseInt(
+      process.env.SEARCH_RESPONSE_FAST_THRESHOLD_MS || '200'
+    ),
+    // Threshold for "medium" response time in ms
+    mediumThresholdMs: parseInt(
+      process.env.SEARCH_RESPONSE_MEDIUM_THRESHOLD_MS || '500'
+    ),
+  },
+
+  // Animation Performance Defaults - Flexy hates hardcoded 60 FPS!
+  // Default values for animation performance monitoring
+  animationPerformanceDefaults: {
+    // Default target FPS
+    defaultFps: parseInt(process.env.ANIMATION_DEFAULT_FPS || '60'),
+    // Memory conversion factor (bytes to MB) - Flexy hates hardcoded 1024!
+    bytesToMbFactor: parseInt(process.env.BYTES_TO_MB_FACTOR || '1024'),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
