@@ -94,7 +94,10 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p v-if="toast.description" class="toast__description">
+          <p
+            v-if="toast.description"
+            class="toast__description"
+          >
             {{ toast.description }}
           </p>
         </div>
