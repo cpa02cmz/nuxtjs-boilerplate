@@ -28,6 +28,32 @@ import { apiConfig, type ApiConfig } from './api.config'
 import { contentConfig, type ContentConfig } from './content.config'
 import { limitsConfig, type LimitsConfig } from './limits.config'
 import { comparisonConfig, type ComparisonConfig } from './comparison.config'
+import { bookmarksConfig, type BookmarksConfig } from './bookmarks.config'
+
+// Re-export all individual configs for direct access
+export { appConfig, type AppConfig }
+export { themeConfig, type ThemeConfig }
+export { seoConfig, type SeoConfig }
+export { searchConfig, type SearchConfig }
+export { securityConfig, generateCsp, getSecurityHeaders, type SecurityConfig }
+export {
+  rateLimitConfig,
+  getRateLimitTier,
+  type RateLimitConfig,
+  type RateLimitTier,
+}
+export { cacheConfig, type CacheConfig }
+export { webhooksConfig, type WebhooksConfig }
+export { paginationConfig, type PaginationConfig }
+export { validationConfig, type ValidationConfig }
+export { analyticsConfig, type AnalyticsConfig }
+export { uiConfig, type UiConfig }
+export { pwaConfig, type PwaConfig }
+export { apiConfig, type ApiConfig }
+export { contentConfig, type ContentConfig }
+export { limitsConfig, type LimitsConfig }
+export { comparisonConfig, type ComparisonConfig }
+export { bookmarksConfig, type BookmarksConfig }
 
 // New modular configs - Flexy loves modularity!
 import { socialConfig, type SocialConfig } from './social.config'
@@ -96,7 +122,47 @@ import {
 } from './routes.config'
 import { memoizeConfig, type MemoizeConfig } from './memoize.config'
 import { performanceConfig } from './performance.config'
-export { bookmarksConfig, type BookmarksConfig }
+import { categoriesConfig } from './categories.config'
+import { animationConfig } from './animation.config'
+import { thresholdsConfig } from './thresholds.config'
+import {
+  analyticsDemoData,
+  getAnalyticsDemoData,
+  type AnalyticsDemoData,
+} from './analytics-demo.config'
+import { userConfig, type UserConfig } from './user.config'
+import { moderationConfig, type ModerationConfig } from './moderation.config'
+import { permissionsConfig, type PermissionsConfig } from './permissions.config'
+import {
+  componentColorsConfig,
+  type ComponentColorsConfig,
+} from './component-colors.config'
+import {
+  componentStylesConfig,
+  type ComponentStylesConfig,
+} from './component-styles.config'
+import { shadowsConfig, type ShadowsConfig } from './shadows.config'
+import {
+  zIndexConfig,
+  zIndexScale,
+  generateZIndexCSSVariables,
+  type ZIndexConfig,
+  type ZIndexScale,
+} from './z-index.config'
+import {
+  urlConfig,
+  DEFAULT_DEV_URL,
+  DEFAULT_PROD_URL,
+  DEV_PORTS,
+  getBaseUrl,
+  getFallbackUrl,
+  buildUrl,
+  buildApiUrl,
+  isLocalhost,
+  getSeoUrl,
+  type UrlConfig,
+  type DevPorts,
+} from './url.config'
 
 // Re-export analytics demo config - Flexy hates hardcoded mock data!
 export { analyticsDemoData, getAnalyticsDemoData, type AnalyticsDemoData }
@@ -135,7 +201,8 @@ export {
 }
 
 // Re-export Network config - Flexy hates hardcoded network errors!
-export { networkConfig, type NetworkConfig } from './network.config'
+import { networkConfig, type NetworkConfig } from './network.config'
+export { networkConfig, type NetworkConfig }
 
 // Messages config - Flexy hates hardcoded error messages!
 import { messagesConfig, type MessagesConfig } from './messages.config'

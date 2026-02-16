@@ -303,6 +303,25 @@ export default [
       },
     },
   },
+  // Configuration for configs index file - allows unused vars since they're re-exported
+  {
+    files: ['configs/index.ts'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 2024,
+        sourceType: 'module',
+      },
+      globals: {
+        ...globals.node,
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off', // Allow unused vars since they're re-exported for external use
+    },
+  },
   // Configuration for Nuxt plugins
   {
     files: ['plugins/**/*.ts'],
