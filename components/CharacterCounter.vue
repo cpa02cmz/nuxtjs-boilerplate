@@ -245,9 +245,6 @@ const counterId = ref(
   `character-counter-${Math.random().toString(36).substr(2, 9)}`
 )
 
-// Accessibility: Track reduced motion preference
-const prefersReducedMotion = ref(false)
-
 onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 })

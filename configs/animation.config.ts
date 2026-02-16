@@ -612,6 +612,29 @@ export const animationConfig = {
     staggerDelayMs: parseInt(process.env.EMPTY_STAGGER_DELAY_MS || '100'),
   },
 
+  // Benefits Section Animations - Palette's micro-UX delight! 🎨
+  // Staggered entrance animations and hover effects for benefit lists
+  benefitsSection: {
+    // Delay between each benefit item's entrance animation (ms)
+    staggerDelayMs: parseInt(process.env.BENEFITS_STAGGER_DELAY_MS || '100'),
+    // Duration of the entrance animation for each item (ms)
+    entranceDurationMs: parseInt(
+      process.env.BENEFITS_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Duration of hover transition effects (ms)
+    hoverDurationMs: parseInt(process.env.BENEFITS_HOVER_DURATION_MS || '200'),
+    // Delay before checkmark drawing animation starts (ms)
+    checkmarkDelayMs: parseInt(
+      process.env.BENEFITS_CHECKMARK_DELAY_MS || '150'
+    ),
+    // Duration of checkmark path drawing animation (ms)
+    checkmarkDrawMs: parseInt(process.env.BENEFITS_CHECKMARK_DRAW_MS || '300'),
+    // General transition duration for CSS transitions (ms)
+    transitionDurationMs: parseInt(
+      process.env.BENEFITS_TRANSITION_DURATION_MS || '200'
+    ),
+  },
+
   // PWA Install Prompt Animations
   pwaInstall: {
     iconPulseDurationSec: parseInt(
