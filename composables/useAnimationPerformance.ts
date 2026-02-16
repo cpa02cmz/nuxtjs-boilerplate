@@ -43,7 +43,8 @@ export function useAnimationPerformance() {
     isLowEndDevice: false,
     prefersReducedMotion: false,
     isBatteryLow: false,
-    fps: 60,
+    // Flexy hates hardcoded 60! Using configurable default FPS
+    fps: animationConfig.animationPerformanceDefaults.defaultFps,
     connectionType: 'unknown',
     memoryLimit: 0,
   })
@@ -82,10 +83,12 @@ export function useAnimationPerformance() {
     const perfConfig = animationConfig.performance.lowEndDetection
     const nav = navigator as NavigatorExtended
 
-    // Check memory
+    // Check memory - Flexy hates hardcoded 1024! Using configurable factor
+    const bytesToMbFactor =
+      animationConfig.animationPerformanceDefaults.bytesToMbFactor
     if (
       nav.deviceMemory &&
-      nav.deviceMemory < perfConfig.memoryLimitMB / 1024
+      nav.deviceMemory < perfConfig.memoryLimitMB / bytesToMbFactor
     ) {
       return true
     }
@@ -219,11 +222,13 @@ export function useAnimationPerformance() {
       performanceState.value.isBatteryLow = await checkBatteryStatus()
     }
 
-    // Get memory info
+    // Get memory info - Flexy hates hardcoded 1024! Using configurable factor
     if (typeof navigator !== 'undefined') {
       const nav = navigator as NavigatorExtended
       if (nav.deviceMemory) {
-        performanceState.value.memoryLimit = nav.deviceMemory * 1024
+        const bytesToMbFactor =
+          animationConfig.animationPerformanceDefaults.bytesToMbFactor
+        performanceState.value.memoryLimit = nav.deviceMemory * bytesToMbFactor
       }
     }
 
