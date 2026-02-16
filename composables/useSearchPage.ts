@@ -1,4 +1,11 @@
-import { computed, ref, readonly, watch, onUnmounted } from 'vue'
+import {
+  computed,
+  ref,
+  readonly,
+  watch,
+  onUnmounted,
+  getCurrentInstance,
+} from 'vue'
 import type { SortOption } from '~/types/resource'
 import { useResourceData } from './useResourceData'
 import { useAdvancedResourceSearch } from './useAdvancedResourceSearch'
@@ -268,13 +275,15 @@ export const useSearchPage = () => {
     facetCountsCache.value.clear()
   }
 
-  // Cleanup on component unmount
-  onUnmounted(() => {
-    if (analyticsTimeout) {
-      clearTimeout(analyticsTimeout)
-      analyticsTimeout = null
-    }
-  })
+  // Cleanup on component unmount - BugFixer: Only register if in component context
+  if (getCurrentInstance()) {
+    onUnmounted(() => {
+      if (analyticsTimeout) {
+        clearTimeout(analyticsTimeout)
+        analyticsTimeout = null
+      }
+    })
+  }
 
   return {
     filterOptions: readonly(filterOptions),
