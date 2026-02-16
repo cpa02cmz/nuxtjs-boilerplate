@@ -41,6 +41,11 @@ const THRESHOLDS = WEB_VITALS_THRESHOLDS
 // Report metric to analytics endpoint
 async function reportMetric(report: WebVitalsReport): Promise<void> {
   try {
+    // BroCula: Skip reporting if analytics API is disabled (e.g., static builds)
+    if (!analyticsConfig.apiEnabled) {
+      return
+    }
+
     // Respect user's Do Not Track preference
     if (typeof navigator !== 'undefined' && navigator.doNotTrack === '1') {
       return
