@@ -3,6 +3,14 @@
 
 import { TIME_MS } from './time.config'
 
+// Flexy hates hardcoded severity lists!
+const parseValidSeverities = (envValue: string | undefined): string[] => {
+  if (!envValue) {
+    return ['info', 'warning', 'error', 'critical']
+  }
+  return envValue.split(',').map(s => s.trim().toLowerCase())
+}
+
 export const errorStatsConfig = {
   // Time range settings
   timeRange: {
@@ -53,6 +61,9 @@ export const errorStatsConfig = {
     // Low error threshold
     low: parseInt(process.env.ERROR_STATS_LOW_THRESHOLD || '5'),
   },
+
+  // Valid severity levels for error tracking - Flexy hates hardcoded arrays!
+  validSeverities: parseValidSeverities(process.env.ERROR_VALID_SEVERITIES),
 
   // Retention settings
   retention: {

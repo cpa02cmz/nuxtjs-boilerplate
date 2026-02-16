@@ -2,6 +2,7 @@ import { prisma, executeTransaction } from './db'
 import { logger } from '~/utils/logger'
 import { limitsConfig } from '~/configs/limits.config'
 import { databaseConfig } from '~/configs/database.config'
+import { errorStatsConfig } from '~/configs/error-stats.config'
 
 export interface ErrorTrackingPayload {
   message: string
@@ -197,11 +198,11 @@ function validateErrorMetricParams(
   source: string
 ): { isValid: boolean; error?: string } {
   // Validate severity - must be one of the allowed values
-  const validSeverities = ['info', 'warning', 'error', 'critical']
-  if (!validSeverities.includes(severity)) {
+  // Flexy hates hardcoded severity lists! Using errorStatsConfig.validSeverities
+  if (!errorStatsConfig.validSeverities.includes(severity)) {
     return {
       isValid: false,
-      error: `Invalid severity: ${severity}. Must be one of: ${validSeverities.join(', ')}`,
+      error: `Invalid severity: ${severity}. Must be one of: ${errorStatsConfig.validSeverities.join(', ')}`,
     }
   }
 
