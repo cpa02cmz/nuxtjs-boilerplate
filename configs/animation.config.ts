@@ -2965,6 +2965,29 @@ export const animationConfig = {
   resourceCard: {
     // New badge pulse duration (seconds)
     newPulseSec: parseFloat(process.env.RESOURCE_CARD_NEW_PULSE_SEC || '2'),
+    // Pallete's micro-UX: Entrance animation configuration for card lists 🎨
+    entrance: {
+      // Duration of card entrance animation (ms)
+      durationMs: parseInt(
+        process.env.RESOURCE_CARD_ENTRANCE_DURATION_MS || '400'
+      ),
+      // Stagger delay between cards (ms)
+      staggerMs: parseInt(process.env.RESOURCE_CARD_STAGGER_MS || '80'),
+      // Maximum stagger delay cap (ms) - prevents excessive delay for long lists
+      maxStaggerMs: parseInt(process.env.RESOURCE_CARD_MAX_STAGGER_MS || '600'),
+      // Scale effect for entrance (starts smaller)
+      startScale: parseFloat(
+        process.env.RESOURCE_CARD_ENTRANCE_SCALE || '0.95'
+      ),
+      // Translate Y offset for entrance (starts lower)
+      startTranslateYPx: parseInt(
+        process.env.RESOURCE_CARD_ENTRANCE_OFFSET_PX || '20'
+      ),
+      // Easing function for entrance
+      easing:
+        process.env.RESOURCE_CARD_ENTRANCE_EASING ||
+        'cubic-bezier(0.16, 1, 0.3, 1)',
+    },
   },
 
   // Resource Comments Animations
