@@ -6,10 +6,27 @@ export const backupConfig = {
   paths: {
     // Directory where backups are stored
     backupDir: process.env.BACKUP_DIR || './backups',
-    // SQLite database file path (source)
-    databasePath: process.env.BACKUP_DB_PATH || './prisma/data/dev.db',
+    // PostgreSQL database connection string (for pg_dump)
+    databaseUrl:
+      process.env.DATABASE_URL || process.env.BACKUP_DATABASE_URL || '',
     // Temporary directory for backup operations
     tempDir: process.env.BACKUP_TEMP_DIR || './tmp/backups',
+  },
+
+  // PostgreSQL-specific settings
+  postgresql: {
+    // pg_dump binary path (empty = use system PATH)
+    pgDumpPath: process.env.PG_DUMP_PATH || '',
+    // pg_restore binary path (empty = use system PATH)
+    pgRestorePath: process.env.PG_RESTORE_PATH || '',
+    // Additional pg_dump options
+    dumpOptions:
+      process.env.PG_DUMP_OPTIONS ||
+      '--clean --if-exists --no-owner --no-privileges',
+    // Additional pg_restore options
+    restoreOptions:
+      process.env.PG_RESTORE_OPTIONS ||
+      '--clean --if-exists --no-owner --no-privileges',
   },
 
   // Backup Schedule
