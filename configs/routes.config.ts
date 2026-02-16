@@ -88,6 +88,15 @@ export function isApiRoute(path: string): boolean {
  * Check if a path is a protected API route (requires auth)
  */
 export function isProtectedApiRoute(path: string): boolean {
+  // P1 Security Fix: Export endpoints require authentication
+  // Issue #3131: Export endpoints lack authentication exposing sensitive data
+  const protectedExportPaths = ['/api/analytics/export', '/api/v1/export']
+
+  // Check if path is a protected export endpoint
+  if (protectedExportPaths.some(exportPath => path.startsWith(exportPath))) {
+    return true
+  }
+
   // Protected if it starts with v1 but NOT with auth
   if (!path.startsWith(routesConfig.api.v1Prefix)) {
     return false

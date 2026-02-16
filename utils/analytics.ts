@@ -4,6 +4,7 @@ import logger from '~/utils/logger'
 import { apiConfig } from '~/configs/api.config'
 import { patternsConfig } from '~/configs/patterns.config'
 import { appConfig } from '~/configs/app.config'
+import { categoriesConfig } from '~/configs/categories.config'
 
 export interface AnalyticsEvent {
   type: string
@@ -91,6 +92,9 @@ export async function trackPageView(
   })
 }
 
+// Valid analytics categories - must match server-side validation
+// Flexy hates hardcoded arrays! Now using categoriesConfig.analytics.validCategories
+
 // Track a resource click
 export async function trackResourceClick(
   resourceId: string,
@@ -98,8 +102,11 @@ export async function trackResourceClick(
   category?: string
 ): Promise<boolean> {
   // Only include category if it's valid - invalid categories cause 400 errors
+  // Flexy hates hardcoded arrays! Using categoriesConfig.analytics.validCategories
   const validCategory =
-    category && VALID_CATEGORIES.includes(category) ? category : undefined
+    category && categoriesConfig.analytics.validCategories.includes(category)
+      ? category
+      : undefined
 
   return trackEvent({
     type: 'resource_click',
@@ -111,20 +118,6 @@ export async function trackResourceClick(
   })
 }
 
-// Valid analytics categories - must match server-side validation
-const VALID_CATEGORIES = [
-  'Development',
-  'Design',
-  'Productivity',
-  'Marketing',
-  'Analytics',
-  'Security',
-  'AI/ML',
-  'DevOps',
-  'Testing',
-  'Education',
-]
-
 // Track a resource view
 export async function trackResourceView(
   resourceId: string,
@@ -132,8 +125,11 @@ export async function trackResourceView(
   category?: string
 ): Promise<boolean> {
   // Only include category if it's valid - invalid categories cause 400 errors
+  // Flexy hates hardcoded arrays! Using categoriesConfig.analytics.validCategories
   const validCategory =
-    category && VALID_CATEGORIES.includes(category) ? category : undefined
+    category && categoriesConfig.analytics.validCategories.includes(category)
+      ? category
+      : undefined
 
   return trackEvent({
     type: 'resource_view',
