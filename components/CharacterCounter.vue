@@ -255,6 +255,20 @@ const checkReducedMotion = () => {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+// Reactive ref for reduced motion preference - used in template
+const prefersReducedMotion = ref(false)
+
+// Update prefersReducedMotion on mount (client-side only)
+if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+  prefersReducedMotion.value = checkReducedMotion()
+  // Listen for changes in reduced motion preference
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const handleChange = () => {
+    prefersReducedMotion.value = mediaQuery.matches
+  }
+  mediaQuery.addEventListener('change', handleChange)
+}
+
 // Watch for state changes and trigger haptic feedback
 watch(
   [isNearLimit, isOverLimit, isComplete],
