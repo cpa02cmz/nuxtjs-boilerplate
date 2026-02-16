@@ -106,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref, onMounted } from 'vue'
+import { computed, watch, ref, onMounted, onUnmounted } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { validationConfig } from '~/configs/validation.config'
@@ -262,6 +262,24 @@ const checkReducedMotion = () => {
   }
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
+
+// Initialize and watch for changes in reduced motion preference
+onMounted(() => {
+  updateReducedMotion()
+
+  // Watch for changes in reduced motion preference
+  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const handleChange = (e: MediaQueryListEvent) => {
+    prefersReducedMotion.value = e.matches
+  }
+
+  mediaQuery.addEventListener('change', handleChange)
+
+  // Cleanup listener on unmount
+  onUnmounted(() => {
+    mediaQuery.removeEventListener('change', handleChange)
+  })
+})
 
 // Watch for state changes and trigger haptic feedback
 watch(
