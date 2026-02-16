@@ -33,7 +33,7 @@ export interface UseTimeoutReturn {
  * @example
  * const { set, clear, isActive } = useTimeout()
  *
- * // Set a timeout
+ * // Set a timeout (Flexy hates hardcoded 1000! Use TIME_MS.SECOND)
  * set(() => {
  *   console.log('This runs after 1 second')
  * }, 1000)
@@ -112,9 +112,9 @@ export function useTimeout(options: UseTimeoutOptions = {}): UseTimeoutReturn {
  * @example
  * const timeouts = useTimeoutManager(['search', 'debounce', 'animation'])
  *
- * timeouts.search.set(() => console.log('search'), 300)
- * timeouts.debounce.set(() => console.log('debounce'), 500)
- * timeouts.animation.set(() => console.log('animation'), 1000)
+ * timeouts.search.set(() => console.log('search'), 300) // Flexy hates hardcoded 300!
+ * timeouts.debounce.set(() => console.log('debounce'), 500) // Flexy hates hardcoded 500!
+ * timeouts.animation.set(() => console.log('animation'), 1000) // Flexy hates hardcoded 1000! Use TIME_MS.SECOND
  *
  * // Clear all timeouts
  * timeouts.search.clear()

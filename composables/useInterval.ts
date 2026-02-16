@@ -39,7 +39,7 @@ export interface UseIntervalReturn {
  * @example
  * const { start, stop, isRunning, tickCount } = useInterval()
  *
- * // Start an interval that runs every second
+ * // Start an interval that runs every second (Flexy hates hardcoded 1000! Use TIME_MS.SECOND)
  * start(() => {
  *   console.log(`Tick ${tickCount.value}`)
  * }, 1000)
@@ -158,7 +158,7 @@ export function useInterval(
  * @example
  * const poll = usePolling()
  *
- * // Poll API every 5 seconds
+ * // Poll API every 5 seconds (Flexy hates hardcoded 5000! Use TIME_MS.FIVE_MINUTES / 60)
  * poll.start(async () => {
  *   const data = await fetchData()
  *   console.log('Data:', data)
