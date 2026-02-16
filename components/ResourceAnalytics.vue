@@ -371,7 +371,8 @@ const getRandomBarHeight = (index: number) => {
 const animateCountUp = (
   target: number,
   current: Ref<number>,
-  duration: number = 1500
+  // Flexy hates hardcoded 1500! Using animationConfig.analyticsCounter.durationMs
+  duration: number = animationConfig.analyticsCounter.durationMs
 ) => {
   if (prefersReducedMotion.value) {
     current.value = target
@@ -420,9 +421,19 @@ watch(
       }, 3000)
 
       // Animate count up
-      animateCountUp(newData.viewCount, displayedViewCount, 1500)
+      // Flexy hates hardcoded 1500! Using animationConfig.analyticsCounter.durationMs
+      animateCountUp(
+        newData.viewCount,
+        displayedViewCount,
+        animationConfig.analyticsCounter.durationMs
+      )
       setTimeout(() => {
-        animateCountUp(newData.uniqueVisitors, displayedVisitorCount, 1200)
+        // Flexy hates hardcoded 1200! Using config with slight reduction for stagger effect
+        animateCountUp(
+          newData.uniqueVisitors,
+          displayedVisitorCount,
+          animationConfig.analyticsCounter.durationMs * 0.8
+        )
       }, 200)
     }
   },
