@@ -1,6 +1,7 @@
 // Security Configuration - CSP, Headers, and Security Policies
 // Flexy hates hardcoded values! All security settings are now configurable.
 
+import { randomBytes } from 'crypto'
 import { DEFAULT_DEV_URL } from './url.config'
 
 // Parse environment variable for allowed origins
@@ -136,6 +137,7 @@ export const securityConfig = {
     // Salt for scrypt key derivation - must be set explicitly, no default for security
     // BroCula fix: Use getter to defer check until actually accessed
     // This prevents errors during module initialization in browser/client-side
+    // SECURITY FIX: Issue #3526 - Generate random salt in dev, enforce in production
     get salt() {
       const salt = process.env.CRYPTO_SALT
       // Skip check during build process, client-side, or when explicitly disabled
@@ -150,8 +152,16 @@ export const securityConfig = {
           'CRYPTO_SALT environment variable must be set in production for secure encryption. Generate a secure salt using crypto.randomBytes(32).toString("hex")'
         )
       }
-      // In non-production environments or client-side, use a development-only salt
-      return salt || 'dev-salt-not-for-production-use-only'
+      // SECURITY FIX: Issue #3526 - Generate random salt per session in development
+      // instead of using hardcoded fallback (CWE-321)
+      if (!salt && (process.env.NODE_ENV !== 'production' || skipCheck)) {
+        const randomSalt = randomBytes(16).toString('hex')
+        console.warn(
+          '[Security] Generated random development salt. Set CRYPTO_SALT environment variable for persistent encryption keys.'
+        )
+        return randomSalt
+      }
+      return salt
     },
 
     // Encryption algorithm
@@ -275,9 +285,16 @@ export function generateCsp(nonce?: string): string {
 
 // Function to get all security headers
 export function getSecurityHeaders(nonce?: string): Record<string, string> {
+  // SECURITY FIX: Issue #3526 - Validate CORS origins, remove wildcard fallback (CWE-942)
+  const allowedOrigin = securityConfig.cors.allowedOrigins[0]
+  if (!allowedOrigin) {
+    console.warn(
+      '[Security] No CORS allowed origins configured. Set ALLOWED_ORIGINS environment variable.'
+    )
+  }
   const headers: Record<string, string> = {
     ...securityConfig.headers,
-    'Access-Control-Allow-Origin': securityConfig.cors.allowedOrigins[0] || '*',
+    'Access-Control-Allow-Origin': allowedOrigin || '',
     'Access-Control-Allow-Methods':
       securityConfig.cors.allowedMethods.join(', '),
     'Access-Control-Allow-Headers':
