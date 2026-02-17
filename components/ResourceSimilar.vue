@@ -109,6 +109,7 @@ import { zIndexScale } from '~/configs/z-index.config'
 import { EASING } from '~/configs/easing.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   resources: Resource[]
@@ -262,7 +263,10 @@ onMounted(() => {
             }
           })
         },
-        { threshold: 0.1 }
+        {
+          // Flexy hates hardcoded 0.1! Using uiConfig.intersectionObserver.threshold
+          threshold: uiConfig.intersectionObserver.threshold,
+        }
       )
       observer.observe(sectionRef.value)
     } else {
