@@ -1,8 +1,26 @@
 // Security Configuration - CSP, Headers, and Security Policies
 // Flexy hates hardcoded values! All security settings are now configurable.
 
-import { randomBytes } from 'crypto'
 import { DEFAULT_DEV_URL } from './url.config'
+
+// Cross-platform random bytes generator (works in Node.js and browsers)
+// SECURITY FIX: Issue #3526 - Use Web Crypto API for cross-platform compatibility
+const generateRandomBytes = (length: number): Uint8Array => {
+  if (typeof window !== 'undefined' && window.crypto) {
+    // Browser environment
+    return window.crypto.getRandomValues(new Uint8Array(length))
+  } else if (typeof globalThis !== 'undefined' && globalThis.crypto) {
+    // Node.js environment with Web Crypto API
+    return globalThis.crypto.getRandomValues(new Uint8Array(length))
+  } else {
+    // Fallback for older environments - generate pseudo-random bytes
+    const bytes = new Uint8Array(length)
+    for (let i = 0; i < length; i++) {
+      bytes[i] = Math.floor(Math.random() * 256)
+    }
+    return bytes
+  }
+}
 
 // Parse environment variable for allowed origins
 const parseAllowedOrigins = (): string[] => {
@@ -154,8 +172,12 @@ export const securityConfig = {
       }
       // SECURITY FIX: Issue #3526 - Generate random salt per session in development
       // instead of using hardcoded fallback (CWE-321)
+      // SECURITY FIX: Use generateRandomBytes for cross-platform compatibility (browser + Node.js)
       if (!salt && (process.env.NODE_ENV !== 'production' || skipCheck)) {
-        const randomSalt = randomBytes(16).toString('hex')
+        const bytes = generateRandomBytes(16)
+        const randomSalt = Array.from(bytes)
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('')
         console.warn(
           '[Security] Generated random development salt. Set CRYPTO_SALT environment variable for persistent encryption keys.'
         )
