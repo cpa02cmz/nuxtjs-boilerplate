@@ -72,7 +72,75 @@
     </div>
 
     <!-- Description content with read more/less -->
-    <div class="description-content-wrapper">
+    <div
+      class="description-content-wrapper"
+      @mouseup="handleTextSelection"
+      @touchend="handleTextSelection"
+    >
+      <!-- 🎨 Palette's micro-UX enhancement: Text Selection Tooltip ✨ -->
+      <Transition
+        :enter-active-class="`transition-all ${animationConfig.tailwindDurations.fast} ease-out`"
+        enter-from-class="opacity-0 scale-90 translate-y-2"
+        enter-to-class="opacity-100 scale-100 translate-y-0"
+        :leave-active-class="`transition-all ${animationConfig.tailwindDurations.fast} ease-in`"
+        leave-from-class="opacity-100 scale-100 translate-y-0"
+        leave-to-class="opacity-0 scale-90 translate-y-2"
+      >
+        <div
+          v-if="showSelectionTooltip && !prefersReducedMotion"
+          class="selection-tooltip"
+          :style="selectionTooltipStyle"
+          role="tooltip"
+        >
+          <button
+            class="selection-tooltip-btn"
+            :class="{ 'is-copied': selectionCopied }"
+            :aria-label="selectionCopied ? 'Copied!' : 'Copy selected text'"
+            @click="copySelectedText"
+            @mousedown="isSelectionPressed = true"
+            @mouseup="isSelectionPressed = false"
+            @mouseleave="isSelectionPressed = false"
+          >
+            <svg
+              v-if="!selectionCopied"
+              xmlns="http://www.w3.org/2000/svg"
+              class="selection-tooltip-icon"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+              />
+            </svg>
+            <svg
+              v-else
+              xmlns="http://www.w3.org/2000/svg"
+              class="selection-tooltip-icon checkmark"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+            <span class="selection-tooltip-text">{{
+              selectionCopied ? 'Copied!' : 'Copy'
+            }}</span>
+          </button>
+          <div class="selection-tooltip-arrow" />
+        </div>
+      </Transition>
+
       <Transition
         :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
         :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
@@ -161,10 +229,7 @@
         </span>
 
         <!-- Reading time estimate -->
-        <span
-          class="stat-divider"
-          aria-hidden="true"
-        >·</span>
+        <span class="stat-divider" aria-hidden="true">·</span>
 
         <span class="stat-item">
           <svg
@@ -189,12 +254,7 @@
     </div>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -230,6 +290,15 @@ const isHoveringCopy = ref(false)
 const copySuccess = ref(false)
 const prefersReducedMotion = ref(false)
 const announcement = ref('')
+
+// 🎨 Palette's micro-UX enhancement: Text selection tooltip state
+const showSelectionTooltip = ref(false)
+const selectionCopied = ref(false)
+const isSelectionPressed = ref(false)
+const selectedText = ref('')
+const selectionPosition = ref({ x: 0, y: 0 })
+let selectionTooltipTimeout: ReturnType<typeof setTimeout> | null = null
+let selectionHideTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Refs
 const copyButtonRef = ref<HTMLButtonElement | null>(null)
@@ -301,6 +370,12 @@ const minReadLabel = computed(() => {
   return contentConfig.resourceDetails?.minRead || 'min read'
 })
 
+// 🎨 Palette's micro-UX enhancement: Text selection tooltip position
+const selectionTooltipStyle = computed(() => ({
+  left: `${selectionPosition.value.x}px`,
+  top: `${selectionPosition.value.y}px`,
+}))
+
 // Methods
 const toggleExpand = async () => {
   isExpanded.value = !isExpanded.value
@@ -349,6 +424,100 @@ const handleCopy = async () => {
   } catch {
     // Silent fail - user can try again
     announcement.value = contentConfig.ariaLabels.clipboard.failed
+    setTimeout(() => {
+      announcement.value = ''
+    }, config.announcementClearMs)
+  }
+}
+
+// 🎨 Palette's micro-UX enhancement: Handle text selection
+const handleTextSelection = () => {
+  // BugFixer: Guard for SSR safety
+  if (typeof window === 'undefined' || typeof document === 'undefined') return
+
+  const selection = window.getSelection()
+  const text = selection?.toString().trim() || ''
+
+  // Clear any existing timeouts
+  if (selectionTooltipTimeout) {
+    clearTimeout(selectionTooltipTimeout)
+  }
+  if (selectionHideTimeout) {
+    clearTimeout(selectionHideTimeout)
+  }
+
+  // Hide tooltip if no text selected or text is too short
+  if (!text || text.length < 2) {
+    showSelectionTooltip.value = false
+    selectedText.value = ''
+    return
+  }
+
+  // Store selected text
+  selectedText.value = text
+
+  // Get selection position for tooltip placement
+  const range = selection?.getRangeAt(0)
+  if (range) {
+    const rect = range.getBoundingClientRect()
+    const containerRect = document
+      .querySelector('.description-content-wrapper')
+      ?.getBoundingClientRect()
+
+    if (containerRect) {
+      // Calculate position relative to container
+      const centerX = rect.left + rect.width / 2
+      selectionPosition.value = {
+        x: centerX - containerRect.left,
+        y: rect.top - containerRect.top - 45, // Position above selection
+      }
+    }
+  }
+
+  // Show tooltip with small delay to avoid flickering
+  selectionTooltipTimeout = setTimeout(() => {
+    showSelectionTooltip.value = true
+    selectionCopied.value = false
+  }, 100)
+
+  // Auto-hide tooltip after delay
+  selectionHideTimeout = setTimeout(() => {
+    showSelectionTooltip.value = false
+  }, animationConfig.microInteractions.selectionTooltipTimeoutMs)
+}
+
+// 🎨 Palette's micro-UX enhancement: Copy selected text
+const copySelectedText = async () => {
+  if (!selectedText.value || selectionCopied.value) return
+
+  // BugFixer: Guard for SSR safety
+  if (typeof navigator === 'undefined' || !navigator.clipboard) return
+
+  try {
+    await navigator.clipboard.writeText(selectedText.value)
+
+    selectionCopied.value = true
+
+    // Haptic feedback for success
+    hapticSuccess()
+
+    // Announce to screen readers
+    announcement.value = `Copied "${selectedText.value.slice(0, 50)}${selectedText.value.length > 50 ? '...' : ''}" to clipboard`
+    setTimeout(() => {
+      announcement.value = ''
+    }, config.announcementClearMs)
+
+    // Hide tooltip after success
+    setTimeout(() => {
+      showSelectionTooltip.value = false
+      // Clear selection
+      if (typeof window !== 'undefined') {
+        window.getSelection()?.removeAllRanges()
+      }
+    }, animationConfig.copyFeedback.tooltipDurationMs)
+  } catch {
+    // Silent fail
+    announcement.value = 'Failed to copy selection'
     setTimeout(() => {
       announcement.value = ''
     }, config.announcementClearMs)
@@ -408,6 +577,14 @@ onMounted(() => {
 onUnmounted(() => {
   if (mediaQuery && handleMotionChange) {
     mediaQuery.removeEventListener('change', handleMotionChange)
+  }
+
+  // 🎨 Palette's micro-UX enhancement: Cleanup selection tooltip timeouts
+  if (selectionTooltipTimeout) {
+    clearTimeout(selectionTooltipTimeout)
+  }
+  if (selectionHideTimeout) {
+    clearTimeout(selectionHideTimeout)
   }
 })
 </script>
@@ -683,6 +860,121 @@ onUnmounted(() => {
 
   .action-btn {
     border: 1px solid currentColor;
+  }
+}
+
+/* 🎨 Palette's micro-UX enhancement: Text Selection Tooltip Styles */
+.selection-tooltip {
+  position: absolute;
+  z-index: 50;
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
+.selection-tooltip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border: none;
+  border-radius: 0.5rem;
+  color: white;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+  transition: all v-bind('`${animationConfig.transition.fast.durationMs}ms`')
+    ease-out;
+  transform-origin: center bottom;
+}
+
+.selection-tooltip-btn:hover {
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 8px -1px rgba(0, 0, 0, 0.15),
+    0 3px 6px -1px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+}
+
+.selection-tooltip-btn.is-pressed {
+  transform: scale(0.95);
+}
+
+.selection-tooltip-btn.is-copied {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.selection-tooltip-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+}
+
+.selection-tooltip-icon.checkmark {
+  animation: selection-check-pop
+    v-bind('`${animationConfig.copyFeedback.checkmarkDelaySec || 0.3}s`')
+    ease-out;
+}
+
+@keyframes selection-check-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.selection-tooltip-text {
+  white-space: nowrap;
+}
+
+.selection-tooltip-arrow {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #111827;
+}
+
+/* Reduced motion support for selection tooltip */
+@media (prefers-reduced-motion: reduce) {
+  .selection-tooltip-btn {
+    transition: none;
+  }
+
+  .selection-tooltip-btn:hover {
+    transform: none;
+  }
+
+  .selection-tooltip-icon.checkmark {
+    animation: none;
+  }
+}
+
+/* High contrast mode support for selection tooltip */
+@media (prefers-contrast: high) {
+  .selection-tooltip-btn {
+    background: black;
+    border: 2px solid white;
+  }
+
+  .selection-tooltip-arrow {
+    border-top-color: black;
   }
 }
 </style>
