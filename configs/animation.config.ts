@@ -2356,6 +2356,11 @@ export const animationConfig = {
     clickFeedbackDurationMs: parseInt(
       process.env.MICRO_CLICK_FEEDBACK_MS || '300'
     ),
+    // 🎨 Palette's micro-UX enhancement: Text selection tooltip auto-hide timeout (ms)
+    // Controls how long the selection tooltip stays visible before auto-hiding
+    selectionTooltipTimeoutMs: parseInt(
+      process.env.MICRO_SELECTION_TOOLTIP_MS || '3000'
+    ),
     // Click feedback shrink scale - how much element shrinks when clicked
     clickShrinkScale: parseFloat(
       process.env.MICRO_CLICK_SHRINK_SCALE || '0.97'
