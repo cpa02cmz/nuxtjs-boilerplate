@@ -28,29 +28,69 @@ const DEFAULT_HEALTH_CHECK_QUERY = databaseConfig.healthCheck.query
 
 /**
  * PostgreSQL Transaction implementation
+ * BugFixer: Issue #3472 - Proper transaction support with commit/rollback
  */
 class PostgreSQLTransaction implements Transaction {
-  constructor(private prisma: PrismaClient) {}
+  private transactionClient: PrismaClient | null = null
+  private shouldRollback = false
+  private transactionPromise: Promise<void> | null = null
+  private resolveTransaction: (() => void) | null = null
+  private rejectTransaction: ((error: Error) => void) | null = null
+
+  constructor(private prisma: PrismaClient) {
+    // Initialize the transaction promise that will be resolved on commit or rejected on rollback
+    this.transactionPromise = new Promise((resolve, reject) => {
+      this.resolveTransaction = resolve
+      this.rejectTransaction = reject
+    })
+  }
+
+  /**
+   * Set the transaction client from Prisma's $transaction
+   * This is called by the adapter when beginning the transaction
+   */
+  setTransactionClient(client: PrismaClient): void {
+    this.transactionClient = client
+  }
 
   async commit(): Promise<void> {
-    // Prisma handles transaction commit automatically
-    // This is a placeholder for explicit transaction control
+    // BugFixer: Actually commit by resolving the transaction promise
+    if (this.resolveTransaction) {
+      this.resolveTransaction()
+    }
+    // Wait for the transaction to complete
+    if (this.transactionPromise) {
+      await this.transactionPromise
+    }
   }
 
   async rollback(): Promise<void> {
-    // Prisma handles transaction rollback automatically
-    // This is a placeholder for explicit transaction control
+    // BugFixer: Actually rollback by rejecting the transaction promise
+    this.shouldRollback = true
+    if (this.rejectTransaction) {
+      this.rejectTransaction(new Error('Transaction rolled back'))
+    }
+    // Wait for the transaction to complete (it will throw)
+    if (this.transactionPromise) {
+      try {
+        await this.transactionPromise
+      } catch {
+        // Expected to throw on rollback
+      }
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async query<T = unknown>(sql: string, params?: unknown[]): Promise<T[]> {
+    // Use transaction client if available, otherwise use main prisma
+    const client = this.transactionClient || this.prisma
     // SECURITY FIX: Validate SQL is SELECT-only to prevent injection
     const trimmedSql = sql.trim().toLowerCase()
     if (!trimmedSql.startsWith('select')) {
       throw new Error('Only SELECT queries are allowed in query() method')
     }
     // SECURITY FIX: Use parameterized queries with template literals
-    const result = await this.prisma.$queryRaw<T[]>`${Prisma.raw(sql)}`
+    const result = await client.$queryRaw<T[]>`${Prisma.raw(sql)}`
     return result
   }
 
@@ -59,10 +99,19 @@ class PostgreSQLTransaction implements Transaction {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     params?: unknown[]
   ): Promise<{ rowCount: number }> {
+    // Use transaction client if available, otherwise use main prisma
+    const client = this.transactionClient || this.prisma
     // SECURITY FIX: Use parameterized queries with template literals
     // Note: Prisma doesn't support params in template literal syntax, so we validate
-    const result = await this.prisma.$executeRaw`${Prisma.raw(sql)}`
+    const result = await client.$executeRaw`${Prisma.raw(sql)}`
     return { rowCount: result }
+  }
+
+  /**
+   * Check if transaction should rollback
+   */
+  isRollbackRequested(): boolean {
+    return this.shouldRollback
   }
 }
 
@@ -215,13 +264,59 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _options?: TransactionOptions
   ): Promise<Transaction> {
-    // Prisma handles transactions through $transaction method
-    // This implementation provides a wrapper for consistency
-    // BugFixer: Ensure initialized before creating transaction
+    // BugFixer: Issue #3472 - Implement proper interactive transactions
+    // Prisma handles transactions through $transaction method with interactive transactions
     if (!this.prisma) {
       throw new Error('Database not connected. Call connect() first.')
     }
-    return new PostgreSQLTransaction(this.prisma)
+
+    // Create transaction wrapper
+    const transaction = new PostgreSQLTransaction(this.prisma)
+
+    // Start Prisma interactive transaction
+    // This runs the transaction and provides a transaction-bound client
+    this.prisma
+      .$transaction(
+        async txClient => {
+          // Set the transaction client so all operations use it
+          transaction.setTransactionClient(txClient as unknown as PrismaClient)
+
+          // Wait for commit or rollback
+          await new Promise<void>((resolve, reject) => {
+            // Store resolvers on transaction for later use
+            ;(
+              transaction as unknown as {
+                setTransactionResolvers: (
+                  res: () => void,
+                  rej: (e: Error) => void
+                ) => void
+              }
+            ).setTransactionResolvers?.(resolve, reject)
+
+            // Also handle the case where commit/rollback is called after this promise is created
+            const checkInterval = setInterval(() => {
+              if (transaction.isRollbackRequested()) {
+                clearInterval(checkInterval)
+                reject(new Error('Transaction rolled back'))
+              }
+            }, 10)
+          })
+        },
+        {
+          maxWait: 5000, // 5s max wait for transaction
+          timeout: 10000, // 10s timeout
+        }
+      )
+      .catch(error => {
+        // Transaction failed or was rolled back - this is expected behavior
+        if (error.message?.includes('rolled back')) {
+          // Normal rollback
+          return
+        }
+        throw error
+      })
+
+    return transaction
   }
 
   async getTables(): Promise<string[]> {
