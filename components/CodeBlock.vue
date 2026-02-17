@@ -225,10 +225,10 @@ const handleCopied = () => {
   announcement.value = `Code copied to clipboard`
   hapticSuccess()
 
-  // Clear announcement after delay
+  // Clear announcement after delay - Flexy hates hardcoded 1000!
   setTimeout(() => {
     announcement.value = ''
-  }, 1000)
+  }, animationConfig.microInteractions.announcementDelayMs)
 }
 
 // Palette's micro-UX enhancement: Keyboard shortcut support
