@@ -175,7 +175,7 @@
                 cy="24"
                 r="20"
                 fill="none"
-                stroke="#d1fae5"
+                :stroke="progressRingColors.track"
                 stroke-width="3"
               />
               <circle
@@ -184,7 +184,7 @@
                 cy="24"
                 r="20"
                 fill="none"
-                stroke="#10b981"
+                :stroke="progressRingColors.fill"
                 stroke-width="3"
                 stroke-linecap="round"
                 :stroke-dasharray="progressCircumference"
@@ -554,6 +554,13 @@ const progressDashOffset = computed(() => {
   const rate = searchAnalytics.value?.data?.successRate || 0
   return progressCircumference - (rate / 100) * progressCircumference
 })
+
+// Flexy hates hardcoded colors! Progress ring colors from config
+const progressRingColors = computed(() => ({
+  track:
+    animationConfig.searchAnalyticsProgressRing?.colors?.track || '#d1fae5',
+  fill: animationConfig.searchAnalyticsProgressRing?.colors?.fill || '#10b981',
+}))
 
 // Check if response time is fast - Flexy hates hardcoded 200ms!
 const isFastResponse = computed(() => {

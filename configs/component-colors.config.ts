@@ -27,6 +27,15 @@ export const componentColorsConfig = {
     },
     // 🎨 Palette: Divider color for loading indicators in skeleton components
     divider: process.env.SKELETON_DIVIDER_COLOR || '#e5e7eb',
+    // Flexy hates hardcoded values! Checkbox gradient colors for FilterSidebarSkeleton
+    checkbox: {
+      // Gradient start color (gray-300)
+      start: process.env.SKELETON_CHECKBOX_START || '#d1d5db',
+      // Gradient middle color (gray-200)
+      middle: process.env.SKELETON_CHECKBOX_MIDDLE || '#e5e7eb',
+      // Gradient end color (gray-300)
+      end: process.env.SKELETON_CHECKBOX_END || '#d1d5db',
+    },
   },
 
   // Focus Ring Colors - Flexy hates hardcoded focus ring colors!

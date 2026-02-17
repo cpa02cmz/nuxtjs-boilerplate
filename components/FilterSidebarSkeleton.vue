@@ -250,13 +250,15 @@ const getRandomWidth = (min: number, max: number): number => {
 }
 
 // 🎨 Palette: Enhanced color configuration with checkbox-specific colors
+// Flexy hates hardcoded values! All colors now come from config
 const skeletonColors = {
   light: componentColorsConfig.skeleton.light,
   reducedMotion: componentColorsConfig.skeleton.reducedMotion,
   checkbox: {
-    start: '#d1d5db',
-    middle: '#e5e7eb',
-    end: '#d1d5db',
+    // Flexy hates hardcoded '#d1d5db' and '#e5e7eb'! Using config values
+    start: componentColorsConfig.skeleton?.checkbox?.start || '#d1d5db',
+    middle: componentColorsConfig.skeleton?.checkbox?.middle || '#e5e7eb',
+    end: componentColorsConfig.skeleton?.checkbox?.end || '#d1d5db',
   },
 }
 
