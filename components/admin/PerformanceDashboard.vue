@@ -3,19 +3,21 @@
     <!-- Header -->
     <header class="dashboard-header">
       <h1 class="dashboard-title">
-        <span
-          class="title-icon"
-          aria-hidden="true"
-        >📊</span>
+        <span class="title-icon" aria-hidden="true">📊</span>
         Performance Dashboard
+        <!-- 🎨 Pallete's micro-UX enhancement: Live data indicator -->
+        <span
+          v-if="isAutoRefreshActive && !prefersReducedMotion"
+          class="live-indicator"
+          aria-hidden="true"
+        >
+          <span class="live-indicator__pulse" />
+          <span class="live-indicator__text">LIVE</span>
+        </span>
       </h1>
       <div class="dashboard-controls">
         <!-- Time Range Selector -->
-        <div
-          class="time-range-selector"
-          role="group"
-          aria-label="Time range"
-        >
+        <div class="time-range-selector" role="group" aria-label="Time range">
           <button
             v-for="range in timeRanges"
             :key="range.hours"
@@ -40,7 +42,8 @@
             class="refresh-icon"
             :class="{ spinning: isLoading }"
             aria-hidden="true"
-          >🔄</span>
+            >🔄</span
+          >
           <span class="refresh-text">{{
             isLoading ? 'Loading...' : 'Refresh'
           }}</span>
@@ -81,44 +84,20 @@
     </header>
 
     <!-- Last Updated -->
-    <div
-      v-if="lastUpdated"
-      class="last-updated"
-      aria-live="polite"
-    >
+    <div v-if="lastUpdated" class="last-updated" aria-live="polite">
       Last updated: {{ formatLastUpdated(lastUpdated) }}
     </div>
 
     <!-- Error Message -->
-    <div
-      v-if="error"
-      class="error-message"
-      role="alert"
-    >
-      <span
-        class="error-icon"
-        aria-hidden="true"
-      >⚠️</span>
+    <div v-if="error" class="error-message" role="alert">
+      <span class="error-icon" aria-hidden="true">⚠️</span>
       {{ error }}
-      <button
-        class="retry-button"
-        @click="refreshData"
-      >
-        Retry
-      </button>
+      <button class="retry-button" @click="refreshData">Retry</button>
     </div>
 
     <!-- Web Vitals Summary -->
-    <section
-      class="web-vitals-section"
-      aria-labelledby="web-vitals-heading"
-    >
-      <h2
-        id="web-vitals-heading"
-        class="section-title"
-      >
-        Core Web Vitals
-      </h2>
+    <section class="web-vitals-section" aria-labelledby="web-vitals-heading">
+      <h2 id="web-vitals-heading" class="section-title">Core Web Vitals</h2>
       <div class="metrics-grid">
         <MetricCard
           v-for="metric in webVitalsList"
@@ -134,25 +113,15 @@
     </section>
 
     <!-- Performance Trends -->
-    <section
-      class="trends-section"
-      aria-labelledby="trends-heading"
-    >
-      <h2
-        id="trends-heading"
-        class="section-title"
-      >
-        Performance Trends
-      </h2>
+    <section class="trends-section" aria-labelledby="trends-heading">
+      <h2 id="trends-heading" class="section-title">Performance Trends</h2>
       <div class="charts-grid">
         <div
           v-for="metricName in chartMetrics"
           :key="metricName"
           class="chart-container"
         >
-          <h3 class="chart-title">
-            {{ metricName }} Over Time
-          </h3>
+          <h3 class="chart-title">{{ metricName }} Over Time</h3>
           <PerformanceChart
             :data="timeSeries[metricName] || []"
             :metric-name="metricName"
@@ -163,28 +132,26 @@
     </section>
 
     <!-- API Performance -->
-    <section
-      class="api-section"
-      aria-labelledby="api-heading"
-    >
-      <h2
-        id="api-heading"
-        class="section-title"
-      >
-        API Performance
-      </h2>
+    <section class="api-section" aria-labelledby="api-heading">
+      <h2 id="api-heading" class="section-title">API Performance</h2>
       <div class="api-metrics">
         <div class="api-metric-card">
           <span class="api-metric-label">Avg Response Time</span>
-          <span class="api-metric-value">{{ apiPerformance.avgResponseTime }}ms</span>
+          <span class="api-metric-value"
+            >{{ apiPerformance.avgResponseTime }}ms</span
+          >
         </div>
         <div class="api-metric-card">
           <span class="api-metric-label">P95 Response Time</span>
-          <span class="api-metric-value">{{ apiPerformance.p95ResponseTime }}ms</span>
+          <span class="api-metric-value"
+            >{{ apiPerformance.p95ResponseTime }}ms</span
+          >
         </div>
         <div class="api-metric-card">
           <span class="api-metric-label">Error Rate</span>
-          <span class="api-metric-value">{{ (apiPerformance.errorRate * 100).toFixed(2) }}%</span>
+          <span class="api-metric-value"
+            >{{ (apiPerformance.errorRate * 100).toFixed(2) }}%</span
+          >
         </div>
         <div class="api-metric-card">
           <span class="api-metric-label">Total Requests</span>
@@ -222,6 +189,8 @@ const refreshInterval = ref<ReturnType<typeof setInterval> | null>(null)
 const showSuccessCelebration = ref(false)
 const prefersReducedMotion = ref(false)
 const celebrationTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+// 🎨 Pallete's micro-UX enhancement: Live data indicator state
+const isAutoRefreshActive = ref(false)
 
 // Computed
 const timeRanges = computed(
@@ -340,6 +309,8 @@ function startAutoRefresh() {
   const intervalMs =
     performanceDashboardConfig.dashboard.refreshIntervalSec * 1000
   refreshInterval.value = setInterval(fetchData, intervalMs)
+  // 🎨 Pallete's micro-UX enhancement: Set live indicator state
+  isAutoRefreshActive.value = true
 }
 
 function stopAutoRefresh() {
@@ -347,6 +318,8 @@ function stopAutoRefresh() {
     clearInterval(refreshInterval.value)
     refreshInterval.value = null
   }
+  // 🎨 Pallete's micro-UX enhancement: Clear live indicator state
+  isAutoRefreshActive.value = false
 }
 
 // Lifecycle
@@ -671,6 +644,88 @@ onUnmounted(() => {
   }
 }
 
+/* 🎨 Pallete's micro-UX enhancement: Live data indicator styles */
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-left: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 4px -1px rgba(16, 185, 129, 0.3);
+  animation: live-indicator-fade-in 300ms ease-out;
+}
+
+@keyframes live-indicator-fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateX(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
+}
+
+.live-indicator__pulse {
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+  position: relative;
+}
+
+.live-indicator__pulse::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  animation: live-pulse-ring 2s ease-out infinite;
+}
+
+.live-indicator__pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: white;
+  border-radius: 50%;
+  animation: live-pulse-dot 2s ease-out infinite;
+}
+
+@keyframes live-pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+@keyframes live-pulse-dot {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+}
+
+.live-indicator__text {
+  font-size: 0.625rem;
+  font-weight: 700;
+}
+
 @media (max-width: 768px) {
   .performance-dashboard {
     padding: 1rem;
@@ -718,6 +773,21 @@ onUnmounted(() => {
 
   .checkmark-path {
     stroke-dashoffset: 0;
+  }
+
+  /* 🎨 Pallete's micro-UX enhancement: Disable live indicator animations */
+  .live-indicator {
+    animation: none;
+  }
+
+  .live-indicator__pulse::before,
+  .live-indicator__pulse::after {
+    animation: none;
+  }
+
+  .live-indicator__pulse::before {
+    opacity: 0.5;
+    transform: scale(1.5);
   }
 }
 </style>
