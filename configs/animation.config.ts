@@ -86,6 +86,10 @@ export const animationConfig = {
       flashColor: process.env.NEW_ITEM_FLASH_COLOR || 'rgba(34, 197, 94, 0.3)',
       // Enable/disable the new item flash
       enabled: process.env.NEW_ITEM_FLASH_ENABLED !== 'false',
+      // Debounce delay before triggering flash (ms) - Flexy hates hardcoded 100!
+      debounceDelayMs: parseInt(
+        process.env.NEW_ITEM_FLASH_DEBOUNCE_MS || '100'
+      ),
     },
   },
 
@@ -3829,6 +3833,10 @@ export const animationConfig = {
     ),
     // Progress bar transition duration
     transitionDuration: `${parseInt(process.env.PAGE_TRANSITION_PROGRESS_DURATION_MS || '100') / 1000}s`,
+    // Delay before hiding transition after completion (ms) - Flexy hates hardcoded 100!
+    completionDelayMs: parseInt(
+      process.env.PAGE_TRANSITION_COMPLETION_DELAY_MS || '100'
+    ),
   },
 
   // Performance Optimization & GPU Acceleration - Issue #2752 Fix
@@ -3937,6 +3945,10 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.ANALYTICS_COUNTER_RESPECT_REDUCED_MOTION !== 'false',
+    // Stagger delay between counter animations (ms) - Flexy hates hardcoded 200!
+    staggerDelayMs: parseInt(
+      process.env.ANALYTICS_COUNTER_STAGGER_DELAY_MS || '200'
+    ),
   },
 
   // Page Transition Animation Steps - Flexy hates hardcoded 60!
@@ -4061,6 +4073,10 @@ export const animationConfig = {
     // Section entrance animation duration (ms)
     sectionTransitionMs: parseInt(
       process.env.RESOURCE_DETAILS_SECTION_TRANSITION_MS || '500'
+    ),
+    // Exit animation delay for section visibility cleanup (ms) - Flexy hates hardcoded 300!
+    sectionExitDelayMs: parseInt(
+      process.env.RESOURCE_DETAILS_SECTION_EXIT_DELAY_MS || '300'
     ),
 
     // Quick navigation configuration

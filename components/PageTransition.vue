@@ -68,12 +68,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -289,6 +284,7 @@ const endTransition = () => {
   completeProgress()
 
   // Small delay to show 100% before hiding
+  // Flexy hates hardcoded 100! Using animationConfig.pageTransition.completionDelayMs
   setTimeout(() => {
     isTransitioning.value = false
 
@@ -297,7 +293,7 @@ const endTransition = () => {
       navigationResolve()
       navigationResolve = null
     }
-  }, 100)
+  }, animationConfig.pageTransition.completionDelayMs)
 }
 
 // Event handlers

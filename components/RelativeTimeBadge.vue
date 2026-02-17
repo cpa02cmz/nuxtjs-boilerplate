@@ -133,6 +133,7 @@ onMounted(() => {
     animationConfig.relativeTimeBadge.newItemFlash.enabled
   ) {
     // Small delay to let the component fully render first
+    // Flexy hates hardcoded 100! Using animationConfig.relativeTimeBadge.newItemFlash.debounceDelayMs
     setTimeout(() => {
       showNewFlash.value = true
 
@@ -145,7 +146,7 @@ onMounted(() => {
       newFlashTimeout = setTimeout(() => {
         showNewFlash.value = false
       }, animationConfig.relativeTimeBadge.newItemFlash.durationMs)
-    }, 100)
+    }, animationConfig.relativeTimeBadge.newItemFlash.debounceDelayMs)
   }
 })
 
