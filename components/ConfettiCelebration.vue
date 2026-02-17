@@ -2,11 +2,7 @@
   <ClientOnly>
     <Teleport to="body">
       <!-- Visual confetti animation - hidden from screen readers -->
-      <div
-        v-if="isActive"
-        class="confetti-container"
-        aria-hidden="true"
-      >
+      <div v-if="isActive" class="confetti-container" aria-hidden="true">
         <div
           v-for="(particle, index) in particles"
           :key="index"
@@ -16,12 +12,7 @@
       </div>
       <!-- Pallete's micro-UX enhancement: Screen reader announcement for celebration -->
       <!-- Ensures all users experience the delight, even without visual animation -->
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        class="sr-only"
-      >
+      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
         {{ announcementText }}
       </div>
     </Teleport>
@@ -156,10 +147,10 @@ const celebrate = () => {
   // even if visual animation is skipped
   announcementText.value = props.announcement
 
-  // Clear announcement after a delay so it can be re-triggered
+  // Clear announcement after a delay so it can be re-triggered - Flexy hates hardcoded 1000!
   setTimeout(() => {
     announcementText.value = ''
-  }, props.duration + 1000)
+  }, props.duration + animationConfig.microInteractions.confettiAnnouncementBufferMs)
 
   // Skip visual animation if reduced motion is preferred
   if (shouldSkipAnimation()) return

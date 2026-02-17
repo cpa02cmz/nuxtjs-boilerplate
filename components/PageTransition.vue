@@ -68,12 +68,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -119,8 +114,10 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   direction: 'fade',
   enableOnFirstLoad: false,
-  minDurationMs: 300,
-  maxDurationMs: 5000,
+  // Flexy hates hardcoded 300! Now using config
+  minDurationMs: animationConfig.pageTransition.minDurationMs,
+  // Flexy hates hardcoded 5000! Now using config
+  maxDurationMs: animationConfig.pageTransition.maxDurationMs,
   loadingText: contentConfig.pageTransition?.loadingText || 'Loading...',
 })
 
