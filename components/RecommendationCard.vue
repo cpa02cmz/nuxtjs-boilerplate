@@ -16,10 +16,7 @@
             {{ resource.description }}
           </p>
         </div>
-        <div
-          v-if="resource.icon"
-          class="ml-3 flex-shrink-0"
-        >
+        <div v-if="resource.icon" class="ml-3 flex-shrink-0">
           <OptimizedImage
             :src="resource.icon"
             :alt="resource.title"
@@ -57,11 +54,7 @@
 
       <div class="mt-3 flex items-center justify-between">
         <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-          <svg
-            class="w-4 h-4 mr-1"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
             <path
               fill-rule="evenodd"
@@ -102,34 +95,51 @@
       </div>
 
       <div class="mt-4 flex space-x-2">
-        <a
-          :href="resource.url"
-          target="_blank"
-          rel="noopener noreferrer"
-          :class="`group flex-1 inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 hover:scale-105 active:scale-95 active:bg-indigo-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 transition-all ${transitionClasses.fast} ease-out relative overflow-hidden`"
-          :aria-label="`View ${resource.title} - opens in new tab`"
+        <!-- Magnetic View Resource Button - Palette's micro-UX delight! -->
+        <div
+          ref="viewButtonContainerRef"
+          class="flex-1 magnetic-button-container"
+          @mouseenter="handleViewButtonMouseEnter"
+          @mouseleave="handleViewButtonMouseLeave"
+          @mousemove="handleViewButtonMouseMove"
         >
-          View Resource
-          <span
-            class="ml-1.5 inline-flex items-center external-link-icon"
-            aria-hidden="true"
+          <a
+            :href="resource.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            :class="[
+              `group w-full inline-flex justify-center items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 hover:scale-105 active:scale-95 active:bg-indigo-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 transition-all ${transitionClasses.fast} ease-out relative overflow-hidden`,
+              {
+                'magnetic-active':
+                  isViewButtonHovering && !prefersReducedMotion,
+              },
+            ]"
+            :style="magneticViewButtonStyle"
+            :aria-label="`View ${resource.title} - opens in new tab`"
+            @click="handleViewResourceClick"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              :class="`h-3.5 w-3.5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all ${transitionClasses.normal}`"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2.5"
+            View Resource
+            <span
+              class="ml-1.5 inline-flex items-center external-link-icon"
+              aria-hidden="true"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
-          </span>
-        </a>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                :class="`h-3.5 w-3.5 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all ${transitionClasses.normal}`"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
+              </svg>
+            </span>
+          </a>
+        </div>
         <button
           ref="bookmarkButtonRef"
           :class="`inline-flex justify-center items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:scale-105 active:scale-95 active:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600 transition-all ${transitionClasses.fast} ease-out relative overflow-hidden`"
@@ -157,12 +167,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, type Ref } from 'vue'
+import { computed, ref, type Ref, onMounted, onUnmounted } from 'vue'
 import type { Resource } from '~/types/resource'
 import { limitsConfig } from '~/configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { zIndexConfig } from '~/configs/z-index.config'
+import { EASING } from '~/configs/easing.config'
 import { useRipple } from '~/composables/useRipple'
 import { hapticLight } from '~/utils/hapticFeedback'
 import OptimizedImage from '~/components/OptimizedImage.vue'
@@ -209,6 +220,134 @@ const handleBookmarkClick = (event: MouseEvent) => {
   // Emit bookmark event
   emit('bookmark', props.resource)
 }
+
+// Palette's micro-UX enhancement: Magnetic View Resource Button state
+const viewButtonContainerRef = ref<HTMLElement | null>(null)
+const isViewButtonHovering = ref(false)
+const viewButtonMagneticX = ref(0)
+const viewButtonMagneticY = ref(0)
+const prefersReducedMotion = ref(false)
+let magneticAnimationFrame: number | null = null
+
+// Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (
+    typeof window === 'undefined' ||
+    typeof window.matchMedia !== 'function'
+  ) {
+    return false
+  }
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// Handle view button mouse enter
+const handleViewButtonMouseEnter = () => {
+  if (prefersReducedMotion.value) return
+  isViewButtonHovering.value = true
+}
+
+// Handle view button mouse leave
+const handleViewButtonMouseLeave = () => {
+  isViewButtonHovering.value = false
+  viewButtonMagneticX.value = 0
+  viewButtonMagneticY.value = 0
+}
+
+// Handle view button mouse move for magnetic effect
+const handleViewButtonMouseMove = (event: MouseEvent) => {
+  if (prefersReducedMotion.value || !viewButtonContainerRef.value) return
+
+  const container = viewButtonContainerRef.value
+  const rect = container.getBoundingClientRect()
+
+  // Calculate container center
+  const centerX = rect.left + rect.width / 2
+  const centerY = rect.top + rect.height / 2
+
+  // Calculate distance from mouse to center
+  const distanceX = event.clientX - centerX
+  const distanceY = event.clientY - centerY
+  const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
+
+  // Maximum distance for magnetic effect
+  const maxDistance = rect.width * 1.5
+
+  // Apply magnetic effect when cursor is within range
+  if (distance < maxDistance && distance > 0) {
+    const config = animationConfig.resourceHeader
+    const strength = (1 - distance / maxDistance) * config.magneticStrength
+
+    // Calculate magnetic pull toward cursor
+    const pullX =
+      (distanceX / distance) * config.magneticMaxDistancePx * strength
+    const pullY =
+      (distanceY / distance) * config.magneticMaxDistancePx * strength
+
+    // Cancel any existing animation frame
+    if (magneticAnimationFrame !== null) {
+      cancelAnimationFrame(magneticAnimationFrame)
+    }
+
+    // Smooth update using requestAnimationFrame
+    magneticAnimationFrame = requestAnimationFrame(() => {
+      viewButtonMagneticX.value = pullX
+      viewButtonMagneticY.value = pullY
+    })
+  } else {
+    viewButtonMagneticX.value = 0
+    viewButtonMagneticY.value = 0
+  }
+}
+
+// Handle view resource click with haptic feedback
+const handleViewResourceClick = () => {
+  // Trigger haptic feedback
+  hapticLight()
+}
+
+// Computed styles for magnetic view button
+const magneticViewButtonStyle = computed(() => {
+  if (prefersReducedMotion.value || !isViewButtonHovering.value) {
+    return {}
+  }
+
+  const config = animationConfig.resourceHeader
+  return {
+    transform: `translate(${viewButtonMagneticX.value}px, ${viewButtonMagneticY.value}px)`,
+    transition: `transform ${config.magneticReturnDurationMs}ms ${EASING.SPRING_STANDARD}`,
+  }
+})
+
+// Initialize reduced motion preference on mount
+let mediaQueryRef: MediaQueryList | null = null
+let handleMotionChangeRef: ((e: MediaQueryListEvent) => void) | null = null
+
+onMounted(() => {
+  prefersReducedMotion.value = checkReducedMotion()
+
+  // Listen for reduced motion preference changes
+  if (typeof window !== 'undefined') {
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    handleMotionChangeRef = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.value = e.matches
+    }
+    mediaQueryRef.addEventListener('change', handleMotionChangeRef)
+  }
+})
+
+onUnmounted(() => {
+  // Cleanup media query listener
+  if (mediaQueryRef && handleMotionChangeRef) {
+    mediaQueryRef.removeEventListener('change', handleMotionChangeRef)
+    mediaQueryRef = null
+    handleMotionChangeRef = null
+  }
+
+  // Clean up animation frame
+  if (magneticAnimationFrame !== null) {
+    cancelAnimationFrame(magneticAnimationFrame)
+  }
+})
 
 // Flexy hates hardcoded limits! Use configurable display limit
 const displayLimit = limitsConfig.display.maxTagsDisplay
@@ -288,6 +427,46 @@ const hasMoreTags = computed(() => {
 
   .recommendation-card {
     transition: none;
+  }
+}
+
+/* Palette's micro-UX enhancement: Magnetic Button Container */
+.magnetic-button-container {
+  position: relative;
+  display: inline-flex;
+  padding: 8px;
+  margin: -8px;
+}
+
+.magnetic-button-container a {
+  will-change: transform;
+}
+
+.magnetic-button-container a.magnetic-active {
+  will-change: transform;
+}
+
+/* Enhanced external link icon animation on hover */
+.external-link-icon svg {
+  transition: transform
+    v-bind('`${animationConfig.transition.normal.durationMs}ms`') ease-out;
+}
+
+.magnetic-button-container:hover .external-link-icon svg {
+  animation: external-link-bounce
+    v-bind('`${animationConfig.resourceHeader.iconAnimationDurationMs}ms`')
+    ease-out forwards;
+}
+
+@keyframes external-link-bounce {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(3px, -3px);
+  }
+  100% {
+    transform: translate(2px, -2px);
   }
 }
 </style>
