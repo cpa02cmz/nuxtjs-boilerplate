@@ -4416,6 +4416,56 @@ export const animationConfig = {
       return `${this.rootMarginPx}px`
     },
   },
+
+  // 🎨 Pallete's Micro-UX Enhancement: Lightbox Modal Configuration
+  // Delightful fullscreen image viewer with smooth zoom transitions
+  lightbox: {
+    // Duration of overlay fade-in animation (ms) - Pallete hates hardcoded 300!
+    overlayFadeInMs: parseInt(process.env.LIGHTBOX_OVERLAY_FADE_MS || '300'),
+    // Duration of overlay fade-out animation (ms)
+    overlayFadeOutMs: parseInt(process.env.LIGHTBOX_OVERLAY_FADE_MS || '300'),
+    // Duration of image zoom-in animation (ms)
+    zoomInDurationMs: parseInt(process.env.LIGHTBOX_ZOOM_IN_MS || '400'),
+    // CSS duration string for zoom animation
+    zoomInDurationSec: `${parseInt(process.env.LIGHTBOX_ZOOM_IN_MS || '400') / 1000}s`,
+    // Duration of image load fade-in (ms)
+    imageLoadFadeMs: parseInt(process.env.LIGHTBOX_IMAGE_LOAD_FADE_MS || '400'),
+    // Close button rotation on hover (degrees)
+    closeButtonRotationDeg: parseInt(
+      process.env.LIGHTBOX_CLOSE_ROTATION || '90'
+    ),
+    // Scale factor for close button hover
+    closeButtonScale: parseFloat(process.env.LIGHTBOX_CLOSE_SCALE || '1.1'),
+    // Scale factor for nav button hover
+    navButtonScale: parseFloat(process.env.LIGHTBOX_NAV_SCALE || '1.1'),
+    // Thumbnail hover lift (px)
+    thumbnailLiftPx: parseInt(process.env.LIGHTBOX_THUMB_LIFT_PX || '2'),
+    // Active thumbnail border color
+    activeThumbBorderColor:
+      process.env.LIGHTBOX_ACTIVE_THUMB_BORDER || '#3b82f6',
+    // Active thumbnail box shadow
+    activeThumbShadow:
+      process.env.LIGHTBOX_ACTIVE_THUMB_SHADOW ||
+      '0 0 0 3px rgba(59, 130, 246, 0.3)',
+    // Backdrop blur amount (px)
+    backdropBlurPx: parseInt(process.env.LIGHTBOX_BACKDROP_BLUR_PX || '8'),
+    // Overlay background opacity (0-1)
+    overlayOpacity: parseFloat(process.env.LIGHTBOX_OVERLAY_OPACITY || '0.95'),
+    // Whether to respect reduced motion preference
+    respectReducedMotion:
+      process.env.LIGHTBOX_RESPECT_REDUCED_MOTION !== 'false',
+    // Keyboard navigation debounce (ms) - prevents rapid navigation
+    keyboardDebounceMs: parseInt(
+      process.env.LIGHTBOX_KEYBOARD_DEBOUNCE_MS || '150'
+    ),
+    // Haptic feedback duration (ms)
+    hapticDurationMs: parseInt(process.env.LIGHTBOX_HAPTIC_DURATION_MS || '5'),
+    // Swipe threshold for mobile navigation (px)
+    swipeThresholdPx: parseInt(process.env.LIGHTBOX_SWIPE_THRESHOLD_PX || '50'),
+    // Easing function for zoom animation
+    zoomEasing:
+      process.env.LIGHTBOX_ZOOM_EASING || 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig

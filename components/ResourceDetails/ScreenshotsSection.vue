@@ -20,6 +20,176 @@
       </span>
     </div>
 
+    <!-- 🎨 Pallete's Micro-UX Enhancement: Lightbox Modal -->
+    <Teleport to="body">
+      <Transition
+        name="lightbox"
+        @after-enter="onLightboxEnter"
+        @before-leave="onLightboxLeave"
+      >
+        <div
+          v-if="lightboxOpen"
+          ref="lightboxRef"
+          class="lightbox-overlay"
+          role="dialog"
+          aria-modal="true"
+          tabindex="-1"
+          :aria-label="lightboxAriaLabel"
+          @click="handleOverlayClick"
+          @keydown="handleLightboxKeydown"
+        >
+          <!-- Close Button -->
+          <button
+            type="button"
+            class="lightbox-close"
+            aria-label="Close lightbox"
+            :class="{ 'is-hovered': closeButtonHovered }"
+            @click="closeLightbox"
+            @mouseenter="closeButtonHovered = true"
+            @mouseleave="closeButtonHovered = false"
+          >
+            <svg
+              class="close-icon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+
+          <!-- Navigation Arrows -->
+          <button
+            v-if="screenshots.length > 1"
+            type="button"
+            class="lightbox-nav lightbox-nav--prev"
+            aria-label="Previous image"
+            :class="{
+              'is-hovered': navPrevHovered,
+              'is-disabled': currentImageIndex === 0,
+            }"
+            :disabled="currentImageIndex === 0"
+            @click="navigatePrev"
+            @mouseenter="navPrevHovered = true"
+            @mouseleave="navPrevHovered = false"
+          >
+            <svg
+              class="nav-icon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+
+          <button
+            v-if="screenshots.length > 1"
+            type="button"
+            class="lightbox-nav lightbox-nav--next"
+            aria-label="Next image"
+            :class="{
+              'is-hovered': navNextHovered,
+              'is-disabled': currentImageIndex === screenshots.length - 1,
+            }"
+            :disabled="currentImageIndex === screenshots.length - 1"
+            @click="navigateNext"
+            @mouseenter="navNextHovered = true"
+            @mouseleave="navNextHovered = false"
+          >
+            <svg
+              class="nav-icon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+
+          <!-- Image Container with Zoom Animation -->
+          <div class="lightbox-content">
+            <div
+              class="lightbox-image-wrapper"
+              :class="{ 'is-zooming': isZooming }"
+            >
+              <NuxtImg
+                :src="currentLightboxImage"
+                :alt="`${title} - Image ${currentImageIndex + 1} of ${screenshots.length}`"
+                class="lightbox-image"
+                :class="{ 'is-loaded': lightboxImageLoaded }"
+                format="avif"
+                quality="90"
+                @load="lightboxImageLoaded = true"
+                @click.stop
+              />
+            </div>
+
+            <!-- Image Counter in Lightbox -->
+            <div
+              class="lightbox-counter"
+              aria-live="polite"
+            >
+              {{ currentImageIndex + 1 }} / {{ screenshots.length }}
+            </div>
+          </div>
+
+          <!-- Thumbnail Strip -->
+          <div
+            v-if="screenshots.length > 1"
+            class="lightbox-thumbnails"
+            role="tablist"
+            aria-label="Image thumbnails"
+          >
+            <button
+              v-for="(screenshot, index) in screenshots"
+              :key="`thumb-${index}`"
+              type="button"
+              role="tab"
+              class="lightbox-thumbnail"
+              :aria-label="`Go to image ${index + 1}`"
+              :aria-selected="index === currentImageIndex"
+              :class="{
+                'is-active': index === currentImageIndex,
+                'is-hovered': hoveredThumbIndex === index,
+              }"
+              @click="goToImage(index)"
+              @mouseenter="hoveredThumbIndex = index"
+              @mouseleave="hoveredThumbIndex = null"
+            >
+              <NuxtImg
+                :src="screenshot"
+                :alt="`Thumbnail ${index + 1}`"
+                class="thumbnail-image"
+                format="avif"
+                quality="60"
+                width="80"
+                height="60"
+              />
+            </button>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
     <!-- Loading Skeleton State - Palette's micro-UX delight! -->
     <div
       v-if="isLoading"
@@ -154,7 +324,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
@@ -182,6 +352,17 @@ const hoveredIndex = ref<number | null>(null)
 const focusedIndex = ref<number | null>(null)
 const countRecentlyUpdated = ref(false)
 const announcementText = ref('')
+
+// 🎨 Pallete's Micro-UX Enhancement: Lightbox State
+const lightboxOpen = ref(false)
+const currentImageIndex = ref(0)
+const lightboxImageLoaded = ref(false)
+const isZooming = ref(false)
+const lightboxRef = ref<HTMLElement | null>(null)
+const closeButtonHovered = ref(false)
+const navPrevHovered = ref(false)
+const navNextHovered = ref(false)
+const hoveredThumbIndex = ref<number | null>(null)
 
 // Check for reduced motion preference
 const prefersReducedMotion = ref(false)
@@ -247,6 +428,16 @@ const skeletonCount = computed(() => {
   return 3
 })
 
+// 🎨 Pallete's Micro-UX Enhancement: Lightbox Computed Properties
+const currentLightboxImage = computed(() => {
+  if (props.screenshots.length === 0) return ''
+  return props.screenshots[currentImageIndex.value]
+})
+
+const lightboxAriaLabel = computed(() => {
+  return `Image viewer: ${props.title} - Image ${currentImageIndex.value + 1} of ${props.screenshots.length}`
+})
+
 // Get staggered animation style - Palette's micro-UX delight!
 const getStaggeredStyle = (index: number) => {
   if (prefersReducedMotion.value) return {}
@@ -273,9 +464,95 @@ const handleImageError = (index: number, event: Event | string) => {
   emit('imageError', event)
 }
 
-const handleImageClick = (index: number) => {
+// 🎨 Pallete's Micro-UX Enhancement: Lightbox Methods
+const openLightbox = (index: number) => {
+  currentImageIndex.value = index
+  lightboxOpen.value = true
+  lightboxImageLoaded.value = false
+  isZooming.value = true
+
+  // Prevent body scroll when lightbox is open
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = 'hidden'
+  }
+
+  // Focus the lightbox for keyboard navigation
+  nextTick(() => {
+    lightboxRef.value?.focus()
+  })
+
   hapticLight()
   emit('imageClick', index)
+}
+
+const closeLightbox = () => {
+  lightboxOpen.value = false
+  isZooming.value = false
+
+  // Restore body scroll
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = ''
+  }
+}
+
+const navigateNext = () => {
+  if (currentImageIndex.value < props.screenshots.length - 1) {
+    lightboxImageLoaded.value = false
+    currentImageIndex.value++
+    hapticLight()
+  }
+}
+
+const navigatePrev = () => {
+  if (currentImageIndex.value > 0) {
+    lightboxImageLoaded.value = false
+    currentImageIndex.value--
+    hapticLight()
+  }
+}
+
+const goToImage = (index: number) => {
+  if (index !== currentImageIndex.value) {
+    lightboxImageLoaded.value = false
+    currentImageIndex.value = index
+    hapticLight()
+  }
+}
+
+const handleOverlayClick = () => {
+  closeLightbox()
+}
+
+const handleLightboxKeydown = (event: KeyboardEvent) => {
+  switch (event.key) {
+    case 'Escape':
+      event.preventDefault()
+      closeLightbox()
+      break
+    case 'ArrowRight':
+      event.preventDefault()
+      navigateNext()
+      break
+    case 'ArrowLeft':
+      event.preventDefault()
+      navigatePrev()
+      break
+  }
+}
+
+const onLightboxEnter = () => {
+  // Animation complete callback
+  isZooming.value = false
+}
+
+const onLightboxLeave = () => {
+  // Reset state when lightbox closes
+  currentImageIndex.value = 0
+}
+
+// Update handleImageClick to open lightbox
+const handleImageClick = (index: number) => {
+  openLightbox(index)
 }
 
 const handleMouseEnter = (index: number) => {
@@ -682,6 +959,266 @@ const handleKeydown = (event: KeyboardEvent, index: number) => {
   .screenshot-wrapper.is-focused {
     outline: 3px solid currentColor;
     outline-offset: 3px;
+  }
+}
+
+/* 🎨 Pallete's Micro-UX Enhancement: Lightbox Styles */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 2rem;
+  backdrop-filter: blur(8px);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 10;
+}
+
+.lightbox-close:hover,
+.lightbox-close.is-hovered {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.close-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 10;
+}
+
+.lightbox-nav--prev {
+  left: 1.5rem;
+}
+
+.lightbox-nav--next {
+  right: 1.5rem;
+}
+
+.lightbox-nav:hover:not(:disabled),
+.lightbox-nav.is-hovered:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.lightbox-nav:disabled,
+.lightbox-nav.is-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.nav-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.lightbox-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 90vw;
+  max-height: 85vh;
+}
+
+.lightbox-image-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  max-height: 70vh;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lightbox-image-wrapper.is-zooming {
+  animation: lightbox-zoom-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.lightbox-image {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.lightbox-image.is-loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes lightbox-zoom-in {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.lightbox-counter {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 9999px;
+  backdrop-filter: blur(4px);
+}
+
+.lightbox-thumbnails {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(8px);
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.lightbox-thumbnail {
+  flex-shrink: 0;
+  width: 5rem;
+  height: 3.75rem;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease-out;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0;
+}
+
+.lightbox-thumbnail:hover,
+.lightbox-thumbnail.is-hovered {
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.lightbox-thumbnail.is-active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6;
+  transition: opacity 0.2s ease-out;
+}
+
+.lightbox-thumbnail.is-active .thumbnail-image,
+.lightbox-thumbnail:hover .thumbnail-image {
+  opacity: 1;
+}
+
+/* Lightbox Transitions */
+.lightbox-enter-active,
+.lightbox-leave-active {
+  transition: opacity 0.3s ease-out;
+}
+
+.lightbox-enter-from,
+.lightbox-leave-to {
+  opacity: 0;
+}
+
+/* Reduced Motion Support for Lightbox */
+@media (prefers-reduced-motion: reduce) {
+  .lightbox-close,
+  .lightbox-nav,
+  .lightbox-image-wrapper,
+  .lightbox-image,
+  .lightbox-thumbnail {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .lightbox-image {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Mobile Responsive Lightbox */
+@media (max-width: 768px) {
+  .lightbox-overlay {
+    padding: 1rem;
+  }
+
+  .lightbox-close {
+    top: 1rem;
+    right: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .lightbox-nav {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .lightbox-nav--prev {
+    left: 0.5rem;
+  }
+
+  .lightbox-nav--next {
+    right: 0.5rem;
+  }
+
+  .lightbox-thumbnails {
+    padding: 0.5rem;
+  }
+
+  .lightbox-thumbnail {
+    width: 3.5rem;
+    height: 2.625rem;
   }
 }
 </style>
