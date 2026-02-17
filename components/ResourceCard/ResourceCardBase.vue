@@ -6,16 +6,29 @@
       `bg-white p-6 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 border border-gray-200 hover:border-blue-300 focus-within:border-blue-300 transition-all ${transitionClasses.card} ease-out group card-shine-container card-3d-tilt`,
       {
         'is-tilting': isTilting && !prefersReducedMotion,
+        'card-shine--active': isShineActive && !prefersReducedMotion,
       },
     ]"
-    :style="tiltStyle"
+    :style="[tiltStyle, shineStyle]"
     role="article"
     @mouseenter="handleMouseEnter"
     @mousemove="handleMouseMove"
     @mouseleave="handleMouseLeave"
   >
+    <!-- 🎨 Pallete's micro-UX enhancement: Card Shine/Glint Effect ✨
+         Adds premium light sheen that follows cursor movement for delightful visual feedback
+         Works beautifully with 3D tilt effect to create depth and polish -->
+    <div
+      v-if="!prefersReducedMotion"
+      class="card-shine-overlay"
+      :class="{ 'card-shine-overlay--visible': isShineActive }"
+      aria-hidden="true"
+    />
     <div class="flex items-start">
-      <div v-if="icon" class="flex-shrink-0 mr-4">
+      <div
+        v-if="icon"
+        class="flex-shrink-0 mr-4"
+      >
         <OptimizedImage
           :src="icon"
           :alt="title"
@@ -49,8 +62,7 @@
                   :class="{
                     'bg-yellow-200 text-gray-900': segment.isHighlight,
                   }"
-                  >{{ segment.text }}</mark
-                >
+                >{{ segment.text }}</mark>
               </template>
               <span v-else>{{ title }}</span>
             </NuxtLink>
@@ -62,8 +74,7 @@
                   :class="{
                     'bg-yellow-200 text-gray-900': segment.isHighlight,
                   }"
-                  >{{ segment.text }}</mark
-                >
+                >{{ segment.text }}</mark>
               </template>
               <span v-else>{{ title }}</span>
             </span>
@@ -164,14 +175,16 @@
         </div>
 
         <!-- Description -->
-        <p id="resource-description" class="mt-1 text-gray-800 text-sm">
+        <p
+          id="resource-description"
+          class="mt-1 text-gray-800 text-sm"
+        >
           <template v-if="highlightedDescriptionSegments.length > 0">
             <mark
               v-for="(segment, index) in highlightedDescriptionSegments"
               :key="index"
               :class="{ 'bg-yellow-200 text-gray-900': segment.isHighlight }"
-              >{{ segment.text }}</mark
-            >
+            >{{ segment.text }}</mark>
           </template>
           <span v-else>{{ description }}</span>
         </p>
@@ -182,18 +195,30 @@
           role="region"
           aria-label="Free tier information"
         >
-          <p id="free-tier-label" class="font-medium text-gray-900 text-sm">
+          <p
+            id="free-tier-label"
+            class="font-medium text-gray-900 text-sm"
+          >
             {{ contentConfig.resourceCard.freeTier }}
           </p>
-          <ul class="mt-1 space-y-1 text-xs text-gray-800" role="list">
-            <li v-for="(benefit, index) in benefits" :key="index">
+          <ul
+            class="mt-1 space-y-1 text-xs text-gray-800"
+            role="list"
+          >
+            <li
+              v-for="(benefit, index) in benefits"
+              :key="index"
+            >
               {{ benefit }}
             </li>
           </ul>
         </div>
 
         <!-- Similarity information (for alternative suggestions) -->
-        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
+        <div
+          v-if="similarityScore && similarityScore > 0"
+          class="mt-3"
+        >
           <div class="flex items-center">
             <div
               class="w-full bg-gray-200 rounded-full h-2"
@@ -212,7 +237,10 @@
               {{ Math.round(similarityScore * 100) }}% match
             </span>
           </div>
-          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
+          <p
+            v-if="similarityReason"
+            class="mt-1 text-xs text-gray-600"
+          >
             {{ similarityReason }}
           </p>
         </div>
@@ -329,7 +357,10 @@
   </article>
 
   <!-- Error state -->
-  <div v-else class="bg-white p-6 rounded-lg shadow border border-red-200">
+  <div
+    v-else
+    class="bg-white p-6 rounded-lg shadow border border-red-200"
+  >
     <div class="flex items-start">
       <div class="flex-shrink-0 mr-4">
         <svg
@@ -348,7 +379,9 @@
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-red-900">Resource Unavailable</h3>
+        <h3 class="text-lg font-medium text-red-900">
+          Resource Unavailable
+        </h3>
         <p class="mt-1 text-red-700 text-sm">
           This resource could not be displayed due to an error.
         </p>
@@ -434,6 +467,12 @@ const tiltX = ref(0)
 const tiltY = ref(0)
 const prefersReducedMotion = ref(false)
 
+// 🎨 Pallete's micro-UX enhancement: Card Shine/Glint Effect ✨
+// Tracks mouse position for premium light sheen overlay
+const isShineActive = ref(false)
+const shineX = ref(50)
+const shineY = ref(50)
+
 // Media query refs for cleanup (Issue #2333 - Memory leak fix)
 const reducedMotionMediaQuery = ref<MediaQueryList | null>(null)
 const reducedMotionHandler = ref<((e: MediaQueryListEvent) => void) | null>(
@@ -511,23 +550,36 @@ const calculateTilt = (event: MouseEvent) => {
   tiltY.value = -mouseX * maxTiltY
 }
 
-// Handle mouse enter - start tilting
+// Handle mouse enter - start tilting and shine
 const handleMouseEnter = () => {
   if (prefersReducedMotion.value) return
   isTilting.value = true
+  isShineActive.value = true
 }
 
-// Handle mouse move - update tilt
+// Handle mouse move - update tilt and shine
 const handleMouseMove = (event: MouseEvent) => {
-  if (!isTilting.value || prefersReducedMotion.value) return
-  calculateTilt(event)
+  if (prefersReducedMotion.value) return
+  if (isTilting.value) {
+    calculateTilt(event)
+  }
+  // Update shine position for light sheen effect
+  if (cardRef.value) {
+    const rect = cardRef.value.getBoundingClientRect()
+    shineX.value = ((event.clientX - rect.left) / rect.width) * 100
+    shineY.value = ((event.clientY - rect.top) / rect.height) * 100
+  }
 }
 
-// Handle mouse leave - reset tilt
+// Handle mouse leave - reset tilt and shine
 const handleMouseLeave = () => {
   isTilting.value = false
   tiltX.value = 0
   tiltY.value = 0
+  isShineActive.value = false
+  // Reset shine position to center for smooth exit animation
+  shineX.value = 50
+  shineY.value = 50
 }
 
 // Palette's Viewed Badge Micro-UX Enhancement!
@@ -574,15 +626,31 @@ const tiltStyle = computed(() => {
   }
 })
 
+// 🎨 Pallete's micro-UX enhancement: Card Shine/Glint Style ✨
+// Calculates gradient position for premium light sheen effect
+const shineStyle = computed(() => {
+  if (prefersReducedMotion.value) {
+    return {}
+  }
+
+  // Use existing cardShine config with sensible defaults
+  const config = animationConfig.cardShine
+
+  return {
+    '--shine-x': `${shineX.value}%`,
+    '--shine-y': `${shineY.value}%`,
+    '--shine-opacity': isShineActive.value ? 0.4 : 0,
+    '--shine-size': '60%',
+    '--shine-transition': `${config.durationSec || 0.3}s`,
+  }
+})
+
 // Computed button text based on navigation state
 const visitButtonText = computed(() => {
   return isNavigating.value
     ? contentConfig.resourceCard.openingLabel
     : props.buttonLabel || contentConfig.resourceCard.defaultButtonLabel
 })
-
-// 🎯 Flexy: Modular easing for new badge pulse animation
-const newPulseEasing = computed(() => EASING.MATERIAL_SHARP)
 
 // Use the resource card actions composable
 const { isNew, isResourceVisited, markResourceVisited } =
@@ -825,9 +893,152 @@ if (typeof useHead === 'function') {
 </script>
 
 <style scoped>
-/* New badge pulse animation */
-.animate-new-pulse {
-  animation: new-pulse 2s v-bind('newPulseEasing') infinite;
+/* 🎨 Pallete's micro-UX enhancement: Card Shine/Glint Effect ✨
+   Premium light sheen that follows cursor movement for delightful visual feedback */
+.card-shine-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: v-bind('zIndexScale.ground');
+  opacity: 0;
+  transition: opacity var(--shine-transition, 0.3s) ease-out;
+  background: radial-gradient(
+    circle at var(--shine-x, 50%) var(--shine-y, 50%),
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent var(--shine-size, 60%)
+  );
+  mix-blend-mode: overlay;
+}
+
+.card-shine-overlay--visible {
+  opacity: var(--shine-opacity, 0.4);
+}
+
+/* Enhanced shine on active tilt */
+.card-shine--active .card-shine-overlay {
+  opacity: var(--shine-opacity, 0.5);
+}
+
+/* Subtle border glow on hover */
+.card-shine-container::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(59, 130, 246, 0.3) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  background-position: var(--shine-x, 50%) var(--shine-y, 50%);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--shine-transition, 0.3s) ease-out;
+  pointer-events: none;
+}
+
+.card-shine--active::before {
+  opacity: 1;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .card-shine-overlay,
+  .card-shine-container::before {
+    display: none;
+  }
+}
+
+.card-shine-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: v-bind('zIndexScale.ground');
+  opacity: 0;
+  transition: opacity
+    v-bind('animationConfig.cardShine?.transitionSec || "0.3s"') ease-out;
+  background: radial-gradient(
+    circle at var(--shine-x, 50%) var(--shine-y, 50%),
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent var(--shine-size, 60%)
+  );
+  mix-blend-mode: overlay;
+}
+
+.card-shine-overlay--visible {
+  opacity: var(--shine-opacity, 0.4);
+}
+
+/* Enhanced shine on active tilt */
+.card-shine--active .card-shine-overlay {
+  opacity: var(--shine-opacity, 0.5);
+}
+
+/* Subtle border glow on hover */
+.card-shine-container::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(59, 130, 246, 0.3) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  background-position: var(--shine-x, 50%) var(--shine-y, 50%);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity
+    v-bind('animationConfig.cardShine?.transitionSec || "0.3s"') ease-out;
+  pointer-events: none;
+}
+
+.card-shine--active::before {
+  opacity: 1;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .card-shine-overlay,
+  .card-shine-container::before {
+    display: none;
+  }
+}
+
+.viewed-badge {
+  position: relative;
+  overflow: hidden;
 }
 
 @keyframes new-pulse {
