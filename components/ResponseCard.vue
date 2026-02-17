@@ -58,12 +58,7 @@
     </div>
 
     <!-- Palette's micro-UX enhancement: Screen reader announcement 🎨 -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </div>
@@ -72,6 +67,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { hapticSuccess } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -199,7 +195,8 @@ const animationStyle = computed(() => {
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  z-index: 10;
+  /* Flexy hates hardcoded z-index! Using zIndexScale */
+  z-index: v-bind('zIndexScale.low[10]');
 }
 
 /* Palette's micro-UX enhancement: Expanding ring animation 🎨 */
@@ -232,7 +229,8 @@ const animationStyle = computed(() => {
   animation: checkmark-pop
     v-bind('`${animationConfig.copyFeedback.checkPopDurationMs}ms`') ease-out
     forwards;
-  z-index: 11;
+  /* Flexy hates hardcoded z-index! Using zIndexScale */
+  z-index: v-bind('zIndexScale.medium[20]');
 }
 
 .response-card__celebration-checkmark .checkmark-path {
