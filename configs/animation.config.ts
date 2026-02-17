@@ -4292,6 +4292,33 @@ export const animationConfig = {
       process.env.METRIC_CARD_DOT_ACTIVE_SIZE || '8'
     ),
   },
+
+  // Lazy Loading Intersection Observer - Flexy hates hardcoded values!
+  // Configuration for lazy loading components with IntersectionObserver
+  lazyLoading: {
+    // Root margin for intersection observer (px) - loads before element is visible
+    // Flexy hates hardcoded 100px! Now configurable via env var
+    rootMarginPx: parseInt(process.env.LAZY_LOADING_ROOT_MARGIN_PX || '100'),
+    // Threshold for intersection (0.0 to 1.0) - percentage of element visible
+    threshold: parseFloat(process.env.LAZY_LOADING_THRESHOLD || '0.1'),
+    // Entrance animation duration for lazy loaded content (ms)
+    entranceDurationMs: parseInt(
+      process.env.LAZY_LOADING_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Skeleton placeholder minimum height (px)
+    skeletonMinHeightPx: parseInt(
+      process.env.LAZY_LOADING_SKELETON_MIN_HEIGHT_PX || '200'
+    ),
+    // Exit animation delay for section visibility (ms)
+    // Flexy hates hardcoded 300ms! Now configurable via env var
+    exitAnimationDelayMs: parseInt(
+      process.env.LAZY_LOADING_EXIT_DELAY_MS || '300'
+    ),
+    // Intersection observer root margin string (e.g., '100px')
+    get rootMargin(): string {
+      return `${this.rootMarginPx}px`
+    },
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
