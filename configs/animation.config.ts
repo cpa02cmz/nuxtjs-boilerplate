@@ -1577,6 +1577,35 @@ export const animationConfig = {
     ),
   },
 
+  // Performance Chart Micro-UX - Pallete's delightful enhancement! 🎨
+  // Line draw animation, hover tooltips, and entrance effects
+  performanceChart: {
+    // Delay before entrance animation starts (ms) - Pallete hates hardcoded 150!
+    entranceDelayMs: parseInt(
+      process.env.PERFORMANCE_CHART_ENTRANCE_DELAY_MS || '150'
+    ),
+    // Duration of line draw animation (ms) - Pallete hates hardcoded 1200!
+    lineDrawDurationMs: parseInt(
+      process.env.PERFORMANCE_CHART_LINE_DRAW_MS || '1200'
+    ),
+    // Duration of area fade-in animation (ms) - Pallete hates hardcoded 600!
+    areaFadeDurationMs: parseInt(
+      process.env.PERFORMANCE_CHART_AREA_FADE_MS || '600'
+    ),
+    // Duration of grid line entrance (ms) - Pallete hates hardcoded 400!
+    gridEntranceDurationMs: parseInt(
+      process.env.PERFORMANCE_CHART_GRID_ENTRANCE_MS || '400'
+    ),
+    // Duration of data point pop-in animation (ms) - Pallete hates hardcoded 300!
+    pointEntranceDurationMs: parseInt(
+      process.env.PERFORMANCE_CHART_POINT_ENTRANCE_MS || '300'
+    ),
+    // Stagger delay between data points (ms) - Pallete hates hardcoded 50!
+    pointStaggerMs: parseInt(
+      process.env.PERFORMANCE_CHART_POINT_STAGGER_MS || '50'
+    ),
+  },
+
   // Similar Resources Micro-UX - Palette's delightful enhancement! ✨
   // Staggered card entrance with lift and press effects
   similarResources: {
