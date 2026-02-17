@@ -54,10 +54,12 @@ export const databaseConfig = {
     prefix: process.env.DB_LOG_PREFIX || '[Database]',
   },
 
-  // Health Check Settings - Flexy hates hardcoded timeouts!
+  // Health Check Settings - Flexy hates hardcoded 5000ms timeout!
   healthCheck: {
-    // Timeout for database health checks (ms)
+    // Timeout for database health check queries (ms)
     timeoutMs: parseInt(process.env.DB_HEALTH_CHECK_TIMEOUT_MS || '5000'),
+    // Query to execute for health check
+    query: process.env.DB_HEALTH_CHECK_QUERY || 'SELECT 1',
   },
 
   // Idempotency Key Settings

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client'
 import { AsyncLocalStorage } from 'async_hooks'
 import { databaseConfig } from '~/configs/database.config'
 import { timeConfig } from '~/configs/time.config'
@@ -198,7 +198,7 @@ export async function checkDatabaseHealth(): Promise<boolean> {
 
   try {
     // Simple query to check connection with timeout
-    const healthCheck = prisma.$queryRaw`SELECT 1`
+    const healthCheck = prisma.$queryRaw`${Prisma.raw(databaseConfig.healthCheck.query)}`
     const timeout = new Promise<never>((_, reject) =>
       setTimeout(
         () => reject(new Error('Health check timeout')),
