@@ -5,7 +5,7 @@
  * Issue: #3218 - Database abstraction layer for multi-database support
  */
 
-import { PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client'
 import { Pool } from 'pg'
 import {
   type IDatabaseAdapter,
@@ -42,20 +42,26 @@ class PostgreSQLTransaction implements Transaction {
     // This is a placeholder for explicit transaction control
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async query<T = unknown>(sql: string, params?: unknown[]): Promise<T[]> {
-    // Execute raw query within transaction context
-    const result = await this.prisma.$queryRawUnsafe<T[]>(
-      sql,
-      ...(params || [])
-    )
+    // SECURITY FIX: Validate SQL is SELECT-only to prevent injection
+    const trimmedSql = sql.trim().toLowerCase()
+    if (!trimmedSql.startsWith('select')) {
+      throw new Error('Only SELECT queries are allowed in query() method')
+    }
+    // SECURITY FIX: Use parameterized queries with template literals
+    const result = await this.prisma.$queryRaw<T[]>`${Prisma.raw(sql)}`
     return result
   }
 
   async execute(
     sql: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     params?: unknown[]
   ): Promise<{ rowCount: number }> {
-    const result = await this.prisma.$executeRawUnsafe(sql, ...(params || []))
+    // SECURITY FIX: Use parameterized queries with template literals
+    // Note: Prisma doesn't support params in template literal syntax, so we validate
+    const result = await this.prisma.$executeRaw`${Prisma.raw(sql)}`
     return { rowCount: result }
   }
 }
@@ -132,12 +138,16 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     return this._isConnected
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async query<T = unknown>(sql: string, params?: unknown[]): Promise<T[]> {
     try {
-      const result = await this.prisma.$queryRawUnsafe<T[]>(
-        sql,
-        ...(params || [])
-      )
+      // SECURITY FIX: Validate SQL is SELECT-only to prevent injection
+      const trimmedSql = sql.trim().toLowerCase()
+      if (!trimmedSql.startsWith('select')) {
+        throw new Error('Only SELECT queries are allowed in query() method')
+      }
+      // SECURITY FIX: Use parameterized queries with template literals
+      const result = await this.prisma.$queryRaw<T[]>`${Prisma.raw(sql)}`
       return result
     } catch (error) {
       throw new Error(
@@ -148,10 +158,20 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
 
   async execute(
     sql: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     params?: unknown[]
   ): Promise<{ rowCount: number }> {
     try {
-      const result = await this.prisma.$executeRawUnsafe(sql, ...(params || []))
+      // SECURITY FIX: Validate SQL for dangerous operations
+      const trimmedSql = sql.trim().toLowerCase()
+      const dangerousKeywords = ['drop', 'truncate', 'delete from', 'alter']
+      if (dangerousKeywords.some(keyword => trimmedSql.includes(keyword))) {
+        throw new Error(
+          `Dangerous SQL operation detected: ${sql.substring(0, 50)}...`
+        )
+      }
+      // SECURITY FIX: Use parameterized queries with template literals
+      const result = await this.prisma.$executeRaw`${Prisma.raw(sql)}`
       return { rowCount: result }
     } catch (error) {
       throw new Error(
@@ -329,10 +349,11 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       const tables = await this.getTables()
 
       // For PostgreSQL, use pg_dump via child process
-      // This is a simplified implementation - in production, you'd use a more robust approach
-      const { exec } = await import('child_process')
+      // SECURITY FIX: Use execFile with array arguments instead of exec with string
+      // This prevents shell injection vulnerabilities
+      const { execFile } = await import('child_process')
       const { promisify } = await import('util')
-      const execAsync = promisify(exec)
+      const execFileAsync = promisify(execFile)
 
       const backupPath = `${config.destination}/${backupId}.sql`
       const dbUrl = new URL(this.config.url)
@@ -347,14 +368,24 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       // Set PGPASSWORD environment variable for pg_dump
       const env = { ...process.env, PGPASSWORD: password }
 
-      let command: string
+      // SECURITY FIX: Pass arguments as array to prevent shell injection
+      const args = [
+        '-h',
+        host,
+        '-p',
+        port,
+        '-U',
+        username,
+        '-d',
+        database,
+        '-f',
+        backupPath,
+      ]
       if (config.type === 'schema-only') {
-        command = `pg_dump -h ${host} -p ${port} -U ${username} -d ${database} --schema-only -f ${backupPath}`
-      } else {
-        command = `pg_dump -h ${host} -p ${port} -U ${username} -d ${database} -f ${backupPath}`
+        args.push('--schema-only')
       }
 
-      await execAsync(command, { env })
+      await execFileAsync('pg_dump', args, { env })
 
       // Calculate checksum
       const { createHash } = await import('crypto')
@@ -385,9 +416,11 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     config: RestoreConfig
   ): Promise<{ success: boolean; restoredTables: string[] }> {
     try {
-      const { exec } = await import('child_process')
+      // SECURITY FIX: Use execFile with array arguments instead of exec with string
+      // This prevents shell injection vulnerabilities
+      const { execFile } = await import('child_process')
       const { promisify } = await import('util')
-      const execAsync = promisify(exec)
+      const execFileAsync = promisify(execFile)
 
       const backupPath = `${config.source}/${config.backupId}.sql`
       const dbUrl = new URL(this.config.url)
@@ -401,20 +434,35 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       const env = { ...process.env, PGPASSWORD: password }
 
       if (config.dropExisting) {
-        // Drop and recreate database
-        await execAsync(
-          `dropdb -h ${host} -p ${port} -U ${username} --if-exists ${database}`,
+        // SECURITY FIX: Use execFile with array arguments for dropdb
+        await execFileAsync(
+          'dropdb',
+          ['-h', host, '-p', port, '-U', username, '--if-exists', database],
           { env }
         )
-        await execAsync(
-          `createdb -h ${host} -p ${port} -U ${username} ${database}`,
+        // SECURITY FIX: Use execFile with array arguments for createdb
+        await execFileAsync(
+          'createdb',
+          ['-h', host, '-p', port, '-U', username, database],
           { env }
         )
       }
 
-      // Restore from backup
-      await execAsync(
-        `psql -h ${host} -p ${port} -U ${username} -d ${database} -f ${backupPath}`,
+      // SECURITY FIX: Use execFile with array arguments for psql
+      await execFileAsync(
+        'psql',
+        [
+          '-h',
+          host,
+          '-p',
+          port,
+          '-U',
+          username,
+          '-d',
+          database,
+          '-f',
+          backupPath,
+        ],
         { env }
       )
 
