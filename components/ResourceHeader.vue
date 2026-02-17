@@ -4,12 +4,7 @@
     :class="{ 'animations-enabled': !prefersReducedMotion }"
   >
     <!-- ARIA Live Region for Announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
 
@@ -258,8 +253,8 @@ const handleBookmarkMouseMove = (event: MouseEvent) => {
   const distanceY = event.clientY - centerY
   const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
 
-  // Maximum distance for magnetic effect
-  const maxDistance = rect.width * 1.5
+  // Flexy hates hardcoded 1.5! Using config instead.
+  const maxDistance = rect.width * config.value.magneticDetectionRangeMultiplier
 
   // Apply magnetic effect when cursor is within range
   if (distance < maxDistance && distance > 0) {

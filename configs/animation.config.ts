@@ -1690,6 +1690,10 @@ export const animationConfig = {
     magneticMaxDistancePx: parseInt(
       process.env.RESOURCE_HEADER_MAGNETIC_DISTANCE || '8'
     ),
+    // Magnetic detection range multiplier (times button width) - Flexy hates hardcoded 1.5!
+    magneticDetectionRangeMultiplier: parseFloat(
+      process.env.RESOURCE_HEADER_MAGNETIC_RANGE_MULTIPLIER || '1.5'
+    ),
     // Magnetic button return duration (ms)
     magneticReturnDurationMs: parseInt(
       process.env.RESOURCE_HEADER_MAGNETIC_RETURN_MS || '300'
@@ -2097,6 +2101,10 @@ export const animationConfig = {
     ),
     // Easing function
     easing: process.env.PWA_INSTALL_EASING || EASING_REF.SPRING_SNAPPY,
+    // Magnetic button detection range multiplier (times button diagonal) - Flexy hates hardcoded 0.8!
+    magneticDetectionRangeMultiplier: parseFloat(
+      process.env.PWA_MAGNETIC_RANGE_MULTIPLIER || '0.8'
+    ),
   },
 
   // Webhook Manager Component - Flexy hates hardcoded values!

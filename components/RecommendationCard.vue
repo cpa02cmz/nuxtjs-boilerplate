@@ -16,10 +16,7 @@
             {{ resource.description }}
           </p>
         </div>
-        <div
-          v-if="resource.icon"
-          class="ml-3 flex-shrink-0"
-        >
+        <div v-if="resource.icon" class="ml-3 flex-shrink-0">
           <OptimizedImage
             :src="resource.icon"
             :alt="resource.title"
@@ -57,11 +54,7 @@
 
       <div class="mt-3 flex items-center justify-between">
         <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-          <svg
-            class="w-4 h-4 mr-1"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
             <path
               fill-rule="evenodd"
@@ -277,12 +270,12 @@ const handleViewButtonMouseMove = (event: MouseEvent) => {
   const distanceY = event.clientY - centerY
   const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY)
 
-  // Maximum distance for magnetic effect
-  const maxDistance = rect.width * 1.5
+  // Flexy hates hardcoded 1.5! Using config instead.
+  const config = animationConfig.resourceHeader
+  const maxDistance = rect.width * config.magneticDetectionRangeMultiplier
 
   // Apply magnetic effect when cursor is within range
   if (distance < maxDistance && distance > 0) {
-    const config = animationConfig.resourceHeader
     const strength = (1 - distance / maxDistance) * config.magneticStrength
 
     // Calculate magnetic pull toward cursor
