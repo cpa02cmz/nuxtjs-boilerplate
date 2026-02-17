@@ -556,7 +556,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyDown)
-  document.removeEventListener('click', handleClickOutside)
+  // BugFixer: Only remove click listener if it was added
+  if (props.closeOnClickOutside) {
+    document.removeEventListener('click', handleClickOutside)
+  }
   clearAllTimeouts()
 })
 

@@ -502,6 +502,7 @@ import { componentColorsConfig } from '~/configs/component-colors.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
 import { hapticSuccess, hapticError, hapticLight } from '~/utils/hapticFeedback'
+import logger from '~/utils/logger'
 
 interface Props {
   initialSubmissions?: Submission[]
@@ -643,8 +644,13 @@ const handleQuickAction = async (
 
     // Emit event to parent to update submission status
     emit('quick-action', { submissionId, action })
-  } catch {
-    // Error state
+  } catch (error) {
+    // BugFixer: Added error logging for debugging
+    logger.error('ReviewQueue: Quick action failed', {
+      submissionId,
+      action,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    })
     processingId.value = null
     processingAction.value = null
 
