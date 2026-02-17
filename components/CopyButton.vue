@@ -63,12 +63,7 @@
     </Tooltip>
 
     <!-- Screen reader live region for copy status announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
 
@@ -102,7 +97,7 @@ import Tooltip from './Tooltip.vue'
 import { useRipple } from '~/composables/useRipple'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
-import { zIndexScale } from '~/configs/z-index.config'
+
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -299,8 +294,8 @@ onUnmounted(() => {
 }
 
 .animate-check-pop {
-  animation: check-pop
-    v-bind('animationConfig.copyFeedback.checkPopDurationMs + "ms"') ease-out;
+  /* BroCula: Hardcoded value from animationConfig.copyFeedback.checkPopDurationMs for SSR compatibility */
+  animation: check-pop 300ms ease-out;
 }
 
 /* Icon wiggle animation on hover - Palette's micro-UX delight! */
@@ -318,9 +313,8 @@ onUnmounted(() => {
 }
 
 .animate-icon-wiggle {
-  animation: icon-wiggle
-    v-bind('animationConfig.copyFeedback.iconWiggleDurationMs + "ms"')
-    ease-in-out;
+  /* BroCula: Hardcoded value from animationConfig.copyFeedback.iconWiggleDurationMs for SSR compatibility */
+  animation: icon-wiggle 400ms ease-in-out;
 }
 
 /* Reduced motion support */
@@ -346,8 +340,8 @@ onUnmounted(() => {
   width: 0;
   height: 0;
   pointer-events: none;
-  /* Flexy hates hardcoded z-index! Using zIndexScale */
-  z-index: v-bind('zIndexScale.medium[50]');
+  /* BroCula: Hardcoded z-index from zIndexScale.medium[50] for SSR compatibility */
+  z-index: 50;
 }
 
 .copy-particle {
@@ -359,8 +353,8 @@ onUnmounted(() => {
   background: var(--particle-color);
   border-radius: 50%;
   transform: translate(-50%, -50%) rotate(var(--particle-rotation));
-  animation: copy-particle-burst
-    v-bind('`${animationConfig.copyParticles.durationMs}ms`') ease-out forwards;
+  /* BroCula: Hardcoded value from animationConfig.copyParticles.durationMs for SSR compatibility */
+  animation: copy-particle-burst 600ms ease-out forwards;
   opacity: 0;
 }
 

@@ -1,12 +1,7 @@
 <template>
   <div :class="[tailwind.layout.screenHeight, 'bg-gray-50 py-8']">
     <!-- ARIA Live Region for Announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
 
@@ -41,21 +36,20 @@
                 />
               </svg>
             </div>
-            <!-- Decorative sparkles -->
-            <div
-              v-if="!prefersReducedMotion"
-              class="absolute -top-1 -right-1 w-4 h-4 text-yellow-400 animate-sparkle"
-              aria-hidden="true"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="currentColor"
+            <!-- Decorative sparkles - BroCula: Wrapped in ClientOnly to prevent hydration mismatch -->
+            <ClientOnly>
+              <div
+                v-if="!prefersReducedMotion"
+                class="absolute -top-1 -right-1 w-4 h-4 text-yellow-400 animate-sparkle"
+                aria-hidden="true"
               >
-                <path
-                  d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
-                />
-              </svg>
-            </div>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
+                  />
+                </svg>
+              </div>
+            </ClientOnly>
           </div>
         </div>
         <h1 :class="[tailwind.typography.pageTitle, 'mb-2']">
@@ -70,7 +64,10 @@
       <div :class="[tailwind.cards.padded]">
         <!-- Getting Started Section with Stagger Animation -->
         <section
-          :class="[tailwind.spacing.section]"
+          :class="[
+            tailwind.spacing.section,
+            { 'animate-section': !prefersReducedMotion },
+          ]"
           :style="getSectionStyle(0)"
         >
           <div class="flex items-center gap-3 mb-4">
@@ -94,9 +91,7 @@
                 />
               </svg>
             </div>
-            <h2 :class="[tailwind.typography.sectionTitle]">
-              Getting Started
-            </h2>
+            <h2 :class="[tailwind.typography.sectionTitle]">Getting Started</h2>
           </div>
           <p :class="[tailwind.typography.body, 'mb-4']">
             Welcome to the Free Stuff on the Internet API! Our API allows you to
@@ -112,9 +107,7 @@
             ]"
           >
             <div class="flex items-center justify-between mb-2">
-              <h3 class="font-medium text-blue-800">
-                Base URL
-              </h3>
+              <h3 class="font-medium text-blue-800">Base URL</h3>
               <CopyButton
                 content="https://yourdomain.com/api"
                 label="Copy base URL"
@@ -133,7 +126,10 @@
 
         <!-- Authentication Section -->
         <section
-          :class="[tailwind.spacing.section]"
+          :class="[
+            tailwind.spacing.section,
+            { 'animate-section': !prefersReducedMotion },
+          ]"
           :style="getSectionStyle(1)"
         >
           <div class="flex items-center gap-3 mb-4">
@@ -157,9 +153,7 @@
                 />
               </svg>
             </div>
-            <h2 :class="[tailwind.typography.sectionTitle]">
-              Authentication
-            </h2>
+            <h2 :class="[tailwind.typography.sectionTitle]">Authentication</h2>
           </div>
           <p :class="[tailwind.typography.body, 'mb-4']">
             To use the API, you need to include your API key in the request
@@ -202,7 +196,10 @@
 
         <!-- API Examples Section with Enhanced Code Blocks -->
         <section
-          :class="[tailwind.spacing.section]"
+          :class="[
+            tailwind.spacing.section,
+            { 'animate-section': !prefersReducedMotion },
+          ]"
           :style="getSectionStyle(2)"
         >
           <div class="flex items-center gap-3 mb-4">
@@ -226,9 +223,7 @@
                 />
               </svg>
             </div>
-            <h2 :class="[tailwind.typography.sectionTitle]">
-              API Examples
-            </h2>
+            <h2 :class="[tailwind.typography.sectionTitle]">API Examples</h2>
           </div>
 
           <div class="space-y-6">
@@ -288,7 +283,10 @@
 
         <!-- Rate Limiting Section -->
         <section
-          :class="[tailwind.spacing.section]"
+          :class="[
+            tailwind.spacing.section,
+            { 'animate-section': !prefersReducedMotion },
+          ]"
           :style="getSectionStyle(3)"
         >
           <div class="flex items-center gap-3 mb-4">
@@ -312,9 +310,7 @@
                 />
               </svg>
             </div>
-            <h2 :class="[tailwind.typography.sectionTitle]">
-              Rate Limiting
-            </h2>
+            <h2 :class="[tailwind.typography.sectionTitle]">Rate Limiting</h2>
           </div>
           <p :class="[tailwind.typography.body, 'mb-4']">
             Our API implements rate limiting to ensure fair usage. Each API key
@@ -386,7 +382,10 @@
 
         <!-- Error Handling Section -->
         <section
-          :class="[tailwind.spacing.section]"
+          :class="[
+            tailwind.spacing.section,
+            { 'animate-section': !prefersReducedMotion },
+          ]"
           :style="getSectionStyle(4)"
         >
           <div class="flex items-center gap-3 mb-4">
@@ -410,9 +409,7 @@
                 />
               </svg>
             </div>
-            <h2 :class="[tailwind.typography.sectionTitle]">
-              Error Handling
-            </h2>
+            <h2 :class="[tailwind.typography.sectionTitle]">Error Handling</h2>
           </div>
           <p :class="[tailwind.typography.body, 'mb-4']">
             The API returns standard HTTP status codes and error responses:
@@ -644,6 +641,11 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
 })
 
+// BroCula: Disable SSR to prevent hydration issues with v-bind CSS expressions
+definePageMeta({
+  ssr: false,
+})
+
 useHead({
   title: 'Developer Portal - Free Stuff on the Internet',
   meta: [
@@ -725,8 +727,8 @@ useHead({
   animation: sparkle 2s ease-in-out infinite;
 }
 
-/* Section entrance animation */
-section {
+/* Section entrance animation - BroCula: Only animate on client to prevent hydration mismatch */
+.animate-section {
   opacity: 0;
   transform: translateY(20px);
   animation: fade-in 0.5s ease-out forwards;
