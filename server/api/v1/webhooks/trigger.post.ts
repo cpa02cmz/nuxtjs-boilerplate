@@ -10,6 +10,8 @@ import {
 import { triggerWebhookSchema } from '~/server/utils/validation-schemas'
 import { webhooksConfig } from '~/configs/webhooks.config'
 import { randomUUID } from 'node:crypto'
+import { getHeader, createError } from 'h3'
+import { logger } from '~/utils/logger'
 
 export default defineEventHandler(async event => {
   try {
@@ -18,7 +20,45 @@ export default defineEventHandler(async event => {
       return sendUnauthorizedError(event, 'Authentication required')
     }
 
+    // P2 Security Fix: Issue #3301 - Validate payload size before reading body
+    const contentLength = getHeader(event, 'content-length')
+    const maxPayloadSize = webhooksConfig.payload.maxSizeBytes
+
+    if (contentLength) {
+      const size = parseInt(contentLength, 10)
+      if (size > maxPayloadSize) {
+        logger.warn('Webhook trigger rejected - payload too large', {
+          size,
+          maxSize: maxPayloadSize,
+          apiKeyId: event.context.apiKey.id,
+          path: event.path,
+        })
+        throw createError({
+          statusCode: 413,
+          statusMessage: webhooksConfig.payload.maxSizeErrorMessage,
+        })
+      }
+    }
+
     const body = await readBody(event)
+
+    // Validate body size after parsing as additional safeguard
+    const bodySize = JSON.stringify(body).length
+    if (bodySize > maxPayloadSize) {
+      logger.warn(
+        'Webhook trigger rejected - payload too large after parsing',
+        {
+          size: bodySize,
+          maxSize: maxPayloadSize,
+          apiKeyId: event.context.apiKey.id,
+          path: event.path,
+        }
+      )
+      throw createError({
+        statusCode: 413,
+        statusMessage: webhooksConfig.payload.maxSizeErrorMessage,
+      })
+    }
 
     // Validate using Zod schema
     const validationResult = triggerWebhookSchema.safeParse(body)
