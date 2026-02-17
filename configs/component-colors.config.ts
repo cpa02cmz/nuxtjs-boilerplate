@@ -554,6 +554,7 @@ export const componentColorsConfig = {
       900: process.env.GRAY_900 || '#111827',
     },
     blue: {
+      300: process.env.BLUE_300 || '#93c5fd',
       400: process.env.BLUE_400 || '#60a5fa',
       500: process.env.BLUE_500 || '#3b82f6',
       600: process.env.BLUE_600 || '#2563eb',
