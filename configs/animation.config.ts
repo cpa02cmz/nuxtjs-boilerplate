@@ -803,6 +803,46 @@ export const animationConfig = {
     redirectDelayMs: parseInt(
       process.env.OFFLINE_RETRY_REDIRECT_DELAY_MS || '500'
     ),
+    // 🎨 Palette's micro-UX enhancement: Particle burst celebration on retry success!
+    // Celebrates the moment when connection is restored with a delightful burst of particles
+    particleBurst: {
+      // Enable/disable particle burst
+      enabled: process.env.OFFLINE_RETRY_PARTICLE_ENABLED !== 'false',
+      // Number of particles in the burst
+      particleCount: parseInt(process.env.OFFLINE_RETRY_PARTICLE_COUNT || '14'),
+      // Animation duration in seconds
+      durationSec: parseFloat(
+        process.env.OFFLINE_RETRY_PARTICLE_DURATION || '0.7'
+      ),
+      // Particle spread distance in pixels
+      spreadPx: parseInt(process.env.OFFLINE_RETRY_PARTICLE_SPREAD || '70'),
+      // Particle colors (green/amber theme for success/connection)
+      colors: [
+        process.env.OFFLINE_RETRY_PARTICLE_COLOR_1 || '#22c55e', // green-500
+        process.env.OFFLINE_RETRY_PARTICLE_COLOR_2 || '#f59e0b', // amber-500
+        process.env.OFFLINE_RETRY_PARTICLE_COLOR_3 || '#4ade80', // green-400
+        process.env.OFFLINE_RETRY_PARTICLE_COLOR_4 || '#fbbf24', // amber-400
+        process.env.OFFLINE_RETRY_PARTICLE_COLOR_5 || '#16a34a', // green-600
+      ],
+      // Particle size range in pixels
+      minSizePx: parseInt(process.env.OFFLINE_RETRY_PARTICLE_MIN_SIZE || '4'),
+      maxSizePx: parseInt(process.env.OFFLINE_RETRY_PARTICLE_MAX_SIZE || '10'),
+      // Delay before particles start disappearing
+      fadeDelaySec: parseFloat(
+        process.env.OFFLINE_RETRY_PARTICLE_FADE_DELAY || '0.35'
+      ),
+      // Angle randomness in degrees - adds natural variation to particle distribution
+      angleRandomnessDeg: parseInt(
+        process.env.OFFLINE_RETRY_PARTICLE_ANGLE_RANDOMNESS || '35'
+      ),
+      // Distance variation factor - particles spread between 70-130% of base spread
+      distanceVariationMin: parseFloat(
+        process.env.OFFLINE_RETRY_PARTICLE_DISTANCE_MIN || '0.7'
+      ),
+      distanceVariationMax: parseFloat(
+        process.env.OFFLINE_RETRY_PARTICLE_DISTANCE_MAX || '1.3'
+      ),
+    },
   },
 
   // Form Validation Animations - Gentle feedback for validation errors

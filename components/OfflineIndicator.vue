@@ -27,10 +27,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <!-- Animated offline icon with connection pulse - Palette's micro-UX enhancement! -->
-                <div
-                  class="relative flex-shrink-0 w-8 h-8"
-                  aria-hidden="true"
-                >
+                <div class="relative flex-shrink-0 w-8 h-8" aria-hidden="true">
                   <!-- Connection pulse rings (shown when reconnecting) -->
                   <template v-if="isReconnecting && !prefersReducedMotion">
                     <div
@@ -80,82 +77,108 @@
               <!-- Reconnecting indicator or Retry button - Palette's micro-UX enhancement! -->
               <div class="flex items-center gap-3">
                 <!-- Retry button (shown when not reconnecting) -->
-                <button
+                <div
                   v-if="!isReconnecting"
-                  ref="retryButtonRef"
-                  class="retry-button group"
-                  :class="{
-                    'is-retrying': isRetrying,
-                    'is-success': retrySuccess,
-                    'is-pressed': isButtonPressed && !prefersReducedMotion,
-                  }"
-                  :aria-label="contentConfig.offline.aria.retryButton"
-                  :disabled="isRetrying"
-                  @click="handleRetry"
-                  @keydown.enter.prevent="handleRetry"
-                  @keydown.space.prevent="handleRetry"
-                  @mousedown="isButtonPressed = true"
-                  @mouseup="isButtonPressed = false"
-                  @mouseleave="isButtonPressed = false"
-                  @touchstart="isButtonPressed = true"
-                  @touchend="isButtonPressed = false"
+                  ref="particleContainerRef"
+                  class="retry-button-container"
                 >
-                  <!-- Default state: Retry icon -->
-                  <svg
-                    v-if="!isRetrying && !retrySuccess"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="retry-icon"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
+                  <!-- 🎨 Palette's micro-UX delight: Particle burst celebration! -->
+                  <div
+                    v-if="particles.length > 0 && !prefersReducedMotion"
+                    class="particle-burst-container"
+                    aria-hidden="true"
                   >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    <span
+                      v-for="particle in particles"
+                      :key="particle.id"
+                      class="particle"
+                      :style="{
+                        '--particle-x': `${particle.x}px`,
+                        '--particle-y': `${particle.y}px`,
+                        '--particle-size': `${particle.size}px`,
+                        '--particle-color': particle.color,
+                        '--particle-delay': `${particle.delay}s`,
+                        '--particle-duration': `${animationConfig.offlineRetry.particleBurst.durationSec}s`,
+                        '--particle-fade-delay': `${animationConfig.offlineRetry.particleBurst.fadeDelaySec}s`,
+                      }"
                     />
-                  </svg>
-                  <!-- Retrying state: Spinner -->
-                  <svg
-                    v-else-if="isRetrying"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="retry-spinner"
-                    fill="none"
-                    viewBox="0 0 24 24"
+                  </div>
+                  <button
+                    ref="retryButtonRef"
+                    class="retry-button group"
+                    :class="{
+                      'is-retrying': isRetrying,
+                      'is-success': retrySuccess,
+                      'is-pressed': isButtonPressed && !prefersReducedMotion,
+                    }"
+                    :aria-label="contentConfig.offline.aria.retryButton"
+                    :disabled="isRetrying"
+                    @click="handleRetry"
+                    @keydown.enter.prevent="handleRetry"
+                    @keydown.space.prevent="handleRetry"
+                    @mousedown="isButtonPressed = true"
+                    @mouseup="isButtonPressed = false"
+                    @mouseleave="isButtonPressed = false"
+                    @touchstart="isButtonPressed = true"
+                    @touchend="isButtonPressed = false"
                   >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
+                    <!-- Default state: Retry icon -->
+                    <svg
+                      v-if="!isRetrying && !retrySuccess"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="retry-icon"
+                      fill="none"
+                      viewBox="0 0 24 24"
                       stroke="currentColor"
-                      stroke-width="4"
-                    />
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  <!-- Success state: Checkmark -->
-                  <svg
-                    v-else
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="retry-success-icon"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="3"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <span class="retry-text">{{ retryButtonText }}</span>
-                </button>
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                    <!-- Retrying state: Spinner -->
+                    <svg
+                      v-else-if="isRetrying"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="retry-spinner"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                      />
+                      <path
+                        class="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    <!-- Success state: Checkmark -->
+                    <svg
+                      v-else
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="retry-success-icon"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="3"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    <span class="retry-text">{{ retryButtonText }}</span>
+                  </button>
+                </div>
 
                 <!-- Reconnecting spinner -->
                 <div
@@ -240,12 +263,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </Teleport>
@@ -273,6 +291,22 @@ const isRetrying = ref(false)
 const retrySuccess = ref(false)
 const isButtonPressed = ref(false)
 const retryButtonRef = ref<HTMLButtonElement | null>(null)
+
+// 🎨 Palette's micro-UX delight: Particle burst state for retry success celebration!
+interface Particle {
+  id: number
+  x: number
+  y: number
+  angle: number
+  distance: number
+  size: number
+  color: string
+  delay: number
+}
+
+const particles = ref<Particle[]>([])
+const particleContainerRef = ref<HTMLDivElement | null>(null)
+let particleIdCounter = 0
 
 // Timers
 let backOnlineTimeout: ReturnType<typeof setTimeout> | null = null
@@ -344,6 +378,60 @@ const handleOnline = () => {
   }, uiConfig.offlineIndicator.backOnlineTimeoutMs)
 }
 
+// 🎨 Palette's micro-UX delight: Create particle burst celebration!
+const createParticleBurst = () => {
+  if (prefersReducedMotion.value) return
+
+  const config = animationConfig.offlineRetry.particleBurst
+  if (!config.enabled) return
+
+  // Clear existing particles
+  particles.value = []
+
+  // Generate new particles
+  const newParticles: Particle[] = []
+  const angleIncrement = 360 / config.particleCount
+
+  for (let i = 0; i < config.particleCount; i++) {
+    const baseAngle = i * angleIncrement
+    const angleRandomness = (Math.random() - 0.5) * config.angleRandomnessDeg
+    const angle = (baseAngle + angleRandomness) * (Math.PI / 180)
+
+    const distanceVariation =
+      config.distanceVariationMin +
+      Math.random() *
+        (config.distanceVariationMax - config.distanceVariationMin)
+    const distance = config.spreadPx * distanceVariation
+
+    const size =
+      config.minSizePx + Math.random() * (config.maxSizePx - config.minSizePx)
+
+    const colorIndex = Math.floor(Math.random() * config.colors.length)
+    const delay = (i / config.particleCount) * 0.1 // Stagger particles slightly
+
+    newParticles.push({
+      id: particleIdCounter++,
+      x: Math.cos(angle) * distance,
+      y: Math.sin(angle) * distance,
+      angle: baseAngle + angleRandomness,
+      distance,
+      size,
+      color: config.colors[colorIndex],
+      delay,
+    })
+  }
+
+  particles.value = newParticles
+
+  // Clear particles after animation completes
+  setTimeout(
+    () => {
+      particles.value = []
+    },
+    config.durationSec * 1000 + 100
+  )
+}
+
 // Palette's micro-UX enhancement: Handle manual retry
 const handleRetry = async () => {
   if (isRetrying.value) return
@@ -372,6 +460,9 @@ const handleRetry = async () => {
       // Success! Show success state briefly
       retrySuccess.value = true
       triggerHaptic('success') // BroCula fix: Using haptic type instead of custom pattern
+
+      // 🎨 Palette's micro-UX delight: Trigger particle burst celebration!
+      createParticleBurst()
 
       // Clear success state after delay
       if (retrySuccessTimeout) {
@@ -770,6 +861,69 @@ onUnmounted(() => {
 
   .connection-pulse-ring {
     border-width: 3px;
+  }
+}
+
+/* 🎨 Palette's micro-UX delight: Particle burst styles! */
+/* Container for the retry button with particle burst support */
+.retry-button-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* Particle burst container - positioned absolutely over the button */
+.particle-burst-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Individual particle styling */
+.particle {
+  position: absolute;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  background-color: var(--particle-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  animation: particle-burst var(--particle-duration) ease-out forwards;
+  animation-delay: var(--particle-delay);
+}
+
+/* Particle burst animation - particles shoot outward then fade */
+@keyframes particle-burst {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  30% {
+    transform: translate(
+        calc(-50% + var(--particle-x) * 0.5),
+        calc(-50% + var(--particle-y) * 0.5)
+      )
+      scale(1.2);
+    opacity: 1;
+  }
+  60% {
+    transform: translate(
+        calc(-50% + var(--particle-x)),
+        calc(-50% + var(--particle-y))
+      )
+      scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(
+        calc(-50% + var(--particle-x)),
+        calc(-50% + var(--particle-y))
+      )
+      scale(0.5);
+    opacity: 0;
   }
 }
 </style>
