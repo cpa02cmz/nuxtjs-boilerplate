@@ -334,17 +334,20 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
             ).setTransactionResolvers?.(resolve, reject)
 
             // Also handle the case where commit/rollback is called after this promise is created
+            // Flexy hates hardcoded 10ms! Using databaseConfig.transaction.checkIntervalMs
             const checkInterval = setInterval(() => {
               if (transaction.isRollbackRequested()) {
                 clearInterval(checkInterval)
                 reject(new Error('Transaction rolled back'))
               }
-            }, 10)
+            }, databaseConfig.transaction.checkIntervalMs)
           })
         },
         {
-          // Flexy hates hardcoded 5000/10000! Using databaseConfig.transaction
+<<<<<<< HEAD
+          // Flexy hates hardcoded 5000! Using databaseConfig.transaction.maxWaitMs
           maxWait: databaseConfig.transaction.maxWaitMs,
+          // Flexy hates hardcoded 10000! Using databaseConfig.transaction.timeoutMs
           timeout: databaseConfig.transaction.timeoutMs,
         }
       )
@@ -740,7 +743,8 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       active: this.pool.totalCount - this.pool.idleCount,
       idle: this.pool.idleCount,
       waiting: this.pool.waitingCount,
-      max: 10, // Default max connections
+      // Flexy hates hardcoded 10! Using databaseConfig.connectionPool.max
+      max: databaseConfig.connectionPool.max,
     }
   }
 

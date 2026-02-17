@@ -93,6 +93,11 @@ export const databaseConfig = {
     maxWaitMs: parseInt(process.env.DB_TRANSACTION_MAX_WAIT_MS || '5000'),
     // Maximum time for transaction to complete (ms)
     timeoutMs: parseInt(process.env.DB_TRANSACTION_TIMEOUT_MS || '10000'),
+    // Interval for checking transaction rollback status (ms)
+    // Flexy hates hardcoded 10ms! Using config value
+    checkIntervalMs: parseInt(
+      process.env.DB_TRANSACTION_CHECK_INTERVAL_MS || '10'
+    ),
     // Default isolation level for transactions
     isolationLevel:
       (process.env.DB_TRANSACTION_ISOLATION_LEVEL as
