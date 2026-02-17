@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-v-html -->
 <template>
   <!-- 
     🎨 Pallete's micro-UX enhancement: Entrance animation wrapper

@@ -111,10 +111,10 @@ export const memoize = <T extends (...args: unknown[]) => ReturnType<T>>(
   }) as T
 }
 
-export const memoizeHighlight = (
-  highlightFn: (text: string, searchQuery: string) => string
-): ((text: string, searchQuery: string) => string) => {
-  const cache = new Map<string, string>()
+export const memoizeHighlight = <T = string>(
+  highlightFn: (text: string, searchQuery: string) => T
+): ((text: string, searchQuery: string) => T) => {
+  const cache = new Map<string, T>()
   allCaches.add(cache)
 
   return (_text: string, _searchQuery: string) => {
