@@ -3,10 +3,7 @@
     <!-- Header -->
     <header class="dashboard-header">
       <h1 class="dashboard-title">
-        <span
-          class="title-icon"
-          aria-hidden="true"
-        >📊</span>
+        <span class="title-icon" aria-hidden="true">📊</span>
         Performance Dashboard
         <!-- 🎨 Pallete's micro-UX enhancement: Live data indicator -->
         <span
@@ -20,11 +17,7 @@
       </h1>
       <div class="dashboard-controls">
         <!-- Time Range Selector -->
-        <div
-          class="time-range-selector"
-          role="group"
-          aria-label="Time range"
-        >
+        <div class="time-range-selector" role="group" aria-label="Time range">
           <button
             v-for="range in timeRanges"
             :key="range.hours"
@@ -49,7 +42,8 @@
             class="refresh-icon"
             :class="{ spinning: isLoading }"
             aria-hidden="true"
-          >🔄</span>
+            >🔄</span
+          >
           <span class="refresh-text">{{
             isLoading ? 'Loading...' : 'Refresh'
           }}</span>
@@ -90,44 +84,20 @@
     </header>
 
     <!-- Last Updated -->
-    <div
-      v-if="lastUpdated"
-      class="last-updated"
-      aria-live="polite"
-    >
+    <div v-if="lastUpdated" class="last-updated" aria-live="polite">
       Last updated: {{ formatLastUpdated(lastUpdated) }}
     </div>
 
     <!-- Error Message -->
-    <div
-      v-if="error"
-      class="error-message"
-      role="alert"
-    >
-      <span
-        class="error-icon"
-        aria-hidden="true"
-      >⚠️</span>
+    <div v-if="error" class="error-message" role="alert">
+      <span class="error-icon" aria-hidden="true">⚠️</span>
       {{ error }}
-      <button
-        class="retry-button"
-        @click="refreshData"
-      >
-        Retry
-      </button>
+      <button class="retry-button" @click="refreshData">Retry</button>
     </div>
 
     <!-- Web Vitals Summary -->
-    <section
-      class="web-vitals-section"
-      aria-labelledby="web-vitals-heading"
-    >
-      <h2
-        id="web-vitals-heading"
-        class="section-title"
-      >
-        Core Web Vitals
-      </h2>
+    <section class="web-vitals-section" aria-labelledby="web-vitals-heading">
+      <h2 id="web-vitals-heading" class="section-title">Core Web Vitals</h2>
       <div class="metrics-grid">
         <MetricCard
           v-for="metric in webVitalsList"
@@ -143,25 +113,15 @@
     </section>
 
     <!-- Performance Trends -->
-    <section
-      class="trends-section"
-      aria-labelledby="trends-heading"
-    >
-      <h2
-        id="trends-heading"
-        class="section-title"
-      >
-        Performance Trends
-      </h2>
+    <section class="trends-section" aria-labelledby="trends-heading">
+      <h2 id="trends-heading" class="section-title">Performance Trends</h2>
       <div class="charts-grid">
         <div
           v-for="metricName in chartMetrics"
           :key="metricName"
           class="chart-container"
         >
-          <h3 class="chart-title">
-            {{ metricName }} Over Time
-          </h3>
+          <h3 class="chart-title">{{ metricName }} Over Time</h3>
           <PerformanceChart
             :data="timeSeries[metricName] || []"
             :metric-name="metricName"
@@ -172,28 +132,26 @@
     </section>
 
     <!-- API Performance -->
-    <section
-      class="api-section"
-      aria-labelledby="api-heading"
-    >
-      <h2
-        id="api-heading"
-        class="section-title"
-      >
-        API Performance
-      </h2>
+    <section class="api-section" aria-labelledby="api-heading">
+      <h2 id="api-heading" class="section-title">API Performance</h2>
       <div class="api-metrics">
         <div class="api-metric-card">
           <span class="api-metric-label">Avg Response Time</span>
-          <span class="api-metric-value">{{ apiPerformance.avgResponseTime }}ms</span>
+          <span class="api-metric-value"
+            >{{ apiPerformance.avgResponseTime }}ms</span
+          >
         </div>
         <div class="api-metric-card">
           <span class="api-metric-label">P95 Response Time</span>
-          <span class="api-metric-value">{{ apiPerformance.p95ResponseTime }}ms</span>
+          <span class="api-metric-value"
+            >{{ apiPerformance.p95ResponseTime }}ms</span
+          >
         </div>
         <div class="api-metric-card">
           <span class="api-metric-label">Error Rate</span>
-          <span class="api-metric-value">{{ (apiPerformance.errorRate * 100).toFixed(2) }}%</span>
+          <span class="api-metric-value"
+            >{{ (apiPerformance.errorRate * 100).toFixed(2) }}%</span
+          >
         </div>
         <div class="api-metric-card">
           <span class="api-metric-label">Total Requests</span>
@@ -521,7 +479,10 @@ onUnmounted(() => {
 }
 
 .refresh-icon.spinning {
-  animation: spin 1s linear infinite;
+  /* Flexy hates hardcoded 1s! Using animationConfig.adminDashboard.refreshSpinDurationSec */
+  animation: spin
+    v-bind('animationConfig.adminDashboard.refreshSpinDurationSec') linear
+    infinite;
 }
 
 @keyframes spin {
@@ -776,7 +737,10 @@ onUnmounted(() => {
   inset: -4px;
   background: rgba(255, 255, 255, 0.4);
   border-radius: 50%;
-  animation: live-pulse-ring 2s ease-out infinite;
+  /* Flexy hates hardcoded 2s! Using animationConfig.performanceDashboard.livePulseRingDurationSec */
+  animation: live-pulse-ring
+    v-bind('animationConfig.performanceDashboard.livePulseRingDurationSec')
+    ease-out infinite;
 }
 
 .live-indicator__pulse::after {
@@ -785,7 +749,10 @@ onUnmounted(() => {
   inset: 0;
   background: white;
   border-radius: 50%;
-  animation: live-pulse-dot 2s ease-out infinite;
+  /* Flexy hates hardcoded 2s! Using animationConfig.performanceDashboard.livePulseDotDurationSec */
+  animation: live-pulse-dot
+    v-bind('animationConfig.performanceDashboard.livePulseDotDurationSec')
+    ease-out infinite;
 }
 
 @keyframes live-pulse-ring {

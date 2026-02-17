@@ -1096,6 +1096,8 @@ export const animationConfig = {
     ),
     // Spin animation duration (seconds) - Flexy hates hardcoded 1s!
     spinDurationSec: parseFloat(process.env.API_KEYS_SPIN_DURATION_SEC || '1'),
+    // Status dot transition duration (seconds) - Flexy hates hardcoded 0.3s!
+    statusTransitionDurationSec: `${parseInt(process.env.API_KEYS_STATUS_TRANSITION_MS || '300') / 1000}s`,
   },
 
   // Card Animations
@@ -4249,6 +4251,14 @@ export const animationConfig = {
     maxDurationMs: parseInt(
       process.env.PAGE_TRANSITION_MAX_DURATION_MS || '5000'
     ),
+    // Shimmer transform transition duration (ms) - Flexy hates hardcoded 100ms!
+    shimmerTransformDurationMs: parseInt(
+      process.env.PAGE_TRANSITION_SHIMMER_TRANSFORM_MS || '100'
+    ),
+    // Reduced motion opacity transition duration (ms) - Flexy hates hardcoded 150ms!
+    reducedMotionOpacityDurationMs: parseInt(
+      process.env.PAGE_TRANSITION_REDUCED_OPACITY_MS || '150'
+    ),
   },
 
   // Performance Optimization & GPU Acceleration - Issue #2752 Fix
@@ -4449,6 +4459,8 @@ export const animationConfig = {
     checkmarkDrawSec: `${parseInt(process.env.WEBHOOK_FORM_CHECKMARK_DRAW_MS || '300') / 1000}s`,
     // Button glow pulse duration (seconds)
     btnGlowDurationSec: `${parseInt(process.env.WEBHOOK_FORM_BTN_GLOW_DURATION_MS || '2000') / 1000}s`,
+    // Loading spinner spin duration (seconds) - Flexy hates hardcoded 1s!
+    spinDurationSec: `${parseInt(process.env.WEBHOOK_FORM_SPIN_DURATION_MS || '1000') / 1000}s`,
   },
 
   // Resource Filters Animations - Pallete's micro-UX enhancement! 🎨
@@ -4612,6 +4624,10 @@ export const animationConfig = {
     progressGradientStart:
       process.env.RESOURCE_DETAILS_PROGRESS_START || '#3b82f6',
     progressGradientEnd: process.env.RESOURCE_DETAILS_PROGRESS_END || '#8b5cf6',
+    // Reading progress bar transition duration (ms) - Flexy hates hardcoded 100ms!
+    progressTransitionMs: parseInt(
+      process.env.RESOURCE_DETAILS_PROGRESS_TRANSITION_MS || '100'
+    ),
   },
 
   // 🎨 Pallete's micro-UX enhancement: Metric Card Animations
@@ -4690,6 +4706,10 @@ export const animationConfig = {
     checkmarkDelaySec:
       parseInt(process.env.PERFORMANCE_DASHBOARD_CHECKMARK_DELAY_MS || '100') /
       1000,
+    // Live indicator pulse ring animation duration (seconds) - Flexy hates hardcoded 2s!
+    livePulseRingDurationSec: `${parseInt(process.env.PERFORMANCE_DASHBOARD_LIVE_PULSE_RING_MS || '2000') / 1000}s`,
+    // Live indicator pulse dot animation duration (seconds) - Flexy hates hardcoded 2s!
+    livePulseDotDurationSec: `${parseInt(process.env.PERFORMANCE_DASHBOARD_LIVE_PULSE_DOT_MS || '2000') / 1000}s`,
   },
 
   // Lazy Loading Intersection Observer - Flexy hates hardcoded values!
