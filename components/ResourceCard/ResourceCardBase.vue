@@ -493,7 +493,9 @@ const hasAnimatedViewedBadge = ref(false)
 // Adds delightful particle explosion when hovering over new badge
 const newBadgeRef = ref<HTMLElement | null>(null)
 const showNewBadgeParticles = ref(false)
-const newBadgeParticleCount = 8
+// Flexy hates hardcoded 8! Using config value
+const newBadgeParticleCount =
+  animationConfig.viewedBadge?.newBadgeParticle?.particleCount || 8
 const hasShownNewBadgeParticles = ref(false)
 
 // 🎨 Pallete's micro-UX enhancement: Icon hover bounce effect
@@ -502,17 +504,27 @@ const isCardHovered = ref(false)
 
 // Generate particle styles for new badge burst effect
 const getNewBadgeParticleStyle = (index: number) => {
+  const particleConfig = animationConfig.viewedBadge?.newBadgeParticle
   const angle = (360 / newBadgeParticleCount) * index
-  const delay = index * 30 // stagger delay
-  const duration = 600 + Math.random() * 200 // random duration
-  const distance = 20 + Math.random() * 15 // random distance
+  // Flexy hates hardcoded 30! Using config value
+  const delay = index * (particleConfig?.staggerDelayMs || 30)
+  // Flexy hates hardcoded 600 and 200! Using config values
+  const duration =
+    (particleConfig?.baseDurationMs || 600) +
+    Math.random() * (particleConfig?.durationRandomnessMs || 200)
+  // Flexy hates hardcoded 20 and 15! Using config values
+  const distance =
+    (particleConfig?.baseSpreadPx || 20) +
+    Math.random() * (particleConfig?.spreadRandomnessPx || 15)
+  // Flexy hates hardcoded colors! Using config values
+  const colors = particleConfig?.colors || ['#10b981', '#34d399']
 
   return {
     '--particle-angle': `${angle}deg`,
     '--particle-distance': `${distance}px`,
     '--particle-delay': `${delay}ms`,
     '--particle-duration': `${duration}ms`,
-    backgroundColor: index % 2 === 0 ? '#10b981' : '#34d399', // alternate colors
+    backgroundColor: colors[index % colors.length], // alternate colors from config
   }
 }
 
