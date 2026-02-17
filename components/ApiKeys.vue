@@ -2,10 +2,7 @@
   <div class="api-keys-manager">
     <div class="api-keys-header">
       <h2>{{ contentConfig.apiKeys.title }}</h2>
-      <button
-        class="btn btn-primary"
-        @click="showCreateForm = true"
-      >
+      <button class="btn btn-primary" @click="showCreateForm = true">
         {{ contentConfig.apiKeys.buttons.create }}
       </button>
     </div>
@@ -27,7 +24,7 @@
             required
             :placeholder="contentConfig.apiKeys.placeholders.keyNameAlt"
             class="form-control"
-          >
+          />
         </div>
 
         <div class="form-group">
@@ -117,10 +114,7 @@
         aria-live="polite"
       >
         <!-- Animated Illustration -->
-        <div
-          class="api-key-illustration"
-          aria-hidden="true"
-        >
+        <div class="api-key-illustration" aria-hidden="true">
           <!-- Background Circle -->
           <div
             class="api-key-bg-circle"
@@ -193,10 +187,7 @@
           {{ contentConfig.apiKeys.empty.ctaButton }}
         </button>
       </div>
-      <div
-        v-else
-        class="api-key-items"
-      >
+      <div v-else class="api-key-items">
         <TransitionGroup
           name="api-key-item"
           tag="div"
@@ -207,7 +198,8 @@
             :key="key.id"
             class="api-key-item"
             :class="{
-              'api-key-item--hovered': hoveredKeyId === key.id && !reducedMotion,
+              'api-key-item--hovered':
+                hoveredKeyId === key.id && !reducedMotion,
               'api-key-item--active': !key.revokedAt,
               'api-key-item--revoked': key.revokedAt,
             }"
@@ -226,7 +218,9 @@
               :aria-label="key.revokedAt ? 'Revoked' : 'Active'"
             >
               <span class="status-dot" />
-              <span class="status-label">{{ key.revokedAt ? 'Revoked' : 'Active' }}</span>
+              <span class="status-label">{{
+                key.revokedAt ? 'Revoked' : 'Active'
+              }}</span>
             </div>
             <div class="api-key-info">
               <div class="api-key-name">
@@ -263,9 +257,9 @@
                   revokingKeyId === key.id
                     ? `Revoking API key: ${key.name}`
                     : contentConfig.apiKeys.aria.revokeButton.replace(
-                      '{{name}}',
-                      key.name
-                    )
+                        '{{name}}',
+                        key.name
+                      )
                 "
                 :disabled="revokingKeyId === key.id"
                 :aria-busy="revokingKeyId === key.id"
@@ -307,11 +301,7 @@
     </div>
 
     <!-- API Key Created Modal -->
-    <div
-      v-if="showKeyCreatedModal"
-      class="modal-overlay"
-      @click="closeModal"
-    >
+    <div v-if="showKeyCreatedModal" class="modal-overlay" @click="closeModal">
       <div
         ref="modalContent"
         class="modal-content"
@@ -326,10 +316,7 @@
           {{ contentConfig.apiKeys.buttons.create }}
         </h3>
         <p><strong>Key:</strong> {{ createdApiKey?.key }}</p>
-        <p
-          class="warning"
-          role="alert"
-        >
+        <p class="warning" role="alert">
           Make sure to copy this key now. You won't be able to see it again.
         </p>
         <div class="form-actions">
@@ -376,10 +363,7 @@
                 : contentConfig.messages.clipboard.copy
             }}
           </button>
-          <button
-            class="btn btn-secondary"
-            @click="closeModal"
-          >
+          <button class="btn btn-secondary" @click="closeModal">
             {{ contentConfig.apiKeys.buttons.cancel }}
           </button>
         </div>
@@ -455,7 +439,10 @@ const handleKeyItemLeave = () => {
 // 🎨 Pallete's micro-UX: Get staggered entrance style for key items
 const getKeyItemStyle = (index: number) => {
   if (reducedMotion.value) return {}
-  const delay = Math.min(index * animationConfig.apiKeys.staggerDelayMs, animationConfig.apiKeys.maxStaggerDelayMs)
+  const delay = Math.min(
+    index * animationConfig.apiKeys.staggerDelayMs,
+    animationConfig.apiKeys.maxStaggerDelayMs
+  )
   return { '--item-delay': `${delay}ms` }
 }
 
@@ -660,11 +647,16 @@ onMounted(() => {
   border: v-bind('componentStylesConfig.apiKeys.itemBorder');
   border-radius: v-bind('componentStylesConfig.apiKeys.itemBorderRadius');
   background: v-bind('componentStylesConfig.apiKeys.itemBackground');
-  transition: all v-bind('animationConfig.apiKeys.itemTransitionMs + "ms"') v-bind('EASING.SPRING_STANDARD');
+  transition: all v-bind('animationConfig.apiKeys.itemTransitionMs + "ms"')
+    v-bind('EASING.SPRING_STANDARD');
   will-change: transform, box-shadow;
   opacity: 0;
-  transform: translateY(v-bind('animationConfig.apiKeys.itemEntranceDistancePx + "px"'));
-  animation: key-item-entrance v-bind('animationConfig.apiKeys.itemEntranceDurationMs + "ms"') v-bind('EASING.SPRING_STANDARD') forwards;
+  transform: translateY(
+    v-bind('animationConfig.apiKeys.itemEntranceDistancePx + "px"')
+  );
+  animation: key-item-entrance
+    v-bind('animationConfig.apiKeys.itemEntranceDurationMs + "ms"')
+    v-bind('EASING.SPRING_STANDARD') forwards;
   animation-delay: var(--item-delay, 0ms);
 }
 
@@ -672,7 +664,10 @@ onMounted(() => {
 @keyframes key-item-entrance {
   0% {
     opacity: 0;
-    transform: translateY(v-bind('animationConfig.apiKeys.itemEntranceDistancePx + "px"')) scale(0.98);
+    transform: translateY(
+        v-bind('animationConfig.apiKeys.itemEntranceDistancePx + "px"')
+      )
+      scale(0.98);
   }
   60% {
     opacity: 1;
@@ -686,8 +681,13 @@ onMounted(() => {
 
 /* 🎨 Pallete's micro-UX: Hover lift effect */
 .api-key-item--hovered {
-  transform: translateY(v-bind('"-" + animationConfig.apiKeys.itemHoverLiftPx + "px"')) !important;
-  box-shadow: 0 v-bind('animationConfig.apiKeys.itemHoverShadowY + "px"') v-bind('animationConfig.apiKeys.itemHoverShadowBlur + "px"') v-bind('animationConfig.apiKeys.itemHoverShadowSpread + "px"') v-bind('animationConfig.shadows.light.md');
+  transform: translateY(
+    v-bind('"-" + animationConfig.apiKeys.itemHoverLiftPx + "px"')
+  ) !important;
+  box-shadow: 0 v-bind('animationConfig.apiKeys.itemHoverShadowY + "px"')
+    v-bind('animationConfig.apiKeys.itemHoverShadowBlur + "px"')
+    v-bind('animationConfig.apiKeys.itemHoverShadowSpread + "px"')
+    v-bind('animationConfig.shadows.light.md');
   border-color: v-bind('componentStylesConfig.apiKeys.itemHoverBorderColor');
 }
 
@@ -714,7 +714,9 @@ onMounted(() => {
 }
 
 .api-key-status--active.api-key-status--pulse .status-dot {
-  animation: status-pulse v-bind('animationConfig.apiKeys.statusPulseDurationSec + "s"') ease-in-out infinite;
+  animation: status-pulse
+    v-bind('animationConfig.apiKeys.statusPulseDurationSec + "s"') ease-in-out
+    infinite;
 }
 
 .api-key-status--revoked .status-dot {
@@ -730,7 +732,8 @@ onMounted(() => {
 }
 
 @keyframes status-pulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
   }
   50% {
@@ -752,7 +755,8 @@ onMounted(() => {
 /* 🎨 Pallete's micro-UX: TransitionGroup animations */
 .api-key-item-enter-active,
 .api-key-item-leave-active {
-  transition: all v-bind('animationConfig.apiKeys.itemTransitionMs + "ms"') v-bind('EASING.SPRING_STANDARD');
+  transition: all v-bind('animationConfig.apiKeys.itemTransitionMs + "ms"')
+    v-bind('EASING.SPRING_STANDARD');
 }
 
 .api-key-item-enter-from {
@@ -766,7 +770,9 @@ onMounted(() => {
 }
 
 .api-key-item-move {
-  transition: transform v-bind('animationConfig.apiKeys.itemTransitionMs + "ms"') v-bind('EASING.SPRING_STANDARD');
+  transition: transform
+    v-bind('animationConfig.apiKeys.itemTransitionMs + "ms"')
+    v-bind('EASING.SPRING_STANDARD');
 }
 
 .api-key-item {
@@ -1151,7 +1157,9 @@ onMounted(() => {
 }
 
 .animate-spin {
-  animation: spin 1s linear infinite;
+  /* Flexy hates hardcoded 1s! Using animationConfig.apiKeys.spinDurationSec */
+  animation: spin v-bind('animationConfig.apiKeys.spinDurationSec + "s"') linear
+    infinite;
 }
 
 /* Pallete: Disabled button state */
