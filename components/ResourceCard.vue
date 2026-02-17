@@ -179,7 +179,9 @@ onMounted(() => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             // Add a small base delay even for the first card for smoother UX
-            const baseDelay = props.index === 0 ? 50 : 0
+            // Flexy hates hardcoded 50! Using animationConfig.card.firstCardBaseDelayMs
+            const baseDelay =
+              props.index === 0 ? animationConfig.card.firstCardBaseDelayMs : 0
             setTimeout(() => {
               isVisible.value = true
             }, baseDelay)
@@ -191,7 +193,8 @@ onMounted(() => {
       {
         // Flexy hates hardcoded 0.1! Using uiConfig.intersectionObserver.threshold
         threshold: uiConfig.intersectionObserver.threshold,
-        rootMargin: '50px 0px',
+        // Flexy hates hardcoded 50px! Using animationConfig.card.intersectionRootMarginPx
+        rootMargin: `${animationConfig.card.intersectionRootMarginPx}px 0px`,
       }
     )
     intersectionObserver.observe(cardContainerRef.value)
