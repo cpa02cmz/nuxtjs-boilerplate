@@ -7,11 +7,14 @@
     :aria-label="`${metricName} performance chart`"
     @mouseleave="handleMouseLeave"
   >
-    <!-- SVG Chart -->
+    <!-- SVG Chart - Palette's micro-UX: Entrance animation support -->
     <svg
       v-if="chartData.length > 0"
       ref="svgRef"
       class="chart-svg"
+      :class="{
+        'chart-svg--entering': isChartVisible && !prefersReducedMotion,
+      }"
       :viewBox="`0 0 ${chartWidth} ${height}`"
       preserveAspectRatio="none"
       tabindex="0"
@@ -49,26 +52,33 @@
         opacity="0.5"
       />
 
-      <!-- Area Path -->
+      <!-- Area Path - Palette's micro-UX: Fade in with entrance animation -->
       <path
         class="chart-area"
+        :class="{
+          'chart-area--entering': isChartVisible && !prefersReducedMotion,
+        }"
         :d="areaPath"
         :fill="chartColor"
         fill-opacity="0.2"
       />
 
-      <!-- Line Path -->
+      <!-- Line Path - Palette's micro-UX: Draw animation on entrance -->
       <path
         class="chart-line"
+        :class="{
+          'chart-line--entering': isChartVisible && !prefersReducedMotion,
+        }"
         :d="linePath"
         :stroke="chartColor"
         :stroke-width="svgConfig.lineStrokeWidth"
         fill="none"
         stroke-linecap="round"
         stroke-linejoin="round"
+        :style="lineDrawStyle"
       />
 
-      <!-- Data Points -->
+      <!-- Data Points - Palette's micro-UX: Staggered entrance animation -->
       <g class="data-points">
         <circle
           v-for="(point, index) in chartData"
@@ -85,7 +95,9 @@
           :class="{
             'data-point--hovered': hoveredIndex === index,
             'data-point--focused': focusedIndex === index,
+            'data-point--entering': isChartVisible && !prefersReducedMotion,
           }"
+          :style="getPointEntranceStyle(index)"
           @mouseenter="handlePointHover(index)"
           @mouseleave="handlePointLeave"
           @focus="handlePointFocus(index)"
@@ -95,22 +107,13 @@
     </svg>
 
     <!-- Empty State -->
-    <div
-      v-if="chartData.length === 0"
-      class="empty-state"
-    >
-      <span
-        class="empty-icon"
-        aria-hidden="true"
-      >📊</span>
+    <div v-if="chartData.length === 0" class="empty-state">
+      <span class="empty-icon" aria-hidden="true">📊</span>
       <span class="empty-text">No data available</span>
     </div>
 
     <!-- X-Axis Labels -->
-    <div
-      v-if="chartData.length > 0"
-      class="x-axis-labels"
-    >
+    <div v-if="chartData.length > 0" class="x-axis-labels">
       <span
         v-for="(label, index) in xAxisLabels"
         :key="`label-${index}`"
@@ -145,10 +148,7 @@
         :style="tooltipStyle"
       >
         <div class="tooltip-content">
-          <div
-            class="tooltip-value"
-            :style="{ color: chartColor }"
-          >
+          <div class="tooltip-value" :style="{ color: chartColor }">
             {{ hoveredPoint.value.toFixed(2) }}
           </div>
           <div class="tooltip-metric">
@@ -158,20 +158,12 @@
             {{ hoveredPoint.label }}
           </div>
         </div>
-        <div
-          aria-hidden="true"
-          class="tooltip-arrow"
-        />
+        <div aria-hidden="true" class="tooltip-arrow" />
       </div>
     </Transition>
 
     <!-- Screen Reader Announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ chartAnnouncement }}
     </div>
   </div>
@@ -223,6 +215,10 @@ const tooltipPosition = ref<'left' | 'center' | 'right'>('center')
 const chartAnnouncement = ref('')
 const prefersReducedMotion = ref(false)
 
+// 🎨 Palette's micro-UX enhancement: Chart entrance animation state
+const isChartVisible = ref(false)
+const lineDrawProgress = ref(0)
+
 // Refs for DOM elements
 const chartContainer = ref<HTMLElement | null>(null)
 const svgRef = ref<SVGSVGElement | null>(null)
@@ -244,6 +240,47 @@ onMounted(() => {
     })
   }
 })
+
+// 🎨 Palette's micro-UX enhancement: Chart entrance animation
+// Animates the line drawing and points fading in when data loads
+watch(
+  () => props.data,
+  newData => {
+    if (newData && newData.length > 0 && !prefersReducedMotion.value) {
+      // Reset animation state
+      isChartVisible.value = false
+      lineDrawProgress.value = 0
+
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        isChartVisible.value = true
+
+        // Animate line drawing progress from 0 to 1
+        const duration = animationConfig.adminChart.entranceDurationMs || 1500
+        const startTime = performance.now()
+
+        const animateLine = (currentTime: number) => {
+          const elapsed = currentTime - startTime
+          const progress = Math.min(elapsed / duration, 1)
+
+          // Ease out cubic for smooth animation
+          lineDrawProgress.value = 1 - Math.pow(1 - progress, 3)
+
+          if (progress < 1) {
+            requestAnimationFrame(animateLine)
+          }
+        }
+
+        requestAnimationFrame(animateLine)
+      }, 100)
+    } else {
+      // Skip animation for reduced motion or no data
+      isChartVisible.value = true
+      lineDrawProgress.value = 1
+    }
+  },
+  { immediate: true }
+)
 
 // Filter and process data
 const chartData = computed(() => {
@@ -314,6 +351,50 @@ const areaPath = computed(() => {
 
   return `${linePath.value} L ${lastPoint.x} ${bottomY} L ${firstPoint.x} ${bottomY} Z`
 })
+
+// 🎨 Palette's micro-UX enhancement: Line draw animation style
+const lineDrawStyle = computed(() => {
+  if (prefersReducedMotion.value || lineDrawProgress.value >= 1) return {}
+
+  // Calculate stroke-dasharray and stroke-dashoffset based on progress
+  // This creates the drawing effect
+  const pathLength =
+    chartData.value.length > 1
+      ? chartData.value.reduce((total, point, index) => {
+          if (index === 0) return 0
+          const prevPoint = chartData.value[index - 1]
+          return (
+            total +
+            Math.sqrt(
+              Math.pow(point.x - prevPoint.x, 2) +
+                Math.pow(point.y - prevPoint.y, 2)
+            )
+          )
+        }, 0)
+      : 1000
+
+  return {
+    strokeDasharray: pathLength,
+    strokeDashoffset: pathLength * (1 - lineDrawProgress.value),
+  }
+})
+
+// 🎨 Palette's micro-UX enhancement: Get point entrance style with staggered delay
+const getPointEntranceStyle = (index: number) => {
+  if (prefersReducedMotion.value || lineDrawProgress.value >= 1) return {}
+
+  // Calculate when this point should appear based on line drawing progress
+  const pointProgress = index / (chartData.value.length - 1 || 1)
+  const visibilityThreshold = pointProgress * 0.8 + 0.2 // Start showing when line is 20% past this point
+
+  const isVisible = lineDrawProgress.value >= visibilityThreshold
+
+  return {
+    opacity: isVisible ? 1 : 0,
+    transform: isVisible ? 'scale(1)' : 'scale(0)',
+    transition: `opacity ${animationConfig.adminChart.dataPointTransitionSec}s ease-out, transform ${animationConfig.adminChart.dataPointTransitionSec}s cubic-bezier(0.175, 0.885, 0.32, 1.275)`,
+  }
+}
 
 // X-axis labels
 const xAxisLabels = computed(() => {
@@ -669,12 +750,61 @@ function handleKeyDown(event: KeyboardEvent) {
   }
 }
 
+/* 🎨 Palette's micro-UX enhancement: Chart entrance animations */
+.chart-svg--entering {
+  animation: chart-fade-in
+    v-bind('`${animationConfig.adminChart.entranceDurationMs}ms`') ease-out;
+}
+
+@keyframes chart-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.chart-area--entering {
+  animation: area-fade-in
+    v-bind('`${animationConfig.adminChart.entranceDurationMs}ms`') ease-out;
+}
+
+@keyframes area-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.2;
+  }
+}
+
+.chart-line--entering {
+  will-change: stroke-dashoffset;
+}
+
+.data-point--entering {
+  will-change: opacity, transform;
+  transform-origin: center;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .chart-line,
   .chart-area,
   .data-point,
   .crosshair {
     transition: none;
+  }
+
+  .chart-svg--entering,
+  .chart-area--entering {
+    animation: none;
+    opacity: 1;
+  }
+
+  .data-point--entering {
+    opacity: 1;
+    transform: none;
   }
 }
 </style>
