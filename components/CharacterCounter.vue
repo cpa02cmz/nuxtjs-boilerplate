@@ -202,9 +202,7 @@ const isComplete = computed(() => {
 const inputProps = computed(() => ({
   'aria-invalid': isOverLimit.value ? true : undefined,
   'aria-describedby':
-    isOverLimit.value || isNearLimit.value
-      ? `character-counter-${counterId.value}`
-      : undefined,
+    isOverLimit.value || isNearLimit.value ? counterId.value : undefined,
 }))
 
 // Progress ring color based on state
