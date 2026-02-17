@@ -4670,6 +4670,30 @@ export const animationConfig = {
     // Pulse animation duration in seconds
     pulseDurationSec: `${parseInt(process.env.DEPRECATION_NOTICE_PULSE_DURATION_MS || '2000') / 1000}s`,
   },
+
+  // 🎨 Pallete's micro-UX enhancement: Profile Stats Counter Animations
+  // Animated number counting for activity statistics on profile page
+  profileStats: {
+    // Duration of the count animation (ms)
+    countDurationMs: parseInt(
+      process.env.PROFILE_STATS_COUNT_DURATION_MS || '800'
+    ),
+    // Duration to keep the highlight effect after animation (ms)
+    highlightDurationMs: parseInt(
+      process.env.PROFILE_STATS_HIGHLIGHT_DURATION_MS || '400'
+    ),
+    // Scale effect when counter is updating
+    updateScale: parseFloat(process.env.PROFILE_STATS_UPDATE_SCALE || '1.1'),
+    // Pulse scale for subtle bounce effect
+    pulseScale: parseFloat(process.env.PROFILE_STATS_PULSE_SCALE || '1.05'),
+    // Glow color for updating state (tailwind blue-400)
+    updatingColor: process.env.PROFILE_STATS_UPDATING_COLOR || '#60a5fa',
+    // Glow spread radius
+    glowSpread: process.env.PROFILE_STATS_GLOW_SPREAD || '8px',
+    // Glow color
+    glowColor:
+      process.env.PROFILE_STATS_GLOW_COLOR || 'rgba(96, 165, 250, 0.4)',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
