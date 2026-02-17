@@ -533,8 +533,10 @@ button:hover {
   }
 }
 
+/* Flexy hates hardcoded 0.3s! Using animationConfig.cssTransitions.standardSec */
 .text-blue-600.font-medium {
-  animation: count-pulse 0.3s ease-out;
+  animation: count-pulse v-bind('animationConfig.cssTransitions.standardSec')
+    ease-out;
 }
 
 /* Checkbox bloom effect - Palette's micro-UX enhancement! */

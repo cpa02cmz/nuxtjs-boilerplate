@@ -263,8 +263,13 @@ const svgAttrs = computed(() => {
   transform: scale(var(--icon-entrance-start-scale, 0.7));
 }
 
+/* Flexy hates hardcoded 0.4s! Using animationConfig.iconEntrance.durationSec */
 .icon-wrapper--entrance.icon-wrapper--mounted {
-  animation: icon-entrance var(--icon-entrance-duration, 0.4s)
+  animation: icon-entrance
+    var(
+      --icon-entrance-duration,
+      v-bind('animationConfig.iconEntrance.durationSec')
+    )
     v-bind('EASING.SPRING_STANDARD') var(--icon-entrance-delay, 0s) forwards;
 }
 
@@ -285,8 +290,13 @@ const svgAttrs = computed(() => {
 
 /* Palette's micro-UX enhancement: Wiggle animation on hover 🎨
    Playful rotation effect for extra delight */
+/* Flexy hates hardcoded 0.5s! Using animationConfig.iconWiggle.durationSec */
 .icon-wrapper--wiggle:hover {
-  animation: icon-wiggle var(--icon-wiggle-duration, 0.5s)
+  animation: icon-wiggle
+    var(
+      --icon-wiggle-duration,
+      v-bind('animationConfig.iconWiggle.durationSec')
+    )
     v-bind('EASING.SPRING_STANDARD');
 }
 
