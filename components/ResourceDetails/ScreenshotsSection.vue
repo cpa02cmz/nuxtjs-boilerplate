@@ -845,7 +845,9 @@ const lightboxZoomDuration = computed(() => {
     rgba(255, 255, 255, 0.4) 50%,
     transparent 100%
   );
-  animation: shimmer-sweep 1.5s ease-in-out infinite;
+  animation: shimmer-sweep
+    v-bind('animationConfig.screenshotsSection.shimmerSweepDurationSec')
+    ease-in-out infinite;
 }
 
 @keyframes shimmer-sweep {
