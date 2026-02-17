@@ -4107,6 +4107,35 @@ export const animationConfig = {
     entranceEasing: EASING_REF.SPRING_SNAPPY,
   },
 
+  // Rate Limit Card Animations - Flexy hates hardcoded values! 🧩
+  // Provides consistent animation timing for rate limit display cards
+  rateLimitCard: {
+    // Card transition duration (ms) - Flexy hates hardcoded 0.3s!
+    transitionMs: parseInt(process.env.RATE_LIMIT_CARD_TRANSITION_MS || '300'),
+    // CSS duration string for v-bind
+    transitionSec: `${parseInt(process.env.RATE_LIMIT_CARD_TRANSITION_MS || '300') / 1000}s`,
+    // Icon container transition duration (ms)
+    iconTransitionMs: parseInt(
+      process.env.RATE_LIMIT_CARD_ICON_TRANSITION_MS || '300'
+    ),
+    // CSS duration string for icon transition
+    iconTransitionSec: `${parseInt(process.env.RATE_LIMIT_CARD_ICON_TRANSITION_MS || '300') / 1000}s`,
+    // Icon pulse animation duration (ms) - Flexy hates hardcoded 0.6s!
+    iconPulseMs: parseInt(process.env.RATE_LIMIT_CARD_ICON_PULSE_MS || '600'),
+    // CSS duration string for icon pulse
+    iconPulseSec: `${parseInt(process.env.RATE_LIMIT_CARD_ICON_PULSE_MS || '600') / 1000}s`,
+    // Glow opacity transition duration (ms)
+    glowTransitionMs: parseInt(
+      process.env.RATE_LIMIT_CARD_GLOW_TRANSITION_MS || '300'
+    ),
+    // CSS duration string for glow transition
+    glowTransitionSec: `${parseInt(process.env.RATE_LIMIT_CARD_GLOW_TRANSITION_MS || '300') / 1000}s`,
+    // Fade-in animation duration (ms) - Flexy hates hardcoded 0.4s!
+    fadeInMs: parseInt(process.env.RATE_LIMIT_CARD_FADE_IN_MS || '400'),
+    // CSS duration string for fade-in
+    fadeInSec: `${parseInt(process.env.RATE_LIMIT_CARD_FADE_IN_MS || '400') / 1000}s`,
+  },
+
   // 🎨 Palette's micro-UX enhancement: Resource Details Page Animations ✨
   // Smooth section reveals, reading progress, and enhanced navigation
   resourceDetails: {
