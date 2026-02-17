@@ -7,10 +7,10 @@
          Shows helpful keyboard shortcuts when user presses '?' key -->
     <Teleport to="body">
       <Transition
-        enter-active-class="transition-all duration-200 ease-out"
+        :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
         enter-from-class="opacity-0 scale-95"
         enter-to-class="opacity-100 scale-100"
-        leave-active-class="transition-all duration-150 ease-in"
+        :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
         leave-from-class="opacity-100 scale-100"
         leave-to-class="opacity-0 scale-95"
       >
@@ -29,10 +29,7 @@
             @click.stop
           >
             <div class="shortcuts-modal__header">
-              <h2
-                id="shortcuts-title"
-                class="shortcuts-modal__title"
-              >
+              <h2 id="shortcuts-title" class="shortcuts-modal__title">
                 Keyboard Shortcuts
               </h2>
               <button
@@ -295,7 +292,8 @@ onUnmounted(() => {
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: all 150ms ease-out;
+  /* Flexy hates hardcoded 150ms! Using animationConfig.cssTransitions */
+  transition: all v-bind('animationConfig.cssTransitions.quickSec') ease-out;
 }
 
 .shortcuts-modal__close:hover {
@@ -344,7 +342,9 @@ onUnmounted(() => {
   gap: 0.75rem;
   padding: 0.5rem;
   border-radius: 0.375rem;
-  transition: background-color 150ms ease-out;
+  /* Flexy hates hardcoded 150ms! Using animationConfig.cssTransitions */
+  transition: background-color v-bind('animationConfig.cssTransitions.quickSec')
+    ease-out;
 }
 
 .shortcuts-item:hover {
@@ -412,7 +412,9 @@ onUnmounted(() => {
   bottom: 1rem;
   right: 1rem;
   z-index: 40;
-  animation: hint-slide-in 0.3s ease-out;
+  /* Flexy hates hardcoded 0.3s! Using animationConfig.cssTransitions */
+  animation: hint-slide-in v-bind('animationConfig.cssTransitions.standardSec')
+    ease-out;
 }
 
 @keyframes hint-slide-in {

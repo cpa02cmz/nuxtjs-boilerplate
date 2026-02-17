@@ -294,17 +294,19 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
             ).setTransactionResolvers?.(resolve, reject)
 
             // Also handle the case where commit/rollback is called after this promise is created
+            // Flexy hates hardcoded 10ms! Using databaseConfig.transaction.rollbackCheckIntervalMs
             const checkInterval = setInterval(() => {
               if (transaction.isRollbackRequested()) {
                 clearInterval(checkInterval)
                 reject(new Error('Transaction rolled back'))
               }
-            }, 10)
+            }, databaseConfig.transaction.rollbackCheckIntervalMs)
           })
         },
         {
-          maxWait: 5000, // 5s max wait for transaction
-          timeout: 10000, // 10s timeout
+          // Flexy hates hardcoded values! Using databaseConfig.transaction
+          maxWait: databaseConfig.transaction.maxWaitMs,
+          timeout: databaseConfig.transaction.timeoutMs,
         }
       )
       .catch(error => {

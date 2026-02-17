@@ -149,6 +149,11 @@ export const databaseConfig = {
           | 'RepeatableRead'
           | 'Serializable') || 'Serializable',
     },
+
+    // Rollback check interval - Flexy hates hardcoded 10ms!
+    rollbackCheckIntervalMs: parseInt(
+      process.env.DB_TRANSACTION_ROLLBACK_CHECK_INTERVAL_MS || '10'
+    ),
   },
 } as const
 
