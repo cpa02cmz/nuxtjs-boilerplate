@@ -87,6 +87,7 @@ export const sanitizeForXSS = (content: string): string => {
  * @param text - The text to highlight
  * @param searchQuery - The search query to highlight
  * @returns HTML string with highlighted terms, safely sanitized
+ * @deprecated Use getHighlightedSegments instead to avoid v-html XSS risks
  */
 export const sanitizeAndHighlight = (
   text: string,
@@ -120,4 +121,71 @@ export const sanitizeAndHighlight = (
 
   // Return the fully sanitized HTML
   return fullySanitized
+}
+
+/**
+ * Interface for highlighted text segments
+ * @property text - The text content of the segment
+ * @property isHighlight - Whether this segment should be highlighted
+ */
+export interface HighlightSegment {
+  text: string
+  isHighlight: boolean
+}
+
+/**
+ * Sanitizes text and returns segments for safe rendering without v-html
+ * This eliminates XSS risks by using Vue's native text rendering instead of v-html
+ * @param text - The text to process
+ * @param searchQuery - The search query to highlight
+ * @returns Array of segments with highlight flags for safe rendering
+ */
+export const getHighlightedSegments = (
+  text: string,
+  searchQuery: string
+): HighlightSegment[] => {
+  if (!text) return []
+  if (!searchQuery) {
+    return [{ text, isHighlight: false }]
+  }
+
+  // Sanitize the input text
+  const sanitizedText = sanitizeForXSS(text)
+
+  // Escape special regex characters in search query
+  const escapedQuery = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const regex = new RegExp(`(${escapedQuery})`, 'gi')
+
+  // Split text by matches and create segments
+  const segments: HighlightSegment[] = []
+  let lastIndex = 0
+  let match
+
+  while ((match = regex.exec(sanitizedText)) !== null) {
+    // Add text before the match
+    if (match.index > lastIndex) {
+      segments.push({
+        text: sanitizedText.slice(lastIndex, match.index),
+        isHighlight: false,
+      })
+    }
+
+    // Add the matched (highlight) text
+    segments.push({
+      text: match[0],
+      isHighlight: true,
+    })
+
+    lastIndex = regex.lastIndex
+  }
+
+  // Add remaining text after last match
+  if (lastIndex < sanitizedText.length) {
+    segments.push({
+      text: sanitizedText.slice(lastIndex),
+      isHighlight: false,
+    })
+  }
+
+  return segments
 }
