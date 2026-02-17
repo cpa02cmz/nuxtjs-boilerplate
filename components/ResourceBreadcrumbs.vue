@@ -8,6 +8,17 @@
         <NuxtLink
           to="/"
           class="breadcrumb-link group"
+          :class="{
+            'is-pressed': pressedLink === 'home',
+            'is-hovered': hoveredLink === 'home',
+          }"
+          @mousedown="handlePressStart('home')"
+          @mouseup="handlePressEnd"
+          @mouseleave="handlePressEnd"
+          @mouseenter="handleHoverStart('home')"
+          @touchstart="handlePressStart('home')"
+          @touchend="handlePressEnd"
+          @click="handleBreadcrumbClick('home')"
         >
           <span class="breadcrumb-text">Home</span>
           <span
@@ -23,6 +34,17 @@
         <NuxtLink
           to="/search"
           class="breadcrumb-link group"
+          :class="{
+            'is-pressed': pressedLink === 'resources',
+            'is-hovered': hoveredLink === 'resources',
+          }"
+          @mousedown="handlePressStart('resources')"
+          @mouseup="handlePressEnd"
+          @mouseleave="handlePressEnd"
+          @mouseenter="handleHoverStart('resources')"
+          @touchstart="handlePressStart('resources')"
+          @touchend="handlePressEnd"
+          @click="handleBreadcrumbClick('resources')"
         >
           <span class="breadcrumb-text">Resources</span>
           <span
@@ -64,10 +86,48 @@ import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 const props = defineProps<{
   title: string
 }>()
+
+// 🎨 Pallete's micro-UX enhancement: Press and hover states
+const pressedLink = ref<string | null>(null)
+const hoveredLink = ref<string | null>(null)
+
+// Handle press start for tactile feedback
+const handlePressStart = (link: string) => {
+  pressedLink.value = link
+}
+
+// Handle press end
+const handlePressEnd = () => {
+  pressedLink.value = null
+}
+
+// Handle hover start
+const handleHoverStart = (link: string) => {
+  hoveredLink.value = link
+}
+
+// Handle breadcrumb click with haptic feedback - Pallete's micro-UX delight!
+const handleBreadcrumbClick = (link: string) => {
+  // Trigger haptic feedback for mobile users
+  hapticLight()
+
+  // Announce navigation to screen readers
+  if (link === 'home') {
+    announcement.value = 'Navigating to Home'
+  } else if (link === 'resources') {
+    announcement.value = 'Navigating to Resources'
+  }
+
+  // Clear announcement after delay
+  setTimeout(() => {
+    announcement.value = ''
+  }, uiTimingConfig.breadcrumbs.announcementClearDelay)
+}
 
 // Screen reader announcement
 const announcement = ref('')
@@ -121,8 +181,25 @@ onMounted(() => {
   padding: 0.125rem 0.25rem;
   margin: -0.125rem -0.25rem;
   border-radius: 0.25rem;
-  transition: color v-bind('`${animationConfig.transition.fast.durationMs}ms`')
-    ease-out;
+  transition:
+    color v-bind('`${animationConfig.transition.fast.durationMs}ms`') ease-out,
+    transform v-bind('`${animationConfig.transition.fast.durationMs}ms`')
+      ease-out,
+    background-color v-bind('`${animationConfig.transition.fast.durationMs}ms`')
+      ease-out;
+  will-change: transform;
+}
+
+/* 🎨 Pallete's micro-UX: Hover lift effect */
+.breadcrumb-link.is-hovered {
+  transform: translateY(-1px);
+  background-color: rgba(37, 99, 235, 0.05);
+}
+
+/* 🎨 Pallete's micro-UX: Press/active state */
+.breadcrumb-link.is-pressed {
+  transform: translateY(0) scale(0.98);
+  background-color: rgba(37, 99, 235, 0.1);
 }
 
 .breadcrumb-link:hover {
@@ -254,6 +331,11 @@ onMounted(() => {
 
   .breadcrumb-current-indicator {
     animation: none;
+  }
+
+  .breadcrumb-link.is-hovered,
+  .breadcrumb-link.is-pressed {
+    transform: none;
   }
 }
 
