@@ -81,11 +81,19 @@ async function reportMetric(report: WebVitalsReport): Promise<void> {
     })
 
     if (!response.ok) {
+      // BroCula: In development mode, silently ignore API errors (e.g., no database)
+      // to prevent console noise. In production, these should be investigated.
+      if (process.env.NODE_ENV === 'development') {
+        return
+      }
       throw new Error(`HTTP ${response.status}`)
     }
   } catch (error) {
-    // Silent fail - don't impact user experience
-    logger.debug('Web vitals report failed:', error)
+    // BroCula: In development mode, silently ignore errors to prevent console noise
+    if (process.env.NODE_ENV !== 'development') {
+      // Silent fail - don't impact user experience
+      logger.debug('Web vitals report failed:', error)
+    }
   }
 }
 
