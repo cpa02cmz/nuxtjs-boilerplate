@@ -19,10 +19,7 @@
       leave-from-class="opacity-100 scale-100"
       leave-to-class="opacity-0 scale-98"
     >
-      <div
-        v-if="!isIntersecting && !isLoaded"
-        class="skeleton-container"
-      >
+      <div v-if="!isIntersecting && !isLoaded" class="skeleton-container">
         <!-- Palette's micro-UX: Multi-layer shimmer for depth -->
         <div
           v-if="!prefersReducedMotion"
@@ -55,12 +52,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -75,7 +67,6 @@ import { animationConfig } from '~/configs/animation.config'
 import { hapticConfig } from '~/configs/haptic.config'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
-import { uiConfig } from '~/configs/ui.config'
 import { zIndexScale } from '~/configs/z-index.config'
 
 interface Props {
@@ -113,10 +104,10 @@ const announcement = ref('')
 const prefersReducedMotion = ref(false)
 
 // Intersection observer for lazy loading
+// Flexy hates hardcoded values! Using animationConfig.lazyLoading
 const { isIntersecting, isLoaded, observe } = useIntersectionObserver({
-  rootMargin: '100px', // Start loading 100px before it comes into view
-  // Flexy hates hardcoded 0.1! Using uiConfig.intersectionObserver.threshold
-  threshold: uiConfig.intersectionObserver.threshold,
+  rootMargin: animationConfig.lazyLoading.rootMargin, // Start loading before element is visible
+  threshold: animationConfig.lazyLoading.threshold,
 })
 
 // Check for reduced motion preference
@@ -216,7 +207,10 @@ onUnmounted(() => {
 <style scoped>
 /* Base wrapper styles */
 .lazy-resource-card-wrapper {
-  min-height: 200px; /* Reserve space to prevent layout shift */
+  /* Flexy hates hardcoded 200px! Using animationConfig.lazyLoading.skeletonMinHeightPx */
+  min-height: v-bind(
+    'animationConfig.lazyLoading.skeletonMinHeightPx + "px"'
+  ); /* Reserve space to prevent layout shift */
   position: relative;
   transition:
     transform v-bind('animationConfig.cssTransitions.normalSec') ease-out,

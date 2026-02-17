@@ -1577,6 +1577,35 @@ export const animationConfig = {
     ),
   },
 
+  // Performance Chart Micro-UX - Pallete's delightful enhancement! 🎨
+  // Line draw animation, hover tooltips, and entrance effects
+  performanceChart: {
+    // Delay before entrance animation starts (ms) - Pallete hates hardcoded 150!
+    entranceDelayMs: parseInt(
+      process.env.PERFORMANCE_CHART_ENTRANCE_DELAY_MS || '150'
+    ),
+    // Duration of line draw animation (ms) - Pallete hates hardcoded 1200!
+    lineDrawDurationMs: parseInt(
+      process.env.PERFORMANCE_CHART_LINE_DRAW_MS || '1200'
+    ),
+    // Duration of area fade-in animation (ms) - Pallete hates hardcoded 600!
+    areaFadeDurationMs: parseInt(
+      process.env.PERFORMANCE_CHART_AREA_FADE_MS || '600'
+    ),
+    // Duration of grid line entrance (ms) - Pallete hates hardcoded 400!
+    gridEntranceDurationMs: parseInt(
+      process.env.PERFORMANCE_CHART_GRID_ENTRANCE_MS || '400'
+    ),
+    // Duration of data point pop-in animation (ms) - Pallete hates hardcoded 300!
+    pointEntranceDurationMs: parseInt(
+      process.env.PERFORMANCE_CHART_POINT_ENTRANCE_MS || '300'
+    ),
+    // Stagger delay between data points (ms) - Pallete hates hardcoded 50!
+    pointStaggerMs: parseInt(
+      process.env.PERFORMANCE_CHART_POINT_STAGGER_MS || '50'
+    ),
+  },
+
   // Similar Resources Micro-UX - Palette's delightful enhancement! ✨
   // Staggered card entrance with lift and press effects
   similarResources: {
@@ -4291,6 +4320,33 @@ export const animationConfig = {
     indicatorDotActiveSizePx: parseInt(
       process.env.METRIC_CARD_DOT_ACTIVE_SIZE || '8'
     ),
+  },
+
+  // Lazy Loading Intersection Observer - Flexy hates hardcoded values!
+  // Configuration for lazy loading components with IntersectionObserver
+  lazyLoading: {
+    // Root margin for intersection observer (px) - loads before element is visible
+    // Flexy hates hardcoded 100px! Now configurable via env var
+    rootMarginPx: parseInt(process.env.LAZY_LOADING_ROOT_MARGIN_PX || '100'),
+    // Threshold for intersection (0.0 to 1.0) - percentage of element visible
+    threshold: parseFloat(process.env.LAZY_LOADING_THRESHOLD || '0.1'),
+    // Entrance animation duration for lazy loaded content (ms)
+    entranceDurationMs: parseInt(
+      process.env.LAZY_LOADING_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Skeleton placeholder minimum height (px)
+    skeletonMinHeightPx: parseInt(
+      process.env.LAZY_LOADING_SKELETON_MIN_HEIGHT_PX || '200'
+    ),
+    // Exit animation delay for section visibility (ms)
+    // Flexy hates hardcoded 300ms! Now configurable via env var
+    exitAnimationDelayMs: parseInt(
+      process.env.LAZY_LOADING_EXIT_DELAY_MS || '300'
+    ),
+    // Intersection observer root margin string (e.g., '100px')
+    get rootMargin(): string {
+      return `${this.rootMarginPx}px`
+    },
   },
 } as const
 

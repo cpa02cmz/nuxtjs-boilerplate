@@ -199,10 +199,15 @@ export class WebhookDeliveryService {
         reject(new Error('Overall delivery timeout'))
       }, OVERALL_TIMEOUT_MS)
 
-      this.executeDelivery(webhook, payload).then(result => {
-        clearTimeout(timeoutId)
-        resolve(result)
-      })
+      this.executeDelivery(webhook, payload)
+        .then(result => {
+          clearTimeout(timeoutId)
+          resolve(result)
+        })
+        .catch(error => {
+          clearTimeout(timeoutId)
+          reject(error)
+        })
     })
   }
 
