@@ -10,10 +10,9 @@ describe('Security Configuration', () => {
     it('should generate CSP without nonce when no nonce is provided', () => {
       const csp = generateCsp()
       expect(csp).toContain("default-src 'self'")
-      expect(csp).toContain("script-src 'self' 'unsafe-eval' 'unsafe-inline'")
-      expect(csp).toContain(
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
-      )
+      // P3 Security Fix: Issue #3337 - unsafe-eval and unsafe-inline removed from defaults
+      expect(csp).toContain("script-src 'self'")
+      expect(csp).toContain("style-src 'self' https://fonts.googleapis.com")
       expect(csp).not.toContain('nonce-')
     })
 
@@ -22,11 +21,10 @@ describe('Security Configuration', () => {
       const csp = generateCsp(nonce)
 
       expect(csp).toContain("default-src 'self'")
+      // P3 Security Fix: Issue #3337 - Secure defaults without unsafe directives
+      expect(csp).toContain(`script-src 'nonce-${nonce}' 'self'`)
       expect(csp).toContain(
-        `script-src 'nonce-${nonce}' 'self' 'unsafe-eval' 'unsafe-inline'`
-      )
-      expect(csp).toContain(
-        `style-src 'nonce-${nonce}' 'self' 'unsafe-inline' https://fonts.googleapis.com`
+        `style-src 'nonce-${nonce}' 'self' https://fonts.googleapis.com`
       )
       expect(csp).toContain(`nonce-${nonce}`)
     })

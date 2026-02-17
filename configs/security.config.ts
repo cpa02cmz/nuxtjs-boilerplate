@@ -16,14 +16,13 @@ export const securityConfig = {
   // CSP Directives Configuration
   csp: {
     defaultSrc: parseCspDirective(process.env.CSP_DEFAULT_SRC || "'self'"),
-    // Note: unsafe-eval and unsafe-inline are allowed for development
-    // In production, configure nonce-based CSP via environment variables
-    scriptSrc: parseCspDirective(
-      process.env.CSP_SCRIPT_SRC || "'self', 'unsafe-eval', 'unsafe-inline'"
-    ),
+    // P3 Security Fix: Issue #3337 - Removed unsafe-eval and unsafe-inline from defaults
+    // These directives significantly weaken XSS protection and should not be default
+    // For development: Set CSP_SCRIPT_SRC="'self', 'unsafe-eval', 'unsafe-inline'"
+    // For production: Use nonce-based CSP (nonces added automatically in generateCsp)
+    scriptSrc: parseCspDirective(process.env.CSP_SCRIPT_SRC || "'self'"),
     styleSrc: parseCspDirective(
-      process.env.CSP_STYLE_SRC ||
-        "'self', 'unsafe-inline', https://fonts.googleapis.com"
+      process.env.CSP_STYLE_SRC || "'self', https://fonts.googleapis.com"
     ),
     imgSrc: parseCspDirective(
       process.env.CSP_IMG_SRC || "'self', data:, blob:, https:"
