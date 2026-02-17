@@ -87,6 +87,26 @@ export const databaseConfig = {
     idleTimeoutMs: parseInt(process.env.DB_IDLE_TIMEOUT_MS || '10000'),
   },
 
+  // SECURITY FIX #3647: Connection Pool Validation Settings
+  poolValidation: {
+    // Enable connection validation before returning from pool
+    testOnBorrow: process.env.DB_POOL_TEST_ON_BORROW === 'true',
+    // Timeout for connection validation queries (ms)
+    validationTimeoutMs: parseInt(
+      process.env.DB_POOL_VALIDATION_TIMEOUT_MS || '2000'
+    ),
+    // Query to execute for connection validation
+    validationQuery: process.env.DB_POOL_VALIDATION_QUERY || 'SELECT 1',
+    // Maximum age of connections before they are recycled (ms)
+    maxConnectionAgeMs: parseInt(
+      process.env.DB_POOL_MAX_CONNECTION_AGE_MS || '3600000'
+    ),
+    // Interval for checking idle connections (ms)
+    idleCheckIntervalMs: parseInt(
+      process.env.DB_POOL_IDLE_CHECK_INTERVAL_MS || '30000'
+    ),
+  },
+
   // Transaction Settings - Flexy hates hardcoded transaction options!
   transaction: {
     // Maximum time to wait for a transaction to start (ms)

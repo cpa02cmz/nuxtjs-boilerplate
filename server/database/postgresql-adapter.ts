@@ -26,6 +26,79 @@ import { databaseConfig } from '~/configs/database.config'
 const DEFAULT_HEALTH_CHECK_TIMEOUT_MS = databaseConfig.healthCheck.timeoutMs
 const DEFAULT_HEALTH_CHECK_QUERY = databaseConfig.healthCheck.query
 
+// SECURITY FIX #3650: Models with soft delete support
+const SOFT_DELETE_TABLES = [
+  'analyticsEvent',
+  'webhook',
+  'webhookDelivery',
+  'webhookQueue',
+  'deadLetterWebhook',
+  'apiKey',
+  'resource',
+  'submission',
+  'idempotencyKey',
+]
+
+/**
+ * SECURITY FIX #3650: Helper function to append soft delete filter to SQL queries
+ * Automatically adds "deletedAt IS NULL" filter for tables that support soft deletes
+ */
+function appendSoftDeleteFilter(sql: string): string {
+  const lowerSql = sql.toLowerCase().trim()
+
+  // Only process SELECT queries
+  if (!lowerSql.startsWith('select')) {
+    return sql
+  }
+
+  // Check if query already has deletedAt filter
+  if (lowerSql.includes('deletedat') || lowerSql.includes('"deletedat"')) {
+    return sql
+  }
+
+  // Check if query references any soft-delete tables
+  for (const tableName of SOFT_DELETE_TABLES) {
+    const tableNameLower = tableName.toLowerCase()
+    // Match table names in FROM or JOIN clauses
+    const tablePattern = new RegExp(
+      `(from|join)\\s+(\\\\"?${tableNameLower}\\\\"?)\\b`,
+      'i'
+    )
+
+    if (tablePattern.test(sql)) {
+      // Check if there's a WHERE clause
+      if (lowerSql.includes(' where ')) {
+        // Add AND condition to existing WHERE
+        sql = sql.replace(
+          /WHERE\s+/i,
+          `WHERE "${tableName}"."deletedAt" IS NULL AND `
+        )
+      } else {
+        // Add WHERE clause before GROUP BY, ORDER BY, LIMIT, or end of query
+        const insertBeforePattern =
+          /\s+(GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|FETCH|FOR\s+UPDATE)\s+/i
+        const match = sql.match(insertBeforePattern)
+
+        if (match && match.index !== undefined) {
+          const insertIndex = match.index
+          sql =
+            sql.slice(0, insertIndex) +
+            ` WHERE "${tableName}"."deletedAt" IS NULL` +
+            sql.slice(insertIndex)
+        } else {
+          // Append WHERE clause at the end
+          sql += ` WHERE "${tableName}"."deletedAt" IS NULL`
+        }
+      }
+
+      // Only apply filter once per query (for the first matching table)
+      break
+    }
+  }
+
+  return sql
+}
+
 /**
  * PostgreSQL Transaction implementation
  * BugFixer: Issue #3472 - Proper transaction support with commit/rollback
@@ -166,6 +239,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     }
 
     // Create PostgreSQL connection pool for direct queries
+    // SECURITY FIX #3647: Add connection validation and error handling
     this.pool = new Pool({
       connectionString: this.connectionUrl,
       min: this.config.pool?.min || databaseConfig.pool.min,
@@ -177,6 +251,42 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       idleTimeoutMillis:
         this.config.pool?.idleTimeoutMs ||
         databaseConfig.connectionPool.idleTimeoutMs,
+      // SECURITY FIX #3647: Connection validation settings
+      ...(databaseConfig.poolValidation.testOnBorrow && {
+        // Validate connections before returning from pool
+        testOnBorrow: true,
+        // Timeout for connection validation queries
+        validationTimeout: databaseConfig.poolValidation.validationTimeoutMs,
+      }),
+    })
+
+    // SECURITY FIX #3647: Add error event handler for pool
+    this.pool.on('error', (err, client) => {
+      console.error('[PostgreSQL] Unexpected pool error:', err.message)
+      // Log additional context if available
+      if (client) {
+        console.error('[PostgreSQL] Error occurred on client in pool')
+      }
+      // In production, you might want to emit metrics or send alerts here
+      if (process.env.NODE_ENV === 'production') {
+        console.error(
+          '[PostgreSQL] Pool error in production - check database connectivity'
+        )
+      }
+    })
+
+    // SECURITY FIX #3647: Add connect event handler for monitoring
+    this.pool.on('connect', () => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[PostgreSQL] New client connected to pool')
+      }
+    })
+
+    // SECURITY FIX #3647: Add remove event handler for monitoring
+    this.pool.on('remove', () => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[PostgreSQL] Client removed from pool')
+      }
     })
 
     // Initialize Prisma client with PostgreSQL adapter
@@ -262,8 +372,13 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
         }
       }
 
+      // SECURITY FIX #3650: Apply soft delete filtering to raw queries
+      const filteredSql = appendSoftDeleteFilter(sql)
+
       // SECURITY FIX: Use parameterized queries with template literals
-      const result = await this.prisma.$queryRaw<T[]>`${Prisma.raw(sql)}`
+      const result = await this.prisma.$queryRaw<
+        T[]
+      >`${Prisma.raw(filteredSql)}`
       return result
     } catch (error) {
       throw new Error(
