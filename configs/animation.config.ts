@@ -4013,6 +4013,90 @@ export const animationConfig = {
     // Easing function for entrance animations
     entranceEasing: EASING_REF.SPRING_SNAPPY,
   },
+
+  // 🎨 Palette's micro-UX enhancement: Resource Details Page Animations ✨
+  // Smooth section reveals, reading progress, and enhanced navigation
+  resourceDetails: {
+    // Stagger delay between section entrances (ms)
+    sectionStaggerMs: parseInt(
+      process.env.RESOURCE_DETAILS_SECTION_STAGGER_MS || '100'
+    ),
+    // Maximum stagger delay to prevent excessive waiting (ms)
+    maxStaggerMs: parseInt(
+      process.env.RESOURCE_DETAILS_MAX_STAGGER_MS || '500'
+    ),
+    // Section entrance animation duration (ms)
+    sectionTransitionMs: parseInt(
+      process.env.RESOURCE_DETAILS_SECTION_TRANSITION_MS || '500'
+    ),
+
+    // Quick navigation configuration
+    // Top offset for sticky nav positioning (px)
+    navTopOffsetPx: parseInt(
+      process.env.RESOURCE_DETAILS_NAV_TOP_OFFSET || '80'
+    ),
+    // Mobile top offset (px)
+    navMobileTopPx: parseInt(
+      process.env.RESOURCE_DETAILS_NAV_MOBILE_TOP || '60'
+    ),
+    // Navigation entrance animation duration (ms)
+    navEntranceMs: parseInt(
+      process.env.RESOURCE_DETAILS_NAV_ENTRANCE_MS || '400'
+    ),
+    // Navigation item entrance duration (ms)
+    navItemEntranceMs: parseInt(
+      process.env.RESOURCE_DETAILS_NAV_ITEM_ENTRANCE_MS || '300'
+    ),
+    // Stagger between nav items (ms)
+    navStaggerMs: parseInt(process.env.RESOURCE_DETAILS_NAV_STAGGER_MS || '50'),
+    // Navigation transition duration (ms)
+    navTransitionMs: parseInt(
+      process.env.RESOURCE_DETAILS_NAV_TRANSITION_MS || '200'
+    ),
+
+    // Back to top button configuration
+    // Bottom position (px)
+    backToTopBottomPx: parseInt(
+      process.env.RESOURCE_DETAILS_BACK_TO_TOP_BOTTOM || '32'
+    ),
+    // Right position (px)
+    backToTopRightPx: parseInt(
+      process.env.RESOURCE_DETAILS_BACK_TO_TOP_RIGHT || '32'
+    ),
+    // Button size (px)
+    backToTopSizePx: parseInt(
+      process.env.RESOURCE_DETAILS_BACK_TO_TOP_SIZE || '48'
+    ),
+    // Mobile bottom position (px)
+    backToTopMobileBottomPx: parseInt(
+      process.env.RESOURCE_DETAILS_BACK_TO_TOP_MOBILE_BOTTOM || '24'
+    ),
+    // Mobile right position (px)
+    backToTopMobileRightPx: parseInt(
+      process.env.RESOURCE_DETAILS_BACK_TO_TOP_MOBILE_RIGHT || '24'
+    ),
+    // Mobile button size (px)
+    backToTopMobileSizePx: parseInt(
+      process.env.RESOURCE_DETAILS_BACK_TO_TOP_MOBILE_SIZE || '44'
+    ),
+    // Button transition duration (ms)
+    backToTopTransitionMs: parseInt(
+      process.env.RESOURCE_DETAILS_BACK_TO_TOP_TRANSITION || '200'
+    ),
+    // Icon transition duration (ms)
+    backToTopIconTransitionMs: parseInt(
+      process.env.RESOURCE_DETAILS_BACK_TO_TOP_ICON_TRANSITION || '200'
+    ),
+    // Bounce animation duration (ms)
+    backToTopBounceMs: parseInt(
+      process.env.RESOURCE_DETAILS_BACK_TO_TOP_BOUNCE || '600'
+    ),
+
+    // Progress bar gradient colors
+    progressGradientStart:
+      process.env.RESOURCE_DETAILS_PROGRESS_START || '#3b82f6',
+    progressGradientEnd: process.env.RESOURCE_DETAILS_PROGRESS_END || '#8b5cf6',
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
