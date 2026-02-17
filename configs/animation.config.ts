@@ -961,6 +961,39 @@ export const animationConfig = {
     ),
     // Float animation duration for decorative keys (seconds)
     floatDurationSec: parseFloat(process.env.API_KEYS_FLOAT_SEC || '3.5'),
+    // 🎨 Pallete's micro-UX: List item animations
+    // Item entrance animation duration (ms)
+    itemEntranceDurationMs: parseInt(
+      process.env.API_KEYS_ITEM_ENTRANCE_MS || '400'
+    ),
+    // Item entrance distance (px) - how far items slide up
+    itemEntranceDistancePx: parseInt(
+      process.env.API_KEYS_ITEM_ENTRANCE_DISTANCE_PX || '20'
+    ),
+    // Item hover lift amount (px)
+    itemHoverLiftPx: parseInt(process.env.API_KEYS_ITEM_HOVER_LIFT_PX || '3'),
+    // Item hover shadow Y offset (px)
+    itemHoverShadowY: parseInt(process.env.API_KEYS_ITEM_HOVER_SHADOW_Y || '8'),
+    // Item hover shadow blur (px)
+    itemHoverShadowBlur: parseInt(
+      process.env.API_KEYS_ITEM_HOVER_SHADOW_BLUR || '16'
+    ),
+    // Item hover shadow spread (px)
+    itemHoverShadowSpread: parseInt(
+      process.env.API_KEYS_ITEM_HOVER_SHADOW_SPREAD || '-4'
+    ),
+    // Item transition duration (ms)
+    itemTransitionMs: parseInt(
+      process.env.API_KEYS_ITEM_TRANSITION_MS || '250'
+    ),
+    // Stagger delay between items (ms)
+    staggerDelayMs: parseInt(process.env.API_KEYS_STAGGER_MS || '80'),
+    // Maximum stagger delay (ms)
+    maxStaggerDelayMs: parseInt(process.env.API_KEYS_MAX_STAGGER_MS || '400'),
+    // Status pulse animation duration (seconds)
+    statusPulseDurationSec: parseFloat(
+      process.env.API_KEYS_STATUS_PULSE_SEC || '2'
+    ),
   },
 
   // Card Animations
@@ -990,6 +1023,8 @@ export const animationConfig = {
     durationSec: parseFloat(process.env.CARD_SHINE_DURATION_SEC || '1.2'),
     // Delay before shine starts on hover (ms)
     delayMs: parseInt(process.env.CARD_SHINE_DELAY_MS || '0'),
+    // CSS-compatible transition duration (seconds) - RepoKeeper fix for missing property
+    transitionSec: parseFloat(process.env.CARD_SHINE_TRANSITION_SEC || '0.3'),
     // Gradient color start (white with low opacity)
     gradientStart:
       process.env.CARD_SHINE_GRADIENT_START || 'rgba(255, 255, 255, 0)',
@@ -1006,6 +1041,17 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.CARD_SHINE_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // Stagger Animation Config - RepoKeeper fix for missing type definition
+  // Used by SearchSuggestions.vue for staggered entrance animations
+  stagger: {
+    // Duration of entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.STAGGER_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Delay between items (ms)
+    delayMs: parseInt(process.env.STAGGER_DELAY_MS || '50'),
   },
 
   // Smart Paste Animations - Palette's micro-UX enhancement!
