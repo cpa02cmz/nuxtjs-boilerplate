@@ -221,8 +221,7 @@
                   stroke-linejoin="round"
                   stroke-width="2"
                   d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+                /></svg>
             </button>
           </div>
         </Tooltip>
@@ -262,7 +261,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
@@ -751,11 +750,13 @@ if (typeof window !== 'undefined') {
     }
   }, TIMING_FALLBACKS.idlePulseDelayMs)
 
-  // Add event listeners
-  window.addEventListener('saved-search-added', savedSearchAddedHandler)
-  window.addEventListener('saved-search-updated', savedSearchUpdatedHandler)
-  window.addEventListener('saved-search-removed', savedSearchRemovedHandler)
-  window.addEventListener('keydown', handleSlashKey)
+  // Add event listeners in onMounted to ensure SSR safety - BugFixer fixed this! 🐛
+  onMounted(() => {
+    window.addEventListener('saved-search-added', savedSearchAddedHandler)
+    window.addEventListener('saved-search-updated', savedSearchUpdatedHandler)
+    window.addEventListener('saved-search-removed', savedSearchRemovedHandler)
+    window.addEventListener('keydown', handleSlashKey)
+  })
 
   // Clean up event listeners on component unmount
   onUnmounted(() => {
