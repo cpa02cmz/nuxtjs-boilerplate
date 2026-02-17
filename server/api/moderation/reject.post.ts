@@ -6,11 +6,37 @@ import {
   sendBadRequestError,
   sendNotFoundError,
   handleApiRouteError,
+  sendUnauthorizedError,
+  sendForbiddenError,
 } from '~/server/utils/api-response'
 import { logger } from '~/utils/logger'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
+
+  // SECURITY FIX: Add authentication check for moderation access
+  const apiKey = event.context.apiKey
+  if (!apiKey) {
+    return sendUnauthorizedError(
+      event,
+      'Authentication required for moderation'
+    )
+  }
+
+  // Check for moderation permissions
+  const hasModerationPermission =
+    apiKey.permissions?.includes('moderation:reject') ||
+    apiKey.permissions?.includes('moderation:approve') ||
+    apiKey.permissions?.includes('admin') ||
+    apiKey.role === 'moderator' ||
+    apiKey.role === 'admin'
+
+  if (!hasModerationPermission) {
+    return sendForbiddenError(
+      event,
+      'Insufficient permissions for moderation rejection'
+    )
+  }
 
   try {
     const body = await readBody(event)

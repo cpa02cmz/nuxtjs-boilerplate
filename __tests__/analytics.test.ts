@@ -1,4 +1,20 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
+
+// BroCula: Mock analytics config to enable API calls in tests
+// Analytics are disabled by default to prevent console 404/500 errors
+vi.mock('~/configs/analytics.config', () => ({
+  analyticsConfig: {
+    apiEnabled: true,
+    endpoints: {
+      events: '/api/analytics/events',
+      webVitals: '/api/analytics/web-vitals',
+    },
+    debounceMs: 100,
+    maxRetries: 3,
+    retryDelayMs: 1000,
+  },
+}))
+
 import {
   trackEvent,
   trackPageView,

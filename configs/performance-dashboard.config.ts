@@ -97,6 +97,44 @@ export const performanceDashboardConfig = {
 
     // Chart height (px)
     height: parseInt(process.env.PERFORMANCE_CHART_HEIGHT || '300'),
+
+    // Chart dimensions - Flexy hates hardcoded values!
+    dimensions: {
+      // Default chart width
+      width: parseInt(process.env.PERFORMANCE_CHART_WIDTH || '800'),
+
+      // Padding around chart content
+      padding: {
+        top: parseInt(process.env.PERFORMANCE_CHART_PADDING_TOP || '20'),
+        right: parseInt(process.env.PERFORMANCE_CHART_PADDING_RIGHT || '30'),
+        bottom: parseInt(process.env.PERFORMANCE_CHART_PADDING_BOTTOM || '30'),
+        left: parseInt(process.env.PERFORMANCE_CHART_PADDING_LEFT || '50'),
+      },
+    },
+
+    // SVG styling - Flexy hates hardcoded values!
+    svg: {
+      // Grid line stroke width
+      gridStrokeWidth: parseInt(
+        process.env.PERFORMANCE_CHART_GRID_STROKE_WIDTH || '1'
+      ),
+
+      // Grid line dash array
+      gridDashArray: process.env.PERFORMANCE_CHART_GRID_DASH_ARRAY || '4',
+
+      // Data line stroke width
+      lineStrokeWidth: parseInt(
+        process.env.PERFORMANCE_CHART_LINE_STROKE_WIDTH || '2'
+      ),
+
+      // Data point radius
+      pointRadius: parseInt(process.env.PERFORMANCE_CHART_POINT_RADIUS || '4'),
+
+      // Data point hover radius
+      pointHoverRadius: parseInt(
+        process.env.PERFORMANCE_CHART_POINT_HOVER_RADIUS || '6'
+      ),
+    },
   },
 
   // Alert Settings

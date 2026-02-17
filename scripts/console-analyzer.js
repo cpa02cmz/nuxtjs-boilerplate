@@ -6,7 +6,7 @@
 
 import { chromium } from 'playwright'
 import fs from 'fs'
-import { monitoringConfig } from '../configs/monitoring.config.ts'
+import { monitoringConfig } from '../configs/monitoring.config.js'
 
 // Flexy loves modularity! Using configurable values instead of hardcoded ones
 const BASE_URL = monitoringConfig.baseUrl

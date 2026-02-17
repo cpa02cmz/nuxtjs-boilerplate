@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-v-html -->
 <template>
   <article
     v-if="!hasError"
@@ -7,14 +6,24 @@
       `bg-white p-6 rounded-lg shadow hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 border border-gray-200 hover:border-blue-300 focus-within:border-blue-300 transition-all ${transitionClasses.card} ease-out group card-shine-container card-3d-tilt`,
       {
         'is-tilting': isTilting && !prefersReducedMotion,
+        'card-shine--active': isShineActive && !prefersReducedMotion,
       },
     ]"
-    :style="tiltStyle"
+    :style="[tiltStyle, shineStyle]"
     role="article"
     @mouseenter="handleMouseEnter"
     @mousemove="handleMouseMove"
     @mouseleave="handleMouseLeave"
   >
+    <!-- 🎨 Pallete's micro-UX enhancement: Card Shine/Glint Effect ✨
+         Adds premium light sheen that follows cursor movement for delightful visual feedback
+         Works beautifully with 3D tilt effect to create depth and polish -->
+    <div
+      v-if="!prefersReducedMotion"
+      class="card-shine-overlay"
+      :class="{ 'card-shine-overlay--visible': isShineActive }"
+      aria-hidden="true"
+    />
     <div class="flex items-start">
       <div
         v-if="icon"
@@ -46,29 +55,55 @@
               :aria-label="`View details for ${title}`"
               @click="markVisited"
             >
-              <span
-                v-if="highlightedTitle"
-                v-html="sanitizedHighlightedTitle"
-              />
+              <template v-if="highlightedTitleSegments.length > 0">
+                <mark
+                  v-for="(segment, index) in highlightedTitleSegments"
+                  :key="index"
+                  :class="{
+                    'bg-yellow-200 text-gray-900': segment.isHighlight,
+                  }"
+                >{{ segment.text }}</mark>
+              </template>
               <span v-else>{{ title }}</span>
             </NuxtLink>
             <span v-else>
-              <span
-                v-if="highlightedTitle"
-                v-html="sanitizedHighlightedTitle"
-              />
+              <template v-if="highlightedTitleSegments.length > 0">
+                <mark
+                  v-for="(segment, index) in highlightedTitleSegments"
+                  :key="index"
+                  :class="{
+                    'bg-yellow-200 text-gray-900': segment.isHighlight,
+                  }"
+                >{{ segment.text }}</mark>
+              </template>
               <span v-else>{{ title }}</span>
             </span>
           </h3>
 
           <!-- Badges -->
           <div class="flex items-center">
+            <!-- 🎨 Pallete's micro-UX enhancement: New badge with particle burst! -->
             <span
               v-if="isNew"
-              class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-sm animate-new-pulse mr-2"
+              ref="newBadgeRef"
+              class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-sm animate-new-pulse mr-2 relative"
               role="status"
               :aria-label="`New resource added within the last ${limitsConfig.newResourceBadge.thresholdDays} days`"
+              @mouseenter="handleNewBadgeHover"
             >
+              <!-- Particle burst container for delightful animation -->
+              <span
+                v-if="showNewBadgeParticles && !prefersReducedMotion"
+                class="new-badge-particles"
+                aria-hidden="true"
+              >
+                <span
+                  v-for="n in newBadgeParticleCount"
+                  :key="n"
+                  class="new-badge-particle"
+                  :style="getNewBadgeParticleStyle(n)"
+                />
+              </span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-3 w-3 mr-1"
@@ -144,10 +179,13 @@
           id="resource-description"
           class="mt-1 text-gray-800 text-sm"
         >
-          <span
-            v-if="highlightedDescription"
-            v-html="sanitizedHighlightedDescription"
-          />
+          <template v-if="highlightedDescriptionSegments.length > 0">
+            <mark
+              v-for="(segment, index) in highlightedDescriptionSegments"
+              :key="index"
+              :class="{ 'bg-yellow-200 text-gray-900': segment.isHighlight }"
+            >{{ segment.text }}</mark>
+          </template>
           <span v-else>{{ description }}</span>
         </p>
 
@@ -362,7 +400,7 @@ import OptimizedImage from '~/components/OptimizedImage.vue'
 import ResourceStatus from '~/components/ResourceStatus.vue'
 import Tooltip from '~/components/Tooltip.vue'
 import { trackResourceView, trackResourceClick } from '~/utils/analytics'
-import { sanitizeAndHighlight } from '~/utils/sanitize'
+import { getHighlightedSegments, type HighlightSegment } from '~/utils/sanitize'
 import { memoizeHighlight } from '~/utils/memoize'
 import { logError } from '~/utils/errorLogger'
 import { formatDomainTooltip } from '~/utils/resourceHelper'
@@ -429,6 +467,12 @@ const tiltX = ref(0)
 const tiltY = ref(0)
 const prefersReducedMotion = ref(false)
 
+// 🎨 Pallete's micro-UX enhancement: Card Shine/Glint Effect ✨
+// Tracks mouse position for premium light sheen overlay
+const isShineActive = ref(false)
+const shineX = ref(50)
+const shineY = ref(50)
+
 // Media query refs for cleanup (Issue #2333 - Memory leak fix)
 const reducedMotionMediaQuery = ref<MediaQueryList | null>(null)
 const reducedMotionHandler = ref<((e: MediaQueryListEvent) => void) | null>(
@@ -439,6 +483,45 @@ const reducedMotionHandler = ref<((e: MediaQueryListEvent) => void) | null>(
 // Tracks when to show the entrance animation for delightful feedback
 const showViewedAnimation = ref(false)
 const hasAnimatedViewedBadge = ref(false)
+
+// 🎨 Pallete's micro-UX enhancement: New Badge Particle Burst!
+// Adds delightful particle explosion when hovering over new badge
+const newBadgeRef = ref<HTMLElement | null>(null)
+const showNewBadgeParticles = ref(false)
+const newBadgeParticleCount = 8
+const hasShownNewBadgeParticles = ref(false)
+
+// Generate particle styles for new badge burst effect
+const getNewBadgeParticleStyle = (index: number) => {
+  const angle = (360 / newBadgeParticleCount) * index
+  const delay = index * 30 // stagger delay
+  const duration = 600 + Math.random() * 200 // random duration
+  const distance = 20 + Math.random() * 15 // random distance
+
+  return {
+    '--particle-angle': `${angle}deg`,
+    '--particle-distance': `${distance}px`,
+    '--particle-delay': `${delay}ms`,
+    '--particle-duration': `${duration}ms`,
+    backgroundColor: index % 2 === 0 ? '#10b981' : '#34d399', // alternate colors
+  }
+}
+
+// Handle hover on new badge to trigger particle burst
+const handleNewBadgeHover = () => {
+  if (prefersReducedMotion.value || hasShownNewBadgeParticles.value) return
+
+  showNewBadgeParticles.value = true
+  hasShownNewBadgeParticles.value = true
+
+  // Trigger haptic feedback for mobile users
+  hapticSuccess()
+
+  // Reset after animation completes
+  setTimeout(() => {
+    showNewBadgeParticles.value = false
+  }, 1000)
+}
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
@@ -467,23 +550,36 @@ const calculateTilt = (event: MouseEvent) => {
   tiltY.value = -mouseX * maxTiltY
 }
 
-// Handle mouse enter - start tilting
+// Handle mouse enter - start tilting and shine
 const handleMouseEnter = () => {
   if (prefersReducedMotion.value) return
   isTilting.value = true
+  isShineActive.value = true
 }
 
-// Handle mouse move - update tilt
+// Handle mouse move - update tilt and shine
 const handleMouseMove = (event: MouseEvent) => {
-  if (!isTilting.value || prefersReducedMotion.value) return
-  calculateTilt(event)
+  if (prefersReducedMotion.value) return
+  if (isTilting.value) {
+    calculateTilt(event)
+  }
+  // Update shine position for light sheen effect
+  if (cardRef.value) {
+    const rect = cardRef.value.getBoundingClientRect()
+    shineX.value = ((event.clientX - rect.left) / rect.width) * 100
+    shineY.value = ((event.clientY - rect.top) / rect.height) * 100
+  }
 }
 
-// Handle mouse leave - reset tilt
+// Handle mouse leave - reset tilt and shine
 const handleMouseLeave = () => {
   isTilting.value = false
   tiltX.value = 0
   tiltY.value = 0
+  isShineActive.value = false
+  // Reset shine position to center for smooth exit animation
+  shineX.value = 50
+  shineY.value = 50
 }
 
 // Palette's Viewed Badge Micro-UX Enhancement!
@@ -530,15 +626,31 @@ const tiltStyle = computed(() => {
   }
 })
 
+// 🎨 Pallete's micro-UX enhancement: Card Shine/Glint Style ✨
+// Calculates gradient position for premium light sheen effect
+const shineStyle = computed(() => {
+  if (prefersReducedMotion.value) {
+    return {}
+  }
+
+  // Use existing cardShine config with sensible defaults
+  const config = animationConfig.cardShine
+
+  return {
+    '--shine-x': `${shineX.value}%`,
+    '--shine-y': `${shineY.value}%`,
+    '--shine-opacity': isShineActive.value ? 0.4 : 0,
+    '--shine-size': '60%',
+    '--shine-transition': `${config.durationSec || 0.3}s`,
+  }
+})
+
 // Computed button text based on navigation state
 const visitButtonText = computed(() => {
   return isNavigating.value
     ? contentConfig.resourceCard.openingLabel
     : props.buttonLabel || contentConfig.resourceCard.defaultButtonLabel
 })
-
-// 🎯 Flexy: Modular easing for new badge pulse animation
-const newPulseEasing = computed(() => EASING.MATERIAL_SHARP)
 
 // Use the resource card actions composable
 const { isNew, isResourceVisited, markResourceVisited } =
@@ -597,8 +709,10 @@ const markVisited = () => {
   }
 }
 
-// Memoized highlight function
-const memoizedHighlight = memoizeHighlight(sanitizeAndHighlight)
+// Memoized highlight function - BugFixer: Fixed XSS vulnerability #3495 by using segments instead of v-html
+const memoizedHighlightSegments = memoizeHighlight<HighlightSegment[]>(
+  getHighlightedSegments
+)
 
 // Track resource view when component mounts
 onMounted(() => {
@@ -645,18 +759,18 @@ onUnmounted(() => {
   }
 })
 
-// Sanitize highlighted content
-const sanitizedHighlightedTitle = computed(() => {
-  if (!props.highlightedTitle) return ''
-  return memoizedHighlight(
+// BugFixer: Fixed XSS vulnerability #3495 - Using segments instead of v-html for safe rendering
+const highlightedTitleSegments = computed<HighlightSegment[]>(() => {
+  if (!props.highlightedTitle) return []
+  return memoizedHighlightSegments(
     props.highlightedTitle,
     props.searchQuery || props.highlightedTitle
   )
 })
 
-const sanitizedHighlightedDescription = computed(() => {
-  if (!props.highlightedDescription) return ''
-  return memoizedHighlight(
+const highlightedDescriptionSegments = computed<HighlightSegment[]>(() => {
+  if (!props.highlightedDescription) return []
+  return memoizedHighlightSegments(
     props.highlightedDescription,
     props.searchQuery || props.highlightedDescription
   )
@@ -779,9 +893,152 @@ if (typeof useHead === 'function') {
 </script>
 
 <style scoped>
-/* New badge pulse animation */
-.animate-new-pulse {
-  animation: new-pulse 2s v-bind('newPulseEasing') infinite;
+/* 🎨 Pallete's micro-UX enhancement: Card Shine/Glint Effect ✨
+   Premium light sheen that follows cursor movement for delightful visual feedback */
+.card-shine-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: v-bind('zIndexScale.ground');
+  opacity: 0;
+  transition: opacity var(--shine-transition, 0.3s) ease-out;
+  background: radial-gradient(
+    circle at var(--shine-x, 50%) var(--shine-y, 50%),
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent var(--shine-size, 60%)
+  );
+  mix-blend-mode: overlay;
+}
+
+.card-shine-overlay--visible {
+  opacity: var(--shine-opacity, 0.4);
+}
+
+/* Enhanced shine on active tilt */
+.card-shine--active .card-shine-overlay {
+  opacity: var(--shine-opacity, 0.5);
+}
+
+/* Subtle border glow on hover */
+.card-shine-container::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(59, 130, 246, 0.3) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  background-position: var(--shine-x, 50%) var(--shine-y, 50%);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--shine-transition, 0.3s) ease-out;
+  pointer-events: none;
+}
+
+.card-shine--active::before {
+  opacity: 1;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .card-shine-overlay,
+  .card-shine-container::before {
+    display: none;
+  }
+}
+
+.card-shine-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: v-bind('zIndexScale.ground');
+  opacity: 0;
+  transition: opacity
+    v-bind('animationConfig.cardShine?.transitionSec || "0.3s"') ease-out;
+  background: radial-gradient(
+    circle at var(--shine-x, 50%) var(--shine-y, 50%),
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent var(--shine-size, 60%)
+  );
+  mix-blend-mode: overlay;
+}
+
+.card-shine-overlay--visible {
+  opacity: var(--shine-opacity, 0.4);
+}
+
+/* Enhanced shine on active tilt */
+.card-shine--active .card-shine-overlay {
+  opacity: var(--shine-opacity, 0.5);
+}
+
+/* Subtle border glow on hover */
+.card-shine-container::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(59, 130, 246, 0.3) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  background-position: var(--shine-x, 50%) var(--shine-y, 50%);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity
+    v-bind('animationConfig.cardShine?.transitionSec || "0.3s"') ease-out;
+  pointer-events: none;
+}
+
+.card-shine--active::before {
+  opacity: 1;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .card-shine-overlay,
+  .card-shine-container::before {
+    display: none;
+  }
+}
+
+.viewed-badge {
+  position: relative;
+  overflow: hidden;
 }
 
 @keyframes new-pulse {
@@ -1039,6 +1296,47 @@ if (typeof useHead === 'function') {
   100% {
     opacity: 0;
     transform: scale(1.5);
+  }
+}
+
+/* 🎨 Pallete's micro-UX enhancement: New Badge Particle Burst Styles */
+.new-badge-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: v-bind('zIndexScale.low[10]');
+}
+
+.new-badge-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  margin-top: -2px;
+  margin-left: -2px;
+  animation: new-badge-particle-burst var(--particle-duration, 600ms)
+    cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: var(--particle-delay, 0ms);
+  opacity: 0;
+}
+
+@keyframes new-badge-particle-burst {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(
+        calc(cos(var(--particle-angle, 0deg)) * var(--particle-distance, 20px)),
+        calc(sin(var(--particle-angle, 0deg)) * var(--particle-distance, 20px))
+      )
+      scale(0.5);
+    opacity: 0;
   }
 }
 
