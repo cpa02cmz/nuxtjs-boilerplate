@@ -41,21 +41,23 @@
                 />
               </svg>
             </div>
-            <!-- Decorative sparkles -->
-            <div
-              v-if="!prefersReducedMotion"
-              class="absolute -top-1 -right-1 w-4 h-4 text-yellow-400 animate-sparkle"
-              aria-hidden="true"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="currentColor"
+            <!-- Decorative sparkles - BroCula: Wrapped in ClientOnly to prevent hydration mismatch -->
+            <ClientOnly>
+              <div
+                v-if="!prefersReducedMotion"
+                class="absolute -top-1 -right-1 w-4 h-4 text-yellow-400 animate-sparkle"
+                aria-hidden="true"
               >
-                <path
-                  d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
-                />
-              </svg>
-            </div>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
+                  />
+                </svg>
+              </div>
+            </ClientOnly>
           </div>
         </div>
         <h1 :class="[tailwind.typography.pageTitle, 'mb-2']">
@@ -70,7 +72,10 @@
       <div :class="[tailwind.cards.padded]">
         <!-- Getting Started Section with Stagger Animation -->
         <section
-          :class="[tailwind.spacing.section]"
+          :class="[
+            tailwind.spacing.section,
+            { 'animate-section': !prefersReducedMotion },
+          ]"
           :style="getSectionStyle(0)"
         >
           <div class="flex items-center gap-3 mb-4">
@@ -133,7 +138,10 @@
 
         <!-- Authentication Section -->
         <section
-          :class="[tailwind.spacing.section]"
+          :class="[
+            tailwind.spacing.section,
+            { 'animate-section': !prefersReducedMotion },
+          ]"
           :style="getSectionStyle(1)"
         >
           <div class="flex items-center gap-3 mb-4">
@@ -202,7 +210,10 @@
 
         <!-- API Examples Section with Enhanced Code Blocks -->
         <section
-          :class="[tailwind.spacing.section]"
+          :class="[
+            tailwind.spacing.section,
+            { 'animate-section': !prefersReducedMotion },
+          ]"
           :style="getSectionStyle(2)"
         >
           <div class="flex items-center gap-3 mb-4">
@@ -288,7 +299,10 @@
 
         <!-- Rate Limiting Section -->
         <section
-          :class="[tailwind.spacing.section]"
+          :class="[
+            tailwind.spacing.section,
+            { 'animate-section': !prefersReducedMotion },
+          ]"
           :style="getSectionStyle(3)"
         >
           <div class="flex items-center gap-3 mb-4">
@@ -386,7 +400,10 @@
 
         <!-- Error Handling Section -->
         <section
-          :class="[tailwind.spacing.section]"
+          :class="[
+            tailwind.spacing.section,
+            { 'animate-section': !prefersReducedMotion },
+          ]"
           :style="getSectionStyle(4)"
         >
           <div class="flex items-center gap-3 mb-4">
@@ -644,6 +661,11 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
 })
 
+// BroCula: Disable SSR to prevent hydration issues with v-bind CSS expressions
+definePageMeta({
+  ssr: false,
+})
+
 useHead({
   title: 'Developer Portal - Free Stuff on the Internet',
   meta: [
@@ -725,8 +747,8 @@ useHead({
   animation: sparkle 2s ease-in-out infinite;
 }
 
-/* Section entrance animation */
-section {
+/* Section entrance animation - BroCula: Only animate on client to prevent hydration mismatch */
+.animate-section {
   opacity: 0;
   transform: translateY(20px);
   animation: fade-in 0.5s ease-out forwards;
