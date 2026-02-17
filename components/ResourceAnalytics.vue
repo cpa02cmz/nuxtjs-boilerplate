@@ -423,7 +423,7 @@ watch(
 
       setTimeout(() => {
         announcementText.value = ''
-      }, 3000)
+      }, animationConfig.analytics.announcementClearDelayMs)
 
       // Animate count up
       // Flexy hates hardcoded 1500! Using animationConfig.analyticsCounter.durationMs
