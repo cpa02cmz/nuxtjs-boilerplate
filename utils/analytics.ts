@@ -55,6 +55,11 @@ export async function trackEvent(event: AnalyticsEvent): Promise<boolean> {
 
     // Check if response is OK before parsing JSON
     if (!response.ok) {
+      // BroCula: In development mode, silently ignore API errors (e.g., no database)
+      // to prevent console noise. In production, these should be investigated.
+      if (process.env.NODE_ENV === 'development') {
+        return false
+      }
       const errorText = await response.text()
       logger.error(`Analytics API error (${response.status}):`, errorText)
       return false
