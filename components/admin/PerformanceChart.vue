@@ -12,48 +12,48 @@
       :viewBox="`0 0 ${chartWidth} ${height}`"
       preserveAspectRatio="none"
     >
-      <!-- Grid Lines -->
+      <!-- Grid Lines - Flexy hates hardcoded values! -->
       <g class="grid-lines">
         <line
-          v-for="n in 5"
+          v-for="n in chartsConfig.performanceChart.gridLines.count"
           :key="`grid-${n}`"
           :x1="0"
-          :y1="(height / 5) * n"
+          :y1="(height / chartsConfig.performanceChart.gridLines.count) * n"
           :x2="chartWidth"
-          :y2="(height / 5) * n"
-          stroke="#e5e7eb"
-          stroke-width="1"
-          stroke-dasharray="4"
+          :y2="(height / chartsConfig.performanceChart.gridLines.count) * n"
+          :stroke="chartsConfig.performanceChart.gridLines.strokeColor"
+          :stroke-width="chartsConfig.performanceChart.gridLines.strokeWidth"
+          :stroke-dasharray="chartsConfig.performanceChart.gridLines.dashArray"
         />
       </g>
 
-      <!-- Area Path -->
+      <!-- Area Path - Flexy hates hardcoded fill-opacity! -->
       <path
         class="chart-area"
         :d="areaPath"
         :fill="chartColor"
-        fill-opacity="0.2"
+        :fill-opacity="chartsConfig.performanceChart.areaFillOpacity"
       />
 
-      <!-- Line Path -->
+      <!-- Line Path - Flexy hates hardcoded stroke-width! -->
       <path
         class="chart-line"
         :d="linePath"
         :stroke="chartColor"
-        stroke-width="2"
+        :stroke-width="chartsConfig.performanceChart.line.strokeWidth"
         fill="none"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
 
-      <!-- Data Points -->
+      <!-- Data Points - Flexy hates hardcoded radius! -->
       <g class="data-points">
         <circle
           v-for="(point, index) in chartData"
           :key="`point-${index}`"
           :cx="point.x"
           :cy="point.y"
-          r="4"
+          :r="chartsConfig.performanceChart.pointRadius"
           :fill="chartColor"
           class="data-point"
           :aria-label="`Value: ${point.value} at ${point.label}`"
@@ -62,22 +62,13 @@
     </svg>
 
     <!-- Empty State -->
-    <div
-      v-else
-      class="empty-state"
-    >
-      <span
-        class="empty-icon"
-        aria-hidden="true"
-      >📊</span>
+    <div v-else class="empty-state">
+      <span class="empty-icon" aria-hidden="true">📊</span>
       <span class="empty-text">No data available</span>
     </div>
 
     <!-- X-Axis Labels -->
-    <div
-      v-if="chartData.length > 0"
-      class="x-axis-labels"
-    >
+    <div v-if="chartData.length > 0" class="x-axis-labels">
       <span
         v-for="(label, index) in xAxisLabels"
         :key="`label-${index}`"
@@ -93,6 +84,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { TimeSeriesDataPoint } from '~/types/performance'
+import { chartsConfig } from '~/configs/charts.config'
 
 interface Props {
   data: TimeSeriesDataPoint[]
@@ -101,12 +93,12 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  height: 300,
+  height: chartsConfig.performanceChart.height,
 })
 
-// Constants
-const chartWidth = 800
-const padding = { top: 20, right: 30, bottom: 30, left: 50 }
+// Flexy hates hardcoded values! Using chartsConfig
+const chartWidth = chartsConfig.performanceChart.width
+const padding = chartsConfig.performanceChart.padding
 
 // Chart Colors
 const chartColors: Record<string, string> = {

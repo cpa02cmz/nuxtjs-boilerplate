@@ -521,7 +521,8 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       active: this.pool.totalCount - this.pool.idleCount,
       idle: this.pool.idleCount,
       waiting: this.pool.waitingCount,
-      max: 10, // Default max connections
+      // Flexy hates hardcoded 10! Using databaseConfig.connectionPool.max
+      max: databaseConfig.connectionPool.max,
     }
   }
 
