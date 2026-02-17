@@ -1,6 +1,11 @@
 import { PrismaClient } from '@prisma/client'
+import { AsyncLocalStorage } from 'async_hooks'
 import { databaseConfig } from '~/configs/database.config'
 import { timeConfig } from '~/configs/time.config'
+
+// Transaction context for nested transaction support
+// Prevents deadlocks by reusing existing transactions instead of creating new ones
+const transactionContext = new AsyncLocalStorage<typeof prisma>()
 
 // Flexy hates hardcoded values! Using config for log prefix
 const LOG_PREFIX = databaseConfig.logging.prefix
@@ -349,6 +354,13 @@ export async function executeTransaction<T>(
   options: TransactionOptions = {},
   operationName: string = 'database transaction'
 ): Promise<T> {
+  // Check if already in a transaction context - prevents nested transaction deadlocks
+  const existingTx = transactionContext.getStore()
+  if (existingTx) {
+    // Reuse existing transaction to avoid deadlock
+    return await operation(existingTx)
+  }
+
   const config = { ...DEFAULT_TRANSACTION_OPTIONS, ...options }
   const { maxRetries, retryDelayMs, ...prismaOptions } = config
 
@@ -360,7 +372,10 @@ export async function executeTransaction<T>(
 
       const result = await prisma.$transaction(
         async tx => {
-          return await operation(tx as typeof prisma)
+          // Store transaction in context for nested calls
+          return await transactionContext.run(tx as typeof prisma, () =>
+            operation(tx as typeof prisma)
+          )
         },
         prismaOptions as {
           maxWait?: number
