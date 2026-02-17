@@ -34,8 +34,14 @@
       </svg>
     </div>
 
-    <span v-if="label" class="loading-spinner__label">{{ label }}</span>
-    <span v-else class="sr-only">{{ config.default }}</span>
+    <span
+      v-if="label"
+      class="loading-spinner__label"
+    >{{ label }}</span>
+    <span
+      v-else
+      class="sr-only"
+    >{{ config.default }}</span>
 
     <!-- Palette: Loading text with animated dots - explicit visual feedback! -->
     <div
