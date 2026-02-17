@@ -349,10 +349,11 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       const tables = await this.getTables()
 
       // For PostgreSQL, use pg_dump via child process
-      // This is a simplified implementation - in production, you'd use a more robust approach
-      const { exec } = await import('child_process')
+      // SECURITY FIX: Use execFile with array arguments instead of exec with string
+      // This prevents shell injection vulnerabilities
+      const { execFile } = await import('child_process')
       const { promisify } = await import('util')
-      const execAsync = promisify(exec)
+      const execFileAsync = promisify(execFile)
 
       const backupPath = `${config.destination}/${backupId}.sql`
       const dbUrl = new URL(this.config.url)
@@ -367,14 +368,24 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       // Set PGPASSWORD environment variable for pg_dump
       const env = { ...process.env, PGPASSWORD: password }
 
-      let command: string
+      // SECURITY FIX: Pass arguments as array to prevent shell injection
+      const args = [
+        '-h',
+        host,
+        '-p',
+        port,
+        '-U',
+        username,
+        '-d',
+        database,
+        '-f',
+        backupPath,
+      ]
       if (config.type === 'schema-only') {
-        command = `pg_dump -h ${host} -p ${port} -U ${username} -d ${database} --schema-only -f ${backupPath}`
-      } else {
-        command = `pg_dump -h ${host} -p ${port} -U ${username} -d ${database} -f ${backupPath}`
+        args.push('--schema-only')
       }
 
-      await execAsync(command, { env })
+      await execFileAsync('pg_dump', args, { env })
 
       // Calculate checksum
       const { createHash } = await import('crypto')
@@ -405,9 +416,11 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     config: RestoreConfig
   ): Promise<{ success: boolean; restoredTables: string[] }> {
     try {
-      const { exec } = await import('child_process')
+      // SECURITY FIX: Use execFile with array arguments instead of exec with string
+      // This prevents shell injection vulnerabilities
+      const { execFile } = await import('child_process')
       const { promisify } = await import('util')
-      const execAsync = promisify(exec)
+      const execFileAsync = promisify(execFile)
 
       const backupPath = `${config.source}/${config.backupId}.sql`
       const dbUrl = new URL(this.config.url)
@@ -421,20 +434,35 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       const env = { ...process.env, PGPASSWORD: password }
 
       if (config.dropExisting) {
-        // Drop and recreate database
-        await execAsync(
-          `dropdb -h ${host} -p ${port} -U ${username} --if-exists ${database}`,
+        // SECURITY FIX: Use execFile with array arguments for dropdb
+        await execFileAsync(
+          'dropdb',
+          ['-h', host, '-p', port, '-U', username, '--if-exists', database],
           { env }
         )
-        await execAsync(
-          `createdb -h ${host} -p ${port} -U ${username} ${database}`,
+        // SECURITY FIX: Use execFile with array arguments for createdb
+        await execFileAsync(
+          'createdb',
+          ['-h', host, '-p', port, '-U', username, database],
           { env }
         )
       }
 
-      // Restore from backup
-      await execAsync(
-        `psql -h ${host} -p ${port} -U ${username} -d ${database} -f ${backupPath}`,
+      // SECURITY FIX: Use execFile with array arguments for psql
+      await execFileAsync(
+        'psql',
+        [
+          '-h',
+          host,
+          '-p',
+          port,
+          '-U',
+          username,
+          '-d',
+          database,
+          '-f',
+          backupPath,
+        ],
         { env }
       )
 
