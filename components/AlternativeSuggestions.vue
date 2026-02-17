@@ -10,7 +10,11 @@
       <div class="alternative-suggestions__title-wrapper">
         <div
           class="alternative-suggestions__icon"
-          :class="{ 'animate-icon-pulse': !prefersReducedMotion && isLoading }"
+          :class="{
+            'animate-icon-pulse': !prefersReducedMotion && isLoading,
+            'alternative-suggestions__icon--sparkle':
+              showSparkle && !prefersReducedMotion,
+          }"
           aria-hidden="true"
         >
           <svg
@@ -27,6 +31,20 @@
               d="M13 10V3L4 14h7v7l9-11h-7z"
             />
           </svg>
+          <!-- 🎨 Pallete's micro-UX enhancement: Sparkle particles -->
+          <span
+            v-if="showSparkle && !prefersReducedMotion"
+            class="sparkle-container"
+            aria-hidden="true"
+          >
+            <span
+              v-for="i in animationConfig.alternativeSuggestions
+                .sparkleParticleCount"
+              :key="i"
+              class="sparkle-particle"
+              :style="{ '--particle-index': i }"
+            />
+          </span>
         </div>
         <div>
           <h2 class="alternative-suggestions__title">
@@ -37,16 +55,29 @@
           </p>
         </div>
       </div>
+      <!-- 🎨 Pallete's micro-UX enhancement: View All link with haptic feedback and enhanced hover -->
       <NuxtLink
         to="/"
         class="alternative-suggestions__view-all"
+        :class="{
+          'alternative-suggestions__view-all--hovered': isViewAllHovered,
+          'alternative-suggestions__view-all--pressed': isViewAllPressed,
+        }"
+        @mouseenter="handleViewAllMouseEnter"
+        @mouseleave="handleViewAllMouseLeave"
+        @mousedown="handleViewAllPressStart"
+        @mouseup="handleViewAllPressEnd"
+        @touchstart="handleViewAllPressStart"
+        @touchend="handleViewAllPressEnd"
       >
         <span>{{ contentConfig.similarResources.viewAll }}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           :class="[
-            'h-4 w-4 ml-1 transition-transform group-hover:translate-x-1',
-            animationConfig.tailwindDurations.normal,
+            'h-4 w-4 ml-1 alternative-suggestions__view-all-icon',
+            isViewAllHovered
+              ? 'alternative-suggestions__view-all-icon--shifted'
+              : '',
           ]"
           fill="none"
           viewBox="0 0 24 24"
@@ -183,6 +214,8 @@ import { EASING } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { getButtonLabel } from '~/utils/resourceHelper'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+// 🎨 Pallete's micro-UX enhancement: Haptic feedback for tactile interactions
+import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
   resource?: Resource
@@ -192,11 +225,15 @@ const props = withDefaults(defineProps<Props>(), {
   resource: () => ({}) as Resource,
 })
 
+// 🎨 Pallete's micro-UX enhancement: Animation and interaction state
 const alternatives = ref<AlternativeSuggestion[]>([])
 const isLoading = ref(true)
 const hasAttemptedLoad = ref(false)
 const prefersReducedMotion = ref(false)
 const announcementText = ref('')
+const showSparkle = ref(false)
+const isViewAllHovered = ref(false)
+const isViewAllPressed = ref(false)
 
 const { resources } = useResourceData()
 const { getAlternativesForResource } = useAlternativeSuggestions(
@@ -224,6 +261,29 @@ const getCardStyle = (index: number) => {
     '--card-index': index,
     '--stagger-delay': `${staggerDelay}ms`,
   }
+}
+
+// 🎨 Pallete's micro-UX enhancement: Handle View All link interactions with haptic feedback
+const handleViewAllMouseEnter = () => {
+  isViewAllHovered.value = true
+  if (!prefersReducedMotion.value) {
+    hapticLight()
+  }
+}
+
+const handleViewAllMouseLeave = () => {
+  isViewAllHovered.value = false
+  isViewAllPressed.value = false
+}
+
+const handleViewAllPressStart = () => {
+  if (!prefersReducedMotion.value) {
+    isViewAllPressed.value = true
+  }
+}
+
+const handleViewAllPressEnd = () => {
+  isViewAllPressed.value = false
 }
 
 // Handle before enter - set initial state
@@ -295,6 +355,17 @@ onMounted(() => {
     prefersReducedMotion.value = e.matches
   }
   mediaQueryRef.addEventListener('change', handleMotionChangeRef)
+
+  // 🎨 Pallete's micro-UX enhancement: Trigger sparkle animation on mount
+  if (!prefersReducedMotion.value) {
+    setTimeout(() => {
+      showSparkle.value = true
+      // Hide sparkle after animation completes
+      setTimeout(() => {
+        showSparkle.value = false
+      }, animationConfig.alternativeSuggestions.sparkleDurationMs)
+    }, animationConfig.alternativeSuggestions.sparkleDelayMs)
+  }
 
   initAlternatives()
 })
@@ -377,6 +448,127 @@ watch(
   }
 }
 
+/* 🎨 Pallete's micro-UX enhancement: Sparkle animation on icon */
+.alternative-suggestions__icon--sparkle {
+  position: relative;
+}
+
+.sparkle-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sparkle-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  border-radius: 50%;
+  opacity: 0;
+  animation: sparkle-burst
+    v-bind('animationConfig.alternativeSuggestions.sparkleDurationMs + "ms"')
+    ease-out forwards;
+  animation-delay: calc(var(--particle-index) * 80ms);
+  box-shadow: 0 0 6px 2px rgba(251, 191, 36, 0.6);
+}
+
+.sparkle-particle:nth-child(1) {
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.sparkle-particle:nth-child(2) {
+  top: 50%;
+  right: -8px;
+  transform: translateY(-50%);
+}
+.sparkle-particle:nth-child(3) {
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.sparkle-particle:nth-child(4) {
+  top: 50%;
+  left: -8px;
+  transform: translateY(-50%);
+}
+.sparkle-particle:nth-child(5) {
+  top: -4px;
+  right: -4px;
+}
+.sparkle-particle:nth-child(6) {
+  bottom: -4px;
+  right: -4px;
+}
+
+@keyframes sparkle-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.5) rotate(45deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(90deg);
+  }
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Enhanced View All link */
+.alternative-suggestions__view-all {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: v-bind('componentColorsConfig.alternativeSuggestions.link.default');
+  text-decoration: none;
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease;
+  padding: 0.5rem;
+  margin: -0.5rem;
+  border-radius: 0.5rem;
+  position: relative;
+}
+
+.alternative-suggestions__view-all::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    v-bind('componentColorsConfig.alternativeSuggestions.icon.gradientStart') 0%,
+    v-bind('componentColorsConfig.alternativeSuggestions.icon.gradientEnd') 100%
+  );
+  border-radius: 0.5rem;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease;
+  z-index: -1;
+}
+
+.alternative-suggestions__view-all:hover {
+  color: white;
+}
+
+.alternative-suggestions__view-all:hover::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.alternative-suggestions__view-all--pressed {
+  transform: scale(0.96);
+}
+
+.alternative-suggestions__view-all-icon {
+  transition: transform v-bind('animationConfig.cssTransitions.normalSec') ease;
+}
+
+.alternative-suggestions__view-all-icon--shifted {
+  transform: translateX(4px);
+}
+
 .alternative-suggestions__title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -388,20 +580,6 @@ watch(
   font-size: 0.875rem;
   color: v-bind('componentColorsConfig.alternativeSuggestions.subtitle');
   margin-top: 0.25rem;
-}
-
-.alternative-suggestions__view-all {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: v-bind('componentColorsConfig.alternativeSuggestions.link.default');
-  text-decoration: none;
-  transition: color v-bind('animationConfig.cssTransitions.normalSec') ease;
-}
-
-.alternative-suggestions__view-all:hover {
-  color: v-bind('componentColorsConfig.alternativeSuggestions.link.hover');
 }
 
 /* Loading State */
