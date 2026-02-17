@@ -514,7 +514,7 @@ const copySelectedText = async () => {
       if (typeof window !== 'undefined') {
         window.getSelection()?.removeAllRanges()
       }
-    }, animationConfig.copyFeedback.tooltipDurationMs)
+    }, animationConfig.copySuccess.tooltipDurationMs) // BugFixer: Fixed incorrect copyFeedback reference
   } catch {
     // Silent fail
     announcement.value = 'Failed to copy selection'

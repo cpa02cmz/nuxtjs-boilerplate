@@ -280,6 +280,9 @@ onUnmounted(() => {
     clearTimeout(focusPulseTimeout)
   }
 })
+
+// Flexy hates hardcoded 600ms! Using animationConfig.copyParticles.durationMs
+const particleDurationMs = animationConfig.copyParticles.durationMs
 </script>
 
 <style scoped>
@@ -355,8 +358,9 @@ onUnmounted(() => {
   background: var(--particle-color);
   border-radius: 50%;
   transform: translate(-50%, -50%) rotate(var(--particle-rotation));
-  /* BroCula: Hardcoded value from animationConfig.copyParticles.durationMs for SSR compatibility */
-  animation: copy-particle-burst 600ms ease-out forwards;
+  /* Flexy hates hardcoded 600ms! Using animationConfig.copyParticles.durationMs */
+  animation: copy-particle-burst v-bind('particleDurationMs + "ms"') ease-out
+    forwards;
   opacity: 0;
 }
 
