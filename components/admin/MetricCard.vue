@@ -21,7 +21,9 @@
       <span class="metric-unit">{{ unit }}</span>
     </div>
 
-    <div class="metric-description">{{ description }}</div>
+    <div class="metric-description">
+      {{ description }}
+    </div>
 
     <div class="metric-percentiles">
       <div class="percentile">
@@ -35,7 +37,10 @@
     </div>
 
     <!-- Rating Indicator -->
-    <div class="rating-indicator" aria-hidden="true">
+    <div
+      class="rating-indicator"
+      aria-hidden="true"
+    >
       <div
         v-for="n in 3"
         :key="n"
