@@ -160,6 +160,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import MetricCard from './MetricCard.vue'
 import PerformanceChart from './PerformanceChart.vue'
 import { performanceDashboardConfig } from '~/configs/performance-dashboard.config'
+import { layoutConfig } from '~/configs/layout.config'
 import type { PerformanceDashboardData } from '~/types/performance'
 import logger from '~/utils/logger'
 // 🎨 Pallete's micro-UX enhancement: Haptic feedback for success celebration
@@ -485,8 +486,15 @@ onUnmounted(() => {
 
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 1.5rem;
+  /* Flexy hates hardcoded 400px! Using layoutConfig.performanceDashboard.chartsGridMinWidthPx */
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(
+      v-bind('layoutConfig.performanceDashboard.chartsGridMinWidthPx + "px"'),
+      1fr
+    )
+  );
+  gap: v-bind('layoutConfig.performanceDashboard.chartsGridGap + "rem"');
 }
 
 .chart-container {
@@ -509,8 +517,17 @@ onUnmounted(() => {
 
 .api-metrics {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  /* Flexy hates hardcoded 200px! Using layoutConfig.performanceDashboard.apiMetricsGridMinWidthPx */
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(
+      v-bind(
+        'layoutConfig.performanceDashboard.apiMetricsGridMinWidthPx + "px"'
+      ),
+      1fr
+    )
+  );
+  gap: v-bind('layoutConfig.performanceDashboard.apiMetricsGridGap + "rem"');
 }
 
 .api-metric-card {

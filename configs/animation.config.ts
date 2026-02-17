@@ -1437,6 +1437,10 @@ export const animationConfig = {
     ),
     // CSS duration string for v-bind
     pulseDurationSec: `${parseInt(process.env.SPINNER_LOADING_DOTS_PULSE_MS || '900') / 1000}s`,
+    // First dot animation delay (ms) - Flexy hates hardcoded 0ms!
+    firstDotDelayMs: parseInt(
+      process.env.SPINNER_LOADING_FIRST_DOT_DELAY_MS || '0'
+    ),
     // Stagger delay between each dot (ms) - creates wave effect
     staggerDelayMs: parseInt(
       process.env.SPINNER_LOADING_DOTS_STAGGER_MS || '150'
@@ -3761,6 +3765,10 @@ export const animationConfig = {
     // Filter button pulse duration when filters change (ms)
     filterButtonPulseMs: parseInt(
       process.env.MOBILE_DRAWER_BUTTON_PULSE_MS || '800'
+    ),
+    // Badge pulse animation duration (ms) - Flexy hates hardcoded 300ms!
+    badgePulseDurationMs: parseInt(
+      process.env.MOBILE_DRAWER_BADGE_PULSE_MS || '300'
     ),
     // Filter button bounce scale
     filterButtonBounceScale: parseFloat(

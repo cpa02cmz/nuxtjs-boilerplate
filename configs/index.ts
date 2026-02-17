@@ -303,6 +303,10 @@ export {
   type StatusGroup,
 }
 
+// Layout config - Flexy hates hardcoded grid values!
+import { layoutConfig, type LayoutConfig } from './layout.config'
+export { layoutConfig, type LayoutConfig }
+
 // Sort config - Flexy hates hardcoded sort options!
 import {
   SORT_OPTIONS,
@@ -380,6 +384,8 @@ export const config = {
   status: statusConfig,
   // Sort config - Flexy hates hardcoded sort options!
   sort: sortConfig,
+  // Layout config - Flexy hates hardcoded grid values!
+  layout: layoutConfig,
 } as const
 
 export type Config = typeof config
