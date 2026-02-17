@@ -53,19 +53,38 @@ export default defineEventHandler(async event => {
     }
 
     // Store in analytics database
-    const { storeWebVitalsMetric } = await import('~/server/utils/analytics-db')
-    const storeResult = await storeWebVitalsMetric(enrichedReport)
+    // BroCula: Wrap in try-catch to prevent 500 errors when database is unavailable
+    try {
+      const { storeWebVitalsMetric } =
+        await import('~/server/utils/analytics-db')
+      const storeResult = await storeWebVitalsMetric(enrichedReport)
 
-    if (!storeResult.success) {
-      logger.warn('Failed to store web vitals metric:', storeResult.error)
-      // Still return success to client - don't block for analytics storage
-    } else {
-      logger.debug('Web Vitals Report stored:', {
-        metric: enrichedReport.metric.name,
-        value: enrichedReport.metric.value,
-        rating: enrichedReport.metric.rating,
-        url: enrichedReport.url,
-      })
+      if (!storeResult.success) {
+        logger.warn('Failed to store web vitals metric:', storeResult.error)
+        // Still return success to client - don't block for analytics storage
+      } else {
+        logger.debug('Web Vitals Report stored:', {
+          metric: enrichedReport.metric.name,
+          value: enrichedReport.metric.value,
+          rating: enrichedReport.metric.rating,
+          url: enrichedReport.url,
+        })
+      }
+    } catch (dbError) {
+      // BroCula: Silently ignore database errors in development to prevent console noise
+      const errorMsg = String(dbError)
+      if (
+        errorMsg.includes("Can't reach database server") ||
+        errorMsg.includes('Connection refused') ||
+        process.env.NODE_ENV === 'development'
+      ) {
+        logger.warn(
+          'Web vitals metric dropped: Database not available (development mode)'
+        )
+      } else {
+        logger.error('Error storing web vitals metric:', dbError)
+      }
+      // Still return success to client - analytics storage is non-critical
     }
 
     return sendSuccessResponse(event, {

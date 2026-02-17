@@ -34,6 +34,7 @@ function hashIP(ip: string): string {
 
 export default defineEventHandler(async event => {
   try {
+    // BroCula: Wrap ALL operations in try-catch to prevent 500 errors in development
     const body = await readBody(event)
     const headers = getHeaders(event)
     const rawIP = getRequestIP(event) || 'unknown'
