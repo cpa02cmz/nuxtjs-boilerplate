@@ -200,6 +200,15 @@ export const timeConfig = {
   intervalRecalculationThresholdMs: parseInt(
     process.env.TIME_AGO_INTERVAL_RECALC_THRESHOLD_MS || '1000'
   ),
+
+  // Time Calculations - Flexy hates hardcoded 30.44 and 365.25!
+  // Used for precise month/year calculations in useTimeAgo
+  calculations: {
+    // Average days per month (accounts for months with 28-31 days)
+    daysPerMonth: parseFloat(process.env.TIME_DAYS_PER_MONTH || '30.44'),
+    // Days per year including leap years (365.25 = 365 + 0.25 for leap year)
+    daysPerYear: parseFloat(process.env.TIME_DAYS_PER_YEAR || '365.25'),
+  },
 } as const
 
 // Type exports

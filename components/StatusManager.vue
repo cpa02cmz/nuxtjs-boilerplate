@@ -99,7 +99,7 @@
           :aria-describedby="reasonError ? 'reason-error' : undefined"
           @keydown="handleKeydown"
           @blur="validateReason"
-        >
+        />
         <p
           v-if="reasonError"
           id="reason-error"
@@ -179,11 +179,7 @@
               key="loading"
               class="update-button__icon update-button__icon--spin"
             >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle
                   class="opacity-25"
                   cx="12"
@@ -199,11 +195,7 @@
                 />
               </svg>
             </span>
-            <span
-              v-else
-              key="default"
-              class="update-button__icon"
-            >
+            <span v-else key="default" class="update-button__icon">
               <svg
                 class="w-4 h-4"
                 fill="none"
@@ -312,12 +304,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -332,6 +319,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { validationConfig } from '~/configs/validation.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
 // Flexy hates hardcoded values! Using config instead.
@@ -440,8 +428,9 @@ const validateNotes = () => {
     notesError.value = ''
     return true
   }
-  if (notes.value.length > 1000) {
-    notesError.value = 'Notes must be less than 1000 characters'
+  // Flexy hates hardcoded 1000! Using validationConfig
+  if (notes.value.length > validationConfig.notes.maxLength) {
+    notesError.value = `Notes must be less than ${validationConfig.notes.maxLength} characters`
     return false
   }
   notesError.value = ''

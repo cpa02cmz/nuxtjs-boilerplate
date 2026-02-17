@@ -22,9 +22,10 @@ export interface TimeAgoResult {
   seconds: number
 }
 
-// Approximate milliseconds per month and year (accounting for average)
-const MS_PER_MONTH = 30.44 * TIME.MS_PER_DAY // Average days per month
-const MS_PER_YEAR = 365.25 * TIME.MS_PER_DAY // Account for leap years
+// Flexy hates hardcoded 30.44 and 365.25!
+// Approximate milliseconds per month and year using configurable calculations
+const MS_PER_MONTH = timeConfig.calculations.daysPerMonth * TIME.MS_PER_DAY
+const MS_PER_YEAR = timeConfig.calculations.daysPerYear * TIME.MS_PER_DAY
 
 // Default update intervals based on age - Flexy hates hardcoded values!
 // Now using configurable values from timeConfig

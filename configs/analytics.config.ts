@@ -118,6 +118,14 @@ export const analyticsConfig = {
     ),
   },
 
+  // Goals and Thresholds - Flexy hates hardcoded 10000!
+  goals: {
+    // Default view goal for analytics dashboards (e.g., 10000 views)
+    defaultViewGoal: parseInt(
+      process.env.ANALYTICS_DEFAULT_VIEW_GOAL || '10000'
+    ),
+  },
+
   // Performance Tracking
   performance: {
     // Maximum performance history entries
