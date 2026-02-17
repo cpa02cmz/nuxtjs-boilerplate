@@ -1,4 +1,5 @@
 // Monitoring Configuration - Browser monitoring and script settings
+// BroCula: Converted to .js for Node.js compatibility
 // Flexy hates hardcoded values! All monitoring settings are now configurable.
 
 export const monitoringConfig = {
@@ -116,6 +117,4 @@ export const monitoringConfig = {
     issuesFound: 1,
     fatalError: 1,
   },
-} as const
-
-export type MonitoringConfig = typeof monitoringConfig
+}
