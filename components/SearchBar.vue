@@ -127,7 +127,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      />
+      >
       <!-- Keyboard shortcut hint with idle pulse animation -->
       <div
         v-if="!modelValue && !isFocused"
@@ -221,8 +221,7 @@
                   stroke-linejoin="round"
                   stroke-width="2"
                   d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+                /></svg>
             </button>
           </div>
         </Tooltip>
