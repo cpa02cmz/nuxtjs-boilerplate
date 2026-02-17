@@ -1,4 +1,4 @@
-import { ref, onUnmounted } from 'vue'
+import { ref, onUnmounted, getCurrentInstance } from 'vue'
 
 /**
  * Composable for managing focus during loading states
@@ -9,6 +9,9 @@ export function useLoadingFocus() {
   // Store the element that triggered the loading state
   const triggerElement = ref<HTMLElement | null>(null)
   const isLoading = ref(false)
+
+  // Track timeout ID for cleanup
+  let focusTimeoutId: ReturnType<typeof setTimeout> | null = null
 
   /**
    * Save the currently focused element before starting loading
@@ -89,7 +92,10 @@ export function useLoadingFocus() {
     }
 
     if (delay > 0) {
-      setTimeout(returnFocusToElement, delay)
+      focusTimeoutId = setTimeout(() => {
+        focusTimeoutId = null
+        returnFocusToElement()
+      }, delay)
     } else {
       returnFocusToElement()
     }
@@ -102,10 +108,16 @@ export function useLoadingFocus() {
     completeLoading({ returnFocus: true })
   }
 
-  // Clean up on unmount
-  onUnmounted(() => {
-    triggerElement.value = null
-  })
+  // Clean up on unmount - BugFixer #2800: Clear timeout to prevent memory leaks
+  if (getCurrentInstance()) {
+    onUnmounted(() => {
+      if (focusTimeoutId) {
+        clearTimeout(focusTimeoutId)
+        focusTimeoutId = null
+      }
+      triggerElement.value = null
+    })
+  }
 
   return {
     isLoading,

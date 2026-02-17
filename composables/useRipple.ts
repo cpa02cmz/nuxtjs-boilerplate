@@ -16,6 +16,13 @@ export interface RippleInstance {
   cleanup: () => void
 }
 
+// BugFixer #2800: Type for tracking ripple timeout data
+interface RippleTimeoutData {
+  fadeOutTimeout: ReturnType<typeof setTimeout>
+  removeTimeout: ReturnType<typeof setTimeout>
+  ripple: HTMLSpanElement
+}
+
 /**
  * Creates a ripple effect on button clicks
  * Provides delightful tactile feedback for primary actions
@@ -51,6 +58,8 @@ export function useRipple(
 
   // Track active ripples for cleanup
   const activeRipples = ref<HTMLSpanElement[]>([])
+  // BugFixer #2800: Track timeout IDs for cleanup to prevent memory leaks
+  const activeTimeouts = ref<RippleTimeoutData[]>([])
 
   /**
    * Creates a ripple effect at the click position
@@ -127,17 +136,33 @@ export function useRipple(
     const fadeOutDurationMs =
       config.duration * animationConfig.ripple.fadeOutEndMultiplier
 
-    setTimeout(() => {
+    // BugFixer #2800: Store timeout IDs for cleanup
+    const fadeOutTimeout = setTimeout(() => {
       ripple.style.opacity = '0'
       ripple.style.transition = `opacity ${fadeOutDurationMs}ms ease-out`
 
-      setTimeout(() => {
+      const removeTimeout = setTimeout(() => {
+        // Remove timeout data from tracking
+        const timeoutIndex = activeTimeouts.value.findIndex(
+          data => data.ripple === ripple
+        )
+        if (timeoutIndex > -1) {
+          activeTimeouts.value.splice(timeoutIndex, 1)
+        }
+
         ripple.remove()
         const index = activeRipples.value.indexOf(ripple)
         if (index > -1) {
           activeRipples.value.splice(index, 1)
         }
       }, fadeOutDurationMs)
+
+      // Track the remove timeout
+      activeTimeouts.value.push({
+        fadeOutTimeout,
+        removeTimeout,
+        ripple,
+      })
     }, fadeOutStartMs)
   }
 
@@ -145,6 +170,13 @@ export function useRipple(
    * Clean up all active ripples
    */
   const cleanup = () => {
+    // BugFixer #2800: Clear all timeouts to prevent memory leaks
+    activeTimeouts.value.forEach(data => {
+      clearTimeout(data.fadeOutTimeout)
+      clearTimeout(data.removeTimeout)
+    })
+    activeTimeouts.value = []
+
     activeRipples.value.forEach(ripple => {
       ripple.remove()
     })
