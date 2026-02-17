@@ -1437,6 +1437,10 @@ export const animationConfig = {
     ),
     // CSS duration string for v-bind
     pulseDurationSec: `${parseInt(process.env.SPINNER_LOADING_DOTS_PULSE_MS || '900') / 1000}s`,
+    // First dot animation delay (ms) - Flexy hates hardcoded 0ms!
+    firstDotDelayMs: parseInt(
+      process.env.SPINNER_LOADING_FIRST_DOT_DELAY_MS || '0'
+    ),
     // Stagger delay between each dot (ms) - creates wave effect
     staggerDelayMs: parseInt(
       process.env.SPINNER_LOADING_DOTS_STAGGER_MS || '150'
@@ -3762,6 +3766,10 @@ export const animationConfig = {
     filterButtonPulseMs: parseInt(
       process.env.MOBILE_DRAWER_BUTTON_PULSE_MS || '800'
     ),
+    // Badge pulse animation duration (ms) - Flexy hates hardcoded 300ms!
+    badgePulseDurationMs: parseInt(
+      process.env.MOBILE_DRAWER_BADGE_PULSE_MS || '300'
+    ),
     // Filter button bounce scale
     filterButtonBounceScale: parseFloat(
       process.env.MOBILE_DRAWER_BUTTON_BOUNCE_SCALE || '1.15'
@@ -4320,6 +4328,27 @@ export const animationConfig = {
     indicatorDotActiveSizePx: parseInt(
       process.env.METRIC_CARD_DOT_ACTIVE_SIZE || '8'
     ),
+  },
+
+  // 🎨 Pallete's micro-UX enhancement: Performance Dashboard Success Celebration
+  // Delightful success feedback when dashboard data refreshes
+  performanceDashboard: {
+    // Celebration animation total duration (ms)
+    celebrationDurationMs: parseInt(
+      process.env.PERFORMANCE_DASHBOARD_CELEBRATION_MS || '1200'
+    ),
+    // Checkmark pop animation duration (ms)
+    checkmarkPopDurationMs: parseInt(
+      process.env.PERFORMANCE_DASHBOARD_CHECKMARK_POP_MS || '400'
+    ),
+    // Checkmark draw animation duration (seconds)
+    checkmarkDrawDurationSec:
+      parseInt(process.env.PERFORMANCE_DASHBOARD_CHECKMARK_DRAW_MS || '300') /
+      1000,
+    // Checkmark animation delay (seconds)
+    checkmarkDelaySec:
+      parseInt(process.env.PERFORMANCE_DASHBOARD_CHECKMARK_DELAY_MS || '100') /
+      1000,
   },
 
   // Lazy Loading Intersection Observer - Flexy hates hardcoded values!

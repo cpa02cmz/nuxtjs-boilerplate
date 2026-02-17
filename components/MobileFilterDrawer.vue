@@ -106,10 +106,7 @@
           @mouseenter="isHandleHovered = true"
           @mouseleave="isHandleHovered = false"
         >
-          <div
-            class="drawer-handle-bar"
-            :style="handleStyle"
-          />
+          <div class="drawer-handle-bar" :style="handleStyle" />
           <div
             v-if="!prefersReducedMotion && swipeProgress > 0"
             class="drawer-handle-glow"
@@ -211,9 +208,11 @@
             @touchstart="isResultsButtonPressed = true"
             @touchend="isResultsButtonPressed = false"
           >
-            <span class="button-text">Show {{ resultsCount }} result{{
-              resultsCount === 1 ? '' : 's'
-            }}</span>
+            <span class="button-text"
+              >Show {{ resultsCount }} result{{
+                resultsCount === 1 ? '' : 's'
+              }}</span
+            >
             <svg
               v-if="resultsCount > 0"
               class="ml-2 w-4 h-4 arrow-icon"
@@ -748,7 +747,10 @@ onUnmounted(() => {
 }
 
 .animate-pulse-gentle {
-  animation: pulse-gentle 300ms ease-out 2;
+  /* Flexy hates hardcoded 300ms! Using animationConfig.mobileFilterDrawer.badgePulseDurationMs */
+  animation: pulse-gentle
+    v-bind('animationConfig.mobileFilterDrawer.badgePulseDurationMs + "ms"')
+    ease-out 2;
 }
 
 /* Drawer overlay with edge glow */
