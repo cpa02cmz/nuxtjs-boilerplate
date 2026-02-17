@@ -197,85 +197,112 @@
         v-else
         class="api-key-items"
       >
-        <div
-          v-for="key in apiKeys"
-          :key="key.id"
-          class="api-key-item"
+        <TransitionGroup
+          name="api-key-item"
+          tag="div"
+          class="api-key-items-container"
         >
-          <div class="api-key-info">
-            <div class="api-key-name">
-              {{ key.name }}
-            </div>
-            <div class="api-key-id">
-              {{ contentConfig.apiKeys.labels.id }} {{ key.id }}
-            </div>
-            <div class="api-key-permissions">
-              <span
-                v-for="permission in key.permissions"
-                :key="permission"
-                class="permission-tag"
-              >
-                {{ permission }}
-              </span>
-            </div>
-            <div class="api-key-meta">
-              <div>
-                {{ contentConfig.apiKeys.labels.created }}
-                {{ new Date(key.createdAt).toLocaleDateString() }}
-              </div>
-              <div v-if="key.lastUsedAt">
-                {{ contentConfig.apiKeys.labels.expires }}
-                {{ new Date(key.lastUsedAt).toLocaleDateString() }}
-              </div>
-            </div>
-          </div>
-          <div class="api-key-actions">
-            <button
-              class="btn btn-sm btn-danger"
-              :class="{ 'btn--revoking': revokingKeyId === key.id }"
-              :aria-label="
-                revokingKeyId === key.id
-                  ? `Revoking API key: ${key.name}`
-                  : contentConfig.apiKeys.aria.revokeButton.replace(
-                    '{{name}}',
-                    key.name
-                  )
-              "
-              :disabled="revokingKeyId === key.id"
-              :aria-busy="revokingKeyId === key.id"
-              @click="revokeApiKey(key.id)"
+          <div
+            v-for="(key, index) in apiKeys"
+            :key="key.id"
+            class="api-key-item"
+            :class="{
+              'api-key-item--hovered': hoveredKeyId === key.id && !reducedMotion,
+              'api-key-item--active': !key.revokedAt,
+              'api-key-item--revoked': key.revokedAt,
+            }"
+            :style="getKeyItemStyle(index)"
+            @mouseenter="handleKeyItemHover(key.id)"
+            @mouseleave="handleKeyItemLeave"
+          >
+            <!-- 🎨 Pallete's micro-UX: Status indicator with pulse animation -->
+            <div
+              class="api-key-status"
+              :class="{
+                'api-key-status--active': !key.revokedAt,
+                'api-key-status--revoked': key.revokedAt,
+                'api-key-status--pulse': !key.revokedAt && !reducedMotion,
+              }"
+              :aria-label="key.revokedAt ? 'Revoked' : 'Active'"
             >
-              <!-- Pallete: Loading spinner for revoke feedback -->
-              <svg
-                v-if="revokingKeyId === key.id"
-                class="animate-spin -ml-1 mr-1.5 h-3.5 w-3.5 text-white inline-block"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
+              <span class="status-dot" />
+              <span class="status-label">{{ key.revokedAt ? 'Revoked' : 'Active' }}</span>
+            </div>
+            <div class="api-key-info">
+              <div class="api-key-name">
+                {{ key.name }}
+              </div>
+              <div class="api-key-id">
+                {{ contentConfig.apiKeys.labels.id }} {{ key.id }}
+              </div>
+              <div class="api-key-permissions">
+                <span
+                  v-for="permission in key.permissions"
+                  :key="permission"
+                  class="permission-tag"
+                >
+                  {{ permission }}
+                </span>
+              </div>
+              <div class="api-key-meta">
+                <div>
+                  {{ contentConfig.apiKeys.labels.created }}
+                  {{ new Date(key.createdAt).toLocaleDateString() }}
+                </div>
+                <div v-if="key.lastUsedAt">
+                  {{ contentConfig.apiKeys.labels.expires }}
+                  {{ new Date(key.lastUsedAt).toLocaleDateString() }}
+                </div>
+              </div>
+            </div>
+            <div class="api-key-actions">
+              <button
+                class="btn btn-sm btn-danger"
+                :class="{ 'btn--revoking': revokingKeyId === key.id }"
+                :aria-label="
+                  revokingKeyId === key.id
+                    ? `Revoking API key: ${key.name}`
+                    : contentConfig.apiKeys.aria.revokeButton.replace(
+                      '{{name}}',
+                      key.name
+                    )
+                "
+                :disabled="revokingKeyId === key.id"
+                :aria-busy="revokingKeyId === key.id"
+                @click="revokeApiKey(key.id)"
               >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                />
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              {{
-                revokingKeyId === key.id
-                  ? contentConfig.apiKeys.buttons.revoking
-                  : contentConfig.apiKeys.buttons.revoke
-              }}
-            </button>
+                <!-- Pallete: Loading spinner for revoke feedback -->
+                <svg
+                  v-if="revokingKeyId === key.id"
+                  class="animate-spin -ml-1 mr-1.5 h-3.5 w-3.5 text-white inline-block"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  />
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                {{
+                  revokingKeyId === key.id
+                    ? contentConfig.apiKeys.buttons.revoking
+                    : contentConfig.apiKeys.buttons.revoke
+                }}
+              </button>
+            </div>
           </div>
-        </div>
+        </TransitionGroup>
       </div>
     </div>
 
@@ -371,16 +398,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, reactive, nextTick } from 'vue'
 import type { ApiKey } from '~/types/webhook'
 import type { NewApiKey } from '~/composables/useApiKeysManager'
 import { useApiKeysManager } from '~/composables/useApiKeysManager'
 import logger from '~/utils/logger'
 import { permissionsConfig } from '~/configs/permissions.config'
 import { animationConfig } from '~/configs/animation.config'
+import { EASING } from '~/configs/easing.config'
 import { contentConfig } from '~/configs/content.config'
 import { componentStylesConfig } from '~/configs/component-styles.config'
-import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
+import { hapticSuccess, hapticError, hapticLight } from '~/utils/hapticFeedback'
 
 const {
   apiKeys,
@@ -408,6 +436,28 @@ const revokingKeyId = ref<string | null>(null)
 
 // Store previously focused element
 let previousActiveElement: HTMLElement | null = null
+
+// 🎨 Pallete's micro-UX: Track hovered key for enhanced interactions
+const hoveredKeyId = ref<string | null>(null)
+
+// 🎨 Pallete's micro-UX: Handle key item hover with haptic feedback
+const handleKeyItemHover = (keyId: string) => {
+  hoveredKeyId.value = keyId
+  if (!reducedMotion.value) {
+    hapticLight()
+  }
+}
+
+const handleKeyItemLeave = () => {
+  hoveredKeyId.value = null
+}
+
+// 🎨 Pallete's micro-UX: Get staggered entrance style for key items
+const getKeyItemStyle = (index: number) => {
+  if (reducedMotion.value) return {}
+  const delay = Math.min(index * animationConfig.apiKeys.staggerDelayMs, animationConfig.apiKeys.maxStaggerDelayMs)
+  return { '--item-delay': `${delay}ms` }
+}
 
 // Focus trap for modal
 const focusableElementsString =
@@ -592,6 +642,131 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: v-bind('componentStylesConfig.apiKeys.itemsGap');
+}
+
+/* 🎨 Pallete's micro-UX: Enhanced API Key Item Styles */
+.api-key-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: v-bind('componentStylesConfig.apiKeys.itemsGap');
+}
+
+.api-key-item {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: v-bind('componentStylesConfig.apiKeys.itemPadding');
+  border: v-bind('componentStylesConfig.apiKeys.itemBorder');
+  border-radius: v-bind('componentStylesConfig.apiKeys.itemBorderRadius');
+  background: v-bind('componentStylesConfig.apiKeys.itemBackground');
+  transition: all v-bind('animationConfig.apiKeys.itemTransitionMs + "ms"') v-bind('EASING.SPRING_STANDARD');
+  will-change: transform, box-shadow;
+  opacity: 0;
+  transform: translateY(v-bind('animationConfig.apiKeys.itemEntranceDistancePx + "px"'));
+  animation: key-item-entrance v-bind('animationConfig.apiKeys.itemEntranceDurationMs + "ms"') v-bind('EASING.SPRING_STANDARD') forwards;
+  animation-delay: var(--item-delay, 0ms);
+}
+
+/* Entrance animation for list items */
+@keyframes key-item-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(v-bind('animationConfig.apiKeys.itemEntranceDistancePx + "px"')) scale(0.98);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 🎨 Pallete's micro-UX: Hover lift effect */
+.api-key-item--hovered {
+  transform: translateY(v-bind('"-" + animationConfig.apiKeys.itemHoverLiftPx + "px"')) !important;
+  box-shadow: 0 v-bind('animationConfig.apiKeys.itemHoverShadowY + "px"') v-bind('animationConfig.apiKeys.itemHoverShadowBlur + "px"') v-bind('animationConfig.apiKeys.itemHoverShadowSpread + "px"') v-bind('animationConfig.shadows.light.md');
+  border-color: v-bind('componentStylesConfig.apiKeys.itemHoverBorderColor');
+}
+
+/* 🎨 Pallete's micro-UX: Status indicator styles */
+.api-key-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.api-key-status--active .status-dot {
+  background: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+}
+
+.api-key-status--active.api-key-status--pulse .status-dot {
+  animation: status-pulse v-bind('animationConfig.apiKeys.statusPulseDurationSec + "s"') ease-in-out infinite;
+}
+
+.api-key-status--revoked .status-dot {
+  background: #9ca3af;
+}
+
+.api-key-status--active .status-label {
+  color: #059669;
+}
+
+.api-key-status--revoked .status-label {
+  color: #6b7280;
+}
+
+@keyframes status-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+  }
+}
+
+/* 🎨 Pallete's micro-UX: Revoked key visual state */
+.api-key-item--revoked {
+  opacity: 0.7;
+  background: v-bind('componentStylesConfig.apiKeys.revokedItemBackground');
+}
+
+.api-key-item--revoked .api-key-name {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+/* 🎨 Pallete's micro-UX: TransitionGroup animations */
+.api-key-item-enter-active,
+.api-key-item-leave-active {
+  transition: all v-bind('animationConfig.apiKeys.itemTransitionMs + "ms"') v-bind('EASING.SPRING_STANDARD');
+}
+
+.api-key-item-enter-from {
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+}
+
+.api-key-item-leave-to {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.api-key-item-move {
+  transition: transform v-bind('animationConfig.apiKeys.itemTransitionMs + "ms"') v-bind('EASING.SPRING_STANDARD');
 }
 
 .api-key-item {

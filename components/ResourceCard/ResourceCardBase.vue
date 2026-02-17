@@ -25,9 +25,14 @@
       aria-hidden="true"
     />
     <div class="flex items-start">
+      <!-- 🎨 Pallete's micro-UX enhancement: Icon hover bounce effect for delightful interaction -->
       <div
         v-if="icon"
-        class="flex-shrink-0 mr-4"
+        class="flex-shrink-0 mr-4 icon-hover-container"
+        :class="{
+          'icon-hover-container--bounce':
+            isCardHovered && !prefersReducedMotion,
+        }"
       >
         <OptimizedImage
           :src="icon"
@@ -491,6 +496,10 @@ const showNewBadgeParticles = ref(false)
 const newBadgeParticleCount = 8
 const hasShownNewBadgeParticles = ref(false)
 
+// 🎨 Pallete's micro-UX enhancement: Icon hover bounce effect
+// Tracks card hover state for subtle icon bounce animation
+const isCardHovered = ref(false)
+
 // Generate particle styles for new badge burst effect
 const getNewBadgeParticleStyle = (index: number) => {
   const angle = (360 / newBadgeParticleCount) * index
@@ -550,8 +559,9 @@ const calculateTilt = (event: MouseEvent) => {
   tiltY.value = -mouseX * maxTiltY
 }
 
-// Handle mouse enter - start tilting and shine
+// Handle mouse enter - start tilting, shine, and icon bounce
 const handleMouseEnter = () => {
+  isCardHovered.value = true
   if (prefersReducedMotion.value) return
   isTilting.value = true
   isShineActive.value = true
@@ -571,8 +581,9 @@ const handleMouseMove = (event: MouseEvent) => {
   }
 }
 
-// Handle mouse leave - reset tilt and shine
+// Handle mouse leave - reset tilt, shine, and icon bounce
 const handleMouseLeave = () => {
+  isCardHovered.value = false
   isTilting.value = false
   tiltX.value = 0
   tiltY.value = 0
@@ -1340,6 +1351,40 @@ if (typeof useHead === 'function') {
   }
 }
 
+/* 🎨 Pallete's micro-UX enhancement: Icon hover bounce effect ✨
+   Subtle bounce animation on resource icon when card is hovered */
+.icon-hover-container {
+  transition: transform
+    v-bind('animationConfig.iconInteraction.durationMs + "ms"') ease-out;
+}
+
+.icon-hover-container--bounce {
+  animation: icon-bounce v-bind('animationConfig.iconBounce.durationMs + "ms"')
+    ease-in-out;
+}
+
+@keyframes icon-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(
+      v-bind('"-" + animationConfig.iconBounce.amplitudePx + "px"')
+    );
+  }
+  50% {
+    transform: translateY(
+      v-bind('animationConfig.iconBounce.amplitudePx * 0.5 + "px"')
+    );
+  }
+  75% {
+    transform: translateY(
+      v-bind('"-" + animationConfig.iconBounce.amplitudePx * 0.25 + "px"')
+    );
+  }
+}
+
 /* Reduced motion support for viewed badge */
 @media (prefers-reduced-motion: reduce) {
   .viewed-badge--animate,
@@ -1349,6 +1394,11 @@ if (typeof useHead === 'function') {
 
   .viewed-badge--animate::after {
     display: none;
+  }
+
+  /* Disable icon bounce for users who prefer reduced motion */
+  .icon-hover-container--bounce {
+    animation: none;
   }
 }
 </style>
