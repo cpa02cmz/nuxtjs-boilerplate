@@ -1,5 +1,6 @@
 import { readonly, ref, computed, onMounted } from 'vue'
 import { useNuxtApp } from '#app'
+import logger from '~/utils/logger'
 
 export interface ValidationHistoryItem {
   isAccessible: boolean
@@ -39,8 +40,12 @@ export const useResourceHealth = (props: Props) => {
       if (response.success && response.data) {
         healthStatus.value = response.data
       }
-    } catch {
-      // Failed to load health status
+    } catch (error) {
+      // BugFixer: Added error logging for debugging
+      logger.warn('useResourceHealth: Failed to load health status', {
+        resourceId: props.resourceId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      })
     }
   }
 
@@ -54,8 +59,12 @@ export const useResourceHealth = (props: Props) => {
       if (response.success && response.data) {
         healthStatus.value = response.data.healthStatus
       }
-    } catch {
-      // Failed to trigger health check
+    } catch (error) {
+      // BugFixer: Added error logging for debugging
+      logger.warn('useResourceHealth: Failed to trigger health check', {
+        resourceId: props.resourceId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      })
     } finally {
       isChecking.value = false
     }

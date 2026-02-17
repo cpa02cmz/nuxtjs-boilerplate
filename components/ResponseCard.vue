@@ -58,7 +58,12 @@
     </div>
 
     <!-- Palette's micro-UX enhancement: Screen reader announcement 🎨 -->
-    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >
       {{ announcementText }}
     </div>
   </div>
