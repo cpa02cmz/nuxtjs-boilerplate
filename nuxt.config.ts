@@ -341,7 +341,8 @@ export default defineNuxtConfig({
       prerender: true,
     },
     '/submit': {
-      prerender: true,
+      // BroCula: Removed prerender because page has ssr: false - prevents hydration mismatch
+      prerender: false,
     },
     // API routes
     '/api/**': {

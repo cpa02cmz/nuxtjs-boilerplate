@@ -776,7 +776,9 @@ onUnmounted(() => {
   inset: -4px;
   background: rgba(255, 255, 255, 0.4);
   border-radius: 50%;
-  animation: live-pulse-ring 2s ease-out infinite;
+  /* Flexy hates hardcoded 2s! Using animationConfig.liveIndicator.pulseDurationSec */
+  animation: live-pulse-ring
+    v-bind('animationConfig.liveIndicator.pulseDurationSec') ease-out infinite;
 }
 
 .live-indicator__pulse::after {
@@ -785,7 +787,9 @@ onUnmounted(() => {
   inset: 0;
   background: white;
   border-radius: 50%;
-  animation: live-pulse-dot 2s ease-out infinite;
+  /* Flexy hates hardcoded 2s! Using animationConfig.liveIndicator.pulseDurationSec */
+  animation: live-pulse-dot
+    v-bind('animationConfig.liveIndicator.pulseDurationSec') ease-out infinite;
 }
 
 @keyframes live-pulse-ring {
