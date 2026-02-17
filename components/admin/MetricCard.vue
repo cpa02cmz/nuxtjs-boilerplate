@@ -1,9 +1,19 @@
 <template>
   <div
     class="metric-card"
-    :class="`rating-${rating}`"
+    :class="[
+      `rating-${rating}`,
+      {
+        'metric-card--visible': isVisible || prefersReducedMotion,
+        'metric-card--hovered': isHovered && !prefersReducedMotion,
+        'metric-card--rating-changed': isRatingChanged && !prefersReducedMotion,
+      },
+    ]"
+    :style="entranceStyle"
     role="region"
     :aria-label="`${name} metric card`"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
   >
     <div class="metric-header">
       <span class="metric-name">{{ name }}</span>
@@ -36,23 +46,33 @@
       </div>
     </div>
 
-    <!-- Rating Indicator -->
+    <!-- 🎨 Pallete's micro-UX enhancement: Rating Indicator with pulse animation -->
     <div
       class="rating-indicator"
+      :class="{
+        'rating-indicator--pulse': isRatingChanged && !prefersReducedMotion,
+      }"
       aria-hidden="true"
     >
       <div
         v-for="n in 3"
         :key="n"
         class="indicator-dot"
-        :class="{ active: getIndicatorLevel(n) }"
+        :class="{
+          active: getIndicatorLevel(n),
+          'indicator-dot--pulse':
+            getIndicatorLevel(n) && isRatingChanged && !prefersReducedMotion,
+        }"
+        :style="{ '--dot-index': n }"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
+import { animationConfig } from '~/configs/animation.config'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
   name: string
@@ -61,9 +81,50 @@ interface Props {
   p95: number
   rating: string
   description: string
+  /**
+   * 🎨 Pallete's micro-UX: Index for staggered entrance animations
+   * Determines the delay before this card animates in
+   * @default 0
+   */
+  index?: number
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  index: 0,
+})
+
+// 🎨 Pallete's micro-UX enhancement: Animation state
+const isVisible = ref(false)
+const prefersReducedMotion = ref(false)
+const isHovered = ref(false)
+const previousRating = ref(props.rating)
+const isRatingChanged = ref(false)
+const displayValue = ref(props.value)
+
+// 🎨 Pallete's micro-UX enhancement: Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// 🎨 Pallete's micro-UX enhancement: Calculate entrance delay
+const entranceDelay = computed(() => {
+  if (prefersReducedMotion.value) return 0
+  const delay = Math.min(
+    props.index * animationConfig.metricCard.staggerDelayMs,
+    animationConfig.metricCard.maxStaggerDelayMs
+  )
+  return delay
+})
+
+// 🎨 Pallete's micro-UX enhancement: Entrance style
+const entranceStyle = computed(() => {
+  if (prefersReducedMotion.value) return {}
+  return {
+    '--entrance-delay': `${entranceDelay.value}ms`,
+  }
+})
 
 // Computed
 const ratingText = computed(() => {
@@ -76,7 +137,7 @@ const ratingText = computed(() => {
 })
 
 const formattedValue = computed(() => {
-  return formatValue(props.value)
+  return formatValue(displayValue.value)
 })
 
 const unit = computed(() => {
@@ -92,6 +153,18 @@ const unit = computed(() => {
       return ''
   }
 })
+
+// 🎨 Pallete's micro-UX enhancement: Handle hover with haptic
+const handleMouseEnter = () => {
+  isHovered.value = true
+  if (!prefersReducedMotion.value) {
+    hapticLight()
+  }
+}
+
+const handleMouseLeave = () => {
+  isHovered.value = false
+}
 
 // Methods
 function formatValue(val: number): string {
@@ -113,6 +186,47 @@ function getIndicatorLevel(level: number): boolean {
   }
   return level <= (levels[props.rating] || 1)
 }
+
+// 🎨 Pallete's micro-UX enhancement: Watch for rating changes
+watch(
+  () => props.rating,
+  (newRating, oldRating) => {
+    if (newRating !== oldRating && isVisible.value) {
+      isRatingChanged.value = true
+      setTimeout(() => {
+        isRatingChanged.value = false
+      }, animationConfig.metricCard.ratingChangeDurationMs)
+    }
+    previousRating.value = newRating
+  }
+)
+
+// 🎨 Pallete's micro-UX enhancement: Animate value changes
+watch(
+  () => props.value,
+  (newValue, oldValue) => {
+    if (
+      newValue !== oldValue &&
+      isVisible.value &&
+      !prefersReducedMotion.value
+    ) {
+      // Simple number animation could be implemented here
+      displayValue.value = newValue
+    } else {
+      displayValue.value = newValue
+    }
+  }
+)
+
+// 🎨 Pallete's micro-UX enhancement: Lifecycle hooks
+onMounted(() => {
+  prefersReducedMotion.value = checkReducedMotion()
+
+  // Trigger entrance animation
+  setTimeout(() => {
+    isVisible.value = true
+  }, animationConfig.metricCard.staggerDelayMs)
+})
 </script>
 
 <style scoped>
@@ -124,9 +238,45 @@ function getIndicatorLevel(level: number): boolean {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  transition: all 0.2s ease;
+  transition: all v-bind('animationConfig.metricCard.entranceDurationMs + "ms"')
+    ease;
   position: relative;
   overflow: hidden;
+  opacity: 0;
+  transform: translateY(
+    v-bind('animationConfig.metricCard.entranceDistancePx + "px"')
+  );
+  transition-delay: var(--entrance-delay, 0ms);
+}
+
+.metric-card--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Hover effects */
+.metric-card--hovered {
+  transform: translateY(
+    v-bind('"-" + animationConfig.metricCard.hoverLiftPx + "px"')
+  );
+  box-shadow: 0 v-bind('animationConfig.metricCard.hoverShadowSpreadPx + "px"')
+    v-bind('animationConfig.metricCard.hoverShadowSpreadPx * 2 + "px"') -1px
+    rgba(0, 0, 0, 0.1);
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Rating change flash */
+.metric-card--rating-changed {
+  animation: rating-flash
+    v-bind('animationConfig.metricCard.ratingChangeDurationMs + "ms"') ease-out;
+}
+
+@keyframes rating-flash {
+  0% {
+    background: v-bind('animationConfig.metricCard.goodRatingColor + "20"');
+  }
+  100% {
+    background: white;
+  }
 }
 
 .metric-card::before {
@@ -249,36 +399,102 @@ function getIndicatorLevel(level: number): boolean {
 }
 
 .indicator-dot {
-  width: 6px;
-  height: 6px;
+  width: v-bind('animationConfig.metricCard.indicatorDotSizePx + "px"');
+  height: v-bind('animationConfig.metricCard.indicatorDotSizePx + "px"');
   border-radius: 50%;
   background: #e5e7eb;
-  transition: background 0.2s ease;
+  transition: all
+    v-bind('animationConfig.metricCard.valueUpdateDurationMs + "ms"') ease;
 }
 
+/* 🎨 Pallete's micro-UX enhancement: Active indicator dots with color */
 .metric-card.rating-good .indicator-dot.active {
-  background: #10b981;
+  background: v-bind('animationConfig.metricCard.goodRatingColor');
 }
 
 .metric-card.rating-needs-improvement .indicator-dot.active {
-  background: #f59e0b;
+  background: v-bind('animationConfig.metricCard.warningRatingColor');
 }
 
 .metric-card.rating-poor .indicator-dot.active {
-  background: #ef4444;
+  background: v-bind('animationConfig.metricCard.poorRatingColor');
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Pulse animation on rating change */
+.indicator-dot--pulse {
+  animation: indicator-pulse
+    v-bind('animationConfig.metricCard.pulseDurationSec') ease-in-out;
+  animation-delay: calc(var(--dot-index) * 100ms);
+}
+
+@keyframes indicator-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(v-bind('animationConfig.metricCard.pulseScale'));
+    opacity: 0.8;
+  }
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Value update animation */
+.metric-value {
+  transition: transform
+    v-bind('animationConfig.metricCard.valueUpdateDurationMs + "ms"') ease;
+}
+
+.metric-card--rating-changed .metric-value {
+  animation: value-pop
+    v-bind('animationConfig.metricCard.valueUpdateDurationMs + "ms"') ease-out;
+}
+
+@keyframes value-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(v-bind('animationConfig.metricCard.valueUpdateScale'));
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .metric-card {
     transition: none;
+    opacity: 1;
+    transform: none;
   }
 
   .metric-card:hover {
     transform: none;
   }
 
+  .metric-card--hovered {
+    transform: none;
+  }
+
   .indicator-dot {
     transition: none;
+  }
+
+  .indicator-dot--pulse {
+    animation: none;
+  }
+
+  .metric-value {
+    transition: none;
+  }
+
+  .metric-card--rating-changed .metric-value {
+    animation: none;
+  }
+
+  .metric-card--rating-changed {
+    animation: none;
   }
 }
 </style>

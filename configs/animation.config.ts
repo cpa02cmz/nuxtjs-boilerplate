@@ -4239,6 +4239,59 @@ export const animationConfig = {
       process.env.RESOURCE_DETAILS_PROGRESS_START || '#3b82f6',
     progressGradientEnd: process.env.RESOURCE_DETAILS_PROGRESS_END || '#8b5cf6',
   },
+
+  // 🎨 Pallete's micro-UX enhancement: Metric Card Animations
+  // Performance dashboard metric cards with delightful interactions
+  metricCard: {
+    // Pulse animation duration for rating indicator dots (ms)
+    pulseDurationMs: parseInt(
+      process.env.METRIC_CARD_PULSE_DURATION_MS || '1200'
+    ),
+    // CSS duration string for v-bind
+    pulseDurationSec: `${parseInt(process.env.METRIC_CARD_PULSE_DURATION_MS || '1200') / 1000}s`,
+    // Pulse scale factor for indicator dots
+    pulseScale: parseFloat(process.env.METRIC_CARD_PULSE_SCALE || '1.4'),
+    // Delay between staggered card entrances (ms)
+    staggerDelayMs: parseInt(process.env.METRIC_CARD_STAGGER_DELAY_MS || '80'),
+    // Maximum stagger delay to prevent long waits (ms)
+    maxStaggerDelayMs: parseInt(
+      process.env.METRIC_CARD_MAX_STAGGER_MS || '600'
+    ),
+    // Card entrance animation duration (ms)
+    entranceDurationMs: parseInt(process.env.METRIC_CARD_ENTRANCE_MS || '500'),
+    // CSS duration string for entrance animation
+    entranceDurationSec: `${parseInt(process.env.METRIC_CARD_ENTRANCE_MS || '500') / 1000}s`,
+    // Card entrance translate distance (px)
+    entranceDistancePx: parseInt(
+      process.env.METRIC_CARD_ENTRANCE_DISTANCE || '20'
+    ),
+    // Value update animation duration (ms)
+    valueUpdateDurationMs: parseInt(
+      process.env.METRIC_CARD_VALUE_UPDATE_MS || '300'
+    ),
+    // Value update scale effect
+    valueUpdateScale: parseFloat(process.env.METRIC_CARD_VALUE_SCALE || '1.05'),
+    // Hover lift distance (px)
+    hoverLiftPx: parseInt(process.env.METRIC_CARD_HOVER_LIFT || '2'),
+    // Hover shadow spread (px)
+    hoverShadowSpreadPx: parseInt(process.env.METRIC_CARD_HOVER_SHADOW || '6'),
+    // Rating change animation duration (ms)
+    ratingChangeDurationMs: parseInt(
+      process.env.METRIC_CARD_RATING_CHANGE_MS || '400'
+    ),
+    // Good rating color
+    goodRatingColor: process.env.METRIC_CARD_GOOD_COLOR || '#10b981',
+    // Needs improvement rating color
+    warningRatingColor: process.env.METRIC_CARD_WARNING_COLOR || '#f59e0b',
+    // Poor rating color
+    poorRatingColor: process.env.METRIC_CARD_POOR_COLOR || '#ef4444',
+    // Indicator dot size (px)
+    indicatorDotSizePx: parseInt(process.env.METRIC_CARD_DOT_SIZE || '6'),
+    // Active indicator dot size (px)
+    indicatorDotActiveSizePx: parseInt(
+      process.env.METRIC_CARD_DOT_ACTIVE_SIZE || '8'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
