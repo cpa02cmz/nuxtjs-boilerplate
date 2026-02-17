@@ -1428,6 +1428,39 @@ export const animationConfig = {
       process.env.SPINNER_GLOW_RESPECT_REDUCED_MOTION !== 'false',
   },
 
+  // Loading Spinner Dots - Palette's micro-UX delight! 🎨
+  // Animated dots that provide explicit "Loading..." feedback
+  loadingSpinnerDots: {
+    // Animation duration for one complete dot pulse cycle (ms)
+    pulseDurationMs: parseInt(
+      process.env.SPINNER_LOADING_DOTS_PULSE_MS || '900'
+    ),
+    // CSS duration string for v-bind
+    pulseDurationSec: `${parseInt(process.env.SPINNER_LOADING_DOTS_PULSE_MS || '900') / 1000}s`,
+    // Stagger delay between each dot (ms) - creates wave effect
+    staggerDelayMs: parseInt(
+      process.env.SPINNER_LOADING_DOTS_STAGGER_MS || '150'
+    ),
+    // Dot size (px)
+    dotSizePx: parseInt(process.env.SPINNER_LOADING_DOTS_SIZE_PX || '5'),
+    // Dot color (gray-400)
+    dotColor: process.env.SPINNER_LOADING_DOTS_COLOR || '#9ca3af',
+    // Active dot color (gray-600) - brighter when pulsing
+    dotActiveColor: process.env.SPINNER_LOADING_DOTS_ACTIVE_COLOR || '#4b5563',
+    // Spacing between dots (px)
+    dotGapPx: parseInt(process.env.SPINNER_LOADING_DOTS_GAP_PX || '3'),
+    // Gap between text and dots (px)
+    gapPx: parseInt(process.env.SPINNER_LOADING_TEXT_GAP_PX || '6'),
+    // Font size for "Loading" text (px)
+    fontSizePx: parseInt(process.env.SPINNER_LOADING_FONT_SIZE_PX || '12'),
+    // Letter spacing for text (px)
+    letterSpacingPx: parseFloat(
+      process.env.SPINNER_LOADING_LETTER_SPACING_PX || '0.5'
+    ),
+    // Top margin from spinner (px)
+    marginTopPx: parseInt(process.env.SPINNER_LOADING_MARGIN_TOP_PX || '12'),
+  },
+
   // Alternative Suggestions Animations - Palette's micro-UX delight!
   // Staggered card entrance with subtle hover effects
   alternativeSuggestions: {
