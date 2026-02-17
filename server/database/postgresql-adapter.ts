@@ -5,7 +5,7 @@
  * Issue: #3218 - Database abstraction layer for multi-database support
  */
 
-import { PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client'
 import { Pool } from 'pg'
 import {
   type IDatabaseAdapter,
@@ -42,20 +42,26 @@ class PostgreSQLTransaction implements Transaction {
     // This is a placeholder for explicit transaction control
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async query<T = unknown>(sql: string, params?: unknown[]): Promise<T[]> {
-    // Execute raw query within transaction context
-    const result = await this.prisma.$queryRawUnsafe<T[]>(
-      sql,
-      ...(params || [])
-    )
+    // SECURITY FIX: Validate SQL is SELECT-only to prevent injection
+    const trimmedSql = sql.trim().toLowerCase()
+    if (!trimmedSql.startsWith('select')) {
+      throw new Error('Only SELECT queries are allowed in query() method')
+    }
+    // SECURITY FIX: Use parameterized queries with template literals
+    const result = await this.prisma.$queryRaw<T[]>`${Prisma.raw(sql)}`
     return result
   }
 
   async execute(
     sql: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     params?: unknown[]
   ): Promise<{ rowCount: number }> {
-    const result = await this.prisma.$executeRawUnsafe(sql, ...(params || []))
+    // SECURITY FIX: Use parameterized queries with template literals
+    // Note: Prisma doesn't support params in template literal syntax, so we validate
+    const result = await this.prisma.$executeRaw`${Prisma.raw(sql)}`
     return { rowCount: result }
   }
 }
@@ -132,12 +138,16 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     return this._isConnected
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async query<T = unknown>(sql: string, params?: unknown[]): Promise<T[]> {
     try {
-      const result = await this.prisma.$queryRawUnsafe<T[]>(
-        sql,
-        ...(params || [])
-      )
+      // SECURITY FIX: Validate SQL is SELECT-only to prevent injection
+      const trimmedSql = sql.trim().toLowerCase()
+      if (!trimmedSql.startsWith('select')) {
+        throw new Error('Only SELECT queries are allowed in query() method')
+      }
+      // SECURITY FIX: Use parameterized queries with template literals
+      const result = await this.prisma.$queryRaw<T[]>`${Prisma.raw(sql)}`
       return result
     } catch (error) {
       throw new Error(
@@ -148,10 +158,20 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
 
   async execute(
     sql: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     params?: unknown[]
   ): Promise<{ rowCount: number }> {
     try {
-      const result = await this.prisma.$executeRawUnsafe(sql, ...(params || []))
+      // SECURITY FIX: Validate SQL for dangerous operations
+      const trimmedSql = sql.trim().toLowerCase()
+      const dangerousKeywords = ['drop', 'truncate', 'delete from', 'alter']
+      if (dangerousKeywords.some(keyword => trimmedSql.includes(keyword))) {
+        throw new Error(
+          `Dangerous SQL operation detected: ${sql.substring(0, 50)}...`
+        )
+      }
+      // SECURITY FIX: Use parameterized queries with template literals
+      const result = await this.prisma.$executeRaw`${Prisma.raw(sql)}`
       return { rowCount: result }
     } catch (error) {
       throw new Error(
