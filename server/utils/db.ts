@@ -190,11 +190,22 @@ if (process.env.NODE_ENV !== 'production') {
 /**
  * Health check function to verify database connectivity
  * Returns true if database is accessible, false otherwise
+ * Issue #3306 fix - Added timeout to prevent indefinite hang
  */
 export async function checkDatabaseHealth(): Promise<boolean> {
+  const HEALTH_CHECK_TIMEOUT = 5000 // 5 seconds
+
   try {
-    // Simple query to check connection
-    await prisma.$queryRaw`SELECT 1`
+    // Simple query to check connection with timeout
+    const healthCheck = prisma.$queryRaw`SELECT 1`
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new Error('Health check timeout')),
+        HEALTH_CHECK_TIMEOUT
+      )
+    )
+
+    await Promise.race([healthCheck, timeout])
     return true
   } catch (error) {
     console.error(`${LOG_PREFIX} Health check failed:`, error)

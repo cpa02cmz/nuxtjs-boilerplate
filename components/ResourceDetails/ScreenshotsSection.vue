@@ -213,7 +213,7 @@ watch(
       announcementText.value = `${newLength} screenshots available`
       setTimeout(() => {
         announcementText.value = ''
-      }, 2000)
+      }, animationConfig.screenshotsSection.announcementClearDelayMs)
     }
   }
 )

@@ -383,6 +383,7 @@ import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { hapticLight, hapticMedium } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   resources?: Resource[]

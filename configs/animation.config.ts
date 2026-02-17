@@ -1498,6 +1498,10 @@ export const animationConfig = {
     announceDelayMs: parseInt(
       process.env.LIMITATIONS_ANNOUNCE_DELAY_MS || '500'
     ),
+    // Flexy hates hardcoded 3000! Screen reader announcement clear delay (ms)
+    announcementClearDelayMs: parseInt(
+      process.env.LIMITATIONS_ANNOUNCEMENT_CLEAR_MS || '3000'
+    ),
   },
 
   // Screenshots Section Micro-UX - Pallete's delightful enhancement! 🎨
@@ -1526,6 +1530,10 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.SCREENSHOTS_RESPECT_REDUCED_MOTION !== 'false',
+    // Flexy hates hardcoded 2000! Screen reader announcement clear delay (ms)
+    announcementClearDelayMs: parseInt(
+      process.env.SCREENSHOTS_ANNOUNCEMENT_CLEAR_MS || '2000'
+    ),
   },
 
   // Similar Resources Micro-UX - Palette's delightful enhancement! ✨
@@ -3313,6 +3321,10 @@ export const animationConfig = {
         process.env.ANALYTICS_MINI_BAR_FALLBACK_HEIGHT || '50'
       ),
     },
+    // Flexy hates hardcoded 3000! Screen reader announcement clear delay (ms)
+    announcementClearDelayMs: parseInt(
+      process.env.ANALYTICS_ANNOUNCEMENT_CLEAR_MS || '3000'
+    ),
   },
 
   // Search Analytics Animations - Flexy hates hardcoded timing values!

@@ -7,6 +7,15 @@ import {
 } from '~/server/utils/api-response'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
+/**
+ * Sanitizes query parameter to prevent prototype pollution
+ * Only allows alphanumeric characters, hyphens, and underscores
+ * Issue #3303 fix - Security: Query parameter prototype pollution risk
+ */
+const isValidEventFilter = (filter: string): boolean => {
+  return /^[a-zA-Z0-9_-]+$/.test(filter)
+}
+
 export default defineEventHandler(async event => {
   try {
     // Check authentication
@@ -31,7 +40,8 @@ export default defineEventHandler(async event => {
     }
 
     // Filter by event type
-    if (eventFilter) {
+    // Issue #3303 fix - Security: Sanitize eventFilter to prevent prototype pollution
+    if (eventFilter && isValidEventFilter(eventFilter)) {
       filteredWebhooks = filteredWebhooks.filter(w =>
         w.events.includes(eventFilter)
       )

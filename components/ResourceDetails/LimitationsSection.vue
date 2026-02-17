@@ -153,7 +153,7 @@ const announceLimitations = () => {
     announcementText.value = `${count} limitation${count !== 1 ? 's' : ''} listed`
     setTimeout(() => {
       announcementText.value = ''
-    }, 3000)
+    }, animationConfig.limitations.announcementClearDelayMs)
   }
 }
 

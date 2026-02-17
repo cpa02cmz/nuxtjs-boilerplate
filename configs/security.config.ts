@@ -135,10 +135,14 @@ export const securityConfig = {
     keyLength: parseInt(process.env.CRYPTO_KEY_LENGTH || '32'),
 
     // Salt for scrypt key derivation - must be set explicitly, no default for security
-    salt: (() => {
+    // BroCula fix: Use getter to defer check until actually accessed
+    // This prevents errors during module initialization in browser/client-side
+    get salt() {
       const salt = process.env.CRYPTO_SALT
-      // Skip check during build process or when explicitly disabled
+      // Skip check during build process, client-side, or when explicitly disabled
+      const isClient = typeof window !== 'undefined'
       const skipCheck =
+        isClient ||
         process.env.SKIP_CRYPTO_CHECK === 'true' ||
         process.env.NUXT_BUILD === 'true' ||
         process.env.npm_lifecycle_event === 'build'
@@ -147,9 +151,9 @@ export const securityConfig = {
           'CRYPTO_SALT environment variable must be set in production for secure encryption. Generate a secure salt using crypto.randomBytes(32).toString("hex")'
         )
       }
-      // In non-production environments, use a development-only salt
+      // In non-production environments or client-side, use a development-only salt
       return salt || 'dev-salt-not-for-production-use-only'
-    })(),
+    },
 
     // Encryption algorithm
     algorithm: process.env.CRYPTO_ALGORITHM || 'aes-256-gcm',
