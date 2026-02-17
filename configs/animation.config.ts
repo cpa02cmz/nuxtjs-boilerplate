@@ -3218,6 +3218,24 @@ export const animationConfig = {
         process.env.RESOURCE_CARD_ENTRANCE_EASING ||
         'cubic-bezier(0.16, 1, 0.3, 1)',
     },
+    // 🎨 Pallete's micro-UX: 3D Hover Tilt Effect configuration
+    // Adds subtle parallax depth when hovering over cards
+    tilt: {
+      // Maximum rotation angle in degrees (creates the tilt effect)
+      maxTiltDeg: parseFloat(process.env.RESOURCE_CARD_TILT_MAX_DEG || '10'),
+      // CSS perspective value for 3D effect (lower = more dramatic)
+      perspectivePx: parseInt(
+        process.env.RESOURCE_CARD_TILT_PERSPECTIVE_PX || '1000'
+      ),
+      // Scale multiplier when hovering (subtle zoom effect)
+      hoverScale: parseFloat(
+        process.env.RESOURCE_CARD_TILT_HOVER_SCALE || '1.02'
+      ),
+      // Opacity of the shine gradient overlay (0-1)
+      shineOpacity: parseFloat(
+        process.env.RESOURCE_CARD_TILT_SHINE_OPACITY || '0.15'
+      ),
+    },
   },
 
   // Resource Comments Animations
