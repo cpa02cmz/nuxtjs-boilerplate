@@ -4,12 +4,42 @@
     @keydown="handleKeydown"
   >
     <div class="flex items-center justify-between mb-3">
-      <legend class="text-sm font-medium text-gray-900">
-        {{ label }}
-      </legend>
+      <button
+        v-if="collapsible"
+        type="button"
+        class="flex items-center justify-between w-full text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded p-1 -ml-1"
+        :aria-expanded="isExpanded"
+        :aria-controls="contentId"
+        @click="toggleExpanded"
+      >
+        <legend class="text-sm font-medium text-gray-900">
+          {{ label }}
+        </legend>
+        <svg
+          class="w-4 h-4 text-gray-500 transition-transform duration-200 group-hover:text-gray-700"
+          :class="{ 'rotate-180': isExpanded }"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+      <template v-else>
+        <legend class="text-sm font-medium text-gray-900">
+          {{ label }}
+        </legend>
+      </template>
       <div
-        v-if="options.length > 1"
+        v-if="options.length > 1 && (!collapsible || isExpanded)"
         class="flex items-center gap-2"
+        :class="{ 'mt-2': collapsible }"
       >
         <span
           class="text-xs text-gray-500 transition-all duration-200"
@@ -42,11 +72,17 @@
       </div>
     </div>
     <div
-      :id="`${id}-checkbox-group`"
+      :id="contentId"
       role="group"
       :aria-label="ariaLabel"
-      class="space-y-1"
-      :class="scrollableClass"
+      class="space-y-1 transition-all duration-200 ease-out overflow-hidden"
+      :class="[
+        scrollableClass,
+        {
+          'max-h-0 opacity-0': collapsible && !isExpanded,
+          'max-h-96 opacity-100': !collapsible || isExpanded,
+        },
+      ]"
     >
       <div
         v-for="option in options"
@@ -163,6 +199,8 @@ interface Props {
   showCount?: boolean
   scrollable?: boolean
   getCountForOption?: (option: string) => number
+  collapsible?: boolean
+  defaultExpanded?: boolean
 }
 
 // Check for reduced motion preference
@@ -182,6 +220,8 @@ const props = withDefaults(defineProps<Props>(), {
   showCount: true,
   scrollable: true,
   getCountForOption: undefined,
+  collapsible: false,
+  defaultExpanded: true,
 })
 
 const emit = defineEmits<Emits>()
@@ -190,6 +230,10 @@ const emit = defineEmits<Emits>()
 const recentlySelected = ref<string | null>(null)
 const recentlyDeselected = ref<string | null>(null)
 const animationTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+
+// Collapsible section state - accessibility enhancement for issue #3305
+const isExpanded = ref(props.defaultExpanded)
+const contentId = computed(() => `${props.id}-checkbox-group`)
 
 // Hover ripple state - Palette's micro-UX enhancement!
 const hoverRipple = ref<{
@@ -270,6 +314,11 @@ const handleMouseLeave = (option: string) => {
       hoverRipple.value.option = null
     }
   }, animationConfig.cssTransitions.fastMs)
+}
+
+// Toggle collapsible section - accessibility enhancement for issue #3305
+const toggleExpanded = () => {
+  isExpanded.value = !isExpanded.value
 }
 
 const toggleOption = (option: string) => {

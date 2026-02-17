@@ -193,7 +193,8 @@ if (process.env.NODE_ENV !== 'production') {
  * Issue #3306 fix - Added timeout to prevent indefinite hang
  */
 export async function checkDatabaseHealth(): Promise<boolean> {
-  const HEALTH_CHECK_TIMEOUT = 5000 // 5 seconds
+  // Flexy hates hardcoded 5000! Using databaseConfig.healthCheck.timeoutMs
+  const HEALTH_CHECK_TIMEOUT = databaseConfig.healthCheck.timeoutMs
 
   try {
     // Simple query to check connection with timeout
