@@ -2,7 +2,11 @@
   <ClientOnly>
     <Teleport to="body">
       <!-- Visual confetti animation - hidden from screen readers -->
-      <div v-if="isActive" class="confetti-container" aria-hidden="true">
+      <div
+        v-if="isActive"
+        class="confetti-container"
+        aria-hidden="true"
+      >
         <div
           v-for="(particle, index) in particles"
           :key="index"
@@ -12,7 +16,12 @@
       </div>
       <!-- Pallete's micro-UX enhancement: Screen reader announcement for celebration -->
       <!-- Ensures all users experience the delight, even without visual animation -->
-      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        class="sr-only"
+      >
         {{ announcementText }}
       </div>
     </Teleport>
