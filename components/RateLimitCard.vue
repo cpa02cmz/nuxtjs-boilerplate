@@ -70,10 +70,7 @@
           />
         </svg>
       </div>
-      <h4
-        :id="titleId"
-        class="font-semibold text-gray-800 capitalize"
-      >
+      <h4 :id="titleId" class="font-semibold text-gray-800 capitalize">
         {{ type }}
       </h4>
     </div>
@@ -82,7 +79,8 @@
       <span
         class="text-2xl font-bold text-gray-900"
         :aria-label="`${limit} ${unit}`"
-      >{{ limit }}</span>
+        >{{ limit }}</span
+      >
     </div>
 
     <p
@@ -93,12 +91,7 @@
     </p>
 
     <!-- Palette's micro-UX: Screen reader announcement for interactions -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -192,12 +185,28 @@ onUnmounted(() => {
   }
 })
 
+// Flexy hates hardcoded values! Using animationConfig for all durations 🧩
 const animationStyle = computed(() => {
   if (prefersReducedMotion.value || props.delay === undefined) return {}
   return {
     animationDelay: `${props.delay * 100}ms`,
   }
 })
+
+// Flexy hates hardcoded CSS durations! Using config values 🧩
+const cardTransitionDuration = computed(
+  () => animationConfig.rateLimitCard.transitionSec
+)
+const iconTransitionDuration = computed(
+  () => animationConfig.rateLimitCard.iconTransitionSec
+)
+const iconPulseDuration = computed(
+  () => animationConfig.rateLimitCard.iconPulseSec
+)
+const glowTransitionDuration = computed(
+  () => animationConfig.rateLimitCard.glowTransitionSec
+)
+const fadeInDuration = computed(() => animationConfig.rateLimitCard.fadeInSec)
 
 // Palette's micro-UX enhancement: Interaction handlers with haptic feedback
 const handleMouseEnter = () => {
@@ -244,7 +253,8 @@ const handleKeydown = (event: KeyboardEvent) => {
   border-radius: 0.5rem;
   border: 1px solid #e5e7eb;
   padding: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Flexy hates hardcoded 0.3s! Using v-bind with animationConfig */
+  transition: all v-bind(cardTransitionDuration) cubic-bezier(0.4, 0, 0.2, 1);
   cursor: default;
   outline: none;
   overflow: hidden;
@@ -280,12 +290,14 @@ const handleKeydown = (event: KeyboardEvent) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s ease-out;
+  /* Flexy hates hardcoded 0.3s! Using v-bind with animationConfig */
+  transition: transform v-bind(iconTransitionDuration) ease-out;
 }
 
 /* Palette's micro-UX enhancement: Icon pulse on hover */
 .icon-container.icon-pulse {
-  animation: icon-pulse 0.6s ease-in-out;
+  /* Flexy hates hardcoded 0.6s! Using v-bind with animationConfig */
+  animation: icon-pulse v-bind(iconPulseDuration) ease-in-out;
 }
 
 @keyframes icon-pulse {
@@ -308,7 +320,8 @@ const handleKeydown = (event: KeyboardEvent) => {
     transparent 70%
   );
   opacity: 0;
-  transition: opacity 0.3s ease-out;
+  /* Flexy hates hardcoded 0.3s! Using v-bind with animationConfig */
+  transition: opacity v-bind(glowTransitionDuration) ease-out;
   pointer-events: none;
 }
 
@@ -330,7 +343,8 @@ const handleKeydown = (event: KeyboardEvent) => {
 
 .animate-fade-in {
   opacity: 0;
-  animation: fade-in 0.4s ease-out forwards;
+  /* Flexy hates hardcoded 0.4s! Using v-bind with animationConfig */
+  animation: fade-in v-bind(fadeInDuration) ease-out forwards;
 }
 
 /* Palette's micro-UX enhancement: Screen reader only text */
