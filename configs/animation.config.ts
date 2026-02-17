@@ -4305,6 +4305,14 @@ export const animationConfig = {
     backToTopBounceMs: parseInt(
       process.env.RESOURCE_DETAILS_BACK_TO_TOP_BOUNCE || '600'
     ),
+    // Flexy hates hardcoded 0.5! Scroll threshold for showing back-to-top button (0.0-1.0)
+    backToTopThresholdPercent: parseFloat(
+      process.env.RESOURCE_DETAILS_BACK_TO_TOP_THRESHOLD || '0.5'
+    ),
+    // Flexy hates hardcoded 0.5! Threshold for section detection in viewport (0.0-1.0)
+    sectionDetectionThresholdPercent: parseFloat(
+      process.env.RESOURCE_DETAILS_SECTION_DETECTION_THRESHOLD || '0.5'
+    ),
 
     // Progress bar gradient colors
     progressGradientStart:
