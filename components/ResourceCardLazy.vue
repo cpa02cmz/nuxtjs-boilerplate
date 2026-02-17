@@ -75,6 +75,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { hapticConfig } from '~/configs/haptic.config'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   title: string
@@ -113,7 +114,8 @@ const prefersReducedMotion = ref(false)
 // Intersection observer for lazy loading
 const { isIntersecting, isLoaded, observe } = useIntersectionObserver({
   rootMargin: '100px', // Start loading 100px before it comes into view
-  threshold: 0.1, // Trigger when 10% of the element is visible
+  // Flexy hates hardcoded 0.1! Using uiConfig.intersectionObserver.threshold
+  threshold: uiConfig.intersectionObserver.threshold,
 })
 
 // Check for reduced motion preference
