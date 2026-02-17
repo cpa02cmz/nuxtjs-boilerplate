@@ -1500,6 +1500,9 @@ export const contentConfig = {
       'No submissions found matching your criteria.',
     actions: {
       review: process.env.CONTENT_REVIEW_ACTION_REVIEW || 'Review',
+      // BugFixer: Added missing quick actions to fix TypeScript errors
+      quickApprove: process.env.CONTENT_REVIEW_QUICK_APPROVE || 'Quick Approve',
+      quickReject: process.env.CONTENT_REVIEW_QUICK_REJECT || 'Quick Reject',
     },
     labels: {
       category: process.env.CONTENT_REVIEW_LABEL_CATEGORY || 'Category:',

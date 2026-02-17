@@ -628,6 +628,13 @@ export const uiConfig = {
       process.env.NUMBER_ABBREVIATION_DECIMALS || '1'
     ),
   },
+
+  // Accessibility Settings - BugFixer: Added to fix TypeScript errors
+  accessibility: {
+    announcementDurationMs: parseInt(
+      process.env.ACCESSIBILITY_ANNOUNCEMENT_DURATION || '3000'
+    ),
+  },
 } as const
 
 export type UiConfig = typeof uiConfig
