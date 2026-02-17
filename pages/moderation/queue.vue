@@ -412,7 +412,8 @@ onUnmounted(() => {
   bottom: 1rem;
   right: 1rem;
   z-index: 40;
-  animation: hint-slide-in 0.3s ease-out;
+  animation: hint-slide-in
+    v-bind('animationConfig.moderationQueue.hintSlideInDurationSec') ease-out;
 }
 
 @keyframes hint-slide-in {

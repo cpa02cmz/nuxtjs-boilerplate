@@ -759,7 +759,7 @@ useHead({
   opacity: 0;
   transform: translateY(20px);
   animation: fade-in
-    v-bind('animationConfig.developerPage.sectionEnterDurationSec') ease-out
+    v-bind('animationConfig.developerPage.sectionEntranceDurationSec') ease-out
     forwards;
 }
 
