@@ -18,6 +18,9 @@ const baseConfig: UserConfig = {
       '#build': path.resolve(__dirname, 'test-mocks/nuxt-imports.ts'),
     },
   },
+  esbuild: {
+    tsconfigRaw: require('./tsconfig.test.json'),
+  },
 }
 
 import { testTimingConfig } from './configs/test-timing.config'
