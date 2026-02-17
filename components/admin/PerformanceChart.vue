@@ -55,8 +55,16 @@
           x2="0%"
           y2="100%"
         >
-          <stop offset="0%" :stop-color="chartColor" stop-opacity="0.3" />
-          <stop offset="100%" :stop-color="chartColor" stop-opacity="0.05" />
+          <stop
+            offset="0%"
+            :stop-color="chartColor"
+            stop-opacity="0.3"
+          />
+          <stop
+            offset="100%"
+            :stop-color="chartColor"
+            stop-opacity="0.05"
+          />
         </linearGradient>
       </defs>
 
@@ -172,7 +180,10 @@
     </div>
 
     <!-- X-Axis Labels -->
-    <div v-if="chartData.length > 0 && !isLoading" class="x-axis-labels">
+    <div
+      v-if="chartData.length > 0 && !isLoading"
+      class="x-axis-labels"
+    >
       <span
         v-for="(label, index) in xAxisLabels"
         :key="`label-${index}`"
@@ -203,7 +214,10 @@
         role="tooltip"
       >
         <div class="tooltip-header">
-          <span class="tooltip-metric" :style="{ color: chartColor }">{{
+          <span
+            class="tooltip-metric"
+            :style="{ color: chartColor }"
+          >{{
             metricName
           }}</span>
           <span class="tooltip-time">{{ hoveredPoint.label }}</span>
@@ -245,7 +259,12 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ announcementText }}
     </div>
   </div>
