@@ -30,7 +30,7 @@ export default defineEventHandler(async event => {
     // Validate range
     const validRanges = performanceDashboardConfig.dashboard.timeRanges.map(
       r => r.hours
-    )
+    ) as number[]
     if (!validRanges.includes(rangeHours)) {
       throw createError({
         statusCode: 400,
@@ -99,7 +99,7 @@ export default defineEventHandler(async event => {
 
 // Calculate Web Vitals summary from raw metrics
 function calculateWebVitalsSummary(
-  metrics: Array<{ metricName: string; value: number; rating?: string }>
+  metrics: Array<{ metricName: string; value: number; rating?: string | null }>
 ): WebVitalsSummary {
   const webVitalNames = ['LCP', 'INP', 'CLS', 'FCP', 'TTFB']
   const summary = {} as WebVitalsSummary
@@ -192,7 +192,7 @@ function transformTimeSeries(
 
 // Calculate API performance metrics
 function calculateApiPerformance(
-  metrics: Array<{ value: number; metadata?: Record<string, unknown> }>
+  metrics: Array<{ value: number; metadata?: Record<string, unknown> | null }>
 ): {
   avgResponseTime: number
   p95ResponseTime: number
