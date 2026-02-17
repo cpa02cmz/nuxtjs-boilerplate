@@ -8,12 +8,19 @@ import logger from '~/utils/logger'
  * Database health check plugin
  * Validates database connectivity during server startup
  * Fails fast with clear error messages if database is unreachable
+ * BUGFIXER FIX #3471: Added startup timeout to prevent indefinite blocking
  */
 export default defineNitroPlugin(async () => {
   const LOG_PREFIX = databaseConfig.logging.prefix
   const MAX_RETRIES = databaseConfig.retries.maxAttempts
   const INITIAL_RETRY_DELAY_MS = timeConfig.retry.baseDelayMs
   const MAX_RETRY_DELAY_MS = timeConfig.retry.maxDelayMs
+
+  // BUGFIXER FIX #3471: Add startup timeout to prevent indefinite blocking
+  // This ensures server can start even if database is slow/unresponsive
+  const STARTUP_TIMEOUT_MS = parseInt(
+    process.env.DB_STARTUP_TIMEOUT_MS || '30000'
+  ) // 30 second default
 
   /**
    * Sleep for specified milliseconds
@@ -79,10 +86,34 @@ export default defineNitroPlugin(async () => {
     return
   }
 
-  const isConnected = await validateDatabaseConnection()
+  // BUGFIXER FIX #3471: Wrap connection validation in timeout to prevent blocking
+  // This ensures server startup is not indefinitely delayed by database issues
+  let isConnected: boolean
+  try {
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => {
+        reject(
+          new Error(
+            `Database health check timed out after ${STARTUP_TIMEOUT_MS}ms`
+          )
+        )
+      }, STARTUP_TIMEOUT_MS)
+    })
+
+    // Race between connection validation and timeout
+    isConnected = await Promise.race([
+      validateDatabaseConnection(),
+      timeoutPromise,
+    ])
+  } catch (timeoutError) {
+    logger.error(
+      `${LOG_PREFIX} ${timeoutError instanceof Error ? timeoutError.message : 'Database health check timeout'}`
+    )
+    isConnected = false
+  }
 
   if (!isConnected) {
-    const errorMessage = `Failed to connect to database after ${MAX_RETRIES} attempts. Please check your DATABASE_URL environment variable and ensure the database is accessible.`
+    const errorMessage = `Failed to connect to database after ${MAX_RETRIES} attempts (timeout: ${STARTUP_TIMEOUT_MS}ms). Please check your DATABASE_URL environment variable and ensure the database is accessible.`
     logger.error(`${LOG_PREFIX} ${errorMessage}`)
 
     // In production, fail fast to prevent serving requests without database
