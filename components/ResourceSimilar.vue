@@ -89,6 +89,38 @@
             :style="getSpotlightStyle(index)"
             aria-hidden="true"
           />
+          <!-- 🎨 Pallete's micro-UX enhancement: Similarity Score Indicator ✨
+               Visual progress ring showing relevance percentage -->
+          <div
+            v-if="resource.similarityScore !== undefined"
+            class="similarity-score-badge"
+            :class="{
+              'is-visible': isVisible,
+              'is-high':
+                getSimilarityLevel(resource.similarityScore) === 'high',
+              'is-medium':
+                getSimilarityLevel(resource.similarityScore) === 'medium',
+              'is-low': getSimilarityLevel(resource.similarityScore) === 'low',
+            }"
+            :aria-label="`Similarity score: ${Math.round((resource.similarityScore || 0) * 100)}%`"
+          >
+            <svg class="similarity-ring" viewBox="0 0 36 36" aria-hidden="true">
+              <!-- Background circle -->
+              <circle class="similarity-ring-bg" cx="18" cy="18" r="15" />
+              <!-- Progress circle with animated stroke -->
+              <circle
+                class="similarity-ring-progress"
+                cx="18"
+                cy="18"
+                r="15"
+                :style="getSimilarityRingStyle(resource.similarityScore, index)"
+              />
+            </svg>
+            <span class="similarity-score-value">
+              {{ Math.round((resource.similarityScore || 0) * 100) }}%
+            </span>
+          </div>
+
           <ResourceCardLazy
             :title="resource.title"
             :description="resource.description"
@@ -149,6 +181,33 @@ const spotlightConfig = animationConfig.similarResources.spotlight || {
   secondaryColor: 'rgba(255, 255, 255, 0)',
   transitionDurationMs: 150,
   borderRadiusPx: 12,
+}
+
+// 🎨 Pallete's micro-UX enhancement: Similarity score indicator helpers
+const getSimilarityLevel = (score?: number): 'high' | 'medium' | 'low' => {
+  if (!score) return 'low'
+  if (score >= 0.7) return 'high'
+  if (score >= 0.4) return 'medium'
+  return 'low'
+}
+
+const getSimilarityRingStyle = (score?: number, index: number = 0) => {
+  const percentage = Math.round((score || 0) * 100)
+  const circumference = 2 * Math.PI * 15 // 2πr where r=15
+  const offset = circumference - (percentage / 100) * circumference
+
+  return {
+    '--ring-circumference': circumference,
+    '--ring-offset': offset,
+    '--ring-percentage': percentage,
+    '--ring-delay': `${index * 100}ms`,
+    '--ring-color':
+      percentage >= 70
+        ? 'var(--score-high-color, #10b981)'
+        : percentage >= 40
+          ? 'var(--score-medium-color, #f59e0b)'
+          : 'var(--score-low-color, #6b7280)',
+  } as Record<string, string | number>
 }
 
 // Check for reduced motion preference
@@ -546,6 +605,128 @@ const spotlightFadeInDuration = computed(
 @media (prefers-contrast: high) {
   .spotlight-overlay {
     display: none;
+  }
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Similarity Score Indicator Styles ✨
+   Visual progress ring showing relevance percentage */
+.similarity-score-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  z-index: v-bind('zIndexScale.low[10]');
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity 0.3s ease-out,
+    transform 0.3s v-bind('EASING.SPRING_STANDARD');
+}
+
+.similarity-score-badge.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Score ring SVG */
+.similarity-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* Start from top */
+}
+
+/* Background ring */
+.similarity-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.3);
+  stroke-width: 3;
+}
+
+/* Progress ring with animated stroke */
+.similarity-ring-progress {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke: var(--ring-color, #6b7280);
+  stroke-dasharray: var(--ring-circumference, 94);
+  stroke-dashoffset: var(--ring-circumference, 94);
+  transition: stroke-dashoffset 1s v-bind('EASING.SPRING_STANDARD');
+  animation: ring-fill 1.2s v-bind('EASING.SPRING_STANDARD') forwards;
+  animation-delay: calc(var(--ring-delay, 0ms) + 0.3s);
+}
+
+/* Ring fill animation */
+@keyframes ring-fill {
+  from {
+    stroke-dashoffset: var(--ring-circumference, 94);
+  }
+  to {
+    stroke-dashoffset: var(--ring-offset, 47);
+  }
+}
+
+/* Score value text */
+.similarity-score-value {
+  position: relative;
+  z-index: 1;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  line-height: 1;
+}
+
+/* Score level color variants */
+.similarity-score-badge.is-high {
+  --score-high-color: #10b981;
+}
+
+.similarity-score-badge.is-medium {
+  --score-medium-color: #f59e0b;
+}
+
+.similarity-score-badge.is-low {
+  --score-low-color: #6b7280;
+}
+
+/* Hover state - subtle pulse */
+.similar-resource-card-wrapper:hover .similarity-score-badge {
+  transform: scale(1.05);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .similarity-score-badge {
+    opacity: 1;
+    transform: scale(1);
+    transition: none;
+  }
+
+  .similarity-ring-progress {
+    animation: none;
+    stroke-dashoffset: var(--ring-offset, 47);
+  }
+
+  .similar-resource-card-wrapper:hover .similarity-score-badge {
+    transform: scale(1);
+  }
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  .similarity-ring-bg {
+    stroke: rgba(255, 255, 255, 0.5);
+  }
+
+  .similarity-score-value {
+    text-shadow: none;
+    -webkit-text-stroke: 0.5px rgba(0, 0, 0, 0.5);
   }
 }
 </style>
