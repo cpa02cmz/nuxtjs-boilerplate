@@ -90,4 +90,5 @@ export interface ApiKey {
   createdAt: string
   updatedAt: string
   lastUsedAt?: string
+  revokedAt?: string
 }
