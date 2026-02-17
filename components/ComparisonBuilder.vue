@@ -882,7 +882,8 @@ defineExpose({
   height: 0.75rem;
   top: 1rem;
   right: 1.5rem;
-  animation: float 3s ease-in-out infinite;
+  animation: float v-bind('animationConfig.comparisonFloat.durationSec + "s"')
+    ease-in-out infinite;
 }
 
 .empty-state__float-dot--2 {

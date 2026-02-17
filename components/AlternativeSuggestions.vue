@@ -469,7 +469,8 @@ watch(
       100%
   );
   background-size: 200% 100%;
-  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  animation: skeleton-shimmer
+    v-bind('animationConfig.skeleton.shimmerDurationSec') ease-in-out infinite;
 }
 
 @keyframes skeleton-shimmer {
