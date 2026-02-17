@@ -19,7 +19,14 @@
             v-for="(resource, index) in resources"
             :key="`header-${index}`"
             scope="col"
-            class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+            class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider comparison-column-header"
+            :class="{
+              'comparison-column-header--hovered': hoveredColumnIndex === index,
+              'comparison-column-header--active':
+                hoveredColumnIndex !== null && hoveredColumnIndex !== index,
+            }"
+            @mouseenter="handleColumnMouseEnter(index)"
+            @mouseleave="handleColumnMouseLeave"
           >
             <div class="flex flex-col items-center">
               <div class="font-bold text-sm">
@@ -120,7 +127,13 @@
           <td
             v-for="(resource, index) in resources"
             :key="`data-${index}-${criterion.id}`"
-            class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 text-center"
+            class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400 text-center comparison-column-cell"
+            :class="{
+              'comparison-column-cell--highlighted':
+                hoveredColumnIndex === index,
+              'comparison-column-cell--dimmed':
+                hoveredColumnIndex !== null && hoveredColumnIndex !== index,
+            }"
           >
             <div class="flex justify-center">
               <LazyComparisonValue
@@ -387,6 +400,10 @@ const emptyStateRef = ref<HTMLElement | null>(null)
 const announcement = ref('')
 const prefersReducedMotion = ref(false)
 
+// 🎨 Palette's micro-UX enhancement: Column hover tracking for table readability
+// Highlights entire column when hovering over header to help users track data across rows
+const hoveredColumnIndex = ref<number | null>(null)
+
 // Media query ref for cleanup (Issue #2333 - Memory leak fix)
 const reducedMotionMediaQuery = ref<MediaQueryList | null>(null)
 
@@ -419,7 +436,10 @@ onMounted(() => {
 onUnmounted(() => {
   if (reducedMotionMediaQuery.value) {
     // BugFixer: Use same function reference for proper removal
-    reducedMotionMediaQuery.value.removeEventListener('change', handleMotionChange)
+    reducedMotionMediaQuery.value.removeEventListener(
+      'change',
+      handleMotionChange
+    )
     reducedMotionMediaQuery.value = null
   }
 })
@@ -450,6 +470,15 @@ const handleBrowseClick = () => {
   setTimeout(() => {
     announcement.value = ''
   }, uiTimingConfig.accessibility.clearDelay)
+}
+
+// 🎨 Palette's micro-UX enhancement: Column highlight handlers
+const handleColumnMouseEnter = (index: number) => {
+  hoveredColumnIndex.value = index
+}
+
+const handleColumnMouseLeave = () => {
+  hoveredColumnIndex.value = null
 }
 
 const handleQuickAdd = (resource: Resource) => {
@@ -714,4 +743,69 @@ const getResourceValue = (resource: Resource, field: string) => {
 
 /* Reduced motion preferences are handled via JS class binding */
 /* All animations respect prefers-reduced-motion */
+
+/* 🎨 Palette's micro-UX enhancement: Smart Column Highlight Styles
+   Helps users track data across wide comparison tables */
+
+/* Header cell hover state - creates visual connection to column */
+.comparison-column-header {
+  transition:
+    background-color v-bind('animationConfig.tailwindDurations.fast') ease-out,
+    transform v-bind('animationConfig.tailwindDurations.fast') ease-out;
+  cursor: default;
+}
+
+.comparison-column-header--hovered {
+  background-color: rgba(59, 130, 246, 0.08);
+  transform: translateY(-1px);
+}
+
+.comparison-column-header--active {
+  opacity: 0.7;
+}
+
+/* Data cell highlight states */
+.comparison-column-cell {
+  transition:
+    background-color v-bind('animationConfig.tailwindDurations.fast') ease-out,
+    opacity v-bind('animationConfig.tailwindDurations.fast') ease-out;
+}
+
+.comparison-column-cell--highlighted {
+  background-color: rgba(59, 130, 246, 0.05);
+  position: relative;
+}
+
+/* Subtle left border indicator for highlighted column */
+.comparison-column-cell--highlighted::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    v-bind('componentColorsConfig?.common?.blue?.[400] || "#60a5fa"'),
+    v-bind('componentColorsConfig?.common?.blue?.[300] || "#93c5fd"')
+  );
+  opacity: 0.5;
+}
+
+/* Dim non-hovered columns for focus */
+.comparison-column-cell--dimmed {
+  opacity: 0.6;
+}
+
+/* Respect reduced motion - instant transitions */
+@media (prefers-reduced-motion: reduce) {
+  .comparison-column-header,
+  .comparison-column-cell {
+    transition: none;
+  }
+
+  .comparison-column-header--hovered {
+    transform: none;
+  }
+}
 </style>
