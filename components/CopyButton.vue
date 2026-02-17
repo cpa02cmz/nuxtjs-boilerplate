@@ -63,12 +63,7 @@
     </Tooltip>
 
     <!-- Screen reader live region for copy status announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
 
@@ -418,7 +413,8 @@ onUnmounted(() => {
 /* Palette's micro-UX enhancement: Keyboard Focus Pulse Animation ✨
    Provides delightful visual feedback when button receives keyboard focus */
 .animate-focus-pulse {
-  animation: focus-pulse-ring 600ms ease-out;
+  /* Flexy hates hardcoded 600ms! Using FOCUS_PULSE_DURATION_MS */
+  animation: focus-pulse-ring v-bind('FOCUS_PULSE_DURATION_MS + "ms"') ease-out;
 }
 
 @keyframes focus-pulse-ring {
@@ -435,7 +431,9 @@ onUnmounted(() => {
 
 /* Success state focus pulse uses green color */
 .bg-green-100.animate-focus-pulse {
-  animation: focus-pulse-ring-green 600ms ease-out;
+  /* Flexy hates hardcoded 600ms! Using FOCUS_PULSE_DURATION_MS */
+  animation: focus-pulse-ring-green v-bind('FOCUS_PULSE_DURATION_MS + "ms"')
+    ease-out;
 }
 
 @keyframes focus-pulse-ring-green {
