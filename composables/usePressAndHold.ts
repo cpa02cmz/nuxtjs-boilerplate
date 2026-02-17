@@ -1,4 +1,4 @@
-import { ref, computed, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted, getCurrentInstance } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 
 interface UsePressAndHoldOptions {
@@ -55,6 +55,9 @@ export function usePressAndHold(options: UsePressAndHoldOptions) {
 
   let pressTimer: ReturnType<typeof setInterval> | null = null
   let startTime: number | null = null
+  // BugFixer #2800: Track timeout IDs for cleanup to prevent memory leaks
+  let resetTimeoutId: ReturnType<typeof setTimeout> | null = null
+  let completionResetTimeoutId: ReturnType<typeof setTimeout> | null = null
 
   // Check for reduced motion preference
   const checkReducedMotion = () => {
@@ -133,7 +136,9 @@ export function usePressAndHold(options: UsePressAndHoldOptions) {
     }
 
     // Reset state with a small delay for visual feedback - Flexy hates hardcoded 150ms!
-    setTimeout(() => {
+    // BugFixer #2800: Store timeout ID for cleanup
+    resetTimeoutId = setTimeout(() => {
+      resetTimeoutId = null
       state.value.isPressing = false
       state.value.progress = 0
     }, animationConfig.microInteractions.resetDelayMs)
@@ -153,19 +158,32 @@ export function usePressAndHold(options: UsePressAndHoldOptions) {
     onComplete()
 
     // Reset after a short delay - Flexy hates hardcoded 300ms!
-    setTimeout(() => {
+    // BugFixer #2800: Store timeout ID for cleanup
+    completionResetTimeoutId = setTimeout(() => {
+      completionResetTimeoutId = null
       state.value.isPressing = false
       state.value.progress = 0
       state.value.isComplete = false
     }, animationConfig.microInteractions.completionResetMs)
   }
 
-  // Cleanup on unmount
-  onUnmounted(() => {
-    if (pressTimer) {
-      clearInterval(pressTimer)
-    }
-  })
+  // Cleanup on unmount - BugFixer #2800: Clear all timers to prevent memory leaks
+  if (getCurrentInstance()) {
+    onUnmounted(() => {
+      if (pressTimer) {
+        clearInterval(pressTimer)
+        pressTimer = null
+      }
+      if (resetTimeoutId) {
+        clearTimeout(resetTimeoutId)
+        resetTimeoutId = null
+      }
+      if (completionResetTimeoutId) {
+        clearTimeout(completionResetTimeoutId)
+        completionResetTimeoutId = null
+      }
+    })
+  }
 
   return {
     state,
