@@ -3,6 +3,25 @@
 
 import { DEFAULT_DEV_URL } from './url.config'
 
+// Cross-platform random bytes generator (works in Node.js and browsers)
+// SECURITY FIX: Issue #3526 - Use Web Crypto API for cross-platform compatibility
+const generateRandomBytes = (length: number): Uint8Array => {
+  if (typeof window !== 'undefined' && window.crypto) {
+    // Browser environment
+    return window.crypto.getRandomValues(new Uint8Array(length))
+  } else if (typeof globalThis !== 'undefined' && globalThis.crypto) {
+    // Node.js environment with Web Crypto API
+    return globalThis.crypto.getRandomValues(new Uint8Array(length))
+  } else {
+    // Fallback for older environments - generate pseudo-random bytes
+    const bytes = new Uint8Array(length)
+    for (let i = 0; i < length; i++) {
+      bytes[i] = Math.floor(Math.random() * 256)
+    }
+    return bytes
+  }
+}
+
 // Parse environment variable for allowed origins
 const parseAllowedOrigins = (): string[] => {
   const origins =
@@ -136,6 +155,7 @@ export const securityConfig = {
     // Salt for scrypt key derivation - must be set explicitly, no default for security
     // BroCula fix: Use getter to defer check until actually accessed
     // This prevents errors during module initialization in browser/client-side
+    // SECURITY FIX: Issue #3526 - Generate random salt in dev, enforce in production
     get salt() {
       const salt = process.env.CRYPTO_SALT
       // Skip check during build process, client-side, or when explicitly disabled
@@ -150,8 +170,20 @@ export const securityConfig = {
           'CRYPTO_SALT environment variable must be set in production for secure encryption. Generate a secure salt using crypto.randomBytes(32).toString("hex")'
         )
       }
-      // In non-production environments or client-side, use a development-only salt
-      return salt || 'dev-salt-not-for-production-use-only'
+      // SECURITY FIX: Issue #3526 - Generate random salt per session in development
+      // instead of using hardcoded fallback (CWE-321)
+      // SECURITY FIX: Use generateRandomBytes for cross-platform compatibility (browser + Node.js)
+      if (!salt && (process.env.NODE_ENV !== 'production' || skipCheck)) {
+        const bytes = generateRandomBytes(16)
+        const randomSalt = Array.from(bytes)
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('')
+        console.warn(
+          '[Security] Generated random development salt. Set CRYPTO_SALT environment variable for persistent encryption keys.'
+        )
+        return randomSalt
+      }
+      return salt
     },
 
     // Encryption algorithm
@@ -275,9 +307,16 @@ export function generateCsp(nonce?: string): string {
 
 // Function to get all security headers
 export function getSecurityHeaders(nonce?: string): Record<string, string> {
+  // SECURITY FIX: Issue #3526 - Validate CORS origins, remove wildcard fallback (CWE-942)
+  const allowedOrigin = securityConfig.cors.allowedOrigins[0]
+  if (!allowedOrigin) {
+    console.warn(
+      '[Security] No CORS allowed origins configured. Set ALLOWED_ORIGINS environment variable.'
+    )
+  }
   const headers: Record<string, string> = {
     ...securityConfig.headers,
-    'Access-Control-Allow-Origin': securityConfig.cors.allowedOrigins[0] || '*',
+    'Access-Control-Allow-Origin': allowedOrigin || '',
     'Access-Control-Allow-Methods':
       securityConfig.cors.allowedMethods.join(', '),
     'Access-Control-Allow-Headers':
