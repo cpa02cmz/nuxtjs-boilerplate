@@ -62,13 +62,22 @@
     </svg>
 
     <!-- Empty State -->
-    <div v-else class="empty-state">
-      <span class="empty-icon" aria-hidden="true">📊</span>
+    <div
+      v-else
+      class="empty-state"
+    >
+      <span
+        class="empty-icon"
+        aria-hidden="true"
+      >📊</span>
       <span class="empty-text">No data available</span>
     </div>
 
     <!-- X-Axis Labels -->
-    <div v-if="chartData.length > 0" class="x-axis-labels">
+    <div
+      v-if="chartData.length > 0"
+      class="x-axis-labels"
+    >
       <span
         v-for="(label, index) in xAxisLabels"
         :key="`label-${index}`"
