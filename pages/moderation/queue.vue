@@ -29,10 +29,7 @@
             @click.stop
           >
             <div class="shortcuts-modal__header">
-              <h2
-                id="shortcuts-title"
-                class="shortcuts-modal__title"
-              >
+              <h2 id="shortcuts-title" class="shortcuts-modal__title">
                 Keyboard Shortcuts
               </h2>
               <button
@@ -412,7 +409,8 @@ onUnmounted(() => {
   bottom: 1rem;
   right: 1rem;
   z-index: 40;
-  animation: hint-slide-in 0.3s ease-out;
+  animation: hint-slide-in
+    v-bind('animationConfig.moderationQueue.hintSlideInDurationSec') ease-out;
 }
 
 @keyframes hint-slide-in {

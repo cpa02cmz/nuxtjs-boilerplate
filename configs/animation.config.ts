@@ -373,6 +373,40 @@ export const animationConfig = {
     announcementTimeoutMs: parseInt(
       process.env.DEVELOPER_PAGE_ANNOUNCEMENT_TIMEOUT_MS || '1000'
     ),
+    // Fade-in animation duration (ms) - Flexy hates hardcoded 0.6s!
+    fadeInDurationMs: parseInt(
+      process.env.DEVELOPER_PAGE_FADE_IN_DURATION_MS || '600'
+    ),
+    // Fade-in CSS duration string
+    fadeInDurationSec: `${parseInt(process.env.DEVELOPER_PAGE_FADE_IN_DURATION_MS || '600') / 1000}s`,
+    // Fade-in delayed animation delay (ms) - Flexy hates hardcoded 0.5s!
+    fadeInDelayMs: parseInt(
+      process.env.DEVELOPER_PAGE_FADE_IN_DELAY_MS || '500'
+    ),
+    // Icon float animation duration (ms) - Flexy hates hardcoded 3s!
+    iconFloatDurationMs: parseInt(
+      process.env.DEVELOPER_PAGE_ICON_FLOAT_DURATION_MS || '3000'
+    ),
+    // Icon float CSS duration string
+    iconFloatDurationSec: `${parseInt(process.env.DEVELOPER_PAGE_ICON_FLOAT_DURATION_MS || '3000') / 1000}s`,
+    // Icon pulse animation duration (ms) - Flexy hates hardcoded 2s!
+    iconPulseDurationMs: parseInt(
+      process.env.DEVELOPER_PAGE_ICON_PULSE_DURATION_MS || '2000'
+    ),
+    // Icon pulse CSS duration string
+    iconPulseDurationSec: `${parseInt(process.env.DEVELOPER_PAGE_ICON_PULSE_DURATION_MS || '2000') / 1000}s`,
+    // Sparkle animation duration (ms) - Flexy hates hardcoded 2s!
+    sparkleDurationMs: parseInt(
+      process.env.DEVELOPER_PAGE_SPARKLE_DURATION_MS || '2000'
+    ),
+    // Sparkle CSS duration string
+    sparkleDurationSec: `${parseInt(process.env.DEVELOPER_PAGE_SPARKLE_DURATION_MS || '2000') / 1000}s`,
+    // Section entrance animation duration (ms) - Flexy hates hardcoded 0.5s!
+    sectionEntranceDurationMs: parseInt(
+      process.env.DEVELOPER_PAGE_SECTION_ENTRANCE_MS || '500'
+    ),
+    // Section entrance CSS duration string
+    sectionEntranceDurationSec: `${parseInt(process.env.DEVELOPER_PAGE_SECTION_ENTRANCE_MS || '500') / 1000}s`,
   },
 
   // Copy Feedback Animation - Palette's delightful micro-UX touch!
@@ -1690,6 +1724,12 @@ export const animationConfig = {
     announcementClearDelayMs: parseInt(
       process.env.SCREENSHOTS_ANNOUNCEMENT_CLEAR_MS || '2000'
     ),
+    // Shimmer sweep animation duration (ms) - Flexy hates hardcoded 1.5s!
+    shimmerSweepDurationMs: parseInt(
+      process.env.SCREENSHOTS_SHIMMER_SWEEP_MS || '1500'
+    ),
+    // Shimmer sweep CSS duration string
+    shimmerSweepDurationSec: `${parseInt(process.env.SCREENSHOTS_SHIMMER_SWEEP_MS || '1500') / 1000}s`,
   },
 
   // Performance Chart Micro-UX - Pallete's delightful enhancement! 🎨
@@ -3381,6 +3421,16 @@ export const animationConfig = {
     floatDurationSec: parseFloat(
       process.env.MODERATION_FLOAT_DURATION_SEC || '3'
     ),
+  },
+
+  // Moderation Queue Animations - Flexy hates hardcoded values!
+  moderationQueue: {
+    // Keyboard hint slide-in animation duration (ms) - Flexy hates hardcoded 0.3s!
+    hintSlideInDurationMs: parseInt(
+      process.env.MODERATION_QUEUE_HINT_SLIDE_IN_MS || '300'
+    ),
+    // Keyboard hint slide-in CSS duration string
+    hintSlideInDurationSec: `${parseInt(process.env.MODERATION_QUEUE_HINT_SLIDE_IN_MS || '300') / 1000}s`,
   },
 
   // Resource Card Animations

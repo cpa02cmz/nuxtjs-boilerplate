@@ -1,12 +1,7 @@
 <template>
   <div :class="[tailwind.layout.screenHeight, 'bg-gray-50 py-8']">
     <!-- ARIA Live Region for Announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
 
@@ -48,10 +43,7 @@
                 class="absolute -top-1 -right-1 w-4 h-4 text-yellow-400 animate-sparkle"
                 aria-hidden="true"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
+                <svg viewBox="0 0 24 24" fill="currentColor">
                   <path
                     d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
                   />
@@ -99,9 +91,7 @@
                 />
               </svg>
             </div>
-            <h2 :class="[tailwind.typography.sectionTitle]">
-              Getting Started
-            </h2>
+            <h2 :class="[tailwind.typography.sectionTitle]">Getting Started</h2>
           </div>
           <p :class="[tailwind.typography.body, 'mb-4']">
             Welcome to the Free Stuff on the Internet API! Our API allows you to
@@ -117,9 +107,7 @@
             ]"
           >
             <div class="flex items-center justify-between mb-2">
-              <h3 class="font-medium text-blue-800">
-                Base URL
-              </h3>
+              <h3 class="font-medium text-blue-800">Base URL</h3>
               <CopyButton
                 content="https://yourdomain.com/api"
                 label="Copy base URL"
@@ -165,9 +153,7 @@
                 />
               </svg>
             </div>
-            <h2 :class="[tailwind.typography.sectionTitle]">
-              Authentication
-            </h2>
+            <h2 :class="[tailwind.typography.sectionTitle]">Authentication</h2>
           </div>
           <p :class="[tailwind.typography.body, 'mb-4']">
             To use the API, you need to include your API key in the request
@@ -237,9 +223,7 @@
                 />
               </svg>
             </div>
-            <h2 :class="[tailwind.typography.sectionTitle]">
-              API Examples
-            </h2>
+            <h2 :class="[tailwind.typography.sectionTitle]">API Examples</h2>
           </div>
 
           <div class="space-y-6">
@@ -326,9 +310,7 @@
                 />
               </svg>
             </div>
-            <h2 :class="[tailwind.typography.sectionTitle]">
-              Rate Limiting
-            </h2>
+            <h2 :class="[tailwind.typography.sectionTitle]">Rate Limiting</h2>
           </div>
           <p :class="[tailwind.typography.body, 'mb-4']">
             Our API implements rate limiting to ensure fair usage. Each API key
@@ -427,9 +409,7 @@
                 />
               </svg>
             </div>
-            <h2 :class="[tailwind.typography.sectionTitle]">
-              Error Handling
-            </h2>
+            <h2 :class="[tailwind.typography.sectionTitle]">Error Handling</h2>
           </div>
           <p :class="[tailwind.typography.body, 'mb-4']">
             The API returns standard HTTP status codes and error responses:
@@ -692,11 +672,14 @@ useHead({
 }
 
 .animate-fade-in {
-  animation: fade-in 0.6s ease-out forwards;
+  animation: fade-in v-bind('animationConfig.developerPage.fadeInDurationSec')
+    ease-out forwards;
 }
 
 .animate-fade-in-delayed {
-  animation: fade-in 0.6s ease-out 0.5s forwards;
+  animation: fade-in v-bind('animationConfig.developerPage.fadeInDurationSec')
+    ease-out v-bind('animationConfig.developerPage.fadeInDelayMs + "ms"')
+    forwards;
   opacity: 0;
 }
 
@@ -712,7 +695,9 @@ useHead({
 }
 
 .animate-icon-float {
-  animation: icon-float 3s ease-in-out infinite;
+  animation: icon-float
+    v-bind('animationConfig.developerPage.iconFloatDurationSec') ease-in-out
+    infinite;
 }
 
 /* Icon pulse animation */
@@ -727,7 +712,9 @@ useHead({
 }
 
 .animate-icon-pulse {
-  animation: icon-pulse 2s ease-in-out infinite;
+  animation: icon-pulse
+    v-bind('animationConfig.developerPage.iconPulseDurationSec') ease-in-out
+    infinite;
 }
 
 /* Sparkle animation */
@@ -744,14 +731,17 @@ useHead({
 }
 
 .animate-sparkle {
-  animation: sparkle 2s ease-in-out infinite;
+  animation: sparkle v-bind('animationConfig.developerPage.sparkleDurationSec')
+    ease-in-out infinite;
 }
 
 /* Section entrance animation - BroCula: Only animate on client to prevent hydration mismatch */
 .animate-section {
   opacity: 0;
   transform: translateY(20px);
-  animation: fade-in 0.5s ease-out forwards;
+  animation: fade-in
+    v-bind('animationConfig.developerPage.sectionEntranceDurationSec') ease-out
+    forwards;
 }
 
 /* Reduced motion - disable animations */
