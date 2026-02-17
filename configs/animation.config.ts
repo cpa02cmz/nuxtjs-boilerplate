@@ -427,6 +427,10 @@ export const animationConfig = {
     crosshairTransitionSec: `${parseInt(process.env.ADMIN_CHART_CROSSHAIR_TRANSITION_MS || '150') / 1000}s`,
     // Data point transition duration (sec) - Flexy hates hardcoded 0.2s!
     dataPointTransitionSec: `${parseInt(process.env.ADMIN_CHART_DATAPOINT_TRANSITION_MS || '200') / 1000}s`,
+    // Chart entrance animation duration (ms) - Palette's micro-UX: Line draw animation
+    entranceDurationMs: parseInt(
+      process.env.ADMIN_CHART_ENTRANCE_DURATION_MS || '1500'
+    ),
   },
 
   // Copy Feedback Animation - Palette's delightful micro-UX touch!
