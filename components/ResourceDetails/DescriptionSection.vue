@@ -325,6 +325,9 @@ const toggleExpand = async () => {
 const handleCopy = async () => {
   if (copySuccess.value) return
 
+  // BugFixer: Guard for SSR safety
+  if (typeof navigator === 'undefined' || !navigator.clipboard) return
+
   try {
     await navigator.clipboard.writeText(props.description)
 

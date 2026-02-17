@@ -161,13 +161,9 @@
         class="mt-4 text-xs text-gray-400"
       >
         Tip: Press
-        <kbd
-          class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs"
-        >Space</kbd>
+        <kbd class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs">Space</kbd>
         or
-        <kbd
-          class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs"
-        >Enter</kbd>
+        <kbd class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs">Enter</kbd>
         to retry
       </p>
     </div>
@@ -254,7 +250,8 @@ const checkConnection = async () => {
     setTimeout(resolve, animationConfig.offlineRetry.spinDurationMs)
   )
 
-  if (navigator.onLine) {
+  // BugFixer: Guard for SSR safety
+  if (typeof navigator !== 'undefined' && navigator.onLine) {
     // Connection restored!
     hapticSuccess()
     announcement.value = 'Connection restored! Redirecting to home page.'

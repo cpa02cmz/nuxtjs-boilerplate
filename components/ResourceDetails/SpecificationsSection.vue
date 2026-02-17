@@ -258,6 +258,9 @@ const handleMouseLeave = () => {
 const handleCopy = async (key: string, value: string) => {
   if (copiedItem.value === key) return
 
+  // BugFixer: Guard for SSR safety
+  if (typeof navigator === 'undefined' || !navigator.clipboard) return
+
   try {
     await navigator.clipboard.writeText(`${formatLabel(key)}: ${value}`)
     copiedItem.value = key
