@@ -942,6 +942,8 @@ export const animationConfig = {
         process.env.ERROR_BOUNDARY_RING_TRACK_COLOR ||
         'rgba(59, 130, 246, 0.2)',
     },
+    // Flexy hates hardcoded 2s! Focus pulse animation for buttons
+    focusPulseDurationSec: `${parseInt(process.env.ERROR_BOUNDARY_FOCUS_PULSE_DURATION_MS || '2000') / 1000}s`,
   },
 
   // API Keys Animations - Flexy hates hardcoded draw animation!
@@ -3731,6 +3733,8 @@ export const animationConfig = {
     spinnerDurationMs: parseInt(
       process.env.HEALTH_MONITOR_SPINNER_DURATION_MS || '1000'
     ),
+    // Flexy hates hardcoded 1s! Status checking pulse animation duration
+    checkingPulseDurationSec: `${parseInt(process.env.HEALTH_MONITOR_CHECKING_PULSE_DURATION_MS || '1000') / 1000}s`,
   },
 
   // Saved Searches Micro-UX - Palette's delightful enhancement! ✨
@@ -4574,6 +4578,13 @@ export const animationConfig = {
     // Easing function for zoom animation
     zoomEasing:
       process.env.LIGHTBOX_ZOOM_EASING || 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+  },
+
+  // Deprecation Notice Animations - Flexy hates hardcoded 2s!
+  // Subtle pulse animation for migration link to draw attention
+  deprecationNotice: {
+    // Pulse animation duration in seconds
+    pulseDurationSec: `${parseInt(process.env.DEPRECATION_NOTICE_PULSE_DURATION_MS || '2000') / 1000}s`,
   },
 } as const
 

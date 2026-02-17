@@ -78,15 +78,9 @@
           </button>
         </div>
         <p>{{ noticeMessage }}</p>
-        <div
-          v-if="migrationPath || alternatives"
-          class="notice-actions"
-        >
+        <div v-if="migrationPath || alternatives" class="notice-actions">
           <!-- Migration Link with Copy Button - Palette's micro-UX delight! -->
-          <div
-            v-if="migrationPath"
-            class="migration-link-wrapper"
-          >
+          <div v-if="migrationPath" class="migration-link-wrapper">
             <a
               :href="migrationPath"
               target="_blank"
@@ -234,11 +228,7 @@
       />
 
       <!-- Screen reader announcement -->
-      <div
-        class="sr-only"
-        role="status"
-        aria-live="polite"
-      >
+      <div class="sr-only" role="status" aria-live="polite">
         {{ announcementText }}
       </div>
     </div>
@@ -727,9 +717,11 @@ onUnmounted(() => {
   }
 }
 
-/* Subtle pulse animation for migration link */
+/* Subtle pulse animation for migration link - Flexy hates hardcoded 2s! */
 .animate-pulse-subtle {
-  animation: pulse-subtle 2s ease-in-out infinite;
+  animation: pulse-subtle
+    v-bind('animationConfig.deprecationNotice.pulseDurationSec') ease-in-out
+    infinite;
 }
 
 @keyframes pulse-subtle {
