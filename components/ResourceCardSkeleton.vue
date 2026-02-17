@@ -109,7 +109,12 @@
       </div>
     </div>
     <!-- 🎨 Pallete: Live region for screen reader announcements - announces loading state -->
-    <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <span
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ loadingAnnouncement }}
     </span>
 
