@@ -1,5 +1,9 @@
 <template>
-  <section class="screenshots-section" role="region" :aria-label="ariaLabel">
+  <section
+    class="screenshots-section"
+    role="region"
+    :aria-label="ariaLabel"
+  >
     <!-- Header with screenshot count -->
     <div class="screenshots-header">
       <h2 class="screenshots-title">
@@ -25,24 +29,24 @@
       >
         <div
           v-if="lightboxOpen"
+          ref="lightboxRef"
           class="lightbox-overlay"
           role="dialog"
           aria-modal="true"
+          tabindex="-1"
           :aria-label="lightboxAriaLabel"
           @click="handleOverlayClick"
           @keydown="handleLightboxKeydown"
-          tabindex="-1"
-          ref="lightboxRef"
         >
           <!-- Close Button -->
           <button
+            type="button"
             class="lightbox-close"
+            aria-label="Close lightbox"
             :class="{ 'is-hovered': closeButtonHovered }"
             @click="closeLightbox"
             @mouseenter="closeButtonHovered = true"
             @mouseleave="closeButtonHovered = false"
-            aria-label="Close lightbox"
-            type="button"
           >
             <svg
               class="close-icon"
@@ -63,17 +67,17 @@
           <!-- Navigation Arrows -->
           <button
             v-if="screenshots.length > 1"
+            type="button"
             class="lightbox-nav lightbox-nav--prev"
+            aria-label="Previous image"
             :class="{
               'is-hovered': navPrevHovered,
               'is-disabled': currentImageIndex === 0,
             }"
+            :disabled="currentImageIndex === 0"
             @click="navigatePrev"
             @mouseenter="navPrevHovered = true"
             @mouseleave="navPrevHovered = false"
-            :disabled="currentImageIndex === 0"
-            aria-label="Previous image"
-            type="button"
           >
             <svg
               class="nav-icon"
@@ -93,17 +97,17 @@
 
           <button
             v-if="screenshots.length > 1"
+            type="button"
             class="lightbox-nav lightbox-nav--next"
+            aria-label="Next image"
             :class="{
               'is-hovered': navNextHovered,
               'is-disabled': currentImageIndex === screenshots.length - 1,
             }"
+            :disabled="currentImageIndex === screenshots.length - 1"
             @click="navigateNext"
             @mouseenter="navNextHovered = true"
             @mouseleave="navNextHovered = false"
-            :disabled="currentImageIndex === screenshots.length - 1"
-            aria-label="Next image"
-            type="button"
           >
             <svg
               class="nav-icon"
@@ -140,7 +144,10 @@
             </div>
 
             <!-- Image Counter in Lightbox -->
-            <div class="lightbox-counter" aria-live="polite">
+            <div
+              class="lightbox-counter"
+              aria-live="polite"
+            >
               {{ currentImageIndex + 1 }} / {{ screenshots.length }}
             </div>
           </div>
@@ -155,18 +162,18 @@
             <button
               v-for="(screenshot, index) in screenshots"
               :key="`thumb-${index}`"
+              type="button"
+              role="tab"
               class="lightbox-thumbnail"
+              :aria-label="`Go to image ${index + 1}`"
+              :aria-selected="index === currentImageIndex"
               :class="{
                 'is-active': index === currentImageIndex,
                 'is-hovered': hoveredThumbIndex === index,
               }"
-              role="tab"
-              :aria-selected="index === currentImageIndex"
-              :aria-label="`Go to image ${index + 1}`"
               @click="goToImage(index)"
               @mouseenter="hoveredThumbIndex = index"
               @mouseleave="hoveredThumbIndex = null"
-              type="button"
             >
               <NuxtImg
                 :src="screenshot"
@@ -305,7 +312,12 @@
     </TransitionGroup>
 
     <!-- Screen reader announcement -->
-    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >
       {{ announcementText }}
     </div>
   </section>
