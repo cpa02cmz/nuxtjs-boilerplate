@@ -26,6 +26,79 @@ import { databaseConfig } from '~/configs/database.config'
 const DEFAULT_HEALTH_CHECK_TIMEOUT_MS = databaseConfig.healthCheck.timeoutMs
 const DEFAULT_HEALTH_CHECK_QUERY = databaseConfig.healthCheck.query
 
+// SECURITY FIX #3650: Models with soft delete support
+const SOFT_DELETE_TABLES = [
+  'analyticsEvent',
+  'webhook',
+  'webhookDelivery',
+  'webhookQueue',
+  'deadLetterWebhook',
+  'apiKey',
+  'resource',
+  'submission',
+  'idempotencyKey',
+]
+
+/**
+ * SECURITY FIX #3650: Helper function to append soft delete filter to SQL queries
+ * Automatically adds "deletedAt IS NULL" filter for tables that support soft deletes
+ */
+function appendSoftDeleteFilter(sql: string): string {
+  const lowerSql = sql.toLowerCase().trim()
+
+  // Only process SELECT queries
+  if (!lowerSql.startsWith('select')) {
+    return sql
+  }
+
+  // Check if query already has deletedAt filter
+  if (lowerSql.includes('deletedat') || lowerSql.includes('"deletedat"')) {
+    return sql
+  }
+
+  // Check if query references any soft-delete tables
+  for (const tableName of SOFT_DELETE_TABLES) {
+    const tableNameLower = tableName.toLowerCase()
+    // Match table names in FROM or JOIN clauses
+    const tablePattern = new RegExp(
+      `(from|join)\\s+(\\\\"?${tableNameLower}\\\\"?)\\b`,
+      'i'
+    )
+
+    if (tablePattern.test(sql)) {
+      // Check if there's a WHERE clause
+      if (lowerSql.includes(' where ')) {
+        // Add AND condition to existing WHERE
+        sql = sql.replace(
+          /WHERE\s+/i,
+          `WHERE "${tableName}"."deletedAt" IS NULL AND `
+        )
+      } else {
+        // Add WHERE clause before GROUP BY, ORDER BY, LIMIT, or end of query
+        const insertBeforePattern =
+          /\s+(GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|FETCH|FOR\s+UPDATE)\s+/i
+        const match = sql.match(insertBeforePattern)
+
+        if (match && match.index !== undefined) {
+          const insertIndex = match.index
+          sql =
+            sql.slice(0, insertIndex) +
+            ` WHERE "${tableName}"."deletedAt" IS NULL` +
+            sql.slice(insertIndex)
+        } else {
+          // Append WHERE clause at the end
+          sql += ` WHERE "${tableName}"."deletedAt" IS NULL`
+        }
+      }
+
+      // Only apply filter once per query (for the first matching table)
+      break
+    }
+  }
+
+  return sql
+}
+
 /**
  * PostgreSQL Transaction implementation
  * BugFixer: Issue #3472 - Proper transaction support with commit/rollback
@@ -262,8 +335,13 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
         }
       }
 
+      // SECURITY FIX #3650: Apply soft delete filtering to raw queries
+      const filteredSql = appendSoftDeleteFilter(sql)
+
       // SECURITY FIX: Use parameterized queries with template literals
-      const result = await this.prisma.$queryRaw<T[]>`${Prisma.raw(sql)}`
+      const result = await this.prisma.$queryRaw<
+        T[]
+      >`${Prisma.raw(filteredSql)}`
       return result
     } catch (error) {
       throw new Error(
