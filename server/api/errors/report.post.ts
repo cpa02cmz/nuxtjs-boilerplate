@@ -119,9 +119,9 @@ export default defineEventHandler(async event => {
     })
 
     logger.info('[Error API] Client error reported:', {
-      message: body.message,
-      component: body.component,
-      severity: body.severity,
+      message: validatedData.message,
+      component: validatedData.component,
+      severity: validatedData.severity,
     })
 
     return sendSuccessResponse(event, {
