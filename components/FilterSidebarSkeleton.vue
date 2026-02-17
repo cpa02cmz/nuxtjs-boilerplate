@@ -38,10 +38,7 @@
     </div>
 
     <!-- Category Section -->
-    <div
-      class="mb-6 filter-section"
-      :style="{ '--section-index': 1 }"
-    >
+    <div class="mb-6 filter-section" :style="{ '--section-index': 1 }">
       <div
         class="skeleton-shimmer skeleton-header-expand h-5 rounded w-24 mb-3 skeleton-item skeleton-wave"
         :style="{ animationDelay: getStaggerDelay(2), '--wave-index': 2 }"
@@ -76,10 +73,7 @@
     </div>
 
     <!-- Pricing Model Section -->
-    <div
-      class="mb-6 filter-section"
-      :style="{ '--section-index': 2 }"
-    >
+    <div class="mb-6 filter-section" :style="{ '--section-index': 2 }">
       <div
         class="skeleton-shimmer skeleton-header-expand h-5 rounded w-32 mb-3 skeleton-item skeleton-wave"
         :style="{ animationDelay: getStaggerDelay(9), '--wave-index': 9 }"
@@ -114,10 +108,7 @@
     </div>
 
     <!-- Difficulty Section -->
-    <div
-      class="mb-6 filter-section"
-      :style="{ '--section-index': 3 }"
-    >
+    <div class="mb-6 filter-section" :style="{ '--section-index': 3 }">
       <div
         class="skeleton-shimmer skeleton-header-expand h-5 rounded w-20 mb-3 skeleton-item skeleton-wave"
         :style="{ animationDelay: getStaggerDelay(14), '--wave-index': 14 }"
@@ -152,10 +143,7 @@
     </div>
 
     <!-- Date Added Section -->
-    <div
-      class="mb-6 filter-section"
-      :style="{ '--section-index': 4 }"
-    >
+    <div class="mb-6 filter-section" :style="{ '--section-index': 4 }">
       <div
         class="skeleton-shimmer skeleton-header-expand h-5 rounded w-24 mb-3 skeleton-item skeleton-wave"
         :style="{ animationDelay: getStaggerDelay(20), '--wave-index': 20 }"
@@ -250,13 +238,15 @@ const getRandomWidth = (min: number, max: number): number => {
 }
 
 // 🎨 Palette: Enhanced color configuration with checkbox-specific colors
+// Flexy hates hardcoded values! All colors now come from config
 const skeletonColors = {
   light: componentColorsConfig.skeleton.light,
   reducedMotion: componentColorsConfig.skeleton.reducedMotion,
   checkbox: {
-    start: '#d1d5db',
-    middle: '#e5e7eb',
-    end: '#d1d5db',
+    // Flexy hates hardcoded '#d1d5db' and '#e5e7eb'! Using config values
+    start: componentColorsConfig.skeleton?.checkbox?.start || '#d1d5db',
+    middle: componentColorsConfig.skeleton?.checkbox?.middle || '#e5e7eb',
+    end: componentColorsConfig.skeleton?.checkbox?.end || '#d1d5db',
   },
 }
 

@@ -2476,6 +2476,37 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.VIEWED_BADGE_RESPECT_REDUCED_MOTION !== 'false',
+    // Flexy hates hardcoded values! New badge particle burst configuration
+    // Palette's micro-UX enhancement: Celebratory particle burst on hover
+    newBadgeParticle: {
+      // Number of particles in the burst
+      particleCount: parseInt(process.env.VIEWED_BADGE_PARTICLE_COUNT || '8'),
+      // Stagger delay between particles (ms)
+      staggerDelayMs: parseInt(
+        process.env.VIEWED_BADGE_PARTICLE_STAGGER_MS || '30'
+      ),
+      // Base animation duration (ms)
+      baseDurationMs: parseInt(
+        process.env.VIEWED_BADGE_PARTICLE_BASE_DURATION_MS || '600'
+      ),
+      // Duration randomness range (ms) - adds to base
+      durationRandomnessMs: parseInt(
+        process.env.VIEWED_BADGE_PARTICLE_DURATION_RANDOMNESS_MS || '200'
+      ),
+      // Base particle spread distance (px)
+      baseSpreadPx: parseInt(
+        process.env.VIEWED_BADGE_PARTICLE_BASE_SPREAD_PX || '20'
+      ),
+      // Spread distance randomness (px) - adds to base
+      spreadRandomnessPx: parseInt(
+        process.env.VIEWED_BADGE_PARTICLE_SPREAD_RANDOMNESS_PX || '15'
+      ),
+      // Particle colors - alternate between these
+      colors: [
+        process.env.VIEWED_BADGE_PARTICLE_COLOR_1 || '#10b981', // emerald-500
+        process.env.VIEWED_BADGE_PARTICLE_COLOR_2 || '#34d399', // emerald-400
+      ],
+    },
   },
 
   // Comparison Value Animations - Palette's micro-UX enhancement!
@@ -4137,6 +4168,13 @@ export const animationConfig = {
     sizePx: parseInt(process.env.SEARCH_ANALYTICS_RING_SIZE_PX || '56'),
     // Ring radius in pixels
     radiusPx: parseInt(process.env.SEARCH_ANALYTICS_RING_RADIUS_PX || '20'),
+    // Flexy hates hardcoded colors! Progress ring color configuration
+    colors: {
+      // Background track color (light green)
+      track: process.env.SEARCH_ANALYTICS_RING_TRACK_COLOR || '#d1fae5',
+      // Fill color (green-500)
+      fill: process.env.SEARCH_ANALYTICS_RING_FILL_COLOR || '#10b981',
+    },
   },
 
   // Search Response Time Thresholds - Flexy hates hardcoded 200ms!
