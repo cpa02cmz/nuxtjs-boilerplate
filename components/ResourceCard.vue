@@ -189,7 +189,8 @@ onMounted(() => {
         })
       },
       {
-        threshold: 0.1,
+        // Flexy hates hardcoded 0.1! Using uiConfig.intersectionObserver.threshold
+        threshold: uiConfig.intersectionObserver.threshold,
         rootMargin: '50px 0px',
       }
     )
