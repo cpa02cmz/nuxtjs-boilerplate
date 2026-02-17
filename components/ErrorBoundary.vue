@@ -1,9 +1,6 @@
 <template>
   <div class="error-boundary-wrapper">
-    <Transition
-      name="error-fade"
-      @after-enter="onErrorEntered"
-    >
+    <Transition name="error-fade" @after-enter="onErrorEntered">
       <div
         v-if="hasError"
         ref="errorContainer"
@@ -43,20 +40,12 @@
           >
             Something went wrong
           </h2>
-          <p
-            id="error-message"
-            class="error-message"
-          >
+          <p id="error-message" class="error-message">
             {{ errorMessage }}
           </p>
-          <div
-            v-if="showDetails"
-            class="error-details"
-          >
+          <div v-if="showDetails" class="error-details">
             <details class="error-details-container">
-              <summary class="error-details-summary">
-                Error Details
-              </summary>
+              <summary class="error-details-summary">Error Details</summary>
               <pre class="error-stack">{{ errorStack }}</pre>
             </details>
           </div>
@@ -114,13 +103,12 @@
                 />
               </svg>
               <!-- Countdown text with screen reader support -->
-              <span
-                class="countdown-ring__text"
-                aria-hidden="true"
-              >{{
+              <span class="countdown-ring__text" aria-hidden="true">{{
                 autoRetryCountdown
               }}</span>
-              <span class="sr-only">{{ autoRetryCountdown }} seconds remaining</span>
+              <span class="sr-only"
+                >{{ autoRetryCountdown }} seconds remaining</span
+              >
             </div>
 
             <!-- Auto-retry status -->
@@ -624,10 +612,12 @@ onUnmounted(() => {
   }
 }
 
-/* Enhanced focus styles with animation */
+/* Enhanced focus styles with animation - Flexy hates hardcoded 2s! */
 .retry-button:focus-visible,
 .home-button:focus-visible {
-  animation: focus-pulse 2s ease-in-out infinite;
+  animation: focus-pulse
+    v-bind('animationConfig.errorBoundary.focusPulseDurationSec') ease-in-out
+    infinite;
 }
 
 @keyframes focus-pulse {
