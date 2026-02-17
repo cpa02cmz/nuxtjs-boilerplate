@@ -19,7 +19,10 @@
       leave-from-class="opacity-100 scale-100"
       leave-to-class="opacity-0 scale-98"
     >
-      <div v-if="!isIntersecting && !isLoaded" class="skeleton-container">
+      <div
+        v-if="!isIntersecting && !isLoaded"
+        class="skeleton-container"
+      >
         <!-- Palette's micro-UX: Multi-layer shimmer for depth -->
         <div
           v-if="!prefersReducedMotion"
@@ -52,7 +55,12 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ announcement }}
     </div>
   </div>
