@@ -8,7 +8,8 @@ import {
 import { logger } from '~/utils/logger'
 import { securityConfig } from '~/configs/security.config'
 
-const ENCRYPTION_KEY = process.env.WEBHOOK_SECRET_ENCRYPTION_KEY
+const ENCRYPTION_KEY: string | undefined =
+  process.env.WEBHOOK_SECRET_ENCRYPTION_KEY
 
 if (!ENCRYPTION_KEY && process.env.NODE_ENV === 'production') {
   throw new Error(
@@ -24,8 +25,10 @@ const { crypto: cryptoConfig } = securityConfig
  * Derives a key from the environment variable using scrypt
  */
 function getKey(): Buffer | null {
-  if (!ENCRYPTION_KEY) return null
-  return scryptSync(ENCRYPTION_KEY, cryptoConfig.salt, cryptoConfig.keyLength)
+  const key = ENCRYPTION_KEY
+  if (!key) return null
+  // BugFixer: Fixed TypeScript type narrowing by extracting to local const
+  return scryptSync(key, cryptoConfig.salt, cryptoConfig.keyLength)
 }
 
 /**
