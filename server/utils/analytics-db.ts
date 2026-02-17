@@ -107,9 +107,28 @@ export async function insertAnalyticsEvent(
       (errObj.meta?.table &&
         String(errObj.meta.table).includes('AnalyticsEvent'))
 
+    // BroCula: Check for database connection errors (e.g., server not available)
+    // This prevents 500 console errors in development when DB is not running
+    const isDatabaseConnectionError =
+      errorMessage.includes("Can't reach database server") ||
+      errorMessage.includes('database server at') ||
+      errorMessage.includes('Connection refused') ||
+      errorMessage.includes('ECONNREFUSED') ||
+      errorMessage.includes('P1001') || // Prisma: Can't reach database server
+      errorMessage.includes('P1002') // Prisma: Database server was reached but timed out
+
     if (isTableNotFound || hasPrismaTableError) {
       logger.warn(
         'AnalyticsEvent table not found in database - graceful degradation'
+      )
+      return { success: false, error: errorMessage, tableNotFound: true }
+    }
+
+    // BroCula: Treat database connection errors as table not found for graceful degradation
+    // This prevents console noise in development when database is not available
+    if (isDatabaseConnectionError) {
+      logger.warn(
+        'Database server not available - analytics event dropped (development mode)'
       )
       return { success: false, error: errorMessage, tableNotFound: true }
     }
