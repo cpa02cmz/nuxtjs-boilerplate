@@ -309,6 +309,7 @@ import { limitsConfig } from '~/configs/limits.config'
 import { animationConfig } from '~/configs/animation.config'
 import { searchConfig } from '~/configs/search.config'
 import { EASING } from '~/configs/easing.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { NuxtLink } from '#components'
 import { hapticLight } from '~/utils/hapticFeedback'
 
@@ -768,7 +769,8 @@ const handleKeyDown = (event: KeyboardEvent) => {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 50;
+  /* Flexy hates hardcoded z-index! Using zIndexScale */
+  z-index: v-bind('zIndexScale.medium[50]');
   overflow: visible;
 }
 

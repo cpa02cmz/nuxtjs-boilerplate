@@ -53,12 +53,7 @@
     </Teleport>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
 
@@ -91,6 +86,7 @@ import { ref, computed, nextTick } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
 import { uiConfig } from '~/configs/ui.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 import { generateId } from '~/utils/generateId'
 
@@ -484,7 +480,8 @@ defineExpose({
   width: 0;
   height: 0;
   pointer-events: none;
-  z-index: 50;
+  /* Flexy hates hardcoded z-index! Using zIndexScale */
+  z-index: v-bind('zIndexScale.medium[50]');
 }
 
 .copy-particle {

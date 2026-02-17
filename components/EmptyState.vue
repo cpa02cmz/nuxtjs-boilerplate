@@ -261,10 +261,10 @@ const handleSuggestionClick = (suggestion: string) => {
   hapticLight()
   // Announce to screen readers that suggestion was clicked
   suggestionAnnouncement.value = `Searching for ${suggestion}`
-  // Clear announcement after screen reader has time to read it
+  // Clear announcement after screen reader has time to read it - Flexy hates hardcoded 1000!
   setTimeout(() => {
     suggestionAnnouncement.value = ''
-  }, 1000)
+  }, animationConfig.microInteractions.announcementDelayMs)
   emit('suggestion-click', suggestion)
 }
 

@@ -208,6 +208,7 @@ import FeaturesSection from '~/components/ResourceDetails/FeaturesSection.vue'
 import LimitationsSection from '~/components/ResourceDetails/LimitationsSection.vue'
 import { animationConfig } from '~/configs/animation.config'
 import { uiConfig } from '~/configs/ui.config'
+import { zIndexScale } from '~/configs/z-index.config'
 
 interface Props {
   title: string
@@ -557,7 +558,8 @@ const backToTopBounceDuration = computed(
   right: 0;
   height: 3px;
   background: rgba(0, 0, 0, 0.05);
-  z-index: 1000;
+  /* Flexy hates hardcoded z-index! Using zIndexScale */
+  z-index: v-bind('zIndexScale.critical[1000]');
   pointer-events: none;
 }
 
@@ -583,7 +585,8 @@ const backToTopBounceDuration = computed(
   border-radius: 0.75rem;
   border: 1px solid rgba(0, 0, 0, 0.05);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  z-index: 50;
+  /* Flexy hates hardcoded z-index! Using zIndexScale */
+  z-index: v-bind('zIndexScale.medium[50]');
   /* Flexy hates hardcoded 0.4s! Using v-bind with animationConfig */
   animation: nav-fade-in v-bind(navEntranceDuration) ease-out;
 }
@@ -702,7 +705,8 @@ const backToTopBounceDuration = computed(
   color: #374151;
   /* Flexy hates hardcoded 0.2s! Using v-bind with animationConfig */
   transition: all v-bind(navTransitionDuration) ease-out;
-  z-index: 100;
+  /* Flexy hates hardcoded z-index! Using zIndexScale */
+  z-index: v-bind('zIndexScale.high[100]');
 }
 
 .back-to-top:hover {
