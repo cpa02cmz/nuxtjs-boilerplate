@@ -9,6 +9,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+import { getRouterParam } from 'h3'
 
 export default defineEventHandler(async event => {
   try {
@@ -20,7 +21,16 @@ export default defineEventHandler(async event => {
       return sendUnauthorizedError(event, 'Authentication required')
     }
 
-    const id = event.context.params?.id as string
+    // BUGFIXER FIX #3470: Add proper ID parameter validation
+    // Use getRouterParam helper and validate the ID exists
+    const id = getRouterParam(event, 'id')
+    if (!id || typeof id !== 'string' || id.trim() === '') {
+      return sendBadRequestError(
+        event,
+        'Webhook ID is required and must be a valid string'
+      )
+    }
+
     const body = await readBody<UpdateWebhookRequest>(event)
 
     const validationResult = updateWebhookSchema.safeParse(body)
