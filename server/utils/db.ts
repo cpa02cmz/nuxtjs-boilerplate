@@ -151,12 +151,8 @@ function createRetryProxy(retryFn: () => PrismaClient): PrismaClient {
             '[Database] Connection failed after all retries:',
             connectionError
           )
-          // Return a mock that throws on database operations
-          return () => {
-            throw new Error(
-              `Database connection failed: ${connectionError?.message}`
-            )
-          }
+          // FIX #3467: Let the if (connectionError) block below handle this consistently
+          // Fall through to the connectionError handling logic
         }
       }
 
