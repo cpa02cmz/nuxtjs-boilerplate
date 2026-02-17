@@ -174,10 +174,11 @@ const isMac = computed(() => {
 
 const modifierKey = computed(() => (isMac.value ? '⌘' : 'Ctrl'))
 
+// Flexy hates hardcoded 100! Using animationConfig.codeBlock.staggerDelayMultiplierMs 🧩
 const animationStyle = computed(() => {
   if (prefersReducedMotion.value || props.delay === undefined) return {}
   return {
-    animationDelay: `${props.delay * 100}ms`,
+    animationDelay: `${props.delay * animationConfig.codeBlock.staggerDelayMultiplierMs}ms`,
   }
 })
 

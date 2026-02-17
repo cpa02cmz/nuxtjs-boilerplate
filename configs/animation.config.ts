@@ -1437,6 +1437,10 @@ export const animationConfig = {
     ),
     // CSS duration string for v-bind
     pulseDurationSec: `${parseInt(process.env.SPINNER_LOADING_DOTS_PULSE_MS || '900') / 1000}s`,
+    // First dot animation delay (ms) - Flexy hates hardcoded 0ms!
+    firstDotDelayMs: parseInt(
+      process.env.SPINNER_LOADING_FIRST_DOT_DELAY_MS || '0'
+    ),
     // Stagger delay between each dot (ms) - creates wave effect
     staggerDelayMs: parseInt(
       process.env.SPINNER_LOADING_DOTS_STAGGER_MS || '150'
@@ -1574,6 +1578,35 @@ export const animationConfig = {
     // Flexy hates hardcoded 2000! Screen reader announcement clear delay (ms)
     announcementClearDelayMs: parseInt(
       process.env.SCREENSHOTS_ANNOUNCEMENT_CLEAR_MS || '2000'
+    ),
+  },
+
+  // Performance Chart Micro-UX - Pallete's delightful enhancement! 🎨
+  // Line draw animation, hover tooltips, and entrance effects
+  performanceChart: {
+    // Delay before entrance animation starts (ms) - Pallete hates hardcoded 150!
+    entranceDelayMs: parseInt(
+      process.env.PERFORMANCE_CHART_ENTRANCE_DELAY_MS || '150'
+    ),
+    // Duration of line draw animation (ms) - Pallete hates hardcoded 1200!
+    lineDrawDurationMs: parseInt(
+      process.env.PERFORMANCE_CHART_LINE_DRAW_MS || '1200'
+    ),
+    // Duration of area fade-in animation (ms) - Pallete hates hardcoded 600!
+    areaFadeDurationMs: parseInt(
+      process.env.PERFORMANCE_CHART_AREA_FADE_MS || '600'
+    ),
+    // Duration of grid line entrance (ms) - Pallete hates hardcoded 400!
+    gridEntranceDurationMs: parseInt(
+      process.env.PERFORMANCE_CHART_GRID_ENTRANCE_MS || '400'
+    ),
+    // Duration of data point pop-in animation (ms) - Pallete hates hardcoded 300!
+    pointEntranceDurationMs: parseInt(
+      process.env.PERFORMANCE_CHART_POINT_ENTRANCE_MS || '300'
+    ),
+    // Stagger delay between data points (ms) - Pallete hates hardcoded 50!
+    pointStaggerMs: parseInt(
+      process.env.PERFORMANCE_CHART_POINT_STAGGER_MS || '50'
     ),
   },
 
@@ -3733,6 +3766,10 @@ export const animationConfig = {
     filterButtonPulseMs: parseInt(
       process.env.MOBILE_DRAWER_BUTTON_PULSE_MS || '800'
     ),
+    // Badge pulse animation duration (ms) - Flexy hates hardcoded 300ms!
+    badgePulseDurationMs: parseInt(
+      process.env.MOBILE_DRAWER_BADGE_PULSE_MS || '300'
+    ),
     // Filter button bounce scale
     filterButtonBounceScale: parseFloat(
       process.env.MOBILE_DRAWER_BUTTON_BOUNCE_SCALE || '1.15'
@@ -3865,6 +3902,19 @@ export const animationConfig = {
     // Duration of keyboard shortcut toast display (ms)
     shortcutToastDurationMs: parseInt(
       process.env.CODEBLOCK_TOAST_DURATION_MS || '3000'
+    ),
+    // Stagger delay multiplier for animation delays (ms) - Flexy hates hardcoded 100!
+    staggerDelayMultiplierMs: parseInt(
+      process.env.CODEBLOCK_STAGGER_MULTIPLIER_MS || '100'
+    ),
+  },
+
+  // Response Card Animations - Flexy hates hardcoded values! 🧩
+  // Stagger delay multiplier for response card entrance animations
+  responseCard: {
+    // Stagger delay multiplier for animation delays (ms) - Flexy hates hardcoded 150!
+    staggerDelayMultiplierMs: parseInt(
+      process.env.RESPONSE_CARD_STAGGER_MULTIPLIER_MS || '150'
     ),
   },
 
@@ -4154,6 +4204,10 @@ export const animationConfig = {
     fadeInMs: parseInt(process.env.RATE_LIMIT_CARD_FADE_IN_MS || '400'),
     // CSS duration string for fade-in
     fadeInSec: `${parseInt(process.env.RATE_LIMIT_CARD_FADE_IN_MS || '400') / 1000}s`,
+    // Stagger delay multiplier for card animations (ms) - Flexy hates hardcoded 100!
+    staggerDelayMultiplierMs: parseInt(
+      process.env.RATE_LIMIT_CARD_STAGGER_MULTIPLIER_MS || '100'
+    ),
   },
 
   // 🎨 Palette's micro-UX enhancement: Resource Details Page Animations ✨
@@ -4291,6 +4345,58 @@ export const animationConfig = {
     indicatorDotActiveSizePx: parseInt(
       process.env.METRIC_CARD_DOT_ACTIVE_SIZE || '8'
     ),
+    // Stagger delay for indicator dot animations (ms) - Flexy hates hardcoded 100ms!
+    indicatorStaggerDelayMs: parseInt(
+      process.env.METRIC_CARD_INDICATOR_STAGGER_MS || '100'
+    ),
+  },
+
+  // 🎨 Pallete's micro-UX enhancement: Performance Dashboard Success Celebration
+  // Delightful success feedback when dashboard data refreshes
+  performanceDashboard: {
+    // Celebration animation total duration (ms)
+    celebrationDurationMs: parseInt(
+      process.env.PERFORMANCE_DASHBOARD_CELEBRATION_MS || '1200'
+    ),
+    // Checkmark pop animation duration (ms)
+    checkmarkPopDurationMs: parseInt(
+      process.env.PERFORMANCE_DASHBOARD_CHECKMARK_POP_MS || '400'
+    ),
+    // Checkmark draw animation duration (seconds)
+    checkmarkDrawDurationSec:
+      parseInt(process.env.PERFORMANCE_DASHBOARD_CHECKMARK_DRAW_MS || '300') /
+      1000,
+    // Checkmark animation delay (seconds)
+    checkmarkDelaySec:
+      parseInt(process.env.PERFORMANCE_DASHBOARD_CHECKMARK_DELAY_MS || '100') /
+      1000,
+  },
+
+  // Lazy Loading Intersection Observer - Flexy hates hardcoded values!
+  // Configuration for lazy loading components with IntersectionObserver
+  lazyLoading: {
+    // Root margin for intersection observer (px) - loads before element is visible
+    // Flexy hates hardcoded 100px! Now configurable via env var
+    rootMarginPx: parseInt(process.env.LAZY_LOADING_ROOT_MARGIN_PX || '100'),
+    // Threshold for intersection (0.0 to 1.0) - percentage of element visible
+    threshold: parseFloat(process.env.LAZY_LOADING_THRESHOLD || '0.1'),
+    // Entrance animation duration for lazy loaded content (ms)
+    entranceDurationMs: parseInt(
+      process.env.LAZY_LOADING_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Skeleton placeholder minimum height (px)
+    skeletonMinHeightPx: parseInt(
+      process.env.LAZY_LOADING_SKELETON_MIN_HEIGHT_PX || '200'
+    ),
+    // Exit animation delay for section visibility (ms)
+    // Flexy hates hardcoded 300ms! Now configurable via env var
+    exitAnimationDelayMs: parseInt(
+      process.env.LAZY_LOADING_EXIT_DELAY_MS || '300'
+    ),
+    // Intersection observer root margin string (e.g., '100px')
+    get rootMargin(): string {
+      return `${this.rootMarginPx}px`
+    },
   },
 } as const
 
