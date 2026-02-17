@@ -67,12 +67,7 @@
     </Transition>
 
     <!-- Screen reader announcement - announces tooltip content when visible -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ isVisible ? content : '' }}
     </div>
   </div>
@@ -556,7 +551,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyDown)
-  document.removeEventListener('click', handleClickOutside)
+  // BugFixer: Only remove click listener if it was added
+  if (props.closeOnClickOutside) {
+    document.removeEventListener('click', handleClickOutside)
+  }
   clearAllTimeouts()
 })
 
