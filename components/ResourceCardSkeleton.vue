@@ -514,7 +514,9 @@ onMounted(() => {
   animation:
     shimmer v-bind('shimmerDurationSec') ease-in-out infinite,
     wave-pulse var(--wave-duration) ease-in-out infinite,
-    breathe 3s ease-in-out infinite;
+    /* Flexy hates hardcoded 3s! Using animationConfig.cssAnimations.longDurationSec */
+    breathe v-bind('animationConfig.cssAnimations.longDurationSec') ease-in-out
+      infinite;
   animation-delay:
     calc(var(--wave-index) * var(--wave-stagger)),
     calc(var(--wave-index) * var(--wave-stagger)),

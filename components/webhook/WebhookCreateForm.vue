@@ -916,8 +916,11 @@ onUnmounted(() => {
 }
 
 /* Pallete: Spinner animation for loading state */
+/* Flexy hates hardcoded 1s! Using animationConfig.spinner.rotateDurationSec */
 .animate-spin {
-  animation: spin 1s linear infinite;
+  animation: spin v-bind('animationConfig.spinner.rotateDurationSec')
+    v-bind('animationConfig.spinner.timingFunction')
+    v-bind('animationConfig.spinner.iterationCount');
 }
 
 @keyframes spin {
