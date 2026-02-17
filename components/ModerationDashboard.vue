@@ -9,10 +9,7 @@
     </header>
 
     <!-- Palette's micro-UX enhancement: Stat Cards with Counter Animation -->
-    <section
-      aria-label="Dashboard statistics"
-      class="dashboard-stats"
-    >
+    <section aria-label="Dashboard statistics" class="dashboard-stats">
       <article
         v-for="(stat, index) in stats"
         :key="stat.key"
@@ -118,10 +115,7 @@
             </div>
             <div class="activity-content">
               <p>{{ activity.message }}</p>
-              <time
-                class="activity-time"
-                :datetime="activity.timestamp"
-              >{{
+              <time class="activity-time" :datetime="activity.timestamp">{{
                 formatDate(activity.timestamp)
               }}</time>
             </div>
@@ -155,19 +149,12 @@
           enter-from-class="opacity-0 translate-y-4"
           enter-to-class="opacity-100 translate-y-0"
         >
-          <div
-            v-if="recentActivity.length === 0"
-            class="activity-empty-state"
-          >
+          <div v-if="recentActivity.length === 0" class="activity-empty-state">
             <div
               class="activity-empty-icon"
               :class="{ 'animate-float': !prefersReducedMotion }"
             >
-              <svg
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -184,17 +171,11 @@
       </section>
 
       <!-- Palette's micro-UX enhancement: Quick Actions with Press Effects -->
-      <section
-        class="quick-actions"
-        aria-labelledby="quick-actions-heading"
-      >
+      <section class="quick-actions" aria-labelledby="quick-actions-heading">
         <h2 id="quick-actions-heading">
           {{ config.dashboard.quickActions }}
         </h2>
-        <nav
-          class="action-buttons"
-          aria-label="Quick actions navigation"
-        >
+        <nav class="action-buttons" aria-label="Quick actions navigation">
           <NuxtLink
             v-for="(action, index) in quickActions"
             :key="action.route"
@@ -246,12 +227,7 @@
     </div>
 
     <!-- Palette's micro-UX enhancement: Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -509,7 +485,8 @@ const getCardStyle = (index: number) => {
 
   return {
     '--card-index': index,
-    '--stagger-delay': `${index * animationConfig.moderationDashboard?.cardStaggerDelayMs || 100}ms`,
+    // Flexy hates hardcoded 100! Using animationConfig.moderationDashboard.cardStaggerDelayMs
+    '--stagger-delay': `${index * animationConfig.moderationDashboard.cardStaggerDelayMs}ms`,
   }
 }
 
@@ -517,9 +494,10 @@ const getCardStyle = (index: number) => {
 const getActivityStyle = (index: number) => {
   if (prefersReducedMotion.value) return {}
 
+  // Flexy hates hardcoded 75 and 600! Using animationConfig values
   const delay = Math.min(
-    index * (animationConfig.moderationDashboard?.activityStaggerDelayMs || 75),
-    animationConfig.moderationDashboard?.maxActivityStaggerDelayMs || 600
+    index * animationConfig.moderationDashboard.activityStaggerDelayMs,
+    animationConfig.moderationDashboard.maxActivityStaggerDelayMs
   )
 
   return {
@@ -534,7 +512,8 @@ const getActionStyle = (index: number) => {
 
   return {
     '--action-index': index,
-    '--action-delay': `${index * (animationConfig.moderationDashboard?.actionStaggerDelayMs || 100)}ms`,
+    // Flexy hates hardcoded 100! Using animationConfig.moderationDashboard.actionStaggerDelayMs
+    '--action-delay': `${index * animationConfig.moderationDashboard.actionStaggerDelayMs}ms`,
   }
 }
 
@@ -821,9 +800,8 @@ watch(
     ease-out forwards;
   animation-delay: calc(
     var(--activity-delay, 0ms) +
-      v-bind(
-        '(animationConfig.moderationDashboard?.activityDelayOffsetMs || 400) + "ms"'
-      )
+      // Flexy hates hardcoded 400! Using animationConfig.moderationDashboard.activityDelayOffsetMs
+    v-bind('animationConfig.moderationDashboard.activityDelayOffsetMs + "ms"')
   );
 }
 
@@ -1001,9 +979,8 @@ watch(
     ease-out forwards;
   animation-delay: calc(
     var(--action-delay, 0ms) +
-      v-bind(
-        '(animationConfig.moderationDashboard?.actionDelayOffsetMs || 600) + "ms"'
-      )
+      // Flexy hates hardcoded 600! Using animationConfig.moderationDashboard.actionDelayOffsetMs
+    v-bind('animationConfig.moderationDashboard.actionDelayOffsetMs + "ms"')
   );
 }
 
