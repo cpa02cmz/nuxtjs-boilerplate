@@ -733,9 +733,11 @@ const handleKeyDown = (event: KeyboardEvent) => {
   transition: all 0.2s ease-out;
 }
 
-/* Animated new indicator with subtle pulse */
+/* Animated new indicator with subtle pulse - Flexy hates hardcoded 2s! */
 .new-indicator--animated {
-  animation: new-pulse 2s ease-in-out infinite;
+  animation: new-pulse
+    v-bind('animationConfig.searchSuggestions.newPulseDurationSec + "s"')
+    ease-in-out infinite;
 }
 
 @keyframes new-pulse {

@@ -996,6 +996,8 @@ export const animationConfig = {
     statusPulseDurationSec: parseFloat(
       process.env.API_KEYS_STATUS_PULSE_SEC || '2'
     ),
+    // Spin animation duration (seconds) - Flexy hates hardcoded 1s!
+    spinDurationSec: parseFloat(process.env.API_KEYS_SPIN_DURATION_SEC || '1'),
   },
 
   // Card Animations
@@ -1928,6 +1930,19 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.POPULAR_SEARCHES_REDUCED_MOTION !== 'false',
+    // Spin animation duration (seconds) - Flexy hates hardcoded 1s!
+    spinDurationSec: parseFloat(
+      process.env.POPULAR_SEARCHES_SPIN_DURATION_SEC || '1'
+    ),
+  },
+
+  // Search Suggestions Micro-UX - Palette's delightful enhancement! ✨
+  // New indicator pulse animation for recently added suggestions
+  searchSuggestions: {
+    // New indicator pulse animation duration (seconds) - Flexy hates hardcoded 2s!
+    newPulseDurationSec: parseFloat(
+      process.env.SEARCH_SUGGESTIONS_NEW_PULSE_SEC || '2'
+    ),
   },
 
   // Related Searches Animations - Palette's micro-UX delight! ✨
