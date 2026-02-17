@@ -34,14 +34,8 @@
       </svg>
     </div>
 
-    <span
-      v-if="label"
-      class="loading-spinner__label"
-    >{{ label }}</span>
-    <span
-      v-else
-      class="sr-only"
-    >{{ config.default }}</span>
+    <span v-if="label" class="loading-spinner__label">{{ label }}</span>
+    <span v-else class="sr-only">{{ config.default }}</span>
 
     <!-- Palette: Loading text with animated dots - explicit visual feedback! -->
     <div
@@ -338,7 +332,9 @@ watch(
 .loading-spinner__loading-label {
   font-size: v-bind('animationConfig.loadingSpinnerDots.fontSizePx + "px"');
   color: v-bind('themeConfig.loadingSpinner.labelColor');
-  letter-spacing: v-bind('animationConfig.loadingSpinnerDots.letterSpacingPx + "px"');
+  letter-spacing: v-bind(
+    'animationConfig.loadingSpinnerDots.letterSpacingPx + "px"'
+  );
 }
 
 .loading-spinner__dots {
@@ -352,23 +348,33 @@ watch(
   height: v-bind('animationConfig.loadingSpinnerDots.dotSizePx + "px"');
   border-radius: 50%;
   background-color: v-bind('animationConfig.loadingSpinnerDots.dotColor');
-  animation: loading-dot-pulse v-bind('animationConfig.loadingSpinnerDots.pulseDurationSec') ease-in-out infinite;
+  animation: loading-dot-pulse
+    v-bind('animationConfig.loadingSpinnerDots.pulseDurationSec') ease-in-out
+    infinite;
 }
 
 .loading-spinner__dot--1 {
-  animation-delay: 0ms;
+  /* Flexy hates hardcoded 0ms! Using animationConfig.loadingSpinnerDots.firstDotDelayMs */
+  animation-delay: v-bind(
+    'animationConfig.loadingSpinnerDots.firstDotDelayMs + "ms"'
+  );
 }
 
 .loading-spinner__dot--2 {
-  animation-delay: v-bind('animationConfig.loadingSpinnerDots.staggerDelayMs + "ms"');
+  animation-delay: v-bind(
+    'animationConfig.loadingSpinnerDots.staggerDelayMs + "ms"'
+  );
 }
 
 .loading-spinner__dot--3 {
-  animation-delay: v-bind('(animationConfig.loadingSpinnerDots.staggerDelayMs * 2) + "ms"');
+  animation-delay: v-bind(
+    '(animationConfig.loadingSpinnerDots.staggerDelayMs * 2) + "ms"'
+  );
 }
 
 @keyframes loading-dot-pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 0.4;
     background-color: v-bind('animationConfig.loadingSpinnerDots.dotColor');
@@ -376,7 +382,9 @@ watch(
   50% {
     transform: scale(1.3);
     opacity: 1;
-    background-color: v-bind('animationConfig.loadingSpinnerDots.dotActiveColor');
+    background-color: v-bind(
+      'animationConfig.loadingSpinnerDots.dotActiveColor'
+    );
   }
 }
 
