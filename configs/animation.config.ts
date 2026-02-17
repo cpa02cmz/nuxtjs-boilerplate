@@ -1098,6 +1098,10 @@ export const animationConfig = {
     statusPulseDurationSec: parseFloat(
       process.env.API_KEYS_STATUS_PULSE_SEC || '2'
     ),
+    // Status dot transition duration (ms) - Flexy hates hardcoded 300ms!
+    statusDotTransitionMs: parseInt(
+      process.env.API_KEYS_STATUS_DOT_TRANSITION_MS || '300'
+    ),
     // Spin animation duration (seconds) - Flexy hates hardcoded 1s!
     spinDurationSec: parseFloat(process.env.API_KEYS_SPIN_DURATION_SEC || '1'),
   },
