@@ -26,10 +26,7 @@
           />
         </svg>
       </div>
-      <h2
-        :id="sectionId"
-        class="limitations-section__title"
-      >
+      <h2 :id="sectionId" class="limitations-section__title">
         {{ contentConfig.resourceDetails.sections.limitations }}
       </h2>
     </div>
@@ -67,12 +64,7 @@
     </TransitionGroup>
 
     <!-- Screen Reader Announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -153,7 +145,7 @@ const announceLimitations = () => {
     announcementText.value = `${count} limitation${count !== 1 ? 's' : ''} listed`
     setTimeout(() => {
       announcementText.value = ''
-    }, 3000)
+    }, animationConfig.limitations.announcementClearDelayMs)
   }
 }
 
