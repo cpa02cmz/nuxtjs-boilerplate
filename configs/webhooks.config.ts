@@ -334,6 +334,17 @@ export const webhooksConfig = {
       process.env.WEBHOOK_MAX_DECODE_ITERATIONS_LIMIT || '10'
     ),
   },
+
+  // Payload Size Limits - P2 Security Fix: Issue #3301
+  payload: {
+    // Maximum payload size in bytes (default: 1MB)
+    maxSizeBytes: parseInt(
+      process.env.WEBHOOK_MAX_PAYLOAD_SIZE_BYTES || '1048576'
+    ),
+
+    // Maximum payload size for error messages
+    maxSizeErrorMessage: `Payload too large. Maximum size is ${parseInt(process.env.WEBHOOK_MAX_PAYLOAD_SIZE_BYTES || '1048576') / 1024 / 1024}MB`,
+  },
 } as const
 
 // Helper function to parse status codes
