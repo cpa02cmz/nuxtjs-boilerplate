@@ -536,6 +536,23 @@ watch(
   },
   { deep: true }
 )
+
+// Flexy hates hardcoded values! Using animationConfig for all CSS durations 🧩
+const navEntranceDuration = computed(
+  () => `${animationConfig.resourceDetails.navEntranceMs}ms`
+)
+const navTransitionDuration = computed(
+  () => `${animationConfig.resourceDetails.navTransitionMs}ms`
+)
+const navItemEntranceDuration = computed(
+  () => `${animationConfig.resourceDetails.navItemEntranceMs}ms`
+)
+const sectionTransitionDuration = computed(
+  () => `${animationConfig.resourceDetails.sectionTransitionMs}ms`
+)
+const backToTopBounceDuration = computed(
+  () => `${animationConfig.resourceDetails.backToTopBounceMs}ms`
+)
 </script>
 
 <style scoped>
@@ -579,7 +596,8 @@ watch(
   border: 1px solid rgba(0, 0, 0, 0.05);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   z-index: 50;
-  animation: nav-fade-in 0.4s ease-out;
+  /* Flexy hates hardcoded 0.4s! Using v-bind with animationConfig */
+  animation: nav-fade-in v-bind(navEntranceDuration) ease-out;
 }
 
 @keyframes nav-fade-in {
@@ -605,9 +623,11 @@ watch(
   font-weight: 500;
   color: #6b7280;
   cursor: pointer;
-  transition: all 0.2s ease-out;
+  /* Flexy hates hardcoded 0.2s! Using v-bind with animationConfig */
+  transition: all v-bind(navTransitionDuration) ease-out;
   opacity: 0;
-  animation: nav-item-enter 0.3s ease-out forwards;
+  /* Flexy hates hardcoded 0.3s! Using v-bind with animationConfig */
+  animation: nav-item-enter v-bind(navItemEntranceDuration) ease-out forwards;
   animation-delay: var(--nav-item-delay, 0ms);
 }
 
@@ -657,7 +677,9 @@ watch(
   margin-bottom: 2rem;
   opacity: 0;
   transform: translateY(20px);
-  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Flexy hates hardcoded 0.5s! Using v-bind with animationConfig */
+  transition: all v-bind(sectionTransitionDuration)
+    cubic-bezier(0.34, 1.56, 0.64, 1);
   transition-delay: var(--section-delay, 0ms);
   border-radius: 0.5rem;
   padding: 0.5rem;
@@ -690,7 +712,8 @@ watch(
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   color: #374151;
-  transition: all 0.2s ease-out;
+  /* Flexy hates hardcoded 0.2s! Using v-bind with animationConfig */
+  transition: all v-bind(navTransitionDuration) ease-out;
   z-index: 100;
 }
 
@@ -707,12 +730,14 @@ watch(
 .back-to-top-icon {
   width: 24px;
   height: 24px;
-  transition: transform 0.2s ease-out;
+  /* Flexy hates hardcoded 0.2s! Using v-bind with animationConfig */
+  transition: transform v-bind(navTransitionDuration) ease-out;
 }
 
 .back-to-top-icon.is-hovered {
   transform: translateY(-2px);
-  animation: bounce-up 0.6s ease-in-out;
+  /* Flexy hates hardcoded 0.6s! Using v-bind with animationConfig */
+  animation: bounce-up v-bind(backToTopBounceDuration) ease-in-out;
 }
 
 @keyframes bounce-up {

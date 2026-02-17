@@ -1863,6 +1863,13 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.MAGNETIC_BUTTON_RESPECT_REDUCED_MOTION !== 'false',
+    // Submit page specific settings - Flexy hates hardcoded values in submit.vue!
+    submitPage: {
+      // Strength for submit button (0-1) - Flexy hates hardcoded 0.4!
+      strength: parseFloat(process.env.MAGNETIC_SUBMIT_STRENGTH || '0.4'),
+      // Max distance for submit button (px) - Flexy hates hardcoded 12!
+      maxDistancePx: parseInt(process.env.MAGNETIC_SUBMIT_MAX_DISTANCE || '12'),
+    },
   },
 
   // Press and Hold Interaction - Palette's protective micro-UX enhancement! ⏱️
@@ -2215,6 +2222,11 @@ export const animationConfig = {
     // Screen reader announcement delay (ms)
     announcementDelayMs: parseInt(
       process.env.MICRO_ANNOUNCEMENT_DELAY_MS || '1000'
+    ),
+    // Confetti announcement buffer - additional time after animation completes (ms)
+    // Flexy hates hardcoded 1000! Now configurable via env var
+    confettiAnnouncementBufferMs: parseInt(
+      process.env.MICRO_CONFETTI_ANNOUNCEMENT_BUFFER_MS || '1000'
     ),
     // Shake animation duration (ms)
     shakeDurationMs: parseInt(process.env.MICRO_SHAKE_DURATION_MS || '500'),
@@ -3889,6 +3901,14 @@ export const animationConfig = {
     ),
     // Progress bar transition duration
     transitionDuration: `${parseInt(process.env.PAGE_TRANSITION_PROGRESS_DURATION_MS || '100') / 1000}s`,
+    // Minimum transition duration to prevent flickering (ms) - Flexy hates hardcoded 300!
+    minDurationMs: parseInt(
+      process.env.PAGE_TRANSITION_MIN_DURATION_MS || '300'
+    ),
+    // Maximum transition duration to prevent hanging (ms) - Flexy hates hardcoded 5000!
+    maxDurationMs: parseInt(
+      process.env.PAGE_TRANSITION_MAX_DURATION_MS || '5000'
+    ),
   },
 
   // Performance Optimization & GPU Acceleration - Issue #2752 Fix
@@ -4105,6 +4125,35 @@ export const animationConfig = {
     ),
     // Easing function for entrance animations
     entranceEasing: EASING_REF.SPRING_SNAPPY,
+  },
+
+  // Rate Limit Card Animations - Flexy hates hardcoded values! 🧩
+  // Provides consistent animation timing for rate limit display cards
+  rateLimitCard: {
+    // Card transition duration (ms) - Flexy hates hardcoded 0.3s!
+    transitionMs: parseInt(process.env.RATE_LIMIT_CARD_TRANSITION_MS || '300'),
+    // CSS duration string for v-bind
+    transitionSec: `${parseInt(process.env.RATE_LIMIT_CARD_TRANSITION_MS || '300') / 1000}s`,
+    // Icon container transition duration (ms)
+    iconTransitionMs: parseInt(
+      process.env.RATE_LIMIT_CARD_ICON_TRANSITION_MS || '300'
+    ),
+    // CSS duration string for icon transition
+    iconTransitionSec: `${parseInt(process.env.RATE_LIMIT_CARD_ICON_TRANSITION_MS || '300') / 1000}s`,
+    // Icon pulse animation duration (ms) - Flexy hates hardcoded 0.6s!
+    iconPulseMs: parseInt(process.env.RATE_LIMIT_CARD_ICON_PULSE_MS || '600'),
+    // CSS duration string for icon pulse
+    iconPulseSec: `${parseInt(process.env.RATE_LIMIT_CARD_ICON_PULSE_MS || '600') / 1000}s`,
+    // Glow opacity transition duration (ms)
+    glowTransitionMs: parseInt(
+      process.env.RATE_LIMIT_CARD_GLOW_TRANSITION_MS || '300'
+    ),
+    // CSS duration string for glow transition
+    glowTransitionSec: `${parseInt(process.env.RATE_LIMIT_CARD_GLOW_TRANSITION_MS || '300') / 1000}s`,
+    // Fade-in animation duration (ms) - Flexy hates hardcoded 0.4s!
+    fadeInMs: parseInt(process.env.RATE_LIMIT_CARD_FADE_IN_MS || '400'),
+    // CSS duration string for fade-in
+    fadeInSec: `${parseInt(process.env.RATE_LIMIT_CARD_FADE_IN_MS || '400') / 1000}s`,
   },
 
   // 🎨 Palette's micro-UX enhancement: Resource Details Page Animations ✨

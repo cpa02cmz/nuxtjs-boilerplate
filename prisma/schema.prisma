@@ -289,3 +289,23 @@ model ErrorMetric {
   @@index([date])
   @@index([severity, source])
 }
+
+model PerformanceMetric {
+  id          String    @id @default(cuid())
+  timestamp   DateTime
+  metricType  String    // web-vital, api, resource, custom
+  metricName  String    // LCP, INP, CLS, FCP, TTFB, etc.
+  value       Float
+  rating      String?   // good, needs-improvement, poor
+  url         String?
+  userAgent   String?
+  connection  String?   // network connection type
+  metadata    String?   // JSON string for additional data
+  deletedAt   DateTime?
+
+  // Optimized indexes for performance dashboard queries
+  @@index([timestamp, metricType])           // Time range queries with type filter
+  @@index([timestamp, metricName])           // Time range queries with name filter
+  @@index([metricType, metricName, timestamp]) // Dashboard aggregation queries
+  @@index([timestamp])                       // Cleanup queries
+}
