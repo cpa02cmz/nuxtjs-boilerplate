@@ -64,17 +64,31 @@
         <div
           v-for="(resource, index) in resources"
           :key="resource.id"
+          ref="cardRefs"
           class="similar-resource-card-wrapper"
           :class="{
             'is-hovered': hoveredCard === resource.id,
             'is-pressed': pressedCard === resource.id,
           }"
           :style="getCardStyle(index)"
-          @mouseenter="handleCardHover(resource.id)"
+          @mouseenter="handleCardHover(resource.id, index)"
           @mouseleave="handleCardLeave"
+          @mousemove="handleCardMouseMove($event, index)"
           @mousedown="handleCardPress(resource.id)"
           @mouseup="handleCardRelease"
         >
+          <!-- 🎨 Pallete's micro-UX enhancement: Spotlight cursor effect ✨
+               Creates a radial gradient spotlight that follows cursor on hover -->
+          <div
+            v-if="
+              hoveredCard === resource.id &&
+              !prefersReducedMotion &&
+              spotlightConfig.enabled
+            "
+            class="spotlight-overlay"
+            :style="getSpotlightStyle(index)"
+            aria-hidden="true"
+          />
           <ResourceCardLazy
             :title="resource.title"
             :description="resource.description"
@@ -88,12 +102,7 @@
       </TransitionGroup>
 
       <!-- Screen reader announcement -->
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        class="sr-only"
-      >
+      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
         {{ announcement }}
       </div>
     </section>
@@ -125,6 +134,18 @@ const announcement = ref('')
 const sectionRef = ref<HTMLElement | null>(null)
 const isVisible = ref(false)
 
+// 🎨 Pallete's micro-UX enhancement: Spotlight cursor effect state
+const cardRefs = ref<HTMLElement[]>([])
+const spotlightPositions = ref<{ [key: number]: { x: number; y: number } }>({})
+const spotlightConfig = animationConfig.similarResources.spotlight || {
+  enabled: true,
+  sizePx: 200,
+  primaryColor: 'rgba(255, 255, 255, 0.15)',
+  secondaryColor: 'rgba(255, 255, 255, 0)',
+  transitionDurationMs: 150,
+  borderRadiusPx: 12,
+}
+
 // Check for reduced motion preference
 const checkReducedMotion = () => {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
@@ -149,8 +170,52 @@ const getCardStyle = (index: number) => {
 }
 
 // Handle card hover
-const handleCardHover = (resourceId: string) => {
+const handleCardHover = (resourceId: string, index?: number) => {
   hoveredCard.value = resourceId
+
+  // Initialize spotlight position to center of card
+  if (index !== undefined && !prefersReducedMotion.value) {
+    const card = cardRefs.value[index]
+    if (card) {
+      const rect = card.getBoundingClientRect()
+      spotlightPositions.value[index] = {
+        x: rect.width / 2,
+        y: rect.height / 2,
+      }
+    }
+  }
+}
+
+// 🎨 Pallete's micro-UX enhancement: Handle mouse movement for spotlight effect
+const handleCardMouseMove = (event: MouseEvent, index: number) => {
+  if (prefersReducedMotion.value || !spotlightConfig.enabled) return
+
+  const card = cardRefs.value[index]
+  if (!card) return
+
+  const rect = card.getBoundingClientRect()
+  spotlightPositions.value[index] = {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top,
+  }
+}
+
+// 🎨 Pallete's micro-UX enhancement: Get spotlight style for card
+const getSpotlightStyle = (index: number) => {
+  const pos = spotlightPositions.value[index]
+  if (!pos) return {}
+
+  return {
+    '--spotlight-x': `${pos.x}px`,
+    '--spotlight-y': `${pos.y}px`,
+    '--spotlight-size': `${spotlightConfig.sizePx || 200}px`,
+    '--spotlight-primary':
+      spotlightConfig.primaryColor || 'rgba(255, 255, 255, 0.15)',
+    '--spotlight-secondary':
+      spotlightConfig.secondaryColor || 'rgba(255, 255, 255, 0)',
+    '--spotlight-transition': `${spotlightConfig.transitionDurationMs || 150}ms`,
+    '--spotlight-radius': `${spotlightConfig.borderRadiusPx || 12}px`,
+  }
 }
 
 // Handle card leave
@@ -420,6 +485,55 @@ onUnmounted(() => {
   .similar-resource-card-wrapper:focus-within {
     outline: 2px solid currentColor;
     outline-offset: 4px;
+  }
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Spotlight cursor effect styles ✨
+   Creates a radial gradient spotlight that follows the cursor on hover */
+.spotlight-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: var(--spotlight-radius, 12px);
+  background: radial-gradient(
+    circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    var(--spotlight-primary, rgba(255, 255, 255, 0.15)) 0%,
+    var(--spotlight-secondary, rgba(255, 255, 255, 0)) 70%
+  );
+  transition: background var(--spotlight-transition, 150ms) ease-out;
+  opacity: 0;
+  animation: spotlight-fade-in 200ms ease-out forwards;
+}
+
+@keyframes spotlight-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Dark mode support for spotlight */
+:global(.dark) .spotlight-overlay {
+  --spotlight-primary: rgba(255, 255, 255, 0.08);
+  --spotlight-secondary: rgba(255, 255, 255, 0);
+}
+
+/* Reduced motion support - disable spotlight animation */
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-overlay {
+    animation: none;
+    opacity: 0;
+    display: none;
+  }
+}
+
+/* High contrast mode - disable spotlight for clarity */
+@media (prefers-contrast: high) {
+  .spotlight-overlay {
+    display: none;
   }
 }
 </style>
