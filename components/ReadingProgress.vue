@@ -87,12 +87,7 @@
     </Transition>
 
     <!-- Screen reader announcement for progress changes -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ progressAnnouncement }}
     </div>
 
@@ -121,16 +116,8 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                class="checkmark-circle"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-              <path
-                class="checkmark-path"
-                d="M7 12l3 3 7-7"
-              />
+              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
           <span class="completion-text">{{
@@ -138,15 +125,8 @@
           }}</span>
         </div>
         <!-- Confetti burst effect -->
-        <div
-          class="confetti-container"
-          aria-hidden="true"
-        >
-          <span
-            v-for="n in 8"
-            :key="n"
-            class="confetti-piece"
-          />
+        <div class="confetti-container" aria-hidden="true">
+          <span v-for="n in 8" :key="n" class="confetti-piece" />
         </div>
       </div>
     </Transition>
@@ -584,7 +564,9 @@ onUnmounted(() => {
     )
     ease-in-out infinite;
   will-change: animation-duration;
-  transition: animation-duration 0.3s ease-out;
+  /* Flexy hates hardcoded 0.3s! Using animationConfig.cssTransitions.standardSec */
+  transition: animation-duration
+    v-bind('animationConfig.cssTransitions.standardSec') ease-out;
 }
 
 /* Enhanced shimmer for fast scrolling - Palette's micro-UX delight! */

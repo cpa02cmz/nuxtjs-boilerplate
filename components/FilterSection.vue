@@ -1,8 +1,5 @@
 <template>
-  <fieldset
-    class="mb-6"
-    @keydown="handleKeydown"
-  >
+  <fieldset class="mb-6" @keydown="handleKeydown">
     <div class="flex items-center justify-between mb-3">
       <button
         v-if="collapsible"
@@ -123,7 +120,7 @@
               <span
                 v-if="
                   !prefersReducedMotion &&
-                    (recentlySelected === option || recentlyDeselected === option)
+                  (recentlySelected === option || recentlyDeselected === option)
                 "
                 class="checkbox-bloom absolute inset-0 rounded pointer-events-none"
                 :class="{
@@ -152,7 +149,7 @@
                 }"
                 @change="toggleOption(option)"
                 @click.stop
-              >
+              />
             </div>
             <label
               :for="`${id}-${option}`"
@@ -533,8 +530,10 @@ button:hover {
   }
 }
 
+/* Flexy hates hardcoded 0.3s! Using animationConfig.cssTransitions.standardSec */
 .text-blue-600.font-medium {
-  animation: count-pulse 0.3s ease-out;
+  animation: count-pulse v-bind('animationConfig.cssTransitions.standardSec')
+    ease-out;
 }
 
 /* Checkbox bloom effect - Palette's micro-UX enhancement! */

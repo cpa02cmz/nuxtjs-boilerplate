@@ -1,9 +1,5 @@
 <template>
-  <section
-    class="screenshots-section"
-    role="region"
-    :aria-label="ariaLabel"
-  >
+  <section class="screenshots-section" role="region" :aria-label="ariaLabel">
     <!-- Header with screenshot count -->
     <div class="screenshots-header">
       <h2 class="screenshots-title">
@@ -144,10 +140,7 @@
             </div>
 
             <!-- Image Counter in Lightbox -->
-            <div
-              class="lightbox-counter"
-              aria-live="polite"
-            >
+            <div class="lightbox-counter" aria-live="polite">
               {{ currentImageIndex + 1 }} / {{ screenshots.length }}
             </div>
           </div>
@@ -312,12 +305,7 @@
     </TransitionGroup>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -994,7 +982,9 @@ const lightboxZoomDuration = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Flexy hates hardcoded 0.3s! Using animationConfig.cssTransitions.standardSec */
+  transition: all v-bind('animationConfig.cssTransitions.standardSec')
+    cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 10;
 }
 
@@ -1024,7 +1014,9 @@ const lightboxZoomDuration = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Flexy hates hardcoded 0.3s! Using animationConfig.cssTransitions.standardSec */
+  transition: all v-bind('animationConfig.cssTransitions.standardSec')
+    cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 10;
 }
 
@@ -1140,7 +1132,8 @@ const lightboxZoomDuration = computed(() => {
   overflow: hidden;
   cursor: pointer;
   border: 2px solid transparent;
-  transition: all 0.2s ease-out;
+  /* Flexy hates hardcoded 0.2s! Using animationConfig.cssTransitions.normalSec */
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease-out;
   background: rgba(255, 255, 255, 0.1);
   padding: 0;
 }
@@ -1161,7 +1154,9 @@ const lightboxZoomDuration = computed(() => {
   height: 100%;
   object-fit: cover;
   opacity: 0.6;
-  transition: opacity 0.2s ease-out;
+  /* Flexy hates hardcoded 0.2s! Using animationConfig.cssTransitions.normalSec */
+  transition: opacity v-bind('animationConfig.cssTransitions.normalSec')
+    ease-out;
 }
 
 .lightbox-thumbnail.is-active .thumbnail-image,
@@ -1170,9 +1165,11 @@ const lightboxZoomDuration = computed(() => {
 }
 
 /* Lightbox Transitions */
+/* Flexy hates hardcoded 0.3s! Using animationConfig.cssTransitions.standardSec */
 .lightbox-enter-active,
 .lightbox-leave-active {
-  transition: opacity 0.3s ease-out;
+  transition: opacity v-bind('animationConfig.cssTransitions.standardSec')
+    ease-out;
 }
 
 .lightbox-enter-from,
