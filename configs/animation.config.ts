@@ -45,6 +45,10 @@ export const animationConfig = {
     ringSpreadScale: parseFloat(
       process.env.LIVE_INDICATOR_RING_SPREAD || '2.0'
     ),
+    // Fade-in animation duration (ms) - Flexy hates hardcoded 300ms!
+    fadeInDurationMs: parseInt(process.env.LIVE_INDICATOR_FADE_IN_MS || '300'),
+    // CSS duration string for v-bind
+    fadeInDurationSec: `${parseInt(process.env.LIVE_INDICATOR_FADE_IN_MS || '300') / 1000}s`,
   },
 
   // Relative Time Badge Animations - Palette's micro-UX delight! 🎨
@@ -4398,6 +4402,21 @@ export const animationConfig = {
     ),
     // Easing function for entrance animations
     entranceEasing: EASING_REF.SPRING_SNAPPY,
+    // Date range radio button transitions - Flexy hates hardcoded 200ms!
+    dateRange: {
+      // General transition duration for radio buttons (ms)
+      transitionMs: parseInt(
+        process.env.RESOURCE_FILTERS_DATE_RANGE_TRANSITION_MS || '200'
+      ),
+      // CSS duration string for v-bind
+      transitionSec: `${parseInt(process.env.RESOURCE_FILTERS_DATE_RANGE_TRANSITION_MS || '200') / 1000}s`,
+      // Transform transition duration for radio inner dot (ms)
+      transformMs: parseInt(
+        process.env.RESOURCE_FILTERS_DATE_RANGE_TRANSFORM_MS || '200'
+      ),
+      // CSS duration string for transform
+      transformSec: `${parseInt(process.env.RESOURCE_FILTERS_DATE_RANGE_TRANSFORM_MS || '200') / 1000}s`,
+    },
   },
 
   // Rate Limit Card Animations - Flexy hates hardcoded values! 🧩

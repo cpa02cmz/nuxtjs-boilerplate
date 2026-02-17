@@ -65,12 +65,7 @@
     </Tooltip>
 
     <!-- Screen reader live region for copy status announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
 
@@ -304,8 +299,9 @@ const particleDurationMs = animationConfig.copyParticles.durationMs
 }
 
 .animate-check-pop {
-  /* BroCula: Hardcoded value from animationConfig.copyFeedback.checkPopDurationMs for SSR compatibility */
-  animation: check-pop 300ms ease-out;
+  /* Flexy hates hardcoded 300ms! Using animationConfig.copyFeedback.checkPopDurationMs for SSR compatibility */
+  animation: check-pop
+    v-bind('animationConfig.copyFeedback.checkPopDurationMs + "ms"') ease-out;
 }
 
 /* Icon wiggle animation on hover - Palette's micro-UX delight! */
@@ -323,8 +319,10 @@ const particleDurationMs = animationConfig.copyParticles.durationMs
 }
 
 .animate-icon-wiggle {
-  /* BroCula: Hardcoded value from animationConfig.copyFeedback.iconWiggleDurationMs for SSR compatibility */
-  animation: icon-wiggle 400ms ease-in-out;
+  /* Flexy hates hardcoded 400ms! Using animationConfig.copyFeedback.iconWiggleDurationMs for SSR compatibility */
+  animation: icon-wiggle
+    v-bind('animationConfig.copyFeedback.iconWiggleDurationMs + "ms"')
+    ease-in-out;
 }
 
 /* Reduced motion support */
