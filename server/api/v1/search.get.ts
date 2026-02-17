@@ -18,6 +18,24 @@ import { cacheConfig } from '~/configs/cache.config'
 import { contentConfig } from '~/configs/content.config'
 
 /**
+ * Generate cache key with sorted query parameters for consistent ordering
+ * Issue #3307 fix - Cache key collision due to unsorted query parameters
+ */
+const generateCacheKey = (query: Record<string, unknown>): string => {
+  const sortedQuery = Object.keys(query)
+    .sort()
+    .reduce(
+      (acc, key) => {
+        acc[key] = query[key]
+        return acc
+      },
+      {} as Record<string, unknown>
+    )
+
+  return `search:${JSON.stringify(sortedQuery)}`
+}
+
+/**
  * GET /api/v1/search
  *
  * Search resources with advanced filtering options
@@ -39,7 +57,7 @@ export default defineEventHandler(async event => {
 
     // Generate cache key based on query parameters
     const query = getQuery(event)
-    const cacheKey = `search:${JSON.stringify(query)}`
+    const cacheKey = generateCacheKey(query)
 
     // Try to get from cache first
     const cachedResult = await cacheManager.get(cacheKey)
