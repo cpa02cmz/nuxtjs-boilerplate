@@ -373,6 +373,36 @@ export const animationConfig = {
     announcementTimeoutMs: parseInt(
       process.env.DEVELOPER_PAGE_ANNOUNCEMENT_TIMEOUT_MS || '1000'
     ),
+    // Fade-in animation duration (sec) - Flexy hates hardcoded 0.6s!
+    fadeInDurationSec: `${parseInt(process.env.DEVELOPER_PAGE_FADE_IN_MS || '600') / 1000}s`,
+    // Fade-in animation delay for delayed elements (sec) - Flexy hates hardcoded 0.5s!
+    fadeInDelaySec: `${parseInt(process.env.DEVELOPER_PAGE_FADE_IN_DELAY_MS || '500') / 1000}s`,
+    // Icon float animation duration (sec) - Flexy hates hardcoded 3s!
+    iconFloatDurationSec: `${parseInt(process.env.DEVELOPER_PAGE_ICON_FLOAT_MS || '3000') / 1000}s`,
+    // Icon pulse animation duration (sec) - Flexy hates hardcoded 2s!
+    iconPulseDurationSec: `${parseInt(process.env.DEVELOPER_PAGE_ICON_PULSE_MS || '2000') / 1000}s`,
+    // Sparkle animation duration (sec) - Flexy hates hardcoded 2s!
+    sparkleDurationSec: `${parseInt(process.env.DEVELOPER_PAGE_SPARKLE_MS || '2000') / 1000}s`,
+    // Section entrance animation duration (sec) - Flexy hates hardcoded 0.5s!
+    sectionEnterDurationSec: `${parseInt(process.env.DEVELOPER_PAGE_SECTION_ENTER_MS || '500') / 1000}s`,
+  },
+
+  // Admin Performance Dashboard Animations - Flexy hates hardcoded values!
+  adminDashboard: {
+    // Button transition duration (sec) - Flexy hates hardcoded 0.2s!
+    buttonTransitionSec: `${parseInt(process.env.ADMIN_BUTTON_TRANSITION_MS || '200') / 1000}s`,
+    // Refresh icon spin duration (sec) - Flexy hates hardcoded 1s!
+    refreshSpinDurationSec: `${parseInt(process.env.ADMIN_REFRESH_SPIN_MS || '1000') / 1000}s`,
+  },
+
+  // Admin Performance Chart Animations - Flexy hates hardcoded values!
+  adminChart: {
+    // Chart line transition duration (sec) - Flexy hates hardcoded 0.3s!
+    lineTransitionSec: `${parseInt(process.env.ADMIN_CHART_LINE_TRANSITION_MS || '300') / 1000}s`,
+    // Crosshair transition duration (sec) - Flexy hates hardcoded 0.15s!
+    crosshairTransitionSec: `${parseInt(process.env.ADMIN_CHART_CROSSHAIR_TRANSITION_MS || '150') / 1000}s`,
+    // Data point transition duration (sec) - Flexy hates hardcoded 0.2s!
+    dataPointTransitionSec: `${parseInt(process.env.ADMIN_CHART_DATAPOINT_TRANSITION_MS || '200') / 1000}s`,
   },
 
   // Copy Feedback Animation - Palette's delightful micro-UX touch!

@@ -510,21 +510,23 @@ function handleKeyDown(event: KeyboardEvent) {
 }
 
 .chart-line {
-  transition: all 0.3s ease;
+  transition: all v-bind('animationConfig.adminChart.lineTransitionSec') ease;
 }
 
 .chart-area {
-  transition: all 0.3s ease;
+  transition: all v-bind('animationConfig.adminChart.lineTransitionSec') ease;
 }
 
 .crosshair {
   pointer-events: none;
-  transition: all 0.15s ease-out;
+  transition: all v-bind('animationConfig.adminChart.crosshairTransitionSec')
+    ease-out;
 }
 
 .data-point {
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all v-bind('animationConfig.adminChart.dataPointTransitionSec')
+    cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
 }
 
