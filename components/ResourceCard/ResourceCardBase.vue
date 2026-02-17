@@ -15,10 +15,7 @@
     @mouseleave="handleMouseLeave"
   >
     <div class="flex items-start">
-      <div
-        v-if="icon"
-        class="flex-shrink-0 mr-4"
-      >
+      <div v-if="icon" class="flex-shrink-0 mr-4">
         <OptimizedImage
           :src="icon"
           :alt="title"
@@ -52,7 +49,8 @@
                   :class="{
                     'bg-yellow-200 text-gray-900': segment.isHighlight,
                   }"
-                >{{ segment.text }}</mark>
+                  >{{ segment.text }}</mark
+                >
               </template>
               <span v-else>{{ title }}</span>
             </NuxtLink>
@@ -64,7 +62,8 @@
                   :class="{
                     'bg-yellow-200 text-gray-900': segment.isHighlight,
                   }"
-                >{{ segment.text }}</mark>
+                  >{{ segment.text }}</mark
+                >
               </template>
               <span v-else>{{ title }}</span>
             </span>
@@ -72,12 +71,28 @@
 
           <!-- Badges -->
           <div class="flex items-center">
+            <!-- 🎨 Pallete's micro-UX enhancement: New badge with particle burst! -->
             <span
               v-if="isNew"
-              class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-sm animate-new-pulse mr-2"
+              ref="newBadgeRef"
+              class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-sm animate-new-pulse mr-2 relative"
               role="status"
               :aria-label="`New resource added within the last ${limitsConfig.newResourceBadge.thresholdDays} days`"
+              @mouseenter="handleNewBadgeHover"
             >
+              <!-- Particle burst container for delightful animation -->
+              <span
+                v-if="showNewBadgeParticles && !prefersReducedMotion"
+                class="new-badge-particles"
+                aria-hidden="true"
+              >
+                <span
+                  v-for="n in newBadgeParticleCount"
+                  :key="n"
+                  class="new-badge-particle"
+                  :style="getNewBadgeParticleStyle(n)"
+                />
+              </span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-3 w-3 mr-1"
@@ -149,16 +164,14 @@
         </div>
 
         <!-- Description -->
-        <p
-          id="resource-description"
-          class="mt-1 text-gray-800 text-sm"
-        >
+        <p id="resource-description" class="mt-1 text-gray-800 text-sm">
           <template v-if="highlightedDescriptionSegments.length > 0">
             <mark
               v-for="(segment, index) in highlightedDescriptionSegments"
               :key="index"
               :class="{ 'bg-yellow-200 text-gray-900': segment.isHighlight }"
-            >{{ segment.text }}</mark>
+              >{{ segment.text }}</mark
+            >
           </template>
           <span v-else>{{ description }}</span>
         </p>
@@ -169,30 +182,18 @@
           role="region"
           aria-label="Free tier information"
         >
-          <p
-            id="free-tier-label"
-            class="font-medium text-gray-900 text-sm"
-          >
+          <p id="free-tier-label" class="font-medium text-gray-900 text-sm">
             {{ contentConfig.resourceCard.freeTier }}
           </p>
-          <ul
-            class="mt-1 space-y-1 text-xs text-gray-800"
-            role="list"
-          >
-            <li
-              v-for="(benefit, index) in benefits"
-              :key="index"
-            >
+          <ul class="mt-1 space-y-1 text-xs text-gray-800" role="list">
+            <li v-for="(benefit, index) in benefits" :key="index">
               {{ benefit }}
             </li>
           </ul>
         </div>
 
         <!-- Similarity information (for alternative suggestions) -->
-        <div
-          v-if="similarityScore && similarityScore > 0"
-          class="mt-3"
-        >
+        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
           <div class="flex items-center">
             <div
               class="w-full bg-gray-200 rounded-full h-2"
@@ -211,10 +212,7 @@
               {{ Math.round(similarityScore * 100) }}% match
             </span>
           </div>
-          <p
-            v-if="similarityReason"
-            class="mt-1 text-xs text-gray-600"
-          >
+          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
             {{ similarityReason }}
           </p>
         </div>
@@ -331,10 +329,7 @@
   </article>
 
   <!-- Error state -->
-  <div
-    v-else
-    class="bg-white p-6 rounded-lg shadow border border-red-200"
-  >
+  <div v-else class="bg-white p-6 rounded-lg shadow border border-red-200">
     <div class="flex items-start">
       <div class="flex-shrink-0 mr-4">
         <svg
@@ -353,9 +348,7 @@
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-red-900">
-          Resource Unavailable
-        </h3>
+        <h3 class="text-lg font-medium text-red-900">Resource Unavailable</h3>
         <p class="mt-1 text-red-700 text-sm">
           This resource could not be displayed due to an error.
         </p>
@@ -451,6 +444,45 @@ const reducedMotionHandler = ref<((e: MediaQueryListEvent) => void) | null>(
 // Tracks when to show the entrance animation for delightful feedback
 const showViewedAnimation = ref(false)
 const hasAnimatedViewedBadge = ref(false)
+
+// 🎨 Pallete's micro-UX enhancement: New Badge Particle Burst!
+// Adds delightful particle explosion when hovering over new badge
+const newBadgeRef = ref<HTMLElement | null>(null)
+const showNewBadgeParticles = ref(false)
+const newBadgeParticleCount = 8
+const hasShownNewBadgeParticles = ref(false)
+
+// Generate particle styles for new badge burst effect
+const getNewBadgeParticleStyle = (index: number) => {
+  const angle = (360 / newBadgeParticleCount) * index
+  const delay = index * 30 // stagger delay
+  const duration = 600 + Math.random() * 200 // random duration
+  const distance = 20 + Math.random() * 15 // random distance
+
+  return {
+    '--particle-angle': `${angle}deg`,
+    '--particle-distance': `${distance}px`,
+    '--particle-delay': `${delay}ms`,
+    '--particle-duration': `${duration}ms`,
+    backgroundColor: index % 2 === 0 ? '#10b981' : '#34d399', // alternate colors
+  }
+}
+
+// Handle hover on new badge to trigger particle burst
+const handleNewBadgeHover = () => {
+  if (prefersReducedMotion.value || hasShownNewBadgeParticles.value) return
+
+  showNewBadgeParticles.value = true
+  hasShownNewBadgeParticles.value = true
+
+  // Trigger haptic feedback for mobile users
+  hapticSuccess()
+
+  // Reset after animation completes
+  setTimeout(() => {
+    showNewBadgeParticles.value = false
+  }, 1000)
+}
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
@@ -1053,6 +1085,47 @@ if (typeof useHead === 'function') {
   100% {
     opacity: 0;
     transform: scale(1.5);
+  }
+}
+
+/* 🎨 Pallete's micro-UX enhancement: New Badge Particle Burst Styles */
+.new-badge-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: v-bind('zIndexScale.low[10]');
+}
+
+.new-badge-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  margin-top: -2px;
+  margin-left: -2px;
+  animation: new-badge-particle-burst var(--particle-duration, 600ms)
+    cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: var(--particle-delay, 0ms);
+  opacity: 0;
+}
+
+@keyframes new-badge-particle-burst {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(
+        calc(cos(var(--particle-angle, 0deg)) * var(--particle-distance, 20px)),
+        calc(sin(var(--particle-angle, 0deg)) * var(--particle-distance, 20px))
+      )
+      scale(0.5);
+    opacity: 0;
   }
 }
 
