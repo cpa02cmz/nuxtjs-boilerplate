@@ -31,7 +31,7 @@ export default defineEventHandler(async event => {
     const validRanges = performanceDashboardConfig.dashboard.timeRanges.map(
       r => r.hours
     )
-    if (!validRanges.includes(rangeHours)) {
+    if (!validRanges.includes(rangeHours as (typeof validRanges)[number])) {
       throw createError({
         statusCode: 400,
         statusMessage: `Invalid range. Valid values: ${validRanges.join(', ')}`,
@@ -50,7 +50,13 @@ export default defineEventHandler(async event => {
     })
 
     // Calculate Web Vitals summary
-    const webVitalsSummary = calculateWebVitalsSummary(rawMetrics)
+    const webVitalsSummary = calculateWebVitalsSummary(
+      rawMetrics as Array<{
+        metricName: string
+        value: number
+        rating: string | null
+      }>
+    )
 
     // Fetch aggregated time series data
     const timeSeriesData = await getAggregatedMetrics({
@@ -69,7 +75,9 @@ export default defineEventHandler(async event => {
       metricType: 'api',
     })
 
-    const apiPerformance = calculateApiPerformance(apiMetrics)
+    const apiPerformance = calculateApiPerformance(
+      apiMetrics as Array<{ value: number; metadata: string | null }>
+    )
 
     const response: PerformanceDashboardData = {
       webVitals: webVitalsSummary,
@@ -99,7 +107,7 @@ export default defineEventHandler(async event => {
 
 // Calculate Web Vitals summary from raw metrics
 function calculateWebVitalsSummary(
-  metrics: Array<{ metricName: string; value: number; rating?: string }>
+  metrics: Array<{ metricName: string; value: number; rating: string | null }>
 ): WebVitalsSummary {
   const webVitalNames = ['LCP', 'INP', 'CLS', 'FCP', 'TTFB']
   const summary = {} as WebVitalsSummary
@@ -120,34 +128,34 @@ function calculateWebVitalsSummary(
     // Sort for percentile calculation
     const sorted = [...values].sort((a, b) => a - b)
     const avg = values.reduce((a, b) => a + b, 0) / values.length
-    const p75 =
-      sorted[Math.floor(sorted.length * 0.75)] || sorted[sorted.length - 1]
-    const p95 =
-      sorted[Math.floor(sorted.length * 0.95)] || sorted[sorted.length - 1]
+    const p75Value =
+      sorted[Math.floor(sorted.length * 0.75)] ?? sorted[sorted.length - 1] ?? 0
+    const p95Value =
+      sorted[Math.floor(sorted.length * 0.95)] ?? sorted[sorted.length - 1] ?? 0
 
     // Determine overall rating based on p75
     let rating = 'good'
     if (name === 'CLS') {
-      if (p75 > 0.25) rating = 'poor'
-      else if (p75 > 0.1) rating = 'needs-improvement'
+      if (p75Value > 0.25) rating = 'poor'
+      else if (p75Value > 0.1) rating = 'needs-improvement'
     } else if (name === 'LCP') {
-      if (p75 > 4000) rating = 'poor'
-      else if (p75 > 2500) rating = 'needs-improvement'
+      if (p75Value > 4000) rating = 'poor'
+      else if (p75Value > 2500) rating = 'needs-improvement'
     } else if (name === 'INP') {
-      if (p75 > 500) rating = 'poor'
-      else if (p75 > 200) rating = 'needs-improvement'
+      if (p75Value > 500) rating = 'poor'
+      else if (p75Value > 200) rating = 'needs-improvement'
     } else if (name === 'FCP') {
-      if (p75 > 3000) rating = 'poor'
-      else if (p75 > 1800) rating = 'needs-improvement'
+      if (p75Value > 3000) rating = 'poor'
+      else if (p75Value > 1800) rating = 'needs-improvement'
     } else if (name === 'TTFB') {
-      if (p75 > 1800) rating = 'poor'
-      else if (p75 > 800) rating = 'needs-improvement'
+      if (p75Value > 1800) rating = 'poor'
+      else if (p75Value > 800) rating = 'needs-improvement'
     }
 
     summary[name as keyof WebVitalsSummary] = {
       avg,
-      p75,
-      p95,
+      p75: p75Value,
+      p95: p95Value,
       rating,
     }
   }
@@ -172,19 +180,25 @@ function transformTimeSeries(
       series[item.metricName] = []
     }
 
-    series[item.metricName].push({
-      timestamp: item.timeBucket.toISOString(),
-      value: Math.round(item.avg * 100) / 100,
-      count: item.count,
-    })
+    const seriesArray = series[item.metricName]
+    if (seriesArray) {
+      seriesArray.push({
+        timestamp: item.timeBucket.toISOString(),
+        value: Math.round(item.avg * 100) / 100,
+        count: item.count,
+      })
+    }
   }
 
   // Sort each series by timestamp
   for (const key of Object.keys(series)) {
-    series[key].sort(
-      (a, b) =>
-        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-    )
+    const seriesArray = series[key]
+    if (seriesArray) {
+      seriesArray.sort(
+        (a, b) =>
+          new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+      )
+    }
   }
 
   return series
@@ -192,7 +206,7 @@ function transformTimeSeries(
 
 // Calculate API performance metrics
 function calculateApiPerformance(
-  metrics: Array<{ value: number; metadata?: Record<string, unknown> }>
+  metrics: Array<{ value: number; metadata: string | null }>
 ): {
   avgResponseTime: number
   p95ResponseTime: number
@@ -212,9 +226,15 @@ function calculateApiPerformance(
   const sorted = [...values].sort((a, b) => a - b)
 
   // Count errors (assuming metadata contains status code)
-  const errors = metrics.filter(
-    m => m.metadata && (m.metadata.statusCode as number) >= 400
-  ).length
+  const errors = metrics.filter(m => {
+    if (!m.metadata) return false
+    try {
+      const meta = JSON.parse(m.metadata) as { statusCode?: number }
+      return meta.statusCode && meta.statusCode >= 400
+    } catch {
+      return false
+    }
+  }).length
 
   return {
     avgResponseTime: Math.round(
