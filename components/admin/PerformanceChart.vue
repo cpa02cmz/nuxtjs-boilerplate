@@ -22,8 +22,8 @@
           :x2="chartWidth"
           :y2="(height / 5) * n"
           stroke="#e5e7eb"
-          stroke-width="1"
-          stroke-dasharray="4"
+          :stroke-width="svgConfig.gridStrokeWidth"
+          :stroke-dasharray="svgConfig.gridDashArray"
         />
       </g>
 
@@ -40,7 +40,7 @@
         class="chart-line"
         :d="linePath"
         :stroke="chartColor"
-        stroke-width="2"
+        :stroke-width="svgConfig.lineStrokeWidth"
         fill="none"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -53,7 +53,7 @@
           :key="`point-${index}`"
           :cx="point.x"
           :cy="point.y"
-          r="4"
+          :r="svgConfig.pointRadius"
           :fill="chartColor"
           class="data-point"
           :aria-label="`Value: ${point.value} at ${point.label}`"
@@ -93,6 +93,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { TimeSeriesDataPoint } from '~/types/performance'
+import { performanceDashboardConfig } from '~/configs/performance-dashboard.config'
 
 interface Props {
   data: TimeSeriesDataPoint[]
@@ -101,12 +102,13 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  height: 300,
+  height: performanceDashboardConfig.charts.height,
 })
 
-// Constants
-const chartWidth = 800
-const padding = { top: 20, right: 30, bottom: 30, left: 50 }
+// Flexy hates hardcoded values! Using config instead.
+const chartWidth = performanceDashboardConfig.charts.dimensions.width
+const padding = performanceDashboardConfig.charts.dimensions.padding
+const svgConfig = performanceDashboardConfig.charts.svg
 
 // Chart Colors
 const chartColors: Record<string, string> = {
@@ -223,7 +225,7 @@ const xAxisLabels = computed(() => {
 }
 
 .data-point:hover {
-  r: 6;
+  r: v-bind('svgConfig.pointHoverRadius');
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
