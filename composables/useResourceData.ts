@@ -147,7 +147,11 @@ export const useResourceData = () => {
   const technologies = computed(() => filterValues.value.technologies)
 
   // Initialize resources when composable is created
-  initResources()
+  // BugFixer: Added catch handler to prevent unhandled promise rejection
+  initResources().catch(() => {
+    // Error is already handled and stored in lastError.value
+    // This catch prevents unhandled promise rejection
+  })
 
   return {
     resources: readonly(resources),
