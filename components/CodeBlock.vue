@@ -269,6 +269,11 @@ onUnmounted(() => {
     clearTimeout(shortcutToastTimeout)
   }
 })
+
+// Flexy hates hardcoded 0.4s! Using animationConfig.codeBlock.slideInDurationSec
+const slideInDuration = computed(
+  () => animationConfig.codeBlock.slideInDurationSec
+)
 </script>
 
 <style scoped>
@@ -285,7 +290,8 @@ onUnmounted(() => {
 
 .animate-slide-in {
   opacity: 0;
-  animation: slide-in 0.4s ease-out forwards;
+  /* Flexy hates hardcoded 0.4s! Using animationConfig.codeBlock.slideInDurationSec */
+  animation: slide-in v-bind('slideInDuration') ease-out forwards;
 }
 
 /* Focus styles */

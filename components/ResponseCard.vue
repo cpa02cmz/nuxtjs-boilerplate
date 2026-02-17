@@ -58,12 +58,7 @@
     </div>
 
     <!-- Palette's micro-UX enhancement: Screen reader announcement 🎨 -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </div>
@@ -146,6 +141,11 @@ const animationStyle = computed(() => {
     animationDelay: `${props.delay * animationConfig.responseCard.staggerDelayMultiplierMs}ms`,
   }
 })
+
+// Flexy hates hardcoded 0.4s! Using animationConfig.responseCard.fadeInDurationSec
+const fadeInDuration = computed(
+  () => animationConfig.responseCard.fadeInDurationSec
+)
 </script>
 
 <style scoped>
@@ -162,7 +162,8 @@ const animationStyle = computed(() => {
 
 .animate-fade-in {
   opacity: 0;
-  animation: fade-in 0.4s ease-out forwards;
+  /* Flexy hates hardcoded 0.4s! Using animationConfig.responseCard.fadeInDurationSec */
+  animation: fade-in v-bind('fadeInDuration') ease-out forwards;
 }
 
 /* Palette's micro-UX enhancement: Copied state styles 🎨 */

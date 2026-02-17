@@ -1778,6 +1778,14 @@ export const animationConfig = {
       transitionDurationMs: parseInt(
         process.env.SIMILAR_SPOTLIGHT_TRANSITION_MS || '150'
       ),
+      // CSS duration string for transitions
+      transitionDurationSec: `${parseInt(process.env.SIMILAR_SPOTLIGHT_TRANSITION_MS || '150') / 1000}s`,
+      // Fade-in animation duration for spotlight entrance (ms) - Flexy hates hardcoded 200!
+      fadeInDurationMs: parseInt(
+        process.env.SIMILAR_SPOTLIGHT_FADE_IN_MS || '200'
+      ),
+      // CSS duration string for fade-in
+      fadeInDurationSec: `${parseInt(process.env.SIMILAR_SPOTLIGHT_FADE_IN_MS || '200') / 1000}s`,
       // Whether to show spotlight on hover
       enabled: process.env.SIMILAR_SPOTLIGHT_ENABLED !== 'false',
       // Border radius of the spotlight effect (px)
@@ -4107,6 +4115,10 @@ export const animationConfig = {
     staggerDelayMultiplierMs: parseInt(
       process.env.CODEBLOCK_STAGGER_MULTIPLIER_MS || '100'
     ),
+    // Duration of slide-in entrance animation (ms) - Flexy hates hardcoded 400!
+    slideInDurationMs: parseInt(process.env.CODEBLOCK_SLIDE_IN_MS || '400'),
+    // CSS duration string for slide-in
+    slideInDurationSec: `${parseInt(process.env.CODEBLOCK_SLIDE_IN_MS || '400') / 1000}s`,
   },
 
   // Response Card Animations - Flexy hates hardcoded values! 🧩
@@ -4116,6 +4128,10 @@ export const animationConfig = {
     staggerDelayMultiplierMs: parseInt(
       process.env.RESPONSE_CARD_STAGGER_MULTIPLIER_MS || '150'
     ),
+    // Duration of fade-in entrance animation (ms) - Flexy hates hardcoded 400!
+    fadeInDurationMs: parseInt(process.env.RESPONSE_CARD_FADE_IN_MS || '400'),
+    // CSS duration string for fade-in
+    fadeInDurationSec: `${parseInt(process.env.RESPONSE_CARD_FADE_IN_MS || '400') / 1000}s`,
   },
 
   // ============================================
