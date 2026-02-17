@@ -692,11 +692,13 @@ useHead({
 }
 
 .animate-fade-in {
-  animation: fade-in 0.6s ease-out forwards;
+  animation: fade-in v-bind('animationConfig.developerPage.fadeInDurationSec')
+    ease-out forwards;
 }
 
 .animate-fade-in-delayed {
-  animation: fade-in 0.6s ease-out 0.5s forwards;
+  animation: fade-in v-bind('animationConfig.developerPage.fadeInDurationSec')
+    ease-out v-bind('animationConfig.developerPage.fadeInDelaySec') forwards;
   opacity: 0;
 }
 
@@ -712,7 +714,9 @@ useHead({
 }
 
 .animate-icon-float {
-  animation: icon-float 3s ease-in-out infinite;
+  animation: icon-float
+    v-bind('animationConfig.developerPage.iconFloatDurationSec') ease-in-out
+    infinite;
 }
 
 /* Icon pulse animation */
@@ -727,7 +731,9 @@ useHead({
 }
 
 .animate-icon-pulse {
-  animation: icon-pulse 2s ease-in-out infinite;
+  animation: icon-pulse
+    v-bind('animationConfig.developerPage.iconPulseDurationSec') ease-in-out
+    infinite;
 }
 
 /* Sparkle animation */
@@ -744,14 +750,17 @@ useHead({
 }
 
 .animate-sparkle {
-  animation: sparkle 2s ease-in-out infinite;
+  animation: sparkle v-bind('animationConfig.developerPage.sparkleDurationSec')
+    ease-in-out infinite;
 }
 
 /* Section entrance animation - BroCula: Only animate on client to prevent hydration mismatch */
 .animate-section {
   opacity: 0;
   transform: translateY(20px);
-  animation: fade-in 0.5s ease-out forwards;
+  animation: fade-in
+    v-bind('animationConfig.developerPage.sectionEntranceDurationSec') ease-out
+    forwards;
 }
 
 /* Reduced motion - disable animations */

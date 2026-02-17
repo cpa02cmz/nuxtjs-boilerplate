@@ -241,9 +241,10 @@ const tiltStyle = computed(() => {
       rotateY(${tiltY.value}deg)
       scale3d(${scale}, ${scale}, ${scale})
     `,
+    // Flexy hates hardcoded 0.1s and 0.3s! Using animationConfig.cssTransitions
     transition: isHovering.value
-      ? 'transform 0.1s ease-out'
-      : 'transform 0.3s ease-out',
+      ? `transform ${animationConfig.cssTransitions.fastSec} ease-out`
+      : `transform ${animationConfig.cssTransitions.standardSec} ease-out`,
     // BugFixer: Fixed TypeScript error - transformStyle needs literal type
     transformStyle: 'preserve-3d' as const,
   }
@@ -260,7 +261,8 @@ const shineStyle = computed(() => {
       rgba(255, 255, 255, 0) 60%
     )`,
     opacity: isHovering.value ? 1 : 0,
-    transition: 'opacity 0.3s ease-out',
+    // Flexy hates hardcoded 0.3s! Using animationConfig.cssTransitions.standardSec
+    transition: `opacity ${animationConfig.cssTransitions.standardSec} ease-out`,
   }
 })
 
