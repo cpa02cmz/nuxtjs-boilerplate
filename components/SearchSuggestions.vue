@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="suggestions.length > 0 || searchHistory.length > 0 || hasQuery"
-    :id="id"
+    :id="componentId"
     ref="particleContainerRef"
     :class="[
       'absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md py-1 overflow-auto border border-gray-200',
@@ -10,7 +10,7 @@
     role="listbox"
     :aria-label="contentConfig.search.suggestions.title"
     :aria-activedescendant="
-      focusedIndex >= 0 ? `${id}-item-${focusedIndex}` : undefined
+      focusedIndex >= 0 ? `${componentId}-item-${focusedIndex}` : undefined
     "
     @keydown="handleKeyDown"
   >
@@ -45,7 +45,7 @@
       <ul>
         <li
           v-for="(history, index) in searchHistory"
-          :id="`${id}-item-${index}`"
+          :id="`${componentId}-item-${index}`"
           :key="'history-' + index"
           :data-suggestion-index="index"
           role="option"
@@ -149,7 +149,7 @@
       <ul>
         <li
           v-for="(suggestion, index) in suggestions"
-          :id="`${id}-item-${searchHistory.length + index}`"
+          :id="`${componentId}-item-${searchHistory.length + index}`"
           :key="suggestion.id"
           :data-suggestion-index="searchHistory.length + index"
           role="option"
@@ -345,10 +345,13 @@ interface Emits {
 const props = withDefaults(defineProps<Props>(), {
   suggestions: () => [],
   searchHistory: () => [],
-  id: generateId, // FIX #2953: Generate default ID for accessibility
+  id: undefined,
   focusedIndex: -1,
   hasQuery: false,
 })
+
+// FIX #2953: Generate component ID for accessibility (must be after defineProps)
+const componentId = computed(() => props.id || generateId())
 const emit = defineEmits<Emits>()
 
 // Use internal state if prop not provided, otherwise use prop
