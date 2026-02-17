@@ -81,7 +81,10 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       max: config.pool?.max || databaseConfig.pool.max,
       connectionTimeoutMillis:
         config.pool?.acquireTimeoutMs || databaseConfig.pool.acquireTimeoutMs,
-      idleTimeoutMillis: config.pool?.idleTimeoutMs || 10000,
+      // Flexy hates hardcoded 10000! Using databaseConfig.connectionPool.idleTimeoutMs
+      idleTimeoutMillis:
+        config.pool?.idleTimeoutMs ||
+        databaseConfig.connectionPool.idleTimeoutMs,
     })
 
     // Initialize Prisma client with PostgreSQL adapter
