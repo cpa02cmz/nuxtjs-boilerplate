@@ -3891,6 +3891,56 @@ export const animationConfig = {
   },
 
   // ============================================
+  // Palette ULW Loop - AI Keys Page Animations
+  // Micro-UX delight for AI Keys page! 🎨
+  // ============================================
+
+  aiKeys: {
+    // Initial delay before starting entrance animations (ms)
+    entranceDelayMs: parseInt(process.env.AI_KEYS_ENTRANCE_DELAY_MS || '100'),
+
+    // Title animation settings
+    titleDurationMs: parseInt(process.env.AI_KEYS_TITLE_DURATION_MS || '600'),
+    titleDelayMs: parseInt(process.env.AI_KEYS_TITLE_DELAY_MS || '0'),
+
+    // Subtitle animation settings
+    subtitleDurationMs: parseInt(
+      process.env.AI_KEYS_SUBTITLE_DURATION_MS || '500'
+    ),
+    subtitleDelayMs: parseInt(process.env.AI_KEYS_SUBTITLE_DELAY_MS || '150'),
+
+    // Category button animation settings
+    categoryDurationMs: parseInt(
+      process.env.AI_KEYS_CATEGORY_DURATION_MS || '400'
+    ),
+    // Stagger delay between each category button (ms)
+    categoryStaggerMs: parseInt(
+      process.env.AI_KEYS_CATEGORY_STAGGER_MS || '50'
+    ),
+
+    // Selected category pulse animation duration (ms)
+    selectedPulseDurationMs: parseInt(
+      process.env.AI_KEYS_SELECTED_PULSE_MS || '200'
+    ),
+
+    // Empty state icon animation duration (ms)
+    emptyIconDurationMs: parseInt(
+      process.env.AI_KEYS_EMPTY_ICON_DURATION_MS || '600'
+    ),
+
+    // Floating dot animation settings
+    floatDotDurationMs: parseInt(
+      process.env.AI_KEYS_FLOAT_DOT_DURATION_MS || '2000'
+    ),
+    floatDotDelayMs: parseInt(process.env.AI_KEYS_FLOAT_DOT_DELAY_MS || '500'),
+
+    // Button transition duration (ms)
+    buttonTransitionMs: parseInt(
+      process.env.AI_KEYS_BUTTON_TRANSITION_MS || '150'
+    ),
+  },
+
+  // ============================================
   // Palette ULW Loop - CodeBlock Animations
   // Micro-UX delight for code blocks! 🎨
   // ============================================
