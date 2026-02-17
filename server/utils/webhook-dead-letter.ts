@@ -12,6 +12,7 @@ import {
   checkDeadLetterThresholds,
 } from './dead-letter-alerts'
 import { TIME } from './constants'
+import { calculateBackoff } from './retry'
 
 export class DeadLetterManager {
   async addToDeadLetter(
@@ -152,7 +153,16 @@ export class DeadLetterManager {
       payload: deadLetterItem.payload,
       // Flexy hates hardcoded 10! Using webhooksConfig.deadLetter.retryPriority
       priority: webhooksConfig.deadLetter.retryPriority,
-      scheduledFor: new Date().toISOString(),
+      scheduledFor: new Date(
+        Date.now() +
+          calculateBackoff(
+            0,
+            webhooksConfig.retry.baseDelayMs,
+            webhooksConfig.retry.maxDelayMs,
+            true,
+            webhooksConfig.retry.jitterFactor
+          )
+      ).toISOString(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       retryCount: 0,

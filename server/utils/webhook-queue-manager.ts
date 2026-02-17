@@ -109,7 +109,7 @@ export class WebhookQueueManager {
         // Issue #2211: Implement retry logic with exponential backoff
         const currentRetryCount = item.retryCount
 
-        if (currentRetryCount >= item.maxRetries) {
+        if (currentRetryCount > item.maxRetries) {
           // Move to dead letter queue after max retries
           logger.warn(
             `Moving queue item ${item.id} to dead letter queue after ${item.maxRetries} retries`
@@ -145,8 +145,8 @@ export class WebhookQueueManager {
             currentRetryCount,
             webhooksConfig.retry.baseDelayMs,
             webhooksConfig.retry.maxDelayMs,
-            false, // No jitter for scheduled items
-            0
+            true, // Enable jitter for better retry distribution
+            webhooksConfig.retry.jitterFactor
           )
           const nextAttemptAt = new Date(Date.now() + backoffMs)
 
