@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { AsyncLocalStorage } from 'async_hooks'
 import { databaseConfig } from '~/configs/database.config'
 import { timeConfig } from '~/configs/time.config'
@@ -197,8 +197,9 @@ export async function checkDatabaseHealth(): Promise<boolean> {
   const HEALTH_CHECK_TIMEOUT = databaseConfig.healthCheck.timeoutMs
 
   try {
-    // Simple query to check connection with timeout
-    const healthCheck = prisma.$queryRaw`${Prisma.raw(databaseConfig.healthCheck.query)}`
+    // SECURITY FIX: Use hardcoded safe query instead of config to prevent injection
+    // The health check query should never be dynamic or user-modifiable
+    const healthCheck = prisma.$queryRaw`SELECT 1`
     const timeout = new Promise<never>((_, reject) =>
       setTimeout(
         () => reject(new Error('Health check timeout')),

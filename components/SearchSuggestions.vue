@@ -313,6 +313,10 @@ import { zIndexScale } from '~/configs/z-index.config'
 import { NuxtLink } from '#components'
 import { hapticLight } from '~/utils/hapticFeedback'
 
+// Generate unique ID for accessibility - FIX #2953
+const generateId = () =>
+  `search-suggestions-${Math.random().toString(36).substr(2, limitsConfig.displayLength.componentIdLength)}`
+
 interface SuggestionItem {
   id: string
   title: string
@@ -341,7 +345,7 @@ interface Emits {
 const props = withDefaults(defineProps<Props>(), {
   suggestions: () => [],
   searchHistory: () => [],
-  id: undefined,
+  id: generateId, // FIX #2953: Generate default ID for accessibility
   focusedIndex: -1,
   hasQuery: false,
 })
