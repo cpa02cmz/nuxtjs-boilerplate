@@ -1006,6 +1006,8 @@ export const animationConfig = {
     durationSec: parseFloat(process.env.CARD_SHINE_DURATION_SEC || '1.2'),
     // Delay before shine starts on hover (ms)
     delayMs: parseInt(process.env.CARD_SHINE_DELAY_MS || '0'),
+    // CSS-compatible transition duration (seconds) - RepoKeeper fix for missing property
+    transitionSec: parseFloat(process.env.CARD_SHINE_TRANSITION_SEC || '0.3'),
     // Gradient color start (white with low opacity)
     gradientStart:
       process.env.CARD_SHINE_GRADIENT_START || 'rgba(255, 255, 255, 0)',
@@ -1022,6 +1024,17 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.CARD_SHINE_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // Stagger Animation Config - RepoKeeper fix for missing type definition
+  // Used by SearchSuggestions.vue for staggered entrance animations
+  stagger: {
+    // Duration of entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.STAGGER_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Delay between items (ms)
+    delayMs: parseInt(process.env.STAGGER_DELAY_MS || '50'),
   },
 
   // Smart Paste Animations - Palette's micro-UX enhancement!
