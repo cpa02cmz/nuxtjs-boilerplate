@@ -239,6 +239,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     }
 
     // Create PostgreSQL connection pool for direct queries
+    // SECURITY FIX #3647: Add connection validation and error handling
     this.pool = new Pool({
       connectionString: this.connectionUrl,
       min: this.config.pool?.min || databaseConfig.pool.min,
@@ -250,6 +251,42 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       idleTimeoutMillis:
         this.config.pool?.idleTimeoutMs ||
         databaseConfig.connectionPool.idleTimeoutMs,
+      // SECURITY FIX #3647: Connection validation settings
+      ...(databaseConfig.poolValidation.testOnBorrow && {
+        // Validate connections before returning from pool
+        testOnBorrow: true,
+        // Timeout for connection validation queries
+        validationTimeout: databaseConfig.poolValidation.validationTimeoutMs,
+      }),
+    })
+
+    // SECURITY FIX #3647: Add error event handler for pool
+    this.pool.on('error', (err, client) => {
+      console.error('[PostgreSQL] Unexpected pool error:', err.message)
+      // Log additional context if available
+      if (client) {
+        console.error('[PostgreSQL] Error occurred on client in pool')
+      }
+      // In production, you might want to emit metrics or send alerts here
+      if (process.env.NODE_ENV === 'production') {
+        console.error(
+          '[PostgreSQL] Pool error in production - check database connectivity'
+        )
+      }
+    })
+
+    // SECURITY FIX #3647: Add connect event handler for monitoring
+    this.pool.on('connect', () => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[PostgreSQL] New client connected to pool')
+      }
+    })
+
+    // SECURITY FIX #3647: Add remove event handler for monitoring
+    this.pool.on('remove', () => {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[PostgreSQL] Client removed from pool')
+      }
     })
 
     // Initialize Prisma client with PostgreSQL adapter
