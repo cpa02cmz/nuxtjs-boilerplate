@@ -38,7 +38,22 @@ export const analyticsConfig = {
 
   // BroCula: Disable analytics API calls in static/SPA mode to prevent 404 console errors
   // Set ANALYTICS_API_ENABLED=false when running static builds without API
-  apiEnabled: process.env.ANALYTICS_API_ENABLED !== 'false',
+  // In browser/client-side, we check if API is actually available before making calls
+  apiEnabled: (() => {
+    // Check explicit environment variable first
+    if (process.env.ANALYTICS_API_ENABLED === 'false') {
+      return false
+    }
+    // In production static builds without explicit API enabled, default to false
+    // to prevent 404 console errors
+    if (
+      process.env.NODE_ENV === 'production' &&
+      process.env.ANALYTICS_API_ENABLED !== 'true'
+    ) {
+      return false
+    }
+    return true
+  })(),
 
   // Storage Keys
   storage: {
