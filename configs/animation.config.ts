@@ -1630,6 +1630,21 @@ export const animationConfig = {
     marginTopPx: parseInt(process.env.SPINNER_LOADING_MARGIN_TOP_PX || '12'),
   },
 
+  // Generic Spinner Animation - Flexy hates hardcoded values! 🧩
+  // Standardized spin animation for loading states across all components
+  spinner: {
+    // Full rotation duration for spin animation (ms) - Flexy hates hardcoded 1s!
+    rotateDurationMs: parseInt(
+      process.env.SPINNER_ROTATE_DURATION_MS || '1000'
+    ),
+    // CSS duration string for v-bind
+    rotateDurationSec: `${parseInt(process.env.SPINNER_ROTATE_DURATION_MS || '1000') / 1000}s`,
+    // Timing function for smooth spin
+    timingFunction: process.env.SPINNER_TIMING_FUNCTION || 'linear',
+    // Number of iterations (infinite for continuous spin)
+    iterationCount: process.env.SPINNER_ITERATION_COUNT || 'infinite',
+  },
+
   // Alternative Suggestions Animations - Palette's micro-UX delight!
   // Staggered card entrance with subtle hover effects
   alternativeSuggestions: {
@@ -1672,6 +1687,16 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.ALTERNATIVES_RESPECT_REDUCED_MOTION !== 'false',
+    // 🎨 Pallete's micro-UX enhancement: Sparkle animation on header icon
+    sparkleDurationMs: parseInt(
+      process.env.ALTERNATIVES_SPARKLE_DURATION_MS || '1000'
+    ),
+    sparkleDelayMs: parseInt(
+      process.env.ALTERNATIVES_SPARKLE_DELAY_MS || '600'
+    ),
+    sparkleParticleCount: parseInt(
+      process.env.ALTERNATIVES_SPARKLE_PARTICLE_COUNT || '6'
+    ),
   },
 
   // 🎨 Pallete's micro-UX enhancement: Limitations Section Animations
