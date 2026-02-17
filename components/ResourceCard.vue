@@ -244,7 +244,8 @@ const tiltStyle = computed(() => {
     transition: isHovering.value
       ? 'transform 0.1s ease-out'
       : 'transform 0.3s ease-out',
-    transformStyle: 'preserve-3d',
+    // BugFixer: Fixed TypeScript error - transformStyle needs literal type
+    transformStyle: 'preserve-3d' as const,
   }
 })
 
