@@ -16,10 +16,7 @@
         @keydown.space.prevent="handleCopy(value as string, 'text')"
       >
         <span class="comparison-value__text">{{ value }}</span>
-        <span
-          class="comparison-value__icon"
-          aria-hidden="true"
-        >
+        <span class="comparison-value__icon" aria-hidden="true">
           <Transition
             mode="out-in"
             :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
@@ -62,10 +59,7 @@
           </Transition>
         </span>
       </button>
-      <span
-        v-else
-        class="comparison-value comparison-value--empty"
-      >-</span>
+      <span v-else class="comparison-value comparison-value--empty">-</span>
     </template>
 
     <!-- Number Type with Copy Functionality -->
@@ -84,10 +78,7 @@
         @keydown.space.prevent="handleCopy(String(value), 'number')"
       >
         <span class="comparison-value__text">{{ value }}</span>
-        <span
-          class="comparison-value__icon"
-          aria-hidden="true"
-        >
+        <span class="comparison-value__icon" aria-hidden="true">
           <Transition
             mode="out-in"
             :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
@@ -130,10 +121,7 @@
           </Transition>
         </span>
       </button>
-      <span
-        v-else
-        class="comparison-value comparison-value--empty"
-      >-</span>
+      <span v-else class="comparison-value comparison-value--empty">-</span>
     </template>
 
     <!-- Boolean Type with Enhanced Visuals -->
@@ -143,15 +131,8 @@
         class="comparison-value comparison-value--boolean comparison-value--true"
         :class="{ 'comparison-value--reduced-motion': prefersReducedMotion }"
       >
-        <span
-          class="comparison-value__boolean-icon"
-          aria-hidden="true"
-        >
-          <svg
-            class="w-3.5 h-3.5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+        <span class="comparison-value__boolean-icon" aria-hidden="true">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
             <path
               fill-rule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -166,15 +147,8 @@
         class="comparison-value comparison-value--boolean comparison-value--false"
         :class="{ 'comparison-value--reduced-motion': prefersReducedMotion }"
       >
-        <span
-          class="comparison-value__boolean-icon"
-          aria-hidden="true"
-        >
-          <svg
-            class="w-3.5 h-3.5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+        <span class="comparison-value__boolean-icon" aria-hidden="true">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
             <path
               fill-rule="evenodd"
               d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -184,10 +158,7 @@
         </span>
         <span class="comparison-value__boolean-text">No</span>
       </span>
-      <span
-        v-else
-        class="comparison-value comparison-value--empty"
-      >-</span>
+      <span v-else class="comparison-value comparison-value--empty">-</span>
     </template>
 
     <!-- List Type with Copy All Functionality -->
@@ -195,30 +166,40 @@
       <div
         v-if="Array.isArray(value) && value.length > 0"
         class="comparison-value comparison-value--list"
+        :class="{ 'comparison-value--reduced-motion': prefersReducedMotion }"
       >
         <div class="flex flex-wrap justify-center gap-1">
           <span
             v-for="(item, index) in displayItems"
             :key="index"
             class="comparison-value__list-item"
+            :style="getListItemStyle(index)"
           >
             {{ item }}
           </span>
           <button
             v-if="hasMoreItems"
+            ref="moreButtonRef"
             class="comparison-value__more-btn"
             :class="{
               'comparison-value--copied': copiedState.list,
               'comparison-value--reduced-motion': prefersReducedMotion,
+              'comparison-value__more-btn--hover': isMoreButtonHovered,
             }"
-            :aria-label="`Copy all ${value.length} items to clipboard`"
+            :aria-label="`Copy all ${value.length} items to clipboard. Hover to preview hidden items.`"
             :title="`Copy all ${value.length} items`"
             @click="handleCopyList"
             @keydown.enter.prevent="handleCopyList"
             @keydown.space.prevent="handleCopyList"
+            @mouseenter="handleMoreButtonMouseEnter"
+            @mouseleave="handleMoreButtonMouseLeave"
+            @focus="handleMoreButtonMouseEnter"
+            @blur="handleMoreButtonMouseLeave"
           >
-            <span>+{{ value.length - displayLimit }}
-              {{ contentConfig.similarResources.moreItemsText }}</span>
+            <span class="comparison-value__more-btn-text"
+              >+{{ value.length - displayLimit }}
+              {{ contentConfig.similarResources.moreItemsText }}</span
+            >
             <Transition
               mode="out-in"
               :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
@@ -261,27 +242,81 @@
             </Transition>
           </button>
         </div>
+
+        <!-- List Preview Tooltip - Palette's micro-UX delight! 🎨 -->
+        <Transition
+          enter-active-class="transition-all duration-200 ease-out"
+          enter-from-class="opacity-0 scale-95 -translate-y-2"
+          enter-to-class="opacity-100 scale-100 translate-y-0"
+          leave-active-class="transition-all duration-150 ease-in"
+          leave-from-class="opacity-100 scale-100 translate-y-0"
+          leave-to-class="opacity-0 scale-95 -translate-y-2"
+        >
+          <div
+            v-if="showListPreview && hasMoreItems"
+            class="comparison-value__list-preview"
+            :class="{
+              'comparison-value__list-preview--reduced-motion':
+                prefersReducedMotion,
+            }"
+            role="tooltip"
+            @mouseenter="handlePreviewMouseEnter"
+            @mouseleave="handlePreviewMouseLeave"
+          >
+            <div class="comparison-value__list-preview-header">
+              <span class="comparison-value__list-preview-title"
+                >All Items ({{ value.length }})</span
+              >
+              <button
+                class="comparison-value__list-preview-copy"
+                :aria-label="`Copy all ${value.length} items`"
+                @click="handleCopyList"
+              >
+                <svg
+                  class="w-3.5 h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
+                </svg>
+                <span>Copy</span>
+              </button>
+            </div>
+            <div class="comparison-value__list-preview-items">
+              <span
+                v-for="(item, index) in value"
+                :key="index"
+                class="comparison-value__list-preview-item"
+                :class="{
+                  'comparison-value__list-preview-item--hidden':
+                    index < displayLimit,
+                }"
+                :style="getPreviewItemStyle(index)"
+              >
+                {{ item }}
+              </span>
+            </div>
+          </div>
+        </Transition>
       </div>
-      <span
-        v-else
-        class="comparison-value comparison-value--empty"
-      >-</span>
+      <span v-else class="comparison-value comparison-value--empty">-</span>
     </template>
 
     <!-- Screen Reader Announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { limitsConfig } from '~/configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
@@ -314,6 +349,13 @@ const copiedState = ref({
   list: false,
 })
 
+// List preview tooltip state - Palette's micro-UX delight! 🎨
+const showListPreview = ref(false)
+const isMoreButtonHovered = ref(false)
+const moreButtonRef = ref<HTMLElement | null>(null)
+let previewShowTimeout: ReturnType<typeof setTimeout> | null = null
+let previewHideTimeout: ReturnType<typeof setTimeout> | null = null
+
 // Announcement text for screen readers
 const announcementText = ref('')
 
@@ -342,6 +384,20 @@ onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 })
 
+// Cleanup timeouts on unmount
+onUnmounted(() => {
+  if (previewShowTimeout) {
+    clearTimeout(previewShowTimeout)
+  }
+  if (previewHideTimeout) {
+    clearTimeout(previewHideTimeout)
+  }
+  // Clear copy timeouts
+  Object.values(copyTimeouts.value).forEach(timeout => {
+    if (timeout) clearTimeout(timeout)
+  })
+})
+
 const displayItems = computed(() => {
   if (!Array.isArray(props.value)) return []
   return props.value.slice(0, displayLimit)
@@ -357,6 +413,80 @@ const hasMoreItems = computed(() => {
 const copyTooltip = computed(() => {
   return contentConfig.comparisonValue?.copyTooltip || 'Click to copy'
 })
+
+// Get staggered animation style for list items
+const getListItemStyle = (index: number) => {
+  if (prefersReducedMotion.value) return {}
+  const staggerDelay = animationConfig.comparisonValue?.listItemStaggerMs || 50
+  return {
+    animationDelay: `${index * staggerDelay}ms`,
+  }
+}
+
+// Get staggered animation style for preview items
+const getPreviewItemStyle = (index: number) => {
+  if (prefersReducedMotion.value) return {}
+  const staggerDelay = animationConfig.comparisonValue?.listItemStaggerMs || 50
+  const baseDelay = index * staggerDelay
+  return {
+    animationDelay: `${baseDelay}ms`,
+  }
+}
+
+// Handle more button mouse enter with delayed preview
+const handleMoreButtonMouseEnter = () => {
+  isMoreButtonHovered.value = true
+
+  // Clear any pending hide timeout
+  if (previewHideTimeout) {
+    clearTimeout(previewHideTimeout)
+    previewHideTimeout = null
+  }
+
+  // Show preview after delay
+  const showDelay =
+    animationConfig.comparisonValue?.listPreviewShowDelayMs || 200
+  previewShowTimeout = setTimeout(() => {
+    showListPreview.value = true
+  }, showDelay)
+}
+
+// Handle more button mouse leave with delayed hide
+const handleMoreButtonMouseLeave = () => {
+  isMoreButtonHovered.value = false
+
+  // Clear any pending show timeout
+  if (previewShowTimeout) {
+    clearTimeout(previewShowTimeout)
+    previewShowTimeout = null
+  }
+
+  // Hide preview after delay (allows moving to tooltip)
+  const hideDelay =
+    animationConfig.comparisonValue?.listPreviewHideDelayMs || 150
+  previewHideTimeout = setTimeout(() => {
+    showListPreview.value = false
+  }, hideDelay)
+}
+
+// Handle preview mouse enter (keep preview open)
+const handlePreviewMouseEnter = () => {
+  // Clear hide timeout when hovering over preview
+  if (previewHideTimeout) {
+    clearTimeout(previewHideTimeout)
+    previewHideTimeout = null
+  }
+  showListPreview.value = true
+}
+
+// Handle preview mouse leave
+const handlePreviewMouseLeave = () => {
+  const hideDelay =
+    animationConfig.comparisonValue?.listPreviewHideDelayMs || 150
+  previewHideTimeout = setTimeout(() => {
+    showListPreview.value = false
+  }, hideDelay)
+}
 
 // Handle copy action with haptic feedback and visual confirmation
 const handleCopy = async (text: string, type: 'text' | 'number' | 'list') => {
@@ -571,19 +701,7 @@ const handleCopyList = async () => {
 .comparison-value--list {
   display: block;
   width: 100%;
-}
-
-.comparison-value__list-item {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.125rem 0.5rem;
-  background-color: v-bind(
-    'themeConfig.comparisonValue.listItemBg || "rgba(59, 130, 246, 0.1)"'
-  );
-  color: v-bind('themeConfig.comparisonValue.listItemColor || "#1d4ed8"');
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 500;
+  position: relative;
 }
 
 .comparison-value__more-btn {
@@ -612,10 +730,189 @@ const handleCopyList = async () => {
   );
 }
 
+.comparison-value__more-btn--hover:not(.comparison-value--reduced-motion) {
+  transform: scale(
+    v-bind('animationConfig.comparisonValue?.moreBtnHoverScale || 1.05')
+  );
+}
+
+.comparison-value__more-btn-text {
+  display: inline-flex;
+  align-items: center;
+}
+
 .comparison-value__more-btn:focus-visible {
   outline: 2px solid
     v-bind('themeConfig.comparisonValue.focusRingColor || "#3b82f6"');
   outline-offset: 2px;
+}
+
+/* List Preview Tooltip - Palette's micro-UX delight! 🎨 */
+.comparison-value__list-preview {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 0.5rem;
+  min-width: 200px;
+  max-width: 300px;
+  background: v-bind('themeConfig.comparisonValue.previewBg || "#ffffff"');
+  border: 1px solid
+    v-bind('themeConfig.comparisonValue.previewBorder || "rgba(0, 0, 0, 0.1)"');
+  border-radius: 0.5rem;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  padding: 0.75rem;
+}
+
+.comparison-value__list-preview::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: v-bind(
+    'themeConfig.comparisonValue.previewBg || "#ffffff"'
+  );
+}
+
+.comparison-value__list-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid
+    v-bind('themeConfig.comparisonValue.previewDivider || "rgba(0, 0, 0, 0.1)"');
+}
+
+.comparison-value__list-preview-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: v-bind('themeConfig.comparisonValue.previewTitleColor || "#374151"');
+}
+
+.comparison-value__list-preview-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: v-bind(
+    'themeConfig.comparisonValue.previewCopyBg || "rgba(59, 130, 246, 0.1)"'
+  );
+  color: v-bind('themeConfig.comparisonValue.previewCopyColor || "#2563eb"');
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all v-bind('animationConfig.transition.fast.durationMs + "ms"')
+    ease;
+}
+
+.comparison-value__list-preview-copy:hover {
+  background: v-bind(
+    'themeConfig.comparisonValue.previewCopyHoverBg || "rgba(59, 130, 246, 0.2)"'
+  );
+}
+
+.comparison-value__list-preview-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.comparison-value__list-preview-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background: v-bind(
+    'themeConfig.comparisonValue.previewItemBg || "rgba(59, 130, 246, 0.08)"'
+  );
+  color: v-bind('themeConfig.comparisonValue.previewItemColor || "#1d4ed8"');
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0;
+  animation: preview-item-fade-in
+    v-bind('animationConfig.transition.normal.durationMs + "ms"') ease-out
+    forwards;
+}
+
+.comparison-value__list-preview-item--hidden {
+  opacity: 0.5;
+  background: v-bind(
+    'themeConfig.comparisonValue.previewItemHiddenBg || "rgba(107, 114, 128, 0.1)"'
+  );
+  color: v-bind(
+    'themeConfig.comparisonValue.previewItemHiddenColor || "#6b7280"'
+  );
+}
+
+@keyframes preview-item-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.comparison-value__list-preview--reduced-motion
+  .comparison-value__list-preview-item {
+  animation: none;
+  opacity: 1;
+}
+
+/* Enhanced List Item Hover Effects */
+.comparison-value__list-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  background-color: v-bind(
+    'themeConfig.comparisonValue.listItemBg || "rgba(59, 130, 246, 0.1)"'
+  );
+  color: v-bind('themeConfig.comparisonValue.listItemColor || "#1d4ed8"');
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all v-bind('animationConfig.transition.fast.durationMs + "ms"')
+    ease-out;
+  opacity: 0;
+  animation: list-item-entrance
+    v-bind('animationConfig.transition.normal.durationMs + "ms"') ease-out
+    forwards;
+}
+
+.comparison-value__list-item:hover:not(.comparison-value--reduced-motion) {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: v-bind(
+    'themeConfig.comparisonValue.listItemHoverBg || "rgba(59, 130, 246, 0.2)"'
+  );
+}
+
+@keyframes list-item-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.comparison-value--reduced-motion .comparison-value__list-item {
+  animation: none;
+  opacity: 1;
 }
 
 /* Reduced motion support */

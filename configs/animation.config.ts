@@ -2374,6 +2374,22 @@ export const animationConfig = {
     booleanPopDurationMs: parseInt(
       process.env.COMPARISON_VALUE_BOOL_POP_MS || '300'
     ),
+    // List item stagger animation delay (ms) - Palette's micro-UX delight! 🎨
+    listItemStaggerMs: parseInt(
+      process.env.COMPARISON_VALUE_LIST_STAGGER_MS || '50'
+    ),
+    // List preview tooltip show delay (ms)
+    listPreviewShowDelayMs: parseInt(
+      process.env.COMPARISON_VALUE_PREVIEW_SHOW_MS || '200'
+    ),
+    // List preview tooltip hide delay (ms)
+    listPreviewHideDelayMs: parseInt(
+      process.env.COMPARISON_VALUE_PREVIEW_HIDE_MS || '150'
+    ),
+    // More button hover scale effect
+    moreBtnHoverScale: parseFloat(
+      process.env.COMPARISON_VALUE_MORE_BTN_SCALE || '1.05'
+    ),
   },
 
   // Comments Section Animations - Palette's micro-UX delight!
