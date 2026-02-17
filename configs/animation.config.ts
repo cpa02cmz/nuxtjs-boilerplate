@@ -3903,6 +3903,19 @@ export const animationConfig = {
     shortcutToastDurationMs: parseInt(
       process.env.CODEBLOCK_TOAST_DURATION_MS || '3000'
     ),
+    // Stagger delay multiplier for animation delays (ms) - Flexy hates hardcoded 100!
+    staggerDelayMultiplierMs: parseInt(
+      process.env.CODEBLOCK_STAGGER_MULTIPLIER_MS || '100'
+    ),
+  },
+
+  // Response Card Animations - Flexy hates hardcoded values! 🧩
+  // Stagger delay multiplier for response card entrance animations
+  responseCard: {
+    // Stagger delay multiplier for animation delays (ms) - Flexy hates hardcoded 150!
+    staggerDelayMultiplierMs: parseInt(
+      process.env.RESPONSE_CARD_STAGGER_MULTIPLIER_MS || '150'
+    ),
   },
 
   // ============================================
@@ -4191,6 +4204,10 @@ export const animationConfig = {
     fadeInMs: parseInt(process.env.RATE_LIMIT_CARD_FADE_IN_MS || '400'),
     // CSS duration string for fade-in
     fadeInSec: `${parseInt(process.env.RATE_LIMIT_CARD_FADE_IN_MS || '400') / 1000}s`,
+    // Stagger delay multiplier for card animations (ms) - Flexy hates hardcoded 100!
+    staggerDelayMultiplierMs: parseInt(
+      process.env.RATE_LIMIT_CARD_STAGGER_MULTIPLIER_MS || '100'
+    ),
   },
 
   // 🎨 Palette's micro-UX enhancement: Resource Details Page Animations ✨
@@ -4327,6 +4344,10 @@ export const animationConfig = {
     // Active indicator dot size (px)
     indicatorDotActiveSizePx: parseInt(
       process.env.METRIC_CARD_DOT_ACTIVE_SIZE || '8'
+    ),
+    // Stagger delay for indicator dot animations (ms) - Flexy hates hardcoded 100ms!
+    indicatorStaggerDelayMs: parseInt(
+      process.env.METRIC_CARD_INDICATOR_STAGGER_MS || '100'
     ),
   },
 
