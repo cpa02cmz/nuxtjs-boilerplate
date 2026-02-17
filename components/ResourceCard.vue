@@ -1,10 +1,18 @@
 <template>
-  <!-- 
+  <!--
     🎨 Pallete's micro-UX enhancement: Entrance animation wrapper
     Creates delightful cascading effect when cards appear in lists
     - Staggered animations based on card index
     - Respects reduced motion preferences
     - Smooth entrance with scale and translate effects
+  -->
+  <!--
+    🎨 Pallete's micro-UX enhancement: 3D Hover Tilt Effect
+    Adds subtle parallax depth when hovering over cards
+    - Mouse-tracking 3D rotation for tactile feedback
+    - Dynamic gradient shine that follows cursor
+    - Respects reduced motion preferences
+    - Fully configurable via animation.config.ts
   -->
   <div
     ref="cardContainerRef"
@@ -13,10 +21,21 @@
       {
         'is-visible': isVisible || prefersReducedMotion,
         'is-animated': !prefersReducedMotion && isVisible,
+        'is-tilted': isHovering && !prefersReducedMotion,
       },
     ]"
-    :style="entranceStyle"
+    :style="[entranceStyle, tiltStyle]"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+    @mousemove="handleMouseMove"
   >
+    <!-- 🎨 Pallete's micro-UX: Dynamic gradient shine overlay -->
+    <div
+      v-if="isHovering && !prefersReducedMotion"
+      class="card-shine-overlay"
+      :style="shineStyle"
+      aria-hidden="true"
+    />
     <ResourceCardBase
       :id="id"
       :title="title"
@@ -113,6 +132,137 @@ const isVisible = ref(false)
 const prefersReducedMotion = ref(false)
 const cardContainerRef = ref<HTMLDivElement | null>(null)
 
+// 🎨 Pallete's micro-UX enhancement: 3D Hover Tilt Effect state
+const isHovering = ref(false)
+const tiltX = ref(0)
+const tiltY = ref(0)
+const shineX = ref(50)
+const shineY = ref(50)
+const isTiltActive = ref(false)
+let tiltRAF: number | null = null
+
+// 🎨 Pallete's micro-UX: Calculate tilt based on mouse position
+const calculateTilt = (event: MouseEvent, element: HTMLElement) => {
+  const rect = element.getBoundingClientRect()
+  const centerX = rect.left + rect.width / 2
+  const centerY = rect.top + rect.height / 2
+  const mouseX = event.clientX - centerX
+  const mouseY = event.clientY - centerY
+
+  // Get config values (with fallbacks)
+  const maxTilt = animationConfig.resourceCard.tilt?.maxTiltDeg ?? 10
+  const perspective = animationConfig.resourceCard.tilt?.perspectivePx ?? 1000
+
+  // Calculate tilt angles (-maxTilt to +maxTilt)
+  const rotateX = (mouseY / (rect.height / 2)) * -maxTilt
+  const rotateY = (mouseX / (rect.width / 2)) * maxTilt
+
+  return {
+    rotateX: Math.max(-maxTilt, Math.min(maxTilt, rotateX)),
+    rotateY: Math.max(-maxTilt, Math.min(maxTilt, rotateY)),
+    perspective,
+  }
+}
+
+// 🎨 Pallete's micro-UX: Calculate shine gradient position
+const calculateShine = (event: MouseEvent, element: HTMLElement) => {
+  const rect = element.getBoundingClientRect()
+  const x = ((event.clientX - rect.left) / rect.width) * 100
+  const y = ((event.clientY - rect.top) / rect.height) * 100
+  return { x, y }
+}
+
+// 🎨 Pallete's micro-UX: Mouse event handlers with RAF for smooth performance
+const handleMouseEnter = () => {
+  if (prefersReducedMotion.value) return
+  isHovering.value = true
+  isTiltActive.value = true
+}
+
+const handleMouseLeave = () => {
+  isHovering.value = false
+  // Reset tilt smoothly
+  if (tiltRAF) {
+    cancelAnimationFrame(tiltRAF)
+  }
+  const resetTilt = () => {
+    if (!isHovering.value) {
+      tiltX.value = tiltX.value * 0.9
+      tiltY.value = tiltY.value * 0.9
+      if (Math.abs(tiltX.value) > 0.1 || Math.abs(tiltY.value) > 0.1) {
+        tiltRAF = requestAnimationFrame(resetTilt)
+      } else {
+        tiltX.value = 0
+        tiltY.value = 0
+        isTiltActive.value = false
+      }
+    }
+  }
+  resetTilt()
+}
+
+const handleMouseMove = (event: MouseEvent) => {
+  if (
+    !isHovering.value ||
+    !cardContainerRef.value ||
+    prefersReducedMotion.value
+  )
+    return
+
+  if (tiltRAF) {
+    cancelAnimationFrame(tiltRAF)
+  }
+
+  tiltRAF = requestAnimationFrame(() => {
+    if (!cardContainerRef.value) return
+    const tilt = calculateTilt(event, cardContainerRef.value)
+    const shine = calculateShine(event, cardContainerRef.value)
+
+    tiltX.value = tilt.rotateX
+    tiltY.value = tilt.rotateY
+    shineX.value = shine.x
+    shineY.value = shine.y
+  })
+}
+
+// 🎨 Pallete's micro-UX: Computed tilt styles
+const tiltStyle = computed(() => {
+  if (prefersReducedMotion.value || !isTiltActive.value) {
+    return {}
+  }
+
+  const perspective = animationConfig.resourceCard.tilt?.perspectivePx ?? 1000
+  const scale = animationConfig.resourceCard.tilt?.hoverScale ?? 1.02
+
+  return {
+    transform: `
+      perspective(${perspective}px)
+      rotateX(${tiltX.value}deg)
+      rotateY(${tiltY.value}deg)
+      scale3d(${scale}, ${scale}, ${scale})
+    `,
+    transition: isHovering.value
+      ? 'transform 0.1s ease-out'
+      : 'transform 0.3s ease-out',
+    transformStyle: 'preserve-3d',
+  }
+})
+
+// 🎨 Pallete's micro-UX: Computed shine gradient styles
+const shineStyle = computed(() => {
+  const opacity = animationConfig.resourceCard.tilt?.shineOpacity ?? 0.15
+
+  return {
+    background: `radial-gradient(
+      circle at ${shineX.value}% ${shineY.value}%,
+      rgba(255, 255, 255, ${opacity}) 0%,
+      rgba(255, 255, 255, 0) 60%
+    )`,
+    opacity: isHovering.value ? 1 : 0,
+    transition: 'opacity 0.3s ease-out',
+  }
+})
+
 // Check for reduced motion preference
 const checkReducedMotion = () => {
   if (typeof window === 'undefined' || !window.matchMedia) return false
@@ -207,6 +357,10 @@ onUnmounted(() => {
   if (intersectionObserver) {
     intersectionObserver.disconnect()
   }
+  // 🎨 Pallete's micro-UX: Clean up tilt RAF to prevent memory leaks
+  if (tiltRAF) {
+    cancelAnimationFrame(tiltRAF)
+  }
 })
 </script>
 
@@ -239,5 +393,30 @@ onUnmounted(() => {
     transform: none;
     transition: none;
   }
+}
+
+/* 🎨 Pallete's micro-UX enhancement: 3D Hover Tilt Effect styles */
+.resource-card-entrance {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+/* Shine overlay for dynamic lighting effect */
+.card-shine-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+/* Enhanced hover state with smooth transitions */
+.resource-card-entrance.is-tilted {
+  z-index: 10;
+}
+
+/* Ensure child elements maintain 3D context */
+.resource-card-entrance :deep(*) {
+  transform-style: preserve-3d;
 }
 </style>
