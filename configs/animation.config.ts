@@ -1687,6 +1687,16 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.ALTERNATIVES_RESPECT_REDUCED_MOTION !== 'false',
+    // 🎨 Pallete's micro-UX enhancement: Sparkle animation on header icon
+    sparkleDurationMs: parseInt(
+      process.env.ALTERNATIVES_SPARKLE_DURATION_MS || '1000'
+    ),
+    sparkleDelayMs: parseInt(
+      process.env.ALTERNATIVES_SPARKLE_DELAY_MS || '600'
+    ),
+    sparkleParticleCount: parseInt(
+      process.env.ALTERNATIVES_SPARKLE_PARTICLE_COUNT || '6'
+    ),
   },
 
   // 🎨 Pallete's micro-UX enhancement: Limitations Section Animations
