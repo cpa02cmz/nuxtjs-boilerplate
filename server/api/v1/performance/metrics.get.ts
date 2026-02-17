@@ -4,6 +4,7 @@ import {
   getAggregatedMetrics,
 } from '~/server/utils/performance-metrics'
 import { performanceDashboardConfig } from '~/configs/performance-dashboard.config'
+import { performanceConfig } from '~/configs/performance.config'
 import type {
   PerformanceDashboardData,
   WebVitalsSummary,
@@ -133,23 +134,28 @@ function calculateWebVitalsSummary(
     const p95Value =
       sorted[Math.floor(sorted.length * 0.95)] ?? sorted[sorted.length - 1] ?? 0
 
-    // Determine overall rating based on p75
+    // Determine overall rating based on p75 - Flexy hates hardcoded thresholds!
     let rating = 'good'
     if (name === 'CLS') {
-      if (p75Value > 0.25) rating = 'poor'
-      else if (p75Value > 0.1) rating = 'needs-improvement'
+      if (p75Value > performanceConfig.webVitals.cls.poor) rating = 'poor'
+      else if (p75Value > performanceConfig.webVitals.cls.needsImprovement)
+        rating = 'needs-improvement'
     } else if (name === 'LCP') {
-      if (p75Value > 4000) rating = 'poor'
-      else if (p75Value > 2500) rating = 'needs-improvement'
+      if (p75Value > performanceConfig.webVitals.lcp.poor) rating = 'poor'
+      else if (p75Value > performanceConfig.webVitals.lcp.needsImprovement)
+        rating = 'needs-improvement'
     } else if (name === 'INP') {
-      if (p75Value > 500) rating = 'poor'
-      else if (p75Value > 200) rating = 'needs-improvement'
+      if (p75Value > performanceConfig.webVitals.inp.poor) rating = 'poor'
+      else if (p75Value > performanceConfig.webVitals.inp.needsImprovement)
+        rating = 'needs-improvement'
     } else if (name === 'FCP') {
-      if (p75Value > 3000) rating = 'poor'
-      else if (p75Value > 1800) rating = 'needs-improvement'
+      if (p75Value > performanceConfig.webVitals.fcp.poor) rating = 'poor'
+      else if (p75Value > performanceConfig.webVitals.fcp.needsImprovement)
+        rating = 'needs-improvement'
     } else if (name === 'TTFB') {
-      if (p75Value > 1800) rating = 'poor'
-      else if (p75Value > 800) rating = 'needs-improvement'
+      if (p75Value > performanceConfig.webVitals.ttfb.poor) rating = 'poor'
+      else if (p75Value > performanceConfig.webVitals.ttfb.needsImprovement)
+        rating = 'needs-improvement'
     }
 
     summary[name as keyof WebVitalsSummary] = {

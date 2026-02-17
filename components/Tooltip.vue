@@ -84,6 +84,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { uiConfig } from '~/configs/ui.config'
 import { generateId } from '~/utils/generateId'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 type TooltipPosition = 'top' | 'bottom' | 'left' | 'right'
 
@@ -278,6 +279,10 @@ const showTooltip = (pin = false) => {
   showTimeout = setTimeout(() => {
     isVisible.value = true
     isPinned.value = pin
+
+    // 🎨 Palette's micro-UX enhancement: Haptic feedback for tactile confirmation
+    // Provides subtle vibration when tooltip appears (especially important for touch devices)
+    hapticLight()
 
     // Calculate optimal position after tooltip is rendered
     nextTick(() => {

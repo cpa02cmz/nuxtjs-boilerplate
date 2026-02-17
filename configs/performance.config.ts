@@ -147,6 +147,45 @@ export const performanceConfig = {
       process.env.PERF_SLOW_INT_THRESHOLD || '100'
     ),
   },
+
+  // Web Vitals Thresholds - Flexy hates hardcoded rating thresholds!
+  webVitals: {
+    // CLS (Cumulative Layout Shift) thresholds
+    cls: {
+      poor: parseFloat(process.env.WEB_VITALS_CLS_POOR || '0.25'),
+      needsImprovement: parseFloat(
+        process.env.WEB_VITALS_CLS_NEEDS_IMPROVEMENT || '0.1'
+      ),
+    },
+    // LCP (Largest Contentful Paint) thresholds in ms
+    lcp: {
+      poor: parseInt(process.env.WEB_VITALS_LCP_POOR || '4000'),
+      needsImprovement: parseInt(
+        process.env.WEB_VITALS_LCP_NEEDS_IMPROVEMENT || '2500'
+      ),
+    },
+    // INP (Interaction to Next Paint) thresholds in ms
+    inp: {
+      poor: parseInt(process.env.WEB_VITALS_INP_POOR || '500'),
+      needsImprovement: parseInt(
+        process.env.WEB_VITALS_INP_NEEDS_IMPROVEMENT || '200'
+      ),
+    },
+    // FCP (First Contentful Paint) thresholds in ms
+    fcp: {
+      poor: parseInt(process.env.WEB_VITALS_FCP_POOR || '3000'),
+      needsImprovement: parseInt(
+        process.env.WEB_VITALS_FCP_NEEDS_IMPROVEMENT || '1800'
+      ),
+    },
+    // TTFB (Time to First Byte) thresholds in ms
+    ttfb: {
+      poor: parseInt(process.env.WEB_VITALS_TTFB_POOR || '1800'),
+      needsImprovement: parseInt(
+        process.env.WEB_VITALS_TTFB_NEEDS_IMPROVEMENT || '800'
+      ),
+    },
+  },
 } as const
 
 // Helper to check if feature is enabled

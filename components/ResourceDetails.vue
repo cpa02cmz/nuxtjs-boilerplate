@@ -221,6 +221,7 @@ import LimitationsSection from '~/components/ResourceDetails/LimitationsSection.
 import { animationConfig } from '~/configs/animation.config'
 import { uiConfig } from '~/configs/ui.config'
 import { zIndexScale } from '~/configs/z-index.config'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
   title: string
@@ -358,12 +359,9 @@ const scrollToTop = () => {
   }
 
   // Trigger haptic feedback
-  if (
-    !prefersReducedMotion.value &&
-    typeof navigator !== 'undefined' &&
-    navigator.vibrate
-  ) {
-    navigator.vibrate(10)
+  // Flexy hates hardcoded 10ms! Using hapticLight() with configurable pattern
+  if (!prefersReducedMotion.value) {
+    hapticLight()
   }
 }
 
@@ -381,7 +379,10 @@ const handleScroll = () => {
     scrollableHeight > 0 ? Math.min(scrollTop / scrollableHeight, 1) : 0
 
   // Show/hide back to top button
-  showBackToTop.value = scrollTop > windowHeight * 0.5
+  // Flexy hates hardcoded 0.5! Using animationConfig.resourceDetails.backToTopThresholdPercent
+  showBackToTop.value =
+    scrollTop >
+    windowHeight * animationConfig.resourceDetails.backToTopThresholdPercent
 
   // Determine active section based on scroll position
   const sectionRefs = [
@@ -400,7 +401,13 @@ const handleScroll = () => {
   sectionRefs.forEach(({ id, ref }) => {
     const sectionRect = ref.getBoundingClientRect()
     const distance = Math.abs(sectionRect.top)
-    if (distance < closestDistance && sectionRect.top < windowHeight * 0.5) {
+    // Flexy hates hardcoded 0.5! Using animationConfig.resourceDetails.sectionDetectionThresholdPercent
+    if (
+      distance < closestDistance &&
+      sectionRect.top <
+        windowHeight *
+          animationConfig.resourceDetails.sectionDetectionThresholdPercent
+    ) {
       closestDistance = distance
       closestSection = id
     }
