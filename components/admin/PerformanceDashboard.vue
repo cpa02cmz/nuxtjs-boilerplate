@@ -426,14 +426,60 @@ onUnmounted(() => {
 }
 
 .range-button {
-  padding: 0.5rem 1rem;
+  padding: 0.375rem 0.75rem;
   border: none;
   background: transparent;
   border-radius: 0.375rem;
   cursor: pointer;
   font-weight: 500;
   color: #6b7280;
-  transition: all 0.2s ease;
+  transition: all v-bind('animationConfig.adminDashboard.buttonTransitionSec')
+    ease;
+}
+
+.range-button:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.range-button.active {
+  background: #3b82f6;
+  color: white;
+}
+
+.refresh-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: #374151;
+  transition: all v-bind('animationConfig.adminDashboard.buttonTransitionSec')
+    ease;
+}
+
+.refresh-button:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.refresh-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.refresh-icon {
+  display: inline-block;
+}
+
+.refresh-icon.spinning {
+  animation: spin
+    v-bind('animationConfig.adminDashboard.refreshSpinDurationSec') linear
+    infinite;
 }
 
 .range-button:hover {
