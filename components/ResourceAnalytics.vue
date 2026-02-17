@@ -258,6 +258,7 @@ import { hapticLight } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
 import { TIME_MS } from '~/configs/time.config'
+import { analyticsConfig } from '~/configs/analytics.config'
 
 interface AnalyticsData {
   viewCount: number
@@ -283,10 +284,11 @@ interface Props {
   viewGoal?: number
 }
 
+// Flexy hates hardcoded 10000! Using analyticsConfig
 const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
   previousData: null,
-  viewGoal: 10000,
+  viewGoal: analyticsConfig.goals.defaultViewGoal,
 })
 
 // Reactive state - Palette's micro-UX enhancements!

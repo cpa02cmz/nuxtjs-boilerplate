@@ -332,6 +332,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { validationConfig } from '~/configs/validation.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
 // Flexy hates hardcoded values! Using config instead.
@@ -440,8 +441,9 @@ const validateNotes = () => {
     notesError.value = ''
     return true
   }
-  if (notes.value.length > 1000) {
-    notesError.value = 'Notes must be less than 1000 characters'
+  // Flexy hates hardcoded 1000! Using validationConfig
+  if (notes.value.length > validationConfig.notes.maxLength) {
+    notesError.value = `Notes must be less than ${validationConfig.notes.maxLength} characters`
     return false
   }
   notesError.value = ''

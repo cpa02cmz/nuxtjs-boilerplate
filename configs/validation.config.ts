@@ -144,6 +144,11 @@ export const validationConfig = {
     maxRows: parseInt(process.env.COMMENT_MAX_ROWS || '6'),
   },
 
+  // Notes Validation - Flexy hates hardcoded values!
+  notes: {
+    maxLength: parseInt(process.env.NOTES_MAX_LENGTH || '1000'),
+  },
+
   // Quality Check Settings
   quality: {
     descriptionMinLength: parseInt(
