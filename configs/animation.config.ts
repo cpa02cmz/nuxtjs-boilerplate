@@ -560,6 +560,23 @@ export const animationConfig = {
     enabled: process.env.ICON_WIGGLE_ENABLED !== 'false',
   },
 
+  // 🎨 Pallete's micro-UX enhancement: Icon Bounce Animation ✨
+  // Adds a playful bounce effect when hovering over resource card icons
+  iconBounce: {
+    // Duration of the bounce animation (ms)
+    durationMs: parseInt(process.env.RESOURCE_CARD_ICON_BOUNCE_MS || '600'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.RESOURCE_CARD_ICON_BOUNCE_MS || '600') / 1000}s`,
+    // Bounce amplitude (px) - how far the icon moves up and down
+    amplitudePx: parseInt(
+      process.env.RESOURCE_CARD_ICON_BOUNCE_AMPLITUDE || '4'
+    ),
+    // Cubic bezier easing for bouncy feel
+    easing:
+      process.env.RESOURCE_CARD_ICON_BOUNCE_EASING ||
+      EASING_REF.SPRING_STANDARD,
+  },
+
   // Search Tracking Delay
   analyticsTracking: {
     trackingDelayMs: parseInt(process.env.ANALYTICS_TRACKING_DELAY_MS || '500'),
