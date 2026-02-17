@@ -109,12 +109,7 @@
       </div>
     </div>
     <!-- 🎨 Pallete: Live region for screen reader announcements - announces loading state -->
-    <span
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ loadingAnnouncement }}
     </span>
 
@@ -153,6 +148,7 @@
 import { ref, onUnmounted, computed, onMounted } from 'vue'
 import { EASING } from '~/configs/easing.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexScale } from '~/configs/z-index.config'
 
 // 🎨 Pallete: Props for contextual accessibility
 interface Props {
@@ -571,7 +567,8 @@ onMounted(() => {
   animation: scan-sweep var(--scan-duration) ease-in-out var(--scan-delay)
     infinite;
   pointer-events: none;
-  z-index: 10;
+  /* Flexy hates hardcoded z-index! Using zIndexScale */
+  z-index: v-bind('zIndexScale.low[10]');
   box-shadow:
     0 0 4px var(--scan-color),
     0 0 8px var(--scan-color),
@@ -690,7 +687,8 @@ onMounted(() => {
   text-transform: uppercase;
   pointer-events: none;
   user-select: none;
-  z-index: 5;
+  /* Flexy hates hardcoded z-index! Using zIndexScale */
+  z-index: v-bind('zIndexScale.low[5]');
   transition: opacity v-bind('animationConfig.cssTransitions.fastSec') ease;
 }
 
