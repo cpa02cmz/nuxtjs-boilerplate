@@ -2806,6 +2806,61 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.REVIEW_QUEUE_RESPECT_REDUCED_MOTION !== 'false',
+    // 🎨 Palette's micro-UX enhancement: Quick Actions Toolbar Configuration
+    quickAction: {
+      // Toolbar position from bottom (px)
+      toolbarBottomPx: parseInt(
+        process.env.REVIEW_QUEUE_QUICK_ACTION_BOTTOM_PX || '12'
+      ),
+      // Toolbar position from right (px)
+      toolbarRightPx: parseInt(
+        process.env.REVIEW_QUEUE_QUICK_ACTION_RIGHT_PX || '12'
+      ),
+      // Gap between action buttons (px)
+      buttonGapPx: parseInt(
+        process.env.REVIEW_QUEUE_QUICK_ACTION_BUTTON_GAP_PX || '8'
+      ),
+      // Toolbar padding (px)
+      toolbarPaddingPx: parseInt(
+        process.env.REVIEW_QUEUE_QUICK_ACTION_PADDING_PX || '6'
+      ),
+      // Toolbar border radius (px)
+      toolbarBorderRadiusPx: parseInt(
+        process.env.REVIEW_QUEUE_QUICK_ACTION_RADIUS_PX || '8'
+      ),
+      // Action button padding Y (px)
+      buttonPaddingYPx: parseInt(
+        process.env.REVIEW_QUEUE_QUICK_ACTION_BTN_PADDING_Y_PX || '6'
+      ),
+      // Action button padding X (px)
+      buttonPaddingXPx: parseInt(
+        process.env.REVIEW_QUEUE_QUICK_ACTION_BTN_PADDING_X_PX || '12'
+      ),
+      // Action button border radius (px)
+      buttonBorderRadiusPx: parseInt(
+        process.env.REVIEW_QUEUE_QUICK_ACTION_BTN_RADIUS_PX || '6'
+      ),
+      // Gap between icon and text (px)
+      iconGapPx: parseInt(
+        process.env.REVIEW_QUEUE_QUICK_ACTION_ICON_GAP_PX || '4'
+      ),
+      // Font size (px)
+      fontSizePx: parseInt(
+        process.env.REVIEW_QUEUE_QUICK_ACTION_FONT_SIZE_PX || '12'
+      ),
+      // Success animation duration (ms)
+      successAnimationDurationMs: parseInt(
+        process.env.REVIEW_QUEUE_QUICK_ACTION_SUCCESS_MS || '600'
+      ),
+      // Completion state delay before resetting (ms)
+      completionDelayMs: parseInt(
+        process.env.REVIEW_QUEUE_QUICK_ACTION_COMPLETION_MS || '1500'
+      ),
+      // API call simulation duration (ms)
+      processingDurationMs: parseInt(
+        process.env.REVIEW_QUEUE_QUICK_ACTION_PROCESSING_MS || '800'
+      ),
+    },
   },
 
   // SubmissionReview Component Animations - Palette's micro-UX delight! 🎉

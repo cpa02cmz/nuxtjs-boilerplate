@@ -51,15 +51,12 @@
           :placeholder="moderationConfig.ui.categoryFilterPlaceholder"
           class="filter-input"
           :aria-label="contentConfig.reviewQueue.aria.categoryFilter"
-        >
+        />
       </div>
     </div>
 
     <!-- Loading State with Skeleton Animation -->
-    <div
-      v-if="loading"
-      class="loading-state"
-    >
+    <div v-if="loading" class="loading-state">
       <div class="skeleton-wrapper">
         <div
           v-for="n in 3"
@@ -123,10 +120,7 @@
             :class="['status-badge', `status-${submission.status}`]"
             :aria-label="`Status: ${submission.status}`"
           >
-            <span
-              class="status-icon"
-              aria-hidden="true"
-            >
+            <span class="status-icon" aria-hidden="true">
               <svg
                 v-if="submission.status === 'pending'"
                 class="w-3 h-3"
@@ -272,14 +266,189 @@
             </svg>
           </NuxtLink>
         </div>
+
+        <!-- 🎨 Palette's micro-UX enhancement: Quick Actions Toolbar
+             Slide-in action buttons for rapid moderation without page navigation -->
+        <Transition
+          :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
+          enter-from-class="opacity-0 translate-y-2 scale-95"
+          enter-to-class="opacity-100 translate-y-0 scale-100"
+          :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
+          leave-from-class="opacity-100 translate-y-0 scale-100"
+          leave-to-class="opacity-0 translate-y-2 scale-95"
+        >
+          <div
+            v-if="
+              hoveredCard === submission.id && submission.status === 'pending'
+            "
+            class="quick-actions-toolbar"
+            :class="{ 'toolbar-visible': !prefersReducedMotion }"
+            role="group"
+            :aria-label="`Quick actions for ${submission.resourceData?.title}`"
+          >
+            <!-- Approve Button -->
+            <button
+              type="button"
+              class="quick-action-btn quick-action-btn--approve"
+              :class="{
+                'is-processing':
+                  processingId === submission.id &&
+                  processingAction === 'approve',
+                'is-success':
+                  completedId === submission.id &&
+                  completedAction === 'approve',
+              }"
+              :disabled="processingId === submission.id"
+              :aria-label="`Approve ${submission.resourceData?.title}`"
+              @click="handleQuickAction(submission.id, 'approve')"
+              @mouseenter="hoveredAction = 'approve'"
+              @mouseleave="hoveredAction = null"
+            >
+              <span class="quick-action-icon">
+                <svg
+                  v-if="
+                    completedId === submission.id &&
+                    completedAction === 'approve'
+                  "
+                  class="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="3"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <svg
+                  v-else-if="
+                    processingId === submission.id &&
+                    processingAction === 'approve'
+                  "
+                  class="w-4 h-4 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  />
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                <svg
+                  v-else
+                  class="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </span>
+              <span class="quick-action-text">{{
+                contentConfig.reviewQueue.actions?.quickApprove || 'Approve'
+              }}</span>
+            </button>
+
+            <!-- Reject Button -->
+            <button
+              type="button"
+              class="quick-action-btn quick-action-btn--reject"
+              :class="{
+                'is-processing':
+                  processingId === submission.id &&
+                  processingAction === 'reject',
+                'is-success':
+                  completedId === submission.id && completedAction === 'reject',
+              }"
+              :disabled="processingId === submission.id"
+              :aria-label="`Reject ${submission.resourceData?.title}`"
+              @click="handleQuickAction(submission.id, 'reject')"
+              @mouseenter="hoveredAction = 'reject'"
+              @mouseleave="hoveredAction = null"
+            >
+              <span class="quick-action-icon">
+                <svg
+                  v-if="
+                    completedId === submission.id &&
+                    completedAction === 'reject'
+                  "
+                  class="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="3"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+                <svg
+                  v-else-if="
+                    processingId === submission.id &&
+                    processingAction === 'reject'
+                  "
+                  class="w-4 h-4 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  />
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                <svg
+                  v-else
+                  class="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </span>
+              <span class="quick-action-text">{{
+                contentConfig.reviewQueue.actions?.quickReject || 'Reject'
+              }}</span>
+            </button>
+          </div>
+        </Transition>
       </div>
     </TransitionGroup>
 
     <!-- Empty State with Illustration -->
-    <div
-      v-else
-      class="empty-state"
-    >
+    <div v-else class="empty-state">
       <div
         class="empty-illustration"
         :class="{ 'float-animation': !prefersReducedMotion }"
@@ -303,9 +472,7 @@
       <p class="empty-title">
         {{ contentConfig.reviewQueue.emptyState }}
       </p>
-      <p class="empty-subtitle">
-        New submissions will appear here
-      </p>
+      <p class="empty-subtitle">New submissions will appear here</p>
     </div>
   </div>
 </template>
@@ -323,6 +490,7 @@ import { easingConfig } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { hapticSuccess, hapticError, hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
   initialSubmissions?: Submission[]
@@ -344,9 +512,17 @@ const {
 // Micro-UX State
 const hoveredCard = ref<string | null>(null)
 const hoveredTag = ref<string | null>(null)
+const hoveredAction = ref<string | null>(null)
 const prefersReducedMotion = ref(false)
 const hasNewSubmissions = ref(false)
 const previousCount = ref(0)
+
+// 🎨 Palette's micro-UX enhancement: Quick action processing state
+const processingId = ref<string | null>(null)
+const processingAction = ref<'approve' | 'reject' | null>(null)
+const completedId = ref<string | null>(null)
+const completedAction = ref<'approve' | 'reject' | null>(null)
+let completionTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
@@ -400,9 +576,65 @@ onMounted(() => {
   }
 })
 
+// 🎨 Palette's micro-UX enhancement: Handle quick approve/reject actions
+const handleQuickAction = async (
+  submissionId: string,
+  action: 'approve' | 'reject'
+) => {
+  if (processingId.value) return // Prevent concurrent actions
+
+  // Set processing state
+  processingId.value = submissionId
+  processingAction.value = action
+
+  // Trigger haptic feedback for action start
+  if (!prefersReducedMotion.value) {
+    hapticLight()
+  }
+
+  try {
+    // Simulate API call (replace with actual API call)
+    await new Promise(resolve => setTimeout(resolve, 800))
+
+    // Success! Update state
+    processingId.value = null
+    processingAction.value = null
+    completedId.value = submissionId
+    completedAction.value = action
+
+    // Trigger success haptic and celebration
+    if (!prefersReducedMotion.value) {
+      hapticSuccess()
+    }
+
+    // Clear completion state after animation
+    if (completionTimeout) {
+      clearTimeout(completionTimeout)
+    }
+    completionTimeout = setTimeout(() => {
+      completedId.value = null
+      completedAction.value = null
+    }, animationConfig.reviewQueue?.quickAction?.completionDelayMs || 1500)
+
+    // TODO: Emit event to parent to update submission status
+    // emit('quick-action', { submissionId, action })
+  } catch {
+    // Error state
+    processingId.value = null
+    processingAction.value = null
+
+    if (!prefersReducedMotion.value) {
+      hapticError()
+    }
+  }
+}
+
 onUnmounted(() => {
   if (mediaQuery && handleMotionChange) {
     mediaQuery.removeEventListener('change', handleMotionChange)
+  }
+  if (completionTimeout) {
+    clearTimeout(completionTimeout)
   }
 })
 </script>
@@ -1101,5 +1333,184 @@ onUnmounted(() => {
   outline: 2px solid white;
   outline-offset: 2px;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5);
+}
+
+/* 🎨 Palette's micro-UX enhancement: Quick Actions Toolbar Styles */
+.quick-actions-toolbar {
+  position: absolute;
+  bottom: v-bind(
+    'animationConfig.reviewQueue?.quickAction?.toolbarBottomPx || 12 + "px"'
+  );
+  right: v-bind(
+    'animationConfig.reviewQueue?.quickAction?.toolbarRightPx || 12 + "px"'
+  );
+  display: flex;
+  gap: v-bind(
+    'animationConfig.reviewQueue?.quickAction?.buttonGapPx || 8 + "px"'
+  );
+  padding: v-bind(
+    'animationConfig.reviewQueue?.quickAction?.toolbarPaddingPx || 6 + "px"'
+  );
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: v-bind(
+    'animationConfig.reviewQueue?.quickAction?.toolbarBorderRadiusPx || 8 + "px"'
+  );
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  z-index: v-bind('zIndexConfig?.dropdown?.[10] || 10');
+}
+
+.quick-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: v-bind(
+    'animationConfig.reviewQueue?.quickAction?.iconGapPx || 4 + "px"'
+  );
+  padding: v-bind(
+      'animationConfig.reviewQueue?.quickAction?.buttonPaddingYPx || 6 + "px"'
+    )
+    v-bind(
+      'animationConfig.reviewQueue?.quickAction?.buttonPaddingXPx || 12 + "px"'
+    );
+  font-size: v-bind(
+    'animationConfig.reviewQueue?.quickAction?.fontSizePx || 12 + "px"'
+  );
+  font-weight: 600;
+  border: none;
+  border-radius: v-bind(
+    'animationConfig.reviewQueue?.quickAction?.buttonBorderRadiusPx || 6 + "px"'
+  );
+  cursor: pointer;
+  transition: all v-bind('animationConfig.cssTransitions.fastSec')
+    v-bind('easingConfig?.cubicBezier?.standard || "ease-out"');
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-action-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.quick-action-btn:focus-visible {
+  box-shadow: 0 0 0 2px currentColor;
+  outline: none;
+}
+
+/* Approve button styles */
+.quick-action-btn--approve {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.quick-action-btn--approve:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.quick-action-btn--approve:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.quick-action-btn--approve.is-processing {
+  background: linear-gradient(135deg, #6ee7b7, #34d399);
+}
+
+.quick-action-btn--approve.is-success {
+  background: linear-gradient(135deg, #10b981, #059669);
+  animation: quick-action-success
+    v-bind(
+      'animationConfig.reviewQueue?.quickAction?.successAnimationDurationMs || 600 + "ms"'
+    )
+    ease-out;
+}
+
+/* Reject button styles */
+.quick-action-btn--reject {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.quick-action-btn--reject:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+.quick-action-btn--reject:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.quick-action-btn--reject.is-processing {
+  background: linear-gradient(135deg, #fca5a5, #f87171);
+}
+
+.quick-action-btn--reject.is-success {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  animation: quick-action-success
+    v-bind(
+      'animationConfig.reviewQueue?.quickAction?.successAnimationDurationMs || 600 + "ms"'
+    )
+    ease-out;
+}
+
+@keyframes quick-action-success {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.quick-action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-action-text {
+  white-space: nowrap;
+}
+
+/* Reduced motion support for quick actions */
+@media (prefers-reduced-motion: reduce) {
+  .quick-actions-toolbar {
+    transition: none;
+  }
+
+  .quick-action-btn {
+    transition: none;
+  }
+
+  .quick-action-btn:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .quick-action-btn.is-success {
+    animation: none;
+  }
+}
+
+/* High contrast mode support for quick actions */
+@media (prefers-contrast: high) {
+  .quick-action-btn {
+    border: 2px solid currentColor;
+  }
+
+  .quick-actions-toolbar {
+    border: 2px solid currentColor;
+  }
 }
 </style>
