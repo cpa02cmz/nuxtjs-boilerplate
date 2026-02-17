@@ -111,11 +111,8 @@
             @change="onDateRangeChange(option.value)"
             @focus="focusedDateOption = option.value"
             @blur="focusedDateOption = null"
-          >
-          <span
-            class="date-range-radio"
-            aria-hidden="true"
-          >
+          />
+          <span class="date-range-radio" aria-hidden="true">
             <span class="date-range-radio-inner" />
           </span>
           <span class="date-range-label">{{ option.label }}</span>
@@ -600,7 +597,9 @@ onUnmounted(() => {
   border-radius: 50%;
   margin-right: 0.5rem;
   flex-shrink: 0;
-  transition: all 200ms ease-out;
+  /* Flexy hates hardcoded 200ms! Using animationConfig.resourceFilters.dateRange.transitionMs */
+  transition: all
+    v-bind('animationConfig.resourceFilters.dateRange.transitionSec') ease-out;
 }
 
 .date-range-option:hover .date-range-radio {
@@ -618,7 +617,10 @@ onUnmounted(() => {
   background: white;
   border-radius: 50%;
   transform: scale(0);
-  transition: transform 200ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Flexy hates hardcoded 200ms! Using animationConfig.resourceFilters.dateRange.transformMs */
+  transition: transform
+    v-bind('animationConfig.resourceFilters.dateRange.transformSec')
+    cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .date-range-option.is-selected .date-range-radio-inner {
@@ -629,7 +631,9 @@ onUnmounted(() => {
   font-size: 0.875rem;
   color: #374151;
   font-weight: 500;
-  transition: color 200ms ease;
+  /* Flexy hates hardcoded 200ms! Using animationConfig.resourceFilters.dateRange.transitionMs */
+  transition: color
+    v-bind('animationConfig.resourceFilters.dateRange.transitionSec') ease;
 }
 
 .date-range-option.is-selected .date-range-label {
@@ -646,7 +650,9 @@ onUnmounted(() => {
     transparent 70%
   );
   opacity: 0;
-  transition: opacity 200ms ease;
+  /* Flexy hates hardcoded 200ms! Using animationConfig.resourceFilters.dateRange.transitionMs */
+  transition: opacity
+    v-bind('animationConfig.resourceFilters.dateRange.transitionSec') ease;
   pointer-events: none;
 }
 
