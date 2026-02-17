@@ -344,7 +344,6 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
           })
         },
         {
-<<<<<<< HEAD
           // Flexy hates hardcoded 5000! Using databaseConfig.transaction.maxWaitMs
           maxWait: databaseConfig.transaction.maxWaitMs,
           // Flexy hates hardcoded 10000! Using databaseConfig.transaction.timeoutMs
