@@ -1377,7 +1377,7 @@ onUnmounted(() => {
     0 4px 12px rgba(0, 0, 0, 0.15),
     0 2px 4px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(0, 0, 0, 0.05);
-  z-index: v-bind('zIndexConfig?.dropdown?.[10] || 10');
+  z-index: v-bind('zIndexConfig.dropdown || 10');
 }
 
 .quick-action-btn {

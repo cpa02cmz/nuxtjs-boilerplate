@@ -267,6 +267,23 @@ export const themeConfig = {
     moreBtnHoverBorder:
       process.env.COMPARISON_VALUE_MORE_BTN_HOVER_BORDER ||
       'rgba(107, 114, 128, 0.3)',
+    // BugFixer: Added missing preview properties to fix TypeScript errors
+    previewBg: process.env.COMPARISON_PREVIEW_BG || '#ffffff',
+    previewBorder:
+      process.env.COMPARISON_PREVIEW_BORDER || 'rgba(0, 0, 0, 0.1)',
+    previewDivider: process.env.COMPARISON_PREVIEW_DIVIDER || '#e5e7eb',
+    previewTitleColor: process.env.COMPARISON_PREVIEW_TITLE_COLOR || '#111827',
+    previewCopyBg: process.env.COMPARISON_PREVIEW_COPY_BG || '#f3f4f6',
+    previewCopyColor: process.env.COMPARISON_PREVIEW_COPY_COLOR || '#374151',
+    previewCopyHoverBg:
+      process.env.COMPARISON_PREVIEW_COPY_HOVER_BG || '#e5e7eb',
+    previewItemBg: process.env.COMPARISON_PREVIEW_ITEM_BG || '#f9fafb',
+    previewItemColor: process.env.COMPARISON_PREVIEW_ITEM_COLOR || '#4b5563',
+    previewItemHiddenBg:
+      process.env.COMPARISON_PREVIEW_ITEM_HIDDEN_BG || '#f3f4f6',
+    previewItemHiddenColor:
+      process.env.COMPARISON_PREVIEW_ITEM_HIDDEN_COLOR || '#9ca3af',
+    listItemHoverBg: process.env.COMPARISON_LIST_ITEM_HOVER_BG || '#f3f4f6',
   },
 } as const
 
