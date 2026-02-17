@@ -944,6 +944,39 @@ export const animationConfig = {
     ),
     // Float animation duration for decorative keys (seconds)
     floatDurationSec: parseFloat(process.env.API_KEYS_FLOAT_SEC || '3.5'),
+    // 🎨 Pallete's micro-UX: List item animations
+    // Item entrance animation duration (ms)
+    itemEntranceDurationMs: parseInt(
+      process.env.API_KEYS_ITEM_ENTRANCE_MS || '400'
+    ),
+    // Item entrance distance (px) - how far items slide up
+    itemEntranceDistancePx: parseInt(
+      process.env.API_KEYS_ITEM_ENTRANCE_DISTANCE_PX || '20'
+    ),
+    // Item hover lift amount (px)
+    itemHoverLiftPx: parseInt(process.env.API_KEYS_ITEM_HOVER_LIFT_PX || '3'),
+    // Item hover shadow Y offset (px)
+    itemHoverShadowY: parseInt(process.env.API_KEYS_ITEM_HOVER_SHADOW_Y || '8'),
+    // Item hover shadow blur (px)
+    itemHoverShadowBlur: parseInt(
+      process.env.API_KEYS_ITEM_HOVER_SHADOW_BLUR || '16'
+    ),
+    // Item hover shadow spread (px)
+    itemHoverShadowSpread: parseInt(
+      process.env.API_KEYS_ITEM_HOVER_SHADOW_SPREAD || '-4'
+    ),
+    // Item transition duration (ms)
+    itemTransitionMs: parseInt(
+      process.env.API_KEYS_ITEM_TRANSITION_MS || '250'
+    ),
+    // Stagger delay between items (ms)
+    staggerDelayMs: parseInt(process.env.API_KEYS_STAGGER_MS || '80'),
+    // Maximum stagger delay (ms)
+    maxStaggerDelayMs: parseInt(process.env.API_KEYS_MAX_STAGGER_MS || '400'),
+    // Status pulse animation duration (seconds)
+    statusPulseDurationSec: parseFloat(
+      process.env.API_KEYS_STATUS_PULSE_SEC || '2'
+    ),
   },
 
   // Card Animations
