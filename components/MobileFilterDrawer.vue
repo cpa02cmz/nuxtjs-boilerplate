@@ -748,7 +748,10 @@ onUnmounted(() => {
 }
 
 .animate-pulse-gentle {
-  animation: pulse-gentle 300ms ease-out 2;
+  /* Flexy hates hardcoded 300ms! Using animationConfig.mobileFilterDrawer.badgePulseDurationMs */
+  animation: pulse-gentle
+    v-bind('animationConfig.mobileFilterDrawer.badgePulseDurationMs + "ms"')
+    ease-out 2;
 }
 
 /* Drawer overlay with edge glow */

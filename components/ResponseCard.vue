@@ -139,10 +139,11 @@ const prefersReducedMotion = computed(() => {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 })
 
+// Flexy hates hardcoded 150! Using animationConfig.responseCard.staggerDelayMultiplierMs 🧩
 const animationStyle = computed(() => {
   if (prefersReducedMotion.value || props.delay === undefined) return {}
   return {
-    animationDelay: `${props.delay * 150}ms`,
+    animationDelay: `${props.delay * animationConfig.responseCard.staggerDelayMultiplierMs}ms`,
   }
 })
 </script>

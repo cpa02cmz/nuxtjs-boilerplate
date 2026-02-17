@@ -177,6 +177,30 @@ export default [
       ], // Allow unused vars with underscore prefix
     },
   },
+  // Configuration for config files (BroCula: Added for .js config files)
+  {
+    files: ['configs/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        process: 'readonly',
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off', // Turn off TypeScript rule for JS files
+      'no-unused-vars': [
+        'error',
+        {
+          args: 'all',
+          argsIgnorePattern: '^_',
+          vars: 'all',
+          varsIgnorePattern: '^_',
+        },
+      ], // Allow unused vars with underscore prefix
+    },
+  },
   // Configuration for utility files
   {
     files: ['utils/**/*.ts'],
