@@ -51,15 +51,12 @@
           :placeholder="moderationConfig.ui.categoryFilterPlaceholder"
           class="filter-input"
           :aria-label="contentConfig.reviewQueue.aria.categoryFilter"
-        >
+        />
       </div>
     </div>
 
     <!-- Loading State with Skeleton Animation -->
-    <div
-      v-if="loading"
-      class="loading-state"
-    >
+    <div v-if="loading" class="loading-state">
       <div class="skeleton-wrapper">
         <div
           v-for="n in 3"
@@ -123,10 +120,7 @@
             :class="['status-badge', `status-${submission.status}`]"
             :aria-label="`Status: ${submission.status}`"
           >
-            <span
-              class="status-icon"
-              aria-hidden="true"
-            >
+            <span class="status-icon" aria-hidden="true">
               <svg
                 v-if="submission.status === 'pending'"
                 class="w-3 h-3"
@@ -314,7 +308,7 @@
                 <svg
                   v-if="
                     completedId === submission.id &&
-                      completedAction === 'approve'
+                    completedAction === 'approve'
                   "
                   class="w-4 h-4"
                   fill="none"
@@ -331,7 +325,7 @@
                 <svg
                   v-else-if="
                     processingId === submission.id &&
-                      processingAction === 'approve'
+                    processingAction === 'approve'
                   "
                   class="w-4 h-4 animate-spin"
                   fill="none"
@@ -392,7 +386,7 @@
                 <svg
                   v-if="
                     completedId === submission.id &&
-                      completedAction === 'reject'
+                    completedAction === 'reject'
                   "
                   class="w-4 h-4"
                   fill="none"
@@ -409,7 +403,7 @@
                 <svg
                   v-else-if="
                     processingId === submission.id &&
-                      processingAction === 'reject'
+                    processingAction === 'reject'
                   "
                   class="w-4 h-4 animate-spin"
                   fill="none"
@@ -454,10 +448,7 @@
     </TransitionGroup>
 
     <!-- Empty State with Illustration -->
-    <div
-      v-else
-      class="empty-state"
-    >
+    <div v-else class="empty-state">
       <div
         class="empty-illustration"
         :class="{ 'float-animation': !prefersReducedMotion }"
@@ -481,9 +472,7 @@
       <p class="empty-title">
         {{ contentConfig.reviewQueue.emptyState }}
       </p>
-      <p class="empty-subtitle">
-        New submissions will appear here
-      </p>
+      <p class="empty-subtitle">New submissions will appear here</p>
     </div>
   </div>
 </template>
@@ -628,10 +617,11 @@ const handleQuickAction = async (
     if (completionTimeout) {
       clearTimeout(completionTimeout)
     }
+    // Flexy hates hardcoded 1500! Using animationConfig
     completionTimeout = setTimeout(() => {
       completedId.value = null
       completedAction.value = null
-    }, animationConfig.reviewQueue?.quickAction?.completionDelayMs || 1500)
+    }, animationConfig.reviewQueue?.quickAction?.completionDelayMs ?? 1500)
 
     // TODO: Emit event to parent to update submission status
     // emit('quick-action', { submissionId, action })
@@ -702,9 +692,10 @@ onUnmounted(() => {
 }
 
 .pulse-animation {
+  /* Flexy hates hardcoded 600! Using animationConfig */
   animation: badge-pulse
     v-bind(
-      '`${animationConfig.reviewQueue?.badgeAnimationDurationMs || 600}ms`'
+      '`${animationConfig.reviewQueue?.badgeAnimationDurationMs ?? 600}ms`'
     )
     ease-out;
 }
@@ -930,9 +921,10 @@ onUnmounted(() => {
 }
 
 .skeleton-wave {
+  /* Flexy hates hardcoded 1500! Using animationConfig */
   animation: skeleton-shimmer
     v-bind(
-      '`${animationConfig.reviewQueue?.skeletonShimmerDurationMs || 1500}ms`'
+      '`${animationConfig.reviewQueue?.skeletonShimmerDurationMs ?? 1500}ms`'
     )
     ease-in-out infinite;
 }
@@ -972,8 +964,9 @@ onUnmounted(() => {
 }
 
 .submission-enter {
+  /* Flexy hates hardcoded 400! Using animationConfig */
   animation: card-enter
-    v-bind('`${animationConfig.reviewQueue?.entranceDurationMs || 400}ms`')
+    v-bind('`${animationConfig.reviewQueue?.entranceDurationMs ?? 400}ms`')
     v-bind('easingConfig.cubicBezier.spring') forwards;
   opacity: 0;
 }
@@ -1061,8 +1054,9 @@ onUnmounted(() => {
 .status-pending {
   background: v-bind('moderationConfig.statusColors.pending.bg');
   color: v-bind('moderationConfig.statusColors.pending.text');
+  /* Flexy hates hardcoded 2000! Using animationConfig */
   animation: pending-pulse
-    v-bind('`${animationConfig.reviewQueue?.pendingPulseDurationMs || 2000}ms`')
+    v-bind('`${animationConfig.reviewQueue?.pendingPulseDurationMs ?? 2000}ms`')
     ease-in-out infinite;
 }
 
@@ -1196,8 +1190,9 @@ onUnmounted(() => {
 }
 
 .btn-pulse {
+  /* Flexy hates hardcoded 400! Using animationConfig */
   animation: btn-pulse
-    v-bind('`${animationConfig.reviewQueue?.buttonPulseDurationMs || 400}ms`')
+    v-bind('`${animationConfig.reviewQueue?.buttonPulseDurationMs ?? 400}ms`')
     ease-out;
 }
 
@@ -1259,8 +1254,9 @@ onUnmounted(() => {
 }
 
 .float-animation {
+  /* Flexy hates hardcoded 3000! Using animationConfig */
   animation: float
-    v-bind('`${animationConfig.reviewQueue?.emptyFloatDurationMs || 3000}ms`')
+    v-bind('`${animationConfig.reviewQueue?.emptyFloatDurationMs ?? 3000}ms`')
     ease-in-out infinite;
 }
 
@@ -1440,9 +1436,10 @@ onUnmounted(() => {
 
 .quick-action-btn--approve.is-success {
   background: linear-gradient(135deg, #10b981, #059669);
+  /* Flexy hates hardcoded 600! Using animationConfig */
   animation: quick-action-success
     v-bind(
-      'animationConfig.reviewQueue?.quickAction?.successAnimationDurationMs || 600 + "ms"'
+      'animationConfig.reviewQueue?.quickAction?.successAnimationDurationMs ?? 600 + "ms"'
     )
     ease-out;
 }
@@ -1469,9 +1466,10 @@ onUnmounted(() => {
 
 .quick-action-btn--reject.is-success {
   background: linear-gradient(135deg, #ef4444, #dc2626);
+  /* Flexy hates hardcoded 600! Using animationConfig */
   animation: quick-action-success
     v-bind(
-      'animationConfig.reviewQueue?.quickAction?.successAnimationDurationMs || 600 + "ms"'
+      'animationConfig.reviewQueue?.quickAction?.successAnimationDurationMs ?? 600 + "ms"'
     )
     ease-out;
 }
