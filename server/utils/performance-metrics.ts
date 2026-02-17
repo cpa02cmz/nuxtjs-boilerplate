@@ -47,7 +47,7 @@ interface MetricResult {
   url: string | null
   userAgent: string | null
   connection: string | null
-  metadata: string | null
+  metadata: Record<string, unknown> | null
 }
 
 export async function getPerformanceMetrics(
@@ -76,10 +76,12 @@ export async function getPerformanceMetrics(
       },
     })
 
-    return metrics.map(m => ({
-      ...m,
-      metadata: m.metadata ? JSON.parse(m.metadata as string) : null,
-    })) as MetricResult[]
+    return metrics.map(
+      (m: { metadata: string | null; [key: string]: unknown }) => ({
+        ...m,
+        metadata: m.metadata ? JSON.parse(m.metadata as string) : null,
+      })
+    ) as MetricResult[]
   } catch (error) {
     logger.error('Failed to fetch performance metrics:', error)
     return []

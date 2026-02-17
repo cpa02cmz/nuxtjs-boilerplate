@@ -31,7 +31,9 @@ async function runPerformanceAudit(page, url, name) {
     })
 
     // Get Web Vitals via Performance Observer script
-    const vitals = await page.evaluate(() => {
+    // BroCula: Fixed - moved monitoringConfig.delays.consoleWaitMs outside page.evaluate
+    const consoleWaitMs = monitoringConfig.delays.consoleWaitMs
+    const vitals = await page.evaluate(waitMs => {
       return new Promise(resolve => {
         const observer = new PerformanceObserver(list => {
           const entries = list.getEntries()
@@ -58,9 +60,9 @@ async function runPerformanceAudit(page, url, name) {
         }
 
         // Timeout after configured delay - Flexy hates hardcoded values!
-        setTimeout(() => resolve({}), monitoringConfig.delays.consoleWaitMs)
+        setTimeout(() => resolve({}), waitMs)
       })
-    })
+    }, consoleWaitMs)
 
     // Count resources
     const resourceCount = await page.evaluate(

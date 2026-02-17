@@ -756,12 +756,13 @@ const prefersReducedMotion = computed(() => {
 
 // Palette's micro-UX delight: Magnetic button effect for submit button
 // Creates a subtle "magnetic" pull that draws the button toward the cursor
+// Flexy hates hardcoded 0.4 and 12! Now using config
 const {
   elementRef: magneticSubmitRef,
   transformStyle: magneticTransformStyle,
 } = useMagneticButton({
-  strength: 0.4,
-  maxDistancePx: 12,
+  strength: animationConfig.magneticButton.submitPage.strength,
+  maxDistancePx: animationConfig.magneticButton.submitPage.maxDistancePx,
 })
 
 // Format relative time for saved indicator
