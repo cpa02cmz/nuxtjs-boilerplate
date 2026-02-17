@@ -192,11 +192,11 @@ onUnmounted(() => {
   }
 })
 
-// Flexy hates hardcoded values! Using animationConfig for all durations 🧩
+// Flexy hates hardcoded 100! Using animationConfig.rateLimitCard.staggerDelayMultiplierMs 🧩
 const animationStyle = computed(() => {
   if (prefersReducedMotion.value || props.delay === undefined) return {}
   return {
-    animationDelay: `${props.delay * 100}ms`,
+    animationDelay: `${props.delay * animationConfig.rateLimitCard.staggerDelayMultiplierMs}ms`,
   }
 })
 

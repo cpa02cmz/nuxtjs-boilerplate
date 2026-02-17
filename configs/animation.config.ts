@@ -1437,6 +1437,10 @@ export const animationConfig = {
     ),
     // CSS duration string for v-bind
     pulseDurationSec: `${parseInt(process.env.SPINNER_LOADING_DOTS_PULSE_MS || '900') / 1000}s`,
+    // First dot animation delay (ms) - Flexy hates hardcoded 0ms!
+    firstDotDelayMs: parseInt(
+      process.env.SPINNER_LOADING_FIRST_DOT_DELAY_MS || '0'
+    ),
     // Stagger delay between each dot (ms) - creates wave effect
     staggerDelayMs: parseInt(
       process.env.SPINNER_LOADING_DOTS_STAGGER_MS || '150'
@@ -3762,6 +3766,10 @@ export const animationConfig = {
     filterButtonPulseMs: parseInt(
       process.env.MOBILE_DRAWER_BUTTON_PULSE_MS || '800'
     ),
+    // Badge pulse animation duration (ms) - Flexy hates hardcoded 300ms!
+    badgePulseDurationMs: parseInt(
+      process.env.MOBILE_DRAWER_BADGE_PULSE_MS || '300'
+    ),
     // Filter button bounce scale
     filterButtonBounceScale: parseFloat(
       process.env.MOBILE_DRAWER_BUTTON_BOUNCE_SCALE || '1.15'
@@ -3894,6 +3902,19 @@ export const animationConfig = {
     // Duration of keyboard shortcut toast display (ms)
     shortcutToastDurationMs: parseInt(
       process.env.CODEBLOCK_TOAST_DURATION_MS || '3000'
+    ),
+    // Stagger delay multiplier for animation delays (ms) - Flexy hates hardcoded 100!
+    staggerDelayMultiplierMs: parseInt(
+      process.env.CODEBLOCK_STAGGER_MULTIPLIER_MS || '100'
+    ),
+  },
+
+  // Response Card Animations - Flexy hates hardcoded values! 🧩
+  // Stagger delay multiplier for response card entrance animations
+  responseCard: {
+    // Stagger delay multiplier for animation delays (ms) - Flexy hates hardcoded 150!
+    staggerDelayMultiplierMs: parseInt(
+      process.env.RESPONSE_CARD_STAGGER_MULTIPLIER_MS || '150'
     ),
   },
 
@@ -4183,6 +4204,10 @@ export const animationConfig = {
     fadeInMs: parseInt(process.env.RATE_LIMIT_CARD_FADE_IN_MS || '400'),
     // CSS duration string for fade-in
     fadeInSec: `${parseInt(process.env.RATE_LIMIT_CARD_FADE_IN_MS || '400') / 1000}s`,
+    // Stagger delay multiplier for card animations (ms) - Flexy hates hardcoded 100!
+    staggerDelayMultiplierMs: parseInt(
+      process.env.RATE_LIMIT_CARD_STAGGER_MULTIPLIER_MS || '100'
+    ),
   },
 
   // 🎨 Palette's micro-UX enhancement: Resource Details Page Animations ✨
@@ -4320,6 +4345,31 @@ export const animationConfig = {
     indicatorDotActiveSizePx: parseInt(
       process.env.METRIC_CARD_DOT_ACTIVE_SIZE || '8'
     ),
+    // Stagger delay for indicator dot animations (ms) - Flexy hates hardcoded 100ms!
+    indicatorStaggerDelayMs: parseInt(
+      process.env.METRIC_CARD_INDICATOR_STAGGER_MS || '100'
+    ),
+  },
+
+  // 🎨 Pallete's micro-UX enhancement: Performance Dashboard Success Celebration
+  // Delightful success feedback when dashboard data refreshes
+  performanceDashboard: {
+    // Celebration animation total duration (ms)
+    celebrationDurationMs: parseInt(
+      process.env.PERFORMANCE_DASHBOARD_CELEBRATION_MS || '1200'
+    ),
+    // Checkmark pop animation duration (ms)
+    checkmarkPopDurationMs: parseInt(
+      process.env.PERFORMANCE_DASHBOARD_CHECKMARK_POP_MS || '400'
+    ),
+    // Checkmark draw animation duration (seconds)
+    checkmarkDrawDurationSec:
+      parseInt(process.env.PERFORMANCE_DASHBOARD_CHECKMARK_DRAW_MS || '300') /
+      1000,
+    // Checkmark animation delay (seconds)
+    checkmarkDelaySec:
+      parseInt(process.env.PERFORMANCE_DASHBOARD_CHECKMARK_DELAY_MS || '100') /
+      1000,
   },
 
   // Lazy Loading Intersection Observer - Flexy hates hardcoded values!
