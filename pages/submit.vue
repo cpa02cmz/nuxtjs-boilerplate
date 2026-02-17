@@ -1,10 +1,7 @@
 <template>
   <div class="py-12">
     <!-- Confetti celebration for successful submission -->
-    <ConfettiCelebration
-      ref="confettiRef"
-      intensity="medium"
-    />
+    <ConfettiCelebration ref="confettiRef" intensity="medium" />
 
     <!-- Smart Paste indicator - Palette's micro-UX enhancement! -->
     <!-- Note: No <ClientOnly> needed here because the page has ssr: false in definePageMeta -->
@@ -76,10 +73,7 @@
                 'has-success': formData.title && !errors.title,
               }"
             >
-              <label
-                for="title"
-                class="floating-label"
-              >
+              <label for="title" class="floating-label">
                 Resource Title <span aria-hidden="true">*</span>
                 <span class="sr-only">(required)</span>
               </label>
@@ -115,7 +109,7 @@
                     ]"
                     @focus="isTitleFocused = true"
                     @blur="handleTitleBlur"
-                  >
+                  />
                 </template>
               </CharacterCounter>
               <!-- Validation checkmark - Palette's micro-UX delight! -->
@@ -151,10 +145,7 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="title-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="title-description" class="mt-1 text-sm text-gray-500">
               The name of the resource or service
             </p>
             <!-- Character limit progress bar for visual feedback -->
@@ -254,10 +245,7 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="description-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="description-description" class="mt-1 text-sm text-gray-500">
               {{ descriptionHelperText }}
             </p>
             <!-- Character limit progress bar for visual feedback -->
@@ -295,10 +283,7 @@
                 'has-success': formData.url && !errors.url,
               }"
             >
-              <label
-                for="url"
-                class="floating-label"
-              >
+              <label for="url" class="floating-label">
                 URL <span aria-hidden="true">*</span>
                 <span class="sr-only">(required)</span>
               </label>
@@ -321,7 +306,7 @@
                 ]"
                 @blur="handleUrlBlur"
                 @paste="handleSmartPaste"
-              >
+              />
               <!-- Validation checkmark - Palette's micro-UX delight! -->
               <Transition
                 enter-active-class="transition-all duration-200 ease-out"
@@ -392,12 +377,7 @@
                 ]"
                 @blur="handleCategoryBlur"
               >
-                <option
-                  value=""
-                  disabled
-                >
-                  Select a category
-                </option>
+                <option value="" disabled>Select a category</option>
                 <option
                   v-for="category in categoryOptions"
                   :key="category.value"
@@ -455,10 +435,7 @@
                 </div>
               </Transition>
             </div>
-            <p
-              id="category-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="category-description" class="mt-1 text-sm text-gray-500">
               Choose the most appropriate category for this resource
             </p>
             <div
@@ -479,22 +456,16 @@
                 'has-value': tagsInput.length > 0,
               }"
             >
-              <label
-                for="tags"
-                class="floating-label"
-              > Tags (Optional) </label>
+              <label for="tags" class="floating-label"> Tags (Optional) </label>
               <input
                 id="tags"
                 v-model="tagsInput"
                 type="text"
                 aria-describedby="tags-description"
                 class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
-              >
+              />
             </div>
-            <p
-              id="tags-description"
-              class="mt-1 text-sm text-gray-500"
-            >
+            <p id="tags-description" class="mt-1 text-sm text-gray-500">
               Add relevant tags to help categorize this resource (e.g., "api,
               free-tier, openai")
             </p>
@@ -538,7 +509,9 @@
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <span class="relative z-10">Draft saved {{ lastSavedText }}</span>
+                  <span class="relative z-10"
+                    >Draft saved {{ lastSavedText }}</span
+                  >
                   >
                 </div>
                 <div
@@ -562,10 +535,7 @@
               <span v-if="!isSubmitting">{{
                 contentConfig.submit.button.submit
               }}</span>
-              <span
-                v-else
-                class="flex items-center"
-              >
+              <span v-else class="flex items-center">
                 <svg
                   class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                   xmlns="http://www.w3.org/2000/svg"
@@ -685,6 +655,33 @@ import { useSmartPaste } from '~/composables/useSmartPaste'
 import { useMagneticButton } from '~/composables/useMagneticButton'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import CharacterCounter from '~/components/CharacterCounter.vue'
+
+// 🦇 BroCula: SSR-safe values - prevents undefined errors during SSR!
+// Direct values avoid v-bind() issues with nested object paths in <style>
+const cssTransitionNormalSec =
+  animationConfig.cssTransitions?.normalSec ?? '0.2s'
+const focusGlowDurationSec = animationConfig.focusGlow?.durationSec ?? '1.5s'
+const focusGlowSpreadMin = animationConfig.focusGlow?.spreadMin ?? 2
+const focusGlowSpreadMax = animationConfig.focusGlow?.spreadMax ?? 8
+const focusGlowColor =
+  animationConfig.focusGlow?.color ?? 'rgba(59, 130, 246, 0.4)'
+const focusGlowSecondaryColor =
+  animationConfig.focusGlow?.secondaryColor ?? 'rgba(147, 197, 253, 0.3)'
+
+// 🦇 BroCula: Pre-computed px values for SSR-safe v-bind usage
+const focusGlowSpreadMinPx = `${focusGlowSpreadMin}px`
+const focusGlowSpreadMin2Px = `${focusGlowSpreadMin * 2}px`
+const focusGlowSpreadMaxPx = `${focusGlowSpreadMax}px`
+const focusGlowSpreadMax2Px = `${focusGlowSpreadMax * 2}px`
+
+// 🦇 BroCula: SSR-safe draftSave animation values
+const draftSaveRingWidth = animationConfig.draftSave?.ringWidth ?? 2
+const draftSavePulseColor =
+  animationConfig.draftSave?.pulseColor ?? 'rgba(34, 197, 94, 0.5)'
+const draftSavePulseDurationSec =
+  animationConfig.draftSave?.pulseDurationSec ?? '0.6s'
+const draftSaveRingWidthPx = `${draftSaveRingWidth}px`
+const draftSavePulseScale = animationConfig.draftSave?.pulseScale ?? 1.05
 
 // Flexy hates hardcoded values! Using config values directly 🎯
 // Animation config already has SSR-safe defaults defined in ~/configs/animation.config.ts
@@ -1181,30 +1178,28 @@ useSeoMeta({
 /* Input Focus Glow Effect - Palette's micro-UX enhancement! */
 /* Adds a subtle animated glow around focused inputs for better visibility */
 .input-focus-glow {
-  transition: box-shadow v-bind('animationConfig.cssTransitions.normalSec')
-    ease-out;
+  /* 🦇 BroCula: Using SSR-safe constant instead of v-bind with nested path */
+  transition: box-shadow v-bind(cssTransitionNormalSec) ease-out;
 }
 
 .input-focus-glow:focus {
-  animation: focus-glow-pulse v-bind('animationConfig.focusGlow.durationSec')
-    ease-in-out infinite;
+  /* 🦇 BroCula: Using SSR-safe constant instead of v-bind with nested path */
+  animation: focus-glow-pulse v-bind('focusGlowDurationSec') ease-in-out
+    infinite;
 }
 
 @keyframes focus-glow-pulse {
   0%,
   100% {
+    /* 🦇 BroCula: Using SSR-safe constants instead of v-bind with nested paths */
     box-shadow:
-      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMin}px`')
-        v-bind('animationConfig.focusGlow.secondaryColor'),
-      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMin * 2}px`')
-        v-bind('animationConfig.focusGlow.color');
+      0 0 0 v-bind('focusGlowSpreadMinPx') v-bind('focusGlowSecondaryColor'),
+      0 0 0 v-bind('focusGlowSpreadMin2Px') v-bind('focusGlowColor');
   }
   50% {
     box-shadow:
-      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMax}px`')
-        v-bind('animationConfig.focusGlow.secondaryColor'),
-      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMax * 2}px`')
-        v-bind('animationConfig.focusGlow.color');
+      0 0 0 v-bind('focusGlowSpreadMaxPx') v-bind('focusGlowSecondaryColor'),
+      0 0 0 v-bind('focusGlowSpreadMax2Px') v-bind('focusGlowColor');
   }
 }
 
@@ -1212,11 +1207,10 @@ useSeoMeta({
 @media (prefers-reduced-motion: reduce) {
   .input-focus-glow:focus {
     animation: none;
+    /* 🦇 BroCula: Using SSR-safe constants instead of v-bind with nested paths */
     box-shadow:
-      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMin}px`')
-        v-bind('animationConfig.focusGlow.secondaryColor'),
-      0 0 0 v-bind('`${animationConfig.focusGlow.spreadMin * 2}px`')
-        v-bind('animationConfig.focusGlow.color');
+      0 0 0 v-bind('focusGlowSpreadMinPx') v-bind('focusGlowSecondaryColor'),
+      0 0 0 v-bind('focusGlowSpreadMin2Px') v-bind('focusGlowColor');
   }
 }
 
@@ -1232,10 +1226,10 @@ useSeoMeta({
   /* w-3.5 = 0.875rem, but we need space for the ring */
   height: 1.25rem;
   border-radius: 50%;
-  border: v-bind('`${animationConfig.draftSave.ringWidth}px`') solid
-    v-bind('animationConfig.draftSave.pulseColor');
-  animation: draft-save-pulse
-    v-bind('animationConfig.draftSave.pulseDurationSec') ease-out forwards;
+  /* 🦇 BroCula: Using SSR-safe constants instead of v-bind with nested paths */
+  border: v-bind('draftSaveRingWidthPx') solid v-bind('draftSavePulseColor');
+  animation: draft-save-pulse v-bind('draftSavePulseDurationSec') ease-out
+    forwards;
   pointer-events: none;
   z-index: 1;
 }
@@ -1244,14 +1238,14 @@ useSeoMeta({
   0% {
     transform: translateY(-50%) scale(1);
     opacity: 0.8;
-    border-width: v-bind('`${animationConfig.draftSave.ringWidth}px`');
+    /* 🦇 BroCula: Using SSR-safe constant instead of v-bind with nested path */
+    border-width: v-bind('draftSaveRingWidthPx');
   }
   50% {
     opacity: 0.4;
   }
   100% {
-    transform: translateY(-50%)
-      scale(v-bind('animationConfig.draftSave.pulseScale'));
+    transform: translateY(-50%) scale(v-bind('draftSavePulseScale'));
     opacity: 0;
     border-width: 0;
   }
@@ -1260,8 +1254,9 @@ useSeoMeta({
 /* Reduced motion: show a simple fade instead of pulse */
 @media (prefers-reduced-motion: reduce) {
   .draft-save-pulse-ring {
-    animation: draft-save-fade
-      v-bind('animationConfig.draftSave.pulseDurationSec') ease-out forwards;
+    /* 🦇 BroCula: Using SSR-safe constant instead of v-bind with nested path */
+    animation: draft-save-fade v-bind('draftSavePulseDurationSec') ease-out
+      forwards;
   }
 
   @keyframes draft-save-fade {

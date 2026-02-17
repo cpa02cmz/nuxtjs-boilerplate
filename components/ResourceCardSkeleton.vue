@@ -150,6 +150,12 @@ import { EASING } from '~/configs/easing.config'
 import { animationConfig } from '~/configs/animation.config'
 import { zIndexScale } from '~/configs/z-index.config'
 
+// 🦇 BroCula: SSR-safe values - prevents undefined errors during SSR!
+// Direct values avoid v-bind() issues with nested object paths in <style>
+const zIndexLow5 = zIndexScale?.low?.[5] ?? 5
+const zIndexLow10 = zIndexScale?.low?.[10] ?? 10
+const cssTransitionFastSec = animationConfig.cssTransitions?.fastSec ?? '0.1s'
+
 // 🎨 Pallete: Props for contextual accessibility
 interface Props {
   /** Type of resource being loaded (e.g., 'article', 'product', 'resource') */
@@ -567,8 +573,8 @@ onMounted(() => {
   animation: scan-sweep var(--scan-duration) ease-in-out var(--scan-delay)
     infinite;
   pointer-events: none;
-  /* Flexy hates hardcoded z-index! Using zIndexScale */
-  z-index: v-bind('zIndexScale.low[10]');
+  /* 🦇 BroCula: Using SSR-safe constant instead of v-bind with nested path */
+  z-index: v-bind(zIndexLow10);
   box-shadow:
     0 0 4px var(--scan-color),
     0 0 8px var(--scan-color),
@@ -687,9 +693,9 @@ onMounted(() => {
   text-transform: uppercase;
   pointer-events: none;
   user-select: none;
-  /* Flexy hates hardcoded z-index! Using zIndexScale */
-  z-index: v-bind('zIndexScale.low[5]');
-  transition: opacity v-bind('animationConfig.cssTransitions.fastSec') ease;
+  /* 🦇 BroCula: Using SSR-safe constants instead of v-bind with nested paths */
+  z-index: v-bind(zIndexLow5);
+  transition: opacity v-bind(cssTransitionFastSec) ease;
 }
 
 .skeleton-loading-indicator--static {

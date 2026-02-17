@@ -95,6 +95,11 @@ import { contentConfig } from '~/configs/content.config'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
 import { animationConfig } from '~/configs/animation.config'
 
+// 🦇 BroCula: SSR-safe CSS transition values - prevents undefined errors during SSR!
+// Direct values avoid v-bind() issues with nested object paths in <style>
+const cssTransitionHoverSec = animationConfig.cssTransitions?.hoverSec ?? '0.2s'
+const cssTransitionFastSec = animationConfig.cssTransitions?.fastSec ?? '0.1s'
+
 definePageMeta({
   layout: 'default',
 })
@@ -194,9 +199,10 @@ useSeoMeta({
 .about-card {
   opacity: 1;
   transform: translateY(0);
+  /* 🦇 BroCula: Using SSR-safe constants instead of v-bind with nested paths */
   transition:
-    transform v-bind('animationConfig.cssTransitions.hoverSec') ease-out,
-    box-shadow v-bind('animationConfig.cssTransitions.hoverSec') ease-out;
+    transform v-bind(cssTransitionHoverSec) ease-out,
+    box-shadow v-bind(cssTransitionHoverSec) ease-out;
 }
 
 .about-card--loaded {
@@ -274,9 +280,10 @@ useSeoMeta({
 }
 
 .about-category-item--hoverable > div {
+  /* 🦇 BroCula: Using SSR-safe constants instead of v-bind with nested paths */
   transition:
-    background-color v-bind('animationConfig.cssTransitions.fastSec') ease-out,
-    transform v-bind('animationConfig.cssTransitions.fastSec') ease-out;
+    background-color v-bind(cssTransitionFastSec) ease-out,
+    transform v-bind(cssTransitionFastSec) ease-out;
 }
 
 @keyframes category-enter {
