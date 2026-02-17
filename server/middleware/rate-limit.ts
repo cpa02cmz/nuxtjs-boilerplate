@@ -45,6 +45,17 @@ function startCleanupInterval(): void {
   }
 }
 
+/**
+ * Stop the cleanup interval - used for testing and graceful shutdown
+ * BugFixer: Issue #3465 - Cleanup interval leak fix
+ */
+export function stopCleanupInterval(): void {
+  if (cleanupInterval) {
+    clearInterval(cleanupInterval)
+    cleanupInterval = null
+  }
+}
+
 // Initialize cleanup on module load
 startCleanupInterval()
 
@@ -58,7 +69,8 @@ export default defineEventHandler(event => {
   const rateLimitConfig = getRateLimitTier(event.path)
 
   // Get client IP for rate limiting
-  const clientIP = getRequestIP(event) || 'unknown'
+  // BugFixer: Issue #3465 - Disable X-Forwarded-For to prevent IP spoofing
+  const clientIP = getRequestIP(event, { xForwardedFor: false }) || 'unknown'
   const key = `${clientIP}:${event.path}`
 
   const now = Date.now()
