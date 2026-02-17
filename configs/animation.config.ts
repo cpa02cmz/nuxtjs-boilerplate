@@ -1614,6 +1614,11 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.ALTERNATIVES_RESPECT_REDUCED_MOTION !== 'false',
+    // 🧩 Flexy: Skeleton stagger delay for loading animation (ms)
+    // Used by AlternativeSuggestions.vue for skeleton card stagger
+    skeletonStaggerDelayMs: parseInt(
+      process.env.ALTERNATIVES_SKELETON_STAGGER_MS || '150'
+    ),
   },
 
   // 🎨 Pallete's micro-UX enhancement: Limitations Section Animations
@@ -3730,6 +3735,17 @@ export const animationConfig = {
     shimmerPulseDurationSec: parseFloat(
       process.env.SEARCH_ANALYTICS_SHIMMER_PULSE_SEC || '1.5'
     ),
+    // 🧩 Flexy: Search performance thresholds (ms) - eliminating hardcoded values!
+    // Used by SearchAnalytics.vue to categorize search response times
+    performanceThresholds: {
+      // Threshold for "fast" searches (ms) - searches faster than this are "fast"
+      fastMs: parseInt(process.env.SEARCH_ANALYTICS_FAST_THRESHOLD_MS || '100'),
+      // Threshold for "medium" searches (ms) - searches between fast and this are "medium"
+      mediumMs: parseInt(
+        process.env.SEARCH_ANALYTICS_MEDIUM_THRESHOLD_MS || '500'
+      ),
+      // Searches slower than mediumMs are considered "slow"
+    },
   },
 
   // Client Error Boundary Animations - Flexy hates hardcoded values!
@@ -4311,14 +4327,14 @@ export const animationConfig = {
     },
   },
 
-  // Search Response Time Thresholds - Flexy hates hardcoded 200ms!
+  // Search Response Time Thresholds - Flexy hates hardcoded values!
   // Thresholds for categorizing search response times
   searchResponseTime: {
-    // Threshold for "fast" response time in ms
+    // Threshold for "fast" response time in ms - Flexy hates hardcoded 100ms!
     fastThresholdMs: parseInt(
-      process.env.SEARCH_RESPONSE_FAST_THRESHOLD_MS || '200'
+      process.env.SEARCH_RESPONSE_FAST_THRESHOLD_MS || '100'
     ),
-    // Threshold for "medium" response time in ms
+    // Threshold for "medium" response time in ms - Flexy hates hardcoded 500ms!
     mediumThresholdMs: parseInt(
       process.env.SEARCH_RESPONSE_MEDIUM_THRESHOLD_MS || '500'
     ),
