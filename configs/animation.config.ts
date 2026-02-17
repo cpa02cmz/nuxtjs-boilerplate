@@ -2856,6 +2856,11 @@ export const animationConfig = {
       completionDelayMs: parseInt(
         process.env.REVIEW_QUEUE_QUICK_ACTION_COMPLETION_MS || '1500'
       ),
+      // API simulation delay for quick actions (ms) - Flexy hates hardcoded 800!
+      // Used to simulate network latency for approve/reject actions
+      apiSimulationDelayMs: parseInt(
+        process.env.REVIEW_QUEUE_API_SIMULATION_DELAY_MS || '800'
+      ),
       // API call simulation duration (ms)
       processingDurationMs: parseInt(
         process.env.REVIEW_QUEUE_QUICK_ACTION_PROCESSING_MS || '800'

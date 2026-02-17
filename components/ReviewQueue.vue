@@ -605,7 +605,13 @@ const handleQuickAction = async (
 
   try {
     // Simulate API call (replace with actual API call)
-    await new Promise(resolve => setTimeout(resolve, 800))
+    // Flexy hates hardcoded 800! Using configurable delay
+    await new Promise(resolve =>
+      setTimeout(
+        resolve,
+        animationConfig.reviewQueue.quickAction.apiSimulationDelayMs
+      )
+    )
 
     // Success! Update state
     processingId.value = null
