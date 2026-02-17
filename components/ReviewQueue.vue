@@ -51,15 +51,12 @@
           :placeholder="moderationConfig.ui.categoryFilterPlaceholder"
           class="filter-input"
           :aria-label="contentConfig.reviewQueue.aria.categoryFilter"
-        >
+        />
       </div>
     </div>
 
     <!-- Loading State with Skeleton Animation -->
-    <div
-      v-if="loading"
-      class="loading-state"
-    >
+    <div v-if="loading" class="loading-state">
       <div class="skeleton-wrapper">
         <div
           v-for="n in 3"
@@ -123,10 +120,7 @@
             :class="['status-badge', `status-${submission.status}`]"
             :aria-label="`Status: ${submission.status}`"
           >
-            <span
-              class="status-icon"
-              aria-hidden="true"
-            >
+            <span class="status-icon" aria-hidden="true">
               <svg
                 v-if="submission.status === 'pending'"
                 class="w-3 h-3"
@@ -314,7 +308,7 @@
                 <svg
                   v-if="
                     completedId === submission.id &&
-                      completedAction === 'approve'
+                    completedAction === 'approve'
                   "
                   class="w-4 h-4"
                   fill="none"
@@ -331,7 +325,7 @@
                 <svg
                   v-else-if="
                     processingId === submission.id &&
-                      processingAction === 'approve'
+                    processingAction === 'approve'
                   "
                   class="w-4 h-4 animate-spin"
                   fill="none"
@@ -392,7 +386,7 @@
                 <svg
                   v-if="
                     completedId === submission.id &&
-                      completedAction === 'reject'
+                    completedAction === 'reject'
                   "
                   class="w-4 h-4"
                   fill="none"
@@ -409,7 +403,7 @@
                 <svg
                   v-else-if="
                     processingId === submission.id &&
-                      processingAction === 'reject'
+                    processingAction === 'reject'
                   "
                   class="w-4 h-4 animate-spin"
                   fill="none"
@@ -454,10 +448,7 @@
     </TransitionGroup>
 
     <!-- Empty State with Illustration -->
-    <div
-      v-else
-      class="empty-state"
-    >
+    <div v-else class="empty-state">
       <div
         class="empty-illustration"
         :class="{ 'float-animation': !prefersReducedMotion }"
@@ -481,9 +472,7 @@
       <p class="empty-title">
         {{ contentConfig.reviewQueue.emptyState }}
       </p>
-      <p class="empty-subtitle">
-        New submissions will appear here
-      </p>
+      <p class="empty-subtitle">New submissions will appear here</p>
     </div>
   </div>
 </template>
@@ -1377,7 +1366,7 @@ onUnmounted(() => {
     0 4px 12px rgba(0, 0, 0, 0.15),
     0 2px 4px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(0, 0, 0, 0.05);
-  z-index: v-bind('zIndexConfig?.dropdown?.[10] || 10');
+  z-index: v-bind('zIndexConfig.dropdown || 10');
 }
 
 .quick-action-btn {

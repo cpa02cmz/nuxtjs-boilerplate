@@ -628,6 +628,14 @@ export const uiConfig = {
       process.env.NUMBER_ABBREVIATION_DECIMALS || '1'
     ),
   },
+
+  // BugFixer: Added missing accessibility configuration section
+  accessibility: {
+    // Announcement duration for screen reader announcements (ms)
+    announcementDurationMs: parseInt(
+      process.env.ACCESSIBILITY_ANNOUNCEMENT_DURATION || '3000'
+    ),
+  },
 } as const
 
 export type UiConfig = typeof uiConfig

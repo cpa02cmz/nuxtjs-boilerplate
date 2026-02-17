@@ -267,6 +267,35 @@ export const themeConfig = {
     moreBtnHoverBorder:
       process.env.COMPARISON_VALUE_MORE_BTN_HOVER_BORDER ||
       'rgba(107, 114, 128, 0.3)',
+    // BugFixer: Added missing preview properties for list preview popup
+    previewBg: process.env.COMPARISON_VALUE_PREVIEW_BG || '#ffffff',
+    previewBorder:
+      process.env.COMPARISON_VALUE_PREVIEW_BORDER || 'rgba(0, 0, 0, 0.1)',
+    previewDivider:
+      process.env.COMPARISON_VALUE_PREVIEW_DIVIDER || 'rgba(0, 0, 0, 0.1)',
+    previewTitleColor:
+      process.env.COMPARISON_VALUE_PREVIEW_TITLE_COLOR || '#374151',
+    previewCopyBg:
+      process.env.COMPARISON_VALUE_PREVIEW_COPY_BG || 'rgba(59, 130, 246, 0.1)',
+    previewCopyColor:
+      process.env.COMPARISON_VALUE_PREVIEW_COPY_COLOR || '#2563eb',
+    previewCopyHoverBg:
+      process.env.COMPARISON_VALUE_PREVIEW_COPY_HOVER_BG ||
+      'rgba(59, 130, 246, 0.2)',
+    previewItemBg:
+      process.env.COMPARISON_VALUE_PREVIEW_ITEM_BG ||
+      'rgba(59, 130, 246, 0.08)',
+    previewItemColor:
+      process.env.COMPARISON_VALUE_PREVIEW_ITEM_COLOR || '#1d4ed8',
+    previewItemHiddenBg:
+      process.env.COMPARISON_VALUE_PREVIEW_ITEM_HIDDEN_BG ||
+      'rgba(107, 114, 128, 0.1)',
+    previewItemHiddenColor:
+      process.env.COMPARISON_VALUE_PREVIEW_ITEM_HIDDEN_COLOR || '#6b7280',
+    // BugFixer: Added missing listItemHoverBg property
+    listItemHoverBg:
+      process.env.COMPARISON_VALUE_LIST_ITEM_HOVER_BG ||
+      'rgba(59, 130, 246, 0.15)',
   },
 } as const
 
