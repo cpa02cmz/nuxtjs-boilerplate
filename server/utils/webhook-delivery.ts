@@ -5,9 +5,9 @@ import { webhookSigner } from './webhook-signer'
 import { getCircuitBreaker } from './circuit-breaker'
 import { createCircuitBreakerError } from './api-error'
 import { webhooksConfig } from '~/configs/webhooks.config'
-import { timeConfig } from '~/configs/time.config'
 import { limitsConfig } from '~/configs/limits.config'
 import { logger } from '~/utils/logger'
+import { calculateBackoff } from './retry'
 
 export interface WebhookDeliveryOptions {
   maxRetries?: number
@@ -465,21 +465,13 @@ export class WebhookDeliveryService {
   }
 
   private calculateRetryDelay(attempt: number): number {
-    // Flexy hates hardcoded values! Using webhooksConfig for retry settings
-    const baseDelayMs = webhooksConfig.retry.baseDelayMs
-    const maxDelayMs = webhooksConfig.retry.maxDelayMs
-    const jitterFactor = webhooksConfig.retry.jitterFactor
-    // Flexy hates hardcoded 2! Using configurable exponential base from timeConfig
-    const exponentialBase = timeConfig.retry.exponentialBase
-
-    let delay = baseDelayMs * Math.pow(exponentialBase, attempt)
-    delay = Math.min(delay, maxDelayMs)
-
-    const jitterRange = delay * jitterFactor
-    const jitter = (Math.random() - 0.5) * jitterRange
-    delay += jitter
-
-    return Math.max(0, Math.floor(delay))
+    return calculateBackoff(
+      attempt,
+      webhooksConfig.retry.baseDelayMs,
+      webhooksConfig.retry.maxDelayMs,
+      true,
+      webhooksConfig.retry.jitterFactor
+    )
   }
 
   private getCircuitBreakerKey(webhook: Webhook): string {
