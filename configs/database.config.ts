@@ -54,6 +54,12 @@ export const databaseConfig = {
     prefix: process.env.DB_LOG_PREFIX || '[Database]',
   },
 
+  // Health Check Settings - Flexy hates hardcoded timeouts!
+  healthCheck: {
+    // Timeout for database health checks (ms)
+    timeoutMs: parseInt(process.env.DB_HEALTH_CHECK_TIMEOUT_MS || '5000'),
+  },
+
   // Idempotency Key Settings
   idempotency: {
     // Default expiration time in hours (24 hours = 1 day)
