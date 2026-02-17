@@ -10,19 +10,17 @@
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
   >
-    <!-- Enhanced Skeleton loader with shimmer effect -->
+    <!-- Enhanced Skeleton loader with shimmer effect
+         Flexy hates hardcoded values! Using animationConfig.tailwindDurations -->
     <Transition
-      enter-active-class="transition-all duration-300 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
       enter-from-class="opacity-0"
       enter-to-class="opacity-100"
-      leave-active-class="transition-all duration-200 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
       leave-from-class="opacity-100 scale-100"
       leave-to-class="opacity-0 scale-98"
     >
-      <div
-        v-if="!isIntersecting && !isLoaded"
-        class="skeleton-container"
-      >
+      <div v-if="!isIntersecting && !isLoaded" class="skeleton-container">
         <!-- Palette's micro-UX: Multi-layer shimmer for depth -->
         <div
           v-if="!prefersReducedMotion"
@@ -55,12 +53,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>

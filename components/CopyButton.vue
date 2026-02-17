@@ -9,7 +9,8 @@
         ref="buttonRef"
         type="button"
         :class="[
-          'flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-1 relative overflow-hidden',
+          // Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations
+          `flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md transition-all ${animationConfig.tailwindDurations.normal} ease-out focus:outline-none focus:ring-2 focus:ring-offset-1 relative overflow-hidden`,
           isCopied
             ? 'bg-green-100 text-green-700 focus:ring-green-500'
             : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800 focus:ring-gray-400',
@@ -25,7 +26,8 @@
           v-if="!isCopied"
           xmlns="http://www.w3.org/2000/svg"
           :class="[
-            'h-3.5 w-3.5 transition-transform duration-200',
+            // Flexy hates hardcoded duration-200!
+            `h-3.5 w-3.5 transition-transform ${animationConfig.tailwindDurations.normal}`,
             isHovering && !prefersReducedMotion ? 'animate-icon-wiggle' : '',
           ]"
           fill="none"
@@ -63,12 +65,7 @@
     </Tooltip>
 
     <!-- Screen reader live region for copy status announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
 
