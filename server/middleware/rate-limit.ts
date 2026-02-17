@@ -64,12 +64,17 @@ export default defineEventHandler(event => {
   const now = Date.now()
   const windowStart = now - rateLimitConfig.windowMs
 
-  // Clean up old entries
+  // Clean up old entries - collect keys first to avoid race conditions
+  const keysToDelete: string[] = []
   Object.keys(rateLimitStore).forEach(k => {
     const entry = rateLimitStore[k]
     if (entry && entry.resetTime < windowStart) {
-      delete rateLimitStore[k]
+      keysToDelete.push(k)
     }
+  })
+  // Delete after iteration to prevent race conditions
+  keysToDelete.forEach(k => {
+    delete rateLimitStore[k]
   })
 
   // Check if this is a new request or existing
