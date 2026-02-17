@@ -343,6 +343,15 @@ export const contentConfig = {
     ofLabel: process.env.CONTENT_SCREENSHOTS_OF || 'of',
   },
 
+  // Performance Chart - Pallete's micro-UX delight! 🎨
+  performanceChart: {
+    emptyState:
+      process.env.CONTENT_PERFORMANCE_CHART_EMPTY || 'No data available',
+    emptySubtext:
+      process.env.CONTENT_PERFORMANCE_CHART_EMPTY_SUBTEXT ||
+      'Data will appear when metrics are collected',
+  },
+
   // Favorites Page - Flexy hates hardcoded page content!
   favorites: {
     title: process.env.CONTENT_FAVORITES_TITLE || 'My Bookmarks',

@@ -507,6 +507,14 @@ interface Props {
   initialSubmissions?: Submission[]
 }
 
+// Define emits for parent component communication
+const emit = defineEmits<{
+  (
+    e: 'quick-action',
+    payload: { submissionId: string; action: 'approve' | 'reject' }
+  ): void
+}>()
+
 const props = withDefaults(defineProps<Props>(), {
   initialSubmissions: () => [],
 })
@@ -633,8 +641,8 @@ const handleQuickAction = async (
       completedAction.value = null
     }, animationConfig.reviewQueue?.quickAction?.completionDelayMs || 1500)
 
-    // TODO: Emit event to parent to update submission status
-    // emit('quick-action', { submissionId, action })
+    // Emit event to parent to update submission status
+    emit('quick-action', { submissionId, action })
   } catch {
     // Error state
     processingId.value = null

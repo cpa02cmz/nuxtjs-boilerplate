@@ -23,8 +23,8 @@
           <OptimizedImage
             :src="resource.icon"
             :alt="resource.title"
-            :width="32"
-            :height="32"
+            :width="layoutConfig.iconSizes.small"
+            :height="layoutConfig.iconSizes.small"
             format="avif"
             loading="lazy"
             :quality="80"
@@ -179,6 +179,7 @@ import type { Resource } from '~/types/resource'
 import { limitsConfig } from '~/configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { layoutConfig } from '~/configs/layout.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { EASING } from '~/configs/easing.config'
 import { useRipple } from '~/composables/useRipple'

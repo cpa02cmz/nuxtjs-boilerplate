@@ -424,7 +424,11 @@ onMounted(() => {
 .indicator-dot--pulse {
   animation: indicator-pulse
     v-bind('animationConfig.metricCard.pulseDurationSec') ease-in-out;
-  animation-delay: calc(var(--dot-index) * 100ms);
+  /* Flexy hates hardcoded 100ms! Using animationConfig.metricCard.indicatorStaggerDelayMs 🧩 */
+  animation-delay: calc(
+    var(--dot-index) *
+      v-bind('animationConfig.metricCard.indicatorStaggerDelayMs + "ms"')
+  );
 }
 
 @keyframes indicator-pulse {
