@@ -2,10 +2,7 @@
   <div class="api-keys-manager">
     <div class="api-keys-header">
       <h2>{{ contentConfig.apiKeys.title }}</h2>
-      <button
-        class="btn btn-primary"
-        @click="showCreateForm = true"
-      >
+      <button class="btn btn-primary" @click="showCreateForm = true">
         {{ contentConfig.apiKeys.buttons.create }}
       </button>
     </div>
@@ -27,7 +24,7 @@
             required
             :placeholder="contentConfig.apiKeys.placeholders.keyNameAlt"
             class="form-control"
-          >
+          />
         </div>
 
         <div class="form-group">
@@ -117,10 +114,7 @@
         aria-live="polite"
       >
         <!-- Animated Illustration -->
-        <div
-          class="api-key-illustration"
-          aria-hidden="true"
-        >
+        <div class="api-key-illustration" aria-hidden="true">
           <!-- Background Circle -->
           <div
             class="api-key-bg-circle"
@@ -193,10 +187,7 @@
           {{ contentConfig.apiKeys.empty.ctaButton }}
         </button>
       </div>
-      <div
-        v-else
-        class="api-key-items"
-      >
+      <div v-else class="api-key-items">
         <TransitionGroup
           name="api-key-item"
           tag="div"
@@ -266,9 +257,9 @@
                   revokingKeyId === key.id
                     ? `Revoking API key: ${key.name}`
                     : contentConfig.apiKeys.aria.revokeButton.replace(
-                      '{{name}}',
-                      key.name
-                    )
+                        '{{name}}',
+                        key.name
+                      )
                 "
                 :disabled="revokingKeyId === key.id"
                 :aria-busy="revokingKeyId === key.id"
@@ -310,11 +301,7 @@
     </div>
 
     <!-- API Key Created Modal -->
-    <div
-      v-if="showKeyCreatedModal"
-      class="modal-overlay"
-      @click="closeModal"
-    >
+    <div v-if="showKeyCreatedModal" class="modal-overlay" @click="closeModal">
       <div
         ref="modalContent"
         class="modal-content"
@@ -329,10 +316,7 @@
           {{ contentConfig.apiKeys.buttons.create }}
         </h3>
         <p><strong>Key:</strong> {{ createdApiKey?.key }}</p>
-        <p
-          class="warning"
-          role="alert"
-        >
+        <p class="warning" role="alert">
           Make sure to copy this key now. You won't be able to see it again.
         </p>
         <div class="form-actions">
@@ -379,10 +363,7 @@
                 : contentConfig.messages.clipboard.copy
             }}
           </button>
-          <button
-            class="btn btn-secondary"
-            @click="closeModal"
-          >
+          <button class="btn btn-secondary" @click="closeModal">
             {{ contentConfig.apiKeys.buttons.cancel }}
           </button>
         </div>
@@ -395,6 +376,27 @@
         >
           {{ copySuccess ? 'API key has been copied to clipboard' : '' }}
         </div>
+
+        <!-- 🎨 Pallete's micro-UX: Particle burst celebration for copy success ✨ -->
+        <TransitionGroup
+          v-if="showParticles && !reducedMotion"
+          tag="div"
+          class="api-key-particle-container"
+          aria-hidden="true"
+        >
+          <span
+            v-for="particle in particles"
+            :key="particle.id"
+            class="api-key-particle"
+            :style="{
+              '--particle-x': `${particle.x}px`,
+              '--particle-y': `${particle.y}px`,
+              '--particle-color': particle.color,
+              '--particle-size': `${particle.size}px`,
+              '--particle-rotation': `${particle.rotation}deg`,
+            }"
+          />
+        </TransitionGroup>
       </div>
     </div>
   </div>
@@ -436,6 +438,50 @@ const modalContent = ref<HTMLElement | null>(null)
 const copySuccess = ref(false)
 // Pallete: Track which key is being revoked for granular loading feedback
 const revokingKeyId = ref<string | null>(null)
+
+// 🎨 Pallete's micro-UX: Particle burst system for copy celebration
+interface Particle {
+  id: number
+  x: number
+  y: number
+  color: string
+  size: number
+  rotation: number
+}
+
+const particles = ref<Particle[]>([])
+const showParticles = ref(false)
+let particleIdCounter = 0
+
+// Generate particle burst for copy success celebration
+const createParticleBurst = () => {
+  if (reducedMotion.value) return
+
+  const colors = ['#10b981', '#34d399', '#6ee7b7', '#059669', '#047857']
+  const newParticles: Particle[] = []
+
+  for (let i = 0; i < 12; i++) {
+    const angle = (i / 12) * Math.PI * 2
+    const distance = 30 + Math.random() * 20
+    newParticles.push({
+      id: particleIdCounter++,
+      x: Math.cos(angle) * distance,
+      y: Math.sin(angle) * distance,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      size: 4 + Math.random() * 4,
+      rotation: Math.random() * 360,
+    })
+  }
+
+  particles.value = newParticles
+  showParticles.value = true
+
+  // Clear particles after animation
+  setTimeout(() => {
+    showParticles.value = false
+    particles.value = []
+  }, animationConfig.copyParticles.durationMs)
+}
 
 // Store previously focused element
 let previousActiveElement: HTMLElement | null = null
@@ -562,6 +608,9 @@ const copyApiKey = async () => {
     try {
       await navigator.clipboard.writeText(createdApiKey.value.key)
       copySuccess.value = true
+
+      // 🎨 Pallete's micro-UX: Trigger particle burst celebration
+      createParticleBurst()
 
       // Haptic feedback for successful copy
       hapticSuccess()
@@ -1186,5 +1235,50 @@ onMounted(() => {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none !important;
+}
+
+/* 🎨 Pallete's micro-UX: Particle burst celebration styles */
+.api-key-particle-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.api-key-particle {
+  position: absolute;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  background: var(--particle-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(var(--particle-rotation));
+  animation: api-key-particle-burst
+    v-bind('animationConfig.copyParticles.durationMs + "ms"') ease-out forwards;
+  box-shadow: 0 0 6px var(--particle-color);
+}
+
+@keyframes api-key-particle-burst {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(
+        calc(-50% + var(--particle-x)),
+        calc(-50% + var(--particle-y))
+      )
+      scale(0);
+    opacity: 0;
+  }
+}
+
+/* Reduced motion: Disable particle animations */
+@media (prefers-reduced-motion: reduce) {
+  .api-key-particle-container {
+    display: none;
+  }
 }
 </style>
