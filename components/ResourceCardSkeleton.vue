@@ -109,12 +109,7 @@
       </div>
     </div>
     <!-- 🎨 Pallete: Live region for screen reader announcements - announces loading state -->
-    <span
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ loadingAnnouncement }}
     </span>
 
@@ -221,6 +216,12 @@ const pulseDurationSec = animationConfig.skeleton.pulseDurationSec
 const cardEnterDurationSec = animationConfig.skeleton.cardEnterDurationSec
 const reducedMotionEnterDurationSec =
   animationConfig.skeleton.reducedMotionEnterDurationSec
+
+// 🦇 BroCula: SSR-safe z-index values - prevent undefined errors during SSR!
+const zIndexValues = computed(() => ({
+  scanLine: zIndexScale?.low?.[10] ?? 10,
+  loadingIndicator: zIndexScale?.low?.[5] ?? 5,
+}))
 
 // 🎯 Flexy: Modular easing values from config - no more hardcoded cubic-bezier!
 const easingValues = computed(() => ({
@@ -572,8 +573,8 @@ onMounted(() => {
   animation: scan-sweep var(--scan-duration) ease-in-out var(--scan-delay)
     infinite;
   pointer-events: none;
-  /* Flexy hates hardcoded z-index! Using zIndexScale */
-  z-index: v-bind('zIndexScale.low[10]');
+  /* 🦇 BroCula: SSR-safe z-index using computed values */
+  z-index: v-bind('zIndexValues.scanLine');
   box-shadow:
     0 0 4px var(--scan-color),
     0 0 8px var(--scan-color),
@@ -692,8 +693,8 @@ onMounted(() => {
   text-transform: uppercase;
   pointer-events: none;
   user-select: none;
-  /* Flexy hates hardcoded z-index! Using zIndexScale */
-  z-index: v-bind('zIndexScale.low[5]');
+  /* 🦇 BroCula: SSR-safe z-index using computed values */
+  z-index: v-bind('zIndexValues.loadingIndicator');
   transition: opacity v-bind('animationConfig.cssTransitions.fastSec') ease;
 }
 
