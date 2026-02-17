@@ -1,5 +1,5 @@
 import { chromium } from 'playwright'
-import { monitoringConfig } from '../configs/monitoring.config.ts'
+import { monitoringConfig } from '../configs/monitoring.config.js'
 
 const BASE_URL = monitoringConfig.baseUrl
 const PAGES = monitoringConfig.pages.essential

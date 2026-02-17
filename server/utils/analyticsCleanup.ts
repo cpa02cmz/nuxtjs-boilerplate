@@ -112,6 +112,18 @@ export async function cleanupOldAnalyticsEvents(
       )
       return 0
     }
+
+    // Check if database is unreachable (common during static generation)
+    if (
+      errorMessage.includes("Can't reach database server") ||
+      errorMessage.includes('localhost:5432')
+    ) {
+      logger.warn(
+        'Database unavailable - skipping analytics cleanup (likely during build/prerendering)'
+      )
+      return 0
+    }
+
     logger.error('Error cleaning up old analytics events:', error)
     throw error
   }

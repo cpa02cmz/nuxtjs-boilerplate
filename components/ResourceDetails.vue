@@ -432,10 +432,11 @@ let intersectionObserver: IntersectionObserver | null = null
 const setupIntersectionObserver = () => {
   if (typeof window === 'undefined' || prefersReducedMotion.value) return
 
+  // Flexy hates hardcoded values! Using animationConfig.lazyLoading
   const options = {
     root: null,
-    rootMargin: '0px',
-    threshold: 0.1,
+    rootMargin: animationConfig.lazyLoading.rootMargin,
+    threshold: animationConfig.lazyLoading.threshold,
   }
 
   intersectionObserver = new IntersectionObserver(entries => {
@@ -446,11 +447,12 @@ const setupIntersectionObserver = () => {
           visibleSections.value.add(sectionId)
         } else {
           // Keep in set briefly for exit animation
+          // Flexy hates hardcoded 300ms! Using animationConfig.lazyLoading.exitAnimationDelayMs
           setTimeout(() => {
             if (!visibleSections.value.has(sectionId)) {
               visibleSections.value.delete(sectionId)
             }
-          }, 300)
+          }, animationConfig.lazyLoading.exitAnimationDelayMs)
         }
       }
     })
