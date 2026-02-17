@@ -95,22 +95,13 @@
     </svg>
 
     <!-- Empty State -->
-    <div
-      v-if="chartData.length === 0"
-      class="empty-state"
-    >
-      <span
-        class="empty-icon"
-        aria-hidden="true"
-      >📊</span>
+    <div v-if="chartData.length === 0" class="empty-state">
+      <span class="empty-icon" aria-hidden="true">📊</span>
       <span class="empty-text">No data available</span>
     </div>
 
     <!-- X-Axis Labels -->
-    <div
-      v-if="chartData.length > 0"
-      class="x-axis-labels"
-    >
+    <div v-if="chartData.length > 0" class="x-axis-labels">
       <span
         v-for="(label, index) in xAxisLabels"
         :key="`label-${index}`"
@@ -145,10 +136,7 @@
         :style="tooltipStyle"
       >
         <div class="tooltip-content">
-          <div
-            class="tooltip-value"
-            :style="{ color: chartColor }"
-          >
+          <div class="tooltip-value" :style="{ color: chartColor }">
             {{ hoveredPoint.value.toFixed(2) }}
           </div>
           <div class="tooltip-metric">
@@ -158,20 +146,12 @@
             {{ hoveredPoint.label }}
           </div>
         </div>
-        <div
-          aria-hidden="true"
-          class="tooltip-arrow"
-        />
+        <div aria-hidden="true" class="tooltip-arrow" />
       </div>
     </Transition>
 
     <!-- Screen Reader Announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ chartAnnouncement }}
     </div>
   </div>
@@ -510,21 +490,23 @@ function handleKeyDown(event: KeyboardEvent) {
 }
 
 .chart-line {
-  transition: all 0.3s ease;
+  transition: all v-bind('animationConfig.adminChart.lineTransitionSec') ease;
 }
 
 .chart-area {
-  transition: all 0.3s ease;
+  transition: all v-bind('animationConfig.adminChart.lineTransitionSec') ease;
 }
 
 .crosshair {
   pointer-events: none;
-  transition: all 0.15s ease-out;
+  transition: all v-bind('animationConfig.adminChart.crosshairTransitionSec')
+    ease-out;
 }
 
 .data-point {
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all v-bind('animationConfig.adminChart.dataPointTransitionSec')
+    cubic-bezier(0.4, 0, 0.2, 1);
   outline: none;
 }
 
