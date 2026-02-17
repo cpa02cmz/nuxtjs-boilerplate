@@ -127,7 +127,7 @@
         @keydown="handleKeyDown"
         @focus="handleFocus"
         @blur="handleBlur"
-      >
+      />
       <!-- Keyboard shortcut hint with idle pulse animation -->
       <div
         v-if="!modelValue && !isFocused"
@@ -262,7 +262,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useResources } from '~/composables/useResources'
 import { useAdvancedResourceSearch } from '~/composables/useAdvancedResourceSearch'
 import { useResourceData } from '~/composables/useResourceData'
@@ -751,11 +751,13 @@ if (typeof window !== 'undefined') {
     }
   }, TIMING_FALLBACKS.idlePulseDelayMs)
 
-  // Add event listeners
-  window.addEventListener('saved-search-added', savedSearchAddedHandler)
-  window.addEventListener('saved-search-updated', savedSearchUpdatedHandler)
-  window.addEventListener('saved-search-removed', savedSearchRemovedHandler)
-  window.addEventListener('keydown', handleSlashKey)
+  // Add event listeners in onMounted to ensure SSR safety - BugFixer fixed this! 🐛
+  onMounted(() => {
+    window.addEventListener('saved-search-added', savedSearchAddedHandler)
+    window.addEventListener('saved-search-updated', savedSearchUpdatedHandler)
+    window.addEventListener('saved-search-removed', savedSearchRemovedHandler)
+    window.addEventListener('keydown', handleSlashKey)
+  })
 
   // Clean up event listeners on component unmount
   onUnmounted(() => {
