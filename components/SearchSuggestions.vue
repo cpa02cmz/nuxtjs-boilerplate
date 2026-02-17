@@ -730,7 +730,8 @@ const handleKeyDown = (event: KeyboardEvent) => {
   border-radius: 9999px;
   border: 1px solid #93c5fd;
   flex-shrink: 0;
-  transition: all 0.2s ease-out;
+  /* Flexy hates hardcoded 0.2s! Using animationConfig.cssTransitions.normalSec */
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease-out;
 }
 
 /* Animated new indicator with subtle pulse - Flexy hates hardcoded 2s! */

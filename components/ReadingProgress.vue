@@ -584,7 +584,9 @@ onUnmounted(() => {
     )
     ease-in-out infinite;
   will-change: animation-duration;
-  transition: animation-duration 0.3s ease-out;
+  /* Flexy hates hardcoded 0.3s! Using animationConfig.cssTransitions.standardSec */
+  transition: animation-duration
+    v-bind('animationConfig.cssTransitions.standardSec') ease-out;
 }
 
 /* Enhanced shimmer for fast scrolling - Palette's micro-UX delight! */
