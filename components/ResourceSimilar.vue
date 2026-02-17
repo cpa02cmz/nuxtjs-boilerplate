@@ -351,6 +351,11 @@ onUnmounted(() => {
     handleMotionChangeRef = null
   }
 })
+
+// Flexy hates hardcoded 200ms! Using animationConfig.similarResources.spotlight.fadeInDurationSec
+const spotlightFadeInDuration = computed(
+  () => animationConfig.similarResources.spotlight.fadeInDurationSec
+)
 </script>
 
 <style scoped>
@@ -503,7 +508,9 @@ onUnmounted(() => {
   );
   transition: background var(--spotlight-transition, 150ms) ease-out;
   opacity: 0;
-  animation: spotlight-fade-in 200ms ease-out forwards;
+  /* Flexy hates hardcoded 200ms! Using animationConfig.similarResources.spotlight.fadeInDurationSec */
+  animation: spotlight-fade-in v-bind('spotlightFadeInDuration') ease-out
+    forwards;
 }
 
 @keyframes spotlight-fade-in {

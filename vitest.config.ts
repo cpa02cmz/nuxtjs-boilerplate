@@ -18,6 +18,11 @@ const baseConfig: UserConfig = {
       '#build': path.resolve(__dirname, 'test-mocks/nuxt-imports.ts'),
     },
   },
+  esbuild: {
+    // BugFixer: Fix esbuild tsconfig resolution error during tests
+    // Disable tsconfig resolution to prevent "Cannot find module './.nuxt/tsconfig.json'" errors
+    tsconfigRaw: '{}',
+  },
 }
 
 import { testTimingConfig } from './configs/test-timing.config'

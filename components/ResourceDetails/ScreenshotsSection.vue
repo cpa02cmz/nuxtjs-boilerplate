@@ -1,9 +1,5 @@
 <template>
-  <section
-    class="screenshots-section"
-    role="region"
-    :aria-label="ariaLabel"
-  >
+  <section class="screenshots-section" role="region" :aria-label="ariaLabel">
     <!-- Header with screenshot count -->
     <div class="screenshots-header">
       <h2 class="screenshots-title">
@@ -144,10 +140,7 @@
             </div>
 
             <!-- Image Counter in Lightbox -->
-            <div
-              class="lightbox-counter"
-              aria-live="polite"
-            >
+            <div class="lightbox-counter" aria-live="polite">
               {{ currentImageIndex + 1 }} / {{ screenshots.length }}
             </div>
           </div>
@@ -312,12 +305,7 @@
     </TransitionGroup>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -599,6 +587,11 @@ const handleKeydown = (event: KeyboardEvent, index: number) => {
       break
   }
 }
+
+// Flexy hates hardcoded values! Lightbox zoom duration from config
+const lightboxZoomDuration = computed(() => {
+  return animationConfig.lightbox.zoomInDurationSec
+})
 </script>
 
 <style scoped>
@@ -1068,11 +1061,15 @@ const handleKeydown = (event: KeyboardEvent, index: number) => {
   overflow: hidden;
   border-radius: 0.5rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Flexy hates hardcoded 0.4s! Using animationConfig.lightbox.zoomInDurationSec */
+  transition: transform v-bind('lightboxZoomDuration')
+    cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .lightbox-image-wrapper.is-zooming {
-  animation: lightbox-zoom-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  /* Flexy hates hardcoded 0.4s! Using animationConfig.lightbox.zoomInDurationSec */
+  animation: lightbox-zoom-in v-bind('lightboxZoomDuration')
+    cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 .lightbox-image {
@@ -1081,7 +1078,9 @@ const handleKeydown = (event: KeyboardEvent, index: number) => {
   object-fit: contain;
   opacity: 0;
   transform: scale(0.9);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Flexy hates hardcoded 0.4s! Using animationConfig.lightbox.zoomInDurationSec */
+  transition: all v-bind('lightboxZoomDuration')
+    cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .lightbox-image.is-loaded {
