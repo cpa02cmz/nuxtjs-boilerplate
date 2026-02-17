@@ -25,6 +25,8 @@
       '--scan-delay': `${scanConfig.delaySec}s`,
       '--scan-color': scanConfig.color,
       '--scan-opacity': scanConfig.opacity,
+      '--skeleton-z-index-scan': skeletonZIndex.scanLine,
+      '--skeleton-z-index-loading': skeletonZIndex.loadingIndicator,
     }"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
@@ -109,12 +111,7 @@
       </div>
     </div>
     <!-- 🎨 Pallete: Live region for screen reader announcements - announces loading state -->
-    <span
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ loadingAnnouncement }}
     </span>
 
@@ -214,6 +211,13 @@ const getStaggerDelay = (index: number): string => {
 
 // Skeleton colors
 const skeletonColors = SKELETON_COLORS
+
+// 🦇 BroCula: SSR-safe z-index values - using refs instead of direct v-bind to imported constants
+// This prevents "Cannot read properties of undefined (reading 'low')" during SSR
+const skeletonZIndex = computed(() => ({
+  scanLine: zIndexScale.low?.[10] ?? 10,
+  loadingIndicator: zIndexScale.low?.[5] ?? 5,
+}))
 
 // CSS duration values - Flexy: All using modular animationConfig!
 const shimmerDurationSec = animationConfig.skeleton.shimmerDurationSec
@@ -572,8 +576,8 @@ onMounted(() => {
   animation: scan-sweep var(--scan-duration) ease-in-out var(--scan-delay)
     infinite;
   pointer-events: none;
-  /* Flexy hates hardcoded z-index! Using zIndexScale */
-  z-index: v-bind('zIndexScale.low[10]');
+  /* 🦇 BroCula: Fixed SSR issue - using CSS variable instead of v-bind to imported constant */
+  z-index: var(--skeleton-z-index-scan);
   box-shadow:
     0 0 4px var(--scan-color),
     0 0 8px var(--scan-color),
@@ -692,8 +696,8 @@ onMounted(() => {
   text-transform: uppercase;
   pointer-events: none;
   user-select: none;
-  /* Flexy hates hardcoded z-index! Using zIndexScale */
-  z-index: v-bind('zIndexScale.low[5]');
+  /* 🦇 BroCula: Fixed SSR issue - using CSS variable instead of v-bind to imported constant */
+  z-index: var(--skeleton-z-index-loading);
   transition: opacity v-bind('animationConfig.cssTransitions.fastSec') ease;
 }
 
