@@ -11,6 +11,8 @@ export const backupConfig = {
       process.env.DATABASE_URL || process.env.BACKUP_DATABASE_URL || '',
     // Temporary directory for backup operations
     tempDir: process.env.BACKUP_TEMP_DIR || './tmp/backups',
+    // Database file path for SQLite file-based backups
+    databasePath: process.env.DATABASE_PATH || './data/database.sqlite',
   },
 
   // PostgreSQL-specific settings
