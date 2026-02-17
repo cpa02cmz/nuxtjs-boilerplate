@@ -50,6 +50,7 @@
           :data-suggestion-index="index"
           role="option"
           :aria-selected="focusedIndex === index"
+          :style="{ '--suggestion-index': index }"
           :class="[
             'suggestion-item',
             'px-4 py-2 cursor-pointer hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset',
@@ -154,6 +155,7 @@
           :data-suggestion-index="searchHistory.length + index"
           role="option"
           :aria-selected="focusedIndex === searchHistory.length + index"
+          :style="{ '--suggestion-index': searchHistory.length + index }"
           :class="[
             'suggestion-item',
             'px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset',
@@ -841,6 +843,44 @@ const handleKeyDown = (event: KeyboardEvent) => {
 @media (prefers-reduced-motion: reduce) {
   .particle-container {
     display: none;
+  }
+}
+
+/* Palette's micro-UX delight: Staggered Entrance Animation for Suggestions */
+/* Creates a wave-like reveal effect when dropdown opens */
+.suggestion-item {
+  animation: stagger-entrance
+    v-bind('animationConfig.stagger.entranceDurationMs + "ms"')
+    v-bind('EASING.SPRING_STANDARD') forwards;
+  animation-delay: calc(
+    var(--suggestion-index, 0) *
+      v-bind('animationConfig.stagger.delayMs + "ms"')
+  );
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+@keyframes stagger-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced motion: Instant appearance without stagger */
+@media (prefers-reduced-motion: reduce) {
+  .suggestion-item {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
 </style>
