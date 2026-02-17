@@ -7,9 +7,9 @@
     <DeprecationNotice
       v-if="
         status &&
-          (status === 'deprecated' ||
-            status === 'discontinued' ||
-            status === 'pending')
+        (status === 'deprecated' ||
+          status === 'discontinued' ||
+          status === 'pending')
       "
       :status="status"
       :migration-path="migrationPath"
@@ -29,11 +29,7 @@
     </div>
 
     <!-- 🎨 Palette's micro-UX enhancement: Quick Navigation for keyboard users ✨ -->
-    <nav
-      v-if="showQuickNav"
-      class="quick-nav"
-      aria-label="Resource sections"
-    >
+    <nav v-if="showQuickNav" class="quick-nav" aria-label="Resource sections">
       <button
         v-for="(section, index) in availableSections"
         :key="section.id"
@@ -54,10 +50,7 @@
       </button>
     </nav>
 
-    <div
-      class="grid grid-cols-1 md:grid-cols-3 gap-8"
-      @scroll="handleScroll"
-    >
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8" @scroll="handleScroll">
       <div class="md:col-span-2 resource-content">
         <!-- 🎨 Palette's micro-UX enhancement: Sections with intersection observer ✨ -->
         <div
@@ -198,12 +191,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -221,6 +209,7 @@ import LimitationsSection from '~/components/ResourceDetails/LimitationsSection.
 import { animationConfig } from '~/configs/animation.config'
 import { uiConfig } from '~/configs/ui.config'
 import { zIndexScale } from '~/configs/z-index.config'
+import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
   title: string
@@ -358,12 +347,9 @@ const scrollToTop = () => {
   }
 
   // Trigger haptic feedback
-  if (
-    !prefersReducedMotion.value &&
-    typeof navigator !== 'undefined' &&
-    navigator.vibrate
-  ) {
-    navigator.vibrate(10)
+  // Flexy hates hardcoded 10ms! Using hapticLight() with configurable pattern
+  if (!prefersReducedMotion.value) {
+    hapticLight()
   }
 }
 
@@ -381,7 +367,10 @@ const handleScroll = () => {
     scrollableHeight > 0 ? Math.min(scrollTop / scrollableHeight, 1) : 0
 
   // Show/hide back to top button
-  showBackToTop.value = scrollTop > windowHeight * 0.5
+  // Flexy hates hardcoded 0.5! Using animationConfig.resourceDetails.backToTopThresholdPercent
+  showBackToTop.value =
+    scrollTop >
+    windowHeight * animationConfig.resourceDetails.backToTopThresholdPercent
 
   // Determine active section based on scroll position
   const sectionRefs = [
@@ -400,7 +389,13 @@ const handleScroll = () => {
   sectionRefs.forEach(({ id, ref }) => {
     const sectionRect = ref.getBoundingClientRect()
     const distance = Math.abs(sectionRect.top)
-    if (distance < closestDistance && sectionRect.top < windowHeight * 0.5) {
+    // Flexy hates hardcoded 0.5! Using animationConfig.resourceDetails.sectionDetectionThresholdPercent
+    if (
+      distance < closestDistance &&
+      sectionRect.top <
+        windowHeight *
+          animationConfig.resourceDetails.sectionDetectionThresholdPercent
+    ) {
       closestDistance = distance
       closestSection = id
     }
