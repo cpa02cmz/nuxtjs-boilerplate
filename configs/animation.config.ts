@@ -223,6 +223,14 @@ export const animationConfig = {
     maxDelayMs: parseInt(process.env.CARD_MAX_DELAY_MS || '500'),
     enterDurationMs: parseInt(process.env.CARD_ENTER_DURATION_MS || '500'),
     enterDistancePx: parseInt(process.env.CARD_ENTER_DISTANCE_PX || '20'),
+    // Base delay for first card (ms) - Flexy hates hardcoded 50!
+    firstCardBaseDelayMs: parseInt(
+      process.env.CARD_FIRST_BASE_DELAY_MS || '50'
+    ),
+    // Intersection observer root margin (px) - Flexy hates hardcoded 50px!
+    intersectionRootMarginPx: parseInt(
+      process.env.CARD_INTERSECTION_MARGIN_PX || '50'
+    ),
   },
 
   // Focus Animations
