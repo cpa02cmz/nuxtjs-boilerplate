@@ -1,9 +1,5 @@
 <template>
-  <section
-    class="screenshots-section"
-    role="region"
-    :aria-label="ariaLabel"
-  >
+  <section class="screenshots-section" role="region" :aria-label="ariaLabel">
     <!-- Header with screenshot count -->
     <div class="screenshots-header">
       <h2 class="screenshots-title">
@@ -142,12 +138,7 @@
     </TransitionGroup>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -158,6 +149,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -467,7 +459,8 @@ const handleKeydown = (event: KeyboardEvent, index: number) => {
   opacity: 0;
   animation: overlay-fade-in v-bind('animationConfig.cssTransitions.fastSec')
     ease-out forwards;
-  z-index: 10;
+  /* Flexy hates hardcoded z-index! Using zIndexScale */
+  z-index: v-bind('zIndexScale.low[10]');
   pointer-events: none;
 }
 
@@ -528,7 +521,8 @@ const handleKeydown = (event: KeyboardEvent, index: number) => {
   opacity: 0;
   transform: translateY(-10px);
   transition: all v-bind('animationConfig.cssTransitions.fastSec') ease-out;
-  z-index: 20;
+  /* Flexy hates hardcoded z-index! Using zIndexScale */
+  z-index: v-bind('zIndexScale.medium[20]');
   backdrop-filter: blur(4px);
 }
 
