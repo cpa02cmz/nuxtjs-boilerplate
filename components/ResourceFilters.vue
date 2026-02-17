@@ -111,11 +111,8 @@
             @change="onDateRangeChange(option.value)"
             @focus="focusedDateOption = option.value"
             @blur="focusedDateOption = null"
-          >
-          <span
-            class="date-range-radio"
-            aria-hidden="true"
-          >
+          />
+          <span class="date-range-radio" aria-hidden="true">
             <span class="date-range-radio-inner" />
           </span>
           <span class="date-range-label">{{ option.label }}</span>
@@ -129,85 +126,8 @@
       </div>
     </fieldset>
 
-    <fieldset class="mb-6">
-      <legend class="text-sm font-medium text-gray-900 mb-3">
-        {{ contentConfig.filters.sectionLabels.dateAdded }}
-      </legend>
-      <div
-        role="radiogroup"
-        :aria-label="contentConfig.filters.ariaLabels.dateAdded"
-        class="space-y-2"
-      >
-        <label
-          class="flex items-center"
-          :for="'date-anytime'"
-        >
-          <input
-            id="date-anytime"
-            type="radio"
-            name="date-filter"
-            value="anytime"
-            :checked="selectedDateRange === 'anytime'"
-            class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
-            @change="onDateRangeChange('anytime')"
-          >
-          <span class="ml-2 text-sm text-gray-800">{{
-            contentConfig.filters.dateRanges.any
-          }}</span>
-        </label>
-        <label
-          class="flex items-center"
-          :for="'date-last-week'"
-        >
-          <input
-            id="date-last-week"
-            type="radio"
-            name="date-filter"
-            value="lastWeek"
-            :checked="selectedDateRange === 'lastWeek'"
-            class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
-            @change="onDateRangeChange('lastWeek')"
-          >
-          <span class="ml-2 text-sm text-gray-800">{{
-            contentConfig.filters.dateRanges.week
-          }}</span>
-        </label>
-        <label
-          class="flex items-center"
-          :for="'date-last-month'"
-        >
-          <input
-            id="date-last-month"
-            type="radio"
-            name="date-filter"
-            value="lastMonth"
-            :checked="selectedDateRange === 'lastMonth'"
-            class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
-            @change="onDateRangeChange('lastMonth')"
-          >
-          <span class="ml-2 text-sm text-gray-800">{{
-            contentConfig.filters.dateRanges.month
-          }}</span>
-        </label>
-        <label
-          class="flex items-center"
-          :for="'date-last-year'"
-        >
-          <input
-            id="date-last-year"
-            type="radio"
-            name="date-filter"
-            value="lastYear"
-            :checked="selectedDateRange === 'lastYear'"
-            class="h-4 w-4 text-gray-600 border-gray-300 focus:ring-gray-500"
-            @change="onDateRangeChange('lastYear')"
-          >
-          <span class="ml-2 text-sm text-gray-800">{{
-            contentConfig.filters.dateRanges.year
-          }}</span>
-        </label>
-      </div>
-    </fieldset>
+    <!-- Note: Duplicate Date Added fieldset removed - Issue #3302 fix
+         Only the enhanced date range section above (lines 76-130) is now rendered -->
 
     <SavedSearches
       v-if="savedSearches && savedSearches.length > 0"

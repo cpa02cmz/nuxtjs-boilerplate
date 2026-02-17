@@ -94,8 +94,20 @@
           type="text"
           :placeholder="contentConfig.statusManager.placeholders.reason"
           class="reason-field"
+          :class="{ 'reason-field--error': reasonError }"
+          :aria-invalid="!!reasonError"
+          :aria-describedby="reasonError ? 'reason-error' : undefined"
           @keydown="handleKeydown"
+          @blur="validateReason"
+        />
+        <p
+          v-if="reasonError"
+          id="reason-error"
+          class="error-message"
+          role="alert"
         >
+          {{ reasonError }}
+        </p>
       </div>
 
       <div class="notes-input">
@@ -107,8 +119,20 @@
           v-model="notes"
           :placeholder="contentConfig.statusManager.placeholders.notes"
           class="notes-field"
+          :class="{ 'notes-field--error': notesError }"
+          :aria-invalid="!!notesError"
+          :aria-describedby="notesError ? 'notes-error' : undefined"
           @keydown="handleKeydown"
+          @blur="validateNotes"
         />
+        <p
+          v-if="notesError"
+          id="notes-error"
+          class="error-message"
+          role="alert"
+        >
+          {{ notesError }}
+        </p>
       </div>
 
       <button
@@ -155,11 +179,7 @@
               key="loading"
               class="update-button__icon update-button__icon--spin"
             >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle
                   class="opacity-25"
                   cx="12"
@@ -175,11 +195,7 @@
                 />
               </svg>
             </span>
-            <span
-              v-else
-              key="default"
-              class="update-button__icon"
-            >
+            <span v-else key="default" class="update-button__icon">
               <svg
                 class="w-4 h-4"
                 fill="none"
@@ -288,12 +304,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
@@ -348,6 +359,10 @@ const successResetTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 const messageDismissDelayMs =
   animationConfig.statusManager.messageDismissDelayMs
 
+// Validation error states - Issue #3304 fix
+const reasonError = ref('')
+const notesError = ref('')
+
 // Track if status has changed from initial
 const hasStatusChanged = computed(() => {
   return selectedStatus.value !== initialStatus.value
@@ -387,6 +402,37 @@ const handleKeydown = (event: KeyboardEvent) => {
       handleUpdate()
     }
   }
+}
+
+// Validation functions - Issue #3304 fix
+const validateReason = () => {
+  if (!reason.value || reason.value.trim().length === 0) {
+    reasonError.value = ''
+    return true
+  }
+  if (reason.value.length < 3) {
+    reasonError.value = 'Reason must be at least 3 characters long'
+    return false
+  }
+  if (reason.value.length > 200) {
+    reasonError.value = 'Reason must be less than 200 characters'
+    return false
+  }
+  reasonError.value = ''
+  return true
+}
+
+const validateNotes = () => {
+  if (!notes.value || notes.value.trim().length === 0) {
+    notesError.value = ''
+    return true
+  }
+  if (notes.value.length > 1000) {
+    notesError.value = 'Notes must be less than 1000 characters'
+    return false
+  }
+  notesError.value = ''
+  return true
 }
 
 const handleUpdate = async () => {
@@ -649,6 +695,30 @@ onUnmounted(() => {
   outline: none;
   border-color: v-bind('animConfig.focusColor');
   box-shadow: v-bind('shadowsConfig.statusManager.focusRing.default');
+}
+
+.reason-field--error,
+.notes-field--error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2;
+}
+
+.reason-field--error:focus,
+.notes-field--error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.error-message::before {
+  content: '⚠️';
 }
 
 .notes-field {
