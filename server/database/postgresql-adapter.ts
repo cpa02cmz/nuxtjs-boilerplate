@@ -84,11 +84,31 @@ class PostgreSQLTransaction implements Transaction {
   async query<T = unknown>(sql: string, params?: unknown[]): Promise<T[]> {
     // Use transaction client if available, otherwise use main prisma
     const client = this.transactionClient || this.prisma
-    // SECURITY FIX: Validate SQL is SELECT-only to prevent injection
+    // SECURITY FIX: Enhanced SQL injection prevention
+    // Validate SQL is SELECT-only and contains no dangerous patterns
     const trimmedSql = sql.trim().toLowerCase()
+
+    // Must start with SELECT
     if (!trimmedSql.startsWith('select')) {
       throw new Error('Only SELECT queries are allowed in query() method')
     }
+
+    // Block dangerous patterns that could indicate SQL injection
+    const dangerousPatterns = [
+      /;\s*(drop|delete|update|insert|alter|truncate|create)\s+/i,
+      /union\s+select/i,
+      /\bexec\s*\(/i,
+      /\bxp_/i,
+      /\/\*.*\*\//s, // Block comments which can hide malicious code
+      /--.*$/m, // Block line comments
+    ]
+
+    for (const pattern of dangerousPatterns) {
+      if (pattern.test(sql)) {
+        throw new Error('SQL query contains potentially dangerous patterns')
+      }
+    }
+
     // SECURITY FIX: Use parameterized queries with template literals
     const result = await client.$queryRaw<T[]>`${Prisma.raw(sql)}`
     return result
@@ -217,11 +237,31 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       if (!this.prisma) {
         throw new Error('Database not connected. Call connect() first.')
       }
-      // SECURITY FIX: Validate SQL is SELECT-only to prevent injection
+      // SECURITY FIX: Enhanced SQL injection prevention
+      // Validate SQL is SELECT-only and contains no dangerous patterns
       const trimmedSql = sql.trim().toLowerCase()
+
+      // Must start with SELECT
       if (!trimmedSql.startsWith('select')) {
         throw new Error('Only SELECT queries are allowed in query() method')
       }
+
+      // Block dangerous patterns that could indicate SQL injection
+      const dangerousPatterns = [
+        /;\s*(drop|delete|update|insert|alter|truncate|create)\s+/i,
+        /union\s+select/i,
+        /\bexec\s*\(/i,
+        /\bxp_/i,
+        /\/\*.*\*\//s, // Block comments which can hide malicious code
+        /--.*$/m, // Block line comments
+      ]
+
+      for (const pattern of dangerousPatterns) {
+        if (pattern.test(sql)) {
+          throw new Error('SQL query contains potentially dangerous patterns')
+        }
+      }
+
       // SECURITY FIX: Use parameterized queries with template literals
       const result = await this.prisma.$queryRaw<T[]>`${Prisma.raw(sql)}`
       return result
