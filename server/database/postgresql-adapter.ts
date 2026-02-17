@@ -69,27 +69,44 @@ class PostgreSQLTransaction implements Transaction {
 /**
  * PostgreSQL Database Adapter
  * Implements IDatabaseAdapter for PostgreSQL using Prisma
+ *
+ * BugFixer: Issue #3466 - Lazy initialization to prevent constructor side effects
+ * Pool and PrismaClient are now created on-demand in connect(), not in constructor
  */
 export class PostgreSQLAdapter implements IDatabaseAdapter {
   readonly provider: DatabaseProvider = 'postgresql'
-  private prisma: PrismaClient
+  private prisma: PrismaClient | null = null
   private pool: Pool | null = null
   private _isConnected = false
 
+  // BugFixer: Store config for lazy initialization
+  private connectionUrl: string
+
   constructor(private config: DatabaseConnectionConfig) {
-    // Parse connection URL for Pool configuration
-    const connectionUrl = config.url
+    // BugFixer: Just store the config, don't create connections yet
+    this.connectionUrl = config.url
+  }
+
+  /**
+   * Initialize the pool and prisma client lazily
+   * BugFixer: Issue #3466 - Separated from constructor for better testability
+   */
+  private initialize(): void {
+    if (this.pool || this.prisma) {
+      return // Already initialized
+    }
 
     // Create PostgreSQL connection pool for direct queries
     this.pool = new Pool({
-      connectionString: connectionUrl,
-      min: config.pool?.min || databaseConfig.pool.min,
-      max: config.pool?.max || databaseConfig.pool.max,
+      connectionString: this.connectionUrl,
+      min: this.config.pool?.min || databaseConfig.pool.min,
+      max: this.config.pool?.max || databaseConfig.pool.max,
       connectionTimeoutMillis:
-        config.pool?.acquireTimeoutMs || databaseConfig.pool.acquireTimeoutMs,
+        this.config.pool?.acquireTimeoutMs ||
+        databaseConfig.pool.acquireTimeoutMs,
       // Flexy hates hardcoded 10000! Using databaseConfig.connectionPool.idleTimeoutMs
       idleTimeoutMillis:
-        config.pool?.idleTimeoutMs ||
+        this.config.pool?.idleTimeoutMs ||
         databaseConfig.connectionPool.idleTimeoutMs,
     })
 
@@ -97,7 +114,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     this.prisma = new PrismaClient({
       datasources: {
         db: {
-          url: connectionUrl,
+          url: this.connectionUrl,
         },
       },
       log:
@@ -109,8 +126,11 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
 
   async connect(): Promise<void> {
     try {
+      // BugFixer: Lazy initialization - create clients only when needed
+      this.initialize()
+
       // Test connection with a simple query
-      await this.prisma.$queryRaw`SELECT 1`
+      await this.prisma!.$queryRaw`SELECT 1`
       this._isConnected = true
     } catch (error) {
       this._isConnected = false
@@ -122,7 +142,10 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
 
   async disconnect(): Promise<void> {
     try {
-      await this.prisma.$disconnect()
+      // BugFixer: Check if initialized before disconnecting
+      if (this.prisma) {
+        await this.prisma.$disconnect()
+      }
       if (this.pool) {
         await this.pool.end()
       }
@@ -141,6 +164,10 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async query<T = unknown>(sql: string, params?: unknown[]): Promise<T[]> {
     try {
+      // BugFixer: Ensure initialized before querying
+      if (!this.prisma) {
+        throw new Error('Database not connected. Call connect() first.')
+      }
       // SECURITY FIX: Validate SQL is SELECT-only to prevent injection
       const trimmedSql = sql.trim().toLowerCase()
       if (!trimmedSql.startsWith('select')) {
@@ -162,6 +189,10 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     params?: unknown[]
   ): Promise<{ rowCount: number }> {
     try {
+      // BugFixer: Ensure initialized before executing
+      if (!this.prisma) {
+        throw new Error('Database not connected. Call connect() first.')
+      }
       // SECURITY FIX: Validate SQL for dangerous operations
       const trimmedSql = sql.trim().toLowerCase()
       const dangerousKeywords = ['drop', 'truncate', 'delete from', 'alter']
@@ -186,6 +217,10 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
   ): Promise<Transaction> {
     // Prisma handles transactions through $transaction method
     // This implementation provides a wrapper for consistency
+    // BugFixer: Ensure initialized before creating transaction
+    if (!this.prisma) {
+      throw new Error('Database not connected. Call connect() first.')
+    }
     return new PostgreSQLTransaction(this.prisma)
   }
 
@@ -604,6 +639,10 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
   }
 
   getRawClient(): PrismaClient {
+    // BugFixer: Ensure initialized before returning client
+    if (!this.prisma) {
+      throw new Error('Database not connected. Call connect() first.')
+    }
     return this.prisma
   }
 
