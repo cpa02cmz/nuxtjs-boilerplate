@@ -1761,6 +1761,30 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.SIMILAR_RESPECT_REDUCED_MOTION !== 'false',
+    // 🎨 Pallete's micro-UX enhancement: Spotlight Cursor Effect ✨
+    // Creates a radial gradient spotlight that follows the cursor on hover
+    spotlight: {
+      // Size of the spotlight gradient (px)
+      sizePx: parseInt(process.env.SIMILAR_SPOTLIGHT_SIZE_PX || '200'),
+      // Primary spotlight color (white with low opacity)
+      primaryColor:
+        process.env.SIMILAR_SPOTLIGHT_PRIMARY_COLOR ||
+        'rgba(255, 255, 255, 0.15)',
+      // Secondary spotlight color (transparent)
+      secondaryColor:
+        process.env.SIMILAR_SPOTLIGHT_SECONDARY_COLOR ||
+        'rgba(255, 255, 255, 0)',
+      // Transition duration for spotlight movement (ms)
+      transitionDurationMs: parseInt(
+        process.env.SIMILAR_SPOTLIGHT_TRANSITION_MS || '150'
+      ),
+      // Whether to show spotlight on hover
+      enabled: process.env.SIMILAR_SPOTLIGHT_ENABLED !== 'false',
+      // Border radius of the spotlight effect (px)
+      borderRadiusPx: parseInt(
+        process.env.SIMILAR_SPOTLIGHT_BORDER_RADIUS_PX || '12'
+      ),
+    },
   },
 
   // Resource Header Micro-UX - Palette's magnetic enhancement! 🎨
