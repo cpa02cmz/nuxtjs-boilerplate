@@ -43,6 +43,20 @@
       class="sr-only"
     >{{ config.default }}</span>
 
+    <!-- Palette: Loading text with animated dots - explicit visual feedback! -->
+    <div
+      v-if="showLoadingText && !label"
+      class="loading-spinner__loading-text"
+      aria-hidden="true"
+    >
+      <span class="loading-spinner__loading-label">Loading</span>
+      <span class="loading-spinner__dots">
+        <span class="loading-spinner__dot loading-spinner__dot--1" />
+        <span class="loading-spinner__dot loading-spinner__dot--2" />
+        <span class="loading-spinner__dot loading-spinner__dot--3" />
+      </span>
+    </div>
+
     <!-- Live region for status announcement to screen readers -->
     <div
       :id="`loading-status-${uniqueId}`"
@@ -84,6 +98,8 @@ interface Props {
   customMessage?: string
   /** Enable shimmer glow effect around the spinner */
   glow?: boolean
+  /** Show "Loading..." text with animated dots below the spinner */
+  showLoadingText?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -92,6 +108,7 @@ const props = withDefaults(defineProps<Props>(), {
   state: null,
   customMessage: undefined,
   glow: true,
+  showLoadingText: true,
 })
 
 // Generate unique ID for this spinner instance using configurable length
@@ -306,6 +323,75 @@ watch(
   100% {
     stroke-dasharray: v-bind('spinnerStyles.stroke.dashArrayMid');
     stroke-dashoffset: v-bind('spinnerStyles.stroke.dashOffsetEnd');
+  }
+}
+
+/* Palette: Loading text with animated dots - explicit visual feedback! */
+.loading-spinner__loading-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: v-bind('animationConfig.loadingSpinnerDots.gapPx + "px"');
+  margin-top: v-bind('animationConfig.loadingSpinnerDots.marginTopPx + "px"');
+}
+
+.loading-spinner__loading-label {
+  font-size: v-bind('animationConfig.loadingSpinnerDots.fontSizePx + "px"');
+  color: v-bind('themeConfig.loadingSpinner.labelColor');
+  letter-spacing: v-bind('animationConfig.loadingSpinnerDots.letterSpacingPx + "px"');
+}
+
+.loading-spinner__dots {
+  display: flex;
+  align-items: center;
+  gap: v-bind('animationConfig.loadingSpinnerDots.dotGapPx + "px"');
+}
+
+.loading-spinner__dot {
+  width: v-bind('animationConfig.loadingSpinnerDots.dotSizePx + "px"');
+  height: v-bind('animationConfig.loadingSpinnerDots.dotSizePx + "px"');
+  border-radius: 50%;
+  background-color: v-bind('animationConfig.loadingSpinnerDots.dotColor');
+  animation: loading-dot-pulse v-bind('animationConfig.loadingSpinnerDots.pulseDurationSec') ease-in-out infinite;
+}
+
+.loading-spinner__dot--1 {
+  animation-delay: 0ms;
+}
+
+.loading-spinner__dot--2 {
+  animation-delay: v-bind('animationConfig.loadingSpinnerDots.staggerDelayMs + "ms"');
+}
+
+.loading-spinner__dot--3 {
+  animation-delay: v-bind('(animationConfig.loadingSpinnerDots.staggerDelayMs * 2) + "ms"');
+}
+
+@keyframes loading-dot-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+    background-color: v-bind('animationConfig.loadingSpinnerDots.dotColor');
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+    background-color: v-bind('animationConfig.loadingSpinnerDots.dotActiveColor');
+  }
+}
+
+/* Reduced motion: static dots without animation */
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner__dot {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .loading-spinner__dot {
+    background-color: currentColor;
   }
 }
 </style>

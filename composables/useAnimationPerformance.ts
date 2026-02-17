@@ -206,6 +206,9 @@ export function useAnimationPerformance() {
   // Initialize performance detection
   let mediaQueryRef: MediaQueryList | null = null
 
+  // BugFixer: Store handler reference so it can be properly removed
+  let mediaQueryHandler: ((e: MediaQueryListEvent) => void) | null = null
+
   onMounted(async () => {
     // Check reduced motion
     performanceState.value.prefersReducedMotion = checkReducedMotion()
@@ -213,9 +216,10 @@ export function useAnimationPerformance() {
     // Listen for reduced motion changes
     if (typeof window !== 'undefined') {
       mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
-      mediaQueryRef.addEventListener('change', (e: MediaQueryListEvent) => {
+      mediaQueryHandler = (e: MediaQueryListEvent) => {
         performanceState.value.prefersReducedMotion = e.matches
-      })
+      }
+      mediaQueryRef.addEventListener('change', mediaQueryHandler)
     }
 
     // Detect low-end device
@@ -242,8 +246,9 @@ export function useAnimationPerformance() {
   })
 
   onUnmounted(() => {
-    if (mediaQueryRef) {
-      mediaQueryRef.removeEventListener('change', () => {})
+    // BugFixer: Properly remove event listener using stored handler reference
+    if (mediaQueryRef && mediaQueryHandler) {
+      mediaQueryRef.removeEventListener('change', mediaQueryHandler)
     }
     if (fpsRafId !== null) {
       cancelAnimationFrame(fpsRafId)
