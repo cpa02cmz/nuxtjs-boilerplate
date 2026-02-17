@@ -17,37 +17,31 @@
     @keydown="handleKeyDown"
   >
     <div
-      class="bg-gray-900 rounded-lg overflow-hidden shadow-md transition-shadow duration-300 group-hover:shadow-lg"
-      :class="{ 'ring-2 ring-blue-500 ring-offset-2': isFocused }"
+      :class="[
+        `bg-gray-900 rounded-lg overflow-hidden shadow-md transition-shadow ${animationConfig.tailwindDurations.standard} group-hover:shadow-lg`,
+        { 'ring-2 ring-blue-500 ring-offset-2': isFocused },
+      ]"
     >
       <!-- Header -->
       <div
         class="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700"
       >
         <div class="flex items-center gap-2">
-          <span
-            class="w-3 h-3 rounded-full bg-red-500"
-            aria-hidden="true"
-          />
-          <span
-            class="w-3 h-3 rounded-full bg-yellow-500"
-            aria-hidden="true"
-          />
-          <span
-            class="w-3 h-3 rounded-full bg-green-500"
-            aria-hidden="true"
-          />
+          <span class="w-3 h-3 rounded-full bg-red-500" aria-hidden="true" />
+          <span class="w-3 h-3 rounded-full bg-yellow-500" aria-hidden="true" />
+          <span class="w-3 h-3 rounded-full bg-green-500" aria-hidden="true" />
           <span class="ml-2 text-xs text-gray-400 font-mono">{{ label }}</span>
         </div>
 
         <!-- Copy Button with Keyboard Shortcut Hint -->
         <div class="flex items-center gap-2">
-          <!-- Keyboard Shortcut Hint - Palette's micro-UX delight! -->
+          <!-- Keyboard Shortcut Hint - Palette's micro-UX delight!
+               Flexy hates hardcoded values! Using animationConfig.tailwindDurations -->
           <Transition
-            enter-active-class="transition-all duration-200 ease-out"
+            :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
             enter-from-class="opacity-0 scale-95 translate-x-2"
             enter-to-class="opacity-100 scale-100 translate-x-0"
-            leave-active-class="transition-all duration-150 ease-in"
+            :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
             leave-from-class="opacity-100 scale-100 translate-x-0"
             leave-to-class="opacity-0 scale-95 translate-x-2"
           >
@@ -78,12 +72,13 @@
         ><code>{{ code }}</code></pre>
       </div>
 
-      <!-- Keyboard Shortcut Toast - Palette's micro-UX delight! -->
+      <!-- Keyboard Shortcut Toast - Palette's micro-UX delight!
+           Flexy hates hardcoded values! Using animationConfig.tailwindDurations -->
       <Transition
-        enter-active-class="transition-all duration-300 ease-out"
+        :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
         enter-from-class="opacity-0 translate-y-2 scale-95"
         enter-to-class="opacity-100 translate-y-0 scale-100"
-        leave-active-class="transition-all duration-200 ease-in"
+        :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
         leave-from-class="opacity-100 translate-y-0 scale-100"
         leave-to-class="opacity-0 translate-y-2 scale-95"
       >
@@ -115,12 +110,7 @@
       </Transition>
 
       <!-- Screen Reader Announcement -->
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        class="sr-only"
-      >
+      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
         {{ announcement }}
       </div>
     </div>

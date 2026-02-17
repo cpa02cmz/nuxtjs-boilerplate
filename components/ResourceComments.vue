@@ -4,7 +4,9 @@
       <h2 class="text-2xl font-bold text-gray-900">
         {{ contentConfig.comments.title }}
       </h2>
-      <span class="text-sm text-gray-500">{{ commentCount }} {{ contentConfig.comments.countLabel }}</span>
+      <span class="text-sm text-gray-500"
+        >{{ commentCount }} {{ contentConfig.comments.countLabel }}</span
+      >
     </div>
 
     <!-- Comment Form with Micro-UX Enhancements -->
@@ -60,10 +62,7 @@
             class="relative w-8 h-8"
             :title="`${remainingChars} characters remaining`"
           >
-            <svg
-              class="w-full h-full transform -rotate-90"
-              viewBox="0 0 32 32"
-            >
+            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 32 32">
               <!-- Background circle -->
               <circle
                 cx="16"
@@ -83,10 +82,12 @@
                 stroke="currentColor"
                 stroke-width="3"
                 stroke-linecap="round"
-                class="transition-all duration-300 ease-out"
+                :class="[
+                  `transition-all ${animationConfig.tailwindDurations.standard} ease-out`,
+                  progressColorClass,
+                ]"
                 :stroke-dasharray="circumference"
                 :stroke-dashoffset="strokeDashOffset"
-                :class="progressColorClass"
               />
             </svg>
             <!-- Count text -->
@@ -129,7 +130,7 @@
               </svg>
               {{
                 contentConfig.comments.validation.overLimit ||
-                  `${Math.abs(remainingChars)} characters over limit`
+                `${Math.abs(remainingChars)} characters over limit`
               }}
             </span>
           </template>
@@ -150,7 +151,7 @@
               </svg>
               {{
                 contentConfig.comments.validation.nearLimit ||
-                  'Approaching limit'
+                'Approaching limit'
               }}
             </span>
           </template>
@@ -159,13 +160,13 @@
           >
             {{
               contentConfig.comments.validation.tooShort ||
-                `Minimum ${MIN_LENGTH} characters`
+              `Minimum ${MIN_LENGTH} characters`
             }}
           </template>
           <template v-else>
             {{
               contentConfig.comments.validation.hint ||
-                `Press Enter to submit, Shift+Enter for new line`
+              `Press Enter to submit, Shift+Enter for new line`
             }}
           </template>
         </span>
@@ -232,11 +233,7 @@
     </div>
 
     <!-- Comments List with Palette's Spring Animation -->
-    <TransitionGroup
-      name="comment-list"
-      tag="div"
-      class="space-y-4"
-    >
+    <TransitionGroup name="comment-list" tag="div" class="space-y-4">
       <div
         v-for="comment in formattedComments"
         :key="comment.id"
@@ -251,11 +248,13 @@
         <div class="flex-shrink-0">
           <!-- Avatar with Pulse Animation for New Comments -->
           <div
-            class="bg-gradient-to-br from-gray-200 to-gray-300 border-2 border-dashed border-gray-400 rounded-xl w-10 h-10 flex items-center justify-center text-gray-500 font-semibold text-sm transition-all duration-300"
-            :class="{
-              'animate-avatar-pulse':
-                isNewComment(comment.id) && !prefersReducedMotion,
-            }"
+            :class="[
+              `bg-gradient-to-br from-gray-200 to-gray-300 border-2 border-dashed border-gray-400 rounded-xl w-10 h-10 flex items-center justify-center text-gray-500 font-semibold text-sm transition-all ${animationConfig.tailwindDurations.standard}`,
+              {
+                'animate-avatar-pulse':
+                  isNewComment(comment.id) && !prefersReducedMotion,
+              },
+            ]"
             aria-hidden="true"
           >
             {{ comment.initials }}
@@ -263,7 +262,7 @@
         </div>
         <div class="flex-1">
           <div
-            class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors duration-200"
+            :class="`bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors ${animationConfig.tailwindDurations.normal}`"
           >
             <div class="flex items-center justify-between">
               <div class="flex items-center">
@@ -289,7 +288,7 @@
               <!-- Like Button with Particle Burst - Palette's Micro-UX Delight! -->
               <button
                 :ref="el => setLikeButtonRef(el, comment.id)"
-                class="group flex items-center gap-1 text-sm text-gray-500 hover:text-red-500 transition-all duration-200 relative"
+                :class="`group flex items-center gap-1 text-sm text-gray-500 hover:text-red-500 transition-all ${animationConfig.tailwindDurations.normal} relative`"
                 :aria-label="contentConfig.comments.aria.likeComment"
                 @click="event => toggleLike(comment.id, event)"
               >
@@ -308,12 +307,15 @@
                   />
                 </span>
                 <svg
-                  class="w-4 h-4 transition-transform duration-200 group-hover:scale-110 relative z-10"
-                  :class="{
-                    'text-red-500 fill-current': isLiked(comment.id),
-                    'animate-heart-pop':
-                      burstingComments.has(comment.id) && !prefersReducedMotion,
-                  }"
+                  :class="[
+                    `w-4 h-4 transition-transform ${animationConfig.tailwindDurations.normal} group-hover:scale-110 relative z-10`,
+                    {
+                      'text-red-500 fill-current': isLiked(comment.id),
+                      'animate-heart-pop':
+                        burstingComments.has(comment.id) &&
+                        !prefersReducedMotion,
+                    },
+                  ]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

@@ -73,12 +73,13 @@
     </TransitionGroup>
 
     <!-- Newly Added Pulse Ring - Palette's micro-UX delight! 🎨
-         Shows a subtle pulse when bookmark is first added to help users locate it -->
+         Shows a subtle pulse when bookmark is first added to help users locate it
+         Flexy hates hardcoded values! Using animationConfig.transitions -->
     <Transition
-      enter-active-class="transition-all duration-300 ease-out"
+      :enter-active-class="`transition-all ${enterTransitionClass} ease-out`"
       enter-from-class="opacity-0 scale-50"
       enter-to-class="opacity-100 scale-100"
-      leave-active-class="transition-all duration-500 ease-in"
+      :leave-active-class="`transition-all ${leaveTransitionClass} ease-in`"
       leave-from-class="opacity-100 scale-100"
       leave-to-class="opacity-0 scale-150"
     >
@@ -171,6 +172,14 @@ const checkReducedMotion = () => {
 
 // Particle configuration from animation config
 const particleConfig = computed(() => animationConfig.bookmark.particleBurst)
+
+// Flexy hates hardcoded transition classes! Using animationConfig.tailwindDurations
+const enterTransitionClass = computed(
+  () => animationConfig.tailwindDurations.standard
+)
+const leaveTransitionClass = computed(
+  () => animationConfig.tailwindDurations.slower
+)
 
 // Timeout refs for cleanup - preventing memory leaks (Issue #1826)
 let animationTimeout: ReturnType<typeof setTimeout> | null = null
