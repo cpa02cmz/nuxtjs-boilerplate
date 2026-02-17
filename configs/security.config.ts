@@ -156,7 +156,7 @@ export const securityConfig = {
     // BroCula fix: Use getter to defer check until actually accessed
     // This prevents errors during module initialization in browser/client-side
     // SECURITY FIX: Issue #3526 - Generate random salt in dev, enforce in production
-    get salt() {
+    get salt(): string {
       const salt = process.env.CRYPTO_SALT
       // Skip check during build process, client-side, or when explicitly disabled
       const isClient = typeof window !== 'undefined'
@@ -183,7 +183,8 @@ export const securityConfig = {
         )
         return randomSalt
       }
-      return salt
+      // BugFixer: Added non-null assertion since we either have salt, threw, or generated one
+      return salt!
     },
 
     // Encryption algorithm

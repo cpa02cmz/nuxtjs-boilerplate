@@ -106,10 +106,7 @@
           @mouseenter="isHandleHovered = true"
           @mouseleave="isHandleHovered = false"
         >
-          <div
-            class="drawer-handle-bar"
-            :style="handleStyle"
-          />
+          <div class="drawer-handle-bar" :style="handleStyle" />
           <div
             v-if="!prefersReducedMotion && swipeProgress > 0"
             class="drawer-handle-glow"
@@ -211,9 +208,11 @@
             @touchstart="isResultsButtonPressed = true"
             @touchend="isResultsButtonPressed = false"
           >
-            <span class="button-text">Show {{ resultsCount }} result{{
-              resultsCount === 1 ? '' : 's'
-            }}</span>
+            <span class="button-text"
+              >Show {{ resultsCount }} result{{
+                resultsCount === 1 ? '' : 's'
+              }}</span
+            >
             <svg
               v-if="resultsCount > 0"
               class="ml-2 w-4 h-4 arrow-icon"
@@ -319,7 +318,7 @@ const swipeVelocity = ref(0)
 
 // Computed swipe progress (derived from swipe position)
 const swipeProgress = computed(() => {
-  if (!isSwiping.value) return 0
+  if (typeof window === 'undefined' || !isSwiping.value) return 0
   const translateX = Math.max(0, swipeCurrentX.value - swipeStartX.value)
   return Math.min(translateX / window.innerWidth, 1)
 })
@@ -536,7 +535,10 @@ const handleTouchEnd = () => {
       const easeOut =
         1 - Math.pow(1 - progress, easingConfig.powers.easeOutCubic)
       const currentTranslate =
-        startTranslate + (window.innerWidth - startTranslate) * easeOut
+        startTranslate +
+        ((typeof window !== 'undefined' ? window.innerWidth : 0) -
+          startTranslate) *
+          easeOut
 
       if (drawerRef.value) {
         drawerRef.value.style.transform = `translateX(${currentTranslate}px)`
