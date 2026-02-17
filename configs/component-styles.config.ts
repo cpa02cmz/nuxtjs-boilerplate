@@ -222,6 +222,9 @@ export const componentStylesConfig = {
     itemBorder: process.env.API_KEYS_ITEM_BORDER || '1px solid #e5e7eb',
     itemBorderRadius: process.env.API_KEYS_ITEM_RADIUS || '0.5rem',
     itemBackground: process.env.API_KEYS_ITEM_BG || 'white',
+    // 🎨 Pallete's micro-UX: Hover and revoked states
+    itemHoverBorderColor: process.env.API_KEYS_ITEM_HOVER_BORDER || '#3b82f6',
+    revokedItemBackground: process.env.API_KEYS_REVOKED_BG || '#f9fafb',
 
     // Key info
     keyNameFontWeight: process.env.API_KEYS_NAME_WEIGHT || '500',

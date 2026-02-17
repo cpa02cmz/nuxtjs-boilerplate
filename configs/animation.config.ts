@@ -560,6 +560,23 @@ export const animationConfig = {
     enabled: process.env.ICON_WIGGLE_ENABLED !== 'false',
   },
 
+  // 🎨 Pallete's micro-UX enhancement: Icon Bounce Animation ✨
+  // Adds a playful bounce effect when hovering over resource card icons
+  iconBounce: {
+    // Duration of the bounce animation (ms)
+    durationMs: parseInt(process.env.RESOURCE_CARD_ICON_BOUNCE_MS || '600'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.RESOURCE_CARD_ICON_BOUNCE_MS || '600') / 1000}s`,
+    // Bounce amplitude (px) - how far the icon moves up and down
+    amplitudePx: parseInt(
+      process.env.RESOURCE_CARD_ICON_BOUNCE_AMPLITUDE || '4'
+    ),
+    // Cubic bezier easing for bouncy feel
+    easing:
+      process.env.RESOURCE_CARD_ICON_BOUNCE_EASING ||
+      EASING_REF.SPRING_STANDARD,
+  },
+
   // Search Tracking Delay
   analyticsTracking: {
     trackingDelayMs: parseInt(process.env.ANALYTICS_TRACKING_DELAY_MS || '500'),
@@ -944,6 +961,39 @@ export const animationConfig = {
     ),
     // Float animation duration for decorative keys (seconds)
     floatDurationSec: parseFloat(process.env.API_KEYS_FLOAT_SEC || '3.5'),
+    // 🎨 Pallete's micro-UX: List item animations
+    // Item entrance animation duration (ms)
+    itemEntranceDurationMs: parseInt(
+      process.env.API_KEYS_ITEM_ENTRANCE_MS || '400'
+    ),
+    // Item entrance distance (px) - how far items slide up
+    itemEntranceDistancePx: parseInt(
+      process.env.API_KEYS_ITEM_ENTRANCE_DISTANCE_PX || '20'
+    ),
+    // Item hover lift amount (px)
+    itemHoverLiftPx: parseInt(process.env.API_KEYS_ITEM_HOVER_LIFT_PX || '3'),
+    // Item hover shadow Y offset (px)
+    itemHoverShadowY: parseInt(process.env.API_KEYS_ITEM_HOVER_SHADOW_Y || '8'),
+    // Item hover shadow blur (px)
+    itemHoverShadowBlur: parseInt(
+      process.env.API_KEYS_ITEM_HOVER_SHADOW_BLUR || '16'
+    ),
+    // Item hover shadow spread (px)
+    itemHoverShadowSpread: parseInt(
+      process.env.API_KEYS_ITEM_HOVER_SHADOW_SPREAD || '-4'
+    ),
+    // Item transition duration (ms)
+    itemTransitionMs: parseInt(
+      process.env.API_KEYS_ITEM_TRANSITION_MS || '250'
+    ),
+    // Stagger delay between items (ms)
+    staggerDelayMs: parseInt(process.env.API_KEYS_STAGGER_MS || '80'),
+    // Maximum stagger delay (ms)
+    maxStaggerDelayMs: parseInt(process.env.API_KEYS_MAX_STAGGER_MS || '400'),
+    // Status pulse animation duration (seconds)
+    statusPulseDurationSec: parseFloat(
+      process.env.API_KEYS_STATUS_PULSE_SEC || '2'
+    ),
   },
 
   // Card Animations
@@ -973,6 +1023,8 @@ export const animationConfig = {
     durationSec: parseFloat(process.env.CARD_SHINE_DURATION_SEC || '1.2'),
     // Delay before shine starts on hover (ms)
     delayMs: parseInt(process.env.CARD_SHINE_DELAY_MS || '0'),
+    // CSS-compatible transition duration (seconds) - RepoKeeper fix for missing property
+    transitionSec: parseFloat(process.env.CARD_SHINE_TRANSITION_SEC || '0.3'),
     // Gradient color start (white with low opacity)
     gradientStart:
       process.env.CARD_SHINE_GRADIENT_START || 'rgba(255, 255, 255, 0)',
@@ -989,6 +1041,17 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.CARD_SHINE_RESPECT_REDUCED_MOTION !== 'false',
+  },
+
+  // Stagger Animation Config - RepoKeeper fix for missing type definition
+  // Used by SearchSuggestions.vue for staggered entrance animations
+  stagger: {
+    // Duration of entrance animation (ms)
+    entranceDurationMs: parseInt(
+      process.env.STAGGER_ENTRANCE_DURATION_MS || '400'
+    ),
+    // Delay between items (ms)
+    delayMs: parseInt(process.env.STAGGER_DELAY_MS || '50'),
   },
 
   // Smart Paste Animations - Palette's micro-UX enhancement!
@@ -2443,6 +2506,37 @@ export const animationConfig = {
     // Whether to respect reduced motion preference
     respectReducedMotion:
       process.env.VIEWED_BADGE_RESPECT_REDUCED_MOTION !== 'false',
+    // Flexy hates hardcoded values! New badge particle burst configuration
+    // Palette's micro-UX enhancement: Celebratory particle burst on hover
+    newBadgeParticle: {
+      // Number of particles in the burst
+      particleCount: parseInt(process.env.VIEWED_BADGE_PARTICLE_COUNT || '8'),
+      // Stagger delay between particles (ms)
+      staggerDelayMs: parseInt(
+        process.env.VIEWED_BADGE_PARTICLE_STAGGER_MS || '30'
+      ),
+      // Base animation duration (ms)
+      baseDurationMs: parseInt(
+        process.env.VIEWED_BADGE_PARTICLE_BASE_DURATION_MS || '600'
+      ),
+      // Duration randomness range (ms) - adds to base
+      durationRandomnessMs: parseInt(
+        process.env.VIEWED_BADGE_PARTICLE_DURATION_RANDOMNESS_MS || '200'
+      ),
+      // Base particle spread distance (px)
+      baseSpreadPx: parseInt(
+        process.env.VIEWED_BADGE_PARTICLE_BASE_SPREAD_PX || '20'
+      ),
+      // Spread distance randomness (px) - adds to base
+      spreadRandomnessPx: parseInt(
+        process.env.VIEWED_BADGE_PARTICLE_SPREAD_RANDOMNESS_PX || '15'
+      ),
+      // Particle colors - alternate between these
+      colors: [
+        process.env.VIEWED_BADGE_PARTICLE_COLOR_1 || '#10b981', // emerald-500
+        process.env.VIEWED_BADGE_PARTICLE_COLOR_2 || '#34d399', // emerald-400
+      ],
+    },
   },
 
   // Comparison Value Animations - Palette's micro-UX enhancement!
@@ -4104,6 +4198,13 @@ export const animationConfig = {
     sizePx: parseInt(process.env.SEARCH_ANALYTICS_RING_SIZE_PX || '56'),
     // Ring radius in pixels
     radiusPx: parseInt(process.env.SEARCH_ANALYTICS_RING_RADIUS_PX || '20'),
+    // Flexy hates hardcoded colors! Progress ring color configuration
+    colors: {
+      // Background track color (light green)
+      track: process.env.SEARCH_ANALYTICS_RING_TRACK_COLOR || '#d1fae5',
+      // Fill color (green-500)
+      fill: process.env.SEARCH_ANALYTICS_RING_FILL_COLOR || '#10b981',
+    },
   },
 
   // Search Response Time Thresholds - Flexy hates hardcoded 200ms!
