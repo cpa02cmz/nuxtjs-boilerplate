@@ -16,15 +16,12 @@
             {{ resource.description }}
           </p>
         </div>
-        <div
-          v-if="resource.icon"
-          class="ml-3 flex-shrink-0"
-        >
+        <div v-if="resource.icon" class="ml-3 flex-shrink-0">
           <OptimizedImage
             :src="resource.icon"
             :alt="resource.title"
-            :width="32"
-            :height="32"
+            :width="layoutConfig.iconSizes.small"
+            :height="layoutConfig.iconSizes.small"
             format="avif"
             loading="lazy"
             :quality="80"
@@ -57,11 +54,7 @@
 
       <div class="mt-3 flex items-center justify-between">
         <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-          <svg
-            class="w-4 h-4 mr-1"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
+          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
             <path
               fill-rule="evenodd"
@@ -179,6 +172,7 @@ import type { Resource } from '~/types/resource'
 import { limitsConfig } from '~/configs/limits.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { layoutConfig } from '~/configs/layout.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { EASING } from '~/configs/easing.config'
 import { useRipple } from '~/composables/useRipple'
