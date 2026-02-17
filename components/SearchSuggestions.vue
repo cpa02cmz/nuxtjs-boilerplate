@@ -9,6 +9,9 @@
     ]"
     role="listbox"
     :aria-label="contentConfig.search.suggestions.title"
+    :aria-activedescendant="
+      focusedIndex >= 0 ? `${id}-item-${focusedIndex}` : undefined
+    "
     @keydown="handleKeyDown"
   >
     <!-- Palette's micro-UX delight: Particle burst celebration for selection feedback -->
