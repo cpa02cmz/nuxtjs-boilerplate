@@ -4330,6 +4330,27 @@ export const animationConfig = {
     ),
   },
 
+  // 🎨 Pallete's micro-UX enhancement: Performance Dashboard Success Celebration
+  // Delightful success feedback when dashboard data refreshes
+  performanceDashboard: {
+    // Celebration animation total duration (ms)
+    celebrationDurationMs: parseInt(
+      process.env.PERFORMANCE_DASHBOARD_CELEBRATION_MS || '1200'
+    ),
+    // Checkmark pop animation duration (ms)
+    checkmarkPopDurationMs: parseInt(
+      process.env.PERFORMANCE_DASHBOARD_CHECKMARK_POP_MS || '400'
+    ),
+    // Checkmark draw animation duration (seconds)
+    checkmarkDrawDurationSec:
+      parseInt(process.env.PERFORMANCE_DASHBOARD_CHECKMARK_DRAW_MS || '300') /
+      1000,
+    // Checkmark animation delay (seconds)
+    checkmarkDelaySec:
+      parseInt(process.env.PERFORMANCE_DASHBOARD_CHECKMARK_DELAY_MS || '100') /
+      1000,
+  },
+
   // Lazy Loading Intersection Observer - Flexy hates hardcoded values!
   // Configuration for lazy loading components with IntersectionObserver
   lazyLoading: {

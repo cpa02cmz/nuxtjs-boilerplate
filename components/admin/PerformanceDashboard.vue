@@ -39,6 +39,38 @@
             isLoading ? 'Loading...' : 'Refresh'
           }}</span>
         </button>
+
+        <!-- 🎨 Pallete's micro-UX enhancement: Success celebration animation -->
+        <Transition
+          enter-active-class="transition-all duration-300 ease-out"
+          enter-from-class="opacity-0 scale-50"
+          enter-to-class="opacity-100 scale-100"
+          leave-active-class="transition-all duration-500 ease-in"
+          leave-from-class="opacity-100 scale-100"
+          leave-to-class="opacity-0 scale-150"
+        >
+          <div
+            v-if="showSuccessCelebration && !prefersReducedMotion"
+            class="success-celebration"
+            aria-hidden="true"
+          >
+            <div class="celebration-ring" />
+            <svg
+              class="celebration-checkmark"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 13l4 4L19 7"
+                class="checkmark-path"
+              />
+            </svg>
+          </div>
+        </Transition>
       </div>
     </header>
 
@@ -131,6 +163,9 @@ import { performanceDashboardConfig } from '~/configs/performance-dashboard.conf
 import { layoutConfig } from '~/configs/layout.config'
 import type { PerformanceDashboardData } from '~/types/performance'
 import logger from '~/utils/logger'
+// 🎨 Pallete's micro-UX enhancement: Haptic feedback for success celebration
+import { hapticSuccess } from '~/utils/hapticFeedback'
+import { animationConfig } from '~/configs/animation.config'
 
 // State
 const data = ref<PerformanceDashboardData | null>(null)
@@ -140,6 +175,11 @@ const selectedRange = ref(
   performanceDashboardConfig.dashboard.defaultTimeRangeHours
 )
 const refreshInterval = ref<ReturnType<typeof setInterval> | null>(null)
+
+// 🎨 Pallete's micro-UX enhancement: Success celebration state
+const showSuccessCelebration = ref(false)
+const prefersReducedMotion = ref(false)
+const celebrationTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 
 // Computed
 const timeRanges = computed(
@@ -183,6 +223,34 @@ const apiPerformance = computed(
 
 const lastUpdated = computed(() => data.value?.lastUpdated)
 
+// 🎨 Pallete's micro-UX enhancement: Check for reduced motion preference
+const checkReducedMotion = () => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// 🎨 Pallete's micro-UX enhancement: Trigger success celebration
+const triggerSuccessCelebration = () => {
+  if (prefersReducedMotion.value) return
+
+  // Clear any existing celebration timeout
+  if (celebrationTimeout.value) {
+    clearTimeout(celebrationTimeout.value)
+  }
+
+  // Show celebration
+  showSuccessCelebration.value = true
+
+  // Haptic feedback for mobile users
+  hapticSuccess()
+
+  // Hide celebration after animation completes
+  celebrationTimeout.value = setTimeout(() => {
+    showSuccessCelebration.value = false
+  }, animationConfig.performanceDashboard.celebrationDurationMs)
+}
+
 // Methods
 async function fetchData() {
   if (isLoading.value) return
@@ -200,6 +268,9 @@ async function fetchData() {
     }
 
     data.value = await response.json()
+
+    // 🎨 Pallete's micro-UX enhancement: Celebrate successful data fetch
+    triggerSuccessCelebration()
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to fetch data'
     error.value = message
@@ -238,12 +309,17 @@ function stopAutoRefresh() {
 
 // Lifecycle
 onMounted(() => {
+  prefersReducedMotion.value = checkReducedMotion()
   fetchData()
   startAutoRefresh()
 })
 
 onUnmounted(() => {
   stopAutoRefresh()
+  // 🎨 Pallete's micro-UX enhancement: Cleanup celebration timeout
+  if (celebrationTimeout.value) {
+    clearTimeout(celebrationTimeout.value)
+  }
 })
 </script>
 
@@ -475,6 +551,84 @@ onUnmounted(() => {
   color: #1f2937;
 }
 
+/* 🎨 Pallete's micro-UX enhancement: Success celebration styles */
+.success-celebration {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.celebration-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid #10b981;
+  animation: celebration-ring-pulse
+    v-bind('animationConfig.performanceDashboard.celebrationDurationMs + "ms"')
+    ease-out forwards;
+}
+
+@keyframes celebration-ring-pulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.celebration-checkmark {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  color: #10b981;
+  z-index: 1;
+  animation: checkmark-pop
+    v-bind('animationConfig.performanceDashboard.checkmarkPopDurationMs + "ms"')
+    ease-out forwards;
+}
+
+.checkmark-path {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: checkmark-draw
+    v-bind(
+      'animationConfig.performanceDashboard.checkmarkDrawDurationSec + "s"'
+    )
+    ease-out forwards;
+  animation-delay: v-bind(
+    'animationConfig.performanceDashboard.checkmarkDelaySec + "s"'
+  );
+}
+
+@keyframes checkmark-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes checkmark-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 @media (max-width: 768px) {
   .performance-dashboard {
     padding: 1rem;
@@ -506,6 +660,22 @@ onUnmounted(() => {
   .range-button,
   .refresh-button {
     transition: none;
+  }
+
+  /* 🎨 Pallete's micro-UX enhancement: Disable celebration animations */
+  .celebration-ring,
+  .celebration-checkmark,
+  .checkmark-path {
+    animation: none !important;
+  }
+
+  .celebration-checkmark {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .checkmark-path {
+    stroke-dashoffset: 0;
   }
 }
 </style>
