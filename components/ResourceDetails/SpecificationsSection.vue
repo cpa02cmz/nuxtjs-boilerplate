@@ -55,11 +55,7 @@
     </div>
 
     <!-- Specifications Grid -->
-    <dl
-      v-else
-      :class="gridClass"
-      class="specifications-grid"
-    >
+    <dl v-else :class="gridClass" class="specifications-grid">
       <div
         v-for="(value, key, index) in specifications"
         :key="key"
@@ -172,12 +168,7 @@
     </div>
 
     <!-- Screen Reader Announcements -->
-    <div
-      aria-atomic="true"
-      aria-live="polite"
-      class="sr-only"
-      role="status"
-    >
+    <div aria-atomic="true" aria-live="polite" class="sr-only" role="status">
       {{ announcementText }}
     </div>
   </section>
@@ -189,6 +180,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
+import { uiConfig } from '~/configs/ui.config'
 
 interface Props {
   specifications: Record<string, string>
@@ -295,7 +287,10 @@ onMounted(() => {
           }
         })
       },
-      { threshold: 0.1 }
+      {
+        // Flexy hates hardcoded 0.1! Using uiConfig.intersectionObserver.threshold
+        threshold: uiConfig.intersectionObserver.threshold,
+      }
     )
     intersectionObserver.observe(sectionRef.value)
   } else {
