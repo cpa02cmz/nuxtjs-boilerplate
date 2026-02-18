@@ -18,9 +18,11 @@ export default defineNitroPlugin(async () => {
 
   // BUGFIXER FIX #3471: Add startup timeout to prevent indefinite blocking
   // This ensures server can start even if database is slow/unresponsive
+  // Flexy hates hardcoded 30000! Using databaseConfig.startup.timeoutMs
   const STARTUP_TIMEOUT_MS = parseInt(
-    process.env.DB_STARTUP_TIMEOUT_MS || '30000'
-  ) // 30 second default
+    process.env.DB_STARTUP_TIMEOUT_MS ||
+      String(databaseConfig.startup.timeoutMs)
+  )
 
   /**
    * Sleep for specified milliseconds

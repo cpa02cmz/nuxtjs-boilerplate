@@ -14,10 +14,10 @@
       <ClientOnly>
         <Teleport to="body">
           <Transition
-            enter-active-class="transition-all duration-200 ease-out"
+            :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
             enter-from-class="opacity-0 scale-75 translate-y-2"
             enter-to-class="opacity-100 scale-100 translate-y-0"
-            leave-active-class="transition-all duration-150 ease-in"
+            :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
             leave-from-class="opacity-100 scale-100 translate-y-0"
             leave-to-class="opacity-0 scale-75 -translate-y-1"
           >
@@ -125,10 +125,10 @@
                 </CharacterCounter>
                 <!-- Validation checkmark - Palette's micro-UX delight! -->
                 <Transition
-                  enter-active-class="transition-all duration-200 ease-out"
+                  :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
                   enter-from-class="opacity-0 scale-50"
                   enter-to-class="opacity-100 scale-100"
-                  leave-active-class="transition-all duration-150 ease-in"
+                  :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
                   leave-from-class="opacity-100 scale-100"
                   leave-to-class="opacity-0 scale-50"
                 >
