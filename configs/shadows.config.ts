@@ -249,6 +249,10 @@ export const shadowsConfig = {
   resourceShare: {
     default:
       process.env.RESOURCE_SHARE_SHADOW || '0 4px 12px rgba(0, 0, 0, 0.15)',
+    // 🎨 Pallete's micro-UX enhancement: Tooltip shadow for keyboard hint
+    tooltip:
+      process.env.RESOURCE_SHARE_TOOLTIP_SHADOW ||
+      '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
   },
 
   // Resource Card Skeleton Shadows
