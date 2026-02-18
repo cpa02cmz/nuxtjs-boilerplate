@@ -107,11 +107,16 @@
             {{ toast.description }}
           </p>
         </div>
+        <!-- 🎨 Pallete's micro-UX enhancement: Dismiss button with keyboard shortcut hint -->
         <button
           type="button"
           class="toast__close"
-          :aria-label="`Dismiss ${toast.type} notification`"
+          :aria-label="`Dismiss ${toast.type} notification. Press Escape key to dismiss`"
           @click="removeToast(toast.id)"
+          @mouseenter="showDismissHint = toast.id"
+          @mouseleave="showDismissHint = null"
+          @focus="showDismissHint = toast.id"
+          @blur="showDismissHint = null"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -125,6 +130,29 @@
               clip-rule="evenodd"
             />
           </svg>
+
+          <!-- 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint tooltip -->
+          <Transition
+            :enter-active-class="`transition-all ${tailwindClassesConfig.duration.fast} ease-out`"
+            enter-from-class="opacity-0 scale-95 translate-x-2"
+            enter-to-class="opacity-100 scale-100 translate-x-0"
+            :leave-active-class="`transition-all ${tailwindClassesConfig.duration.quick} ease-in`"
+            leave-from-class="opacity-100 scale-100 translate-x-0"
+            leave-to-class="opacity-0 scale-95 translate-x-2"
+          >
+            <div
+              v-if="showDismissHint === toast.id && !prefersReducedMotion"
+              class="dismiss-shortcut-hint"
+              role="tooltip"
+              aria-hidden="true"
+            >
+              <div class="dismiss-shortcut-hint__content">
+                <kbd class="dismiss-shortcut-hint__key">Esc</kbd>
+                <span class="dismiss-shortcut-hint__label">to dismiss</span>
+              </div>
+              <div class="dismiss-shortcut-hint__arrow" />
+            </div>
+          </Transition>
         </button>
         <!-- Progress bar showing remaining time -->
         <div
@@ -145,6 +173,8 @@ import { uiConfig } from '~/configs/ui.config'
 import { iconsConfig } from '~/configs/icons.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
+import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { generateId } from '~/utils/generateId'
 import { hapticLight } from '~/utils/hapticFeedback'
 
@@ -164,6 +194,8 @@ const pausedToastIds = ref<Set<string>>(new Set())
 const enteringToastIds = ref<Set<string>>(new Set())
 // Palette's micro-UX enhancement: Respect reduced motion preference
 const prefersReducedMotion = ref(false)
+// 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint state
+const showDismissHint = ref<string | null>(null)
 
 // Flexy hates hardcoded values! Use config for all styling
 const toastStyles = computed(() => uiConfig.toastStyles)
@@ -797,5 +829,76 @@ onUnmounted(() => {
 
 .toast--swiping {
   touch-action: none;
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint tooltip styles */
+.dismiss-shortcut-hint {
+  position: absolute;
+  right: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: v-bind('zIndexScale.tooltip');
+  pointer-events: none;
+}
+
+.dismiss-shortcut-hint__content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(31, 41, 55, 0.95);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+
+.dismiss-shortcut-hint__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  padding: 2px 6px;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1f2937;
+  background: linear-gradient(180deg, #f9fafb 0%, #e5e7eb 100%);
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.dismiss-shortcut-hint__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #f9fafb;
+}
+
+.dismiss-shortcut-hint__arrow {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 5px solid rgba(31, 41, 55, 0.95);
+}
+
+/* Show hint on hover/focus */
+.toast__close:hover .dismiss-shortcut-hint,
+.toast__close:focus-visible .dismiss-shortcut-hint {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Reduced motion support - hide animated tooltip */
+@media (prefers-reduced-motion: reduce) {
+  .dismiss-shortcut-hint {
+    display: none;
+  }
 }
 </style>
