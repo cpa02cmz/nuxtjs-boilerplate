@@ -21,14 +21,20 @@
           'toast',
           `toast--${toast.type}`,
           { 'toast--entering': enteringToastIds.has(toast.id) },
+          {
+            'toast--swiping': swipeState[toast.id]?.isSwiping,
+          },
         ]"
-        :style="getToastStyle(index)"
+        :style="[getToastStyle(index), getSwipeStyle(toast.id)]"
         :role="toast.type === 'error' ? 'alert' : 'status'"
         :aria-live="toast.type === 'error' ? 'assertive' : 'polite'"
         @mouseenter="pauseToast(toast.id)"
         @mouseleave="resumeToast(toast.id)"
         @focusin="pauseToast(toast.id)"
         @focusout="resumeToast(toast.id)"
+        @touchstart.passive="handleTouchStart($event, toast.id)"
+        @touchmove="handleTouchMove($event, toast.id)"
+        @touchend="handleTouchEnd(toast.id)"
       >
         <div
           class="toast__icon"
@@ -274,6 +280,124 @@ const resumeToast = (id: string) => {
 
 const removeToast = (id: string) => {
   toasts.value = toasts.value.filter(toast => toast.id !== id)
+}
+
+// Palette's micro-UX enhancement: Smart Dismiss - Swipe to dismiss on touch devices 🎨
+// Track swipe state for each toast
+const swipeState = ref<{
+  [key: string]: {
+    startX: number
+    currentX: number
+    isSwiping: boolean
+    velocity: number
+  }
+}>({})
+
+// Swipe configuration from animation config
+const swipeConfig = computed(
+  () =>
+    animationConfig.toastNotification?.swipe || {
+      thresholdPx: 100,
+      velocityThreshold: 0.5,
+      resistance: 0.8,
+      snapBackDurationMs: 300,
+    }
+)
+
+// Handle touch start for swipe detection
+const handleTouchStart = (event: TouchEvent, toastId: string) => {
+  if (prefersReducedMotion.value) return
+
+  const touch = event.touches[0]
+  swipeState.value[toastId] = {
+    startX: touch.clientX,
+    currentX: touch.clientX,
+    isSwiping: true,
+    velocity: 0,
+  }
+
+  // Pause toast auto-dismiss while swiping
+  pauseToast(toastId)
+}
+
+// Handle touch move for swipe progress
+const handleTouchMove = (event: TouchEvent, toastId: string) => {
+  if (prefersReducedMotion.value || !swipeState.value[toastId]?.isSwiping)
+    return
+
+  const touch = event.touches[0]
+  const state = swipeState.value[toastId]
+  const deltaX = touch.clientX - state.startX
+
+  // Apply resistance for natural feel
+  const resistance = swipeConfig.value.resistance || 0.8
+  state.currentX = state.startX + deltaX * resistance
+  state.velocity = Math.abs(deltaX) / (Date.now() - Date.now() + 1) // Simple velocity calc
+
+  // Prevent default scrolling when swiping horizontally
+  if (Math.abs(deltaX) > 10) {
+    event.preventDefault()
+  }
+}
+
+// Handle touch end for swipe completion
+const handleTouchEnd = (toastId: string) => {
+  if (prefersReducedMotion.value || !swipeState.value[toastId]?.isSwiping)
+    return
+
+  const state = swipeState.value[toastId]
+  const deltaX = state.currentX - state.startX
+  const threshold = swipeConfig.value.thresholdPx || 100
+  const velocityThreshold = swipeConfig.value.velocityThreshold || 0.5
+
+  // Check if swipe threshold or velocity is met
+  const shouldDismiss =
+    Math.abs(deltaX) > threshold || state.velocity > velocityThreshold
+
+  if (shouldDismiss) {
+    // Trigger haptic feedback on successful dismiss
+    hapticLight()
+
+    // Animate toast off-screen in the direction of swipe
+    const direction = deltaX > 0 ? 1 : -1
+    state.currentX = state.startX + direction * window.innerWidth
+
+    // Remove toast after animation
+    setTimeout(() => {
+      removeToast(toastId)
+      delete swipeState.value[toastId]
+    }, swipeConfig.value.snapBackDurationMs || 300)
+  } else {
+    // Snap back to original position
+    state.isSwiping = false
+    state.currentX = state.startX
+
+    // Resume auto-dismiss
+    resumeToast(toastId)
+
+    // Clean up after snap-back animation
+    setTimeout(() => {
+      delete swipeState.value[toastId]
+    }, swipeConfig.value.snapBackDurationMs || 300)
+  }
+}
+
+// Get swipe transform style for a toast
+const getSwipeStyle = (toastId: string) => {
+  const state = swipeState.value[toastId]
+  if (!state?.isSwiping) return {}
+
+  const deltaX = state.currentX - state.startX
+  const opacity = Math.max(0.5, 1 - Math.abs(deltaX) / 300)
+  const scale = Math.max(0.95, 1 - Math.abs(deltaX) / 2000)
+
+  return {
+    transform: `translateX(${deltaX}px) scale(${scale})`,
+    opacity,
+    transition: state.isSwiping
+      ? 'none'
+      : `transform ${swipeConfig.value.snapBackDurationMs || 300}ms ease-out, opacity ${swipeConfig.value.snapBackDurationMs || 300}ms ease-out`,
+  }
 }
 
 // Palette's micro-UX enhancement: Dismiss all toasts at once
@@ -588,4 +712,84 @@ onUnmounted(() => {
 }
 
 /* Flexy removed duplicate progress bar styles - already defined above using config values */
+
+/* Palette's micro-UX enhancement: Smart Dismiss - Swipe to dismiss styles 🎨 */
+/* Visual feedback during swipe gesture */
+.toast--swiping {
+  cursor: grabbing;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Swipe hint indicator for touch devices */
+.toast::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(
+    180deg,
+    v-bind('toastStyles.colors.success.border') 0%,
+    v-bind('toastStyles.colors.info.border') 100%
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Left swipe hint */
+.toast::before {
+  left: 0;
+}
+
+/* Right swipe hint */
+.toast::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 4px;
+  background: linear-gradient(
+    180deg,
+    v-bind('toastStyles.colors.success.border') 0%,
+    v-bind('toastStyles.colors.info.border') 100%
+  );
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Show swipe hints on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .toast::before,
+  .toast::after {
+    opacity: 0.3;
+  }
+
+  .toast--swiping::before,
+  .toast--swiping::after {
+    opacity: 0.6;
+  }
+}
+
+/* Reduced motion support for swipe */
+@media (prefers-reduced-motion: reduce) {
+  .toast--swiping {
+    transition: opacity 0.2s ease-out !important;
+  }
+
+  .toast::before,
+  .toast::after {
+    display: none;
+  }
+}
+
+/* Touch action optimization */
+.toast {
+  touch-action: pan-y pinch-zoom;
+}
+
+.toast--swiping {
+  touch-action: none;
+}
 </style>

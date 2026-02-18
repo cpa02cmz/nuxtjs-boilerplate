@@ -2917,6 +2917,21 @@ export const animationConfig = {
     reducedMotionDurationMs: parseInt(
       process.env.TOAST_REDUCED_MOTION_DURATION_MS || '200'
     ),
+    // Palette's micro-UX enhancement: Smart Dismiss - Swipe to dismiss configuration 🎨
+    swipe: {
+      // Minimum distance (px) to trigger dismiss
+      thresholdPx: parseInt(process.env.TOAST_SWIPE_THRESHOLD_PX || '100'),
+      // Minimum velocity (px/ms) to trigger dismiss
+      velocityThreshold: parseFloat(
+        process.env.TOAST_SWIPE_VELOCITY_THRESHOLD || '0.5'
+      ),
+      // Resistance factor for swipe movement (0.8 = 80% of actual movement)
+      resistance: parseFloat(process.env.TOAST_SWIPE_RESISTANCE || '0.8'),
+      // Duration for snap-back animation when not dismissed (ms)
+      snapBackDurationMs: parseInt(
+        process.env.TOAST_SWIPE_SNAP_BACK_MS || '300'
+      ),
+    },
   },
 
   // Scroll To Top Completion Celebration - Palette's micro-UX delight! 🎉
