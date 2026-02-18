@@ -6,9 +6,14 @@ import {
   sendUnauthorizedError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 export default defineEventHandler(async event => {
   try {
+    // Backend Engineer: Apply rate limiting for DELETE operations
+    // Consistent with webhooks/[id].delete.ts pattern
+    await rateLimit(event, 'api-key-delete')
+
     // Security: Only accept API key via header, never via query parameter
     // Query parameters expose keys in server logs, browser history, and referrer headers
     const authApiKey = getHeader(event, 'X-API-Key')
