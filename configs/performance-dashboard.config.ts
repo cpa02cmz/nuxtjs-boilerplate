@@ -169,6 +169,17 @@ export const performanceDashboardConfig = {
       process.env.PERFORMANCE_A11Y_DELAY_MS || '1000'
     ),
   },
+
+  // Time Series Bucket Sizes (in minutes) - Flexy hates hardcoded values!
+  bucketSizes: {
+    oneHour: parseInt(process.env.PERFORMANCE_BUCKET_1H_MINUTES || '5'),
+    sixHours: parseInt(process.env.PERFORMANCE_BUCKET_6H_MINUTES || '15'),
+    twentyFourHours: parseInt(
+      process.env.PERFORMANCE_BUCKET_24H_MINUTES || '60'
+    ),
+    sevenDays: parseInt(process.env.PERFORMANCE_BUCKET_7D_MINUTES || '360'),
+    thirtyDays: parseInt(process.env.PERFORMANCE_BUCKET_30D_MINUTES || '1440'),
+  },
 } as const
 
 export type PerformanceDashboardConfig = typeof performanceDashboardConfig
