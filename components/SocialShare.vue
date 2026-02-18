@@ -355,7 +355,8 @@ const { createRipple: createCopyRipple } = useRipple(
 // Use configurable styles from socialConfig
 const shareButtonClasses = computed(() => {
   const styles = socialConfig.platformStyles.shareButton
-  return `p-2 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 ${styles.bg} ${styles.ring}`
+  // Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal
+  return `p-2 rounded-full transition-colors ${animationConfig.tailwindDurations.normal} focus:outline-none focus:ring-2 ${styles.bg} ${styles.ring}`
 })
 
 const dropdownContainerClasses = computed(() => {
