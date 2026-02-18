@@ -68,13 +68,14 @@
         copySuccess
           ? contentConfig.share.ariaLabels.copySuccess
           : contentConfig.share.ariaLabels.shareTitle.replace(
-            '{{title}}',
-            title
-          )
+              '{{title}}',
+              title
+            )
       "
       :aria-expanded="showShareMenu"
       :class="[
-        'p-2 rounded-full transition-all ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 relative overflow-hidden',
+        // WCAG 2.5.5: Minimum touch target size 44x44px
+        'p-2.5 min-w-[44px] min-h-[44px] rounded-full transition-all ease-out focus:outline-none focus:ring-2 focus:ring-blue-500 relative overflow-hidden',
         tailwindClassesConfig.duration.normal,
         copySuccess
           ? 'bg-green-100 text-green-600 hover:bg-green-200'
@@ -133,10 +134,7 @@
         aria-labelledby="share-menu"
         @keydown="handleMenuKeydown"
       >
-        <div
-          class="py-1"
-          role="none"
-        >
+        <div class="py-1" role="none">
           <!-- Twitter -->
           <a
             :href="twitterUrl"
@@ -262,10 +260,7 @@
               stroke-linecap="round"
               stroke-linejoin="round"
             >
-              <path
-                class="checkmark-path"
-                d="M4 10l4 4 8-8"
-              />
+              <path class="checkmark-path" d="M4 10l4 4 8-8" />
             </svg>
             {{
               copySuccess

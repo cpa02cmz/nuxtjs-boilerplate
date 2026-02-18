@@ -38,12 +38,11 @@ export default defineNitroPlugin(nitroApp => {
         return
       }
 
-      // Only use nonces in production to avoid CSP blocking inline scripts in dev
-      // In development, we rely on 'unsafe-inline' instead
-      const isDev = process.env.NODE_ENV === 'development'
-      const nonce = isDev
-        ? undefined
-        : randomBytes(securityConfig.crypto.nonceLength).toString('base64')
+      // Enable CSP nonce in all environments for consistent security headers
+      // This provides better security in development and production
+      const nonce = randomBytes(securityConfig.crypto.nonceLength).toString(
+        'base64'
+      )
 
       // Get security headers with nonce (nonce only in production)
       const securityHeaders = getSecurityHeaders(nonce)
