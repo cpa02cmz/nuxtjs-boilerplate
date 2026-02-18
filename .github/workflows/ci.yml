@@ -1,6 +1,7 @@
 name: PR Gate (ARM)
 
 on:
+  workflow_dispatch: 
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
