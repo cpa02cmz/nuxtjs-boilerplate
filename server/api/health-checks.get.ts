@@ -1,4 +1,4 @@
-import { defineEventHandler } from 'h3'
+import { defineEventHandler, setResponseHeaders } from 'h3'
 import { getAllResourceHealthStatuses } from '~/server/utils/resourceHealth'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {

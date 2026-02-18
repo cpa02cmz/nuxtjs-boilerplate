@@ -1,4 +1,5 @@
 import type { Submission } from '~/types/submission'
+import { setResponseHeaders } from 'h3'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendSuccessResponse,
