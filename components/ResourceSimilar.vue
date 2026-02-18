@@ -88,8 +88,8 @@
           <div
             v-if="
               hoveredCard === resource.id &&
-              !prefersReducedMotion &&
-              spotlightConfig.enabled
+                !prefersReducedMotion &&
+                spotlightConfig.enabled
             "
             class="spotlight-overlay"
             :style="getSpotlightStyle(index)"
@@ -112,9 +112,18 @@
               (resource.similarityScore || 0) * 100
             )}%`"
           >
-            <svg class="similarity-ring" viewBox="0 0 36 36" aria-hidden="true">
+            <svg
+              class="similarity-ring"
+              viewBox="0 0 36 36"
+              aria-hidden="true"
+            >
               <!-- Background circle -->
-              <circle class="similarity-ring-bg" cx="18" cy="18" r="15" />
+              <circle
+                class="similarity-ring-bg"
+                cx="18"
+                cy="18"
+                r="15"
+              />
               <!-- Progress circle with animated stroke -->
               <circle
                 class="similarity-ring-progress"
@@ -142,7 +151,12 @@
       </TransitionGroup>
 
       <!-- Screen reader announcement -->
-      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        class="sr-only"
+      >
         {{ announcement }}
       </div>
     </section>
@@ -568,7 +582,10 @@ const spotlightFadeInDuration = computed(
     var(--spotlight-primary, rgba(255, 255, 255, 0.15)) 0%,
     var(--spotlight-secondary, rgba(255, 255, 255, 0)) 70%
   );
-  transition: background var(--spotlight-transition, 150ms) ease-out;
+  /* Flexy hates hardcoded 150ms! Using animationConfig.similarResources.spotlight.transitionDurationMs */
+  transition: background
+    v-bind('animationConfig.similarResources.spotlight.transitionDurationSec')
+    ease-out;
   opacity: 0;
   /* Flexy hates hardcoded 200ms! Using animationConfig.similarResources.spotlight.fadeInDurationSec */
   animation: spotlight-fade-in v-bind('spotlightFadeInDuration') ease-out
@@ -659,7 +676,10 @@ const spotlightFadeInDuration = computed(
   stroke: var(--ring-color, #6b7280);
   stroke-dasharray: var(--ring-circumference, 94);
   stroke-dashoffset: var(--ring-circumference, 94);
-  transition: stroke-dashoffset 1s v-bind('EASING.SPRING_STANDARD');
+  /* Flexy hates hardcoded 1s! Using animationConfig.similarResources.ring.transitionSec */
+  transition: stroke-dashoffset
+    v-bind('animationConfig.similarResources.ring.transitionSec')
+    v-bind('EASING.SPRING_STANDARD');
   /* Flexy hates hardcoded 1.2s! Using animationConfig.similarResources.spotlight.ringFillDurationSec */
   animation: ring-fill
     v-bind(

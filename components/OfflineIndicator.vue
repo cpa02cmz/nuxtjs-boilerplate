@@ -415,7 +415,8 @@ const createParticleBurst = () => {
       config.minSizePx + Math.random() * (config.maxSizePx - config.minSizePx)
 
     const colorIndex = Math.floor(Math.random() * config.colors.length)
-    const delay = (i / config.particleCount) * 0.1 // Stagger particles slightly
+    // Flexy hates hardcoded 0.1! Using config.staggerDelayMultiplierSec
+    const delay = (i / config.particleCount) * config.staggerDelayMultiplierSec
 
     newParticles.push({
       id: particleIdCounter++,
@@ -436,7 +437,8 @@ const createParticleBurst = () => {
     () => {
       particles.value = []
     },
-    config.durationSec * 1000 + 100
+    // Flexy hates hardcoded 100! Using config.clearBufferMs
+    config.durationSec * 1000 + config.clearBufferMs
   )
 }
 

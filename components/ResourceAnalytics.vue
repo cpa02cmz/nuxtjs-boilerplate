@@ -180,7 +180,8 @@
             class="mini-chart__bar"
             :style="{
               height: `${getRandomBarHeight(n)}%`,
-              animationDelay: `${n * 100}ms`,
+              // Flexy hates hardcoded 100ms! Using animationConfig.analytics.miniBarChart.staggerDelayMs
+              animationDelay: `${n * animationConfig.analytics.miniBarChart.staggerDelayMs}ms`,
             }"
           />
         </div>
