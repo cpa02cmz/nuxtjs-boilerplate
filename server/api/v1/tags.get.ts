@@ -1,13 +1,11 @@
-import { defineEventHandler, getQuery } from 'h3'
-import { logError } from '~/utils/errorLogger'
-import { getAllHierarchicalTags } from '~/utils/tags'
 import type { Resource } from '~/types/resource'
-import { rateLimit } from '~/server/utils/enhanced-rate-limit'
-import {
-  sendSuccessResponse,
-  handleApiRouteError,
-} from '~/server/utils/api-response'
+import type { H3Event } from 'h3'
+import { cacheManager, cacheSetWithTags } from '~/server/utils/enhanced-cache'
+import { createApiRoute } from '~/server/utils/create-api-route'
+import { generateCacheTags, cacheTagsConfig } from '~/configs/cache-tags.config'
+import { timeConfig, toSeconds } from '~/configs/time.config'
 import { contentConfig } from '~/configs/content.config'
+import { getAllHierarchicalTags } from '~/utils/tags'
 
 /**
  * GET /api/v1/tags
@@ -19,49 +17,64 @@ import { contentConfig } from '~/configs/content.config'
  * - includeParents: Include parent tags in the response (default: true)
  * - rootOnly: Return only root level tags (default: false)
  */
-export default defineEventHandler(async event => {
-  await rateLimit(event)
+async function getTagsHandler(event: H3Event) {
+  // Parse query parameters
+  const query = getQuery(event)
+  const includeChildren = query.includeChildren !== 'false'
+  const includeParents = query.includeParents !== 'false'
+  const rootOnly = query.rootOnly === 'true'
 
-  try {
-    // Import resources from JSON to get actual tag data
-    const resourcesModule = await import(contentConfig.paths.resourcesData)
-    const resources: Resource[] = resourcesModule.default || resourcesModule
+  // Build cache key based on query parameters
+  const cacheKey = `tags:${includeChildren}:${includeParents}:${rootOnly}`
 
-    // Parse query parameters
-    const query = getQuery(event)
-    const includeChildren = query.includeChildren !== 'false' // Default to true
-    const includeParents = query.includeParents !== 'false' // Default to true
-    const rootOnly = query.rootOnly === 'true' // Default to false
+  // Try to get from cache first
+  const cachedResult = (await cacheManager.get(cacheKey)) as {
+    tags: unknown[]
+    includeChildren: boolean
+    includeParents: boolean
+    rootOnly: boolean
+  } | null
 
-    // Get all hierarchical tags from resources
-    const allTags = getAllHierarchicalTags(resources)
-
-    // Filter based on rootOnly parameter
-    let filteredTags = allTags
-    if (rootOnly) {
-      filteredTags = allTags.filter(tag => tag.parentId === null)
-    }
-
-    const responseData = {
-      tags: filteredTags,
-      includeChildren,
-      includeParents,
-      rootOnly,
-    }
-
-    return sendSuccessResponse(event, responseData)
-  } catch (error) {
-    // Log error using our error logging service
-    logError(
-      `Error fetching hierarchical tags: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      error as Error,
-      'api-v1-tags',
-      {
-        query: getQuery(event),
-        errorType: error instanceof Error ? error.constructor.name : 'Unknown',
-      }
-    )
-
-    return handleApiRouteError(event, error)
+  if (cachedResult) {
+    event.node.res?.setHeader('X-Cache', 'HIT')
+    return cachedResult
   }
+
+  // Import resources from JSON to get actual tag data
+  const resourcesModule = await import(contentConfig.paths.resourcesData)
+  const resources: Resource[] = resourcesModule.default || resourcesModule
+
+  // Get all hierarchical tags from resources
+  const allTags = getAllHierarchicalTags(resources)
+
+  // Filter based on rootOnly parameter
+  let filteredTags = allTags
+  if (rootOnly) {
+    filteredTags = allTags.filter(tag => tag.parentId === null)
+  }
+
+  const responseData = {
+    tags: filteredTags,
+    includeChildren,
+    includeParents,
+    rootOnly,
+  }
+
+  // Cache result since tags don't change often
+  await cacheSetWithTags(
+    cacheKey,
+    responseData,
+    toSeconds(timeConfig.cache.long),
+    generateCacheTags(cacheTagsConfig.tags.all)
+  )
+
+  // Set cache miss header
+  event.node.res?.setHeader('X-Cache', 'MISS')
+
+  return responseData
+}
+
+// Export using the unified API route handler
+export default createApiRoute(getTagsHandler, {
+  logContext: 'api-v1-tags',
 })
