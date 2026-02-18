@@ -381,12 +381,7 @@ describe('useModeration', () => {
         'abuse',
         mockRegularUser
       )
-      const _flag3 = manager.flagContent(
-        'comment',
-        'comment-3',
-        'spam',
-        mockRegularUser
-      )
+      manager.flagContent('comment', 'comment-3', 'spam', mockRegularUser)
 
       manager.moderateContent(flag1.id, 'removed', mockModerator)
       manager.resolveFlag(flag2.id, mockModerator)
