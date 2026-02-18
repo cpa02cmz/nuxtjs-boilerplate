@@ -68,12 +68,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -329,10 +324,10 @@ const beforeEachGuard = () => {
 }
 
 const afterEachGuard = () => {
-  // Small delay to ensure new page has started rendering
+  // Small delay to ensure new page has started rendering - Flexy hates hardcoded 50ms!
   setTimeout(() => {
     endTransition()
-  }, 50)
+  }, animationConfig.pageTransition.debounceMs)
 }
 
 // Lifecycle hooks
