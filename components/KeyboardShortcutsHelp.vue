@@ -1,9 +1,6 @@
 <template>
   <Teleport to="body">
-    <Transition
-      name="modal"
-      @after-enter="focusCloseButton"
-    >
+    <Transition name="modal" @after-enter="focusCloseButton">
       <div
         v-if="isOpen"
         ref="modalContainerRef"
@@ -29,7 +26,8 @@
         <div
           ref="modalRef"
           :class="[
-            'relative w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl transform transition-all duration-200 overflow-hidden',
+            // Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations
+            `relative w-full bg-white dark:bg-gray-800 rounded-xl shadow-2xl transform transition-all ${animationConfig.tailwindDurations.normal} overflow-hidden`,
             componentStylesConfig.keyboardShortcuts.modalWidth,
           ]"
           role="document"
@@ -66,7 +64,7 @@
             </div>
             <button
               ref="closeButtonRef"
-              class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+              :class="`p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${animationConfig.tailwindDurations.normal}`"
               :aria-label="config.aria.close"
               @click="close"
             >
@@ -116,7 +114,8 @@
                     }}</span>
                     <kbd
                       :class="[
-                        'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                        // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                        `px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                         isKeyPressed('/') &&
                           'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                       ]"
@@ -132,7 +131,8 @@
                     }}</span>
                     <kbd
                       :class="[
-                        'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                        // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                        `px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                         isKeyPressed('Esc') &&
                           'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                       ]"
@@ -149,7 +149,8 @@
                     <div class="flex items-center gap-1">
                       <kbd
                         :class="[
-                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                          `px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                           isKeyPressed('↑') &&
                             'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                         ]"
@@ -158,7 +159,8 @@
                       </kbd>
                       <kbd
                         :class="[
-                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                          `px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                           isKeyPressed('↓') &&
                             'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                         ]"
@@ -186,7 +188,8 @@
                     }}</span>
                     <kbd
                       :class="[
-                        'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                        // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                        `px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                         isKeyPressed('Tab') &&
                           'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                       ]"
@@ -203,7 +206,8 @@
                     <div class="flex items-center gap-1">
                       <kbd
                         :class="[
-                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                          `px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                           isKeyPressed('Shift') &&
                             'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                         ]"
@@ -213,7 +217,8 @@
                       <span class="text-gray-400">+</span>
                       <kbd
                         :class="[
-                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                          `px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                           isKeyPressed('Tab') &&
                             'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                         ]"
@@ -230,7 +235,8 @@
                     }}</span>
                     <kbd
                       :class="[
-                        'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                        // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                        `px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                         isKeyPressed('Esc') &&
                           'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                       ]"
@@ -258,7 +264,8 @@
                     <div class="flex items-center gap-1">
                       <kbd
                         :class="[
-                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                          `px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                           isKeyPressed('Ctrl') &&
                             'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                         ]"
@@ -268,7 +275,8 @@
                       <span class="text-gray-400">+</span>
                       <kbd
                         :class="[
-                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                          `px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                           (isKeyPressed('z') || isKeyPressed('Z')) &&
                             'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                         ]"
@@ -286,7 +294,8 @@
                     <div class="flex items-center gap-1">
                       <kbd
                         :class="[
-                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                          `px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                           isKeyPressed('Enter') &&
                             'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                         ]"
@@ -296,7 +305,8 @@
                       <span class="text-gray-400">/</span>
                       <kbd
                         :class="[
-                          'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                          // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                          `px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                           isKeyPressed('Space') &&
                             'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                         ]"
@@ -324,7 +334,8 @@
                     }}</span>
                     <kbd
                       :class="[
-                        'px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all duration-100',
+                        // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                        `px-2 py-1 text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                         isKeyPressed('?') &&
                           'kbd-pressed scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                       ]"
@@ -345,11 +356,13 @@
               Tip: Press
               <kbd
                 :class="[
-                  'px-1 py-0.5 text-xs bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 rounded transition-all duration-100',
+                  // Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations
+                  `px-1 py-0.5 text-xs bg-white dark:bg-gray-600 border border-gray-200 dark:border-gray-500 rounded transition-all ${animationConfig.tailwindDurations.fast}`,
                   isKeyPressed('?') &&
                     'scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                 ]"
-              >?</kbd>
+                >?</kbd
+              >
               anywhere to open this guide
             </p>
           </div>

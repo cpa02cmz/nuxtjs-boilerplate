@@ -107,7 +107,9 @@
           :key="`skeleton-${i}`"
           class="alternative-suggestions__skeleton-card"
           :class="{ 'animate-pulse': !prefersReducedMotion }"
-          :style="{ animationDelay: `${(i - 1) * 150}ms` }"
+          :style="{
+            animationDelay: `${(i - 1) * (animationConfig.alternativeSuggestions?.skeletonStaggerDelayMs || 150)}ms`,
+          }"
         >
           <div class="skeleton-shimmer skeleton-icon rounded-lg" />
           <div class="space-y-3">
@@ -183,21 +185,13 @@
       <p class="alternative-suggestions__empty-message">
         {{ contentConfig.alternativeSuggestions.emptyState.message }}
       </p>
-      <NuxtLink
-        to="/"
-        class="alternative-suggestions__empty-cta"
-      >
+      <NuxtLink to="/" class="alternative-suggestions__empty-cta">
         {{ contentConfig.alternativeSuggestions.emptyState.browseAll }}
       </NuxtLink>
     </div>
 
     <!-- Screen reader announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
