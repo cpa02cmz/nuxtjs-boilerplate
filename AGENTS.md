@@ -112,7 +112,7 @@
 - **Description**: Repository maintenance audit - 1 empty directory removed, 7 merged branches and 20+ stale branches documented, full codebase audit completed
 - **Status**: Open, awaiting review
 - **Branch**: `repokeeper/ulw-loop-maintenance-20260218-0445`
-- **URL**: #TBD
+- **URL**: https://github.com/cpa02cmz/nuxtjs-boilerplate/pull/3717
 
 #### RepoKeeper Strict Workflow Compliance:
 
