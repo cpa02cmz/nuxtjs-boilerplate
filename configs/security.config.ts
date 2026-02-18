@@ -84,6 +84,13 @@ export const securityConfig = {
     'Permissions-Policy':
       process.env.HEADER_PERMISSIONS_POLICY ||
       'geolocation=(), microphone=(), camera=()',
+    // Security-Engineer: Modern cross-origin isolation headers for defense-in-depth
+    // These headers help prevent Spectre-style attacks and cross-origin data leakage
+    'Cross-Origin-Opener-Policy': process.env.HEADER_COOP || 'same-origin',
+    'Cross-Origin-Resource-Policy': process.env.HEADER_CORP || 'same-origin',
+    'Cross-Origin-Embedder-Policy': process.env.HEADER_COEP || 'require-corp',
+    'X-Permitted-Cross-Domain-Policies':
+      process.env.HEADER_CROSS_DOMAIN_POLICIES || 'none',
   },
 
   // Alias for backward compatibility with tests
@@ -103,6 +110,12 @@ export const securityConfig = {
       process.env.CORS_ALLOWED_METHODS || 'GET, HEAD, POST, OPTIONS',
     'Access-Control-Allow-Headers':
       process.env.CORS_ALLOWED_HEADERS || 'Content-Type, Authorization',
+    // Security-Engineer: Modern cross-origin isolation headers for defense-in-depth
+    'Cross-Origin-Opener-Policy': process.env.HEADER_COOP || 'same-origin',
+    'Cross-Origin-Resource-Policy': process.env.HEADER_CORP || 'same-origin',
+    'Cross-Origin-Embedder-Policy': process.env.HEADER_COEP || 'require-corp',
+    'X-Permitted-Cross-Domain-Policies':
+      process.env.HEADER_CROSS_DOMAIN_POLICIES || 'none',
   },
 
   // CORS Configuration
