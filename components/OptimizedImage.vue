@@ -296,8 +296,9 @@ const handleRetry = () => {
   hapticLight()
 
   // Force image reload by appending cache buster
-  // @ts-expect-error - $el exists on component refs but TypeScript doesn't know
-  const img = imageRef.value?.$el as HTMLImageElement | undefined
+  // Type assertion for component ref - $el is available at runtime
+  const componentEl = imageRef.value as { $el?: HTMLImageElement } | null
+  const img = componentEl?.$el
   if (img) {
     const currentSrc = props.src
     const cacheBuster = `?retry=${Date.now()}`
