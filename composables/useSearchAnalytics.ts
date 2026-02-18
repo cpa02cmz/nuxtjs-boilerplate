@@ -4,6 +4,7 @@ import { logError } from '~/utils/errorLogger'
 import type { ApiResponse, ApiClient } from '~/utils/api-client'
 import { useNuxtApp } from '#app'
 import { limitsConfig } from '~/configs/limits.config'
+import { formatDateShort } from '~/utils/date-utils'
 
 interface UseSearchAnalyticsOptions {
   apiClient?: ApiClient
@@ -24,11 +25,6 @@ export function useSearchAnalytics(options: UseSearchAnalyticsOptions = {}) {
       1
     )
   })
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  }
 
   const fetchSearchAnalytics = async () => {
     loading.value = true
@@ -83,7 +79,7 @@ export function useSearchAnalytics(options: UseSearchAnalyticsOptions = {}) {
     error,
     timeRange,
     maxSearchCount,
-    formatDate,
+    formatDate: formatDateShort,
     fetchSearchAnalytics,
   }
 }
