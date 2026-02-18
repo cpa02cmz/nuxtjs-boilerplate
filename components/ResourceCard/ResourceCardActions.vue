@@ -70,7 +70,8 @@
         v-if="id"
         ref="copyButtonRef"
         :class="[
-          `p-2 rounded-full transition-all ${transitionClasses.normal} ease-out magnetic-button`,
+          // WCAG 2.5.5: Minimum touch target size 44x44px
+          `p-2.5 min-w-[44px] min-h-[44px] rounded-full transition-all ${transitionClasses.normal} ease-out magnetic-button`,
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2',
           isCopied
             ? 'bg-green-100 text-green-600 scale-110'
