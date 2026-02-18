@@ -1,8 +1,5 @@
 <template>
-  <fieldset
-    class="mb-6"
-    @keydown="handleKeydown"
-  >
+  <fieldset class="mb-6" @keydown="handleKeydown">
     <div class="flex items-center justify-between mb-3">
       <button
         v-if="collapsible"
@@ -59,27 +56,72 @@
           v-if="selectedOptions.length === 0"
           type="button"
           :class="[
-            'text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded px-1',
+            'text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded px-1 relative',
             animationConfig.tailwindDurations.normal,
           ]"
           :aria-label="`Select all ${options.length} ${label} filters`"
           :aria-controls="`${id}-checkbox-group`"
           @click="selectAll"
+          @mouseenter="handleSelectAllMouseEnter"
+          @mouseleave="handleSelectAllMouseLeave"
+          @focus="handleSelectAllMouseEnter"
+          @blur="handleSelectAllMouseLeave"
         >
           Select All
+          <!-- 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint tooltip -->
+          <Transition
+            :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
+            enter-from-class="opacity-0 scale-95 translate-y-1"
+            enter-to-class="opacity-100 scale-100 translate-y-0"
+            :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
+            leave-from-class="opacity-100 scale-100 translate-y-0"
+            leave-to-class="opacity-0 scale-95 translate-y-1"
+          >
+            <span
+              v-if="showSelectAllHint"
+              class="keyboard-hint keyboard-hint--select-all"
+              aria-hidden="true"
+            >
+              <kbd class="keyboard-hint__key">Ctrl</kbd>
+              <span class="keyboard-hint__plus">+</span>
+              <kbd class="keyboard-hint__key">A</kbd>
+            </span>
+          </Transition>
         </button>
         <button
           v-else
           type="button"
           :class="[
-            'text-xs text-gray-500 hover:text-gray-700 font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-1 rounded px-1',
+            'text-xs text-gray-500 hover:text-gray-700 font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-1 rounded px-1 relative',
             animationConfig.tailwindDurations.normal,
           ]"
           :aria-label="`Clear all ${selectedOptions.length} selected ${label} filters`"
           :aria-controls="`${id}-checkbox-group`"
           @click="clearAll"
+          @mouseenter="handleClearMouseEnter"
+          @mouseleave="handleClearMouseLeave"
+          @focus="handleClearMouseEnter"
+          @blur="handleClearMouseLeave"
         >
           Clear
+          <!-- 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint tooltip -->
+          <Transition
+            :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
+            enter-from-class="opacity-0 scale-95 translate-y-1"
+            enter-to-class="opacity-100 scale-100 translate-y-0"
+            :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
+            leave-from-class="opacity-100 scale-100 translate-y-0"
+            leave-to-class="opacity-0 scale-95 translate-y-1"
+          >
+            <span
+              v-if="showClearHint"
+              class="keyboard-hint keyboard-hint--clear"
+              aria-hidden="true"
+            >
+              <kbd class="keyboard-hint__key">Esc</kbd>
+              <span class="keyboard-hint__label">to clear</span>
+            </span>
+          </Transition>
         </button>
       </div>
     </div>
@@ -139,7 +181,7 @@
               <span
                 v-if="
                   !prefersReducedMotion &&
-                    (recentlySelected === option || recentlyDeselected === option)
+                  (recentlySelected === option || recentlyDeselected === option)
                 "
                 class="checkbox-bloom absolute inset-0 rounded pointer-events-none"
                 :class="{
@@ -171,7 +213,7 @@
                 ]"
                 @change="toggleOption(option)"
                 @click.stop
-              >
+              />
             </div>
             <label
               :for="`${id}-${option}`"
@@ -214,6 +256,8 @@ import { hapticLight } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
 import { EASING } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { zIndexConfig } from '~/configs/z-index.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 
 interface Props {
   label: string
@@ -273,6 +317,12 @@ const hoverRipple = ref<{
   active: false,
 })
 let hoverRippleTimeout: ReturnType<typeof setTimeout> | null = null
+
+// 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint state
+const showSelectAllHint = ref(false)
+const showClearHint = ref(false)
+let selectAllHintTimeout: ReturnType<typeof setTimeout> | null = null
+let clearHintTimeout: ReturnType<typeof setTimeout> | null = null
 
 const scrollableClass = computed(() =>
   props.scrollable ? 'max-h-40 overflow-y-auto' : ''
@@ -339,6 +389,51 @@ const handleMouseLeave = (option: string) => {
       hoverRipple.value.option = null
     }
   }, animationConfig.cssTransitions.fastMs)
+}
+
+// 🎨 Pallete's micro-UX enhancement: Show/hide keyboard shortcut hints
+const handleSelectAllMouseEnter = () => {
+  if (prefersReducedMotion.value) return
+
+  // Clear existing timeout
+  if (selectAllHintTimeout) {
+    clearTimeout(selectAllHintTimeout)
+  }
+
+  // Show hint after delay (prevents flashing on quick mouse passes)
+  selectAllHintTimeout = setTimeout(() => {
+    showSelectAllHint.value = true
+  }, animationConfig.codeBlock.shortcutHintDelayMs)
+}
+
+const handleSelectAllMouseLeave = () => {
+  if (selectAllHintTimeout) {
+    clearTimeout(selectAllHintTimeout)
+    selectAllHintTimeout = null
+  }
+  showSelectAllHint.value = false
+}
+
+const handleClearMouseEnter = () => {
+  if (prefersReducedMotion.value) return
+
+  // Clear existing timeout
+  if (clearHintTimeout) {
+    clearTimeout(clearHintTimeout)
+  }
+
+  // Show hint after delay (prevents flashing on quick mouse passes)
+  clearHintTimeout = setTimeout(() => {
+    showClearHint.value = true
+  }, animationConfig.codeBlock.shortcutHintDelayMs)
+}
+
+const handleClearMouseLeave = () => {
+  if (clearHintTimeout) {
+    clearTimeout(clearHintTimeout)
+    clearHintTimeout = null
+  }
+  showClearHint.value = false
 }
 
 // Toggle collapsible section - accessibility enhancement for issue #3305
@@ -464,6 +559,13 @@ onUnmounted(() => {
   }
   if (hoverRippleTimeout) {
     clearTimeout(hoverRippleTimeout)
+  }
+  // 🎨 Pallete's micro-UX enhancement: Cleanup keyboard hint timeouts
+  if (selectAllHintTimeout) {
+    clearTimeout(selectAllHintTimeout)
+  }
+  if (clearHintTimeout) {
+    clearTimeout(clearHintTimeout)
   }
 })
 </script>
@@ -712,6 +814,78 @@ button:hover {
 .hover-ripple--active {
   transform: scale(v-bind('animationConfig.checkbox.rippleScale'));
   opacity: 1;
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint styles */
+.keyboard-hint {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: v-bind('zIndexConfig.tooltip');
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.keyboard-hint__content,
+.keyboard-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 8px;
+  background: linear-gradient(
+    135deg,
+    v-bind('animationConfig.gradients?.blue?.start || "#1f2937"') 0%,
+    v-bind('animationConfig.gradients?.blue?.end || "#374151"') 100%
+  );
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 4px;
+  box-shadow: v-bind(
+    'shadowsConfig.boxShadow.md || "0 4px 6px -1px rgba(0, 0, 0, 0.1)"'
+  );
+}
+
+.keyboard-hint__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 3px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+}
+
+.keyboard-hint__plus {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 10px;
+}
+
+.keyboard-hint__label {
+  margin-left: 3px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 10px;
+}
+
+/* Show hint on focus for keyboard users */
+button:focus-visible .keyboard-hint {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Reduced motion support for keyboard hints */
+@media (prefers-reduced-motion: reduce) {
+  .keyboard-hint {
+    transition: none;
+    display: none;
+  }
 }
 
 /* Reduced motion support */
