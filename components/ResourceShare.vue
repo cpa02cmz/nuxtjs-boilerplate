@@ -40,7 +40,12 @@
         </svg>
       </a>
 
-      <!-- Copy Link Button with Success Animation -->
+      <!--
+        🎨 Pallete's micro-UX enhancement: Copy button with keyboard shortcut hint
+        - Shows helpful Ctrl+C hint on hover/focus for better discoverability
+        - Smooth tooltip animations with reduced motion support
+        - Helps users discover keyboard shortcuts for faster workflows
+      -->
       <button
         ref="copyButtonRef"
         :class="[
@@ -56,7 +61,34 @@
         @mouseleave="clearPressed"
         @touchstart="setPressed('copy')"
         @touchend="clearPressed"
+        @mouseenter="showCopyHint = true"
+        @focus="showCopyHint = true"
+        @blur="showCopyHint = false"
       >
+        <!-- Keyboard shortcut hint tooltip -->
+        <Transition
+          :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
+          enter-from-class="opacity-0 scale-95 translate-y-1"
+          enter-to-class="opacity-100 scale-100 translate-y-0"
+          :leave-active-class="`transition-all ${animationConfig.tailwindDurations.fast} ease-in`"
+          leave-from-class="opacity-100 scale-100 translate-y-0"
+          leave-to-class="opacity-0 scale-95 translate-y-1"
+        >
+          <span
+            v-if="showCopyHint && !showCopySuccess && !prefersReducedMotion"
+            class="copy-shortcut-hint"
+            role="tooltip"
+            aria-hidden="true"
+          >
+            <span class="copy-shortcut-hint__content">
+              <kbd class="copy-shortcut-hint__key">Ctrl</kbd>
+              <span class="copy-shortcut-hint__plus">+</span>
+              <kbd class="copy-shortcut-hint__key">C</kbd>
+              <span class="copy-shortcut-hint__label">to copy</span>
+            </span>
+            <span class="copy-shortcut-hint__arrow" />
+          </span>
+        </Transition>
         <!-- Button Ripple Effect -->
         <span
           v-if="rippleButton === 'copy'"
@@ -123,7 +155,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { socialConfig } from '~/configs/social.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
@@ -148,13 +180,22 @@ const emit = defineEmits<{
   copy: []
 }>()
 
-// Micro-UX State Management
+// 🎨 Pallete's micro-UX enhancement: Reactive state for delightful interactions
 const pressedButton = ref<string | null>(null)
 const rippleButton = ref<string | null>(null)
 const ripplePosition = ref({ x: 0, y: 0 })
 const showCopySuccess = ref(false)
+const showCopyHint = ref(false)
 const screenReaderAnnouncement = ref('')
 const copyButtonRef = ref<HTMLButtonElement | null>(null)
+
+// 🎨 Pallete's micro-UX enhancement: Check for reduced motion preference
+const prefersReducedMotion = ref(false)
+const checkReducedMotion = () => {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function')
+    return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
 
 // Social platform configurations with icons
 const socialPlatforms = computed(() => [
@@ -249,6 +290,9 @@ const handleSocialClick = (platform: string, event: MouseEvent) => {
 
 // Handle copy button click with success animation
 const handleCopyClick = async (event: MouseEvent) => {
+  // 🎨 Pallete's micro-UX enhancement: Hide hint when clicked
+  showCopyHint.value = false
+
   // Create ripple effect
   createRipple(event, 'copy')
 
@@ -274,6 +318,28 @@ const handleCopyClick = async (event: MouseEvent) => {
     screenReaderAnnouncement.value = ''
   }, animationConfig.microInteractions.announcementDelayMs)
 }
+
+// 🎨 Pallete's micro-UX enhancement: Lifecycle hooks for reduced motion support
+let mediaQueryRef: MediaQueryList | null = null
+
+const handleMotionChange = (e: MediaQueryListEvent) => {
+  prefersReducedMotion.value = e.matches
+}
+
+onMounted(() => {
+  prefersReducedMotion.value = checkReducedMotion()
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    mediaQueryRef.addEventListener('change', handleMotionChange)
+  }
+})
+
+onUnmounted(() => {
+  if (mediaQueryRef) {
+    mediaQueryRef.removeEventListener('change', handleMotionChange)
+    mediaQueryRef = null
+  }
+})
 </script>
 
 <style scoped>
@@ -465,6 +531,91 @@ const handleCopyClick = async (event: MouseEvent) => {
   .share-button:focus-visible {
     outline: 3px solid currentColor;
     outline-offset: 3px;
+  }
+}
+
+/*
+  🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint styles
+  Tooltip that helps users discover Ctrl+C shortcut for faster copying
+*/
+.copy-shortcut-hint {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: v-bind('zIndexScale.high[1]');
+  pointer-events: none;
+}
+
+.copy-shortcut-hint__content {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: linear-gradient(
+    135deg,
+    v-bind('animationConfig.gradients?.keyboardHint?.start || "#1f2937"') 0%,
+    v-bind('animationConfig.gradients?.keyboardHint?.end || "#374151"') 100%
+  );
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  white-space: nowrap;
+  box-shadow: v-bind(
+    'shadowsConfig.resourceShare.tooltip || "0 4px 6px -1px rgba(0, 0, 0, 0.1)"'
+  );
+}
+
+.copy-shortcut-hint__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+}
+
+.copy-shortcut-hint__plus {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+}
+
+.copy-shortcut-hint__label {
+  margin-left: 4px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.copy-shortcut-hint__arrow {
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid
+    v-bind('animationConfig.gradients?.keyboardHint?.end || "#374151"');
+}
+
+/* Show hint on focus for keyboard users */
+.share-button:focus-visible .copy-shortcut-hint {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Reduced motion support for keyboard hint */
+@media (prefers-reduced-motion: reduce) {
+  .copy-shortcut-hint {
+    transition: none;
   }
 }
 </style>
