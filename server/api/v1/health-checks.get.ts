@@ -10,13 +10,6 @@ export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
 
-    // Deprecation headers for backward compatibility
-    setResponseHeaders(event, {
-      Sunset: 'Mon, 01 Jun 2026 00:00:00 GMT',
-      Deprecation: 'true',
-      Link: '</api/v1/health-checks>; rel="successor-version"',
-    })
-
     const healthStatuses = getAllResourceHealthStatuses()
 
     const responseData = {

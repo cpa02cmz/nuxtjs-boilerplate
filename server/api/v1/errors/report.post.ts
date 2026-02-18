@@ -77,13 +77,6 @@ export default defineEventHandler(async event => {
     // Apply rate limiting - 10 requests per minute per IP
     await rateLimit(event, 'error-report')
 
-    // Deprecation headers for backward compatibility
-    setResponseHeaders(event, {
-      Sunset: 'Mon, 01 Jun 2026 00:00:00 GMT',
-      Deprecation: 'true',
-      Link: '</api/v1/errors/report>; rel="successor-version"',
-    })
-
     const body = await readBody(event)
     const errorTracker = createErrorTracker()
 
