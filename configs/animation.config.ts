@@ -2654,6 +2654,11 @@ export const animationConfig = {
       start: process.env.GRADIENT_PURPLE_START || '#8b5cf6',
       end: process.env.GRADIENT_PURPLE_END || '#7c3aed',
     },
+    // Keyboard hint tooltip gradient - Flexy hates hardcoded values!
+    keyboardHint: {
+      start: process.env.GRADIENT_KEYBOARD_HINT_START || '#1f2937',
+      end: process.env.GRADIENT_KEYBOARD_HINT_END || '#374151',
+    },
   },
 
   // Shadow Colors - Flexy hates hardcoded rgba values!

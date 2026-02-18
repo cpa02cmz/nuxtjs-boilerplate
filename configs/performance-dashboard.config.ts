@@ -89,6 +89,22 @@ export const performanceDashboardConfig = {
       process.env.PERFORMANCE_CHART_ANIMATION_MS || '750'
     ),
 
+    // Chart Colors - Flexy hates hardcoded hex codes! 🧩
+    colors: {
+      // LCP (Largest Contentful Paint) - Blue
+      LCP: process.env.PERFORMANCE_CHART_COLOR_LCP || '#3b82f6',
+      // INP (Interaction to Next Paint) - Emerald/Green
+      INP: process.env.PERFORMANCE_CHART_COLOR_INP || '#10b981',
+      // CLS (Cumulative Layout Shift) - Amber/Yellow
+      CLS: process.env.PERFORMANCE_CHART_COLOR_CLS || '#f59e0b',
+      // FCP (First Contentful Paint) - Purple
+      FCP: process.env.PERFORMANCE_CHART_COLOR_FCP || '#8b5cf6',
+      // TTFB (Time to First Byte) - Red
+      TTFB: process.env.PERFORMANCE_CHART_COLOR_TTFB || '#ef4444',
+      // Default/Fallback color - Gray
+      default: process.env.PERFORMANCE_CHART_COLOR_DEFAULT || '#6b7280',
+    },
+
     // Smooth curves
     smoothCurves: process.env.PERFORMANCE_CHART_SMOOTH !== 'false',
 

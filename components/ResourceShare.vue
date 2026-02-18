@@ -143,12 +143,7 @@
     </div>
 
     <!-- Screen Reader Announcement for Copy Success -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ screenReaderAnnouncement }}
     </div>
   </div>
@@ -543,7 +538,7 @@ onUnmounted(() => {
   bottom: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
-  z-index: v-bind('zIndexScale.high[1]');
+  z-index: v-bind('zIndexScale.high[100]');
   pointer-events: none;
 }
 

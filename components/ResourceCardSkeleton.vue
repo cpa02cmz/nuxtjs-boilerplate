@@ -111,12 +111,7 @@
       </div>
     </div>
     <!-- 🎨 Pallete: Live region for screen reader announcements - announces loading state -->
-    <span
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ loadingAnnouncement }}
     </span>
 
@@ -156,6 +151,7 @@ import { ref, onUnmounted, computed, onMounted } from 'vue'
 import { EASING } from '~/configs/easing.config'
 import { animationConfig } from '~/configs/animation.config'
 import { zIndexScale } from '~/configs/z-index.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 // 🎨 Pallete: Props for contextual accessibility
 interface Props {
@@ -183,24 +179,6 @@ const props = withDefaults(defineProps<Props>(), {
 // Flexy: All cubic-bezier values now use modular EASING config! 🎯
 // 🎨 Pallete: Enhanced accessibility with contextual aria-labels and live region!
 
-// SSR-safe color configuration with defaults
-const SKELETON_COLORS = {
-  light: {
-    start: '#e5e7eb',
-    middle: '#f3f4f6',
-    end: '#e5e7eb',
-  },
-  icon: {
-    start: '#d1d5db',
-    middle: '#e5e7eb',
-    end: '#d1d5db',
-  },
-  reducedMotion: {
-    light: '#e5e7eb',
-    icon: '#d1d5db',
-  },
-}
-
 // Animation timing configuration - Flexy: Using modular animationConfig!
 const staggerBaseDelay = animationConfig.skeleton.staggerDelayMs
 const staggerIncrement = animationConfig.skeleton.staggerIncrementMs
@@ -214,8 +192,8 @@ const getStaggerDelay = (index: number): string => {
   return `${staggerBaseDelay + index * staggerIncrement}ms`
 }
 
-// Skeleton colors
-const skeletonColors = SKELETON_COLORS
+// Skeleton colors - Flexy hates hardcoded values! Using config 🧩
+const skeletonColors = componentColorsConfig.skeleton
 
 // 🦇 BroCula: SSR-safe z-index values - using refs instead of direct v-bind to imported constants
 // This prevents "Cannot read properties of undefined (reading 'low')" during SSR
