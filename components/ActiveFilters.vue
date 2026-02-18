@@ -1,9 +1,23 @@
 <template>
+  <!--
+    🎨 Pallete's micro-UX enhancement: Smart Focus Indicator
+    Detects keyboard vs mouse navigation and shows adaptive focus styles
+    - Keyboard users get prominent focus rings for better visibility
+    - Mouse users get subtle hover states without intrusive focus rings
+    - Respects reduced motion preferences
+    -->
   <div
     v-if="hasActiveFilters"
+    ref="containerRef"
     class="flex flex-wrap items-center gap-2 mb-4"
+    :class="{
+      'using-keyboard': isUsingKeyboard && !prefersReducedMotion,
+      'using-mouse': !isUsingKeyboard,
+    }"
     role="region"
     :aria-label="contentConfig.filters.ariaLabels.region"
+    @keydown="handleContainerKeydown"
+    @mousedown="handleContainerMouseDown"
   >
     <div class="flex items-center gap-2">
       <span class="text-sm text-gray-500 font-medium">{{
@@ -64,10 +78,7 @@
         <span :class="['truncate', uiConfig.chips.queryMaxWidth]">{{
           searchQuery
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -88,10 +99,7 @@
           </svg>
         </span>
         <!-- Shimmer effect on hover -->
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Category chips -->
@@ -127,10 +135,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           category
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -150,10 +155,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Pricing model chips -->
@@ -189,10 +191,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           pricing
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -212,10 +211,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Difficulty chips -->
@@ -251,10 +247,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           difficulty
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -274,10 +267,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Technology chips -->
@@ -313,10 +303,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           tech
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -336,10 +323,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Tag chips -->
@@ -375,10 +359,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           tag
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -398,10 +379,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Benefit chips -->
@@ -437,10 +415,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           benefit
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -460,10 +435,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Date range chip -->
@@ -497,10 +469,7 @@
           contentConfig.filters.labels.date
         }}</span>
         <span>{{ formatDateRange(selectedDateRange) }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -520,10 +489,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Undo button for recently removed filter -->
@@ -553,11 +519,14 @@
             d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
           />
         </svg>
-        <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span>
+        <span :class="['truncate', uiConfig.chips.valueMaxWidth]"
+          >{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span
+        >
         <kbd
           class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
           aria-hidden="true"
-        >{{ contentConfig.filters.keyboard.ctrlZ }}</kbd>
+          >{{ contentConfig.filters.keyboard.ctrlZ }}</kbd
+        >
         <!-- Progress bar for undo window with color transition -->
         <span
           class="undo-progress-bar"
@@ -579,7 +548,8 @@
       <kbd
         class="hidden sm:inline-block ml-1.5 px-1.5 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded group-hover:bg-gray-200 transition-colors"
         aria-hidden="true"
-      >{{ contentConfig.filters.keyboard.esc }}</kbd>
+        >{{ contentConfig.filters.keyboard.esc }}</kbd
+      >
     </button>
   </div>
 </template>
@@ -660,6 +630,33 @@ const _removingChips = ref<Set<string>>(new Set())
 const pressedChips = ref<Set<string>>(new Set())
 // Track which chips are being removed for exit animation
 const exitingChips = ref<Set<string>>(new Set())
+
+// 🎨 Pallete's micro-UX enhancement: Smart Focus Indicator
+// Detects keyboard vs mouse navigation for adaptive focus styles
+const containerRef = ref<HTMLElement | null>(null)
+const isUsingKeyboard = ref(false)
+let keyboardModeTimeout: ReturnType<typeof setTimeout> | null = null
+
+// Handle keyboard navigation detection
+const handleContainerKeydown = () => {
+  if (!isUsingKeyboard.value) {
+    isUsingKeyboard.value = true
+  }
+  // Clear any existing timeout
+  if (keyboardModeTimeout) {
+    clearTimeout(keyboardModeTimeout)
+  }
+}
+
+// Handle mouse navigation detection
+const handleContainerMouseDown = () => {
+  if (isUsingKeyboard.value) {
+    // Small delay to prevent flickering when switching from keyboard to mouse
+    keyboardModeTimeout = setTimeout(() => {
+      isUsingKeyboard.value = false
+    }, 100)
+  }
+}
 
 // Check for reduced motion preference
 const prefersReducedMotion = ref(false)
@@ -1078,6 +1075,11 @@ onUnmounted(() => {
     mediaQueryRef.removeEventListener('change', handleMotionChange)
     mediaQueryRef = null
   }
+  // 🎨 Pallete's micro-UX: Cleanup keyboard mode timeout
+  if (keyboardModeTimeout) {
+    clearTimeout(keyboardModeTimeout)
+    keyboardModeTimeout = null
+  }
 })
 </script>
 
@@ -1490,6 +1492,137 @@ onUnmounted(() => {
 
   .filter-chip:focus-visible {
     animation: none;
+  }
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Smart Focus Indicator Styles */
+/* Container states for keyboard vs mouse navigation */
+.using-keyboard .filter-chip:focus-visible {
+  /* Prominent focus ring for keyboard users */
+  @apply ring-4 ring-offset-2;
+  box-shadow:
+    0 0 0 4px rgba(59, 130, 246, 0.4),
+    0 0 0 8px rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px) scale(1.02);
+  transition: all v-bind('animationConfig.cssTransitions.fastSec') ease-out;
+}
+
+.using-keyboard .filter-chip:focus-visible::after {
+  /* Show keyboard shortcut hint */
+  content: 'Press Delete or Backspace to remove';
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
+}
+
+.using-keyboard .filter-chip:focus-visible::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
+}
+
+/* Mouse users get subtle hover states without intrusive focus rings */
+.using-mouse .filter-chip:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+  ring: 0;
+}
+
+.using-mouse .filter-chip:hover {
+  /* Subtle lift effect for mouse users */
+  transform: translateY(-1px);
+  box-shadow: v-bind('shadowsConfig.activeFilters.hover');
+}
+
+/* Smooth transition when switching between modes */
+.filter-chip {
+  transition:
+    transform v-bind('animationConfig.cssTransitions.normalSec') ease-out,
+    box-shadow v-bind('animationConfig.cssTransitions.fastSec') ease-out,
+    ring-width v-bind('animationConfig.cssTransitions.fastSec') ease-out;
+}
+
+/* Enhanced focus visible animation for keyboard users */
+.using-keyboard .filter-chip:focus-visible {
+  animation:
+    focusPulse v-bind('animationConfig.idlePulse.durationSec') ease-in-out
+      infinite,
+    focusGlow v-bind('animationConfig.cssTransitions.standardSec') ease-out
+      forwards;
+}
+
+@keyframes focusGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow:
+      0 0 0 4px rgba(59, 130, 246, 0.4),
+      0 0 0 8px rgba(59, 130, 246, 0.1);
+  }
+}
+
+/* Reduced motion support for smart focus indicator */
+@media (prefers-reduced-motion: reduce) {
+  .using-keyboard .filter-chip:focus-visible,
+  .using-mouse .filter-chip:hover {
+    transform: none;
+    transition: none;
+    animation: none;
+  }
+
+  .using-keyboard .filter-chip:focus-visible::after {
+    /* Keep tooltip visible but without animation */
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) scale(1);
+    transition: none;
+  }
+}
+
+/* Keyboard mode indicator badge - shows briefly when switching to keyboard */
+.using-keyboard::before {
+  content: 'Keyboard Navigation';
+  position: absolute;
+  top: -24px;
+  left: 0;
+  padding: 2px 8px;
+  background: rgba(59, 130, 246, 0.9);
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 4px;
+  opacity: 0;
+  animation: keyboardModeIndicator
+    v-bind('animationConfig.cssAnimations.standardDurationSec') ease-out
+    forwards;
+  pointer-events: none;
+  z-index: v-bind('zIndexConfig.tooltip');
+}
+
+@keyframes keyboardModeIndicator {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* Hide keyboard mode indicator for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .using-keyboard::before {
+    display: none;
   }
 }
 </style>
