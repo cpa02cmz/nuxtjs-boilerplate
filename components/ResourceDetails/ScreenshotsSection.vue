@@ -1,9 +1,5 @@
 <template>
-  <section
-    class="screenshots-section"
-    role="region"
-    :aria-label="ariaLabel"
-  >
+  <section class="screenshots-section" role="region" :aria-label="ariaLabel">
     <!-- Header with screenshot count -->
     <div class="screenshots-header">
       <h2 class="screenshots-title">
@@ -137,17 +133,14 @@
                 class="lightbox-image"
                 :class="{ 'is-loaded': lightboxImageLoaded }"
                 format="avif"
-                quality="90"
+                :quality="imageConfig.quality.high"
                 @load="lightboxImageLoaded = true"
                 @click.stop
               />
             </div>
 
             <!-- Image Counter in Lightbox -->
-            <div
-              class="lightbox-counter"
-              aria-live="polite"
-            >
+            <div class="lightbox-counter" aria-live="polite">
               {{ currentImageIndex + 1 }} / {{ screenshots.length }}
             </div>
           </div>
@@ -180,7 +173,7 @@
                 :alt="`Thumbnail ${index + 1}`"
                 class="thumbnail-image"
                 format="avif"
-                quality="60"
+                :quality="imageConfig.quality.low"
                 width="80"
                 height="60"
               />
@@ -301,7 +294,7 @@
           :class="{ 'is-loading': loadingImages.has(index) }"
           loading="lazy"
           format="avif"
-          quality="80"
+          :quality="imageConfig.quality.medium"
           tabindex="0"
           role="img"
           @load="handleImageLoad(index)"
@@ -312,12 +305,7 @@
     </TransitionGroup>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -329,6 +317,8 @@ import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { zIndexScale } from '~/configs/z-index.config'
+// Flexy hates hardcoded image quality values!
+import { imageConfig } from '~/configs/image.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 
 interface Props {
