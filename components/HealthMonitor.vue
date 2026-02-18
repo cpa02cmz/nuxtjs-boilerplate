@@ -7,6 +7,11 @@
         class="check-button"
         :class="{ 'is-checking': isChecking }"
         :disabled="isChecking"
+        :aria-label="
+          isChecking
+            ? contentConfig.health.button.checking
+            : contentConfig.health.button.check
+        "
         @click="handleCheckClick"
       >
         <span
