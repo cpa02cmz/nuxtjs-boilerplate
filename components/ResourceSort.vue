@@ -36,11 +36,17 @@
 
     <!-- Custom Animated Dropdown -->
     <div class="flex items-center space-x-2">
-      <label :for="selectId" class="text-sm text-gray-800">{{
+      <label
+        :for="selectId"
+        class="text-sm text-gray-800"
+      >{{
         contentConfig.sort.label
       }}</label>
 
-      <div ref="dropdownRef" class="relative">
+      <div
+        ref="dropdownRef"
+        class="relative"
+      >
         <!-- Trigger Button -->
         <button
           :id="selectId"
@@ -249,7 +255,12 @@
     </div>
 
     <!-- Screen reader announcement for sort order changes -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ sortAnnouncement }}
     </div>
   </div>
