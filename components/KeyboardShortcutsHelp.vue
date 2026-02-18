@@ -1,6 +1,9 @@
 <template>
   <Teleport to="body">
-    <Transition name="modal" @after-enter="focusCloseButton">
+    <Transition
+      name="modal"
+      @after-enter="focusCloseButton"
+    >
       <div
         v-if="isOpen"
         ref="modalContainerRef"
@@ -361,8 +364,7 @@
                   isKeyPressed('?') &&
                     'scale-95 bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300 shadow-inner',
                 ]"
-                >?</kbd
-              >
+              >?</kbd>
               anywhere to open this guide
             </p>
           </div>
