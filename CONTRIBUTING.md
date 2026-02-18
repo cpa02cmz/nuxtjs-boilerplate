@@ -21,19 +21,30 @@ Thank you for your interest in contributing to this project! We welcome contribu
 
 ### Development Setup
 
-See our [Development Setup Guide](./docs/development-setup.md) for detailed instructions.
+1. Fork the repository and clone it locally
+2. Run `npm install` to install dependencies
+3. Copy `.env.example` to `.env` and configure
+4. Run `npm run prisma:generate` to set up the database
+5. Run `npm run dev` to start the development server
+
+> See the [README.md](./README.md) for complete setup instructions.
 
 ### Code Standards
 
-See our [Development Guidelines](./docs/development.md) for:
-- Code standards and conventions
-- Component guidelines
-- Testing practices
-- Git workflow
+We follow these guidelines:
+
+- **TypeScript**: Strict mode enabled, prefer explicit types
+- **Components**: Use Vue 3 Composition API with `<script setup>`
+- **Styling**: Tailwind CSS for all styling
+- **Testing**: Vitest for unit tests, Playwright for E2E
+- **Git**: Feature branches with conventional commits
+
+> See the [README.md](./README.md) for project architecture details.
 
 ### Commit Message Convention
 
 We follow conventional commits:
+
 - `feat:` - New features
 - `fix:` - Bug fixes
 - `docs:` - Documentation changes
