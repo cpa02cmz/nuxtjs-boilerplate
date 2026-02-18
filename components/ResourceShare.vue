@@ -143,12 +143,7 @@
     </div>
 
     <!-- Screen Reader Announcement for Copy Success -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ screenReaderAnnouncement }}
     </div>
   </div>
@@ -543,7 +538,7 @@ onUnmounted(() => {
   bottom: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
-  z-index: v-bind('zIndexScale.high[1]');
+  z-index: v-bind('zIndexScale.high[100]');
   pointer-events: none;
 }
 
@@ -554,8 +549,8 @@ onUnmounted(() => {
   padding: 6px 10px;
   background: linear-gradient(
     135deg,
-    v-bind('animationConfig.gradients?.keyboardHint?.start || "#1f2937"') 0%,
-    v-bind('animationConfig.gradients?.keyboardHint?.end || "#374151"') 100%
+    v-bind('animationConfig.gradients?.blue?.start || "#1f2937"') 0%,
+    v-bind('animationConfig.gradients?.blue?.end || "#374151"') 100%
   );
   color: white;
   font-size: 12px;
@@ -563,7 +558,7 @@ onUnmounted(() => {
   border-radius: 6px;
   white-space: nowrap;
   box-shadow: v-bind(
-    'shadowsConfig.resourceShare.tooltip || "0 4px 6px -1px rgba(0, 0, 0, 0.1)"'
+    'shadowsConfig.resourceShare.default || "0 4px 6px -1px rgba(0, 0, 0, 0.1)"'
   );
 }
 
@@ -603,7 +598,7 @@ onUnmounted(() => {
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 5px solid
-    v-bind('animationConfig.gradients?.keyboardHint?.end || "#374151"');
+    v-bind('animationConfig.gradients?.blue?.end || "#374151"');
 }
 
 /* Show hint on focus for keyboard users */
