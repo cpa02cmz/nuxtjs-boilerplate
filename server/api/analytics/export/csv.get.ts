@@ -33,14 +33,14 @@ export default defineEventHandler(async event => {
       })
     }
 
-    // P1 Security Fix: Issue #3782 - Verify export permission
+    // P1 Security Fix: Issue #3782 - Verify analytics read permission
     const apiKey = event.context.apiKey
-    const hasExportPermission =
+    const hasAnalyticsPermission =
       apiKey.permissions?.includes('analytics:read') ||
       apiKey.permissions?.includes('admin') ||
       apiKey.permissions?.length === 0 // Backward compatibility: keys without permissions can export
 
-    if (!hasExportPermission) {
+    if (!hasAnalyticsPermission) {
       logger.warn(
         'Forbidden analytics export attempt - insufficient permissions',
         {
