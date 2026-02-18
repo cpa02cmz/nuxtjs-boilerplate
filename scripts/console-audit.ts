@@ -1,13 +1,9 @@
 import { chromium, type Page } from 'playwright'
+import { monitoringConfig } from '../configs/monitoring.config.js'
 
-const BASE_URL = 'http://localhost:3000'
-const PAGES = [
-  { path: '/', name: 'Home' },
-  { path: '/ai-keys', name: 'AI Keys' },
-  { path: '/about', name: 'About' },
-  { path: '/developer', name: 'Developer' },
-  { path: '/search', name: 'Search' },
-]
+// Flexy hates hardcoded values! Using monitoringConfig for all settings 🧩
+const BASE_URL = monitoringConfig.baseUrl
+const PAGES = monitoringConfig.pages.essential
 
 interface ConsoleIssue {
   location: string
@@ -46,11 +42,12 @@ async function analyzePageConsole(page: Page, url: string, name: string) {
     // Navigate to page
     await page.goto(`${BASE_URL}${url}`, {
       waitUntil: 'networkidle',
-      timeout: 30000,
+      timeout: monitoringConfig.timeouts.navigationMs,
     })
 
     // Wait a bit for any async errors
-    await page.waitForTimeout(2000)
+    // Flexy hates hardcoded 2000ms! Using monitoringConfig.delays.consoleWaitMs 🧩
+    await page.waitForTimeout(monitoringConfig.delays.consoleWaitMs)
 
     // Check for Vue hydration errors
     const hydrationError = await page.evaluate(() => {
