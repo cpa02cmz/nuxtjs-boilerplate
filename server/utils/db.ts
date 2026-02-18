@@ -56,10 +56,12 @@ function createPrismaClient(): PrismaClient {
   const attemptConnection = (): PrismaClient => {
     try {
       // Create base Prisma client
+      // Security-engineer: Removed 'query' from development logging to prevent
+      // sensitive data (user emails, PII, etc.) from being logged in query params
       const baseClient = new PrismaClient({
         log:
           process.env.NODE_ENV === 'development'
-            ? ['query', 'info', 'warn', 'error']
+            ? ['info', 'warn', 'error']
             : ['error'],
       })
 
