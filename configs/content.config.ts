@@ -144,6 +144,9 @@ export const contentConfig = {
     resetSuccess: process.env.CONTENT_FILTERS_RESET_SUCCESS || 'Reset!',
     activeFilters: process.env.CONTENT_FILTERS_ACTIVE || 'Active filters:',
     clearAll: process.env.CONTENT_FILTERS_CLEAR_ALL || 'Clear all',
+    // 🎨 Pallete's micro-UX enhancement: Copy filter summary button
+    copySummary: process.env.CONTENT_FILTERS_COPY_SUMMARY || 'Copy filters',
+    copied: process.env.CONTENT_FILTERS_COPIED || 'Copied!',
     // Section labels for filter sections (without colons)
     sectionLabels: {
       category: process.env.CONTENT_FILTER_SECTION_CATEGORY || 'Category',
@@ -179,6 +182,13 @@ export const contentConfig = {
       clearAll:
         process.env.CONTENT_FILTER_ARIA_CLEAR_ALL ||
         'Clear all filters (press Escape to clear all)',
+      // 🎨 Pallete's micro-UX enhancement: Copy filter summary aria labels
+      copySummary:
+        process.env.CONTENT_FILTER_ARIA_COPY_SUMMARY ||
+        'Copy filter summary to clipboard',
+      copied:
+        process.env.CONTENT_FILTER_ARIA_COPIED ||
+        'Filter summary copied to clipboard',
     },
     // Chip aria-label templates
     chipAriaLabels: {

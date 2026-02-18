@@ -64,10 +64,7 @@
         <span :class="['truncate', uiConfig.chips.queryMaxWidth]">{{
           searchQuery
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -88,10 +85,7 @@
           </svg>
         </span>
         <!-- Shimmer effect on hover -->
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Category chips -->
@@ -127,10 +121,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           category
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -150,10 +141,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Pricing model chips -->
@@ -189,10 +177,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           pricing
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -212,10 +197,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Difficulty chips -->
@@ -251,10 +233,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           difficulty
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -274,10 +253,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Technology chips -->
@@ -313,10 +289,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           tech
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -336,10 +309,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Tag chips -->
@@ -375,10 +345,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           tag
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -398,10 +365,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Benefit chips -->
@@ -437,10 +401,7 @@
         <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{
           benefit
         }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -460,10 +421,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Date range chip -->
@@ -497,10 +455,7 @@
           contentConfig.filters.labels.date
         }}</span>
         <span>{{ formatDateRange(selectedDateRange) }}</span>
-        <span
-          class="remove-icon"
-          aria-hidden="true"
-        >
+        <span class="remove-icon" aria-hidden="true">
           <svg
             :class="[
               CHIP_ICON_SIZE,
@@ -520,10 +475,7 @@
             />
           </svg>
         </span>
-        <span
-          class="shimmer-effect"
-          aria-hidden="true"
-        />
+        <span class="shimmer-effect" aria-hidden="true" />
       </button>
 
       <!-- Undo button for recently removed filter -->
@@ -553,11 +505,14 @@
             d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
           />
         </svg>
-        <span :class="['truncate', uiConfig.chips.valueMaxWidth]">{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span>
+        <span :class="['truncate', uiConfig.chips.valueMaxWidth]"
+          >{{ contentConfig.buttons.undo }} {{ lastRemovedFilter.type }}</span
+        >
         <kbd
           class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
           aria-hidden="true"
-        >{{ contentConfig.filters.keyboard.ctrlZ }}</kbd>
+          >{{ contentConfig.filters.keyboard.ctrlZ }}</kbd
+        >
         <!-- Progress bar for undo window with color transition -->
         <span
           class="undo-progress-bar"
@@ -567,6 +522,67 @@
         />
       </button>
     </TransitionGroup>
+
+    <!-- 🎨 Pallete's micro-UX enhancement: Copy Filter Summary Button -->
+    <!-- Allows users to copy their filter configuration as text to share or save -->
+    <button
+      class="group ml-2 text-sm text-gray-500 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-400 rounded px-2 py-1 transition-all flex items-center gap-1.5"
+      :class="{ 'text-green-600 hover:text-green-700': copySuccess }"
+      :aria-label="
+        copySuccess
+          ? contentConfig.filters.ariaLabels.copied
+          : contentConfig.filters.ariaLabels.copySummary
+      "
+      @click="handleCopySummary"
+    >
+      <Transition
+        mode="out-in"
+        :enter-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-out`"
+        enter-from-class="opacity-0 scale-75"
+        enter-to-class="opacity-100 scale-100"
+        :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
+        leave-from-class="opacity-100 scale-100"
+        leave-to-class="opacity-0 scale-75"
+      >
+        <svg
+          v-if="!copySuccess"
+          key="copy-icon"
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+          />
+        </svg>
+        <svg
+          v-else
+          key="check-icon"
+          class="w-4 h-4 text-green-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
+      </Transition>
+      <span>{{
+        copySuccess
+          ? contentConfig.filters.copied
+          : contentConfig.filters.copySummary
+      }}</span>
+    </button>
 
     <!-- Clear all button with keyboard shortcut hint -->
     <button
@@ -579,8 +595,14 @@
       <kbd
         class="hidden sm:inline-block ml-1.5 px-1.5 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded group-hover:bg-gray-200 transition-colors"
         aria-hidden="true"
-      >{{ contentConfig.filters.keyboard.esc }}</kbd>
+        >{{ contentConfig.filters.keyboard.esc }}</kbd
+      >
     </button>
+
+    <!-- Screen reader announcement for copy action -->
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+      {{ copyAnnouncement }}
+    </div>
   </div>
 </template>
 
@@ -633,6 +655,12 @@ const emit = defineEmits<{
 
 // Announcement state for screen readers
 const announcement = ref('')
+
+// 🎨 Pallete's micro-UX enhancement: Copy filter summary state
+const copySuccess = ref(false)
+const copyAnnouncement = ref('')
+const copyTimeoutId = ref<ReturnType<typeof setTimeout> | null>(null)
+const COPY_SUCCESS_DURATION_MS = 2000 // Show success state for 2 seconds
 
 // Chip refs for keyboard navigation
 const chipRefs = ref<HTMLButtonElement[]>([])
@@ -811,6 +839,89 @@ const handleClearAll = () => {
   }, ANNOUNCEMENT_CLEAR_MS)
 
   emit('reset-filters')
+}
+
+// 🎨 Pallete's micro-UX enhancement: Generate and copy filter summary
+const handleCopySummary = async () => {
+  // Generate filter summary text
+  const summary = generateFilterSummary()
+
+  try {
+    // Copy to clipboard
+    await navigator.clipboard.writeText(summary)
+
+    // Show success state
+    copySuccess.value = true
+
+    // Trigger haptic feedback for mobile users
+    triggerHaptic('light')
+
+    // Announce to screen readers
+    copyAnnouncement.value = `Filter summary copied to clipboard: ${summary}`
+
+    // Clear previous timeout if exists
+    if (copyTimeoutId.value) {
+      clearTimeout(copyTimeoutId.value)
+    }
+
+    // Reset success state after delay
+    copyTimeoutId.value = setTimeout(() => {
+      copySuccess.value = false
+      copyAnnouncement.value = ''
+    }, COPY_SUCCESS_DURATION_MS)
+
+    // Clear announcement after screen reader has time to read it
+    setTimeout(() => {
+      copyAnnouncement.value = ''
+    }, ANNOUNCEMENT_CLEAR_MS)
+  } catch {
+    // Handle copy failure gracefully
+    copyAnnouncement.value = 'Failed to copy filter summary. Please try again.'
+    setTimeout(() => {
+      copyAnnouncement.value = ''
+    }, ANNOUNCEMENT_CLEAR_MS)
+  }
+}
+
+// 🎨 Pallete's micro-UX enhancement: Generate human-readable filter summary
+const generateFilterSummary = (): string => {
+  const parts: string[] = []
+
+  if (props.searchQuery) {
+    parts.push(`Search: "${props.searchQuery}"`)
+  }
+
+  if (props.selectedCategories.length > 0) {
+    parts.push(`Categories: ${props.selectedCategories.join(', ')}`)
+  }
+
+  if (props.selectedPricingModels.length > 0) {
+    parts.push(`Pricing: ${props.selectedPricingModels.join(', ')}`)
+  }
+
+  if (props.selectedDifficultyLevels.length > 0) {
+    parts.push(`Difficulty: ${props.selectedDifficultyLevels.join(', ')}`)
+  }
+
+  if (props.selectedTechnologies.length > 0) {
+    parts.push(`Technologies: ${props.selectedTechnologies.join(', ')}`)
+  }
+
+  if (props.selectedTags.length > 0) {
+    parts.push(`Tags: ${props.selectedTags.join(', ')}`)
+  }
+
+  if (props.selectedBenefits.length > 0) {
+    parts.push(`Benefits: ${props.selectedBenefits.join(', ')}`)
+  }
+
+  if (props.selectedDateRange && props.selectedDateRange !== 'anytime') {
+    parts.push(`Date: ${formatDateRange(props.selectedDateRange)}`)
+  }
+
+  return parts.length > 0
+    ? `Active Filters (${parts.length}): ${parts.join(' | ')}`
+    : 'No active filters'
 }
 
 // Clear undo state and timers
