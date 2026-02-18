@@ -1,4 +1,4 @@
-import { getHeader, getQuery, defineEventHandler } from 'h3'
+import { getHeader, defineEventHandler } from 'h3'
 import type { ApiKey } from '~/types/webhook'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import {
@@ -13,12 +13,15 @@ export default defineEventHandler(async event => {
     // Apply rate limiting: 10 requests per minute for API key listing (requires auth)
     await rateLimit(event)
 
-    // Authentication check - require valid API key
-    const apiKey =
-      getHeader(event, 'X-API-Key') || (getQuery(event).api_key as string)
+    // Security: Only accept API key via header, never via query parameter
+    // Query parameters expose keys in server logs, browser history, and referrer headers
+    const apiKey = getHeader(event, 'X-API-Key')
 
     if (!apiKey) {
-      return sendUnauthorizedError(event, 'API key required')
+      return sendUnauthorizedError(
+        event,
+        'API key required via X-API-Key header. Query parameter authentication is not supported for security reasons.'
+      )
     }
 
     // Verify API key exists and is active
