@@ -464,9 +464,7 @@
             <span>Shortcuts</span>
           </button>
         </div>
-        <p class="sr-only">
-          Footer content ends
-        </p>
+        <p class="sr-only">Footer content ends</p>
       </div>
     </footer>
 
@@ -540,7 +538,7 @@ watch(comparisonCount, (newCount, oldCount) => {
     isCountAnimating.value = true
     setTimeout(() => {
       isCountAnimating.value = false
-    }, 400)
+    }, animationConfig.cssTransitions.slowMs)
   }
   previousCount.value = newCount
 })
