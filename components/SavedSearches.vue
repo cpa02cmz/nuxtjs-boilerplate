@@ -214,7 +214,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useNuxtApp } from '#app'
 import { contentConfig } from '~/configs/content.config'
 import { uiConfig } from '~/configs/ui.config'
@@ -265,6 +265,14 @@ onMounted(() => {
   prefersReducedMotion.value = checkReducedMotion()
 })
 
+// BugFixer: Cleanup toast undo handler to prevent memory leak
+onUnmounted(() => {
+  if (toastUndoHandler.value) {
+    window.removeEventListener('toast-action-undo', toastUndoHandler.value)
+    toastUndoHandler.value = null
+  }
+})
+
 // Track recently deleted searches for undo functionality
 const recentlyDeleted = ref<SavedSearch[]>([])
 const undoTimeouts = ref<Map<string, ReturnType<typeof setTimeout>>>(new Map())
@@ -276,6 +284,9 @@ const particlesActive = ref<Set<string>>(new Set())
 const undoProgressActive = ref(false)
 const undoProgressPercent = ref(0)
 const undoProgressAnimationFrame = ref<number | null>(null)
+
+// BugFixer: Store toast undo handler reference for cleanup
+const toastUndoHandler = ref<((ev: Event) => void) | null>(null)
 
 // Palette's micro-UX enhancement: Track the last deleted search for quick restore
 const lastDeletedSearch = computed(
@@ -405,14 +416,12 @@ const onRemoveSavedSearch = (search: SavedSearch, _index?: number) => {
   }
 
   // Store undo callback globally for the toast action
+  // BugFixer: Store handler reference for cleanup to prevent memory leak
   if (typeof window !== 'undefined') {
-    window.addEventListener(
-      'toast-action-undo',
-      () => {
-        undoDelete(search)
-      },
-      { once: true }
-    )
+    toastUndoHandler.value = () => undoDelete(search)
+    window.addEventListener('toast-action-undo', toastUndoHandler.value, {
+      once: true,
+    })
   }
 }
 
