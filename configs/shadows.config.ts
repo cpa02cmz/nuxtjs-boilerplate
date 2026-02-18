@@ -370,6 +370,21 @@ export const shadowsConfig = {
   textShadow: {
     sm: process.env.TEXT_SHADOW_SM || '0 1px 2px rgba(0, 0, 0, 0.1)',
   },
+
+  // Client Error Boundary Shadows - Flexy hates hardcoded box-shadow values!
+  clientErrorBoundary: {
+    // Error indicator shadow
+    errorIndicator:
+      process.env.CLIENT_ERROR_BOUNDARY_INDICATOR_SHADOW ||
+      '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
+    // Error indicator focus ring (for pulse animation)
+    errorIndicatorFocus:
+      process.env.CLIENT_ERROR_BOUNDARY_FOCUS_RING || '0 0 0 3px #fecaca',
+    // Retry button hover shadow
+    retryButtonHover:
+      process.env.CLIENT_ERROR_BOUNDARY_RETRY_HOVER_SHADOW ||
+      '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
 } as const
 
 export type ShadowsConfig = typeof shadowsConfig
