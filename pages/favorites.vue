@@ -2,10 +2,7 @@
   <ClientErrorBoundary component-name="FavoritesPage">
     <div class="py-12">
       <!-- Confetti celebration when clearing all bookmarks -->
-      <ConfettiCelebration
-        ref="confettiRef"
-        intensity="light"
-      />
+      <ConfettiCelebration ref="confettiRef" intensity="light" />
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
           <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
@@ -24,10 +21,7 @@
           aria-live="polite"
         >
           <!-- Animated bookmark illustration -->
-          <div
-            class="relative mx-auto h-32 w-32 mb-4"
-            aria-hidden="true"
-          >
+          <div class="relative mx-auto h-32 w-32 mb-4" aria-hidden="true">
             <!-- Background circle with pulse -->
             <div
               class="absolute inset-0 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-full"
@@ -61,10 +55,7 @@
               v-if="!prefersReducedMotion"
               class="absolute top-2 right-4 w-3 h-3 text-yellow-400 animate-sparkle"
             >
-              <svg
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
+              <svg viewBox="0 0 24 24" fill="currentColor">
                 <path
                   d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
                 />
@@ -74,10 +65,7 @@
               v-if="!prefersReducedMotion"
               class="absolute bottom-4 left-2 w-2 h-2 text-yellow-400 animate-sparkle-delayed"
             >
-              <svg
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
+              <svg viewBox="0 0 24 24" fill="currentColor">
                 <path
                   d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
                 />
@@ -155,10 +143,10 @@
         <div v-else>
           <!-- Undo notification banner -->
           <Transition
-            enter-active-class="transition-all duration-300 ease-out"
+            :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
             enter-from-class="opacity-0 -translate-y-4"
             enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition-all duration-200 ease-in"
+            :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
             leave-from-class="opacity-100 translate-y-0"
             leave-to-class="opacity-0 -translate-y-4"
           >
@@ -245,10 +233,10 @@
                 {{ contentConfig.favorites.controls.export }}
               </button>
               <Transition
-                enter-active-class="transition-all duration-200 ease-out"
+                :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
                 enter-from-class="opacity-0 scale-95"
                 enter-to-class="opacity-100 scale-100"
-                leave-active-class="transition-all duration-150 ease-in"
+                :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
                 leave-from-class="opacity-100 scale-100"
                 leave-to-class="opacity-0 scale-95"
                 mode="out-in"
@@ -313,7 +301,7 @@
                   :aria-label="`Remove ${bookmark.title} from bookmarks`"
                   :title="
                     contentConfig.favorites.aria?.removeBookmark ||
-                      'Remove bookmark'
+                    'Remove bookmark'
                   "
                   @click="removeBookmark(bookmark.id)"
                 >
@@ -343,7 +331,7 @@
 import { ref, computed, onUnmounted } from 'vue'
 import { useNuxtApp } from '#app'
 import { useBookmarks } from '~/composables/useBookmarks'
-import { animationConfig } from '~/configs/animation.config'
+import { animationConfig as _animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import type { Bookmark } from '~/composables/useBookmarks'
@@ -351,6 +339,10 @@ import { bookmarksConfig } from '~/configs/bookmarks.config'
 import { contentConfig } from '~/configs/content.config'
 import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 import { PROGRESS } from '~/server/utils/constants'
+
+// Flexy: animationConfig IS used in template - linter doesn't detect usage in template literal bindings
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const animationConfig = _animationConfig
 
 // Respect user's motion preferences for accessibility
 const prefersReducedMotion = computed(() => {

@@ -462,9 +462,7 @@
             <span>Shortcuts</span>
           </button>
         </div>
-        <p class="sr-only">
-          Footer content ends
-        </p>
+        <p class="sr-only">Footer content ends</p>
       </div>
     </footer>
 
