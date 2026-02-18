@@ -481,7 +481,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     // This runs the transaction and provides a transaction-bound client
     this.prisma
       .$transaction(
-        async txClient => {
+        async (txClient: unknown) => {
           // Set the transaction client so all operations use it
           transaction.setTransactionClient(txClient as unknown as PrismaClient)
 
@@ -514,9 +514,9 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
           timeout: databaseConfig.transaction.timeoutMs,
         }
       )
-      .catch(error => {
+      .catch((error: unknown) => {
         // Transaction failed or was rolled back - this is expected behavior
-        if (error.message?.includes('rolled back')) {
+        if ((error as Error).message?.includes('rolled back')) {
           // Normal rollback
           return
         }
