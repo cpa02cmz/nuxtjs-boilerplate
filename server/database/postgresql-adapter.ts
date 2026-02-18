@@ -21,6 +21,7 @@ import {
   type IndexInfo,
 } from './database-abstraction'
 import { databaseConfig } from '~/configs/database.config'
+import { logger } from '~/utils/logger'
 
 // Flexy hates hardcoded values! Using config for defaults
 const DEFAULT_HEALTH_CHECK_TIMEOUT_MS = databaseConfig.healthCheck.timeoutMs
@@ -262,14 +263,14 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
 
     // SECURITY FIX #3647: Add error event handler for pool
     this.pool.on('error', (err, client) => {
-      console.error('[PostgreSQL] Unexpected pool error:', err.message)
+      logger.error('[PostgreSQL] Unexpected pool error:', err.message)
       // Log additional context if available
       if (client) {
-        console.error('[PostgreSQL] Error occurred on client in pool')
+        logger.error('[PostgreSQL] Error occurred on client in pool')
       }
       // In production, you might want to emit metrics or send alerts here
       if (process.env.NODE_ENV === 'production') {
-        console.error(
+        logger.error(
           '[PostgreSQL] Pool error in production - check database connectivity'
         )
       }
@@ -278,14 +279,14 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     // SECURITY FIX #3647: Add connect event handler for monitoring
     this.pool.on('connect', () => {
       if (process.env.NODE_ENV === 'development') {
-        console.log('[PostgreSQL] New client connected to pool')
+        logger.info('[PostgreSQL] New client connected to pool')
       }
     })
 
     // SECURITY FIX #3647: Add remove event handler for monitoring
     this.pool.on('remove', () => {
       if (process.env.NODE_ENV === 'development') {
-        console.log('[PostgreSQL] Client removed from pool')
+        logger.info('[PostgreSQL] Client removed from pool')
       }
     })
 
