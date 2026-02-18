@@ -1,420 +1,36 @@
 <template>
-  <div class="py-12">
-    <!-- Confetti celebration for successful submission -->
-    <ConfettiCelebration
-      ref="confettiRef"
-      intensity="medium"
-    />
+  <!-- BroCula: Single root element with hydration guard to prevent Vue warning -->
+  <div class="py-12 min-h-[50vh]">
+    <!-- Content only renders after hydration to prevent mismatch with ssr: false -->
+    <template v-if="isHydrated">
+      <!-- Confetti celebration for successful submission -->
+      <ConfettiCelebration ref="confettiRef" intensity="medium" />
 
-    <!-- Smart Paste indicator - Palette's micro-UX enhancement! -->
-    <!-- BroCula: Wrapped in ClientOnly to prevent hydration mismatch -->
-    <ClientOnly>
-      <Teleport to="body">
-        <Transition
-          enter-active-class="transition-all duration-200 ease-out"
-          enter-from-class="opacity-0 scale-75 translate-y-2"
-          enter-to-class="opacity-100 scale-100 translate-y-0"
-          leave-active-class="transition-all duration-150 ease-in"
-          leave-from-class="opacity-100 scale-100 translate-y-0"
-          leave-to-class="opacity-0 scale-75 -translate-y-1"
-        >
-          <div
-            v-if="smartPasteState.showIndicator"
-            class="paste-indicator fixed z-50 px-3 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg shadow-lg pointer-events-none whitespace-nowrap"
-            :style="{
-              left: `${smartPasteState.indicatorPosition.x}px`,
-              top: `${smartPasteState.indicatorPosition.y}px`,
-            }"
-            role="status"
-            aria-live="polite"
+      <!-- Smart Paste indicator - Palette's micro-UX enhancement! -->
+      <!-- BroCula: Wrapped in ClientOnly to prevent hydration mismatch -->
+      <ClientOnly>
+        <Teleport to="body">
+          <Transition
+            enter-active-class="transition-all duration-200 ease-out"
+            enter-from-class="opacity-0 scale-75 translate-y-2"
+            enter-to-class="opacity-100 scale-100 translate-y-0"
+            leave-active-class="transition-all duration-150 ease-in"
+            leave-from-class="opacity-100 scale-100 translate-y-0"
+            leave-to-class="opacity-0 scale-75 -translate-y-1"
           >
-            <span class="flex items-center gap-1.5">
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-              </svg>
-              {{ smartPasteState.indicatorMessage }}
-            </span>
-            <!-- Arrow pointing down -->
-            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5">
-              <div class="w-2 h-2 bg-teal-600 transform rotate-45" />
-            </div>
-          </div>
-        </Transition>
-      </Teleport>
-    </ClientOnly>
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-          Submit a Resource
-        </h1>
-        <p class="mt-4 text-xl text-gray-500">
-          Share valuable free resources with the community
-        </p>
-      </div>
-
-      <div class="bg-white shadow-xl rounded-lg p-6 sm:p-8">
-        <form
-          class="space-y-6"
-          novalidate
-          @submit.prevent="handleSubmitWithShake"
-        >
-          <div ref="titleFieldRef">
-            <!-- Floating Label Container - Palette's micro-UX delight! -->
             <div
-              class="floating-label-container relative"
-              :class="{
-                'has-value': formData.title.length > 0,
-                'has-error': errors.title,
-                'has-success': formData.title && !errors.title,
+              v-if="smartPasteState.showIndicator"
+              class="paste-indicator fixed z-50 px-3 py-1.5 text-sm font-semibold text-white bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg shadow-lg pointer-events-none whitespace-nowrap"
+              :style="{
+                left: `${smartPasteState.indicatorPosition.x}px`,
+                top: `${smartPasteState.indicatorPosition.y}px`,
               }"
+              role="status"
+              aria-live="polite"
             >
-              <label
-                for="title"
-                class="floating-label"
-              >
-                Resource Title <span aria-hidden="true">*</span>
-                <span class="sr-only">(required)</span>
-              </label>
-              <!-- Character Counter with Visual Progress Ring - Palette's micro-UX delight! -->
-              <CharacterCounter
-                :character-count="formData.title.length"
-                :max-length="maxTitleLength"
-                :is-focused="isTitleFocused"
-                :show-counter="true"
-                :warning-threshold="
-                  validationConfig.characterCounter.warningThreshold
-                "
-              >
-                <template #default="{ isNearLimit, isOverLimit }">
-                  <input
-                    id="title"
-                    ref="titleInput"
-                    v-model="formData.title"
-                    type="text"
-                    required
-                    :maxlength="maxTitleLength"
-                    aria-required="true"
-                    aria-describedby="title-description title-counter title-error"
-                    :aria-invalid="errors.title ? 'true' : 'false'"
-                    :class="[
-                      'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
-                      errors.title || isOverLimit
-                        ? 'border-red-500 animate-form-shake'
-                        : formData.title && !errors.title
-                          ? 'border-green-500'
-                          : 'border-gray-300',
-                      isNearLimit && !isOverLimit ? 'border-amber-400' : '',
-                    ]"
-                    @focus="isTitleFocused = true"
-                    @blur="handleTitleBlur"
-                  >
-                </template>
-              </CharacterCounter>
-              <!-- Validation checkmark - Palette's micro-UX delight! -->
-              <Transition
-                enter-active-class="transition-all duration-200 ease-out"
-                enter-from-class="opacity-0 scale-50"
-                enter-to-class="opacity-100 scale-100"
-                leave-active-class="transition-all duration-150 ease-in"
-                leave-from-class="opacity-100 scale-100"
-                leave-to-class="opacity-0 scale-50"
-              >
-                <div
-                  v-if="formData.title && !errors.title"
-                  class="absolute top-1/2 -translate-y-1/2 pointer-events-none"
-                  :style="{
-                    right: `${uiConfig.form.inputPositioning.checkmarkRightRem}rem`,
-                  }"
-                  aria-hidden="true"
-                >
-                  <svg
-                    class="w-5 h-5 text-green-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2.5"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-              </Transition>
-            </div>
-            <p
-              id="title-description"
-              class="mt-1 text-sm text-gray-500"
-            >
-              The name of the resource or service
-            </p>
-            <!-- Character limit progress bar for visual feedback -->
-            <div
-              v-if="formData.title.length > 0"
-              class="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden"
-              aria-hidden="true"
-            >
-              <div
-                class="h-full transition-all duration-300 ease-out rounded-full"
-                :class="titleProgressClass"
-                :style="{
-                  width: `${(formData.title.length / maxTitleLength) * 100}%`,
-                }"
-              />
-            </div>
-
-            <div
-              v-if="errors.title"
-              id="title-error"
-              class="mt-1 text-sm text-red-600"
-              role="alert"
-            >
-              {{ errors.title }}
-            </div>
-          </div>
-
-          <div ref="descriptionFieldRef">
-            <label
-              for="description"
-              class="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Description <span aria-hidden="true">*</span>
-              <span class="sr-only">(required)</span>
-            </label>
-            <div class="relative">
-              <textarea
-                id="description"
-                ref="descriptionInput"
-                v-model="formData.description"
-                required
-                :rows="uiConfig.form.textareaRows"
-                :maxlength="maxDescriptionLength"
-                aria-required="true"
-                aria-describedby="description-description description-counter description-error"
-                :aria-invalid="errors.description ? 'true' : 'false'"
-                :class="[
-                  'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 resize-none input-focus-glow',
-                  errors.description
-                    ? 'border-red-500 animate-form-shake'
-                    : formData.description && !errors.description
-                      ? 'border-green-500'
-                      : 'border-gray-300',
-                ]"
-                :placeholder="contentConfig.submit.form.descriptionPlaceholder"
-                @focus="isDescriptionFocused = true"
-                @blur="handleDescriptionBlur"
-              />
-              <div
-                id="description-counter"
-                class="absolute bottom-2 text-xs font-medium tabular-nums transition-all duration-200"
-                :class="descriptionCounterClass"
-                :style="{
-                  right: `${uiConfig.form.inputPositioning.counterRightRem}rem`,
-                }"
-                aria-live="polite"
-              >
-                {{ formData.description.length }}/{{ maxDescriptionLength }}
-              </div>
-              <!-- Validation checkmark - Palette's micro-UX delight! -->
-              <Transition
-                enter-active-class="transition-all duration-200 ease-out"
-                enter-from-class="opacity-0 scale-50"
-                enter-to-class="opacity-100 scale-100"
-                leave-active-class="transition-all duration-150 ease-in"
-                leave-from-class="opacity-100 scale-100"
-                leave-to-class="opacity-0 scale-50"
-              >
-                <div
-                  v-if="formData.description && !errors.description"
-                  class="absolute right-3 top-3 pointer-events-none"
-                  aria-hidden="true"
-                >
-                  <svg
-                    class="w-5 h-5 text-green-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2.5"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-              </Transition>
-            </div>
-            <p
-              id="description-description"
-              class="mt-1 text-sm text-gray-500"
-            >
-              {{ descriptionHelperText }}
-            </p>
-            <!-- Character limit progress bar for visual feedback -->
-            <div
-              v-if="formData.description.length > 0"
-              class="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden"
-              aria-hidden="true"
-            >
-              <div
-                class="h-full transition-all duration-300 ease-out rounded-full"
-                :class="descriptionProgressClass"
-                :style="{
-                  width: `${(formData.description.length / maxDescriptionLength) * 100}%`,
-                }"
-              />
-            </div>
-
-            <div
-              v-if="errors.description"
-              id="description-error"
-              class="mt-1 text-sm text-red-600"
-              role="alert"
-            >
-              {{ errors.description }}
-            </div>
-          </div>
-
-          <div ref="urlFieldRef">
-            <!-- Floating Label Container - Palette's micro-UX delight! -->
-            <div
-              class="floating-label-container relative"
-              :class="{
-                'has-value': formData.url.length > 0,
-                'has-error': errors.url,
-                'has-success': formData.url && !errors.url,
-              }"
-            >
-              <label
-                for="url"
-                class="floating-label"
-              >
-                URL <span aria-hidden="true">*</span>
-                <span class="sr-only">(required)</span>
-              </label>
-              <input
-                id="url"
-                ref="urlInputRef"
-                v-model="formData.url"
-                type="url"
-                required
-                aria-required="true"
-                aria-describedby="url-description url-error"
-                :aria-invalid="errors.url ? 'true' : 'false'"
-                :class="[
-                  'w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
-                  errors.url
-                    ? 'border-red-500 animate-form-shake'
-                    : formData.url && !errors.url
-                      ? 'border-green-500'
-                      : 'border-gray-300',
-                ]"
-                @blur="handleUrlBlur"
-                @paste="handleSmartPaste"
-              >
-              <!-- Validation checkmark - Palette's micro-UX delight! -->
-              <Transition
-                enter-active-class="transition-all duration-200 ease-out"
-                enter-from-class="opacity-0 scale-50"
-                enter-to-class="opacity-100 scale-100"
-                leave-active-class="transition-all duration-150 ease-in"
-                leave-from-class="opacity-100 scale-100"
-                leave-to-class="opacity-0 scale-50"
-              >
-                <div
-                  v-if="formData.url && !errors.url"
-                  class="absolute top-1/2 -translate-y-1/2 pointer-events-none"
-                  :style="{
-                    right: `${uiConfig.form.inputPositioning.counterRightRem}rem`,
-                  }"
-                  aria-hidden="true"
-                >
-                  <svg
-                    class="w-5 h-5 text-green-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2.5"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-              </Transition>
-            </div>
-            <div
-              v-if="errors.url"
-              id="url-error"
-              class="mt-1 text-sm text-red-600"
-              role="alert"
-            >
-              {{ errors.url }}
-            </div>
-          </div>
-
-          <div ref="categoryFieldRef">
-            <label
-              for="category"
-              class="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Category <span aria-hidden="true">*</span>
-              <span class="sr-only">(required)</span>
-            </label>
-            <div class="relative">
-              <select
-                id="category"
-                ref="categoryInput"
-                v-model="formData.category"
-                required
-                aria-required="true"
-                aria-describedby="category-description category-error"
-                :aria-invalid="errors.category ? 'true' : 'false'"
-                :class="[
-                  'w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow appearance-none bg-white',
-                  errors.category
-                    ? 'border-red-500 animate-form-shake'
-                    : formData.category && !errors.category
-                      ? 'border-green-500'
-                      : 'border-gray-300',
-                ]"
-                @blur="handleCategoryBlur"
-              >
-                <option
-                  value=""
-                  disabled
-                >
-                  Select a category
-                </option>
-                <option
-                  v-for="category in categoryOptions"
-                  :key="category.value"
-                  :value="category.value"
-                >
-                  {{ category.label }}
-                </option>
-              </select>
-              <!-- Dropdown arrow for custom-styled select -->
-              <div
-                class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"
-                aria-hidden="true"
-              >
+              <span class="flex items-center gap-1.5">
                 <svg
-                  class="w-5 h-5"
+                  class="w-4 h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -423,248 +39,624 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M19 9l-7 7-7-7"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                   />
                 </svg>
+                {{ smartPasteState.indicatorMessage }}
+              </span>
+              <!-- Arrow pointing down -->
+              <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-0.5">
+                <div class="w-2 h-2 bg-teal-600 transform rotate-45" />
               </div>
-              <!-- Validation checkmark - Palette's micro-UX delight! -->
-              <Transition
-                enter-active-class="transition-all duration-200 ease-out"
-                enter-from-class="opacity-0 scale-50"
-                enter-to-class="opacity-100 scale-100"
-                leave-active-class="transition-all duration-150 ease-in"
-                leave-from-class="opacity-100 scale-100"
-                leave-to-class="opacity-0 scale-50"
+            </div>
+          </Transition>
+        </Teleport>
+      </ClientOnly>
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+            Submit a Resource
+          </h1>
+          <p class="mt-4 text-xl text-gray-500">
+            Share valuable free resources with the community
+          </p>
+        </div>
+
+        <div class="bg-white shadow-xl rounded-lg p-6 sm:p-8">
+          <form
+            class="space-y-6"
+            novalidate
+            @submit.prevent="handleSubmitWithShake"
+          >
+            <div ref="titleFieldRef">
+              <!-- Floating Label Container - Palette's micro-UX delight! -->
+              <div
+                class="floating-label-container relative"
+                :class="{
+                  'has-value': formData.title.length > 0,
+                  'has-error': errors.title,
+                  'has-success': formData.title && !errors.title,
+                }"
+              >
+                <label for="title" class="floating-label">
+                  Resource Title <span aria-hidden="true">*</span>
+                  <span class="sr-only">(required)</span>
+                </label>
+                <!-- Character Counter with Visual Progress Ring - Palette's micro-UX delight! -->
+                <CharacterCounter
+                  :character-count="formData.title.length"
+                  :max-length="maxTitleLength"
+                  :is-focused="isTitleFocused"
+                  :show-counter="true"
+                  :warning-threshold="
+                    validationConfig.characterCounter.warningThreshold
+                  "
+                >
+                  <template #default="{ isNearLimit, isOverLimit }">
+                    <input
+                      id="title"
+                      ref="titleInput"
+                      v-model="formData.title"
+                      type="text"
+                      required
+                      :maxlength="maxTitleLength"
+                      aria-required="true"
+                      aria-describedby="title-description title-counter title-error"
+                      :aria-invalid="errors.title ? 'true' : 'false'"
+                      :class="[
+                        'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
+                        errors.title || isOverLimit
+                          ? 'border-red-500 animate-form-shake'
+                          : formData.title && !errors.title
+                            ? 'border-green-500'
+                            : 'border-gray-300',
+                        isNearLimit && !isOverLimit ? 'border-amber-400' : '',
+                      ]"
+                      @focus="isTitleFocused = true"
+                      @blur="handleTitleBlur"
+                    />
+                  </template>
+                </CharacterCounter>
+                <!-- Validation checkmark - Palette's micro-UX delight! -->
+                <Transition
+                  enter-active-class="transition-all duration-200 ease-out"
+                  enter-from-class="opacity-0 scale-50"
+                  enter-to-class="opacity-100 scale-100"
+                  leave-active-class="transition-all duration-150 ease-in"
+                  leave-from-class="opacity-100 scale-100"
+                  leave-to-class="opacity-0 scale-50"
+                >
+                  <div
+                    v-if="formData.title && !errors.title"
+                    class="absolute top-1/2 -translate-y-1/2 pointer-events-none"
+                    :style="{
+                      right: `${uiConfig.form.inputPositioning.checkmarkRightRem}rem`,
+                    }"
+                    aria-hidden="true"
+                  >
+                    <svg
+                      class="w-5 h-5 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.5"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                </Transition>
+              </div>
+              <p id="title-description" class="mt-1 text-sm text-gray-500">
+                The name of the resource or service
+              </p>
+              <!-- Character limit progress bar for visual feedback -->
+              <div
+                v-if="formData.title.length > 0"
+                class="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden"
+                aria-hidden="true"
               >
                 <div
-                  v-if="formData.category && !errors.category"
-                  class="absolute right-10 top-1/2 -translate-y-1/2 pointer-events-none"
+                  class="h-full transition-all duration-300 ease-out rounded-full"
+                  :class="titleProgressClass"
+                  :style="{
+                    width: `${(formData.title.length / maxTitleLength) * 100}%`,
+                  }"
+                />
+              </div>
+
+              <div
+                v-if="errors.title"
+                id="title-error"
+                class="mt-1 text-sm text-red-600"
+                role="alert"
+              >
+                {{ errors.title }}
+              </div>
+            </div>
+
+            <div ref="descriptionFieldRef">
+              <label
+                for="description"
+                class="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Description <span aria-hidden="true">*</span>
+                <span class="sr-only">(required)</span>
+              </label>
+              <div class="relative">
+                <textarea
+                  id="description"
+                  ref="descriptionInput"
+                  v-model="formData.description"
+                  required
+                  :rows="uiConfig.form.textareaRows"
+                  :maxlength="maxDescriptionLength"
+                  aria-required="true"
+                  aria-describedby="description-description description-counter description-error"
+                  :aria-invalid="errors.description ? 'true' : 'false'"
+                  :class="[
+                    'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 resize-none input-focus-glow',
+                    errors.description
+                      ? 'border-red-500 animate-form-shake'
+                      : formData.description && !errors.description
+                        ? 'border-green-500'
+                        : 'border-gray-300',
+                  ]"
+                  :placeholder="
+                    contentConfig.submit.form.descriptionPlaceholder
+                  "
+                  @focus="isDescriptionFocused = true"
+                  @blur="handleDescriptionBlur"
+                />
+                <div
+                  id="description-counter"
+                  class="absolute bottom-2 text-xs font-medium tabular-nums transition-all duration-200"
+                  :class="descriptionCounterClass"
+                  :style="{
+                    right: `${uiConfig.form.inputPositioning.counterRightRem}rem`,
+                  }"
+                  aria-live="polite"
+                >
+                  {{ formData.description.length }}/{{ maxDescriptionLength }}
+                </div>
+                <!-- Validation checkmark - Palette's micro-UX delight! -->
+                <Transition
+                  enter-active-class="transition-all duration-200 ease-out"
+                  enter-from-class="opacity-0 scale-50"
+                  enter-to-class="opacity-100 scale-100"
+                  leave-active-class="transition-all duration-150 ease-in"
+                  leave-from-class="opacity-100 scale-100"
+                  leave-to-class="opacity-0 scale-50"
+                >
+                  <div
+                    v-if="formData.description && !errors.description"
+                    class="absolute right-3 top-3 pointer-events-none"
+                    aria-hidden="true"
+                  >
+                    <svg
+                      class="w-5 h-5 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.5"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                </Transition>
+              </div>
+              <p
+                id="description-description"
+                class="mt-1 text-sm text-gray-500"
+              >
+                {{ descriptionHelperText }}
+              </p>
+              <!-- Character limit progress bar for visual feedback -->
+              <div
+                v-if="formData.description.length > 0"
+                class="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden"
+                aria-hidden="true"
+              >
+                <div
+                  class="h-full transition-all duration-300 ease-out rounded-full"
+                  :class="descriptionProgressClass"
+                  :style="{
+                    width: `${(formData.description.length / maxDescriptionLength) * 100}%`,
+                  }"
+                />
+              </div>
+
+              <div
+                v-if="errors.description"
+                id="description-error"
+                class="mt-1 text-sm text-red-600"
+                role="alert"
+              >
+                {{ errors.description }}
+              </div>
+            </div>
+
+            <div ref="urlFieldRef">
+              <!-- Floating Label Container - Palette's micro-UX delight! -->
+              <div
+                class="floating-label-container relative"
+                :class="{
+                  'has-value': formData.url.length > 0,
+                  'has-error': errors.url,
+                  'has-success': formData.url && !errors.url,
+                }"
+              >
+                <label for="url" class="floating-label">
+                  URL <span aria-hidden="true">*</span>
+                  <span class="sr-only">(required)</span>
+                </label>
+                <input
+                  id="url"
+                  ref="urlInputRef"
+                  v-model="formData.url"
+                  type="url"
+                  required
+                  aria-required="true"
+                  aria-describedby="url-description url-error"
+                  :aria-invalid="errors.url ? 'true' : 'false'"
+                  :class="[
+                    'w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
+                    errors.url
+                      ? 'border-red-500 animate-form-shake'
+                      : formData.url && !errors.url
+                        ? 'border-green-500'
+                        : 'border-gray-300',
+                  ]"
+                  @blur="handleUrlBlur"
+                  @paste="handleSmartPaste"
+                />
+                <!-- Validation checkmark - Palette's micro-UX delight! -->
+                <Transition
+                  enter-active-class="transition-all duration-200 ease-out"
+                  enter-from-class="opacity-0 scale-50"
+                  enter-to-class="opacity-100 scale-100"
+                  leave-active-class="transition-all duration-150 ease-in"
+                  leave-from-class="opacity-100 scale-100"
+                  leave-to-class="opacity-0 scale-50"
+                >
+                  <div
+                    v-if="formData.url && !errors.url"
+                    class="absolute top-1/2 -translate-y-1/2 pointer-events-none"
+                    :style="{
+                      right: `${uiConfig.form.inputPositioning.counterRightRem}rem`,
+                    }"
+                    aria-hidden="true"
+                  >
+                    <svg
+                      class="w-5 h-5 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.5"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                </Transition>
+              </div>
+              <div
+                v-if="errors.url"
+                id="url-error"
+                class="mt-1 text-sm text-red-600"
+                role="alert"
+              >
+                {{ errors.url }}
+              </div>
+            </div>
+
+            <div ref="categoryFieldRef">
+              <label
+                for="category"
+                class="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Category <span aria-hidden="true">*</span>
+                <span class="sr-only">(required)</span>
+              </label>
+              <div class="relative">
+                <select
+                  id="category"
+                  ref="categoryInput"
+                  v-model="formData.category"
+                  required
+                  aria-required="true"
+                  aria-describedby="category-description category-error"
+                  :aria-invalid="errors.category ? 'true' : 'false'"
+                  :class="[
+                    'w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow appearance-none bg-white',
+                    errors.category
+                      ? 'border-red-500 animate-form-shake'
+                      : formData.category && !errors.category
+                        ? 'border-green-500'
+                        : 'border-gray-300',
+                  ]"
+                  @blur="handleCategoryBlur"
+                >
+                  <option value="" disabled>Select a category</option>
+                  <option
+                    v-for="category in categoryOptions"
+                    :key="category.value"
+                    :value="category.value"
+                  >
+                    {{ category.label }}
+                  </option>
+                </select>
+                <!-- Dropdown arrow for custom-styled select -->
+                <div
+                  class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"
                   aria-hidden="true"
                 >
                   <svg
-                    class="w-5 h-5 text-green-500"
+                    class="w-5 h-5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2.5"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-              </Transition>
-            </div>
-            <p
-              id="category-description"
-              class="mt-1 text-sm text-gray-500"
-            >
-              Choose the most appropriate category for this resource
-            </p>
-            <div
-              v-if="errors.category"
-              id="category-error"
-              class="mt-1 text-sm text-red-600"
-              role="alert"
-            >
-              {{ errors.category }}
-            </div>
-          </div>
-
-          <div>
-            <!-- Floating Label Container - Palette's micro-UX delight! -->
-            <div
-              class="floating-label-container relative"
-              :class="{
-                'has-value': tagsInput.length > 0,
-              }"
-            >
-              <label
-                for="tags"
-                class="floating-label"
-              > Tags (Optional) </label>
-              <input
-                id="tags"
-                v-model="tagsInput"
-                type="text"
-                aria-describedby="tags-description"
-                class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
-              >
-            </div>
-            <p
-              id="tags-description"
-              class="mt-1 text-sm text-gray-500"
-            >
-              Add relevant tags to help categorize this resource (e.g., "api,
-              free-tier, openai")
-            </p>
-          </div>
-
-          <div class="pt-4">
-            <!-- Draft save indicator with Pulse Ring animation - Palette's micro-UX delight! -->
-            <div
-              class="flex items-center justify-center mb-3 min-h-[20px]"
-              aria-live="polite"
-            >
-              <Transition
-                enter-active-class="transition-all duration-300 ease-out"
-                enter-from-class="opacity-0 transform -translate-y-1"
-                enter-to-class="opacity-100 transform translate-y-0"
-                leave-active-class="transition-all duration-300 ease-in"
-                leave-from-class="opacity-100 transform translate-y-0"
-                leave-to-class="opacity-0 transform -translate-y-1"
-              >
-                <div
-                  v-if="showSavedIndicator && lastSavedTimestamp"
-                  class="flex items-center text-xs text-green-600 relative"
-                >
-                  <!-- Pulse ring animation container - No ClientOnly needed as page has ssr: false -->
-                  <div
-                    v-if="showDraftPulse && !prefersReducedMotion"
-                    class="draft-save-pulse-ring"
-                    aria-hidden="true"
-                  />
-                  <svg
-                    class="w-3.5 h-3.5 mr-1.5 relative z-10"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
                   >
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M5 13l4 4L19 7"
+                      d="M19 9l-7 7-7-7"
                     />
                   </svg>
-                  <span class="relative z-10">Draft saved {{ lastSavedText }}</span>
-                  >
                 </div>
-                <div
-                  v-else-if="hasFormContent() && !submitSuccess"
-                  class="text-xs text-gray-400"
+                <!-- Validation checkmark - Palette's micro-UX delight! -->
+                <Transition
+                  enter-active-class="transition-all duration-200 ease-out"
+                  enter-from-class="opacity-0 scale-50"
+                  enter-to-class="opacity-100 scale-100"
+                  leave-active-class="transition-all duration-150 ease-in"
+                  leave-from-class="opacity-100 scale-100"
+                  leave-to-class="opacity-0 scale-50"
                 >
-                  {{ contentConfig.submit.draft.autoSaveEnabled }}
-                </div>
-              </Transition>
+                  <div
+                    v-if="formData.category && !errors.category"
+                    class="absolute right-10 top-1/2 -translate-y-1/2 pointer-events-none"
+                    aria-hidden="true"
+                  >
+                    <svg
+                      class="w-5 h-5 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2.5"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                </Transition>
+              </div>
+              <p id="category-description" class="mt-1 text-sm text-gray-500">
+                Choose the most appropriate category for this resource
+              </p>
+              <div
+                v-if="errors.category"
+                id="category-error"
+                class="mt-1 text-sm text-red-600"
+                role="alert"
+              >
+                {{ errors.category }}
+              </div>
             </div>
 
-            <button
-              ref="magneticSubmitRef"
-              type="submit"
-              :disabled="isSubmitting"
-              :aria-busy="isSubmitting"
-              aria-live="polite"
-              :style="magneticTransformStyle"
-              class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 magnetic-button"
-            >
-              <span v-if="!isSubmitting">{{
-                contentConfig.submit.button.submit
-              }}</span>
-              <span
-                v-else
-                class="flex items-center"
+            <div>
+              <!-- Floating Label Container - Palette's micro-UX delight! -->
+              <div
+                class="floating-label-container relative"
+                :class="{
+                  'has-value': tagsInput.length > 0,
+                }"
               >
+                <label for="tags" class="floating-label">
+                  Tags (Optional)
+                </label>
+                <input
+                  id="tags"
+                  v-model="tagsInput"
+                  type="text"
+                  aria-describedby="tags-description"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
+                />
+              </div>
+              <p id="tags-description" class="mt-1 text-sm text-gray-500">
+                Add relevant tags to help categorize this resource (e.g., "api,
+                free-tier, openai")
+              </p>
+            </div>
+
+            <div class="pt-4">
+              <!-- Draft save indicator with Pulse Ring animation - Palette's micro-UX delight! -->
+              <div
+                class="flex items-center justify-center mb-3 min-h-[20px]"
+                aria-live="polite"
+              >
+                <Transition
+                  enter-active-class="transition-all duration-300 ease-out"
+                  enter-from-class="opacity-0 transform -translate-y-1"
+                  enter-to-class="opacity-100 transform translate-y-0"
+                  leave-active-class="transition-all duration-300 ease-in"
+                  leave-from-class="opacity-100 transform translate-y-0"
+                  leave-to-class="opacity-0 transform -translate-y-1"
+                >
+                  <div
+                    v-if="showSavedIndicator && lastSavedTimestamp"
+                    class="flex items-center text-xs text-green-600 relative"
+                  >
+                    <!-- Pulse ring animation container - No ClientOnly needed as page has ssr: false -->
+                    <div
+                      v-if="showDraftPulse && !prefersReducedMotion"
+                      class="draft-save-pulse-ring"
+                      aria-hidden="true"
+                    />
+                    <svg
+                      class="w-3.5 h-3.5 mr-1.5 relative z-10"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    <span class="relative z-10"
+                      >Draft saved {{ lastSavedText }}</span
+                    >
+                    >
+                  </div>
+                  <div
+                    v-else-if="hasFormContent() && !submitSuccess"
+                    class="text-xs text-gray-400"
+                  >
+                    {{ contentConfig.submit.draft.autoSaveEnabled }}
+                  </div>
+                </Transition>
+              </div>
+
+              <button
+                ref="magneticSubmitRef"
+                type="submit"
+                :disabled="isSubmitting"
+                :aria-busy="isSubmitting"
+                aria-live="polite"
+                :style="magneticTransformStyle"
+                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 magnetic-button"
+              >
+                <span v-if="!isSubmitting">{{
+                  contentConfig.submit.button.submit
+                }}</span>
+                <span v-else class="flex items-center">
+                  <svg
+                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    />
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  {{ contentConfig.submit.button.submitting }}
+                </span>
+              </button>
+            </div>
+          </form>
+
+          <!-- Success message -->
+          <div
+            v-if="submitSuccess"
+            class="mt-8 p-4 bg-green-50 rounded-md"
+            role="alert"
+            aria-live="polite"
+          >
+            <div class="flex">
+              <div class="flex-shrink-0">
                 <svg
-                  class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  class="h-5 w-5 text-green-400"
                   xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
                   aria-hidden="true"
                 >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  />
                   <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
                   />
                 </svg>
-                {{ contentConfig.submit.button.submitting }}
-              </span>
-            </button>
-          </div>
-        </form>
-
-        <!-- Success message -->
-        <div
-          v-if="submitSuccess"
-          class="mt-8 p-4 bg-green-50 rounded-md"
-          role="alert"
-          aria-live="polite"
-        >
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <svg
-                class="h-5 w-5 text-green-400"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-green-800">
+                  {{ contentConfig.submit.success.heading }}
+                </h3>
+                <div class="mt-2 text-sm text-green-700">
+                  <p>
+                    Thank you for submitting a resource. Our team will review it
+                    and approve it if it meets our quality standards.
+                  </p>
+                </div>
+              </div>
             </div>
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-green-800">
-                {{ contentConfig.submit.success.heading }}
-              </h3>
-              <div class="mt-2 text-sm text-green-700">
-                <p>
-                  Thank you for submitting a resource. Our team will review it
-                  and approve it if it meets our quality standards.
-                </p>
+          </div>
+
+          <!-- Error message -->
+          <div
+            v-if="submitError"
+            class="mt-8 p-4 bg-red-50 rounded-md"
+            role="alert"
+            aria-live="assertive"
+          >
+            <div class="flex">
+              <div class="flex-shrink-0">
+                <svg
+                  class="h-5 w-5 text-red-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-red-800">
+                  {{ contentConfig.submit.error.heading }}
+                </h3>
+                <div class="mt-2 text-sm text-red-700">
+                  <p>{{ submitError }}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Error message -->
-        <div
-          v-if="submitError"
-          class="mt-8 p-4 bg-red-50 rounded-md"
-          role="alert"
-          aria-live="assertive"
-        >
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <svg
-                class="h-5 w-5 text-red-400"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </div>
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800">
-                {{ contentConfig.submit.error.heading }}
-              </h3>
-              <div class="mt-2 text-sm text-red-700">
-                <p>{{ submitError }}</p>
-              </div>
-            </div>
-          </div>
+      </div>
+    </template>
+    <!-- BroCula: Loading state while hydrating -->
+    <div v-else class="flex items-center justify-center h-full min-h-[50vh]">
+      <div class="text-center">
+        <div class="animate-pulse flex space-x-2 justify-center mb-4">
+          <div class="w-3 h-3 bg-blue-500 rounded-full" />
+          <div class="w-3 h-3 bg-blue-500 rounded-full" />
+          <div class="w-3 h-3 bg-blue-500 rounded-full" />
         </div>
+        <p class="text-gray-500 text-sm">Loading form...</p>
       </div>
     </div>
   </div>
@@ -687,6 +679,9 @@ import { useSmartPaste } from '~/composables/useSmartPaste'
 import { useMagneticButton } from '~/composables/useMagneticButton'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import CharacterCounter from '~/components/CharacterCounter.vue'
+
+// BroCula: Hydration guard to prevent Vue warning with ssr: false
+const isHydrated = ref(false)
 
 // Flexy hates hardcoded values! Using config values directly 🎯
 // Animation config already has SSR-safe defaults defined in ~/configs/animation.config.ts
@@ -1100,6 +1095,9 @@ const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
 }
 
 onMounted(() => {
+  // BroCula: Mark as hydrated to prevent Vue hydration warning with ssr: false
+  isHydrated.value = true
+
   titleInput.value?.focus()
   restoreDraft()
 
