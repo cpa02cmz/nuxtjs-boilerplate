@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import { getQuery } from 'h3'
+import { createHash } from 'node:crypto'
 import { rateLimitConfig } from '~/configs/rate-limit.config'
 import { TIME } from '~/server/utils/constants'
 import { logger } from '~/utils/logger'
@@ -127,9 +128,79 @@ async function acquireLock(key: string): Promise<() => void> {
 
 // Admin bypass keys - loaded from environment variable at startup
 // Only used when valid bypass key is provided in request headers
+// SECURITY: Audit logging added for bypass usage tracking (security-engineer)
 const adminBypassKeys = new Set<string>()
 if (process.env.ADMIN_RATE_LIMIT_BYPASS_KEY) {
   adminBypassKeys.add(process.env.ADMIN_RATE_LIMIT_BYPASS_KEY)
+}
+
+// Security audit log for bypass key usage
+interface BypassAuditEntry {
+  timestamp: string
+  keyHash: string
+  path: string
+  ip: string
+  userAgent?: string
+}
+
+const bypassAuditLog: BypassAuditEntry[] = []
+const MAX_BYPASS_AUDIT_ENTRIES = 1000
+
+/**
+ * Log bypass key usage for security auditing
+ * SECURITY: Tracks all bypass key usage for security monitoring
+ */
+function logBypassUsage(
+  bypassKey: string,
+  path: string,
+  ip: string,
+  userAgent?: string
+): void {
+  // Hash the bypass key for audit log (don't store raw key)
+  const keyHash = createHash('sha256')
+    .update(bypassKey)
+    .digest('hex')
+    .substring(0, 16)
+
+  const entry: BypassAuditEntry = {
+    timestamp: new Date().toISOString(),
+    keyHash,
+    path,
+    ip,
+    userAgent,
+  }
+
+  // Add to audit log
+  bypassAuditLog.push(entry)
+
+  // Prevent unbounded growth
+  if (bypassAuditLog.length > MAX_BYPASS_AUDIT_ENTRIES) {
+    bypassAuditLog.shift()
+  }
+
+  // Log to security audit
+  logger.warn('[Security Audit] Rate limit bypass used', {
+    keyHash,
+    path,
+    ip,
+    timestamp: entry.timestamp,
+    userAgent: userAgent?.substring(0, 100), // Truncate for logging
+  })
+}
+
+/**
+ * Get bypass audit log for security review
+ * SECURITY: Export for security monitoring and alerting
+ */
+export function getBypassAuditLog(): BypassAuditEntry[] {
+  return [...bypassAuditLog]
+}
+
+/**
+ * Clear bypass audit log (for testing only)
+ */
+export function clearBypassAuditLogForTesting(): void {
+  bypassAuditLog.length = 0
 }
 
 class RateLimiter {
@@ -469,6 +540,12 @@ export async function rateLimit(event: H3Event, key?: string): Promise<void> {
   // If this was a bypassed request, increment analytics
   if (bypassKey && adminBypassKeys.has(bypassKey)) {
     analytics.bypassedRequests++
+    logBypassUsage(
+      bypassKey,
+      event.path || '/unknown',
+      getClientIp(event),
+      event.node.req.headers['user-agent'] as string | undefined
+    )
   }
 
   event.node.res?.setHeader('X-RateLimit-Limit', status.limit.toString())
