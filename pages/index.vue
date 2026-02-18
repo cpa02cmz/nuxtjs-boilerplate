@@ -14,17 +14,11 @@
 
       <!-- Search Bar -->
       <div class="mt-8 max-w-2xl mx-auto">
-        <LazySearchBar
-          v-model="searchQuery"
-          @search="handleSearch"
-        />
+        <LazySearchBar v-model="searchQuery" @search="handleSearch" />
       </div>
 
       <!-- Loading State with Skeletons -->
-      <div
-        v-if="loading"
-        class="mt-16"
-      >
+      <div v-if="loading" class="mt-16">
         <div class="flex flex-wrap gap-2 mb-8 justify-center">
           <div
             v-for="i in 5"
@@ -43,18 +37,12 @@
 
         <!-- Resources Grid with Skeletons -->
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <ResourceCardSkeleton
-            v-for="i in 6"
-            :key="`skeleton-${i}`"
-          />
+          <ResourceCardSkeleton v-for="i in 6" :key="`skeleton-${i}`" />
         </div>
       </div>
 
       <!-- Error State -->
-      <div
-        v-else-if="error"
-        class="mt-16"
-      >
+      <div v-else-if="error" class="mt-16">
         <ErrorMessage
           :message="errorMessage || error"
           variant="error"
@@ -63,10 +51,7 @@
       </div>
 
       <!-- Resources Grid -->
-      <div
-        v-else
-        class="mt-16"
-      >
+      <div v-else class="mt-16">
         <!-- ARIA live region for search results -->
         <div
           id="search-results-status"
@@ -215,10 +200,11 @@
               </div>
 
               <!-- Load More Button with Progress Ring -->
+              <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations -->
               <button
                 v-else
                 ref="loadMoreButtonRef"
-                class="relative inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-white group"
+                :class="`relative inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all ${animationConfig.tailwindDurations.normal} disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-white group`"
                 :disabled="isLoadingMore"
                 :aria-label="loadMoreAriaLabel"
                 @click="loadMoreWithEnhancedFeedback"
@@ -249,7 +235,7 @@
                     stroke-linecap="round"
                     :stroke-dasharray="loadMoreProgressCircumference"
                     :stroke-dashoffset="loadMoreProgressOffset"
-                    class="text-indigo-500 transition-all duration-500 ease-out"
+                    :class="`text-indigo-500 transition-all ${animationConfig.tailwindDurations.slower} ease-out`"
                   />
                 </svg>
 
@@ -280,10 +266,10 @@
                   </svg>
 
                   <!-- Arrow Down Icon -->
+                  <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations -->
                   <svg
                     v-else
-                    class="w-5 h-5 mr-2 text-gray-500 transition-transform duration-200"
-                    :class="tailwindClassesConfig.interactive.hoverLiftGentle"
+                    :class="`w-5 h-5 mr-2 text-gray-500 transition-transform ${animationConfig.tailwindDurations.normal} ${tailwindClassesConfig.interactive.hoverLiftGentle}`"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -313,11 +299,7 @@
               </button>
 
               <!-- Screen reader announcement for progress -->
-              <div
-                role="status"
-                aria-live="polite"
-                class="sr-only"
-              >
+              <div role="status" aria-live="polite" class="sr-only">
                 {{ loadMoreProgressAnnouncement }}
               </div>
             </div>
@@ -343,10 +325,7 @@
           </div>
 
           <!-- Trending Resources Section -->
-          <div
-            v-if="filteredResources.length > 0 && !loading"
-            class="mt-16"
-          >
+          <div v-if="filteredResources.length > 0 && !loading" class="mt-16">
             <h2 class="text-2xl font-bold text-gray-900 mb-6">
               Trending Resources
             </h2>
@@ -379,10 +358,7 @@
         </div>
 
         <!-- Recommendations Section -->
-        <div
-          v-if="filteredResources.length > 0 && !loading"
-          class="mt-16"
-        >
+        <div v-if="filteredResources.length > 0 && !loading" class="mt-16">
           <ClientOnly>
             <LazyRecommendationsSection />
           </ClientOnly>
