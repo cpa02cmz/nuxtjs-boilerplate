@@ -1,13 +1,13 @@
 import type { Submission } from '~/types/submission'
-import { getQuery } from 'h3'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { TIME_MS } from '~/configs/time.config'
-import { paginationConfig } from '~/configs/pagination.config'
 import { contentConfig } from '~/configs/content.config'
+import { moderationQueueQuerySchema } from '~/server/utils/validation-schemas'
+import { validateQueryParams } from '~/server/utils/validation-utils'
 
 // Mock data for demonstration - in a real application, this would come from a database
 // Flexy hates hardcoded values! Using config for URLs and TIME_MS for time constants
@@ -50,21 +50,20 @@ export default defineEventHandler(async event => {
   await rateLimit(event)
 
   try {
+    // Validate query parameters using Zod schema
+    const validatedQuery = validateQueryParams(
+      moderationQueueQuerySchema,
+      event
+    )
+
     // In a real application, this would query the database for pending submissions
     // with additional filtering and pagination options
 
-    // Get query parameters for filtering
-    const query = getQuery(event)
-    const statusFilter = query.status as string | undefined
-    const categoryFilter = query.category as string | undefined
-    // Flexy hates hardcoded limits! Using config instead
-    const limit = query.limit
-      ? parseInt(query.limit as string)
-      : paginationConfig.moderation.defaultLimit
-    // Flexy hates hardcoded 0! Using paginationConfig.defaults.offset
-    const offset = query.offset
-      ? parseInt(query.offset as string)
-      : paginationConfig.defaults.offset
+    // Extract validated parameters
+    const statusFilter = validatedQuery.status
+    const categoryFilter = validatedQuery.category
+    const limit = validatedQuery.limit
+    const offset = validatedQuery.offset
 
     // Filter submissions based on query parameters
     let filteredSubmissions = [...mockSubmissions()]

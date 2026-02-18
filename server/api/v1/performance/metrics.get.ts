@@ -1,4 +1,4 @@
-import { defineEventHandler, getQuery, createError } from 'h3'
+import { defineEventHandler, createError } from 'h3'
 import {
   getPerformanceMetrics,
   getAggregatedMetrics,
@@ -12,6 +12,8 @@ import type {
 } from '~/types/performance'
 import logger from '~/utils/logger'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+import { performanceMetricsQuerySchema } from '~/server/utils/validation-schemas'
+import { validateQueryParams } from '~/server/utils/validation-utils'
 
 /**
  * GET /api/v1/performance/metrics
@@ -24,13 +26,15 @@ import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 export default defineEventHandler(async event => {
   try {
     await rateLimit(event, 'performance-metrics')
-    const query = getQuery(event)
-    const rangeHours = parseInt(
-      (query.range as string) ||
-        String(performanceDashboardConfig.dashboard.defaultTimeRangeHours)
-    )
 
-    // Validate range
+    // Validate query parameters using Zod schema
+    const validatedQuery = validateQueryParams(
+      performanceMetricsQuerySchema,
+      event
+    )
+    const rangeHours = validatedQuery.range
+
+    // Validate range is one of the allowed values
     const validRanges = performanceDashboardConfig.dashboard.timeRanges.map(
       r => r.hours
     )
