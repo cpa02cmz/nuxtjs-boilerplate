@@ -364,14 +364,25 @@ class CacheManager {
     }
 
     // If Redis is enabled, also invalidate matching keys in Redis
+    // Performance: Use SCAN instead of KEYS to avoid blocking Redis on large keyspaces
     if (this.enableRedis && this.redisClient && this.redisConnected) {
       try {
-        // In Redis, we need to scan keys matching the pattern and delete them
-        const keys = await this.redisClient.keys(pattern)
-        if (keys.length > 0) {
-          await this.redisClient.del(...keys)
-          invalidatedCount += keys.length
-        }
+        // SCAN iterates in batches, preventing Redis blocking on large keyspaces
+        let cursor = '0'
+        do {
+          const [newCursor, foundKeys] = await this.redisClient.scan(
+            cursor,
+            'MATCH',
+            pattern,
+            'COUNT',
+            1000
+          )
+          cursor = newCursor
+          if (foundKeys && foundKeys.length > 0) {
+            await this.redisClient.del(...foundKeys)
+            invalidatedCount += foundKeys.length
+          }
+        } while (cursor !== '0')
       } catch (error) {
         logger.warn('Redis invalidate error:', error)
         // Don't disable Redis here, just log the error and continue

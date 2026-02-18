@@ -47,6 +47,8 @@
           <button
             v-for="category in categories"
             :key="category"
+            :aria-pressed="selectedCategories.includes(category)"
+            :aria-label="`Filter by ${category}${selectedCategories.includes(category) ? ' (selected)' : ''}`"
             :class="[
               'px-3 py-1 text-sm rounded-full border',
               selectedCategories.includes(category)

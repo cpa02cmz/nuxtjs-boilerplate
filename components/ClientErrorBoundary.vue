@@ -159,6 +159,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import ErrorBoundary from './ErrorBoundary.vue'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { shadowsConfig } from '~/configs/shadows.config'
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -370,7 +371,7 @@ onUnmounted(() => {
   border: 1px solid #fecaca;
   border-radius: 0.5rem;
   color: #991b1b;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: v-bind('shadowsConfig.clientErrorBoundary.errorIndicator');
 }
 
 .error-indicator--pulse {
@@ -383,10 +384,10 @@ onUnmounted(() => {
 @keyframes error-pulse {
   0%,
   100% {
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: v-bind('shadowsConfig.clientErrorBoundary.errorIndicator');
   }
   50% {
-    box-shadow: 0 0 0 3px #fecaca;
+    box-shadow: v-bind('shadowsConfig.clientErrorBoundary.errorIndicatorFocus');
   }
 }
 
@@ -452,7 +453,7 @@ onUnmounted(() => {
   background-color: #fef2f2;
   border-color: #f87171;
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: v-bind('shadowsConfig.clientErrorBoundary.retryButtonHover');
 }
 
 .error-indicator__retry:active,

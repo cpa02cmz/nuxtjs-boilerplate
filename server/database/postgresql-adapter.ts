@@ -240,7 +240,9 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     }
 
     // Create PostgreSQL connection pool for direct queries
-    // SECURITY FIX #3647: Add connection validation and error handling
+    // Database-Architect: pg.Pool handles connection health internally
+    // Note: testOnBorrow/validationTimeout are HikariCP concepts, not valid in pg
+    // Connection validation should use pg.Pool events (error, connect, remove)
     this.pool = new Pool({
       connectionString: this.connectionUrl,
       min: this.config.pool?.min || databaseConfig.connectionPool.min,
@@ -252,13 +254,6 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       idleTimeoutMillis:
         this.config.pool?.idleTimeoutMs ||
         databaseConfig.connectionPool.idleTimeoutMs,
-      // SECURITY FIX #3647: Connection validation settings
-      ...(databaseConfig.poolValidation.testOnBorrow && {
-        // Validate connections before returning from pool
-        testOnBorrow: true,
-        // Timeout for connection validation queries
-        validationTimeout: databaseConfig.poolValidation.validationTimeoutMs,
-      }),
     })
 
     // SECURITY FIX #3647: Add error event handler for pool
