@@ -4602,6 +4602,14 @@ export const animationConfig = {
     ),
     // Enable keyboard shortcuts
     enabled: process.env.KEYBOARD_SHORTCUTS_ENABLED !== 'false',
+    // 🎨 Pallete's micro-UX: Hint display duration (ms) - how long hint stays visible
+    hintDisplayDurationMs: parseInt(
+      process.env.KEYBOARD_HINT_DISPLAY_DURATION_MS || '2500'
+    ),
+    // 🎨 Pallete's micro-UX: Hint vertical offset from top (px)
+    hintOffsetYPx: parseInt(process.env.KEYBOARD_HINT_OFFSET_Y_PX || '12'),
+    // 🎨 Pallete's micro-UX: Hint horizontal offset from right (px)
+    hintOffsetXPx: parseInt(process.env.KEYBOARD_HINT_OFFSET_X_PX || '12'),
   },
 
   // Webhook Form Animations - Pallete's micro-UX enhancement! 🎨

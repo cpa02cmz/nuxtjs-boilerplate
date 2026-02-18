@@ -1,9 +1,33 @@
 <template>
   <article
+    ref="cardRef"
     :class="`recommendation-card bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-1 focus-within:shadow-lg focus-within:-translate-y-1 transition-all ${transitionClasses.normal} ease-out overflow-hidden border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 focus-within:border-blue-300 dark:focus-within:border-blue-500 card-shine-container`"
     role="article"
     tabindex="0"
+    @keydown.enter.prevent="handleCardEnter"
+    @focus="handleCardFocus"
+    @blur="handleCardBlur"
   >
+    <!-- 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint tooltip -->
+    <Transition
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
+      enter-from-class="opacity-0 scale-95 translate-y-2"
+      enter-to-class="opacity-100 scale-100 translate-y-0"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.fast} ease-in`"
+      leave-from-class="opacity-100 scale-100 translate-y-0"
+      leave-to-class="opacity-0 scale-95 translate-y-2"
+    >
+      <div
+        v-if="showKeyboardHint && !prefersReducedMotion"
+        class="keyboard-hint"
+        role="tooltip"
+        aria-hidden="true"
+      >
+        <span class="keyboard-hint__text">Press</span>
+        <kbd class="keyboard-hint__key">Enter</kbd>
+        <span class="keyboard-hint__text">to open</span>
+      </div>
+    </Transition>
     <div class="p-4">
       <div class="flex justify-between items-start">
         <div class="flex-1 min-w-0">
@@ -182,6 +206,7 @@ import { animationConfig } from '~/configs/animation.config'
 import { layoutConfig } from '~/configs/layout.config'
 import { zIndexConfig } from '~/configs/z-index.config'
 import { EASING } from '~/configs/easing.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import { useRipple } from '~/composables/useRipple'
 import { hapticLight } from '~/utils/hapticFeedback'
 import OptimizedImage from '~/components/OptimizedImage.vue'
@@ -204,6 +229,10 @@ void props.resource
 const emit = defineEmits<{
   bookmark: [resource: Resource]
 }>()
+
+// 🎨 Pallete's micro-UX enhancement: Card ref and keyboard hint state
+const cardRef = ref<HTMLElement | null>(null)
+const showKeyboardHint = ref(false)
 
 // Bookmark button ref for ripple effect
 const bookmarkButtonRef = ref<HTMLButtonElement | null>(null)
@@ -311,6 +340,32 @@ const handleViewButtonMouseMove = (event: MouseEvent) => {
 const handleViewResourceClick = () => {
   // Trigger haptic feedback
   hapticLight()
+}
+
+// 🎨 Pallete's micro-UX enhancement: Handle Enter key on focused card
+const handleCardEnter = () => {
+  // Open the resource URL when Enter is pressed on the focused card
+  if (props.resource?.url) {
+    hapticLight()
+    window.open(props.resource.url, '_blank', 'noopener,noreferrer')
+  }
+}
+
+// 🎨 Pallete's micro-UX enhancement: Show keyboard hint on focus
+const handleCardFocus = () => {
+  // Only show hint if not using reduced motion
+  if (!prefersReducedMotion.value) {
+    showKeyboardHint.value = true
+    // Auto-hide hint after delay
+    setTimeout(() => {
+      showKeyboardHint.value = false
+    }, animationConfig.keyboardShortcuts.hintDisplayDurationMs)
+  }
+}
+
+// 🎨 Pallete's micro-UX enhancement: Hide keyboard hint on blur
+const handleCardBlur = () => {
+  showKeyboardHint.value = false
 }
 
 // Computed styles for magnetic view button
@@ -475,6 +530,54 @@ const hasMoreTags = computed(() => {
   }
   100% {
     transform: translate(2px, -2px);
+  }
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint tooltip */
+.keyboard-hint {
+  position: absolute;
+  top: v-bind('animationConfig.keyboardShortcuts.hintOffsetYPx + "px"');
+  right: v-bind('animationConfig.keyboardShortcuts.hintOffsetXPx + "px"');
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: v-bind('componentColorsConfig.keyboardHint.bg');
+  border: 1px solid v-bind('componentColorsConfig.keyboardHint.border');
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-size: 12px;
+  color: v-bind('componentColorsConfig.keyboardHint.text');
+  z-index: v-bind('zIndexConfig.tooltip');
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.keyboard-hint__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  padding: 2px 6px;
+  background: v-bind('componentColorsConfig.keyboardHint.keyBg');
+  border: 1px solid v-bind('componentColorsConfig.keyboardHint.keyBorder');
+  border-radius: 4px;
+  border-bottom-width: 2px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: v-bind('componentColorsConfig.keyboardHint.keyText');
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.keyboard-hint__text {
+  font-weight: 500;
+}
+
+/* Reduced motion support - hide keyboard hint */
+@media (prefers-reduced-motion: reduce) {
+  .keyboard-hint {
+    display: none !important;
   }
 }
 </style>
