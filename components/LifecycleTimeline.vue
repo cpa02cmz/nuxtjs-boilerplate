@@ -265,7 +265,7 @@ const typewriterProgress = ref<{
   [key: number]: { reason: number; notes: number }
 }>({})
 let intersectionObserver: IntersectionObserver | null = null
-let typingIntervals: { [key: number]: ReturnType<typeof setInterval> } = {}
+let typingIntervals: { [key: string]: ReturnType<typeof setInterval> } = {}
 
 // Check for reduced motion preference
 const checkReducedMotion = () => {
