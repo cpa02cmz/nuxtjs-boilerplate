@@ -56,10 +56,7 @@
         aria-hidden="true"
       >
         <div class="typing-momentum-bar" />
-        <div
-          v-if="momentumLevel === 'high'"
-          class="typing-momentum-glow"
-        />
+        <div v-if="momentumLevel === 'high'" class="typing-momentum-glow" />
       </div>
     </Transition>
 
@@ -898,7 +895,8 @@ const triggerCelebration = () => {
   background: v-bind('momentumConfig.colors.high');
   filter: blur(4px);
   opacity: v-bind('momentumConfig.glowIntensity');
-  animation: momentum-glow-pulse 1s ease-in-out infinite;
+  animation: momentum-glow-pulse v-bind('momentumConfig.glowPulseDurationSec')
+    ease-in-out infinite;
 }
 
 @keyframes momentum-bar-appear-low {
@@ -952,7 +950,8 @@ const triggerCelebration = () => {
 
 /* High momentum scale effect on the counter ring */
 .character-counter-ring--high-momentum {
-  animation: high-momentum-ring-scale 0.3s ease-out;
+  animation: high-momentum-ring-scale
+    v-bind('momentumConfig.highMomentumRingScaleDurationSec') ease-out;
 }
 
 @keyframes high-momentum-ring-scale {
