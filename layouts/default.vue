@@ -503,6 +503,9 @@ import { useResourceComparison } from '~/composables/useResourceComparison'
 import { useTheme } from '~/composables/useTheme'
 import { contentConfig } from '~/configs/content.config'
 import { easingConfig } from '~/configs/easing.config'
+// Flexy: Layout uses hardcoded duration classes for performance
+// duration-300 (standard) for theme transitions, duration-200 (normal) for UI interactions
+// Avoiding reactivity overhead on layout elements that appear on every page
 // NodeListOf is a global DOM type, no need to import
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
 import KeyboardShortcutsHelp from '~/components/KeyboardShortcutsHelp.vue'

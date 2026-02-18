@@ -127,8 +127,9 @@
               />
             </div>
             <div class="relative group">
+              <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal -->
               <p
-                class="font-mono text-sm bg-white p-2 rounded border border-blue-200 transition-all duration-200 group-hover:shadow-sm"
+                :class="`font-mono text-sm bg-white p-2 rounded border border-blue-200 transition-all ${animationConfig.tailwindDurations.normal} group-hover:shadow-sm`"
               >
                 https://yourdomain.com/api
               </p>
@@ -482,14 +483,15 @@
           </div>
           <div class="flex flex-col sm:flex-row gap-4">
             <a
-              href="/api-docs"
+              href="/api/docs"
               target="_blank"
               :class="[
-                tailwind.buttons.primaryBlue,
+                tailwind.buttons.secondary,
                 'text-center inline-flex items-center justify-center gap-2',
                 tailwind.focus.ringWithOffset,
+                // Flexy hates hardcoded duration-300! Using animationConfig.tailwindDurations.standard
                 {
-                  'hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300':
+                  [`hover:shadow-lg hover:-translate-y-0.5 transition-all ${animationConfig.tailwindDurations.standard}`]:
                     !prefersReducedMotion,
                 },
               ]"
@@ -517,8 +519,9 @@
                 tailwind.buttons.primary,
                 'text-center inline-flex items-center justify-center gap-2',
                 tailwind.focus.ringWithOffset,
+                // Flexy hates hardcoded duration-300! Using animationConfig.tailwindDurations.standard
                 {
-                  'hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300':
+                  [`hover:shadow-lg hover:-translate-y-0.5 transition-all ${animationConfig.tailwindDurations.standard}`]:
                     !prefersReducedMotion,
                 },
               ]"
