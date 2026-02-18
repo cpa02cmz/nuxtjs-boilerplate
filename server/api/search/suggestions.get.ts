@@ -1,15 +1,14 @@
-import { getQuery } from 'h3'
 import type { Resource } from '~/types/resource'
 import { cacheManager, cacheSetWithTags } from '~/server/utils/enhanced-cache'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendSuccessResponse,
-  sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
-import { limitsConfig } from '~/configs/limits.config'
 import { cacheConfig } from '~/configs/cache.config'
 import { contentConfig } from '~/configs/content.config'
+import { suggestionsQuerySchema } from '~/server/utils/validation-schemas'
+import { validateQueryParams } from '~/server/utils/validation-utils'
 
 /**
  * GET /api/search/suggestions
@@ -25,36 +24,12 @@ export default defineEventHandler(async event => {
     // Apply rate limiting for search suggestions endpoint
     await rateLimit(event)
 
-    // Get query parameters
-    const query = getQuery(event)
+    // Validate query parameters using Zod schema
+    const validatedQuery = validateQueryParams(suggestionsQuerySchema, event)
 
-    // Validate and parse query parameter
-    let searchQuery = ''
-    if (query.q !== undefined) {
-      searchQuery = query.q as string
-      if (typeof searchQuery !== 'string') {
-        return sendBadRequestError(
-          event,
-          'Invalid search query parameter. Must be a string.'
-        )
-      }
-    }
-
-    // Validate and parse limit parameter
-    let limit = limitsConfig.search.defaultSuggestionsLimit // default from config
-    // Flexy hates hardcoded fallback! Config already has default value.
-    const maxSuggestionsLimit = limitsConfig.search.maxSuggestionsLimit
-    if (query.limit !== undefined) {
-      const parsedLimit = parseInt(query.limit as string)
-      if (!isNaN(parsedLimit) && parsedLimit > 0) {
-        limit = Math.min(parsedLimit, maxSuggestionsLimit) // max from config
-      } else {
-        return sendBadRequestError(
-          event,
-          'Invalid limit parameter. Must be a positive integer.'
-        )
-      }
-    }
+    // Extract validated parameters
+    const searchQuery = validatedQuery.q
+    const limit = validatedQuery.limit
 
     // Generate cache key based on query parameters
     const cacheKey = `suggestions:${searchQuery}:${limit}`

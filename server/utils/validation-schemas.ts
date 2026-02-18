@@ -276,3 +276,83 @@ export const analyticsEventSchema = z.object({
   timestamp: z.union([z.string(), z.date(), z.number().int().positive()]),
   properties: z.record(z.string(), z.unknown()).optional(),
 })
+
+// API v1 Search Query Schema
+export const searchQuerySchemaV1 = z.object({
+  q: z
+    .string()
+    .max(limitsConfig.validation.searchQueryMaxLength, 'Query too long')
+    .optional(),
+  query: z
+    .string()
+    .max(limitsConfig.validation.searchQueryMaxLength, 'Query too long')
+    .optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional().default(20),
+  offset: z.coerce.number().int().min(0).optional().default(0),
+  category: z.string().optional(),
+  pricing: z.enum(['Free', 'Freemium', 'Paid', 'Open Source']).optional(),
+  difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']).optional(),
+  tags: z.string().optional(),
+  hierarchicalTags: z.string().optional(),
+})
+
+// API v1 Resources Query Schema
+export const resourcesQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional().default(20),
+  offset: z.coerce.number().int().min(0).optional().default(0),
+  category: z.string().optional(),
+  pricing: z.enum(['Free', 'Freemium', 'Paid', 'Open Source']).optional(),
+  difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']).optional(),
+  tag: z.string().optional(),
+  search: z.string().optional(),
+  sort: z
+    .enum(['title', 'dateAdded', 'popularity'])
+    .optional()
+    .default('popularity'),
+  order: z.enum(['asc', 'desc']).optional().default('desc'),
+})
+
+// Search Suggestions Query Schema
+export const suggestionsQuerySchema = z.object({
+  q: z
+    .string()
+    .max(limitsConfig.validation.searchQueryMaxLength, 'Query too long')
+    .optional()
+    .default(''),
+  limit: z.coerce.number().int().min(1).max(20).optional().default(5),
+})
+
+// Moderation Queue Query Schema
+export const moderationQueueQuerySchema = z.object({
+  status: z.enum(['pending', 'approved', 'rejected', 'deprecated']).optional(),
+  category: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(100).optional().default(20),
+  offset: z.coerce.number().int().min(0).optional().default(0),
+})
+
+// Alternatives Action Body Schema
+export const alternativesActionSchema = z.object({
+  alternativeId: z.string().min(1, 'Alternative resource ID is required'),
+  action: z.enum(['add', 'remove']).optional().default('add'),
+})
+
+// Performance Metrics Query Schema
+export const performanceMetricsQuerySchema = z.object({
+  range: z.coerce.number().int().positive().optional().default(24),
+  refresh: z.coerce.boolean().optional().default(false),
+})
+
+// Performance Metrics Body Schema
+export const performanceMetricsBodySchema = z.object({
+  metric: z.object({
+    id: z.string(),
+    name: z.enum(['LCP', 'INP', 'CLS', 'FCP', 'TTFB']),
+    value: z.number(),
+    rating: z.enum(['good', 'needs-improvement', 'poor']),
+  }),
+  timestamp: z.string().datetime(),
+  url: z.string().url('Invalid URL format'),
+  userAgent: z.string().optional().default('unknown'),
+  connection: z.string().optional(),
+})
