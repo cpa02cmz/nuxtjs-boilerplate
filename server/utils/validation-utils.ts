@@ -43,7 +43,7 @@ export async function validateRequestBody<T>(
     ) {
       throw error
     }
-    throw new Error(contentConfig.errors.validation.readBody)
+    throw new Error(contentConfig.errors.validation.readBody, { cause: error })
   }
 }
 

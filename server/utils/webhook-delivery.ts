@@ -177,7 +177,7 @@ export function validateWebhookUrl(url: string): void {
     if (error instanceof Error && error.message.includes('Webhook URL')) {
       throw error
     }
-    throw new Error('Invalid webhook URL format')
+    throw new Error('Invalid webhook URL format', { cause: error })
   }
 }
 
@@ -236,7 +236,7 @@ export class WebhookDeliveryService {
     let responseCode: number | undefined
     let responseMessage: string | undefined
     let responseBody: string | undefined
-    let success = false
+    let success: boolean
 
     try {
       await circuitBreaker.execute(

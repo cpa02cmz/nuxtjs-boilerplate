@@ -315,7 +315,8 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     } catch (error) {
       this._isConnected = false
       throw new Error(
-        `Failed to connect to PostgreSQL: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to connect to PostgreSQL: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        { cause: error }
       )
     }
   }
@@ -332,7 +333,8 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       this._isConnected = false
     } catch (error) {
       throw new Error(
-        `Failed to disconnect from PostgreSQL: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to disconnect from PostgreSQL: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        { cause: error }
       )
     }
   }
@@ -436,7 +438,8 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       return result
     } catch (error) {
       throw new Error(
-        `Query failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Query failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        { cause: error }
       )
     }
   }
@@ -464,7 +467,8 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       return { rowCount: result }
     } catch (error) {
       throw new Error(
-        `Execute failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Execute failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        { cause: error }
       )
     }
   }
@@ -543,7 +547,8 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       return result.map(row => row.table_name)
     } catch (error) {
       throw new Error(
-        `Failed to get tables: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to get tables: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        { cause: error }
       )
     }
   }
@@ -635,7 +640,8 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       }
     } catch (error) {
       throw new Error(
-        `Failed to get table schema: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to get table schema: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        { cause: error }
       )
     }
   }
@@ -671,7 +677,8 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       })
     } catch (error) {
       throw new Error(
-        `Failed to get indexes: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to get indexes: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        { cause: error }
       )
     }
   }
@@ -749,7 +756,8 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       }
     } catch (error) {
       throw new Error(
-        `Failed to create backup: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to create backup: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        { cause: error }
       )
     }
   }
@@ -817,7 +825,8 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       }
     } catch (error) {
       throw new Error(
-        `Failed to restore backup: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Failed to restore backup: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        { cause: error }
       )
     }
   }

@@ -44,10 +44,6 @@ export function usePersonalizedRecommendations(
       if (currentResource && resource.id === currentResource.id) continue
 
       let contentScore = 0
-      let interestScore = 0
-      let collaborativeScore = 0
-      let popularityScore = 0
-      let skillScore = 0
 
       if (currentResource) {
         contentScore =
@@ -55,19 +51,19 @@ export function usePersonalizedRecommendations(
           configValue.contentBasedWeight
       }
 
-      interestScore =
+      const interestScore =
         calculateInterestMatch(resource, userPrefs) *
         configValue.personalizationWeight
 
-      collaborativeScore =
+      const collaborativeScore =
         calculateCollaborativeScore(resource.id, userPrefs) *
         configValue.collaborativeWeight
 
-      popularityScore =
+      const popularityScore =
         (resource.popularity / 10) * configValue.popularityWeight
 
       // Flexy hates hardcoded weights! Using configurable skill match weight
-      skillScore =
+      const skillScore =
         calculateSkillMatch(resource, userPrefs) *
         recommendationConfig.personalizedWeights.skillMatch
 

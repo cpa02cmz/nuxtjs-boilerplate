@@ -155,7 +155,7 @@ export class WebhookQueueSystem {
       timeoutMs: webhooksConfig.circuitBreaker.timeoutMs,
     })
 
-    let success = false
+    let success: boolean
     let lastError: Error | null = null
 
     try {

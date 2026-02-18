@@ -44,13 +44,11 @@ export function useSearchBasedRecommendations(
     const zeroResultQueries = searchAnalytics.data.zeroResultQueries || []
 
     for (const resource of resources) {
-      let searchPopularityScore = 0
       let searchTermMatchScore = 0
-      let trendingBoostScore = 0
       let userHistoryScore = 0
 
       // Calculate search popularity score based on popular searches
-      searchPopularityScore = calculateSearchPopularityScore(
+      const searchPopularityScore = calculateSearchPopularityScore(
         resource,
         popularSearches
       )
@@ -64,7 +62,7 @@ export function useSearchBasedRecommendations(
       }
 
       // Calculate trending boost from search analytics
-      trendingBoostScore = calculateTrendingSearchBoost(
+      const trendingBoostScore = calculateTrendingSearchBoost(
         resource,
         popularSearches
       )
