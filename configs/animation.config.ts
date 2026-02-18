@@ -1907,6 +1907,10 @@ export const animationConfig = {
         process.env.SIMILAR_BADGE_TRANSITION_MS || '300'
       ),
       badgeTransitionSec: `${parseInt(process.env.SIMILAR_BADGE_TRANSITION_MS || '300') / 1000}s`,
+      // Flexy hates hardcoded 1.2s! Ring fill animation duration
+      ringFillDurationSec: parseFloat(
+        process.env.SIMILAR_RING_FILL_DURATION_SEC || '1.2'
+      ),
     },
   },
 
@@ -3522,6 +3526,12 @@ export const animationConfig = {
     ),
     // Keyboard hint slide-in CSS duration string
     hintSlideInDurationSec: `${parseInt(process.env.MODERATION_QUEUE_HINT_SLIDE_IN_MS || '300') / 1000}s`,
+    // Transition duration for UI elements (ms) - Flexy hates hardcoded 150ms!
+    transitionDurationMs: parseInt(
+      process.env.MODERATION_QUEUE_TRANSITION_MS || '150'
+    ),
+    // CSS duration string for transitions
+    transitionDurationSec: `${parseInt(process.env.MODERATION_QUEUE_TRANSITION_MS || '150') / 1000}s`,
   },
 
   // Resource Card Animations

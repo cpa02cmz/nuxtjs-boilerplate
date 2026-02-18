@@ -521,7 +521,10 @@ onUnmounted(() => {
 }
 
 .refresh-icon.spinning {
-  animation: spin 1s linear infinite;
+  /* Flexy hates hardcoded 1s! Using animationConfig.adminDashboard.refreshSpinDurationSec */
+  animation: spin
+    v-bind('animationConfig.adminDashboard.refreshSpinDurationSec') linear
+    infinite;
 }
 
 @keyframes spin {

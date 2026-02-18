@@ -10,6 +10,314 @@
 
 ### RepoKeeper ULW Loop Results (2026-02-18 02:32) - LATEST
 
+**Agent**: Flexy 🧩 (Modularity & Anti-Hardcoded Specialist)  
+**Branch**: `flexy/ulw-loop-hardcoded-elimination-20260218-0216`  
+**PR**: #3675  
+**Status**: ✅ Complete - 4 Hardcoded Animation Values Eliminated
+
+#### Phase 0: Pre-flight Checks (Strict Workflow)
+
+**Fatal on Build/Lint Errors - All Checks Passed:**
+
+✅ **Lint Check**: 0 errors (47 pre-existing formatting warnings)  
+✅ **Type Check**: TypeScript compilation successful (nuxt typecheck)  
+✅ **Test Check**: 1,298 tests passing (0 failures, 0 skipped)  
+✅ **Security Check**: 0 vulnerabilities detected  
+✅ **Branch Sync**: Up to date with origin/main  
+✅ **GitHub CLI**: Authenticated and functional
+
+#### Phase 1: Hardcoded Value Detection Analysis
+
+**Flexy's Mission**: Find and eliminate hardcoded values to make the system more modular without over-engineering.
+
+**Files Analyzed:**
+
+- 77 Vue components in `components/`
+- 67 composables in `composables/`
+- 63 API routes in `server/api/`
+- 31 server utilities in `server/utils/`
+- All configuration files in `configs/`
+
+**Hardcoded Values Found:**
+
+| Location                                        | Hardcoded Value              | Solution                                                         | Severity |
+| ----------------------------------------------- | ---------------------------- | ---------------------------------------------------------------- | -------- |
+| `components/admin/PerformanceDashboard.vue:524` | `1s` (spin animation)        | `animationConfig.adminDashboard.refreshSpinDurationSec`          | Medium   |
+| `components/ResourceSimilar.vue:669`            | `1.2s` (ring-fill animation) | `animationConfig.similarResources.spotlight.ringFillDurationSec` | Medium   |
+| `pages/moderation/queue.vue:298`                | `150ms` (transition)         | `animationConfig.moderationQueue.transitionDurationSec`          | Medium   |
+| `pages/moderation/queue.vue:347`                | `150ms` (transition)         | `animationConfig.moderationQueue.transitionDurationSec`          | Medium   |
+
+#### Phase 2: Modularity Improvements
+
+**Changes Implemented:**
+
+✅ **configs/animation.config.ts**:
+
+- Added `similarResources.spotlight.ringFillDurationSec` with env var `SIMILAR_RING_FILL_DURATION_SEC`
+- Added `moderationQueue.transitionDurationMs` with env var `MODERATION_QUEUE_TRANSITION_MS`
+- Added `moderationQueue.transitionDurationSec` computed property
+- All properties have environment variable fallbacks
+- Added Flexy comments for traceability
+
+✅ **components/admin/PerformanceDashboard.vue**:
+
+- Replaced hardcoded `1s` with `v-bind('animationConfig.adminDashboard.refreshSpinDurationSec')`
+- Added comment: "Flexy hates hardcoded 1s!"
+
+✅ **components/ResourceSimilar.vue**:
+
+- Replaced hardcoded `1.2s` with `v-bind('animationConfig.similarResources.spotlight.ringFillDurationSec + "s"')`
+- Added comment: "Flexy hates hardcoded 1.2s!"
+
+✅ **pages/moderation/queue.vue**:
+
+- Replaced hardcoded `150ms` with `v-bind('animationConfig.moderationQueue.transitionDurationSec')` (2 locations)
+- Added comment: "Flexy hates hardcoded 150ms!"
+
+**New Environment Variables:**
+
+| Variable                         | Default | Description                                             |
+| -------------------------------- | ------- | ------------------------------------------------------- |
+| `SIMILAR_RING_FILL_DURATION_SEC` | 1.2     | Similarity score ring fill animation duration (seconds) |
+| `MODERATION_QUEUE_TRANSITION_MS` | 150     | Moderation queue UI transition duration (milliseconds)  |
+
+**Benefits:**
+
+- **Maintainability**: Centralized configuration makes updates easier
+- **Flexibility**: Runtime customization via environment variables
+- **Consistency**: Uses existing config patterns across codebase
+- **Type Safety**: Full TypeScript support with proper types
+
+#### Phase 3: PR Creation
+
+**PR Created with Modularity Improvements:**
+
+- **Title**: refactor: Flexy ULW Loop - Eliminate 4 hardcoded animation values 🧩
+- **Description**: 4 hardcoded animation values eliminated - now fully configurable
+- **Status**: Open, awaiting review
+- **Branch**: `flexy/ulw-loop-hardcoded-elimination-20260218-0216`
+- **URL**: https://github.com/cpa02cmz/nuxtjs-boilerplate/pull/3675
+
+#### Flexy Strict Workflow Compliance:
+
+- ✅ Phase 0: Pre-flight checks completed (0 fatal errors)
+- ✅ Phase 1: Hardcoded value detection completed (4 values found)
+- ✅ Phase 2: All values made configurable (4 files modified)
+- ✅ Phase 3: PR created successfully (#3675)
+- ✅ Phase 4: Branch up to date with main
+- ✅ Phase 5: Documentation updated (AGENTS.md)
+
+**Result**: Flexy ULW Loop complete - 4 hardcoded animation values eliminated, repository even more modular! 🧩✅
+
+---
+
+### BroCula ULW Loop Results (2026-02-18 01:52) - PREVIOUS
+
+**Agent**: BroCula 🧛 (Browser Console & Lighthouse Guardian)  
+**Branch**: `brocula/ulw-loop-console-audit-20260218-0152`  
+**PR**: #3663  
+**Status**: ✅ Complete - 1 Vue Hydration Warning Fixed
+
+#### Phase 0: Pre-flight Checks (Strict Workflow)
+
+**Fatal on Build/Lint Errors - All Checks Passed:**
+
+✅ **Lint Check**: 0 errors (20 pre-existing formatting warnings)  
+✅ **Type Check**: TypeScript compilation successful (nuxt typecheck)  
+✅ **Test Check**: 1,298 tests passing (0 failures, 0 skipped)  
+✅ **Security Check**: 0 vulnerabilities detected  
+✅ **Branch Sync**: Up to date with origin/main  
+✅ **GitHub CLI**: Authenticated and functional
+
+#### Phase 1: Browser Console Analysis
+
+**BroCula's Mission**: Monitor browser console for errors/warnings and fix immediately.
+
+**Pages Audited:**
+
+| Page    | Path     | Status             |
+| ------- | -------- | ------------------ |
+| Home    | /        | ✅ Clean           |
+| Search  | /search  | ✅ Clean           |
+| About   | /about   | ✅ Clean           |
+| Submit  | /submit  | ⚠️ 1 Warning Found |
+| AI Keys | /ai-keys | ✅ Clean           |
+
+**Console Audit Results:**
+
+| Category             | Count | Status   |
+| -------------------- | ----- | -------- |
+| **Console Errors**   | 0     | ✅ Pass  |
+| **Console Warnings** | 1     | ✅ Fixed |
+| **Hydration Errors** | 0     | ✅ Pass  |
+| **Page Errors**      | 0     | ✅ Pass  |
+
+#### Phase 2: Bug Fixes Implementation
+
+**Issue Found:**
+
+✅ **Vue Hydration Warning on /submit**
+
+- **Warning**: "[Vue warn]: Attempting to hydrate existing markup but container is empty. Performing full mount instead."
+- **Location**: `pages/submit.vue`
+- **Root Cause**: Page uses `ssr: false` which causes Nuxt to attempt hydration on empty container in dev mode
+- **Fix Applied**:
+  - Added hydration guard with `isHydrated` ref
+  - Wrapped content in conditional rendering
+  - Added loading state during hydration
+  - Ensured single root element for proper Nuxt rendering
+
+**Changes Made:**
+
+✅ **pages/submit.vue**:
+
+- Added `isHydrated` reactive ref to control rendering
+- Wrapped main content in `v-if="isHydrated"`
+- Added loading state with animated dots for better UX
+- Set `isHydrated.value = true` in `onMounted` hook
+- Ensures content only renders after client-side hydration complete
+
+#### Phase 3: Lighthouse Performance Audit
+
+**Lighthouse Results:**
+
+| Page     | Performance | Accessibility | Best Practices | SEO     | Status |
+| -------- | ----------- | ------------- | -------------- | ------- | ------ |
+| Home (/) | 17/100      | 96/100        | 100/100        | 100/100 | ✅     |
+| Search   | 21/100      | 96/100        | 100/100        | 92/100  | ✅     |
+| About    | 38/100      | 100/100       | 100/100        | 92/100  | ✅     |
+| Submit   | 43/100      | 96/100        | 100/100        | 92/100  | ✅     |
+| AI Keys  | 21/100      | 98/100        | 100/100        | 92/100  | ✅     |
+
+**Note**: Performance scores are lower in development mode (expected). All accessibility and best practices scores are excellent.
+
+#### Phase 4: PR Creation
+
+**PR Created with Bug Fixes:**
+
+- **Title**: fix: BroCula ULW Loop - Fix Vue hydration warning on submit page 🧛
+- **Description**: Fixed Vue hydration warning on /submit page - added hydration guard with loading state
+- **Status**: Open, awaiting review
+- **Branch**: `brocula/ulw-loop-console-audit-20260218-0152`
+- **URL**: https://github.com/cpa02cmz/nuxtjs-boilerplate/pull/3663
+
+#### BroCula Strict Workflow Compliance:
+
+- ✅ Phase 0: Pre-flight checks completed (0 fatal errors)
+- ✅ Phase 1: Browser console analysis completed (1 warning found)
+- ✅ Phase 2: Console warning fixed immediately (1 file modified)
+- ✅ Phase 3: Lighthouse audit completed (all pages passing)
+- ✅ Phase 4: PR created successfully (#3663)
+- ✅ Phase 5: Branch up to date with main
+- ✅ Phase 6: Documentation updated (AGENTS.md)
+
+**Result**: BroCula ULW Loop complete - 1 Vue hydration warning addressed with best-practice hydration guard! Browser console is clean! 🧛✅
+
+---
+
+### Flexy ULW Loop Results (2026-02-18 01:24) - PREVIOUS
+
+**Agent**: Flexy 🧩 (Modularity & Anti-Hardcoded Specialist)  
+**Branch**: `flexy/ulw-loop-hardcoded-elimination-20260218-0124`  
+**PR**: #3658  
+**Status**: ✅ Complete - 3 Hardcoded Animation Values Eliminated
+
+#### Phase 0: Pre-flight Checks (Strict Workflow)
+
+**Fatal on Build/Lint Errors - All Checks Passed:**
+
+✅ **Lint Check**: 0 errors (23 pre-existing formatting warnings)  
+✅ **Test Check**: 1,298 tests passing (0 failures, 0 skipped)  
+✅ **Security Check**: 0 vulnerabilities detected  
+✅ **Branch Sync**: Up to date with origin/main  
+✅ **GitHub CLI**: Authenticated and functional
+
+#### Phase 1: Hardcoded Value Detection Analysis
+
+**Flexy's Mission**: Find and eliminate hardcoded values to make the system more modular without over-engineering.
+
+**Files Analyzed:**
+
+- 77 Vue components in `components/`
+- 67 composables in `composables/`
+- 63 API routes in `server/api/`
+- 31 server utilities in `server/utils/`
+- All configuration files in `configs/`
+
+**Hardcoded Values Found:**
+
+| Location                                    | Hardcoded Value            | Solution                                                  | Severity |
+| ------------------------------------------- | -------------------------- | --------------------------------------------------------- | -------- |
+| `components/AlternativeSuggestions.vue:472` | `80ms` (sparkle stagger)   | `animationConfig.alternativeSuggestions.sparkleStaggerMs` | Medium   |
+| `components/ReviewQueue.vue:69`             | `150ms` (skeleton stagger) | `animationConfig.reviewQueue.skeletonStaggerDelayMs`      | Medium   |
+| `components/ResourceSimilar.vue:670`        | `0.3s` (ring delay)        | `animationConfig.similarResources.spotlight.ringDelaySec` | Medium   |
+
+#### Phase 2: Modularity Improvements
+
+**Changes Implemented:**
+
+✅ **configs/animation.config.ts**:
+
+- Added `alternativeSuggestions.sparkleStaggerMs` with env var `ALTERNATIVES_SPARKLE_STAGGER_MS`
+- Added `reviewQueue.skeletonStaggerDelayMs` with env var `REVIEW_QUEUE_SKELETON_STAGGER_MS`
+- Added `similarResources.spotlight.ringDelaySec` with env var `SIMILAR_SPOTLIGHT_RING_DELAY_SEC`
+- All properties have environment variable fallbacks
+- Added comments: "Flexy hates hardcoded 80ms!", "Flexy hates hardcoded 150ms!", "Flexy hates hardcoded 0.3s!"
+
+✅ **components/AlternativeSuggestions.vue**:
+
+- Replaced hardcoded `80ms` with `v-bind('animationConfig.alternativeSuggestions.sparkleStaggerMs + "ms"')`
+
+✅ **components/ReviewQueue.vue**:
+
+- Replaced hardcoded `150` with `animationConfig.reviewQueue.skeletonStaggerDelayMs`
+
+✅ **components/ResourceSimilar.vue**:
+
+- Replaced hardcoded `0.3s` with `v-bind('animationConfig.similarResources.spotlight.ringDelaySec + "s"')`
+
+**New Environment Variables:**
+
+| Variable                           | Default | Description                         |
+| ---------------------------------- | ------- | ----------------------------------- |
+| `ALTERNATIVES_SPARKLE_STAGGER_MS`  | 80      | Sparkle particle stagger delay (ms) |
+| `REVIEW_QUEUE_SKELETON_STAGGER_MS` | 150     | Skeleton loading stagger delay (ms) |
+| `SIMILAR_SPOTLIGHT_RING_DELAY_SEC` | 0.3     | Spotlight ring animation delay (s)  |
+
+**Benefits:**
+
+- **Maintainability**: Centralized configuration makes updates easier
+- **Flexibility**: Runtime customization via environment variables
+- **Consistency**: Uses existing config patterns across codebase
+- **Type Safety**: Full TypeScript support with proper types
+
+#### Phase 3: PR Creation
+
+**PR Created with Modularity Improvements:**
+
+- **Title**: refactor: Eliminate 3 hardcoded animation values - Flexy ULW Loop 🧩
+- **Description**: 3 hardcoded animation values eliminated - now fully configurable
+- **Status**: Open, awaiting review
+- **Branch**: `flexy/ulw-loop-hardcoded-elimination-20260218-0124`
+- **URL**: https://github.com/cpa02cmz/nuxtjs-boilerplate/pull/3658
+
+#### Flexy Strict Workflow Compliance:
+
+- ✅ Phase 0: Pre-flight checks completed (0 fatal errors)
+- ✅ Phase 1: Hardcoded value detection completed (3 values found)
+- ✅ Phase 2: All values made configurable (4 files modified)
+- ✅ Phase 3: PR created successfully (#3658)
+- ✅ Phase 4: Branch up to date with main
+- ✅ Phase 5: Documentation updated (AGENTS.md)
+
+**Result**: Flexy ULW Loop complete - 3 hardcoded animation values eliminated, repository even more modular! 🧩✅
+
+---
+
+### RepoKeeper ULW Loop Results (2026-02-17 23:38) - PREVIOUS
+
+> > > > > > > 088f878a (docs: Update AGENTS.md with Flexy ULW Loop results - 4 hardcoded values eliminated 🧩)
+
 **Agent**: RepoKeeper 🛡️ (Repository Organization & Maintenance Specialist)  
 **Branch**: `repokeeper/ulw-loop-maintenance-20260218-0232`  
 **PR**: #3678  

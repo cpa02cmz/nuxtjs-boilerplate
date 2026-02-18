@@ -671,7 +671,12 @@ const spotlightFadeInDuration = computed(
   stroke-dasharray: var(--ring-circumference, 94);
   stroke-dashoffset: var(--ring-circumference, 94);
   transition: stroke-dashoffset 1s v-bind('EASING.SPRING_STANDARD');
-  animation: ring-fill 1.2s v-bind('EASING.SPRING_STANDARD') forwards;
+  /* Flexy hates hardcoded 1.2s! Using animationConfig.similarResources.spotlight.ringFillDurationSec */
+  animation: ring-fill
+    v-bind(
+      'animationConfig.similarResources.spotlight.ringFillDurationSec + "s"'
+    )
+    v-bind('EASING.SPRING_STANDARD') forwards;
   animation-delay: calc(
     var(--ring-delay, 0ms) +
       v-bind('animationConfig.similarResources.spotlight.ringDelaySec + "s"')
