@@ -3,10 +3,7 @@
     <!-- Content only renders after hydration to prevent mismatch with ssr: false -->
     <template v-if="isHydrated">
       <!-- Confetti celebration for successful submission -->
-      <ConfettiCelebration
-        ref="confettiRef"
-        intensity="medium"
-      />
+      <ConfettiCelebration ref="confettiRef" intensity="medium" />
 
       <!-- Smart Paste indicator - Palette's micro-UX enhancement! -->
       <!-- BroCula: Wrapped in ClientOnly to prevent hydration mismatch -->
@@ -80,10 +77,7 @@
                   'has-success': formData.title && !errors.title,
                 }"
               >
-                <label
-                  for="title"
-                  class="floating-label"
-                >
+                <label for="title" class="floating-label">
                   Resource Title <span aria-hidden="true">*</span>
                   <span class="sr-only">(required)</span>
                 </label>
@@ -120,7 +114,7 @@
                       ]"
                       @focus="isTitleFocused = true"
                       @blur="handleTitleBlur"
-                    >
+                    />
                   </template>
                 </CharacterCounter>
                 <!-- Validation checkmark - Palette's micro-UX delight! -->
@@ -156,10 +150,7 @@
                   </div>
                 </Transition>
               </div>
-              <p
-                id="title-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              <p id="title-description" class="mt-1 text-sm text-gray-500">
                 The name of the resource or service
               </p>
               <!-- Character limit progress bar for visual feedback -->
@@ -303,10 +294,7 @@
                   'has-success': formData.url && !errors.url,
                 }"
               >
-                <label
-                  for="url"
-                  class="floating-label"
-                >
+                <label for="url" class="floating-label">
                   URL <span aria-hidden="true">*</span>
                   <span class="sr-only">(required)</span>
                 </label>
@@ -330,7 +318,7 @@
                   ]"
                   @blur="handleUrlBlur"
                   @paste="handleSmartPaste"
-                >
+                />
                 <!-- Validation checkmark - Palette's micro-UX delight! -->
                 <Transition
                   :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
@@ -402,12 +390,7 @@
                   ]"
                   @blur="handleCategoryBlur"
                 >
-                  <option
-                    value=""
-                    disabled
-                  >
-                    Select a category
-                  </option>
+                  <option value="" disabled>Select a category</option>
                   <option
                     v-for="category in categoryOptions"
                     :key="category.value"
@@ -465,10 +448,7 @@
                   </div>
                 </Transition>
               </div>
-              <p
-                id="category-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              <p id="category-description" class="mt-1 text-sm text-gray-500">
                 Choose the most appropriate category for this resource
               </p>
               <div
@@ -489,10 +469,7 @@
                   'has-value': tagsInput.length > 0,
                 }"
               >
-                <label
-                  for="tags"
-                  class="floating-label"
-                >
+                <label for="tags" class="floating-label">
                   Tags (Optional)
                 </label>
                 <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal -->
@@ -502,12 +479,9 @@
                   type="text"
                   aria-describedby="tags-description"
                   :class="`w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all ${animationConfig.tailwindDurations.normal} input-focus-glow`"
-                >
+                />
               </div>
-              <p
-                id="tags-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              <p id="tags-description" class="mt-1 text-sm text-gray-500">
                 Add relevant tags to help categorize this resource (e.g., "api,
                 free-tier, openai")
               </p>
@@ -529,30 +503,56 @@
                 >
                   <div
                     v-if="showSavedIndicator && lastSavedTimestamp"
-                    class="flex items-center text-xs text-green-600 relative"
+                    class="flex items-center justify-between text-xs text-green-600 relative"
                   >
-                    <!-- Pulse ring animation container - No ClientOnly needed as page has ssr: false -->
-                    <div
-                      v-if="showDraftPulse && !prefersReducedMotion"
-                      class="draft-save-pulse-ring"
-                      aria-hidden="true"
-                    />
-                    <svg
-                      class="w-3.5 h-3.5 mr-1.5 relative z-10"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M5 13l4 4L19 7"
+                    <div class="flex items-center">
+                      <!-- Pulse ring animation container - No ClientOnly needed as page has ssr: false -->
+                      <div
+                        v-if="showDraftPulse && !prefersReducedMotion"
+                        class="draft-save-pulse-ring"
+                        aria-hidden="true"
                       />
-                    </svg>
-                    <span class="relative z-10">Draft saved {{ lastSavedText }}</span>
+                      <svg
+                        class="w-3.5 h-3.5 mr-1.5 relative z-10"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      <span class="relative z-10"
+                        >Draft saved {{ lastSavedText }}</span
+                      >
+                    </div>
+                    <!-- User Story Engineer: Clear draft button for better UX -->
+                    <button
+                      type="button"
+                      class="relative z-10 text-gray-400 hover:text-red-500 transition-colors focus:outline-none focus:ring-2 focus:ring-red-300 rounded px-1"
+                      title="Clear draft"
+                      aria-label="Clear saved draft"
+                      @click="handleClearDraft"
                     >
+                      <svg
+                        class="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                      </svg>
+                    </button>
                   </div>
                   <div
                     v-else-if="hasFormContent() && !submitSuccess"
@@ -576,10 +576,7 @@
                 <span v-if="!isSubmitting">{{
                   contentConfig.submit.button.submit
                 }}</span>
-                <span
-                  v-else
-                  class="flex items-center"
-                >
+                <span v-else class="flex items-center">
                   <svg
                     class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
@@ -681,19 +678,14 @@
       </div>
     </template>
     <!-- BroCula: Loading state while hydrating -->
-    <div
-      v-else
-      class="flex items-center justify-center h-full min-h-[50vh]"
-    >
+    <div v-else class="flex items-center justify-center h-full min-h-[50vh]">
       <div class="text-center">
         <div class="animate-pulse flex space-x-2 justify-center mb-4">
           <div class="w-3 h-3 bg-blue-500 rounded-full" />
           <div class="w-3 h-3 bg-blue-500 rounded-full" />
           <div class="w-3 h-3 bg-blue-500 rounded-full" />
         </div>
-        <p class="text-gray-500 text-sm">
-          Loading form...
-        </p>
+        <p class="text-gray-500 text-sm">Loading form...</p>
       </div>
     </div>
   </div>
@@ -768,6 +760,7 @@ const {
   restoreFormData,
   getFormData,
   hasFormContent,
+  resetForm,
 } = useSubmitPage()
 
 // Track which fields should shake when validation fails
@@ -1102,6 +1095,19 @@ const clearDraft = () => {
   if (typeof window === 'undefined') return
   localStorage.removeItem(DRAFT_STORAGE_KEY)
   localStorage.removeItem(DRAFT_TIMESTAMP_KEY)
+}
+
+// User Story Engineer: Handle clear draft with user feedback
+const handleClearDraft = () => {
+  clearDraft()
+  resetForm()
+  showSavedIndicator.value = false
+  lastSavedTimestamp.value = null
+
+  $toast.info(
+    contentConfig.toast.draft.cleared.title,
+    contentConfig.toast.draft.cleared.description
+  )
 }
 
 // Beforeunload warning when form has unsaved changes

@@ -1709,6 +1709,13 @@ export const contentConfig = {
           process.env.CONTENT_TOAST_DRAFT_DESC ||
           'Your previous submission draft from {{ timeAgo }} has been restored.',
       },
+      // User Story Engineer: Clear draft toast notification
+      cleared: {
+        title: process.env.CONTENT_TOAST_DRAFT_CLEARED_TITLE || 'Draft Cleared',
+        description:
+          process.env.CONTENT_TOAST_DRAFT_CLEARED_DESC ||
+          'Your saved draft has been removed.',
+      },
     },
     comparison: {
       copied: {
