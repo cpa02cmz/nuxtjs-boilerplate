@@ -4872,6 +4872,44 @@ export const animationConfig = {
     glowColor:
       process.env.PROFILE_STATS_GLOW_COLOR || 'rgba(96, 165, 250, 0.4)',
   },
+
+  // 🎨 Pallete's micro-UX enhancement: Lifecycle Timeline Narrative Reveal ✨
+  // Scroll-triggered typewriter animation for storytelling experience
+  lifecycleTimeline: {
+    // Typewriter animation speed (ms per character) - Flexy hates hardcoded 30!
+    typewriterSpeedMs: parseInt(
+      process.env.LIFECYCLE_TYPEWRITER_SPEED_MS || '30'
+    ),
+    // Stagger delay between timeline items (ms)
+    itemStaggerDelayMs: parseInt(
+      process.env.LIFECYCLE_ITEM_STAGGER_MS || '200'
+    ),
+    // Intersection Observer threshold for triggering animation
+    revealThreshold: parseFloat(
+      process.env.LIFECYCLE_REVEAL_THRESHOLD || '0.3'
+    ),
+    // Root margin for Intersection Observer
+    revealRootMargin:
+      process.env.LIFECYCLE_REVEAL_ROOT_MARGIN || '0px 0px -50px 0px',
+    // Duration of the fade-in animation for text (ms)
+    textFadeInDurationMs: parseInt(
+      process.env.LIFECYCLE_TEXT_FADE_IN_MS || '400'
+    ),
+    // Duration of the slide-in animation (ms)
+    slideInDurationMs: parseInt(process.env.LIFECYCLE_SLIDE_IN_MS || '500'),
+    // Scale effect for timeline markers when revealed
+    markerRevealScale: parseFloat(process.env.LIFECYCLE_MARKER_SCALE || '1.15'),
+    // Delay before starting typewriter effect after slide-in (ms)
+    typewriterDelayMs: parseInt(
+      process.env.LIFECYCLE_TYPEWRITER_DELAY_MS || '300'
+    ),
+    // Enable narrative announcements for screen readers
+    enableNarration: process.env.LIFECYCLE_ENABLE_NARRATION !== 'false',
+    // Announcement delay after item is revealed (ms)
+    narrationDelayMs: parseInt(
+      process.env.LIFECYCLE_NARRATION_DELAY_MS || '600'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
