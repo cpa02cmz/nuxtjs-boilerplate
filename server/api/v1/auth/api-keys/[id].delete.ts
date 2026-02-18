@@ -1,4 +1,4 @@
-import { getHeader, getQuery } from 'h3'
+import { getHeader } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import {
   sendNotFoundError,
@@ -9,12 +9,15 @@ import {
 
 export default defineEventHandler(async event => {
   try {
-    // Authentication check - require valid API key
-    const authApiKey =
-      getHeader(event, 'X-API-Key') || (getQuery(event).api_key as string)
+    // Security: Only accept API key via header, never via query parameter
+    // Query parameters expose keys in server logs, browser history, and referrer headers
+    const authApiKey = getHeader(event, 'X-API-Key')
 
     if (!authApiKey) {
-      return sendUnauthorizedError(event, 'API key required')
+      return sendUnauthorizedError(
+        event,
+        'API key required via X-API-Key header. Query parameter authentication is not supported for security reasons.'
+      )
     }
 
     // Verify API key exists and is active
