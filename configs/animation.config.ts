@@ -920,6 +920,14 @@ export const animationConfig = {
       distanceVariationMax: parseFloat(
         process.env.OFFLINE_RETRY_PARTICLE_DISTANCE_MAX || '1.3'
       ),
+      // Flexy hates hardcoded 0.1! Stagger delay multiplier between particles (seconds)
+      staggerDelayMultiplierSec: parseFloat(
+        process.env.OFFLINE_RETRY_PARTICLE_STAGGER_MULTIPLIER_SEC || '0.1'
+      ),
+      // Flexy hates hardcoded 100! Buffer time before clearing particles after animation (ms)
+      clearBufferMs: parseInt(
+        process.env.OFFLINE_RETRY_PARTICLE_CLEAR_BUFFER_MS || '100'
+      ),
     },
   },
 
@@ -1936,6 +1944,13 @@ export const animationConfig = {
       ringFillDurationSec: parseFloat(
         process.env.SIMILAR_RING_FILL_DURATION_SEC || '1.2'
       ),
+    },
+    // Flexy hates hardcoded 1s! Similarity ring progress transition
+    ring: {
+      // Transition duration for ring progress changes (ms)
+      transitionMs: parseInt(process.env.SIMILAR_RING_TRANSITION_MS || '1000'),
+      // CSS duration string for v-bind
+      transitionSec: `${parseInt(process.env.SIMILAR_RING_TRANSITION_MS || '1000') / 1000}s`,
     },
   },
 
@@ -3911,6 +3926,10 @@ export const animationConfig = {
       // Fallback height when index is out of range
       fallbackHeight: parseInt(
         process.env.ANALYTICS_MINI_BAR_FALLBACK_HEIGHT || '50'
+      ),
+      // Flexy hates hardcoded 100! Stagger delay between bars (ms)
+      staggerDelayMs: parseInt(
+        process.env.ANALYTICS_MINI_BAR_STAGGER_MS || '100'
       ),
     },
     // Flexy hates hardcoded 3000! Screen reader announcement clear delay (ms)
