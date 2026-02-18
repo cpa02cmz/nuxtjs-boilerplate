@@ -67,7 +67,8 @@
                   :class="{
                     'bg-yellow-200 text-gray-900': segment.isHighlight,
                   }"
-                >{{ segment.text }}</mark>
+                  >{{ segment.text }}</mark
+                >
               </template>
               <span v-else>{{ title }}</span>
             </NuxtLink>
@@ -79,7 +80,8 @@
                   :class="{
                     'bg-yellow-200 text-gray-900': segment.isHighlight,
                   }"
-                >{{ segment.text }}</mark>
+                  >{{ segment.text }}</mark
+                >
               </template>
               <span v-else>{{ title }}</span>
             </span>
@@ -180,16 +182,14 @@
         </div>
 
         <!-- Description -->
-        <p
-          id="resource-description"
-          class="mt-1 text-gray-800 text-sm"
-        >
+        <p id="resource-description" class="mt-1 text-gray-800 text-sm">
           <template v-if="highlightedDescriptionSegments.length > 0">
             <mark
               v-for="(segment, index) in highlightedDescriptionSegments"
               :key="index"
               :class="{ 'bg-yellow-200 text-gray-900': segment.isHighlight }"
-            >{{ segment.text }}</mark>
+              >{{ segment.text }}</mark
+            >
           </template>
           <span v-else>{{ description }}</span>
         </p>
@@ -200,30 +200,18 @@
           role="region"
           aria-label="Free tier information"
         >
-          <p
-            id="free-tier-label"
-            class="font-medium text-gray-900 text-sm"
-          >
+          <p id="free-tier-label" class="font-medium text-gray-900 text-sm">
             {{ contentConfig.resourceCard.freeTier }}
           </p>
-          <ul
-            class="mt-1 space-y-1 text-xs text-gray-800"
-            role="list"
-          >
-            <li
-              v-for="(benefit, index) in benefits"
-              :key="index"
-            >
+          <ul class="mt-1 space-y-1 text-xs text-gray-800" role="list">
+            <li v-for="(benefit, index) in benefits" :key="index">
               {{ benefit }}
             </li>
           </ul>
         </div>
 
         <!-- Similarity information (for alternative suggestions) -->
-        <div
-          v-if="similarityScore && similarityScore > 0"
-          class="mt-3"
-        >
+        <div v-if="similarityScore && similarityScore > 0" class="mt-3">
           <div class="flex items-center">
             <div
               class="w-full bg-gray-200 rounded-full h-2"
@@ -242,10 +230,7 @@
               {{ Math.round(similarityScore * 100) }}% match
             </span>
           </div>
-          <p
-            v-if="similarityReason"
-            class="mt-1 text-xs text-gray-600"
-          >
+          <p v-if="similarityReason" class="mt-1 text-xs text-gray-600">
             {{ similarityReason }}
           </p>
         </div>
@@ -362,10 +347,7 @@
   </article>
 
   <!-- Error state -->
-  <div
-    v-else
-    class="bg-white p-6 rounded-lg shadow border border-red-200"
-  >
+  <div v-else class="bg-white p-6 rounded-lg shadow border border-red-200">
     <div class="flex items-start">
       <div class="flex-shrink-0 mr-4">
         <svg
@@ -384,9 +366,7 @@
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <h3 class="text-lg font-medium text-red-900">
-          Resource Unavailable
-        </h3>
+        <h3 class="text-lg font-medium text-red-900">Resource Unavailable</h3>
         <p class="mt-1 text-red-700 text-sm">
           This resource could not be displayed due to an error.
         </p>
@@ -907,7 +887,7 @@ if (typeof useHead === 'function') {
       script: [
         {
           type: 'application/ld+json',
-          innerHTML: serializedSchema,
+          textContent: serializedSchema, // Security: Use textContent instead of innerHTML for JSON-LD
         },
       ],
     }
