@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3'
 import { getQuery } from 'h3'
 import { rateLimitConfig } from '~/configs/rate-limit.config'
+import { httpConfig } from '~/configs/http.config'
 import { TIME } from '~/server/utils/constants'
 
 /**
@@ -437,7 +438,7 @@ export async function rateLimit(event: H3Event, key?: string): Promise<void> {
   ) {
     const { createError } = await import('h3')
     throw createError({
-      statusCode: 400,
+      statusCode: httpConfig.status.BAD_REQUEST, // Flexy hates hardcoded 400!
       statusMessage:
         'Bypass keys are not allowed in query parameters for security reasons',
     })
@@ -493,7 +494,7 @@ export async function rateLimit(event: H3Event, key?: string): Promise<void> {
     analytics.blockedRequests++
     const { createError } = await import('h3')
     throw createError({
-      statusCode: 429,
+      statusCode: httpConfig.status.TOO_MANY_REQUESTS, // Flexy hates hardcoded 429!
       statusMessage: result.message || 'Rate limit exceeded',
     })
   }

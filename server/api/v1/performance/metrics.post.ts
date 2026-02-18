@@ -1,6 +1,7 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import { storePerformanceMetric } from '~/server/utils/performance-metrics'
 import { transformWebVitalsReport } from '~/types/performance'
+import { httpConfig } from '~/configs/http.config'
 import logger from '~/utils/logger'
 
 /**
@@ -21,7 +22,7 @@ export default defineEventHandler(async event => {
     // Validate required fields
     if (!body.metric || !body.timestamp || !body.url) {
       throw createError({
-        statusCode: 400,
+        statusCode: httpConfig.status.BAD_REQUEST, // Flexy hates hardcoded 400!
         statusMessage: 'Missing required fields: metric, timestamp, url',
       })
     }
@@ -51,7 +52,7 @@ export default defineEventHandler(async event => {
     }
 
     throw createError({
-      statusCode: 500,
+      statusCode: httpConfig.status.INTERNAL_SERVER_ERROR, // Flexy hates hardcoded 500!
       statusMessage: 'Failed to store performance metric',
     })
   }

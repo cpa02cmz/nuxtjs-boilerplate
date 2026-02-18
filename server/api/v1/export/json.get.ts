@@ -6,6 +6,7 @@ import {
   sendForbiddenError,
 } from '~/server/utils/api-response'
 import { contentConfig } from '~/configs/content.config'
+import { httpConfig } from '~/configs/http.config'
 import { logger } from '~/utils/logger'
 
 /**
@@ -26,7 +27,7 @@ export default defineEventHandler(async event => {
         ip: event.node.req.socket.remoteAddress,
       })
       throw createError({
-        statusCode: 401,
+        statusCode: httpConfig.status.UNAUTHORIZED, // Flexy hates hardcoded 401!
         statusMessage: 'Authentication required for export',
       })
     }
@@ -52,7 +53,7 @@ export default defineEventHandler(async event => {
         'Insufficient permissions for export. Required: export:read or admin.'
       )
       throw createError({
-        statusCode: 403,
+        statusCode: httpConfig.status.FORBIDDEN, // Flexy hates hardcoded 403!
         statusMessage: 'Forbidden: Insufficient permissions for export',
       })
     }

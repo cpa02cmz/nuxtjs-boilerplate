@@ -5,6 +5,7 @@ import {
 } from '~/server/utils/performance-metrics'
 import { performanceDashboardConfig } from '~/configs/performance-dashboard.config'
 import { performanceConfig } from '~/configs/performance.config'
+import { httpConfig } from '~/configs/http.config'
 import type {
   PerformanceDashboardData,
   WebVitalsSummary,
@@ -34,7 +35,7 @@ export default defineEventHandler(async event => {
     )
     if (!validRanges.includes(rangeHours as (typeof validRanges)[number])) {
       throw createError({
-        statusCode: 400,
+        statusCode: httpConfig.status.BAD_REQUEST, // Flexy hates hardcoded 400!
         statusMessage: `Invalid range. Valid values: ${validRanges.join(', ')}`,
       })
     }
@@ -100,7 +101,7 @@ export default defineEventHandler(async event => {
     }
 
     throw createError({
-      statusCode: 500,
+      statusCode: httpConfig.status.INTERNAL_SERVER_ERROR, // Flexy hates hardcoded 500!
       statusMessage: 'Failed to fetch performance metrics',
     })
   }

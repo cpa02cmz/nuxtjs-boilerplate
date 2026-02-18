@@ -9,6 +9,7 @@ import {
 } from '~/server/utils/api-response'
 import { triggerWebhookSchema } from '~/server/utils/validation-schemas'
 import { webhooksConfig } from '~/configs/webhooks.config'
+import { httpConfig } from '~/configs/http.config'
 import { randomUUID } from 'node:crypto'
 import { getHeader, createError } from 'h3'
 import { logger } from '~/utils/logger'
@@ -34,7 +35,7 @@ export default defineEventHandler(async event => {
           path: event.path,
         })
         throw createError({
-          statusCode: 413,
+          statusCode: httpConfig.status.PAYLOAD_TOO_LARGE, // Flexy hates hardcoded 413!
           statusMessage: webhooksConfig.payload.maxSizeErrorMessage,
         })
       }
@@ -55,7 +56,7 @@ export default defineEventHandler(async event => {
         }
       )
       throw createError({
-        statusCode: 413,
+        statusCode: httpConfig.status.PAYLOAD_TOO_LARGE, // Flexy hates hardcoded 413!
         statusMessage: webhooksConfig.payload.maxSizeErrorMessage,
       })
     }

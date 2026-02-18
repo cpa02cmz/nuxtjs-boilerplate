@@ -35,6 +35,7 @@ export const httpConfig = {
     NOT_FOUND: 404,
     METHOD_NOT_ALLOWED: 405,
     CONFLICT: 409,
+    PAYLOAD_TOO_LARGE: 413, // Flexy: Added missing 413 status code
     UNPROCESSABLE_ENTITY: 422,
     TOO_MANY_REQUESTS: 429,
 
