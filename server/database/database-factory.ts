@@ -12,6 +12,7 @@ import {
   type IDatabaseFactory,
 } from './database-abstraction'
 import { createPostgreSQLAdapter } from './postgresql-adapter'
+import { databaseConfig } from '~/configs/database.config'
 
 // Singleton instance cache
 const adapterCache = new Map<string, IDatabaseAdapter>()
@@ -128,10 +129,21 @@ export function createAdapterFromEnv(): IDatabaseAdapter {
     url,
     directUrl: process.env.DIRECT_URL || url,
     pool: {
-      min: parseInt(process.env.DB_POOL_MIN || '2'),
-      max: parseInt(process.env.DB_POOL_MAX || '10'),
-      acquireTimeoutMs: parseInt(process.env.DB_ACQUIRE_TIMEOUT_MS || '3000'),
-      idleTimeoutMs: parseInt(process.env.DB_IDLE_TIMEOUT_MS || '10000'),
+      // Flexy hates hardcoded values! Using databaseConfig.connectionPool
+      min: parseInt(
+        process.env.DB_POOL_MIN || String(databaseConfig.connectionPool.min)
+      ),
+      max: parseInt(
+        process.env.DB_POOL_MAX || String(databaseConfig.connectionPool.max)
+      ),
+      acquireTimeoutMs: parseInt(
+        process.env.DB_ACQUIRE_TIMEOUT_MS ||
+          String(databaseConfig.connectionPool.acquireTimeoutMs)
+      ),
+      idleTimeoutMs: parseInt(
+        process.env.DB_IDLE_TIMEOUT_MS ||
+          String(databaseConfig.connectionPool.idleTimeoutMs)
+      ),
     },
   }
 

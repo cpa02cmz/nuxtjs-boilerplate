@@ -24,13 +24,6 @@ export const databaseConfig = {
     delayMs: parseInt(process.env.DB_RETRY_DELAY_MS || '1000'),
   },
 
-  // Connection Pool Settings - Active for PostgreSQL
-  pool: {
-    min: parseInt(process.env.DB_POOL_MIN || '2'),
-    max: parseInt(process.env.DB_POOL_MAX || '10'),
-    acquireTimeoutMs: parseInt(process.env.DB_ACQUIRE_TIMEOUT_MS || '3000'),
-  },
-
   // Query Settings
   query: {
     timeoutMs: parseInt(process.env.DB_QUERY_TIMEOUT_MS || '5000'),
@@ -60,6 +53,12 @@ export const databaseConfig = {
     timeoutMs: parseInt(process.env.DB_HEALTH_CHECK_TIMEOUT_MS || '5000'),
     // Query to execute for health check
     query: process.env.DB_HEALTH_CHECK_QUERY || 'SELECT 1',
+  },
+
+  // Startup Settings - Flexy hates hardcoded 30000ms timeout!
+  startup: {
+    // Maximum time to wait for database connection during startup (ms)
+    timeoutMs: parseInt(process.env.DB_STARTUP_TIMEOUT_MS || '30000'),
   },
 
   // Idempotency Key Settings

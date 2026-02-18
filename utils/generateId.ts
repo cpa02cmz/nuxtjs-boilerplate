@@ -22,16 +22,28 @@ export interface IdGenerationConfig {
   includeTimestamp: boolean
 }
 
+import { limitsConfig } from '~/configs/limits.config'
+
 /**
  * Default configuration for ID generation
- * Flexy hates hardcoded values! All configurable via environment variables.
+ * Flexy hates hardcoded values! All configurable via environment variables or limitsConfig.
  */
 const defaultConfig: IdGenerationConfig = {
-  defaultLength: parseInt(process.env.ID_GENERATION_DEFAULT_LENGTH || '7'),
-  toastIdLength: parseInt(process.env.ID_GENERATION_TOAST_LENGTH || '7'),
-  tooltipIdLength: parseInt(process.env.ID_GENERATION_TOOLTIP_LENGTH || '7'),
+  defaultLength: parseInt(
+    process.env.ID_GENERATION_DEFAULT_LENGTH ||
+      String(limitsConfig.displayLength.uniqueIdLength)
+  ),
+  toastIdLength: parseInt(
+    process.env.ID_GENERATION_TOAST_LENGTH ||
+      String(limitsConfig.displayLength.toastIdLength)
+  ),
+  tooltipIdLength: parseInt(
+    process.env.ID_GENERATION_TOOLTIP_LENGTH ||
+      String(limitsConfig.displayLength.uniqueIdLength)
+  ),
   componentIdLength: parseInt(
-    process.env.ID_GENERATION_COMPONENT_LENGTH || '9'
+    process.env.ID_GENERATION_COMPONENT_LENGTH ||
+      String(limitsConfig.displayLength.componentIdLength)
   ),
   charset:
     (process.env.ID_GENERATION_CHARSET as IdGenerationConfig['charset']) ||
