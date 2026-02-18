@@ -107,22 +107,13 @@
     </svg>
 
     <!-- Empty State -->
-    <div
-      v-if="chartData.length === 0"
-      class="empty-state"
-    >
-      <span
-        class="empty-icon"
-        aria-hidden="true"
-      >📊</span>
+    <div v-if="chartData.length === 0" class="empty-state">
+      <span class="empty-icon" aria-hidden="true">📊</span>
       <span class="empty-text">No data available</span>
     </div>
 
     <!-- X-Axis Labels -->
-    <div
-      v-if="chartData.length > 0"
-      class="x-axis-labels"
-    >
+    <div v-if="chartData.length > 0" class="x-axis-labels">
       <span
         v-for="(label, index) in xAxisLabels"
         :key="`label-${index}`"
@@ -157,10 +148,7 @@
         :style="tooltipStyle"
       >
         <div class="tooltip-content">
-          <div
-            class="tooltip-value"
-            :style="{ color: chartColor }"
-          >
+          <div class="tooltip-value" :style="{ color: chartColor }">
             {{ hoveredPoint.value.toFixed(2) }}
           </div>
           <div class="tooltip-metric">
@@ -170,20 +158,12 @@
             {{ hoveredPoint.label }}
           </div>
         </div>
-        <div
-          aria-hidden="true"
-          class="tooltip-arrow"
-        />
+        <div aria-hidden="true" class="tooltip-arrow" />
       </div>
     </Transition>
 
     <!-- Screen Reader Announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ chartAnnouncement }}
     </div>
   </div>
@@ -292,7 +272,8 @@ watch(
         }
 
         requestAnimationFrame(animateLine)
-      }, 100)
+        /* Flexy hates hardcoded 100! Now using configurable chart entrance delay */
+      }, animationConfig.adminChart.entranceDelayMs)
     } else {
       // Skip animation for reduced motion or no data
       isChartVisible.value = true

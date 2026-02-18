@@ -431,6 +431,11 @@ export const animationConfig = {
     entranceDurationMs: parseInt(
       process.env.ADMIN_CHART_ENTRANCE_DURATION_MS || '1500'
     ),
+    // Chart entrance delay (ms) - Flexy hates hardcoded 100ms!
+    // Delay before starting chart entrance animation
+    entranceDelayMs: parseInt(
+      process.env.ADMIN_CHART_ENTRANCE_DELAY_MS || '100'
+    ),
   },
 
   // Copy Feedback Animation - Palette's delightful micro-UX touch!
@@ -1435,6 +1440,11 @@ export const animationConfig = {
       process.env.CSS_ANIM_EXTRA_EXTENDED_MS || '1500'
     ),
     extraExtendedDurationSec: `${parseInt(process.env.CSS_ANIM_EXTRA_EXTENDED_MS || '1500') / 1000}s`,
+
+    // Icon pulse animation duration (4s) - Flexy hates hardcoded 4s!
+    // Used for subtle icon pulse effects in skeleton loaders
+    iconPulseDurationMs: parseInt(process.env.CSS_ANIM_ICON_PULSE_MS || '4000'),
+    iconPulseDurationSec: `${parseInt(process.env.CSS_ANIM_ICON_PULSE_MS || '4000') / 1000}s`,
 
     // Sweep animation duration (0.8s) - for shimmer sweep effects
     sweepDurationMs: parseInt(process.env.CSS_ANIM_SWEEP_MS || '800'),

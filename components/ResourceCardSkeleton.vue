@@ -111,12 +111,7 @@
       </div>
     </div>
     <!-- 🎨 Pallete: Live region for screen reader announcements - announces loading state -->
-    <span
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ loadingAnnouncement }}
     </span>
 
@@ -434,7 +429,9 @@ onMounted(() => {
     shimmer v-bind('shimmerDurationSec') ease-in-out infinite,
     breathe v-bind('animationConfig.cssAnimations.longDurationSec') ease-in-out
       infinite,
-    icon-pulse 4s ease-in-out infinite;
+    /* Flexy hates hardcoded 4s! Now using configurable icon pulse duration */
+    icon-pulse v-bind('animationConfig.cssAnimations.iconPulseDurationSec')
+      ease-in-out infinite;
   transition: transform v-bind('animationConfig.cssTransitions.slowSec')
     v-bind('easingValues.springSnappy');
 }

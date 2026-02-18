@@ -38,10 +38,7 @@
     </div>
 
     <!-- Category Section -->
-    <div
-      class="mb-6 filter-section"
-      :style="{ '--section-index': 1 }"
-    >
+    <div class="mb-6 filter-section" :style="{ '--section-index': 1 }">
       <div
         class="skeleton-shimmer skeleton-header-expand h-5 rounded w-24 mb-3 skeleton-item skeleton-wave"
         :style="{ animationDelay: getStaggerDelay(2), '--wave-index': 2 }"
@@ -76,10 +73,7 @@
     </div>
 
     <!-- Pricing Model Section -->
-    <div
-      class="mb-6 filter-section"
-      :style="{ '--section-index': 2 }"
-    >
+    <div class="mb-6 filter-section" :style="{ '--section-index': 2 }">
       <div
         class="skeleton-shimmer skeleton-header-expand h-5 rounded w-32 mb-3 skeleton-item skeleton-wave"
         :style="{ animationDelay: getStaggerDelay(9), '--wave-index': 9 }"
@@ -114,10 +108,7 @@
     </div>
 
     <!-- Difficulty Section -->
-    <div
-      class="mb-6 filter-section"
-      :style="{ '--section-index': 3 }"
-    >
+    <div class="mb-6 filter-section" :style="{ '--section-index': 3 }">
       <div
         class="skeleton-shimmer skeleton-header-expand h-5 rounded w-20 mb-3 skeleton-item skeleton-wave"
         :style="{ animationDelay: getStaggerDelay(14), '--wave-index': 14 }"
@@ -152,10 +143,7 @@
     </div>
 
     <!-- Date Added Section -->
-    <div
-      class="mb-6 filter-section"
-      :style="{ '--section-index': 4 }"
-    >
+    <div class="mb-6 filter-section" :style="{ '--section-index': 4 }">
       <div
         class="skeleton-shimmer skeleton-header-expand h-5 rounded w-24 mb-3 skeleton-item skeleton-wave"
         :style="{ animationDelay: getStaggerDelay(20), '--wave-index': 20 }"
@@ -457,7 +445,10 @@ const easingValues = computed(() => ({
   animation:
     shimmer v-bind('animationConfig.skeleton.shimmerDurationSec') ease-in-out
       infinite,
-    checkbox-pulse 3s ease-in-out infinite,
+    /* Flexy hates hardcoded 3s! Now using configurable checkbox pulse duration */
+    checkbox-pulse
+      v-bind('animationConfig.cssAnimations.iconAttentionDurationSec')
+      ease-in-out infinite,
     breathe v-bind('animationConfig.cssAnimations.longDurationSec') ease-in-out
       infinite;
   transition: transform v-bind('animationConfig.cssTransitions.fastSec')
