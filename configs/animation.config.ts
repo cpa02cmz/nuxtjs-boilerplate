@@ -1714,6 +1714,10 @@ export const animationConfig = {
       process.env.ALTERNATIVES_TRANSITION_DURATION_MS || '200'
     ),
     transitionDurationSec: `${parseInt(process.env.ALTERNATIVES_TRANSITION_DURATION_MS || '200') / 1000}s`,
+    // Flexy hates hardcoded 150ms! Skeleton loading stagger delay between cards
+    skeletonStaggerDelayMs: parseInt(
+      process.env.ALTERNATIVES_SKELETON_STAGGER_MS || '150'
+    ),
   },
 
   // 🎨 Pallete's micro-UX enhancement: Limitations Section Animations

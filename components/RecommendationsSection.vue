@@ -23,7 +23,9 @@
           :key="`skeleton-${i}`"
           class="recommendation-skeleton-card"
           :class="{ 'animate-shimmer': !prefersReducedMotion }"
-          :style="{ animationDelay: `${(i - 1) * 150}ms` }"
+          :style="{
+            animationDelay: `${(i - 1) * (animationConfig.recommendations?.staggerDelayMs || 100)}ms`,
+          }"
         >
           <div class="skeleton-header">
             <div class="skeleton-title" />
