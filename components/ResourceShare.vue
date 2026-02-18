@@ -143,12 +143,7 @@
     </div>
 
     <!-- Screen Reader Announcement for Copy Success -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ screenReaderAnnouncement }}
     </div>
   </div>
@@ -159,7 +154,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { socialConfig } from '~/configs/social.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
-import { zIndexScale } from '~/configs/z-index.config'
+import { zIndexScale, zIndexConfig } from '~/configs/z-index.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
 
@@ -543,7 +538,7 @@ onUnmounted(() => {
   bottom: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
-  z-index: v-bind('zIndexScale.high[1]');
+  z-index: v-bind('zIndexConfig.tooltip');
   pointer-events: none;
 }
 
@@ -552,19 +547,13 @@ onUnmounted(() => {
   align-items: center;
   gap: 4px;
   padding: 6px 10px;
-  background: linear-gradient(
-    135deg,
-    v-bind('animationConfig.gradients?.keyboardHint?.start || "#1f2937"') 0%,
-    v-bind('animationConfig.gradients?.keyboardHint?.end || "#374151"') 100%
-  );
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
   color: white;
   font-size: 12px;
   font-weight: 500;
   border-radius: 6px;
   white-space: nowrap;
-  box-shadow: v-bind(
-    'shadowsConfig.resourceShare.tooltip || "0 4px 6px -1px rgba(0, 0, 0, 0.1)"'
-  );
+  box-shadow: v-bind('shadowsConfig.resourceShare.default');
 }
 
 .copy-shortcut-hint__key {
@@ -602,8 +591,7 @@ onUnmounted(() => {
   height: 0;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-top: 5px solid
-    v-bind('animationConfig.gradients?.keyboardHint?.end || "#374151"');
+  border-top: 5px solid #374151;
 }
 
 /* Show hint on focus for keyboard users */
