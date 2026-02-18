@@ -1,4 +1,4 @@
-import { getHeader, createError } from 'h3'
+import { getHeader } from 'h3'
 import { createHash } from 'crypto'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import { sendUnauthorizedError } from '~/server/utils/api-response'
@@ -47,14 +47,10 @@ export default defineEventHandler(async event => {
         timestamp: new Date().toISOString(),
       }
     )
-    sendUnauthorizedError(
+    return sendUnauthorizedError(
       event,
       'Authentication required. Please provide a valid X-API-Key header.'
     )
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Unauthorized: API key required',
-    })
   }
 
   // Verify API key exists and is active
@@ -68,12 +64,7 @@ export default defineEventHandler(async event => {
       ipHash: hashedIP,
       timestamp: new Date().toISOString(),
     })
-    sendUnauthorizedError(event, 'Invalid or inactive API key')
-    // Halt request processing to prevent API handler execution
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Invalid or inactive API key',
-    })
+    return sendUnauthorizedError(event, 'Invalid or inactive API key')
   }
 
   // P1 Security Fix: Add audit logging for sensitive operations
