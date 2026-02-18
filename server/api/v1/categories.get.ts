@@ -11,17 +11,13 @@ import { contentConfig } from '~/configs/content.config'
  *
  * Retrieve a list of all available categories with counts
  */
-interface CategoriesCacheEntry {
-  data: Array<{ name: string; count: number }>
-  success: boolean
-}
-
 async function getCategoriesHandler(event: H3Event) {
   // Try to get from cache first
   const cacheKey = 'categories:all'
-  const cachedResult = (await cacheManager.get(
-    cacheKey
-  )) as CategoriesCacheEntry | null
+  const cachedResult = (await cacheManager.get(cacheKey)) as Array<{
+    name: string
+    count: number
+  }> | null
   if (cachedResult) {
     event.node.res?.setHeader('X-Cache', 'HIT')
     return cachedResult
@@ -45,10 +41,10 @@ async function getCategoriesHandler(event: H3Event) {
   }))
 
   // Cache result for 1 hour since categories don't change often
-  const response = { success: true, data: categories }
+  // Cache only the raw data - createApiRoute will wrap it with { success: true, data: ... }
   await cacheSetWithTags(
     cacheKey,
-    response,
+    categories,
     toSeconds(timeConfig.cache.long),
     generateCacheTags(cacheTagsConfig.categories.all)
   )

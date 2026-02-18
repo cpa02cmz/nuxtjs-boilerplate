@@ -67,6 +67,7 @@ export default defineEventHandler(async event => {
     if (cachedResult) {
       event.node.res?.setHeader('X-Cache', 'HIT')
       event.node.res?.setHeader('X-Cache-Key', cacheKey)
+      // Cached result already has { success: true, data: ..., pagination: ... } wrapper
       return cachedResult
     }
 
@@ -175,8 +176,8 @@ export default defineEventHandler(async event => {
     const resourcesWithHierarchicalTags =
       convertResourcesToHierarchicalTags(paginatedResources)
 
-    // Prepare response
-    const response = {
+    // Prepare response data (without wrapper - sendSuccessResponse adds it)
+    const responseData = {
       data: resourcesWithHierarchicalTags,
       pagination: {
         total,
@@ -189,9 +190,14 @@ export default defineEventHandler(async event => {
 
     // Cache the result with tags for easier invalidation
     // Use shorter TTL for search results since they change more frequently
+    // Cache the full response with wrapper for consistency
+    const responseWithWrapper = {
+      success: true,
+      ...responseData,
+    }
     await cacheSetWithTags(
       cacheKey,
-      response,
+      responseWithWrapper,
       cacheConfig.server.defaultTtlMs / 1000,
       generateCacheTags(
         cacheTagsConfig.search.results,
@@ -203,8 +209,8 @@ export default defineEventHandler(async event => {
     event.node.res?.setHeader('X-Cache', 'MISS')
     event.node.res?.setHeader('X-Cache-Key', cacheKey)
 
-    // Set success response
-    return sendSuccessResponse(event, response)
+    // Set success response (sendSuccessResponse adds the wrapper)
+    return sendSuccessResponse(event, responseData)
   } catch (error) {
     // Log error using our error logging service
     logError(

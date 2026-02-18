@@ -56,7 +56,10 @@
         aria-hidden="true"
       >
         <div class="typing-momentum-bar" />
-        <div v-if="momentumLevel === 'high'" class="typing-momentum-glow" />
+        <div
+          v-if="momentumLevel === 'high'"
+          class="typing-momentum-glow"
+        />
       </div>
     </Transition>
 
