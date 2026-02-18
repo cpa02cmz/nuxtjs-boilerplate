@@ -2,10 +2,12 @@ import { defineEventHandler, getQuery } from 'h3'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import {
   sendSuccessResponse,
+  sendBadRequestError,
   sendUnauthorizedError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
+import { webhookDeliveriesQuerySchema } from '~/server/utils/validation-schemas'
 
 export default defineEventHandler(async event => {
   try {
@@ -18,8 +20,18 @@ export default defineEventHandler(async event => {
     await rateLimit(event)
 
     const query = getQuery(event)
-    const webhookId = query.webhookId as string | undefined
-    const status = query.status as string | undefined
+
+    // BugFixer: Fixed Issue #3902 - Add validation for query parameters
+    const validatedQuery = webhookDeliveriesQuerySchema.safeParse(query)
+    if (!validatedQuery.success) {
+      return sendBadRequestError(
+        event,
+        'Invalid query parameters: ' +
+          validatedQuery.error.issues.map(i => i.message).join(', ')
+      )
+    }
+
+    const { webhookId, status } = validatedQuery.data
 
     let deliveries = await webhookStorage.getAllDeliveries()
 
