@@ -7,17 +7,21 @@
       {{ contentConfig.lifecycle.title }}
     </h3>
 
-    <div
-      v-if="statusHistory && statusHistory.length > 0"
-      class="timeline"
-    >
+    <div v-if="statusHistory && statusHistory.length > 0" class="timeline">
       <div
         v-for="(change, index) in statusHistory"
         :key="change.id"
+        ref="timelineItemRefs"
         :aria-label="getItemAriaLabel(change, index)"
         :style="{ '--item-index': index }"
         class="timeline-item"
-        :class="{ 'timeline-item--clicked': clickedIndex === index }"
+        :class="{
+          'timeline-item--clicked': clickedIndex === index,
+          'timeline-item--revealed':
+            revealedItems.has(index) && !prefersReducedMotion,
+          'timeline-item--typing':
+            typingItems.has(index) && !prefersReducedMotion,
+        }"
         role="listitem"
         tabindex="0"
         @click="handleItemClick($event, index, change)"
@@ -39,37 +43,79 @@
             }"
           />
         </span>
+
+        <!-- 🎨 Pallete's micro-UX enhancement: Narrative Reveal Glow Effect ✨
+             Subtle glow that appears when timeline item is revealed -->
+        <span
+          v-if="revealedItems.has(index) && !prefersReducedMotion"
+          class="timeline-item__reveal-glow"
+          aria-hidden="true"
+        />
+
         <div class="timeline-marker">
           <div
             :class="['marker', getMarkerClass(change.toStatus)]"
             :title="change.toStatus"
+            :style="getMarkerRevealStyle(index)"
           >
             {{ getStatusInitial(change.toStatus) }}
           </div>
           <div
             v-if="index !== statusHistory.length - 1"
             class="timeline-connector"
+            :class="{
+              'timeline-connector--active': revealedItems.has(index + 1),
+            }"
           />
         </div>
         <div class="timeline-content">
           <div class="change-info">
-            <span class="status-change">{{ change.fromStatus }} → {{ change.toStatus }}</span>
+            <span
+              class="status-change"
+              :class="{
+                'status-change--typing':
+                  typingItems.has(index) && !prefersReducedMotion,
+              }"
+            >
+              {{ change.fromStatus }} → {{ change.toStatus }}
+            </span>
             <span class="change-date">{{ formatDate(change.changedAt) }}</span>
           </div>
           <div class="change-details">
-            <div
-              v-if="change.reason"
-              class="reason"
-            >
-              {{ contentConfig.lifecycle.labels.reason }} {{ change.reason }}
+            <!-- 🎨 Pallete's micro-UX enhancement: Typewriter Text Reveal ✨
+                 Progressive text reveal for storytelling narrative -->
+            <div v-if="change.reason" class="reason">
+              <span class="reason-label">{{
+                contentConfig.lifecycle.labels.reason
+              }}</span>
+              <span
+                class="reason-text"
+                :class="{
+                  'reason-text--typing':
+                    typingItems.has(index) && !prefersReducedMotion,
+                }"
+                :style="getTypewriterStyle(index, 'reason')"
+                >{{ change.reason }}</span
+              >
+            </div>
+            <div v-if="change.notes" class="notes">
+              <span class="notes-label">{{
+                contentConfig.lifecycle.labels.notes
+              }}</span>
+              <span
+                class="notes-text"
+                :class="{
+                  'notes-text--typing':
+                    typingItems.has(index) && !prefersReducedMotion,
+                }"
+                :style="getTypewriterStyle(index, 'notes')"
+                >{{ change.notes }}</span
+              >
             </div>
             <div
-              v-if="change.notes"
-              class="notes"
+              class="changed-by"
+              :class="{ 'changed-by--revealed': revealedItems.has(index) }"
             >
-              {{ contentConfig.lifecycle.labels.notes }} {{ change.notes }}
-            </div>
-            <div class="changed-by">
               {{ contentConfig.lifecycle.labels.changedBy }}
               {{ change.changedBy }}
             </div>
@@ -78,20 +124,12 @@
       </div>
     </div>
 
-    <div
-      v-else
-      class="no-history"
-    >
+    <div v-else class="no-history">
       {{ contentConfig.lifecycle.emptyState }}
     </div>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
 
@@ -100,30 +138,22 @@
       class="update-history"
     >
       <h4>{{ contentConfig.lifecycle.updateHistoryTitle }}</h4>
-      <div
-        v-for="update in updateHistory"
-        :key="update.id"
-        class="update-item"
-      >
+      <div v-for="update in updateHistory" :key="update.id" class="update-item">
         <div class="update-header">
-          <span class="version">{{ contentConfig.lifecycle.versionPrefix
-          }}{{ update.version }}</span>
+          <span class="version"
+            >{{ contentConfig.lifecycle.versionPrefix
+            }}{{ update.version }}</span
+          >
           <span class="update-date">{{ formatDate(update.updatedAt) }}</span>
         </div>
-        <div
-          v-if="update.changelog"
-          class="changelog"
-        >
+        <div v-if="update.changelog" class="changelog">
           {{ update.changelog }}
         </div>
         <ul
           v-if="update.changes && update.changes.length > 0"
           class="changes-list"
         >
-          <li
-            v-for="(change, idx) in update.changes"
-            :key="idx"
-          >
+          <li v-for="(change, idx) in update.changes" :key="idx">
             {{ change }}
           </li>
         </ul>
@@ -145,27 +175,18 @@
           <kbd class="keyboard-hint__key">↓</kbd>
           <span class="keyboard-hint__text">Navigate</span>
         </span>
-        <span
-          class="keyboard-hint__divider"
-          aria-hidden="true"
-        >•</span>
+        <span class="keyboard-hint__divider" aria-hidden="true">•</span>
         <span class="keyboard-hint__item">
           <kbd class="keyboard-hint__key">j</kbd>
           <kbd class="keyboard-hint__key">k</kbd>
           <span class="keyboard-hint__text">Vim style</span>
         </span>
-        <span
-          class="keyboard-hint__divider"
-          aria-hidden="true"
-        >•</span>
+        <span class="keyboard-hint__divider" aria-hidden="true">•</span>
         <span class="keyboard-hint__item">
           <kbd class="keyboard-hint__key">Home</kbd>
           <span class="keyboard-hint__text">First</span>
         </span>
-        <span
-          class="keyboard-hint__divider"
-          aria-hidden="true"
-        >•</span>
+        <span class="keyboard-hint__divider" aria-hidden="true">•</span>
         <span class="keyboard-hint__item">
           <kbd class="keyboard-hint__key">End</kbd>
           <span class="keyboard-hint__text">Last</span>
@@ -204,6 +225,16 @@ const announcement = ref('')
 const isKeyboardFocused = ref(false)
 let keyboardFocusTimeout: ReturnType<typeof setTimeout> | null = null
 
+// 🎨 Pallete's micro-UX enhancement: Scroll-triggered Narrative Reveal State
+const timelineItemRefs = ref<HTMLElement[]>([])
+const revealedItems = ref<Set<number>>(new Set())
+const typingItems = ref<Set<number>>(new Set())
+const typewriterProgress = ref<{
+  [key: number]: { reason: number; notes: number }
+}>({})
+let intersectionObserver: IntersectionObserver | null = null
+let typingIntervals: { [key: number]: ReturnType<typeof setInterval> } = {}
+
 // Check for reduced motion preference
 const checkReducedMotion = () => {
   if (
@@ -213,6 +244,139 @@ const checkReducedMotion = () => {
     return false
   }
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+// 🎨 Pallete's micro-UX enhancement: Scroll-triggered Narrative Reveal Functions
+// Initialize Intersection Observer for scroll-triggered animations
+const initIntersectionObserver = () => {
+  if (prefersReducedMotion.value || typeof window === 'undefined') return
+
+  const config = animationConfig.lifecycleTimeline
+
+  intersectionObserver = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = parseInt(entry.target.getAttribute('data-index') || '0')
+          revealTimelineItem(index)
+        }
+      })
+    },
+    {
+      threshold: config.revealThreshold,
+      rootMargin: config.revealRootMargin,
+    }
+  )
+
+  // Observe all timeline items
+  timelineItemRefs.value.forEach((item, index) => {
+    item.setAttribute('data-index', String(index))
+    intersectionObserver?.observe(item)
+  })
+}
+
+// Reveal a timeline item with animation
+const revealTimelineItem = (index: number) => {
+  if (revealedItems.value.has(index)) return
+
+  const config = animationConfig.lifecycleTimeline
+
+  // Add to revealed set
+  revealedItems.value.add(index)
+
+  // Initialize typewriter progress
+  if (!typewriterProgress.value[index]) {
+    typewriterProgress.value[index] = { reason: 0, notes: 0 }
+  }
+
+  // Start typewriter effect after slide-in animation
+  setTimeout(() => {
+    typingItems.value.add(index)
+    startTypewriterAnimation(index)
+
+    // Announce narrative progression for screen readers
+    if (config.enableNarration && props.statusHistory?.[index]) {
+      setTimeout(() => {
+        const change = props.statusHistory![index]
+        announcement.value = `Timeline entry ${index + 1} of ${props.statusHistory!.length}: Status changed from ${change.fromStatus} to ${change.toStatus}`
+        setTimeout(() => {
+          announcement.value = ''
+        }, config.narrationDelayMs)
+      }, config.narrationDelayMs)
+    }
+  }, config.typewriterDelayMs)
+
+  // Haptic feedback for mobile users
+  if (!prefersReducedMotion.value) {
+    hapticLight()
+  }
+}
+
+// Start typewriter animation for a timeline item
+const startTypewriterAnimation = (index: number) => {
+  const change = props.statusHistory?.[index]
+  if (!change) return
+
+  const config = animationConfig.lifecycleTimeline
+  const progress = typewriterProgress.value[index]
+
+  // Animate reason text
+  if (change.reason) {
+    const reasonLength = change.reason.length
+    typingIntervals[`${index}-reason`] = setInterval(() => {
+      if (progress.reason < reasonLength) {
+        progress.reason++
+      } else {
+        clearInterval(typingIntervals[`${index}-reason`])
+      }
+    }, config.typewriterSpeedMs)
+  }
+
+  // Animate notes text with slight delay
+  if (change.notes) {
+    setTimeout(() => {
+      const notesLength = change.notes!.length
+      typingIntervals[`${index}-notes`] = setInterval(() => {
+        if (progress.notes < notesLength) {
+          progress.notes++
+        } else {
+          clearInterval(typingIntervals[`${index}-notes`])
+        }
+      }, config.typewriterSpeedMs)
+    }, config.typewriterSpeedMs * 10) // Small delay between reason and notes
+  }
+}
+
+// Get typewriter style for text elements
+const getTypewriterStyle = (index: number, type: 'reason' | 'notes') => {
+  if (prefersReducedMotion.value || !typingItems.value.has(index)) {
+    return {}
+  }
+
+  const progress = typewriterProgress.value[index]?.[type] || 0
+  const change = props.statusHistory?.[index]
+  const text = type === 'reason' ? change?.reason : change?.notes
+
+  if (!text) return {}
+
+  // Calculate clip-path to reveal text progressively
+  const percentage = Math.min((progress / text.length) * 100, 100)
+  return {
+    clipPath: `inset(0 ${100 - percentage}% 0 0)`,
+  }
+}
+
+// Get marker reveal style
+const getMarkerRevealStyle = (index: number) => {
+  if (prefersReducedMotion.value || !revealedItems.value.has(index)) {
+    return {}
+  }
+
+  const config = animationConfig.lifecycleTimeline
+  return {
+    transform: `scale(${config.markerRevealScale})`,
+    transition: `transform ${config.slideInDurationMs}ms ${easingConfig.cubicBezier.spring}`,
+  }
 }
 
 // Get ARIA label for timeline item
@@ -375,6 +539,12 @@ onMounted(() => {
   // Add global focus tracking for keyboard hint
   document.addEventListener('focusin', handleFocus)
   document.addEventListener('focusout', handleBlur)
+
+  // 🎨 Pallete's micro-UX enhancement: Initialize scroll-triggered narrative reveal
+  // Small delay to ensure DOM is ready
+  setTimeout(() => {
+    initIntersectionObserver()
+  }, 100)
 })
 
 // Cleanup on unmount
@@ -384,6 +554,14 @@ onUnmounted(() => {
   if (keyboardFocusTimeout) {
     clearTimeout(keyboardFocusTimeout)
   }
+
+  // 🎨 Pallete's micro-UX enhancement: Cleanup Intersection Observer and intervals
+  if (intersectionObserver) {
+    intersectionObserver.disconnect()
+  }
+  Object.values(typingIntervals).forEach(interval => {
+    clearInterval(interval)
+  })
 })
 </script>
 
@@ -445,6 +623,128 @@ onUnmounted(() => {
 .timeline-item:hover {
   transform: translateX(4px);
   background-color: v-bind('componentColorsConfig.lifecycleTimeline.hoverBg');
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Scroll-triggered Narrative Reveal Styles */
+
+/* Revealed state - base animation */
+.timeline-item--revealed {
+  animation: timeline-reveal
+    v-bind('animationConfig.lifecycleTimeline.slideInDurationMs + "ms"')
+    v-bind('easingConfig.cubicBezier.spring') forwards;
+}
+
+@keyframes timeline-reveal {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Reveal glow effect */
+.timeline-item__reveal-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(59, 130, 246, 0.1) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  animation: reveal-glow-fade
+    v-bind('animationConfig.lifecycleTimeline.textFadeInDurationMs + "ms"')
+    ease-out forwards;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes reveal-glow-fade {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+/* Timeline connector animation */
+.timeline-connector--active {
+  animation: connector-activate
+    v-bind('animationConfig.lifecycleTimeline.slideInDurationMs + "ms"')
+    ease-out forwards;
+}
+
+@keyframes connector-activate {
+  0% {
+    background: linear-gradient(
+      to bottom,
+      v-bind('componentColorsConfig.lifecycleTimeline.connector') 0%,
+      transparent 100%
+    );
+  }
+  100% {
+    background: v-bind('componentColorsConfig.lifecycleTimeline.connector');
+  }
+}
+
+/* Typewriter text styles */
+.status-change--typing,
+.reason-text--typing,
+.notes-text--typing {
+  position: relative;
+  display: inline-block;
+}
+
+/* Typing cursor effect */
+.status-change--typing::after,
+.reason-text--typing::after,
+.notes-text--typing::after {
+  content: '|';
+  position: absolute;
+  right: -4px;
+  top: 0;
+  color: v-bind('componentColorsConfig.lifecycleTimeline.statusChange');
+  animation: typing-cursor
+    v-bind('animationConfig.lifecycleTimeline.typewriterSpeedMs * 20 + "ms"')
+    step-end infinite;
+}
+
+@keyframes typing-cursor {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Changed by reveal animation */
+.changed-by--revealed {
+  animation: changed-by-fade-in
+    v-bind('animationConfig.lifecycleTimeline.textFadeInDurationMs + "ms"')
+    ease-out forwards;
+  animation-delay: v-bind(
+    'animationConfig.lifecycleTimeline.typewriterDelayMs + "ms"'
+  );
+  opacity: 0;
+}
+
+@keyframes changed-by-fade-in {
+  to {
+    opacity: 1;
+  }
 }
 
 .timeline-item:focus {
@@ -736,6 +1036,35 @@ onUnmounted(() => {
   .timeline-item__ripple-circle {
     animation: none;
     opacity: 0;
+  }
+
+  /* 🎨 Pallete's micro-UX: Disable narrative reveal animations for reduced motion */
+  .timeline-item--revealed,
+  .timeline-item--typing {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .timeline-item__reveal-glow {
+    animation: none;
+    opacity: 0;
+  }
+
+  .timeline-connector--active {
+    animation: none;
+  }
+
+  .status-change--typing::after,
+  .reason-text--typing::after,
+  .notes-text--typing::after {
+    animation: none;
+    opacity: 0;
+  }
+
+  .changed-by--revealed {
+    animation: none;
+    opacity: 1;
   }
 }
 
