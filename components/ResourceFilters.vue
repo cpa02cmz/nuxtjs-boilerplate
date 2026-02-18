@@ -111,11 +111,8 @@
             @change="onDateRangeChange(option.value)"
             @focus="focusedDateOption = option.value"
             @blur="focusedDateOption = null"
-          >
-          <span
-            class="date-range-radio"
-            aria-hidden="true"
-          >
+          />
+          <span class="date-range-radio" aria-hidden="true">
             <span class="date-range-radio-inner" />
           </span>
           <span class="date-range-label">{{ option.label }}</span>
@@ -513,13 +510,16 @@ onUnmounted(() => {
 }
 
 /* Header entrance animation */
+/* Flexy hates hardcoded 0ms! Using animationConfig.resourceFilters.headerDelayMs */
 .filter-header {
   opacity: 0;
   transform: translateY(-10px);
   transition:
     opacity var(--entrance-duration, 400ms) ease-out,
     transform var(--entrance-duration, 400ms) ease-out;
-  transition-delay: 0ms;
+  transition-delay: v-bind(
+    'animationConfig.resourceFilters.headerDelayMs + "ms"'
+  );
 }
 
 .filter-header.is-visible {

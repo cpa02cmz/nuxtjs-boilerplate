@@ -33,6 +33,17 @@ export const animationConfig = {
     swipeThresholdPx: parseInt(process.env.TOOLTIP_SWIPE_THRESHOLD_PX || '50'),
   },
 
+  // Toast Notification Animations - Flexy hates hardcoded CSS transitions! 🧩
+  // Swipe hint indicators and reduced motion transitions for toast notifications
+  toast: {
+    // Swipe hint opacity transition duration (seconds)
+    // Flexy hates hardcoded 0.2s!
+    swipeHintTransitionSec: `${parseInt(process.env.TOAST_SWIPE_HINT_TRANSITION_MS || '200') / 1000}s`,
+    // Reduced motion swipe transition duration (seconds)
+    // Flexy hates hardcoded 0.2s!
+    reducedMotionSwipeSec: `${parseInt(process.env.TOAST_REDUCED_MOTION_SWIPE_MS || '200') / 1000}s`,
+  },
+
   // Live Indicator Animations - Palette's micro-UX delight! 🎨
   // Used by RelativeTimeBadge for pulsing indicator dot
   liveIndicator: {
@@ -2766,6 +2777,10 @@ export const animationConfig = {
       durationRandomnessMs: parseInt(
         process.env.VIEWED_BADGE_PARTICLE_DURATION_RANDOMNESS_MS || '200'
       ),
+      // Particle animation reset timeout (ms) - Flexy hates hardcoded 1000ms!
+      resetTimeoutMs: parseInt(
+        process.env.VIEWED_BADGE_PARTICLE_RESET_TIMEOUT_MS || '1000'
+      ),
       // Base particle spread distance (px)
       baseSpreadPx: parseInt(
         process.env.VIEWED_BADGE_PARTICLE_BASE_SPREAD_PX || '20'
@@ -4361,6 +4376,8 @@ export const animationConfig = {
     maxDurationMs: parseInt(
       process.env.PAGE_TRANSITION_MAX_DURATION_MS || '5000'
     ),
+    // Navigation debounce delay (ms) - Flexy hates hardcoded 50ms!
+    debounceMs: parseInt(process.env.PAGE_TRANSITION_DEBOUNCE_MS || '50'),
   },
 
   // Performance Optimization & GPU Acceleration - Issue #2752 Fix
@@ -4584,6 +4601,12 @@ export const animationConfig = {
     ),
     // Easing function for entrance animations
     entranceEasing: EASING_REF.SPRING_SNAPPY,
+    // Filter header entrance transition delay (ms) - Flexy hates hardcoded 0ms!
+    headerDelayMs: parseInt(
+      process.env.RESOURCE_FILTERS_HEADER_DELAY_MS || '0'
+    ),
+    // CSS delay string for v-bind
+    headerDelaySec: `${parseInt(process.env.RESOURCE_FILTERS_HEADER_DELAY_MS || '0') / 1000}s`,
     // Date range radio button transitions - Flexy hates hardcoded 200ms!
     dateRange: {
       // General transition duration for radio buttons (ms)

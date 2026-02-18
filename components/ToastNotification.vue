@@ -100,10 +100,7 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p
-            v-if="toast.description"
-            class="toast__description"
-          >
+          <p v-if="toast.description" class="toast__description">
             {{ toast.description }}
           </p>
         </div>
@@ -722,6 +719,7 @@ onUnmounted(() => {
 }
 
 /* Swipe hint indicator for touch devices */
+/* Flexy hates hardcoded 0.2s! Using animationConfig.toast.swipeHintTransitionSec */
 .toast::before {
   content: '';
   position: absolute;
@@ -734,7 +732,8 @@ onUnmounted(() => {
     v-bind('toastStyles.colors.info.border') 100%
   );
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity v-bind('animationConfig.toast.swipeHintTransitionSec')
+    ease;
 }
 
 /* Left swipe hint */
@@ -743,6 +742,7 @@ onUnmounted(() => {
 }
 
 /* Right swipe hint */
+/* Flexy hates hardcoded 0.2s! Using animationConfig.toast.swipeHintTransitionSec */
 .toast::after {
   content: '';
   position: absolute;
@@ -756,7 +756,8 @@ onUnmounted(() => {
     v-bind('toastStyles.colors.info.border') 100%
   );
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity v-bind('animationConfig.toast.swipeHintTransitionSec')
+    ease;
 }
 
 /* Show swipe hints on touch devices */
@@ -773,9 +774,11 @@ onUnmounted(() => {
 }
 
 /* Reduced motion support for swipe */
+/* Flexy hates hardcoded 0.2s! Using animationConfig.toast.reducedMotionSwipeSec */
 @media (prefers-reduced-motion: reduce) {
   .toast--swiping {
-    transition: opacity 0.2s ease-out !important;
+    transition: opacity v-bind('animationConfig.toast.reducedMotionSwipeSec')
+      ease-out !important;
   }
 
   .toast::before,
