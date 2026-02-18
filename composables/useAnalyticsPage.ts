@@ -3,6 +3,7 @@ import { logError } from '~/utils/errorLogger'
 import logger from '~/utils/logger'
 import type { ApiResponse } from '~/utils/api-client'
 import { limitsConfig } from '~/configs/limits.config'
+import { formatDateShort } from '~/utils/date-utils'
 
 interface EventsByType {
   page_view?: number
@@ -61,11 +62,6 @@ export const useAnalyticsPage = () => {
     return Math.max(...analyticsData.value.dailyTrends.map(day => day.count), 1)
   })
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  }
-
   const fetchAnalyticsData = async () => {
     loading.value = true
     error.value = null
@@ -113,7 +109,7 @@ export const useAnalyticsPage = () => {
     startDate: readonly(startDate),
     endDate: readonly(endDate),
     maxDailyCount,
-    formatDate,
+    formatDate: formatDateShort,
     fetchAnalyticsData,
   }
 }

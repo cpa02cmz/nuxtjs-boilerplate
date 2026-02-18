@@ -258,11 +258,12 @@ function calculateApiPerformance(
   }
 }
 
-// Calculate bucket size based on range
+// Calculate bucket size based on range - Flexy hates hardcoded values!
 function calculateBucketSize(rangeHours: number): number {
-  if (rangeHours <= 1) return 5 // 5 min buckets for 1 hour
-  if (rangeHours <= 6) return 15 // 15 min buckets for 6 hours
-  if (rangeHours <= 24) return 60 // 1 hour buckets for 24 hours
-  if (rangeHours <= 168) return 360 // 6 hour buckets for 7 days
-  return 1440 // 24 hour buckets for 30 days
+  const { bucketSizes } = performanceDashboardConfig
+  if (rangeHours <= 1) return bucketSizes.oneHour
+  if (rangeHours <= 6) return bucketSizes.sixHours
+  if (rangeHours <= 24) return bucketSizes.twentyFourHours
+  if (rangeHours <= 168) return bucketSizes.sevenDays
+  return bucketSizes.thirtyDays
 }

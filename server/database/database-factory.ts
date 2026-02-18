@@ -110,11 +110,29 @@ export class DatabaseFactory implements IDatabaseFactory {
 /**
  * Create database adapter from environment configuration
  * Uses DATABASE_URL and DB_PROVIDER environment variables
+ *
+ * -architect: Added provider validation to fail fast on invalid DB_PROVIDER values
  */
 export function createAdapterFromEnv(): IDatabaseAdapter {
   const factory = DatabaseFactory.getInstance()
 
-  const provider = (process.env.DB_PROVIDER as DatabaseProvider) || 'postgresql'
+  // -architect: Validate provider before casting
+  const supportedProviders: DatabaseProvider[] = [
+    'postgresql',
+    'sqlite',
+    'mysql',
+  ]
+  const rawProvider = process.env.DB_PROVIDER || 'postgresql'
+
+  if (!supportedProviders.includes(rawProvider as DatabaseProvider)) {
+    throw new Error(
+      `Unsupported DB_PROVIDER "${rawProvider}". ` +
+        `Supported providers: ${supportedProviders.join(', ')}. ` +
+        'Please update your .env file or environment.'
+    )
+  }
+
+  const provider = rawProvider as DatabaseProvider
   const url = process.env.DATABASE_URL
 
   if (!url) {

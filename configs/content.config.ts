@@ -695,6 +695,11 @@ export const contentConfig = {
     moreItemsText: process.env.CONTENT_SIMILAR_MORE_TEXT || 'more',
   },
 
+  recommendationCard: {
+    viewResource:
+      process.env.CONTENT_RECOMMENDATION_VIEW_RESOURCE || 'View Resource',
+  },
+
   // Alternative Suggestions Section - Palette's micro-UX enhancement!
   alternativeSuggestions: {
     title: process.env.CONTENT_ALTERNATIVES_TITLE || 'Alternative Suggestions',
