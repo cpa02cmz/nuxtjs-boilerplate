@@ -212,6 +212,9 @@ export const shadowsConfig = {
     default:
       process.env.ACTIVE_FILTERS_SHADOW ||
       '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    hover:
+      process.env.ACTIVE_FILTERS_HOVER_SHADOW ||
+      '0 6px 8px -1px rgba(0, 0, 0, 0.12), 0 3px 5px -1px rgba(0, 0, 0, 0.08)',
     focusPrimary:
       process.env.ACTIVE_FILTERS_FOCUS_PRIMARY || 'rgba(59, 130, 246, 0.3)',
     focusRing: {
