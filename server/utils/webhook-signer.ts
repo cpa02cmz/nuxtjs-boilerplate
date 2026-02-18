@@ -1,5 +1,5 @@
 import type { WebhookPayload } from '~/types/webhook'
-import { createHmac } from 'node:crypto'
+import { createHmac, timingSafeEqual } from 'node:crypto'
 import { patternsConfig } from '~/configs/patterns.config'
 
 export class WebhookSigner {
@@ -15,6 +15,13 @@ export class WebhookSigner {
     return `${patternsConfig.webhook.signaturePrefix}${signature}`
   }
 
+  /**
+   * Verify webhook signature using timing-safe comparison
+   * SECURITY FIX: Use timingSafeEqual to prevent timing attacks (CWE-208)
+   * Direct string comparison is vulnerable to character-by-character brute-forcing
+   * by measuring response times. Timing-safe comparison ensures constant-time
+   * evaluation regardless of input.
+   */
   verifySignature(
     payload: WebhookPayload,
     signature: string,
@@ -22,7 +29,17 @@ export class WebhookSigner {
   ): boolean {
     const expectedSignature = this.generateSignature(payload, secret)
 
-    return signature === expectedSignature
+    // SECURITY: Early length check before timing-safe comparison
+    // Different lengths indicate invalid signature anyway
+    if (signature.length !== expectedSignature.length) {
+      return false
+    }
+
+    // SECURITY: Use timing-safe comparison to prevent timing attacks
+    return timingSafeEqual(
+      Buffer.from(signature, 'utf8'),
+      Buffer.from(expectedSignature, 'utf8')
+    )
   }
 
   generatePayloadWithSignature(

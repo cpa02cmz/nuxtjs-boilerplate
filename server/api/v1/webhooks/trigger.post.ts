@@ -12,9 +12,12 @@ import { webhooksConfig } from '~/configs/webhooks.config'
 import { randomUUID } from 'node:crypto'
 import { getHeader, createError } from 'h3'
 import { logger } from '~/utils/logger'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 export default defineEventHandler(async event => {
   try {
+    // Backend-engineer: Add rate limiting to prevent webhook trigger abuse
+    await rateLimit(event)
     // Check authentication
     if (!event.context.apiKey) {
       return sendUnauthorizedError(event, 'Authentication required')
