@@ -955,6 +955,8 @@ const handleChipKeydown = (
       break
     case 'Delete':
     case 'Backspace':
+    case 'Enter':
+    case 'NumpadEnter':
       event.preventDefault()
       handleRemove(type, value, event as unknown as Event)
       // Focus the next chip, previous chip, or Clear all button if this was the last one
