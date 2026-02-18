@@ -3,10 +3,7 @@
     <!-- Header -->
     <header class="dashboard-header">
       <h1 class="dashboard-title">
-        <span
-          class="title-icon"
-          aria-hidden="true"
-        >📊</span>
+        <span class="title-icon" aria-hidden="true">📊</span>
         Performance Dashboard
         <!-- 🎨 Pallete's micro-UX enhancement: Live data indicator -->
         <span
@@ -20,11 +17,7 @@
       </h1>
       <div class="dashboard-controls">
         <!-- Time Range Selector -->
-        <div
-          class="time-range-selector"
-          role="group"
-          aria-label="Time range"
-        >
+        <div class="time-range-selector" role="group" aria-label="Time range">
           <button
             v-for="range in timeRanges"
             :key="range.hours"
@@ -49,7 +42,8 @@
             class="refresh-icon"
             :class="{ spinning: isLoading }"
             aria-hidden="true"
-          >🔄</span>
+            >🔄</span
+          >
           <span class="refresh-text">{{
             isLoading ? 'Loading...' : 'Refresh'
           }}</span>
@@ -57,10 +51,10 @@
 
         <!-- 🎨 Pallete's micro-UX enhancement: Success celebration animation -->
         <Transition
-          enter-active-class="transition-all duration-300 ease-out"
+          :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
           enter-from-class="opacity-0 scale-50"
           enter-to-class="opacity-100 scale-100"
-          leave-active-class="transition-all duration-500 ease-in"
+          :leave-active-class="`transition-all ${animationConfig.tailwindDurations.slower} ease-in`"
           leave-from-class="opacity-100 scale-100"
           leave-to-class="opacity-0 scale-150"
         >
@@ -90,44 +84,20 @@
     </header>
 
     <!-- Last Updated -->
-    <div
-      v-if="lastUpdated"
-      class="last-updated"
-      aria-live="polite"
-    >
+    <div v-if="lastUpdated" class="last-updated" aria-live="polite">
       Last updated: {{ formatLastUpdated(lastUpdated) }}
     </div>
 
     <!-- Error Message -->
-    <div
-      v-if="error"
-      class="error-message"
-      role="alert"
-    >
-      <span
-        class="error-icon"
-        aria-hidden="true"
-      >⚠️</span>
+    <div v-if="error" class="error-message" role="alert">
+      <span class="error-icon" aria-hidden="true">⚠️</span>
       {{ error }}
-      <button
-        class="retry-button"
-        @click="refreshData"
-      >
-        Retry
-      </button>
+      <button class="retry-button" @click="refreshData">Retry</button>
     </div>
 
     <!-- Web Vitals Summary -->
-    <section
-      class="web-vitals-section"
-      aria-labelledby="web-vitals-heading"
-    >
-      <h2
-        id="web-vitals-heading"
-        class="section-title"
-      >
-        Core Web Vitals
-      </h2>
+    <section class="web-vitals-section" aria-labelledby="web-vitals-heading">
+      <h2 id="web-vitals-heading" class="section-title">Core Web Vitals</h2>
       <div class="metrics-grid">
         <MetricCard
           v-for="metric in webVitalsList"
@@ -143,25 +113,15 @@
     </section>
 
     <!-- Performance Trends -->
-    <section
-      class="trends-section"
-      aria-labelledby="trends-heading"
-    >
-      <h2
-        id="trends-heading"
-        class="section-title"
-      >
-        Performance Trends
-      </h2>
+    <section class="trends-section" aria-labelledby="trends-heading">
+      <h2 id="trends-heading" class="section-title">Performance Trends</h2>
       <div class="charts-grid">
         <div
           v-for="metricName in chartMetrics"
           :key="metricName"
           class="chart-container"
         >
-          <h3 class="chart-title">
-            {{ metricName }} Over Time
-          </h3>
+          <h3 class="chart-title">{{ metricName }} Over Time</h3>
           <PerformanceChart
             :data="timeSeries[metricName] || []"
             :metric-name="metricName"
@@ -172,28 +132,26 @@
     </section>
 
     <!-- API Performance -->
-    <section
-      class="api-section"
-      aria-labelledby="api-heading"
-    >
-      <h2
-        id="api-heading"
-        class="section-title"
-      >
-        API Performance
-      </h2>
+    <section class="api-section" aria-labelledby="api-heading">
+      <h2 id="api-heading" class="section-title">API Performance</h2>
       <div class="api-metrics">
         <div class="api-metric-card">
           <span class="api-metric-label">Avg Response Time</span>
-          <span class="api-metric-value">{{ apiPerformance.avgResponseTime }}ms</span>
+          <span class="api-metric-value"
+            >{{ apiPerformance.avgResponseTime }}ms</span
+          >
         </div>
         <div class="api-metric-card">
           <span class="api-metric-label">P95 Response Time</span>
-          <span class="api-metric-value">{{ apiPerformance.p95ResponseTime }}ms</span>
+          <span class="api-metric-value"
+            >{{ apiPerformance.p95ResponseTime }}ms</span
+          >
         </div>
         <div class="api-metric-card">
           <span class="api-metric-label">Error Rate</span>
-          <span class="api-metric-value">{{ (apiPerformance.errorRate * 100).toFixed(2) }}%</span>
+          <span class="api-metric-value"
+            >{{ (apiPerformance.errorRate * 100).toFixed(2) }}%</span
+          >
         </div>
         <div class="api-metric-card">
           <span class="api-metric-label">Total Requests</span>
@@ -503,7 +461,8 @@ onUnmounted(() => {
   cursor: pointer;
   font-weight: 500;
   color: #374151;
-  transition: all 0.2s ease;
+  /* Flexy hates hardcoded 0.2s! Using animationConfig.cssTransitions.normalSec */
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease;
 }
 
 .refresh-button:hover:not(:disabled) {

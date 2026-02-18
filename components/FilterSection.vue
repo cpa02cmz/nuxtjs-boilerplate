@@ -1,8 +1,5 @@
 <template>
-  <fieldset
-    class="mb-6"
-    @keydown="handleKeydown"
-  >
+  <fieldset class="mb-6" @keydown="handleKeydown">
     <div class="flex items-center justify-between mb-3">
       <button
         v-if="collapsible"
@@ -16,8 +13,11 @@
           {{ label }}
         </legend>
         <svg
-          class="w-4 h-4 text-gray-500 transition-transform duration-200 group-hover:text-gray-700"
-          :class="{ 'rotate-180': isExpanded }"
+          :class="[
+            'w-4 h-4 text-gray-500 transition-transform group-hover:text-gray-700',
+            animationConfig.tailwindDurations.normal,
+            { 'rotate-180': isExpanded },
+          ]"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -42,8 +42,11 @@
         :class="{ 'mt-2': collapsible }"
       >
         <span
-          class="text-xs text-gray-500 transition-all duration-200"
-          :class="{ 'text-blue-600 font-medium': selectedOptions.length > 0 }"
+          :class="[
+            'text-xs text-gray-500 transition-all',
+            animationConfig.tailwindDurations.normal,
+            { 'text-blue-600 font-medium': selectedOptions.length > 0 },
+          ]"
           aria-live="polite"
         >
           {{ selectedOptions.length }} of {{ options.length }}
@@ -52,7 +55,10 @@
         <button
           v-if="selectedOptions.length === 0"
           type="button"
-          class="text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded px-1"
+          :class="[
+            'text-xs text-blue-600 hover:text-blue-800 font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded px-1',
+            animationConfig.tailwindDurations.normal,
+          ]"
           :aria-label="`Select all ${options.length} ${label} filters`"
           :aria-controls="`${id}-checkbox-group`"
           @click="selectAll"
@@ -62,7 +68,10 @@
         <button
           v-else
           type="button"
-          class="text-xs text-gray-500 hover:text-gray-700 font-medium transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-1 rounded px-1"
+          :class="[
+            'text-xs text-gray-500 hover:text-gray-700 font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-1 rounded px-1',
+            animationConfig.tailwindDurations.normal,
+          ]"
           :aria-label="`Clear all ${selectedOptions.length} selected ${label} filters`"
           :aria-controls="`${id}-checkbox-group`"
           @click="clearAll"
@@ -75,8 +84,9 @@
       :id="contentId"
       role="group"
       :aria-label="ariaLabel"
-      class="space-y-1 transition-all duration-200 ease-out overflow-hidden"
       :class="[
+        'space-y-1 transition-all ease-out overflow-hidden',
+        animationConfig.tailwindDurations.normal,
         scrollableClass,
         {
           'max-h-0 opacity-0': collapsible && !isExpanded,
@@ -87,19 +97,22 @@
       <div
         v-for="option in options"
         :key="option"
-        class="filter-option flex items-center rounded-md transition-all duration-200 ease-out relative overflow-hidden"
-        :class="{
-          'justify-between': showCount,
-          'bg-gray-50': selectedOptions.includes(option),
-          'active:bg-gray-100': !isOptionDisabled(option),
-          'cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500 focus-within:bg-blue-50':
-            !isOptionDisabled(option),
-          'cursor-not-allowed opacity-50': isOptionDisabled(option),
-          'checkbox-selected':
-            recentlySelected === option && !prefersReducedMotion,
-          'checkbox-deselected':
-            recentlyDeselected === option && !prefersReducedMotion,
-        }"
+        :class="[
+          'filter-option flex items-center rounded-md transition-all ease-out relative overflow-hidden',
+          animationConfig.tailwindDurations.normal,
+          {
+            'justify-between': showCount,
+            'bg-gray-50': selectedOptions.includes(option),
+            'active:bg-gray-100': !isOptionDisabled(option),
+            'cursor-pointer hover:bg-gray-50 focus-within:ring-2 focus-within:ring-blue-500 focus-within:bg-blue-50':
+              !isOptionDisabled(option),
+            'cursor-not-allowed opacity-50': isOptionDisabled(option),
+            'checkbox-selected':
+              recentlySelected === option && !prefersReducedMotion,
+            'checkbox-deselected':
+              recentlyDeselected === option && !prefersReducedMotion,
+          },
+        ]"
         :style="getCheckboxBloomStyle(option)"
         @click="!isOptionDisabled(option) && toggleOption(option)"
         @mouseenter="handleMouseEnter(option, $event)"
@@ -123,7 +136,7 @@
               <span
                 v-if="
                   !prefersReducedMotion &&
-                    (recentlySelected === option || recentlyDeselected === option)
+                  (recentlySelected === option || recentlyDeselected === option)
                 "
                 class="checkbox-bloom absolute inset-0 rounded pointer-events-none"
                 :class="{
@@ -139,40 +152,49 @@
                 :checked="selectedOptions.includes(option)"
                 :disabled="isOptionDisabled(option)"
                 :aria-label="ariaLabelOption(option)"
-                class="filter-checkbox h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500 focus:ring-offset-0 transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 relative z-10"
-                :class="{
-                  'animate-checkbox-pop':
-                    recentlySelected === option && !prefersReducedMotion,
-                  'animate-checkbox-pop-out':
-                    recentlyDeselected === option && !prefersReducedMotion,
-                  'animate-check-draw':
-                    selectedOptions.includes(option) &&
-                    recentlySelected === option &&
-                    !prefersReducedMotion,
-                }"
+                :class="[
+                  'filter-checkbox h-4 w-4 text-gray-600 border-gray-300 rounded focus:ring-gray-500 focus:ring-offset-0 transition-all disabled:cursor-not-allowed disabled:opacity-50 relative z-10',
+                  animationConfig.tailwindDurations.normal,
+                  {
+                    'animate-checkbox-pop':
+                      recentlySelected === option && !prefersReducedMotion,
+                    'animate-checkbox-pop-out':
+                      recentlyDeselected === option && !prefersReducedMotion,
+                    'animate-check-draw':
+                      selectedOptions.includes(option) &&
+                      recentlySelected === option &&
+                      !prefersReducedMotion,
+                  },
+                ]"
                 @change="toggleOption(option)"
                 @click.stop
-              >
+              />
             </div>
             <label
               :for="`${id}-${option}`"
-              class="ml-2 text-sm text-gray-800 select-none flex-1 transition-colors duration-200"
-              :class="{
-                'text-gray-900 font-medium': selectedOptions.includes(option),
-                'cursor-pointer': !isOptionDisabled(option),
-                'cursor-not-allowed text-gray-400': isOptionDisabled(option),
-              }"
+              :class="[
+                'ml-2 text-sm text-gray-800 select-none flex-1 transition-colors',
+                animationConfig.tailwindDurations.normal,
+                {
+                  'text-gray-900 font-medium': selectedOptions.includes(option),
+                  'cursor-pointer': !isOptionDisabled(option),
+                  'cursor-not-allowed text-gray-400': isOptionDisabled(option),
+                },
+              ]"
             >
               {{ option }}
             </label>
           </div>
           <span
             v-if="showCount && getCountForOption"
-            class="mr-2 text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5 transition-all duration-200"
-            :class="{
-              'bg-gray-200 text-gray-800': selectedOptions.includes(option),
-              'bg-gray-50 text-gray-400': isOptionDisabled(option),
-            }"
+            :class="[
+              'mr-2 text-xs bg-gray-100 text-gray-600 rounded-full px-2 py-0.5 transition-all',
+              animationConfig.tailwindDurations.normal,
+              {
+                'bg-gray-200 text-gray-800': selectedOptions.includes(option),
+                'bg-gray-50 text-gray-400': isOptionDisabled(option),
+              },
+            ]"
             aria-label="result count"
           >
             {{ getCountForOption(option) }}

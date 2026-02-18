@@ -275,7 +275,7 @@
               v-for="(suggestion, index) in defaultSuggestions"
               :key="index"
               type="button"
-              class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              :class="`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors ${animationConfig.tailwindDurations.quick} focus:outline-none focus:ring-2 focus:ring-blue-500`"
               @click="selectDefaultSuggestion(suggestion)"
             >
               {{ suggestion }}
@@ -286,14 +286,14 @@
         <div class="flex justify-center gap-3">
           <button
             type="button"
-            class="text-sm text-gray-600 hover:text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 rounded px-3 py-1.5 transition-colors duration-150"
+            :class="`text-sm text-gray-600 hover:text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 rounded px-3 py-1.5 transition-colors ${animationConfig.tailwindDurations.quick}`"
             @click="handleClearSearch"
           >
             {{ contentConfig.search.emptyState.clearSearch }}
           </button>
           <NuxtLink
             to="/search"
-            class="text-sm text-blue-600 hover:text-blue-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-3 py-1.5 transition-colors duration-150"
+            :class="`text-sm text-blue-600 hover:text-blue-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-3 py-1.5 transition-colors ${animationConfig.tailwindDurations.quick}`"
           >
             {{ contentConfig.search.emptyState.browseAll }}
           </NuxtLink>

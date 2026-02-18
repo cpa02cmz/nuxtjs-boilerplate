@@ -1,8 +1,6 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">
-      Popular Searches
-    </h3>
+    <h3 class="text-lg font-medium text-gray-900 mb-4">Popular Searches</h3>
     <TransitionGroup
       tag="div"
       class="space-y-3"
@@ -18,8 +16,9 @@
         v-for="(search, index) in popularSearches"
         :key="search.query"
         ref="searchButtons"
-        class="group w-full text-left p-3 rounded-lg transition-all duration-300 ease-out flex justify-between items-center relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2"
         :class="[
+          'group w-full text-left p-3 rounded-lg transition-all ease-out flex justify-between items-center relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2',
+          animationConfig.tailwindDurations.standard,
           hoverIndex === index
             ? 'bg-gray-50 shadow-md -translate-y-0.5'
             : 'bg-white hover:bg-gray-50 hover:shadow-sm',
@@ -75,14 +74,13 @@
             aria-hidden="true"
           />
           <span
-            class="flex-shrink-0 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors duration-200"
+            :class="[
+              'flex-shrink-0 w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors',
+              animationConfig.tailwindDurations.normal,
+            ]"
             aria-hidden="true"
           >
-            <svg
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -92,8 +90,12 @@
             </svg>
           </span>
           <span
-            class="text-gray-800 truncate group-hover:text-gray-900 transition-colors duration-200 font-medium"
-          >{{ search.query }}</span>
+            :class="[
+              'text-gray-800 truncate group-hover:text-gray-900 transition-colors font-medium',
+              animationConfig.tailwindDurations.normal,
+            ]"
+            >{{ search.query }}</span
+          >
         </div>
 
         <!-- Palette's micro-UX enhancement: Keyboard shortcut hint tooltip -->
@@ -108,8 +110,8 @@
           <div
             v-if="
               (hoverIndex === index || focusedIndex === index) &&
-                !prefersReducedMotion &&
-                loadingIndex !== index
+              !prefersReducedMotion &&
+              loadingIndex !== index
             "
             class="absolute right-16 top-1/2 -translate-y-1/2 z-20 pointer-events-none"
             role="tooltip"
@@ -153,14 +155,20 @@
           </span>
           <span
             v-else
-            class="text-xs font-medium bg-gray-100 text-gray-600 rounded-full px-2.5 py-1 transition-all duration-300 group-hover:bg-gray-800 group-hover:text-white"
+            :class="[
+              'text-xs font-medium bg-gray-100 text-gray-600 rounded-full px-2.5 py-1 transition-all group-hover:bg-gray-800 group-hover:text-white',
+              animationConfig.tailwindDurations.standard,
+            ]"
           >
             {{ formatCount(search.count) }}
           </span>
           <!-- Arrow indicator on hover (hidden when loading) -->
           <span
             v-if="loadingIndex !== index"
-            class="text-gray-400 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0"
+            :class="[
+              'text-gray-400 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0',
+              animationConfig.tailwindDurations.standard,
+            ]"
             aria-hidden="true"
           >
             <svg
@@ -195,11 +203,7 @@
         class="text-center text-gray-500 py-8 flex flex-col items-center"
       >
         <div class="w-12 h-12 mb-3 text-gray-300 animate-pulse-subtle">
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -208,9 +212,7 @@
             />
           </svg>
         </div>
-        <p class="text-sm">
-          No popular searches yet
-        </p>
+        <p class="text-sm">No popular searches yet</p>
         <p class="text-xs text-gray-400 mt-1">
           Start exploring to see trending queries
         </p>
@@ -218,12 +220,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
