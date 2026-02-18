@@ -29,7 +29,10 @@
             @click.stop
           >
             <div class="shortcuts-modal__header">
-              <h2 id="shortcuts-title" class="shortcuts-modal__title">
+              <h2
+                id="shortcuts-title"
+                class="shortcuts-modal__title"
+              >
                 Keyboard Shortcuts
               </h2>
               <button
