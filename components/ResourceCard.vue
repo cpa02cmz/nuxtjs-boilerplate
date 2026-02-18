@@ -78,6 +78,7 @@ import ResourceCardBase from './ResourceCard/ResourceCardBase.vue'
 import ResourceCardActions from './ResourceCard/ResourceCardActions.vue'
 import { uiConfig } from '~/configs/ui.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexScale } from '~/configs/z-index.config'
 
 interface Props {
   title: string
@@ -409,13 +410,15 @@ onUnmounted(() => {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 1;
+  /* Flexy hates hardcoded z-index: 1! Using zIndexScale */
+  z-index: v-bind('zIndexScale.low[1]');
   border-radius: inherit;
 }
 
 /* Enhanced hover state with smooth transitions */
 .resource-card-entrance.is-tilted {
-  z-index: 10;
+  /* Flexy hates hardcoded z-index: 10! Using zIndexScale */
+  z-index: v-bind('zIndexScale.low[10]');
 }
 
 /* Ensure child elements maintain 3D context */

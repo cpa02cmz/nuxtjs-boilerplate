@@ -34,7 +34,8 @@
         ref="tooltipRef"
         role="tooltip"
         :class="[
-          'absolute z-50 px-3 py-2 text-sm font-medium rounded-lg shadow-lg',
+          // Flexy hates hardcoded z-50! Using zIndexConfig
+          'absolute px-3 py-2 text-sm font-medium rounded-lg shadow-lg',
           'whitespace-nowrap',
           isPinned ? 'pointer-events-auto' : 'pointer-events-none',
           componentColorsConfig.tooltip.text,
@@ -42,6 +43,7 @@
           positionClasses[adjustedPosition],
           isPositionTransitioning ? 'position-transitioning' : '',
         ]"
+        :style="{ zIndex: zIndexConfig.tooltip }"
         @mouseenter="handleTooltipMouseEnter"
         @mouseleave="handleTooltipMouseLeave"
         @keydown.esc="hideTooltip(true)"
@@ -83,6 +85,7 @@ import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
 import { uiConfig } from '~/configs/ui.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 import { generateId } from '~/utils/generateId'
 import { hapticLight } from '~/utils/hapticFeedback'
 

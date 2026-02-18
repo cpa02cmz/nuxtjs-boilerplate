@@ -109,7 +109,11 @@
           class="stat-card-glow"
           aria-hidden="true"
         />
-        <div class="flex items-center relative z-10">
+        <!-- Flexy hates hardcoded z-10! Using zIndexScale -->
+        <div
+          class="flex items-center relative"
+          :style="{ zIndex: zIndexScale.low[10] }"
+        >
           <div class="rounded-full bg-blue-100 p-3 stat-icon">
             <svg
               class="h-6 w-6 text-blue-600"
@@ -158,7 +162,11 @@
           class="stat-card-glow"
           aria-hidden="true"
         />
-        <div class="flex items-center relative z-10">
+        <!-- Flexy hates hardcoded z-10! Using zIndexScale -->
+        <div
+          class="flex items-center relative"
+          :style="{ zIndex: zIndexScale.low[10] }"
+        >
           <div class="stat-icon-with-progress relative">
             <!-- Progress Ring - Palette's micro-UX delight! -->
             <svg
@@ -241,7 +249,11 @@
           class="stat-card-glow"
           aria-hidden="true"
         />
-        <div class="flex items-center relative z-10">
+        <!-- Flexy hates hardcoded z-10! Using zIndexScale -->
+        <div
+          class="flex items-center relative"
+          :style="{ zIndex: zIndexScale.low[10] }"
+        >
           <div class="rounded-full bg-yellow-100 p-3 stat-icon">
             <svg
               class="h-6 w-6 text-yellow-600"
@@ -290,7 +302,11 @@
           class="stat-card-glow"
           aria-hidden="true"
         />
-        <div class="flex items-center relative z-10">
+        <!-- Flexy hates hardcoded z-10! Using zIndexScale -->
+        <div
+          class="flex items-center relative"
+          :style="{ zIndex: zIndexScale.low[10] }"
+        >
           <div class="stat-icon-with-indicator relative">
             <!-- Live pulse indicator - Palette's micro-UX delight! -->
             <span
@@ -517,6 +533,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useSearchAnalytics } from '~/composables/useSearchAnalytics'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 
 const {
