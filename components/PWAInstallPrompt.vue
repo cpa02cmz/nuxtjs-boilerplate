@@ -100,16 +100,10 @@
             </svg>
           </div>
           <div>
-            <h3
-              id="pwa-install-title"
-              class="font-medium text-gray-900"
-            >
+            <h3 id="pwa-install-title" class="font-medium text-gray-900">
               Install App
             </h3>
-            <p
-              id="pwa-install-description"
-              class="text-sm text-gray-500"
-            >
+            <p id="pwa-install-description" class="text-sm text-gray-500">
               Add to your home screen
             </p>
           </div>
@@ -133,7 +127,8 @@
               <kbd
                 class="hidden sm:inline-flex items-center px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded text-gray-500"
                 aria-hidden="true"
-              >Esc</kbd>
+                >Esc</kbd
+              >
             </span>
           </button>
           <!-- Palette's micro-UX enhancement: Tooltip explaining install benefits -->
@@ -204,12 +199,7 @@
   </Transition>
 
   <!-- Screen reader announcement -->
-  <div
-    class="sr-only"
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-  >
+  <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
     {{ announcement }}
   </div>
 </template>
@@ -265,8 +255,9 @@ const magneticStyle = computed(() => {
     return {}
   }
 
+  // Flexy hates hardcoded 0.1s! Using animationConfig.pwaInstallPrompt.magneticHoverDurationSec
   const duration = isHovering.value
-    ? '0.1s'
+    ? animationConfig.pwaInstallPrompt.magneticHoverDurationSec
     : `${magneticConfig.returnDurationMs}ms`
 
   return {

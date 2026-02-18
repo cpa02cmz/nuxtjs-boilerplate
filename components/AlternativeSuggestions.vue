@@ -183,21 +183,13 @@
       <p class="alternative-suggestions__empty-message">
         {{ contentConfig.alternativeSuggestions.emptyState.message }}
       </p>
-      <NuxtLink
-        to="/"
-        class="alternative-suggestions__empty-cta"
-      >
+      <NuxtLink to="/" class="alternative-suggestions__empty-cta">
         {{ contentConfig.alternativeSuggestions.emptyState.browseAll }}
       </NuxtLink>
     </div>
 
     <!-- Screen reader announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -799,9 +791,14 @@ watch(
   font-weight: 500;
   border-radius: 0.5rem;
   text-decoration: none;
+  /* Flexy hates hardcoded 0.2s! Using animationConfig.alternativeSuggestions.transitionDurationSec */
   transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
+    background-color
+      v-bind('animationConfig.alternativeSuggestions.transitionDurationSec')
+      ease,
+    transform
+      v-bind('animationConfig.alternativeSuggestions.transitionDurationSec')
+      ease;
 }
 
 .alternative-suggestions__empty-cta:hover {

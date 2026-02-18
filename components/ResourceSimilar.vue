@@ -82,8 +82,8 @@
           <div
             v-if="
               hoveredCard === resource.id &&
-                !prefersReducedMotion &&
-                spotlightConfig.enabled
+              !prefersReducedMotion &&
+              spotlightConfig.enabled
             "
             class="spotlight-overlay"
             :style="getSpotlightStyle(index)"
@@ -104,18 +104,9 @@
             }"
             :aria-label="`Similarity score: ${Math.round((resource.similarityScore || 0) * 100)}%`"
           >
-            <svg
-              class="similarity-ring"
-              viewBox="0 0 36 36"
-              aria-hidden="true"
-            >
+            <svg class="similarity-ring" viewBox="0 0 36 36" aria-hidden="true">
               <!-- Background circle -->
-              <circle
-                class="similarity-ring-bg"
-                cx="18"
-                cy="18"
-                r="15"
-              />
+              <circle class="similarity-ring-bg" cx="18" cy="18" r="15" />
               <!-- Progress circle with animated stroke -->
               <circle
                 class="similarity-ring-progress"
@@ -143,12 +134,7 @@
       </TransitionGroup>
 
       <!-- Screen reader announcement -->
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        class="sr-only"
-      >
+      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
         {{ announcement }}
       </div>
     </section>
@@ -631,9 +617,14 @@ const spotlightFadeInDuration = computed(
   justify-content: center;
   opacity: 0;
   transform: scale(0.8);
+  /* Flexy hates hardcoded 0.3s! Using animationConfig.similarResources.spotlight.badgeTransitionSec */
   transition:
-    opacity 0.3s ease-out,
-    transform 0.3s v-bind('EASING.SPRING_STANDARD');
+    opacity
+      v-bind('animationConfig.similarResources.spotlight.badgeTransitionSec')
+      ease-out,
+    transform
+      v-bind('animationConfig.similarResources.spotlight.badgeTransitionSec')
+      v-bind('EASING.SPRING_STANDARD');
 }
 
 .similarity-score-badge.is-visible {
