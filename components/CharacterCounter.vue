@@ -39,6 +39,27 @@
       />
     </TransitionGroup>
 
+    <!-- 🎨 Palette's micro-UX enhancement: Typing Momentum Indicator ✨
+         Shows a subtle glow bar when user types rapidly, creating a sense of flow and momentum -->
+    <Transition
+      :enter-active-class="`transition-opacity ${momentumConfig.fadeInDurationMs}ms ease-out`"
+      :leave-active-class="`transition-opacity ${momentumConfig.fadeOutDurationMs}ms ease-out`"
+    >
+      <div
+        v-if="showMomentumIndicator && !prefersReducedMotion"
+        class="typing-momentum-indicator"
+        :class="{
+          'typing-momentum-indicator--low': momentumLevel === 'low',
+          'typing-momentum-indicator--medium': momentumLevel === 'medium',
+          'typing-momentum-indicator--high': momentumLevel === 'high',
+        }"
+        aria-hidden="true"
+      >
+        <div class="typing-momentum-bar" />
+        <div v-if="momentumLevel === 'high'" class="typing-momentum-glow" />
+      </div>
+    </Transition>
+
     <!-- Visual Progress Ring Counter - Palette's micro-UX delight! -->
     <div
       v-if="showCounter"
@@ -47,6 +68,8 @@
         'character-counter-ring--focused': isFocused,
         'character-counter-ring--visible': characterCount > 0 || alwaysShow,
         'character-counter-ring--complete': isComplete,
+        'character-counter-ring--high-momentum':
+          momentumLevel === 'high' && !prefersReducedMotion,
       }"
       :title="counterTooltip"
     >
@@ -287,6 +310,11 @@ const celebrationParticles = ref<
 let celebrationTimeout: ReturnType<typeof setTimeout> | null = null
 const hasCelebrated = ref(false)
 
+// 🎨 Palette's micro-UX enhancement: Typing Momentum Indicator state ✨
+const typingTimestamps = ref<number[]>([])
+let momentumClearTimeout: ReturnType<typeof setTimeout> | null = null
+const momentumConfig = computed(() => animationConfig.typingMomentum)
+
 // Palette's micro-UX enhancement: Haptic feedback on state transitions
 // Track previous state to trigger feedback only on transitions, not continuously
 const previousState = ref<'normal' | 'warning' | 'complete' | 'error'>('normal')
@@ -368,10 +396,77 @@ watch(
   }
 )
 
+// 🎨 Palette's micro-UX enhancement: Watch character count for typing momentum ✨
+watch(
+  () => props.characterCount,
+  (newCount, oldCount) => {
+    // Only track if momentum indicator is enabled and user doesn't prefer reduced motion
+    if (!momentumConfig.value.enabled || prefersReducedMotion.value) return
+
+    // Only track when characters are being added (not deleted)
+    if (newCount > oldCount) {
+      // Add timestamp for this character
+      typingTimestamps.value.push(Date.now())
+
+      // Clean up old timestamps outside the time window
+      const cutoffTime = Date.now() - momentumConfig.value.timeWindowMs
+      typingTimestamps.value = typingTimestamps.value.filter(
+        ts => ts >= cutoffTime
+      )
+
+      // Clear existing momentum timeout
+      if (momentumClearTimeout) {
+        clearTimeout(momentumClearTimeout)
+      }
+
+      // Set timeout to clear momentum indicator after typing stops
+      momentumClearTimeout = setTimeout(() => {
+        typingTimestamps.value = []
+      }, momentumConfig.value.displayDurationMs)
+    } else if (newCount < oldCount) {
+      // Reset momentum when deleting characters
+      typingTimestamps.value = []
+    }
+  }
+)
+
 // Flexy hates hardcoded rgba! Using configurable shadow color
 const shadowColorDefault = computed(
   () => componentColorsConfig.shadows.light.default
 )
+
+// 🎨 Palette's micro-UX enhancement: Typing Momentum Indicator computed properties ✨
+
+// Check if momentum indicator should be shown
+const showMomentumIndicator = computed(() => {
+  if (!momentumConfig.value.enabled || prefersReducedMotion.value) return false
+  return typingTimestamps.value.length >= momentumConfig.value.minCharacters
+})
+
+// Calculate momentum level based on typing speed
+const momentumLevel = computed(() => {
+  if (!momentumConfig.value.enabled || prefersReducedMotion.value) return 'none'
+
+  const recentTimestamps = typingTimestamps.value.filter(
+    ts => Date.now() - ts <= momentumConfig.value.timeWindowMs
+  )
+
+  if (recentTimestamps.length < momentumConfig.value.minCharacters) {
+    return 'none'
+  } else if (
+    recentTimestamps.length <=
+    momentumConfig.value.minCharacters + 2
+  ) {
+    return 'low'
+  } else if (
+    recentTimestamps.length <=
+    momentumConfig.value.minCharacters + 5
+  ) {
+    return 'medium'
+  } else {
+    return 'high'
+  }
+})
 
 // Palette's micro-UX enhancement: Generate celebration particles when reaching limit
 const generateCelebrationParticles = () => {
@@ -731,6 +826,155 @@ const triggerCelebration = () => {
 @media (prefers-reduced-motion: reduce) {
   .celebration-particle-container {
     display: none;
+  }
+}
+
+/* 🎨 Palette's micro-UX enhancement: Typing Momentum Indicator Styles ✨ */
+.typing-momentum-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: v-bind('validationConfig.characterCounter.positionOffsetPx + "px"');
+  height: v-bind('momentumConfig.barHeightPx + "px"');
+  pointer-events: none;
+  z-index: v-bind('zIndexScale.low[5]');
+  overflow: hidden;
+  border-radius: 0 0 0 4px;
+}
+
+.typing-momentum-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  transform-origin: left;
+  animation: momentum-bar-appear
+    v-bind('momentumConfig.fadeInDurationMs + "ms"') ease-out forwards;
+}
+
+.typing-momentum-indicator--low .typing-momentum-bar {
+  background: linear-gradient(
+    90deg,
+    v-bind('momentumConfig.colors.low') 0%,
+    transparent 100%
+  );
+  animation: momentum-bar-appear-low
+    v-bind('momentumConfig.fadeInDurationMs + "ms"') ease-out forwards;
+}
+
+.typing-momentum-indicator--medium .typing-momentum-bar {
+  background: linear-gradient(
+    90deg,
+    v-bind('momentumConfig.colors.medium') 0%,
+    v-bind('momentumConfig.colors.medium.replace("0.7", "0.3")') 70%,
+    transparent 100%
+  );
+  animation: momentum-bar-appear-medium
+    v-bind('momentumConfig.fadeInDurationMs + "ms"') ease-out forwards;
+}
+
+.typing-momentum-indicator--high .typing-momentum-bar {
+  background: linear-gradient(
+    90deg,
+    v-bind('momentumConfig.colors.high') 0%,
+    v-bind('momentumConfig.colors.high.replace("0.8", "0.4")') 60%,
+    transparent 100%
+  );
+  animation: momentum-bar-appear-high
+    v-bind('momentumConfig.fadeInDurationMs + "ms"') ease-out forwards;
+}
+
+/* Glow effect for high momentum */
+.typing-momentum-glow {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: calc(100% + 4px);
+  background: v-bind('momentumConfig.colors.high');
+  filter: blur(4px);
+  opacity: v-bind('momentumConfig.glowIntensity');
+  animation: momentum-glow-pulse 1s ease-in-out infinite;
+}
+
+@keyframes momentum-bar-appear-low {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes momentum-bar-appear-medium {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scaleX(1.05);
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes momentum-bar-appear-high {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scaleX(1.1);
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes momentum-glow-pulse {
+  0%,
+  100% {
+    opacity: v-bind('momentumConfig.glowIntensity');
+  }
+  50% {
+    opacity: calc(v-bind('momentumConfig.glowIntensity') * 1.5);
+  }
+}
+
+/* High momentum scale effect on the counter ring */
+.character-counter-ring--high-momentum {
+  animation: high-momentum-ring-scale 0.3s ease-out;
+}
+
+@keyframes high-momentum-ring-scale {
+  0% {
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    transform: translateY(-50%)
+      scale(v-bind('momentumConfig.highMomentumScale'));
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+/* Reduced motion support for typing momentum */
+@media (prefers-reduced-motion: reduce) {
+  .typing-momentum-indicator,
+  .typing-momentum-bar,
+  .typing-momentum-glow {
+    display: none;
+  }
+
+  .character-counter-ring--high-momentum {
+    animation: none;
   }
 }
 </style>
