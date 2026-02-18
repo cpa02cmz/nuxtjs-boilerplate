@@ -631,9 +631,14 @@ const spotlightFadeInDuration = computed(
   justify-content: center;
   opacity: 0;
   transform: scale(0.8);
+  /* Flexy hates hardcoded 0.3s! Using animationConfig.similarResources.spotlight.badgeTransitionSec */
   transition:
-    opacity 0.3s ease-out,
-    transform 0.3s v-bind('EASING.SPRING_STANDARD');
+    opacity
+      v-bind('animationConfig.similarResources.spotlight.badgeTransitionSec')
+      ease-out,
+    transform
+      v-bind('animationConfig.similarResources.spotlight.badgeTransitionSec')
+      v-bind('EASING.SPRING_STANDARD');
 }
 
 .similarity-score-badge.is-visible {

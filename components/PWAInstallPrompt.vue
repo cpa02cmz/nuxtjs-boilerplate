@@ -265,8 +265,9 @@ const magneticStyle = computed(() => {
     return {}
   }
 
+  // Flexy hates hardcoded 0.1s! Using animationConfig.pwaInstallPrompt.magneticHoverDurationSec
   const duration = isHovering.value
-    ? '0.1s'
+    ? animationConfig.pwaInstallPrompt.magneticHoverDurationSec
     : `${magneticConfig.returnDurationMs}ms`
 
   return {

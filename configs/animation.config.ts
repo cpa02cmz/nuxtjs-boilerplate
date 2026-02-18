@@ -1709,6 +1709,11 @@ export const animationConfig = {
     sparkleStaggerMs: parseInt(
       process.env.ALTERNATIVES_SPARKLE_STAGGER_MS || '80'
     ),
+    // Flexy hates hardcoded 0.2s! CSS transition duration for hover effects
+    transitionDurationMs: parseInt(
+      process.env.ALTERNATIVES_TRANSITION_DURATION_MS || '200'
+    ),
+    transitionDurationSec: `${parseInt(process.env.ALTERNATIVES_TRANSITION_DURATION_MS || '200') / 1000}s`,
   },
 
   // 🎨 Pallete's micro-UX enhancement: Limitations Section Animations
@@ -1897,6 +1902,11 @@ export const animationConfig = {
       ringDelaySec: parseFloat(
         process.env.SIMILAR_SPOTLIGHT_RING_DELAY_SEC || '0.3'
       ),
+      // Flexy hates hardcoded 0.3s! Badge transition duration for score reveal
+      badgeTransitionMs: parseInt(
+        process.env.SIMILAR_BADGE_TRANSITION_MS || '300'
+      ),
+      badgeTransitionSec: `${parseInt(process.env.SIMILAR_BADGE_TRANSITION_MS || '300') / 1000}s`,
     },
   },
 
@@ -2211,6 +2221,17 @@ export const animationConfig = {
     pulseScale: parseFloat(process.env.BREADCRUMBS_PULSE_SCALE || '1.2'),
     // Whether to respect reduced motion preference
     respectReducedMotion: process.env.BREADCRUMBS_REDUCED_MOTION !== 'false',
+    // 🎨 Pallete's micro-UX enhancement: Breadcrumb Trail Glow ✨
+    // Creates a subtle gradient path connecting all breadcrumbs on hover
+    trailFadeDurationMs: parseInt(
+      process.env.BREADCRUMBS_TRAIL_FADE_DURATION_MS || '300'
+    ),
+    trailMovementDurationMs: parseInt(
+      process.env.BREADCRUMBS_TRAIL_MOVEMENT_DURATION_MS || '400'
+    ),
+    trailPulseDurationMs: parseInt(
+      process.env.BREADCRUMBS_TRAIL_PULSE_DURATION_MS || '2000'
+    ),
   },
 
   // Status Manager Component - Flexy hates hardcoded values!
@@ -2354,6 +2375,11 @@ export const animationConfig = {
     ),
     // Easing function
     easing: process.env.PWA_INSTALL_EASING || EASING_REF.SPRING_SNAPPY,
+    // Flexy hates hardcoded 0.1s! Magnetic button hover transition duration (ms)
+    magneticHoverDurationMs: parseInt(
+      process.env.PWA_MAGNETIC_HOVER_DURATION_MS || '100'
+    ),
+    magneticHoverDurationSec: `${parseInt(process.env.PWA_MAGNETIC_HOVER_DURATION_MS || '100') / 1000}s`,
   },
 
   // Webhook Manager Component - Flexy hates hardcoded values!
@@ -4845,6 +4871,44 @@ export const animationConfig = {
     // Glow color
     glowColor:
       process.env.PROFILE_STATS_GLOW_COLOR || 'rgba(96, 165, 250, 0.4)',
+  },
+
+  // 🎨 Pallete's micro-UX enhancement: Lifecycle Timeline Narrative Reveal ✨
+  // Scroll-triggered typewriter animation for storytelling experience
+  lifecycleTimeline: {
+    // Typewriter animation speed (ms per character) - Flexy hates hardcoded 30!
+    typewriterSpeedMs: parseInt(
+      process.env.LIFECYCLE_TYPEWRITER_SPEED_MS || '30'
+    ),
+    // Stagger delay between timeline items (ms)
+    itemStaggerDelayMs: parseInt(
+      process.env.LIFECYCLE_ITEM_STAGGER_MS || '200'
+    ),
+    // Intersection Observer threshold for triggering animation
+    revealThreshold: parseFloat(
+      process.env.LIFECYCLE_REVEAL_THRESHOLD || '0.3'
+    ),
+    // Root margin for Intersection Observer
+    revealRootMargin:
+      process.env.LIFECYCLE_REVEAL_ROOT_MARGIN || '0px 0px -50px 0px',
+    // Duration of the fade-in animation for text (ms)
+    textFadeInDurationMs: parseInt(
+      process.env.LIFECYCLE_TEXT_FADE_IN_MS || '400'
+    ),
+    // Duration of the slide-in animation (ms)
+    slideInDurationMs: parseInt(process.env.LIFECYCLE_SLIDE_IN_MS || '500'),
+    // Scale effect for timeline markers when revealed
+    markerRevealScale: parseFloat(process.env.LIFECYCLE_MARKER_SCALE || '1.15'),
+    // Delay before starting typewriter effect after slide-in (ms)
+    typewriterDelayMs: parseInt(
+      process.env.LIFECYCLE_TYPEWRITER_DELAY_MS || '300'
+    ),
+    // Enable narrative announcements for screen readers
+    enableNarration: process.env.LIFECYCLE_ENABLE_NARRATION !== 'false',
+    // Announcement delay after item is revealed (ms)
+    narrationDelayMs: parseInt(
+      process.env.LIFECYCLE_NARRATION_DELAY_MS || '600'
+    ),
   },
 } as const
 
