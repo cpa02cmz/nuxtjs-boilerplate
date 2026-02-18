@@ -107,7 +107,8 @@
                           )
                       "
                       :class="[
-                        'flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-md transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-1 relative overflow-hidden',
+                        // Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal
+                        `flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-md transition-all ${animationConfig.tailwindDurations.normal} ease-out focus:outline-none focus:ring-2 focus:ring-offset-1 relative overflow-hidden`,
                         copyStates[key.id]?.isCopied
                           ? 'bg-green-100 text-green-600 hover:bg-green-200 focus:ring-green-500'
                           : 'bg-white text-gray-600 hover:bg-gray-50 hover:text-indigo-600 focus:ring-indigo-500 border border-gray-300',
@@ -116,10 +117,11 @@
                       @click="handleCopyKey(key as ApiKeyDisplay)"
                     >
                       <!-- Copy Icon -->
+                      <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal -->
                       <svg
                         v-if="!copyStates[key.id]?.isCopied"
                         xmlns="http://www.w3.org/2000/svg"
-                        class="w-4 h-4 transition-transform duration-200"
+                        :class="`w-4 h-4 transition-transform ${animationConfig.tailwindDurations.normal}`"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
