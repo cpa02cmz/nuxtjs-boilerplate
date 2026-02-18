@@ -103,7 +103,7 @@
                       aria-describedby="title-description title-counter title-error"
                       :aria-invalid="errors.title ? 'true' : 'false'"
                       :class="[
-                        'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
+                        'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all ${animationConfig.tailwindDurations.normal} input-focus-glow',
                         errors.title || isOverLimit
                           ? 'border-red-500 animate-form-shake'
                           : formData.title && !errors.title
@@ -159,7 +159,7 @@
                 aria-hidden="true"
               >
                 <div
-                  class="h-full transition-all duration-300 ease-out rounded-full"
+                  class="h-full transition-all ${animationConfig.tailwindDurations.standard} ease-out rounded-full"
                   :class="titleProgressClass"
                   :style="{
                     width: `${(formData.title.length / maxTitleLength) * 100}%`,
@@ -197,7 +197,7 @@
                   aria-describedby="description-description description-counter description-error"
                   :aria-invalid="errors.description ? 'true' : 'false'"
                   :class="[
-                    'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 resize-none input-focus-glow',
+                    'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all ${animationConfig.tailwindDurations.normal} resize-none input-focus-glow',
                     errors.description
                       ? 'border-red-500 animate-form-shake'
                       : formData.description && !errors.description
@@ -212,7 +212,7 @@
                 />
                 <div
                   id="description-counter"
-                  class="absolute bottom-2 text-xs font-medium tabular-nums transition-all duration-200"
+                  class="absolute bottom-2 text-xs font-medium tabular-nums transition-all ${animationConfig.tailwindDurations.normal}"
                   :class="descriptionCounterClass"
                   :style="{
                     right: `${uiConfig.form.inputPositioning.counterRightRem}rem`,
@@ -264,7 +264,7 @@
                 aria-hidden="true"
               >
                 <div
-                  class="h-full transition-all duration-300 ease-out rounded-full"
+                  class="h-full transition-all ${animationConfig.tailwindDurations.standard} ease-out rounded-full"
                   :class="descriptionProgressClass"
                   :style="{
                     width: `${(formData.description.length / maxDescriptionLength) * 100}%`,
@@ -306,7 +306,7 @@
                   aria-describedby="url-description url-error"
                   :aria-invalid="errors.url ? 'true' : 'false'"
                   :class="[
-                    'w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
+                    'w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all ${animationConfig.tailwindDurations.normal} input-focus-glow',
                     errors.url
                       ? 'border-red-500 animate-form-shake'
                       : formData.url && !errors.url
@@ -377,7 +377,7 @@
                   aria-describedby="category-description category-error"
                   :aria-invalid="errors.category ? 'true' : 'false'"
                   :class="[
-                    'w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow appearance-none bg-white',
+                    'w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all ${animationConfig.tailwindDurations.normal} input-focus-glow appearance-none bg-white',
                     errors.category
                       ? 'border-red-500 animate-form-shake'
                       : formData.category && !errors.category
@@ -473,7 +473,7 @@
                   v-model="tagsInput"
                   type="text"
                   aria-describedby="tags-description"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all ${animationConfig.tailwindDurations.normal} input-focus-glow"
                 />
               </div>
               <p id="tags-description" class="mt-1 text-sm text-gray-500">
@@ -541,7 +541,7 @@
                 :aria-busy="isSubmitting"
                 aria-live="polite"
                 :style="magneticTransformStyle"
-                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 magnetic-button"
+                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all ${animationConfig.tailwindDurations.normal} magnetic-button"
               >
                 <span v-if="!isSubmitting">{{
                   contentConfig.submit.button.submit

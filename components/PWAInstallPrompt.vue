@@ -1,62 +1,11 @@
 <template>
   <!-- Success Celebration Toast -->
+  <!-- Flexy hates hardcoded duration-500 and duration-300! Using animationConfig.tailwindDurations -->
   <Transition
-    enter-active-class="transition-all duration-500 ease-out"
+    :enter-active-class="`transition-all ${animationConfig.tailwindDurations.slower} ease-out`"
     enter-from-class="opacity-0 translate-y-8 scale-50"
     enter-to-class="opacity-100 translate-y-0 scale-100"
-    leave-active-class="transition-all duration-300 ease-in"
-    leave-from-class="opacity-100 translate-y-0 scale-100"
-    leave-to-class="opacity-0 translate-y-4 scale-95"
-  >
-    <div
-      v-if="showSuccess"
-      class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
-      <div
-        class="bg-green-500 text-white px-5 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-success-pop"
-      >
-        <!-- Animated checkmark -->
-        <div
-          class="w-8 h-8 bg-white rounded-full flex items-center justify-center animate-check-pop"
-        >
-          <svg
-            class="w-5 h-5 text-green-500"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="3"
-            aria-hidden="true"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M5 13l4 4L19 7"
-              class="animate-check-draw"
-            />
-          </svg>
-        </div>
-        <span class="font-medium">{{ contentConfig.pwa.installSuccess }}</span>
-      </div>
-      <!-- Confetti celebration -->
-      <ConfettiCelebration
-        :trigger="showSuccess"
-        intensity="light"
-        :duration="animationConfig.confetti.lightDurationMs"
-      />
-    </div>
-  </Transition>
-
-  <!-- Install Prompt -->
-  <Transition
-    enter-active-class="transition-all duration-500 ease-out"
-    enter-from-class="opacity-0 translate-y-8 scale-95"
-    enter-to-class="opacity-100 translate-y-0 scale-100"
-    leave-active-class="transition-all duration-300 ease-in"
-    leave-from-class="opacity-100 translate-y-0 scale-100"
-    leave-to-class="opacity-0 translate-y-4 scale-95"
+    :leave-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-in`"
     @after-leave="handleAfterLeave"
   >
     <div
@@ -100,27 +49,22 @@
             </svg>
           </div>
           <div>
-            <h3
-              id="pwa-install-title"
-              class="font-medium text-gray-900"
-            >
+            <h3 id="pwa-install-title" class="font-medium text-gray-900">
               Install App
             </h3>
-            <p
-              id="pwa-install-description"
-              class="text-sm text-gray-500"
-            >
+            <p id="pwa-install-description" class="text-sm text-gray-500">
               Add to your home screen
             </p>
           </div>
         </div>
         <div class="flex space-x-2">
+          <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal -->
           <button
             ref="dismissButtonRef"
             :class="[
               'px-3 py-1 text-sm text-gray-600 hover:text-gray-800',
               'focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2',
-              'transition-all duration-200 ease-out',
+              `transition-all ${animationConfig.tailwindDurations.normal} ease-out`,
               'hover:bg-gray-100 rounded-md',
               isDismissing && 'opacity-50 cursor-not-allowed',
             ]"
@@ -133,7 +77,8 @@
               <kbd
                 class="hidden sm:inline-flex items-center px-1 py-0.5 text-xs bg-gray-100 border border-gray-300 rounded text-gray-500"
                 aria-hidden="true"
-              >Esc</kbd>
+                >Esc</kbd
+              >
             </span>
           </button>
           <!-- Palette's micro-UX enhancement: Tooltip explaining install benefits -->
@@ -194,9 +139,10 @@
       </div>
 
       <!-- Progress bar for auto-dismiss (optional feature) -->
+      <!-- Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations.fast -->
       <div
         v-if="autoDismissDuration > 0"
-        class="absolute bottom-0 left-0 h-0.5 bg-blue-500 transition-all duration-100 ease-linear"
+        :class="`absolute bottom-0 left-0 h-0.5 bg-blue-500 transition-all ${animationConfig.tailwindDurations.fast} ease-linear`"
         :style="{ width: `${autoDismissProgress}%` }"
         aria-hidden="true"
       />
@@ -204,12 +150,7 @@
   </Transition>
 
   <!-- Screen reader announcement -->
-  <div
-    class="sr-only"
-    role="status"
-    aria-live="polite"
-    aria-atomic="true"
-  >
+  <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
     {{ announcement }}
   </div>
 </template>
