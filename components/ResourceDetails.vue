@@ -544,8 +544,7 @@ watch(
     newSet.forEach(sectionId => {
       visitedSections.value.add(sectionId)
     })
-  },
-  { deep: true }
+  }
 )
 
 // Flexy hates hardcoded values! Using animationConfig for all CSS durations 🧩
