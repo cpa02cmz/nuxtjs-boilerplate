@@ -464,9 +464,7 @@
             <span>Shortcuts</span>
           </button>
         </div>
-        <p class="sr-only">
-          Footer content ends
-        </p>
+        <p class="sr-only">Footer content ends</p>
       </div>
     </footer>
 
@@ -538,9 +536,10 @@ const previousCount = ref(comparisonCount.value)
 watch(comparisonCount, (newCount, oldCount) => {
   if (newCount !== oldCount && newCount > 0) {
     isCountAnimating.value = true
+    // Flexy hates hardcoded 400! Using animationConfig for consistency 🧩
     setTimeout(() => {
       isCountAnimating.value = false
-    }, 400)
+    }, animationConfig.comparison.countAnimationDurationMs)
   }
   previousCount.value = newCount
 })

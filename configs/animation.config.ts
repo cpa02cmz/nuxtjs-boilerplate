@@ -3858,6 +3858,11 @@ export const animationConfig = {
     confettiDurationMs: parseInt(
       process.env.COMPARISON_CONFETTI_DURATION_MS || '2000'
     ),
+    // Comparison count badge animation duration (ms) - Flexy hates hardcoded 400!
+    // Used in layouts/default.vue for comparison button bounce animation reset
+    countAnimationDurationMs: parseInt(
+      process.env.COMPARISON_COUNT_ANIMATION_DURATION_MS || '400'
+    ),
   },
 
   // Resource Analytics Animations - Flexy hates hardcoded stagger delays!
