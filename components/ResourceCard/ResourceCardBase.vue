@@ -929,7 +929,13 @@ if (typeof useHead === 'function') {
   pointer-events: none;
   z-index: v-bind('zIndexScale.ground');
   opacity: 0;
-  transition: opacity var(--shine-transition, 0.3s) ease-out;
+  /* Flexy hates hardcoded 0.3s! Using animationConfig.cardShine.transitionSec */
+  transition: opacity
+    var(
+      --shine-transition,
+      v-bind('animationConfig.cardShine.transitionSec + "s"')
+    )
+    ease-out;
   background: radial-gradient(
     circle at var(--shine-x, 50%) var(--shine-y, 50%),
     rgba(255, 255, 255, 0.35) 0%,
@@ -974,7 +980,13 @@ if (typeof useHead === 'function') {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
-  transition: opacity var(--shine-transition, 0.3s) ease-out;
+  /* Flexy hates hardcoded 0.3s! Using animationConfig.cardShine.transitionSec */
+  transition: opacity
+    var(
+      --shine-transition,
+      v-bind('animationConfig.cardShine.transitionSec + "s"')
+    )
+    ease-out;
   pointer-events: none;
 }
 

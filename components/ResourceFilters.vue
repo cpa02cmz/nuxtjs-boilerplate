@@ -501,9 +501,20 @@ onUnmounted(() => {
 .filter-section-wrapper {
   opacity: 0;
   transform: translateY(20px);
+  /* Flexy hates hardcoded 400ms! Using animationConfig.stagger.entranceDurationMs */
   transition:
-    opacity var(--entrance-duration, 400ms) ease-out,
-    transform var(--entrance-duration, 400ms) v-bind('EASING.SPRING_SNAPPY');
+    opacity
+      var(
+        --entrance-duration,
+        v-bind('animationConfig.stagger.entranceDurationMs + "ms"')
+      )
+      ease-out,
+    transform
+      var(
+        --entrance-duration,
+        v-bind('animationConfig.stagger.entranceDurationMs + "ms"')
+      )
+      v-bind('EASING.SPRING_SNAPPY');
   transition-delay: var(--stagger-delay, 0ms);
 }
 
@@ -534,9 +545,20 @@ onUnmounted(() => {
 .date-range-section {
   opacity: 0;
   transform: translateY(20px);
+  /* Flexy hates hardcoded 400ms! Using animationConfig.stagger.entranceDurationMs */
   transition:
-    opacity var(--entrance-duration, 400ms) ease-out,
-    transform var(--entrance-duration, 400ms) v-bind('EASING.SPRING_SNAPPY');
+    opacity
+      var(
+        --entrance-duration,
+        v-bind('animationConfig.stagger.entranceDurationMs + "ms"')
+      )
+      ease-out,
+    transform
+      var(
+        --entrance-duration,
+        v-bind('animationConfig.stagger.entranceDurationMs + "ms"')
+      )
+      v-bind('EASING.SPRING_SNAPPY');
   transition-delay: var(--stagger-delay, 0ms);
 }
 
