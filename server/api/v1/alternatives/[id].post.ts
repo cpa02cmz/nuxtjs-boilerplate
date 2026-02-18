@@ -11,6 +11,7 @@ import {
 import { defineEventHandler, getRouterParam } from 'h3'
 import { alternativesActionSchema } from '~/server/utils/validation-schemas'
 import { validateRequestBody } from '~/server/utils/validation-utils'
+import { safeJsonParse } from '~/server/utils/safeJsonParse'
 
 export default defineEventHandler(async event => {
   try {
@@ -43,9 +44,10 @@ export default defineEventHandler(async event => {
         }
 
         // Parse existing alternatives
-        let currentAlternatives: string[] = resource.alternatives
-          ? JSON.parse(resource.alternatives)
-          : []
+        let currentAlternatives = safeJsonParse<string[]>(
+          resource.alternatives || '[]',
+          []
+        )
 
         if (action === 'add') {
           // Add alternative relationship (both ways)
@@ -61,10 +63,10 @@ export default defineEventHandler(async event => {
             })
 
             // Also add reverse relationship
-            const reverseAlternatives: string[] =
-              alternativeResource.alternatives
-                ? JSON.parse(alternativeResource.alternatives)
-                : []
+            const reverseAlternatives = safeJsonParse<string[]>(
+              alternativeResource.alternatives || '[]',
+              []
+            )
             if (!reverseAlternatives.includes(resourceId)) {
               reverseAlternatives.push(resourceId)
               await tx.resource.update({
@@ -90,9 +92,10 @@ export default defineEventHandler(async event => {
           })
 
           // Also remove reverse relationship
-          let reverseAlternatives: string[] = alternativeResource.alternatives
-            ? JSON.parse(alternativeResource.alternatives)
-            : []
+          let reverseAlternatives = safeJsonParse<string[]>(
+            alternativeResource.alternatives || '[]',
+            []
+          )
           reverseAlternatives = reverseAlternatives.filter(
             id => id !== resourceId
           )
