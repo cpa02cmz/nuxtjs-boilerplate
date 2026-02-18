@@ -66,12 +66,7 @@
     </Tooltip>
 
     <!-- Screen reader live region for copy status announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
 
@@ -105,6 +100,7 @@ import Tooltip from './Tooltip.vue'
 import { useRipple } from '~/composables/useRipple'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
+import { zIndexScale } from '~/configs/z-index.config'
 
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
@@ -354,8 +350,8 @@ const particleDurationMs = animationConfig.copyParticles.durationMs
   width: 0;
   height: 0;
   pointer-events: none;
-  /* BroCula: Hardcoded z-index from zIndexScale.medium[50] for SSR compatibility */
-  z-index: 50;
+  /* Flexy hates hardcoded z-index! Using zIndexScale.medium[50] */
+  z-index: v-bind('zIndexScale.medium[50]');
 }
 
 .copy-particle {
