@@ -9,13 +9,13 @@ import {
 } from '~/utils/tags'
 import {
   sendSuccessResponse,
-  sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { generateCacheTags, cacheTagsConfig } from '~/configs/cache-tags.config'
-import { paginationConfig } from '~/configs/pagination.config'
 import { cacheConfig } from '~/configs/cache.config'
 import { contentConfig } from '~/configs/content.config'
+import { searchQuerySchemaV1 } from '~/server/utils/validation-schemas'
+import { validateQueryParams } from '~/server/utils/validation-utils'
 
 /**
  * Generate cache key with sorted query parameters for consistent ordering
@@ -55,6 +55,9 @@ export default defineEventHandler(async event => {
     // Apply rate limiting for search endpoint (which is more restrictive)
     await rateLimit(event)
 
+    // Validate query parameters using Zod schema
+    const validatedQuery = validateQueryParams(searchQuerySchemaV1, event)
+
     // Generate cache key based on query parameters
     const query = getQuery(event)
     const cacheKey = generateCacheKey(query)
@@ -72,84 +75,33 @@ export default defineEventHandler(async event => {
     const resourcesModule = await import(contentConfig.paths.resourcesData)
     let resources: Resource[] = resourcesModule.default || resourcesModule
 
-    // Parse query parameters with validation
-    // Validate and parse limit parameter
-    let limit = paginationConfig.search.defaultLimit // Use config instead of hardcoded
-    if (query.limit !== undefined) {
-      const parsedLimit = parseInt(query.limit as string)
-      if (!isNaN(parsedLimit) && parsedLimit > 0) {
-        limit = Math.min(parsedLimit, paginationConfig.search.maxLimit) // Use config instead of hardcoded
-      } else {
-        return sendBadRequestError(
-          event,
-          'Invalid limit parameter. Must be a positive integer.'
-        )
-      }
-    }
-
-    // Validate and parse offset parameter
-    let offset = paginationConfig.defaults.offset // Use config instead of hardcoded
-    if (query.offset !== undefined) {
-      const parsedOffset = parseInt(query.offset as string)
-      if (!isNaN(parsedOffset) && parsedOffset >= 0) {
-        offset = parsedOffset
-      } else {
-        return sendBadRequestError(
-          event,
-          'Invalid offset parameter. Must be a non-negative integer.'
-        )
-      }
-    }
-
-    // Parse other parameters
-    const searchQuery = query.q as string | undefined
-    const category = query.category as string | undefined
-    const pricing = query.pricing as string | undefined
-    const difficulty = query.difficulty as string | undefined
-    const tagsParam = query.tags as string | undefined
-    const hierarchicalTagsParam = query.hierarchicalTags as string | undefined
+    // Extract validated parameters
+    const limit = validatedQuery.limit
+    const offset = validatedQuery.offset
+    const searchQuery = validatedQuery.q ?? validatedQuery.query
+    const category = validatedQuery.category
+    const pricing = validatedQuery.pricing
+    const difficulty = validatedQuery.difficulty
+    const tagsParam = validatedQuery.tags
+    const hierarchicalTagsParam = validatedQuery.hierarchicalTags
 
     // Pre-process filter values for single-pass filtering
     const categoryLower = category?.toLowerCase()
     const pricingLower = pricing?.toLowerCase()
     const difficultyLower = difficulty?.toLowerCase()
 
-    let tagsSet: Set<string> | undefined
-    if (tagsParam) {
-      if (typeof tagsParam !== 'string') {
-        return sendBadRequestError(
-          event,
-          'Invalid tags parameter. Must be a comma-separated string.'
-        )
-      }
-      tagsSet = new Set(
-        tagsParam.split(',').map(tag => tag.trim().toLowerCase())
-      )
-    }
+    // Parse tags into Set for efficient lookup
+    const tagsSet = tagsParam
+      ? new Set(tagsParam.split(',').map(tag => tag.trim().toLowerCase()))
+      : undefined
 
-    let hierarchicalTagIds: string[] | undefined
-    if (hierarchicalTagsParam) {
-      if (typeof hierarchicalTagsParam !== 'string') {
-        return sendBadRequestError(
-          event,
-          'Invalid hierarchicalTags parameter. Must be a comma-separated string.'
-        )
-      }
-      hierarchicalTagIds = hierarchicalTagsParam
-        .split(',')
-        .map(tagId => tagId.trim())
-    }
+    // Parse hierarchical tags
+    const hierarchicalTagIds = hierarchicalTagsParam
+      ? hierarchicalTagsParam.split(',').map(tagId => tagId.trim())
+      : undefined
 
-    let searchTerm: string | undefined
-    if (searchQuery) {
-      if (typeof searchQuery !== 'string') {
-        return sendBadRequestError(
-          event,
-          'Invalid search query parameter. Must be a string.'
-        )
-      }
-      searchTerm = searchQuery.toLowerCase()
-    }
+    // Prepare search term
+    const searchTerm = searchQuery?.toLowerCase()
 
     // Combine category, pricing, difficulty, and flat tags into single-pass filter
     // This reduces from 4 iterations to 1 iteration

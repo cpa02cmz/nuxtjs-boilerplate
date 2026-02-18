@@ -8,7 +8,9 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
-import { defineEventHandler, getRouterParam, readBody } from 'h3'
+import { defineEventHandler, getRouterParam } from 'h3'
+import { alternativesActionSchema } from '~/server/utils/validation-schemas'
+import { validateRequestBody } from '~/server/utils/validation-utils'
 
 export default defineEventHandler(async event => {
   try {
@@ -21,13 +23,9 @@ export default defineEventHandler(async event => {
       return sendBadRequestError(event, 'Resource ID is required')
     }
 
-    // Parse request body
-    const body = await readBody(event)
+    // Validate request body using Zod schema
+    const body = await validateRequestBody(alternativesActionSchema, event)
     const { alternativeId, action = 'add' } = body
-
-    if (!alternativeId) {
-      return sendBadRequestError(event, 'Alternative resource ID is required')
-    }
 
     // Execute all database operations within a transaction to prevent race conditions
     const result = await executeTransaction(

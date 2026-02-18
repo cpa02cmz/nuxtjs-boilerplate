@@ -8,10 +8,11 @@ import {
   sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
-import { paginationConfig } from '~/configs/pagination.config'
 import { cacheConfig } from '~/configs/cache.config'
 import { apiConfig } from '~/configs/api.config'
 import { loadServerResources } from '~/server/utils/server-resources'
+import { resourcesQuerySchema } from '~/server/utils/validation-schemas'
+import { validateQueryParams } from '~/server/utils/validation-utils'
 
 /**
  * Generate cache key with sorted query parameters for consistent ordering
@@ -53,6 +54,9 @@ export default defineEventHandler(async event => {
     // Apply rate limiting
     await rateLimit(event)
 
+    // Validate query parameters using Zod schema
+    const validatedQuery = validateQueryParams(resourcesQuerySchema, event)
+
     // Generate cache key based on query parameters
     const query = getQuery(event)
     const cacheKey = generateCacheKey(query)
@@ -68,53 +72,19 @@ export default defineEventHandler(async event => {
     // Load resources using server utility
     let resources: Resource[] = loadServerResources()
 
-    // Parse query parameters with validation
-    // Validate and parse limit parameter
-    let limit = paginationConfig.defaults.pageSize // Use config instead of hardcoded
-    if (query.limit !== undefined) {
-      const parsedLimit = parseInt(query.limit as string)
-      if (!isNaN(parsedLimit) && parsedLimit > 0) {
-        limit = Math.min(parsedLimit, paginationConfig.limits.maxPageSize) // Use config instead of hardcoded
-      } else {
-        return sendBadRequestError(
-          event,
-          'Invalid limit parameter. Must be a positive integer.'
-        )
-      }
-    }
-
-    // Validate and parse offset/page parameter (page takes precedence over offset)
-    let offset = paginationConfig.defaults.offset // Use config instead of hardcoded
-    if (query.page !== undefined) {
-      const parsedPage = parseInt(query.page as string)
-      if (!isNaN(parsedPage) && parsedPage >= 1) {
-        offset = (parsedPage - 1) * limit
-      } else {
-        return sendBadRequestError(
-          event,
-          'Invalid page parameter. Must be a positive integer (1 or greater).'
-        )
-      }
-    } else if (query.offset !== undefined) {
-      const parsedOffset = parseInt(query.offset as string)
-      if (!isNaN(parsedOffset) && parsedOffset >= 0) {
-        offset = parsedOffset
-      } else {
-        return sendBadRequestError(
-          event,
-          'Invalid offset parameter. Must be a non-negative integer.'
-        )
-      }
-    }
-
-    // Validate and parse other parameters
-    const category = query.category as string | undefined
-    const pricing = query.pricing as string | undefined
-    const difficulty = query.difficulty as string | undefined
-    const search = query.search as string | undefined
-    const tag = query.tag as string | undefined
-    const sort = query.sort as string | undefined
-    const order = (query.order as string | undefined)?.toLowerCase()
+    // Extract validated parameters
+    const limit = validatedQuery.limit
+    // Calculate offset from page or use offset directly
+    const offset = validatedQuery.page
+      ? (validatedQuery.page - 1) * limit
+      : validatedQuery.offset
+    const category = validatedQuery.category
+    const pricing = validatedQuery.pricing
+    const difficulty = validatedQuery.difficulty
+    const search = validatedQuery.search
+    const tag = validatedQuery.tag
+    const sort = validatedQuery.sort
+    const order = validatedQuery.order
 
     // Validate sort parameter (supports both old and new formats)
     // Flexy hates hardcoded values! Using apiConfig for sort defaults

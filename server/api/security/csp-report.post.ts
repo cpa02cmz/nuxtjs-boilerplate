@@ -6,6 +6,7 @@
 
 import { defineEventHandler, readBody } from 'h3'
 import { limitsConfig } from '~/configs/limits.config'
+import { logger } from '~/utils/logger'
 import {
   sendMethodNotAllowedError,
   sendBadRequestError,
@@ -99,7 +100,7 @@ export default defineEventHandler(async event => {
     }
 
     // Log the CSP violation for monitoring (now with validated data)
-    console.error('[CSP Violation]', {
+    logger.error('CSP Violation detected', {
       timestamp: new Date().toISOString(),
       ...report,
     })
