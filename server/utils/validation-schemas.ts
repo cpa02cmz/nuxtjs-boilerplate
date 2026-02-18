@@ -331,6 +331,28 @@ export const moderationQueueQuerySchema = z.object({
   offset: z.coerce.number().int().min(0).optional().default(0),
 })
 
+// Moderation Rejection Schema - BugFixer: Fixed inconsistent validation approach (Issue #3903)
+export const moderationRejectionSchema = z.object({
+  submissionId: z.string().min(1, 'Submission ID is required'),
+  reviewedBy: z.string().min(1, 'Reviewer ID is required'),
+  rejectionReason: z
+    .string()
+    .min(1, 'Rejection reason is required')
+    .max(1000, 'Rejection reason must be less than 1000 characters'),
+  notes: z
+    .string()
+    .max(2000, 'Notes must be less than 2000 characters')
+    .optional(),
+})
+
+export type ModerationRejectionInput = z.infer<typeof moderationRejectionSchema>
+
+// Webhook Deliveries Query Schema - BugFixer: Added missing validation (Issue #3902)
+export const webhookDeliveriesQuerySchema = z.object({
+  webhookId: z.string().uuid().optional(),
+  status: z.enum(['success', 'failed', 'pending']).optional(),
+})
+
 // Alternatives Action Body Schema
 export const alternativesActionSchema = z.object({
   alternativeId: z.string().min(1, 'Alternative resource ID is required'),
