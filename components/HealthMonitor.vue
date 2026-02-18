@@ -14,8 +14,16 @@
         "
         @click="handleCheckClick"
       >
-        <span v-if="isChecking" class="button-spinner" aria-hidden="true">
-          <svg class="spinner-icon" viewBox="0 0 24 24" fill="none">
+        <span
+          v-if="isChecking"
+          class="button-spinner"
+          aria-hidden="true"
+        >
+          <svg
+            class="spinner-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
             <circle
               class="spinner-track"
               cx="12"
@@ -42,7 +50,10 @@
       </button>
     </div>
 
-    <div v-if="healthStatus" class="health-status">
+    <div
+      v-if="healthStatus"
+      class="health-status"
+    >
       <div class="status-summary">
         <div class="status-item">
           <!-- Status icon with pulse animation - Palette's micro-UX delight! -->
@@ -73,21 +84,25 @@
               leave-from-class="opacity-100 scale-100"
               leave-to-class="opacity-0 scale-50"
             >
-              <span v-if="isChecking" key="checking" class="status-checking"
-                >⋯</span
-              >
+              <span
+                v-if="isChecking"
+                key="checking"
+                class="status-checking"
+              >⋯</span>
               <span
                 v-else-if="healthStatus.isHealthy"
                 key="healthy"
                 class="status-healthy-icon"
-                >✓</span
-              >
-              <span v-else-if="healthStatus.lastStatus === null" key="unknown"
-                >?</span
-              >
-              <span v-else key="unhealthy" class="status-unhealthy-icon"
-                >✗</span
-              >
+              >✓</span>
+              <span
+                v-else-if="healthStatus.lastStatus === null"
+                key="unknown"
+              >?</span>
+              <span
+                v-else
+                key="unhealthy"
+                class="status-unhealthy-icon"
+              >✗</span>
             </Transition>
           </div>
           <div class="status-details">
@@ -113,16 +128,20 @@
                 formatDate(healthStatus.lastChecked)
               }}</span>
             </div>
-            <div v-if="healthStatus.responseTime" class="status-info">
+            <div
+              v-if="healthStatus.responseTime"
+              class="status-info"
+            >
               <span class="info-label">{{
                 contentConfig.health.labels.responseTime
               }}</span>
-              <span class="info-value"
-                >{{ healthStatus.responseTime
-                }}{{ contentConfig.health.units.ms }}</span
-              >
+              <span class="info-value">{{ healthStatus.responseTime
+              }}{{ contentConfig.health.units.ms }}</span>
             </div>
-            <div v-if="healthStatus.error" class="status-error">
+            <div
+              v-if="healthStatus.error"
+              class="status-error"
+            >
               <span class="error-label">{{
                 contentConfig.health.labels.error
               }}</span>
@@ -135,7 +154,7 @@
       <div
         v-if="
           healthStatus.validationHistory &&
-          healthStatus.validationHistory.length > 0
+            healthStatus.validationHistory.length > 0
         "
         class="history-section"
       >
@@ -150,19 +169,24 @@
             :class="check.isAccessible ? 'history-success' : 'history-error'"
           >
             <div class="history-status">
-              <span v-if="check.isAccessible" class="success-icon">✓</span>
-              <span v-else class="error-icon">✗</span>
+              <span
+                v-if="check.isAccessible"
+                class="success-icon"
+              >✓</span>
+              <span
+                v-else
+                class="error-icon"
+              >✗</span>
             </div>
             <div class="history-details">
               <div>{{ formatDate(check.timestamp) }}</div>
               <div class="history-info">
-                <span v-if="check.status"
-                  >{{ check.status }} {{ check.statusText }}</span
-                >
-                <span v-if="check.responseTime" class="response-time"
-                  >({{ check.responseTime
-                  }}{{ contentConfig.health.units.ms }})</span
-                >
+                <span v-if="check.status">{{ check.status }} {{ check.statusText }}</span>
+                <span
+                  v-if="check.responseTime"
+                  class="response-time"
+                >({{ check.responseTime
+                }}{{ contentConfig.health.units.ms }})</span>
               </div>
             </div>
           </div>
@@ -170,7 +194,10 @@
       </div>
     </div>
 
-    <div v-else class="no-health-data">
+    <div
+      v-else
+      class="no-health-data"
+    >
       {{ contentConfig.health.emptyState }}
     </div>
   </div>
