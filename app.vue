@@ -78,7 +78,7 @@ useHead({
   script: [
     {
       type: 'application/ld+json',
-      innerHTML: JSON.stringify(websiteSchema),
+      textContent: JSON.stringify(websiteSchema), // Security: Use textContent instead of innerHTML for JSON-LD
     },
   ],
   // Add accessibility-related meta tags and attributes
