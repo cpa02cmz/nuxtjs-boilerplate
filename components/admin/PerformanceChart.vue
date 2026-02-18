@@ -107,22 +107,13 @@
     </svg>
 
     <!-- Empty State -->
-    <div
-      v-if="chartData.length === 0"
-      class="empty-state"
-    >
-      <span
-        class="empty-icon"
-        aria-hidden="true"
-      >📊</span>
+    <div v-if="chartData.length === 0" class="empty-state">
+      <span class="empty-icon" aria-hidden="true">📊</span>
       <span class="empty-text">No data available</span>
     </div>
 
     <!-- X-Axis Labels -->
-    <div
-      v-if="chartData.length > 0"
-      class="x-axis-labels"
-    >
+    <div v-if="chartData.length > 0" class="x-axis-labels">
       <span
         v-for="(label, index) in xAxisLabels"
         :key="`label-${index}`"
@@ -157,10 +148,7 @@
         :style="tooltipStyle"
       >
         <div class="tooltip-content">
-          <div
-            class="tooltip-value"
-            :style="{ color: chartColor }"
-          >
+          <div class="tooltip-value" :style="{ color: chartColor }">
             {{ hoveredPoint.value.toFixed(2) }}
           </div>
           <div class="tooltip-metric">
@@ -170,20 +158,12 @@
             {{ hoveredPoint.label }}
           </div>
         </div>
-        <div
-          aria-hidden="true"
-          class="tooltip-arrow"
-        />
+        <div aria-hidden="true" class="tooltip-arrow" />
       </div>
     </Transition>
 
     <!-- Screen Reader Announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ chartAnnouncement }}
     </div>
   </div>
@@ -194,6 +174,7 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import type { TimeSeriesDataPoint } from '~/types/performance'
 import { performanceDashboardConfig } from '~/configs/performance-dashboard.config'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 interface Props {
   data: TimeSeriesDataPoint[]
@@ -214,16 +195,13 @@ const svgConfig = performanceDashboardConfig.charts.svg
 const tooltipEnterDuration = `${animationConfig.tooltip.showDelayMs}ms`
 const tooltipLeaveDuration = `${animationConfig.tooltip.hideDelayMs}ms`
 
-// Chart Colors
-const chartColors: Record<string, string> = {
-  LCP: '#3b82f6',
-  INP: '#10b981',
-  CLS: '#f59e0b',
-  FCP: '#8b5cf6',
-  TTFB: '#ef4444',
-}
-
-const chartColor = computed(() => chartColors[props.metricName] || '#6b7280')
+// Chart Colors - Flexy hates hardcoded chart colors! Using componentColorsConfig.performanceChart
+const chartColor = computed(
+  () =>
+    componentColorsConfig.performanceChart.metrics[
+      props.metricName as keyof typeof componentColorsConfig.performanceChart.metrics
+    ] || componentColorsConfig.performanceChart.fallback
+)
 
 // 🎨 Palette's micro-UX enhancement: Interactive state management
 const hoveredIndex = ref<number | null>(null)

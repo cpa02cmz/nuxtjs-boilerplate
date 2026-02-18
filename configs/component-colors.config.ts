@@ -716,6 +716,21 @@ export const componentColorsConfig = {
     },
   },
 
+  // Performance Chart Colors - Flexy hates hardcoded chart colors!
+  // Used by PerformanceChart component for metric visualization
+  performanceChart: {
+    // Core Web Vitals and performance metric colors
+    metrics: {
+      LCP: process.env.PERF_CHART_LCP_COLOR || '#3b82f6', // blue-500
+      INP: process.env.PERF_CHART_INP_COLOR || '#10b981', // emerald-500
+      CLS: process.env.PERF_CHART_CLS_COLOR || '#f59e0b', // amber-500
+      FCP: process.env.PERF_CHART_FCP_COLOR || '#8b5cf6', // violet-500
+      TTFB: process.env.PERF_CHART_TTFB_COLOR || '#ef4444', // red-500
+    },
+    // Fallback color for unknown metrics
+    fallback: process.env.PERF_CHART_FALLBACK_COLOR || '#6b7280', // gray-500
+  },
+
   // Text Colors - Flexy hates hardcoded text colors!
   text: {
     primary: process.env.TEXT_PRIMARY || '#111827',
