@@ -66,7 +66,12 @@
     </Tooltip>
 
     <!-- Screen reader live region for copy status announcement -->
-    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >
       {{ announcementText }}
     </div>
 
