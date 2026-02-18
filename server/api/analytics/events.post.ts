@@ -1,4 +1,10 @@
-import { defineEventHandler, readBody, getHeaders, getRequestIP } from 'h3'
+import {
+  defineEventHandler,
+  readBody,
+  getHeaders,
+  getRequestIP,
+  setResponseHeaders,
+} from 'h3'
 import { randomUUID, createHash } from 'node:crypto'
 import { insertAnalyticsEvent } from '~/server/utils/analytics-db'
 import { analyticsEventSchema } from '~/server/utils/validation-schemas'

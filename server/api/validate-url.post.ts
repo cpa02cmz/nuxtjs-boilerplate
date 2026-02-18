@@ -4,6 +4,7 @@
  * Validate a single URL by checking its HTTP status
  */
 
+import { setResponseHeaders } from 'h3'
 import { validateUrl } from '~/utils/urlValidation'
 import { logger } from '~/utils/logger'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'

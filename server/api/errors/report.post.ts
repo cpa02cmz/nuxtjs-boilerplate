@@ -1,4 +1,4 @@
-import { defineEventHandler, readBody } from 'h3'
+import { defineEventHandler, readBody, setResponseHeaders } from 'h3'
 import { createErrorTracker } from '~/server/utils/error-tracker'
 import { logger } from '~/utils/logger'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
