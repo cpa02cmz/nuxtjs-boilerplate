@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300"
+    :class="`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors ${animationConfig.tailwindDurations.standard}`"
   >
     <!-- Skip to main content link for screen readers -->
     <a
@@ -11,7 +11,7 @@
     </a>
 
     <header
-      class="bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 transition-colors duration-300"
+      :class="`bg-white dark:bg-gray-800 shadow dark:shadow-gray-900 transition-colors ${animationConfig.tailwindDurations.standard}`"
       role="banner"
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,7 +19,7 @@
           <div class="flex items-center">
             <NuxtLink
               to="/"
-              class="text-xl font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 focus:rounded transition-colors duration-200"
+              :class="`text-xl font-semibold text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 focus:rounded transition-colors ${animationConfig.tailwindDurations.normal}`"
               :aria-label="contentConfig.layout.ariaLabels.homeLink"
             >
               Free Stuff on the Internet
@@ -44,7 +44,7 @@
             <ClientOnly>
               <button
                 type="button"
-                class="p-2 rounded-md text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+                :class="`p-2 rounded-md text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
                 :aria-label="
                   isDark ? 'Switch to light mode' : 'Switch to dark mode'
                 "
@@ -108,56 +108,56 @@
 
             <NuxtLink
               to="/"
-              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              :class="`text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
               :aria-label="contentConfig.layout.ariaLabels.homeLink"
             >
               Home
             </NuxtLink>
             <NuxtLink
               to="/search"
-              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              :class="`text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
               active-class="bg-gray-100 dark:bg-gray-800"
             >
               Search
             </NuxtLink>
             <NuxtLink
               to="/ai-keys"
-              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              :class="`text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
               active-class="bg-gray-100 dark:bg-gray-800"
             >
               AI Keys
             </NuxtLink>
             <NuxtLink
               to="/favorites"
-              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              :class="`text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
               active-class="bg-gray-100 dark:bg-gray-800"
             >
               Favorites
             </NuxtLink>
             <NuxtLink
               to="/about"
-              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              :class="`text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
               active-class="bg-gray-100 dark:bg-gray-800"
             >
               About
             </NuxtLink>
             <NuxtLink
               to="/submit"
-              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium font-medium bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              :class="`text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium font-medium bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
               active-class="bg-gray-200 dark:bg-gray-700"
             >
               Submit
             </NuxtLink>
             <NuxtLink
               to="/developer"
-              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              :class="`text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
               active-class="bg-gray-100 dark:bg-gray-800"
             >
               Developer
             </NuxtLink>
             <NuxtLink
               to="/api-analytics"
-              class="text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              :class="`text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
               active-class="bg-gray-100 dark:bg-gray-800"
             >
               API Analytics
@@ -165,8 +165,10 @@
             <NuxtLink
               v-if="comparisonCount > 0"
               to="/compare"
-              class="relative inline-flex items-center px-3 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
-              :class="{ 'animate-bounce-scale': isCountAnimating }"
+              :class="[
+                `relative inline-flex items-center px-3 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all ${animationConfig.tailwindDurations.normal}`,
+                { 'animate-bounce-scale': isCountAnimating },
+              ]"
               :aria-label="
                 contentConfig.layout.ariaLabels.compare.replace(
                   '{{count}}',
@@ -205,7 +207,7 @@
             <ClientOnly>
               <button
                 type="button"
-                class="p-2 rounded-md text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+                :class="`p-2 rounded-md text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
                 :aria-label="
                   isDark ? 'Switch to light mode' : 'Switch to dark mode'
                 "
@@ -268,7 +270,7 @@
             <button
               ref="mobileMenuButton"
               type="button"
-              class="inline-flex items-center justify-center p-2 rounded-md text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+              :class="`inline-flex items-center justify-center p-2 rounded-md text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
               aria-controls="mobile-menu"
               :aria-expanded="mobileMenuOpen"
               :aria-label="
@@ -319,19 +321,19 @@
         v-show="mobileMenuOpen"
         id="mobile-menu"
         ref="mobileMenuRef"
-        class="lg:hidden bg-white dark:bg-gray-800 transition-colors duration-300"
+        :class="`lg:hidden bg-white dark:bg-gray-800 transition-colors ${animationConfig.tailwindDurations.standard}`"
       >
         <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           <NuxtLink
             to="/"
-            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            :class="`text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
             @click="closeMobileMenu"
           >
             Home
           </NuxtLink>
           <NuxtLink
             to="/search"
-            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            :class="`text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
             active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
@@ -339,7 +341,7 @@
           </NuxtLink>
           <NuxtLink
             to="/ai-keys"
-            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            :class="`text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
             active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
@@ -347,7 +349,7 @@
           </NuxtLink>
           <NuxtLink
             to="/favorites"
-            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            :class="`text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
             active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
@@ -355,7 +357,7 @@
           </NuxtLink>
           <NuxtLink
             to="/about"
-            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            :class="`text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
             active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
@@ -363,7 +365,7 @@
           </NuxtLink>
           <NuxtLink
             to="/submit"
-            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            :class="`text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
             active-class="bg-gray-200 dark:bg-gray-600"
             @click="closeMobileMenu"
           >
@@ -371,7 +373,7 @@
           </NuxtLink>
           <NuxtLink
             to="/developer"
-            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            :class="`text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
             active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
@@ -379,7 +381,7 @@
           </NuxtLink>
           <NuxtLink
             to="/api-analytics"
-            class="text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors duration-200"
+            :class="`text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-400 transition-colors ${animationConfig.tailwindDurations.normal}`"
             active-class="bg-gray-100 dark:bg-gray-700"
             @click="closeMobileMenu"
           >
@@ -388,7 +390,7 @@
           <NuxtLink
             v-if="comparisonCount > 0"
             to="/compare"
-            class="flex items-center justify-between text-gray-800 dark:text-gray-200 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+            :class="`flex items-center justify-between text-gray-800 dark:text-gray-200 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${animationConfig.tailwindDurations.normal}`"
             active-class="bg-blue-100 dark:bg-blue-900/50"
             @click="closeMobileMenu"
           >
@@ -436,11 +438,11 @@
       <slot />
     </main>
     <footer
-      class="bg-white dark:bg-gray-800 mt-8 py-6 border-t dark:border-gray-700 transition-colors duration-300"
+      :class="`bg-white dark:bg-gray-800 mt-8 py-6 border-t dark:border-gray-700 transition-colors ${animationConfig.tailwindDurations.standard}`"
       role="contentinfo"
     >
       <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 dark:text-gray-400 text-sm transition-colors duration-200"
+        :class="`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 dark:text-gray-400 text-sm transition-colors ${animationConfig.tailwindDurations.normal}`"
       >
         <div
           class="flex flex-col sm:flex-row items-center justify-center gap-4"
@@ -450,7 +452,7 @@
             rights reserved.
           </span>
           <button
-            class="inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1 transition-colors duration-200"
+            :class="`inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1 transition-colors ${animationConfig.tailwindDurations.normal}`"
             :aria-label="contentConfig.layout.ariaLabels.keyboardShortcuts"
             @click="openShortcutsHelp"
           >
@@ -462,9 +464,7 @@
             <span>Shortcuts</span>
           </button>
         </div>
-        <p class="sr-only">
-          Footer content ends
-        </p>
+        <p class="sr-only">Footer content ends</p>
       </div>
     </footer>
 
@@ -503,9 +503,8 @@ import { useResourceComparison } from '~/composables/useResourceComparison'
 import { useTheme } from '~/composables/useTheme'
 import { contentConfig } from '~/configs/content.config'
 import { easingConfig } from '~/configs/easing.config'
-// Flexy: Layout uses hardcoded duration classes for performance
-// duration-300 (standard) for theme transitions, duration-200 (normal) for UI interactions
-// Avoiding reactivity overhead on layout elements that appear on every page
+import { animationConfig } from '~/configs/animation.config'
+// Flexy hates hardcoded duration classes! Using animationConfig.tailwindDurations for consistency 🧩
 // NodeListOf is a global DOM type, no need to import
 import PWAInstallPrompt from '~/components/PWAInstallPrompt.vue'
 import KeyboardShortcutsHelp from '~/components/KeyboardShortcutsHelp.vue'
