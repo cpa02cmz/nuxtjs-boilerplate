@@ -54,6 +54,17 @@ export {
   databaseFactory,
 } from './database-factory'
 
+/**
+ * Gracefully shutdown all database adapters
+ * Call this during server shutdown to properly close connections
+ */
+export async function shutdownAllAdapters(): Promise<{
+  disconnected: number
+  errors: Error[]
+}> {
+  return databaseFactory.shutdownAll()
+}
+
 // PostgreSQL adapter
 export {
   PostgreSQLAdapter,

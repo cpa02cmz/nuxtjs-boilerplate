@@ -105,6 +105,36 @@ export class DatabaseFactory implements IDatabaseFactory {
   hasCachedAdapter(cacheKey: string): boolean {
     return adapterCache.has(cacheKey)
   }
+
+  /**
+   * Gracefully shutdown all cached adapters
+   * Disconnects all adapters and clears the cache
+   * Important for graceful server shutdowns
+   */
+  async shutdownAll(): Promise<{ disconnected: number; errors: Error[] }> {
+    const errors: Error[] = []
+    let disconnected = 0
+
+    for (const [cacheKey, adapter] of adapterCache.entries()) {
+      try {
+        if (adapter.isConnected()) {
+          await adapter.disconnect()
+          disconnected++
+        }
+      } catch (error) {
+        errors.push(
+          error instanceof Error
+            ? error
+            : new Error(`Failed to disconnect adapter ${cacheKey}`)
+        )
+      }
+    }
+
+    adapterCache.clear()
+    defaultAdapter = null
+
+    return { disconnected, errors }
+  }
 }
 
 /**
