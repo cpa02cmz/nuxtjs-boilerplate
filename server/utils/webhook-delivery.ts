@@ -235,12 +235,14 @@ export class WebhookDeliveryService {
 
     let responseCode: number | undefined
     let responseMessage: string | undefined
+    let responseBody: string | undefined
     let success = false
 
     try {
       await circuitBreaker.execute(
         async () => {
-          await $fetch(webhook.url, {
+          // ULW Loop Fix #3858: Capture response body from webhook endpoint
+          const response = await $fetch(webhook.url, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -254,6 +256,9 @@ export class WebhookDeliveryService {
             body: JSON.stringify(payloadWithSignature),
             timeout: DEFAULT_TIMEOUT_MS,
           })
+          // Store response body for audit trail and two-way communication
+          responseBody =
+            typeof response === 'string' ? response : JSON.stringify(response)
         },
         () => {
           const lastFailureTime = circuitBreaker.getStats().lastFailureTime
@@ -324,7 +329,8 @@ export class WebhookDeliveryService {
       payload: payloadWithSignature,
       status: success ? 'success' : 'failed',
       statusCode: responseCode,
-      responseBody: responseMessage,
+      // ULW Loop Fix #3858: Use captured response body for audit trail, fallback to error message
+      responseBody: responseBody || responseMessage,
       attemptCount: 1,
       createdAt: new Date().toISOString(),
       idempotencyKey: payload.idempotencyKey,
