@@ -125,7 +125,7 @@
             :aria-label="`View ${resource.title} - opens in new tab`"
             @click="handleViewResourceClick"
           >
-            View Resource
+            {{ contentConfig.recommendationCard.viewResource }}
             <span
               class="ml-1.5 inline-flex items-center external-link-icon"
               aria-hidden="true"
