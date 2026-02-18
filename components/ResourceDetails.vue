@@ -7,9 +7,9 @@
     <DeprecationNotice
       v-if="
         status &&
-          (status === 'deprecated' ||
-            status === 'discontinued' ||
-            status === 'pending')
+        (status === 'deprecated' ||
+          status === 'discontinued' ||
+          status === 'pending')
       "
       :status="status"
       :migration-path="migrationPath"
@@ -29,11 +29,7 @@
     </div>
 
     <!-- 🎨 Palette's micro-UX enhancement: Quick Navigation for keyboard users ✨ -->
-    <nav
-      v-if="showQuickNav"
-      class="quick-nav"
-      aria-label="Resource sections"
-    >
+    <nav v-if="showQuickNav" class="quick-nav" aria-label="Resource sections">
       <button
         v-for="(section, index) in availableSections"
         :key="section.id"
@@ -199,12 +195,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -367,7 +358,9 @@ const scrollToTop = () => {
 }
 
 // 🎨 Palette's micro-UX enhancement: Handle scroll for progress and back-to-top
-const handleScroll = () => {
+// Performance: Use RAF throttling to prevent excessive updates during scroll
+let scrollRAF = false
+const updateScrollProgress = () => {
   if (typeof window === 'undefined' || !containerRef.value) return
 
   const windowHeight = window.innerHeight
@@ -417,6 +410,15 @@ const handleScroll = () => {
   if (closestSection && closestSection !== activeSection.value) {
     activeSection.value = closestSection
     visitedSections.value.add(closestSection)
+  }
+
+  scrollRAF = false
+}
+
+const handleScroll = () => {
+  if (!scrollRAF) {
+    scrollRAF = true
+    requestAnimationFrame(updateScrollProgress)
   }
 }
 
@@ -516,8 +518,8 @@ onMounted(() => {
   // Setup intersection observer
   setupIntersectionObserver()
 
-  // Initial scroll check
-  handleScroll()
+  // Initial scroll check (immediate, no RAF needed)
+  updateScrollProgress()
 
   // Announce page load
   announcement.value = `${props.title} details loaded with ${availableSections.value.length} sections`
