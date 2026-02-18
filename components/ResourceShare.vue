@@ -154,7 +154,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { socialConfig } from '~/configs/social.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
-import { zIndexScale, zIndexConfig } from '~/configs/z-index.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
 
