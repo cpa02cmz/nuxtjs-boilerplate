@@ -100,10 +100,7 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p
-            v-if="toast.description"
-            class="toast__description"
-          >
+          <p v-if="toast.description" class="toast__description">
             {{ toast.description }}
           </p>
         </div>
@@ -136,7 +133,7 @@
             :enter-active-class="`transition-all ${tailwindClassesConfig.duration.fast} ease-out`"
             enter-from-class="opacity-0 scale-95 translate-x-2"
             enter-to-class="opacity-100 scale-100 translate-x-0"
-            :leave-active-class="`transition-all ${tailwindClassesConfig.duration.quick} ease-in`"
+            :leave-active-class="`transition-all ${tailwindClassesConfig.duration.fast} ease-in`"
             leave-from-class="opacity-100 scale-100 translate-x-0"
             leave-to-class="opacity-0 scale-95 translate-x-2"
           >
@@ -174,7 +171,7 @@ import { iconsConfig } from '~/configs/icons.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
 import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
-import { zIndexScale } from '~/configs/z-index.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 import { generateId } from '~/utils/generateId'
 import { hapticLight } from '~/utils/hapticFeedback'
 
@@ -837,7 +834,7 @@ onUnmounted(() => {
   right: calc(100% + 8px);
   top: 50%;
   transform: translateY(-50%);
-  z-index: v-bind('zIndexScale.tooltip');
+  z-index: v-bind('zIndexConfig.tooltip');
   pointer-events: none;
 }
 
