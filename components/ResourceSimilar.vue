@@ -88,8 +88,8 @@
           <div
             v-if="
               hoveredCard === resource.id &&
-              !prefersReducedMotion &&
-              spotlightConfig.enabled
+                !prefersReducedMotion &&
+                spotlightConfig.enabled
             "
             class="spotlight-overlay"
             :style="getSpotlightStyle(index)"
@@ -110,9 +110,18 @@
             }"
             :aria-label="`Similarity score: ${Math.round((resource.similarityScore || 0) * 100)}%`"
           >
-            <svg class="similarity-ring" viewBox="0 0 36 36" aria-hidden="true">
+            <svg
+              class="similarity-ring"
+              viewBox="0 0 36 36"
+              aria-hidden="true"
+            >
               <!-- Background circle -->
-              <circle class="similarity-ring-bg" cx="18" cy="18" r="15" />
+              <circle
+                class="similarity-ring-bg"
+                cx="18"
+                cy="18"
+                r="15"
+              />
               <!-- Progress circle with animated stroke -->
               <circle
                 class="similarity-ring-progress"
@@ -140,7 +149,12 @@
       </TransitionGroup>
 
       <!-- Screen reader announcement -->
-      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        class="sr-only"
+      >
         {{ announcement }}
       </div>
     </section>
