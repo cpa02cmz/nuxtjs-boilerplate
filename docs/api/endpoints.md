@@ -383,28 +383,27 @@ Perform search across resources with advanced filtering.
 
 ```json
 {
-  "results": [
-    {
-      "id": "res_123",
-      "title": "Example Resource",
-      "description": "Resource description",
-      "url": "https://example.com",
-      "category": "development",
-      "tags": ["free", "tools"],
-      "score": 0.95
-    }
-  ],
-  "total": 25,
-  "took": 45,
-  "facets": {
-    "categories": [
-      { "name": "development", "count": 15 },
-      { "name": "design", "count": 8 }
+  "success": true,
+  "data": {
+    "data": [
+      {
+        "id": "res_123",
+        "title": "Example Resource",
+        "description": "Resource description",
+        "url": "https://example.com",
+        "category": "development",
+        "tags": ["free", "tools"],
+        "score": 0.95,
+        "hierarchicalTags": [...]
+      }
     ],
-    "tags": [
-      { "name": "free", "count": 22 },
-      { "name": "tools", "count": 18 }
-    ]
+    "pagination": {
+      "total": 25,
+      "limit": 20,
+      "offset": 0,
+      "hasNext": true,
+      "hasPrev": false
+    }
   }
 }
 ```
