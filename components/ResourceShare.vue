@@ -538,7 +538,7 @@ onUnmounted(() => {
   bottom: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
-  z-index: v-bind('zIndexScale.low[5]');
+  z-index: 5;
   pointer-events: none;
 }
 
@@ -549,17 +549,15 @@ onUnmounted(() => {
   padding: 6px 10px;
   background: linear-gradient(
     135deg,
-    v-bind('animationConfig.gradients?.keyboardHint?.start || "#1f2937"') 0%,
-    v-bind('animationConfig.gradients?.keyboardHint?.end || "#374151"') 100%
+    v-bind('animationConfig.gradients.keyboardHint.start') 0%,
+    v-bind('animationConfig.gradients.keyboardHint.end') 100%
   );
   color: white;
   font-size: 12px;
   font-weight: 500;
   border-radius: 6px;
   white-space: nowrap;
-  box-shadow: v-bind(
-    'shadowsConfig.resourceShare.tooltip || "0 4px 6px -1px rgba(0, 0, 0, 0.1)"'
-  );
+  box-shadow: v-bind('shadowsConfig.resourceShare.tooltip');
 }
 
 .copy-shortcut-hint__key {
@@ -597,8 +595,7 @@ onUnmounted(() => {
   height: 0;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-top: 5px solid
-    v-bind('animationConfig.gradients?.keyboardHint?.end || "#374151"');
+  border-top: 5px solid v-bind('animationConfig.gradients.keyboardHint.end');
 }
 
 /* Show hint on focus for keyboard users */
