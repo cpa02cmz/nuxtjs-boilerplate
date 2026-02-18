@@ -18,7 +18,10 @@
       :class="{ 'breadcrumb-trail--visible': isNavHovered }"
       aria-hidden="true"
     >
-      <div class="breadcrumb-trail__glow" :style="trailGlowStyle" />
+      <div
+        class="breadcrumb-trail__glow"
+        :style="trailGlowStyle"
+      />
     </div>
 
     <ol class="flex items-center space-x-2 text-sm relative z-10">
@@ -39,7 +42,10 @@
           @click="handleBreadcrumbClick('home')"
         >
           <span class="breadcrumb-text">Home</span>
-          <span class="breadcrumb-underline" aria-hidden="true" />
+          <span
+            class="breadcrumb-underline"
+            aria-hidden="true"
+          />
         </NuxtLink>
       </li>
       <li aria-hidden="true">
@@ -62,20 +68,34 @@
           @click="handleBreadcrumbClick('resources')"
         >
           <span class="breadcrumb-text">Resources</span>
-          <span class="breadcrumb-underline" aria-hidden="true" />
+          <span
+            class="breadcrumb-underline"
+            aria-hidden="true"
+          />
         </NuxtLink>
       </li>
       <li aria-hidden="true">
         <span class="breadcrumb-separator">/</span>
       </li>
-      <li class="breadcrumb-current" aria-current="page">
+      <li
+        class="breadcrumb-current"
+        aria-current="page"
+      >
         <span class="breadcrumb-current-text">{{ title }}</span>
-        <span class="breadcrumb-current-indicator" aria-hidden="true" />
+        <span
+          class="breadcrumb-current-indicator"
+          aria-hidden="true"
+        />
       </li>
     </ol>
 
     <!-- Screen reader announcement for current page -->
-    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    <div
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
       {{ announcement }}
     </div>
   </nav>
