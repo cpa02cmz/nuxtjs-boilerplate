@@ -1,9 +1,30 @@
 <template>
   <nav
-    class="mb-6"
+    ref="breadcrumbNav"
+    class="mb-6 breadcrumb-nav"
+    :class="{
+      'breadcrumb-nav--hovered': isNavHovered && !prefersReducedMotion,
+    }"
     aria-label="Breadcrumb"
+    @mouseenter="handleNavEnter"
+    @mouseleave="handleNavLeave"
   >
-    <ol class="flex items-center space-x-2 text-sm">
+    <!-- 🎨 Pallete's micro-UX enhancement: Breadcrumb Trail Glow ✨
+         Creates a subtle gradient path connecting all breadcrumbs on hover
+         Helps users visualize the navigation hierarchy -->
+    <div
+      v-if="!prefersReducedMotion"
+      class="breadcrumb-trail"
+      :class="{ 'breadcrumb-trail--visible': isNavHovered }"
+      aria-hidden="true"
+    >
+      <div
+        class="breadcrumb-trail__glow"
+        :style="trailGlowStyle"
+      />
+    </div>
+
+    <ol class="flex items-center space-x-2 text-sm relative z-10">
       <li class="breadcrumb-item">
         <NuxtLink
           to="/"
@@ -132,6 +153,48 @@ const handleBreadcrumbClick = (link: string) => {
 // Screen reader announcement
 const announcement = ref('')
 
+// 🎨 Pallete's micro-UX enhancement: Breadcrumb trail glow state
+const isNavHovered = ref(false)
+const breadcrumbNav = ref<HTMLElement | null>(null)
+const trailGlowStyle = ref({})
+
+// Handle nav enter for trail glow
+const handleNavEnter = () => {
+  isNavHovered.value = true
+  updateTrailGlow()
+}
+
+// Handle nav leave
+const handleNavLeave = () => {
+  isNavHovered.value = false
+}
+
+// Update trail glow position based on breadcrumb positions
+const updateTrailGlow = () => {
+  if (!breadcrumbNav.value || prefersReducedMotion.value) return
+
+  const links = breadcrumbNav.value.querySelectorAll('.breadcrumb-link')
+  if (links.length === 0) return
+
+  const firstLink = links[0]
+  const lastLink = links[links.length - 1]
+  const navRect = breadcrumbNav.value.getBoundingClientRect()
+  const firstRect = firstLink.getBoundingClientRect()
+  const lastRect = lastLink.getBoundingClientRect()
+
+  // Calculate trail position
+  const startX = firstRect.left - navRect.left
+  const endX = lastRect.right - navRect.left
+  const width = endX - startX
+  const centerY = firstRect.top - navRect.top + firstRect.height / 2
+
+  trailGlowStyle.value = {
+    left: `${startX}px`,
+    top: `${centerY - 2}px`,
+    width: `${width}px`,
+  }
+}
+
 // Announce page changes to screen readers
 watch(
   () => props.title,
@@ -166,6 +229,62 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Breadcrumb nav container with trail glow support */
+.breadcrumb-nav {
+  position: relative;
+  padding: 0.5rem 0;
+  margin: -0.5rem 0;
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Breadcrumb Trail Glow Styles */
+.breadcrumb-trail {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  opacity: 0;
+  transition: opacity
+    v-bind('`${animationConfig.breadcrumbs.trailFadeDurationMs}ms`') ease-out;
+}
+
+.breadcrumb-trail--visible {
+  opacity: 1;
+}
+
+.breadcrumb-trail__glow {
+  position: absolute;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    rgba(37, 99, 235, 0) 0%,
+    rgba(37, 99, 235, 0.3) 15%,
+    rgba(59, 130, 246, 0.5) 50%,
+    rgba(37, 99, 235, 0.3) 85%,
+    rgba(37, 99, 235, 0) 100%
+  );
+  border-radius: 2px;
+  filter: blur(2px);
+  transition: all
+    v-bind('`${animationConfig.breadcrumbs.trailMovementDurationMs}ms`')
+    ease-out;
+  animation: trail-pulse
+    v-bind('`${animationConfig.breadcrumbs.trailPulseDurationMs}ms`')
+    ease-in-out infinite;
+}
+
+@keyframes trail-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    filter: blur(2px) brightness(1);
+  }
+  50% {
+    opacity: 1;
+    filter: blur(2px) brightness(1.2);
+  }
+}
+
 /* Breadcrumb item base styles */
 .breadcrumb-item {
   position: relative;
@@ -315,7 +434,8 @@ onMounted(() => {
 @media (prefers-reduced-motion: reduce) {
   .breadcrumb-link,
   .breadcrumb-underline,
-  .breadcrumb-separator {
+  .breadcrumb-separator,
+  .breadcrumb-trail {
     transition: none;
   }
 
@@ -336,6 +456,11 @@ onMounted(() => {
   .breadcrumb-link.is-hovered,
   .breadcrumb-link.is-pressed {
     transform: none;
+  }
+
+  .breadcrumb-trail__glow {
+    animation: none;
+    opacity: 0 !important;
   }
 }
 

@@ -66,7 +66,9 @@
           :key="n"
           class="skeleton-card"
           :class="{ 'skeleton-wave': !prefersReducedMotion }"
-          :style="{ animationDelay: `${(n - 1) * 150}ms` }"
+          :style="{
+            animationDelay: `${(n - 1) * animationConfig.reviewQueue.skeletonStaggerDelayMs}ms`,
+          }"
         >
           <div class="skeleton-header">
             <div class="skeleton-title" />

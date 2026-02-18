@@ -1705,6 +1705,10 @@ export const animationConfig = {
     sparkleParticleCount: parseInt(
       process.env.ALTERNATIVES_SPARKLE_PARTICLE_COUNT || '6'
     ),
+    // Flexy hates hardcoded 80ms! Stagger delay between sparkle particles
+    sparkleStaggerMs: parseInt(
+      process.env.ALTERNATIVES_SPARKLE_STAGGER_MS || '80'
+    ),
   },
 
   // 🎨 Pallete's micro-UX enhancement: Limitations Section Animations
@@ -1888,6 +1892,10 @@ export const animationConfig = {
       // Border radius of the spotlight effect (px)
       borderRadiusPx: parseInt(
         process.env.SIMILAR_SPOTLIGHT_BORDER_RADIUS_PX || '12'
+      ),
+      // Flexy hates hardcoded 0.3s! Ring animation delay offset
+      ringDelaySec: parseFloat(
+        process.env.SIMILAR_SPOTLIGHT_RING_DELAY_SEC || '0.3'
       ),
     },
   },
@@ -2203,6 +2211,17 @@ export const animationConfig = {
     pulseScale: parseFloat(process.env.BREADCRUMBS_PULSE_SCALE || '1.2'),
     // Whether to respect reduced motion preference
     respectReducedMotion: process.env.BREADCRUMBS_REDUCED_MOTION !== 'false',
+    // 🎨 Pallete's micro-UX enhancement: Breadcrumb Trail Glow ✨
+    // Creates a subtle gradient path connecting all breadcrumbs on hover
+    trailFadeDurationMs: parseInt(
+      process.env.BREADCRUMBS_TRAIL_FADE_DURATION_MS || '300'
+    ),
+    trailMovementDurationMs: parseInt(
+      process.env.BREADCRUMBS_TRAIL_MOVEMENT_DURATION_MS || '400'
+    ),
+    trailPulseDurationMs: parseInt(
+      process.env.BREADCRUMBS_TRAIL_PULSE_DURATION_MS || '2000'
+    ),
   },
 
   // Status Manager Component - Flexy hates hardcoded values!
@@ -3196,6 +3215,10 @@ export const animationConfig = {
         process.env.REVIEW_QUEUE_QUICK_ACTION_PROCESSING_MS || '800'
       ),
     },
+    // Flexy hates hardcoded 150ms! Skeleton loading stagger delay between cards
+    skeletonStaggerDelayMs: parseInt(
+      process.env.REVIEW_QUEUE_SKELETON_STAGGER_MS || '150'
+    ),
   },
 
   // SubmissionReview Component Animations - Palette's micro-UX delight! 🎉
