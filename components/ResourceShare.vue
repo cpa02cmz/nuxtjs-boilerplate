@@ -538,7 +538,7 @@ onUnmounted(() => {
   bottom: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
-  z-index: v-bind('zIndexConfig.tooltip');
+  z-index: v-bind('zIndexScale.low[5]');
   pointer-events: none;
 }
 
