@@ -11,6 +11,7 @@ import {
 } from '~/server/utils/api-response'
 import { userConfig } from '~/configs/user.config'
 import { resourceStatusUpdateSchema } from '~/server/utils/validation-schemas'
+import { safeJsonParse } from '~/server/utils/safeJsonParse'
 
 interface StatusChangeRecord {
   id: string
@@ -68,9 +69,10 @@ export default defineEventHandler(async event => {
     }
 
     // Parse existing history or create new array
-    const existingHistory: StatusChangeRecord[] = resource.statusHistory
-      ? JSON.parse(resource.statusHistory)
-      : []
+    const existingHistory = safeJsonParse<StatusChangeRecord[]>(
+      resource.statusHistory || '[]',
+      []
+    )
     existingHistory.push(statusChange)
 
     // Update resource in database with new status and history
