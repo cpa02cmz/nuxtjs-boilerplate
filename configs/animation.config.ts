@@ -1709,6 +1709,11 @@ export const animationConfig = {
     sparkleStaggerMs: parseInt(
       process.env.ALTERNATIVES_SPARKLE_STAGGER_MS || '80'
     ),
+    // Flexy hates hardcoded 0.2s! CSS transition duration for hover effects
+    transitionDurationMs: parseInt(
+      process.env.ALTERNATIVES_TRANSITION_DURATION_MS || '200'
+    ),
+    transitionDurationSec: `${parseInt(process.env.ALTERNATIVES_TRANSITION_DURATION_MS || '200') / 1000}s`,
   },
 
   // 🎨 Pallete's micro-UX enhancement: Limitations Section Animations
@@ -1897,6 +1902,11 @@ export const animationConfig = {
       ringDelaySec: parseFloat(
         process.env.SIMILAR_SPOTLIGHT_RING_DELAY_SEC || '0.3'
       ),
+      // Flexy hates hardcoded 0.3s! Badge transition duration for score reveal
+      badgeTransitionMs: parseInt(
+        process.env.SIMILAR_BADGE_TRANSITION_MS || '300'
+      ),
+      badgeTransitionSec: `${parseInt(process.env.SIMILAR_BADGE_TRANSITION_MS || '300') / 1000}s`,
     },
   },
 
@@ -2365,6 +2375,11 @@ export const animationConfig = {
     ),
     // Easing function
     easing: process.env.PWA_INSTALL_EASING || EASING_REF.SPRING_SNAPPY,
+    // Flexy hates hardcoded 0.1s! Magnetic button hover transition duration (ms)
+    magneticHoverDurationMs: parseInt(
+      process.env.PWA_MAGNETIC_HOVER_DURATION_MS || '100'
+    ),
+    magneticHoverDurationSec: `${parseInt(process.env.PWA_MAGNETIC_HOVER_DURATION_MS || '100') / 1000}s`,
   },
 
   // Webhook Manager Component - Flexy hates hardcoded values!
