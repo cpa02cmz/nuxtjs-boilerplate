@@ -97,6 +97,7 @@ jobs:
           - user-story-engineer
           - modularity-engineer
           - repository-manager
+          - CI Build–Runtime Boundary
     steps:
       - uses: actions/checkout@v4
   
