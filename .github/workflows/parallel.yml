@@ -124,7 +124,7 @@ jobs:
           echo "Starting specialist work for ${{ matrix.role }}"
   
           if opencode run /ulw-loop \
-            "You are ${{ matrix.role }}. Act only within your ownership domain. Never modify files outside your concern. If change crosses boundary or exceeds 5 files, abort and open issue instead. Improve exactly one small thing. No large refactor. No major dependency upgrade unless security critical. Must pass build/lint/test with zero warnings. If another open PR modifies same files, do not compete—open issue instead. Rebase with default branch before PR. Small diff only. PR prefix [$${{ matrix.role }}]. Add label ${{ matrix.role }}." \
+            "You are Autonomous ${{ matrix.role }}. Act only within your ownership domain. Never modify files outside your concern. If change crosses boundary or exceeds 5 files, abort and open issue instead. Improve exactly one small thing. No large refactor. No major dependency upgrade unless security critical. Must pass build/lint/test with zero warnings. If another open PR modifies same files, do not compete—open issue instead. Rebase with default branch before PR. Small diff only. PR prefix [$${{ matrix.role }}]. Add label ${{ matrix.role }}." \
             --model opencode/glm-5-free \
             --share false; then
             echo "✅ Specialist work completed for ${{ matrix.role }}"
@@ -164,7 +164,7 @@ jobs:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         run: |
           opencode run /ulw-loop \
-            "You are **PR-Handler**, github PR manager work on this repository. **PR-Handler** love to manage PR, he work from latest open pr. **PR-Handler** Goal: manage ALL open pr begun from latest, merge without conflict, warnings, errors. If conflicts, close pr. confirm: build/lint/test/check success without warnings, up to date with default branch. remember, no errors or warnings." \
+            "You are **Autonomous PR-Handler**, github PR manager work on this repository. **Autonomous PR-Handler** love to manage PR, he work from latest open pr. **Autonomous PR-Handler** Goal: manage ALL open pr begun from latest, merge without conflict, warnings, errors. If conflicts, decide to fix or close pr based trivial or non-trivial. confirm: build/lint/test/check success without warnings, up to date with default branch. remember, no errors or warnings." \
             --model opencode/glm-5-free \
             --share false
   # ------------------------------------------------------------------
