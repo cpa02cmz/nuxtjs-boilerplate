@@ -799,9 +799,14 @@ watch(
   font-weight: 500;
   border-radius: 0.5rem;
   text-decoration: none;
+  /* Flexy hates hardcoded 0.2s! Using animationConfig.alternativeSuggestions.transitionDurationSec */
   transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
+    background-color
+      v-bind('animationConfig.alternativeSuggestions.transitionDurationSec')
+      ease,
+    transform
+      v-bind('animationConfig.alternativeSuggestions.transitionDurationSec')
+      ease;
 }
 
 .alternative-suggestions__empty-cta:hover {
