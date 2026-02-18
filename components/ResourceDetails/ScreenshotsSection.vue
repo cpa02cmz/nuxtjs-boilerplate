@@ -1,9 +1,5 @@
 <template>
-  <section
-    class="screenshots-section"
-    role="region"
-    :aria-label="ariaLabel"
-  >
+  <section class="screenshots-section" role="region" :aria-label="ariaLabel">
     <!-- Header with screenshot count -->
     <div class="screenshots-header">
       <h2 class="screenshots-title">
@@ -65,6 +61,7 @@
           </button>
 
           <!-- Navigation Arrows -->
+          <!-- 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hints for navigation -->
           <button
             v-if="screenshots.length > 1"
             type="button"
@@ -76,8 +73,10 @@
             }"
             :disabled="currentImageIndex === 0"
             @click="navigatePrev"
-            @mouseenter="navPrevHovered = true"
-            @mouseleave="navPrevHovered = false"
+            @mouseenter="handleNavPrevMouseEnter"
+            @mouseleave="handleNavPrevMouseLeave"
+            @focus="handleNavPrevMouseEnter"
+            @blur="handleNavPrevMouseLeave"
           >
             <svg
               class="nav-icon"
@@ -93,6 +92,23 @@
                 d="M15 19l-7-7 7-7"
               />
             </svg>
+            <!-- 🎨 Pallete's micro-UX: Keyboard shortcut hint tooltip -->
+            <Transition
+              :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
+              enter-from-class="opacity-0 scale-95 translate-y-2"
+              enter-to-class="opacity-100 scale-100 translate-y-0"
+              :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
+              leave-from-class="opacity-100 scale-100 translate-y-0"
+              leave-to-class="opacity-0 scale-95 translate-y-2"
+            >
+              <span
+                v-if="showNavPrevHint && !prefersReducedMotion"
+                class="keyboard-hint keyboard-hint--nav"
+                aria-hidden="true"
+              >
+                <kbd class="keyboard-hint__key">←</kbd>
+              </span>
+            </Transition>
           </button>
 
           <button
@@ -106,8 +122,10 @@
             }"
             :disabled="currentImageIndex === screenshots.length - 1"
             @click="navigateNext"
-            @mouseenter="navNextHovered = true"
-            @mouseleave="navNextHovered = false"
+            @mouseenter="handleNavNextMouseEnter"
+            @mouseleave="handleNavNextMouseLeave"
+            @focus="handleNavNextMouseEnter"
+            @blur="handleNavNextMouseLeave"
           >
             <svg
               class="nav-icon"
@@ -123,6 +141,23 @@
                 d="M9 5l7 7-7 7"
               />
             </svg>
+            <!-- 🎨 Pallete's micro-UX: Keyboard shortcut hint tooltip -->
+            <Transition
+              :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
+              enter-from-class="opacity-0 scale-95 translate-y-2"
+              enter-to-class="opacity-100 scale-100 translate-y-0"
+              :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
+              leave-from-class="opacity-100 scale-100 translate-y-0"
+              leave-to-class="opacity-0 scale-95 translate-y-2"
+            >
+              <span
+                v-if="showNavNextHint && !prefersReducedMotion"
+                class="keyboard-hint keyboard-hint--nav"
+                aria-hidden="true"
+              >
+                <kbd class="keyboard-hint__key">→</kbd>
+              </span>
+            </Transition>
           </button>
 
           <!-- Image Container with Zoom Animation -->
@@ -144,10 +179,7 @@
             </div>
 
             <!-- Image Counter in Lightbox -->
-            <div
-              class="lightbox-counter"
-              aria-live="polite"
-            >
+            <div class="lightbox-counter" aria-live="polite">
               {{ currentImageIndex + 1 }} / {{ screenshots.length }}
             </div>
           </div>
@@ -312,12 +344,7 @@
     </TransitionGroup>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -363,6 +390,12 @@ const closeButtonHovered = ref(false)
 const navPrevHovered = ref(false)
 const navNextHovered = ref(false)
 const hoveredThumbIndex = ref<number | null>(null)
+
+// 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint state
+const showNavPrevHint = ref(false)
+const showNavNextHint = ref(false)
+let navPrevHintTimeout: ReturnType<typeof setTimeout> | null = null
+let navNextHintTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Check for reduced motion preference
 const prefersReducedMotion = ref(false)
@@ -569,6 +602,41 @@ const handleFocus = (index: number) => {
 
 const handleBlur = () => {
   focusedIndex.value = null
+}
+
+// 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint handlers
+const handleNavPrevMouseEnter = () => {
+  navPrevHovered.value = true
+  if (navPrevHintTimeout) clearTimeout(navPrevHintTimeout)
+  navPrevHintTimeout = setTimeout(() => {
+    showNavPrevHint.value = true
+  }, animationConfig.keyboardShortcuts.hintDelayMs)
+}
+
+const handleNavPrevMouseLeave = () => {
+  navPrevHovered.value = false
+  showNavPrevHint.value = false
+  if (navPrevHintTimeout) {
+    clearTimeout(navPrevHintTimeout)
+    navPrevHintTimeout = null
+  }
+}
+
+const handleNavNextMouseEnter = () => {
+  navNextHovered.value = true
+  if (navNextHintTimeout) clearTimeout(navNextHintTimeout)
+  navNextHintTimeout = setTimeout(() => {
+    showNavNextHint.value = true
+  }, animationConfig.keyboardShortcuts.hintDelayMs)
+}
+
+const handleNavNextMouseLeave = () => {
+  navNextHovered.value = false
+  showNavNextHint.value = false
+  if (navNextHintTimeout) {
+    clearTimeout(navNextHintTimeout)
+    navNextHintTimeout = null
+  }
 }
 
 // Keyboard navigation - Palette's micro-UX accessibility enhancement!
@@ -1208,6 +1276,61 @@ const lightboxZoomDuration = computed(() => {
   }
 }
 
+/* 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint styles */
+.keyboard-hint {
+  position: absolute;
+  bottom: calc(100% + 0.75rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: v-bind('zIndexScale.high[100]');
+  pointer-events: none;
+}
+
+.keyboard-hint--nav {
+  /* Position above the nav button */
+}
+
+.keyboard-hint__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  font-family:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(55, 65, 81); /* gray-700 */
+  background: linear-gradient(135deg, #f3f4f6 0%, #ffffff 100%);
+  border: 1px solid rgb(209, 213, 219); /* gray-300 */
+  border-radius: 0.375rem;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+/* Dark mode support for keyboard hints */
+.dark .keyboard-hint__key {
+  color: rgb(229, 231, 235); /* gray-200 */
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  border-color: rgb(75, 85, 99); /* gray-600 */
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 2px 4px -1px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Reduced motion support - hide keyboard hints for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .keyboard-hint {
+    display: none !important;
+  }
+}
+
 /* Mobile Responsive Lightbox */
 @media (max-width: 768px) {
   .lightbox-overlay {
@@ -1241,6 +1364,11 @@ const lightboxZoomDuration = computed(() => {
   .lightbox-thumbnail {
     width: 3.5rem;
     height: 2.625rem;
+  }
+
+  /* Hide keyboard hints on mobile - touch devices don't need them */
+  .keyboard-hint {
+    display: none;
   }
 }
 </style>
