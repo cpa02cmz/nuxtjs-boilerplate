@@ -286,6 +286,15 @@ export const contentConfig = {
         icon: '✨',
       },
     ] as SortOption[],
+    // 🎨 Pallete's micro-UX enhancement: Keyboard shortcut discovery hint
+    // Shown when dropdown is opened with mouse to help users discover keyboard shortcuts
+    keyboardHint: {
+      text: process.env.CONTENT_SORT_KEYBOARD_HINT_TEXT || 'Tip: Use keyboard',
+      navigate:
+        process.env.CONTENT_SORT_KEYBOARD_HINT_NAVIGATE || 'to navigate,',
+      select: process.env.CONTENT_SORT_KEYBOARD_HINT_SELECT || 'to select,',
+      close: process.env.CONTENT_SORT_KEYBOARD_HINT_CLOSE || 'to close',
+    },
   },
 
   // Resource Card

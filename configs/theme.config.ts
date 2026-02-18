@@ -49,6 +49,23 @@ export const themeConfig = {
     highlightText: process.env.SEARCH_HIGHLIGHT_TEXT || 'text-gray-900',
   },
 
+  // 🎨 Pallete's micro-UX enhancement: Keyboard Hint Colors
+  // Used for keyboard shortcut discovery tooltip in dropdowns
+  keyboardHint: {
+    // Gradient background colors
+    gradientStart: process.env.KEYBOARD_HINT_GRADIENT_START || '#eff6ff',
+    gradientEnd: process.env.KEYBOARD_HINT_GRADIENT_END || '#dbeafe',
+    // Border color
+    borderColor: process.env.KEYBOARD_HINT_BORDER_COLOR || '#bfdbfe',
+    // Text colors
+    textColor: process.env.KEYBOARD_HINT_TEXT_COLOR || '#1e40af',
+    separatorColor: process.env.KEYBOARD_HINT_SEPARATOR_COLOR || '#60a5fa',
+    // Key badge colors
+    keyBg: process.env.KEYBOARD_HINT_KEY_BG || '#ffffff',
+    keyBorder: process.env.KEYBOARD_HINT_KEY_BORDER || '#93c5fd',
+    keyText: process.env.KEYBOARD_HINT_KEY_TEXT || '#1d4ed8',
+  },
+
   // Layout Spacing (in pixels)
   layout: {
     toastTop: parseInt(process.env.TOAST_TOP_POSITION || '20'),

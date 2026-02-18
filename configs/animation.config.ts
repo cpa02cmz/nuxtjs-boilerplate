@@ -3712,6 +3712,31 @@ export const animationConfig = {
     textFadeDurationSec: `${parseInt(process.env.CHECKMARK_TEXT_FADE_MS || '300') / 1000}s`,
   },
 
+  // 🎨 Pallete's micro-UX enhancement: Sort Dropdown Keyboard Shortcut Hint
+  // Shows keyboard shortcut discovery tooltip when dropdown is opened with mouse
+  sortDropdown: {
+    // Duration to display keyboard hint (ms)
+    keyboardHintDisplayDurationMs: parseInt(
+      process.env.SORT_DROPDOWN_HINT_DURATION_MS || '4000'
+    ),
+    // Padding Y for keyboard hint (px)
+    keyboardHintPaddingYPx: parseInt(
+      process.env.SORT_DROPDOWN_HINT_PADDING_Y_PX || '8'
+    ),
+    // Padding X for keyboard hint (px)
+    keyboardHintPaddingXPx: parseInt(
+      process.env.SORT_DROPDOWN_HINT_PADDING_X_PX || '12'
+    ),
+    // Font size for keyboard hint text (px)
+    keyboardHintFontSizePx: parseInt(
+      process.env.SORT_DROPDOWN_HINT_FONT_SIZE_PX || '11'
+    ),
+    // Pulse animation duration for icon (seconds)
+    keyboardHintPulseDurationSec: parseFloat(
+      process.env.SORT_DROPDOWN_HINT_PULSE_SEC || '1.5'
+    ),
+  },
+
   // Validation Shake Animation
   // Used for form validation error feedback
   validationShakeAnim: {
