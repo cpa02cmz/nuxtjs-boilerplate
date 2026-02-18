@@ -2,10 +2,7 @@
   <ClientErrorBoundary component-name="FavoritesPage">
     <div class="py-12">
       <!-- Confetti celebration when clearing all bookmarks -->
-      <ConfettiCelebration
-        ref="confettiRef"
-        intensity="light"
-      />
+      <ConfettiCelebration ref="confettiRef" intensity="light" />
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
           <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
@@ -24,10 +21,7 @@
           aria-live="polite"
         >
           <!-- Animated bookmark illustration -->
-          <div
-            class="relative mx-auto h-32 w-32 mb-4"
-            aria-hidden="true"
-          >
+          <div class="relative mx-auto h-32 w-32 mb-4" aria-hidden="true">
             <!-- Background circle with pulse -->
             <div
               class="absolute inset-0 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-full"
@@ -61,10 +55,7 @@
               v-if="!prefersReducedMotion"
               class="absolute top-2 right-4 w-3 h-3 text-yellow-400 animate-sparkle"
             >
-              <svg
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
+              <svg viewBox="0 0 24 24" fill="currentColor">
                 <path
                   d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
                 />
@@ -74,10 +65,7 @@
               v-if="!prefersReducedMotion"
               class="absolute bottom-4 left-2 w-2 h-2 text-yellow-400 animate-sparkle-delayed"
             >
-              <svg
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
+              <svg viewBox="0 0 24 24" fill="currentColor">
                 <path
                   d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
                 />
@@ -108,14 +96,12 @@
           <div class="mt-8">
             <NuxtLink
               to="/"
-              class="group inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-200"
-              :class="tailwindClassesConfig.interactive.lift"
+              :class="`group inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all ${animationConfig.tailwindDurations.normal} ${tailwindClassesConfig.interactive.lift}`"
             >
               {{ contentConfig.favorites.emptyState.ctaButton }}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="ml-2 h-5 w-5 transition-transform duration-200"
-                :class="tailwindClassesConfig.interactive.groupHoverSlideRight"
+                :class="`ml-2 h-5 w-5 transition-transform ${animationConfig.tailwindDurations.normal} ${tailwindClassesConfig.interactive.groupHoverSlideRight}`"
                 viewBox="0 0 20 20"
                 fill="currentColor"
                 aria-hidden="true"
@@ -154,11 +140,12 @@
         <!-- Bookmarks content -->
         <div v-else>
           <!-- Undo notification banner -->
+          <!-- Flexy hates hardcoded duration-300 and duration-200! Using animationConfig.tailwindDurations -->
           <Transition
-            enter-active-class="transition-all duration-300 ease-out"
+            :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
             enter-from-class="opacity-0 -translate-y-4"
             enter-to-class="opacity-100 translate-y-0"
-            leave-active-class="transition-all duration-200 ease-in"
+            :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
             leave-from-class="opacity-100 translate-y-0"
             leave-to-class="opacity-0 -translate-y-4"
           >
@@ -202,12 +189,12 @@
                     aria-hidden="true"
                   >
                     <div
-                      class="h-full bg-blue-500 rounded-full transition-all duration-100 ease-linear"
+                      :class="`h-full bg-blue-500 rounded-full transition-all ${animationConfig.tailwindDurations.fast} ease-linear`"
                       :style="{ width: `${undoProgress}%` }"
                     />
                   </div>
                   <button
-                    class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    :class="`inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors ${animationConfig.tailwindDurations.normal} focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`"
                     @click="undoAllDeletions"
                   >
                     <svg
@@ -244,11 +231,12 @@
               >
                 {{ contentConfig.favorites.controls.export }}
               </button>
+              <!-- Flexy hates hardcoded duration-200 and duration-150! Using animationConfig.tailwindDurations -->
               <Transition
-                enter-active-class="transition-all duration-200 ease-out"
+                :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
                 enter-from-class="opacity-0 scale-95"
                 enter-to-class="opacity-100 scale-100"
-                leave-active-class="transition-all duration-150 ease-in"
+                :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
                 leave-from-class="opacity-100 scale-100"
                 leave-to-class="opacity-0 scale-95"
                 mode="out-in"
@@ -305,15 +293,15 @@
             >
               <template #actions>
                 <button
-                  class="text-red-500 hover:text-red-700 transition-all duration-200"
                   :class="[
+                    `text-red-500 hover:text-red-700 transition-all ${animationConfig.tailwindDurations.normal}`,
                     tailwindClassesConfig.interactive.hoverScaleLarge,
                     tailwindClassesConfig.interactive.activeScale,
                   ]"
                   :aria-label="`Remove ${bookmark.title} from bookmarks`"
                   :title="
                     contentConfig.favorites.aria?.removeBookmark ||
-                      'Remove bookmark'
+                    'Remove bookmark'
                   "
                   @click="removeBookmark(bookmark.id)"
                 >

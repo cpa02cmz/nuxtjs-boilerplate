@@ -4,10 +4,7 @@
     <!-- Content only renders after hydration to prevent mismatch with ssr: false -->
     <template v-if="isHydrated">
       <!-- Confetti celebration for successful submission -->
-      <ConfettiCelebration
-        ref="confettiRef"
-        intensity="medium"
-      />
+      <ConfettiCelebration ref="confettiRef" intensity="medium" />
 
       <!-- Smart Paste indicator - Palette's micro-UX enhancement! -->
       <!-- BroCula: Wrapped in ClientOnly to prevent hydration mismatch -->
@@ -81,10 +78,7 @@
                   'has-success': formData.title && !errors.title,
                 }"
               >
-                <label
-                  for="title"
-                  class="floating-label"
-                >
+                <label for="title" class="floating-label">
                   Resource Title <span aria-hidden="true">*</span>
                   <span class="sr-only">(required)</span>
                 </label>
@@ -110,7 +104,8 @@
                       aria-describedby="title-description title-counter title-error"
                       :aria-invalid="errors.title ? 'true' : 'false'"
                       :class="[
-                        'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
+                        // Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal
+                        `w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all ${animationConfig.tailwindDurations.normal} input-focus-glow`,
                         errors.title || isOverLimit
                           ? 'border-red-500 animate-form-shake'
                           : formData.title && !errors.title
@@ -120,7 +115,7 @@
                       ]"
                       @focus="isTitleFocused = true"
                       @blur="handleTitleBlur"
-                    >
+                    />
                   </template>
                 </CharacterCounter>
                 <!-- Validation checkmark - Palette's micro-UX delight! -->
@@ -156,10 +151,7 @@
                   </div>
                 </Transition>
               </div>
-              <p
-                id="title-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              <p id="title-description" class="mt-1 text-sm text-gray-500">
                 The name of the resource or service
               </p>
               <!-- Character limit progress bar for visual feedback -->
@@ -168,9 +160,9 @@
                 class="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden"
                 aria-hidden="true"
               >
+                <!-- Flexy hates hardcoded duration-300! Using animationConfig.tailwindDurations.standard -->
                 <div
-                  class="h-full transition-all duration-300 ease-out rounded-full"
-                  :class="titleProgressClass"
+                  :class="`h-full transition-all ${animationConfig.tailwindDurations.standard} ease-out rounded-full ${titleProgressClass}`"
                   :style="{
                     width: `${(formData.title.length / maxTitleLength) * 100}%`,
                   }"
@@ -207,7 +199,8 @@
                   aria-describedby="description-description description-counter description-error"
                   :aria-invalid="errors.description ? 'true' : 'false'"
                   :class="[
-                    'w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 resize-none input-focus-glow',
+                    // Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal
+                    `w-full px-4 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all ${animationConfig.tailwindDurations.normal} resize-none input-focus-glow`,
                     errors.description
                       ? 'border-red-500 animate-form-shake'
                       : formData.description && !errors.description
@@ -220,10 +213,10 @@
                   @focus="isDescriptionFocused = true"
                   @blur="handleDescriptionBlur"
                 />
+                <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal -->
                 <div
                   id="description-counter"
-                  class="absolute bottom-2 text-xs font-medium tabular-nums transition-all duration-200"
-                  :class="descriptionCounterClass"
+                  :class="`absolute bottom-2 text-xs font-medium tabular-nums transition-all ${animationConfig.tailwindDurations.normal} ${descriptionCounterClass}`"
                   :style="{
                     right: `${uiConfig.form.inputPositioning.counterRightRem}rem`,
                   }"
@@ -232,11 +225,12 @@
                   {{ formData.description.length }}/{{ maxDescriptionLength }}
                 </div>
                 <!-- Validation checkmark - Palette's micro-UX delight! -->
+                <!-- Flexy hates hardcoded duration-200 and duration-150! Using animationConfig.tailwindDurations -->
                 <Transition
-                  enter-active-class="transition-all duration-200 ease-out"
+                  :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
                   enter-from-class="opacity-0 scale-50"
                   enter-to-class="opacity-100 scale-100"
-                  leave-active-class="transition-all duration-150 ease-in"
+                  :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
                   leave-from-class="opacity-100 scale-100"
                   leave-to-class="opacity-0 scale-50"
                 >
@@ -273,9 +267,9 @@
                 class="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden"
                 aria-hidden="true"
               >
+                <!-- Flexy hates hardcoded duration-300! Using animationConfig.tailwindDurations.standard -->
                 <div
-                  class="h-full transition-all duration-300 ease-out rounded-full"
-                  :class="descriptionProgressClass"
+                  :class="`h-full transition-all ${animationConfig.tailwindDurations.standard} ease-out rounded-full ${descriptionProgressClass}`"
                   :style="{
                     width: `${(formData.description.length / maxDescriptionLength) * 100}%`,
                   }"
@@ -302,10 +296,7 @@
                   'has-success': formData.url && !errors.url,
                 }"
               >
-                <label
-                  for="url"
-                  class="floating-label"
-                >
+                <label for="url" class="floating-label">
                   URL <span aria-hidden="true">*</span>
                   <span class="sr-only">(required)</span>
                 </label>
@@ -319,7 +310,8 @@
                   aria-describedby="url-description url-error"
                   :aria-invalid="errors.url ? 'true' : 'false'"
                   :class="[
-                    'w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow',
+                    // Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal
+                    `w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all ${animationConfig.tailwindDurations.normal} input-focus-glow`,
                     errors.url
                       ? 'border-red-500 animate-form-shake'
                       : formData.url && !errors.url
@@ -328,13 +320,14 @@
                   ]"
                   @blur="handleUrlBlur"
                   @paste="handleSmartPaste"
-                >
+                />
                 <!-- Validation checkmark - Palette's micro-UX delight! -->
+                <!-- Flexy hates hardcoded duration-200 and duration-150! Using animationConfig.tailwindDurations -->
                 <Transition
-                  enter-active-class="transition-all duration-200 ease-out"
+                  :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
                   enter-from-class="opacity-0 scale-50"
                   enter-to-class="opacity-100 scale-100"
-                  leave-active-class="transition-all duration-150 ease-in"
+                  :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
                   leave-from-class="opacity-100 scale-100"
                   leave-to-class="opacity-0 scale-50"
                 >
@@ -390,7 +383,8 @@
                   aria-describedby="category-description category-error"
                   :aria-invalid="errors.category ? 'true' : 'false'"
                   :class="[
-                    'w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow appearance-none bg-white',
+                    // Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal
+                    `w-full px-4 py-2 pr-10 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all ${animationConfig.tailwindDurations.normal} input-focus-glow appearance-none bg-white`,
                     errors.category
                       ? 'border-red-500 animate-form-shake'
                       : formData.category && !errors.category
@@ -399,12 +393,7 @@
                   ]"
                   @blur="handleCategoryBlur"
                 >
-                  <option
-                    value=""
-                    disabled
-                  >
-                    Select a category
-                  </option>
+                  <option value="" disabled>Select a category</option>
                   <option
                     v-for="category in categoryOptions"
                     :key="category.value"
@@ -433,11 +422,12 @@
                   </svg>
                 </div>
                 <!-- Validation checkmark - Palette's micro-UX delight! -->
+                <!-- Flexy hates hardcoded duration-200 and duration-150! Using animationConfig.tailwindDurations -->
                 <Transition
-                  enter-active-class="transition-all duration-200 ease-out"
+                  :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
                   enter-from-class="opacity-0 scale-50"
                   enter-to-class="opacity-100 scale-100"
-                  leave-active-class="transition-all duration-150 ease-in"
+                  :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
                   leave-from-class="opacity-100 scale-100"
                   leave-to-class="opacity-0 scale-50"
                 >
@@ -462,10 +452,7 @@
                   </div>
                 </Transition>
               </div>
-              <p
-                id="category-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              <p id="category-description" class="mt-1 text-sm text-gray-500">
                 Choose the most appropriate category for this resource
               </p>
               <div
@@ -486,10 +473,7 @@
                   'has-value': tagsInput.length > 0,
                 }"
               >
-                <label
-                  for="tags"
-                  class="floating-label"
-                >
+                <label for="tags" class="floating-label">
                   Tags (Optional)
                 </label>
                 <input
@@ -497,13 +481,10 @@
                   v-model="tagsInput"
                   type="text"
                   aria-describedby="tags-description"
-                  class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
-                >
+                  :class="`w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all ${animationConfig.tailwindDurations.normal} input-focus-glow`"
+                />
               </div>
-              <p
-                id="tags-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              <p id="tags-description" class="mt-1 text-sm text-gray-500">
                 Add relevant tags to help categorize this resource (e.g., "api,
                 free-tier, openai")
               </p>
@@ -511,15 +492,16 @@
 
             <div class="pt-4">
               <!-- Draft save indicator with Pulse Ring animation - Palette's micro-UX delight! -->
+              <!-- Flexy hates hardcoded duration-300! Using animationConfig.tailwindDurations.standard -->
               <div
                 class="flex items-center justify-center mb-3 min-h-[20px]"
                 aria-live="polite"
               >
                 <Transition
-                  enter-active-class="transition-all duration-300 ease-out"
+                  :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
                   enter-from-class="opacity-0 transform -translate-y-1"
                   enter-to-class="opacity-100 transform translate-y-0"
-                  leave-active-class="transition-all duration-300 ease-in"
+                  :leave-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-in`"
                   leave-from-class="opacity-100 transform translate-y-0"
                   leave-to-class="opacity-0 transform -translate-y-1"
                 >
@@ -547,7 +529,9 @@
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span class="relative z-10">Draft saved {{ lastSavedText }}</span>
+                    <span class="relative z-10"
+                      >Draft saved {{ lastSavedText }}</span
+                    >
                     >
                   </div>
                   <div
@@ -566,15 +550,12 @@
                 :aria-busy="isSubmitting"
                 aria-live="polite"
                 :style="magneticTransformStyle"
-                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 magnetic-button"
+                :class="`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all ${animationConfig.tailwindDurations.normal} magnetic-button`"
               >
                 <span v-if="!isSubmitting">{{
                   contentConfig.submit.button.submit
                 }}</span>
-                <span
-                  v-else
-                  class="flex items-center"
-                >
+                <span v-else class="flex items-center">
                   <svg
                     class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
@@ -676,19 +657,14 @@
       </div>
     </template>
     <!-- BroCula: Loading state while hydrating -->
-    <div
-      v-else
-      class="flex items-center justify-center h-full min-h-[50vh]"
-    >
+    <div v-else class="flex items-center justify-center h-full min-h-[50vh]">
       <div class="text-center">
         <div class="animate-pulse flex space-x-2 justify-center mb-4">
           <div class="w-3 h-3 bg-blue-500 rounded-full" />
           <div class="w-3 h-3 bg-blue-500 rounded-full" />
           <div class="w-3 h-3 bg-blue-500 rounded-full" />
         </div>
-        <p class="text-gray-500 text-sm">
-          Loading form...
-        </p>
+        <p class="text-gray-500 text-sm">Loading form...</p>
       </div>
     </div>
   </div>
