@@ -4973,6 +4973,18 @@ export const animationConfig = {
     highMomentumScale: parseFloat(
       process.env.TYPING_MOMENTUM_HIGH_SCALE || '1.02'
     ),
+    // Glow pulse animation duration (ms) - Flexy hates hardcoded 1s!
+    glowPulseDurationMs: parseInt(
+      process.env.TYPING_MOMENTUM_GLOW_PULSE_MS || '1000'
+    ),
+    // CSS duration string for v-bind
+    glowPulseDurationSec: `${parseInt(process.env.TYPING_MOMENTUM_GLOW_PULSE_MS || '1000') / 1000}s`,
+    // High momentum ring scale animation duration (ms) - Flexy hates hardcoded 0.3s!
+    highMomentumRingScaleDurationMs: parseInt(
+      process.env.TYPING_MOMENTUM_RING_SCALE_MS || '300'
+    ),
+    // CSS duration string for v-bind
+    highMomentumRingScaleDurationSec: `${parseInt(process.env.TYPING_MOMENTUM_RING_SCALE_MS || '300') / 1000}s`,
   },
 } as const
 
