@@ -2211,6 +2211,17 @@ export const animationConfig = {
     pulseScale: parseFloat(process.env.BREADCRUMBS_PULSE_SCALE || '1.2'),
     // Whether to respect reduced motion preference
     respectReducedMotion: process.env.BREADCRUMBS_REDUCED_MOTION !== 'false',
+    // 🎨 Pallete's micro-UX enhancement: Breadcrumb Trail Glow ✨
+    // Creates a subtle gradient path connecting all breadcrumbs on hover
+    trailFadeDurationMs: parseInt(
+      process.env.BREADCRUMBS_TRAIL_FADE_DURATION_MS || '300'
+    ),
+    trailMovementDurationMs: parseInt(
+      process.env.BREADCRUMBS_TRAIL_MOVEMENT_DURATION_MS || '400'
+    ),
+    trailPulseDurationMs: parseInt(
+      process.env.BREADCRUMBS_TRAIL_PULSE_DURATION_MS || '2000'
+    ),
   },
 
   // Status Manager Component - Flexy hates hardcoded values!
