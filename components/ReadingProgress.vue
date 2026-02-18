@@ -43,11 +43,12 @@
     </Transition>
 
     <!-- Reading Time Estimate - Palette's micro-UX delight! -->
+    <!-- Flexy hates hardcoded duration-200 and duration-150! Using animationConfig.tailwindDurations -->
     <Transition
-      enter-active-class="transition-all duration-200 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
       enter-from-class="opacity-0 translate-y-1"
       enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition-all duration-150 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
       leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 translate-y-1"
     >
@@ -87,21 +88,17 @@
     </Transition>
 
     <!-- Screen reader announcement for progress changes -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ progressAnnouncement }}
     </div>
 
     <!-- Completion Celebration - Palette's micro-UX delight! -->
+    <!-- Flexy hates hardcoded duration-500 and duration-300! Using animationConfig.tailwindDurations -->
     <Transition
-      enter-active-class="transition-all duration-500 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.slower} ease-out`"
       enter-from-class="opacity-0 scale-50"
       enter-to-class="opacity-100 scale-100"
-      leave-active-class="transition-all duration-300 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-in`"
       leave-from-class="opacity-100 scale-100"
       leave-to-class="opacity-0 scale-75"
     >
@@ -121,16 +118,8 @@
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                class="checkmark-circle"
-                cx="12"
-                cy="12"
-                r="10"
-              />
-              <path
-                class="checkmark-path"
-                d="M7 12l3 3 7-7"
-              />
+              <circle class="checkmark-circle" cx="12" cy="12" r="10" />
+              <path class="checkmark-path" d="M7 12l3 3 7-7" />
             </svg>
           </div>
           <span class="completion-text">{{
@@ -138,15 +127,8 @@
           }}</span>
         </div>
         <!-- Confetti burst effect -->
-        <div
-          class="confetti-container"
-          aria-hidden="true"
-        >
-          <span
-            v-for="n in 8"
-            :key="n"
-            class="confetti-piece"
-          />
+        <div class="confetti-container" aria-hidden="true">
+          <span v-for="n in 8" :key="n" class="confetti-piece" />
         </div>
       </div>
     </Transition>
