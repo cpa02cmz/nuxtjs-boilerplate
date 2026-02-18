@@ -66,6 +66,8 @@ class DeadLetterEventEmitter {
   private listeners: Map<string, DeadLetterEventListener[]> = new Map()
   private recentEvents: DeadLetterEvent[] = []
   private config: DeadLetterAlertConfig
+  // ULW Loop Fix #3859: Maximum buffer size to prevent unbounded memory growth
+  private readonly MAX_EVENTS_SIZE = 1000
 
   constructor(config: DeadLetterAlertConfig = defaultConfig) {
     this.config = config
@@ -91,6 +93,12 @@ class DeadLetterEventEmitter {
 
   async emit(event: string, data: DeadLetterEvent): Promise<void> {
     this.recentEvents.push(data)
+
+    // ULW Loop Fix #3859: Prevent unbounded memory growth
+    if (this.recentEvents.length > this.MAX_EVENTS_SIZE) {
+      this.recentEvents = this.recentEvents.slice(-this.MAX_EVENTS_SIZE)
+    }
+
     this.cleanupOldEvents()
 
     const eventListeners = this.listeners.get(event)
@@ -243,14 +251,24 @@ ${this.config.notifications.includePayload ? `### Payload\n\n\`\`\`json\n${JSON.
 *This issue was automatically created by the dead letter queue alerting system.*
 `
 
-      const response = await octokit.issues.create({
-        owner,
-        repo,
-        title,
-        body,
-        labels: this.config.githubIssue.labels,
-        assignees: this.config.githubIssue.assignees,
-      })
+      // ULW Loop Fix #3860: Add timeout protection to prevent indefinite blocking
+      const GITHUB_API_TIMEOUT_MS = 30000 // 30 seconds
+      const response = await Promise.race([
+        octokit.issues.create({
+          owner,
+          repo,
+          title,
+          body,
+          labels: this.config.githubIssue.labels,
+          assignees: this.config.githubIssue.assignees,
+        }),
+        new Promise<never>((_, reject) =>
+          setTimeout(
+            () => reject(new Error('GitHub API timeout after 30s')),
+            GITHUB_API_TIMEOUT_MS
+          )
+        ),
+      ])
 
       logger.info(
         `[DeadLetterAlert] Created GitHub issue: ${response.data.html_url}`
