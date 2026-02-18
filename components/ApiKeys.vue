@@ -429,6 +429,7 @@ import { useApiKeysManager } from '~/composables/useApiKeysManager'
 import logger from '~/utils/logger'
 import { permissionsConfig } from '~/configs/permissions.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { EASING } from '~/configs/easing.config'
 import { contentConfig } from '~/configs/content.config'
 import { componentStylesConfig } from '~/configs/component-styles.config'
@@ -1278,7 +1279,8 @@ onMounted(() => {
   width: 0;
   height: 0;
   pointer-events: none;
-  z-index: 100;
+  /* Flexy hates hardcoded z-index values! Use config instead */
+  z-index: v-bind('zIndexScale.high[100]');
 }
 
 .api-key-particle {
