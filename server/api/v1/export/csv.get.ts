@@ -1,4 +1,4 @@
-import { defineEventHandler, setResponseHeader, createError } from 'h3'
+import { defineEventHandler, setResponseHeader } from 'h3'
 import type { Resource } from '~/types/resource'
 import { resourcesToCsv } from '~/utils/csv'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
@@ -48,14 +48,10 @@ export default defineEventHandler(async event => {
         permissions: apiKey.permissions,
         ip: event.node.req.socket.remoteAddress,
       })
-      sendForbiddenError(
+      return sendForbiddenError(
         event,
         'Insufficient permissions for export. Required: export:read or admin.'
       )
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'Forbidden: Insufficient permissions for export',
-      })
     }
 
     // Import resources from JSON
