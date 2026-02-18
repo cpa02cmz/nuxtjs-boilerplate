@@ -2,6 +2,7 @@ import type { H3Event } from 'h3'
 import { getQuery } from 'h3'
 import { rateLimitConfig } from '~/configs/rate-limit.config'
 import { TIME } from '~/server/utils/constants'
+import { logger } from '~/utils/logger'
 
 /**
  * Extract and validate client IP address from request
@@ -79,7 +80,7 @@ function cleanupExpiredRateLimitEntries(): void {
   }
 
   if (cleanedCount > 0 && process.env.NODE_ENV !== 'test') {
-    console.log(`[RateLimit] Cleaned up ${cleanedCount} expired bucket entries`)
+    logger.info(`[RateLimit] Cleaned up ${cleanedCount} expired bucket entries`)
   }
 }
 
@@ -305,7 +306,7 @@ function cleanupExpiredAnalytics(): void {
   }
 
   if (cleanedCount > 0 && process.env.NODE_ENV !== 'test') {
-    console.log(
+    logger.info(
       `[RateLimit] Cleaned up ${cleanedCount} expired analytics entries`
     )
   }

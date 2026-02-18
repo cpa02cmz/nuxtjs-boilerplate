@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import { AsyncLocalStorage } from 'async_hooks'
 import { databaseConfig } from '~/configs/database.config'
 import { timeConfig } from '~/configs/time.config'
+import { logger } from '~/utils/logger'
 
 // Transaction context for nested transaction support
 // Prevents deadlocks by reusing existing transactions instead of creating new ones
@@ -87,7 +88,7 @@ function createPrismaClient(): PrismaClient {
                 // Check if deletedAt filter is present
                 if (!lowerQuery.includes('deletedat')) {
                   const warning = `[SECURITY WARNING] Raw query on ${modelName} missing deletedAt filter. Query: ${query.substring(0, 100)}...`
-                  console.warn(warning)
+                  logger.warn(warning)
 
                   // In strict mode, throw error
                   if (process.env.STRICT_SOFT_DELETE === 'true') {
@@ -161,7 +162,7 @@ function createPrismaClient(): PrismaClient {
 
       // Log successful connection
       if (process.env.NODE_ENV !== 'test') {
-        console.log(
+        logger.info(
           `${LOG_PREFIX} Prisma client initialized successfully with PostgreSQL and soft delete filtering`
         )
       }
@@ -171,7 +172,7 @@ function createPrismaClient(): PrismaClient {
       retries++
 
       if (retries < MAX_RETRIES) {
-        console.warn(
+        logger.warn(
           `${LOG_PREFIX} Connection attempt ${retries} failed, retrying...`,
           error instanceof Error ? error.message : 'Unknown error'
         )
@@ -180,7 +181,7 @@ function createPrismaClient(): PrismaClient {
         return createRetryProxy(attemptConnection)
       }
 
-      console.error(
+      logger.error(
         `${LOG_PREFIX} Failed to initialize Prisma client after retries:`,
         error
       )
@@ -207,7 +208,7 @@ function createRetryProxy(retryFn: () => PrismaClient): PrismaClient {
         } catch (error) {
           connectionError =
             error instanceof Error ? error : new Error(String(error))
-          console.error(
+          logger.error(
             '[Database] Connection failed after all retries:',
             connectionError
           )
@@ -266,7 +267,7 @@ export async function checkDatabaseHealth(): Promise<boolean> {
     await Promise.race([healthCheck, timeout])
     return true
   } catch (error) {
-    console.error(`${LOG_PREFIX} Health check failed:`, error)
+    logger.error(`${LOG_PREFIX} Health check failed:`, error)
     return false
   }
 }
@@ -278,9 +279,9 @@ export async function checkDatabaseHealth(): Promise<boolean> {
 export async function disconnectDatabase(): Promise<void> {
   try {
     await prisma.$disconnect()
-    console.log(`${LOG_PREFIX} Prisma client disconnected successfully`)
+    logger.info(`${LOG_PREFIX} Prisma client disconnected successfully`)
   } catch (error) {
-    console.error(`${LOG_PREFIX} Error disconnecting Prisma client:`, error)
+    logger.error(`${LOG_PREFIX} Error disconnecting Prisma client:`, error)
   }
 }
 
@@ -345,7 +346,7 @@ export async function executeWithTimeout<T>(
       duration >
       timeoutMs * databaseConfig.performance.slowQueryThresholdMultiplier
     ) {
-      console.warn(
+      logger.warn(
         `${LOG_PREFIX} Slow query detected: ${operationName} took ${duration}ms (timeout: ${timeoutMs}ms)`
       )
     }
@@ -360,7 +361,7 @@ export async function executeWithTimeout<T>(
     const duration = Date.now() - startTime
 
     if (error instanceof Error && error.message.includes('Query timeout')) {
-      console.error(
+      logger.error(
         `${LOG_PREFIX} Query timed out after ${duration}ms: ${operationName}`
       )
       throw error
@@ -462,7 +463,7 @@ export async function executeTransaction<T>(
         (prismaOptions.timeout || databaseConfig.transaction.timeoutMs) *
           databaseConfig.performance.slowTransactionThresholdMultiplier
       ) {
-        console.warn(
+        logger.warn(
           `${LOG_PREFIX} Slow transaction detected: ${operationName} took ${duration}ms`
         )
       }
@@ -476,7 +477,7 @@ export async function executeTransaction<T>(
         const delayMs =
           (retryDelayMs || timeConfig.retry.baseDelayMs) *
           Math.pow(timeConfig.retry.exponentialBase, attempt)
-        console.warn(
+        logger.warn(
           `${LOG_PREFIX} Transaction ${operationName} failed (attempt ${attempt + 1}/${maxRetries}), retrying in ${delayMs}ms:`,
           lastError.message
         )
@@ -485,7 +486,7 @@ export async function executeTransaction<T>(
       }
 
       // Log final failure
-      console.error(
+      logger.error(
         `${LOG_PREFIX} Transaction ${operationName} failed after ${attempt + 1} attempts:`
       )
       throw lastError
