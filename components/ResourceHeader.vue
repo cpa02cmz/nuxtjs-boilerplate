@@ -4,12 +4,7 @@
     :class="{ 'animations-enabled': !prefersReducedMotion }"
   >
     <!-- ARIA Live Region for Announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
 
@@ -82,10 +77,13 @@
           target="_blank"
           rel="noopener noreferrer"
           class="resource-header__button inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-800"
-          :class="{
-            'resource-header__button--hover': isHovering,
-            'resource-header__button--pressed': isPressed,
-          }"
+          :class="[
+            animationConfig.tailwindDurations.normal,
+            {
+              'resource-header__button--hover': isHovering,
+              'resource-header__button--pressed': isPressed,
+            },
+          ]"
           :style="magneticButtonStyle"
           aria-label="Visit external resource: {{ title }}"
           @mouseenter="handleMouseEnter"

@@ -20,10 +20,7 @@
       leave-from-class="opacity-100 scale-100"
       leave-to-class="opacity-0 scale-98"
     >
-      <div
-        v-if="!isIntersecting && !isLoaded"
-        class="skeleton-container"
-      >
+      <div v-if="!isIntersecting && !isLoaded" class="skeleton-container">
         <!-- Palette's micro-UX: Multi-layer shimmer for depth -->
         <div
           v-if="!prefersReducedMotion"
@@ -36,7 +33,7 @@
 
     <!-- Actual card with entrance animation -->
     <Transition
-      enter-active-class="transition-all ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
       :enter-active-class-duration="entranceDuration"
       enter-from-class="opacity-0 translate-y-4 scale-95"
       enter-to-class="opacity-100 translate-y-0 scale-100"
@@ -56,12 +53,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
