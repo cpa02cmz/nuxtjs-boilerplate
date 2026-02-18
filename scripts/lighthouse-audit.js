@@ -7,6 +7,21 @@ const PAGES = monitoringConfig.pages.essential
 async function runPerformanceAudit(page, url, name) {
   console.log(`\n📄 Auditing ${name}...`)
 
+  // 🧛 BroCula: Capture console errors and warnings
+  const consoleMessages = []
+  page.on('console', msg => {
+    const type = msg.type()
+    if (type === 'error' || type === 'warning') {
+      consoleMessages.push({ type, text: msg.text(), location: msg.location() })
+    }
+  })
+
+  // 🧛 BroCula: Capture page errors
+  const pageErrors = []
+  page.on('pageerror', error => {
+    pageErrors.push(error.message)
+  })
+
   try {
     // Clear cache and cookies
     await page.context().clearCookies()
@@ -39,16 +54,21 @@ async function runPerformanceAudit(page, url, name) {
           const entries = list.getEntries()
           const vitals = {}
           entries.forEach(entry => {
-            if (entry.entryType === 'web-vitals') {
-              vitals[entry.name] = entry.value
+            // 🧛 BroCula: Capture standard performance entry types
+            if (
+              entry.entryType === 'measure' ||
+              entry.entryType === 'navigation'
+            ) {
+              vitals[entry.name] = entry.duration || entry.startTime
             }
           })
           resolve(vitals)
         })
 
         try {
+          // 🧛 BroCula: Only observe standard entry types - 'web-vitals' is not a standard entry type
           observer.observe({
-            entryTypes: ['web-vitals', 'measure', 'navigation'],
+            entryTypes: ['measure', 'navigation'],
           })
         } catch (e) {
           // Fallback to basic timing
@@ -118,7 +138,39 @@ async function runPerformanceAudit(page, url, name) {
       )
     }
 
-    return { loadTime, resourceCount, metrics: perfMetrics }
+    // 🧛 BroCula: Report console errors and warnings
+    if (consoleMessages.length > 0) {
+      console.log(`   🚨 Console Issues: ${consoleMessages.length}`)
+      const errors = consoleMessages.filter(m => m.type === 'error')
+      const warnings = consoleMessages.filter(m => m.type === 'warning')
+      if (errors.length > 0) {
+        console.log(`      ❌ Errors: ${errors.length}`)
+        errors
+          .slice(0, 3)
+          .forEach(e => console.log(`         - ${e.text.substring(0, 100)}`))
+      }
+      if (warnings.length > 0) {
+        console.log(`      ⚠️  Warnings: ${warnings.length}`)
+        warnings
+          .slice(0, 3)
+          .forEach(w => console.log(`         - ${w.text.substring(0, 100)}`))
+      }
+    }
+
+    if (pageErrors.length > 0) {
+      console.log(`   💥 Page Errors: ${pageErrors.length}`)
+      pageErrors
+        .slice(0, 3)
+        .forEach(e => console.log(`      - ${e.substring(0, 100)}`))
+    }
+
+    return {
+      loadTime,
+      resourceCount,
+      metrics: perfMetrics,
+      consoleMessages,
+      pageErrors,
+    }
   } catch (error) {
     console.error(`   ❌ Failed to audit ${name}:`, error.message)
     return null
