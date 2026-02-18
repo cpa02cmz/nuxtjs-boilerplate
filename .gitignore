@@ -107,6 +107,9 @@ sw.*
 *.rej
 *~
 
+# Test temporary directories
+test-tmp/
+
 # Editor backup files
 .vscode/settings.json
 *.sublime-project
