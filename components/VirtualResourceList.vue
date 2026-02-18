@@ -8,7 +8,7 @@
       '--scrollbar-track': scrollbarColors.track,
       '--scrollbar-thumb-hover': scrollbarColors.thumbHover,
     }"
-    @scroll="handleScroll"
+    @scroll.passive="handleScroll"
   >
     <!-- Scroll Progress Indicator - Palette's micro-UX enhancement! -->
     <div
@@ -44,11 +44,7 @@
       tabindex="0"
       @keydown="handleKeyDown"
     >
-      <TransitionGroup
-        name="list-item"
-        tag="div"
-        class="w-full h-full"
-      >
+      <TransitionGroup name="list-item" tag="div" class="w-full h-full">
         <div
           v-for="virtualRow in virtualizer.getVirtualItems()"
           :key="String(virtualRow.key)"

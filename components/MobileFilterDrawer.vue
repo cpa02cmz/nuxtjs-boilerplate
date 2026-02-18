@@ -90,7 +90,7 @@
         aria-labelledby="mobile-filter-title"
         tabindex="-1"
         @touchstart="handleTouchStart"
-        @touchmove="handleTouchMove"
+        @touchmove.passive="handleTouchMove"
         @touchend="handleTouchEnd"
         @touchcancel="handleTouchEnd"
       >
@@ -106,10 +106,7 @@
           @mouseenter="isHandleHovered = true"
           @mouseleave="isHandleHovered = false"
         >
-          <div
-            class="drawer-handle-bar"
-            :style="handleStyle"
-          />
+          <div class="drawer-handle-bar" :style="handleStyle" />
           <div
             v-if="!prefersReducedMotion && swipeProgress > 0"
             class="drawer-handle-glow"
@@ -233,9 +230,11 @@
             @touchstart="isResultsButtonPressed = true"
             @touchend="isResultsButtonPressed = false"
           >
-            <span class="button-text">Show {{ resultsCount }} result{{
-              resultsCount === 1 ? '' : 's'
-            }}</span>
+            <span class="button-text"
+              >Show {{ resultsCount }} result{{
+                resultsCount === 1 ? '' : 's'
+              }}</span
+            >
             <svg
               v-if="resultsCount > 0"
               class="ml-2 w-4 h-4 arrow-icon"
