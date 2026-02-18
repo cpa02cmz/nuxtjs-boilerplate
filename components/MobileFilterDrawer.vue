@@ -106,10 +106,7 @@
           @mouseenter="isHandleHovered = true"
           @mouseleave="isHandleHovered = false"
         >
-          <div
-            class="drawer-handle-bar"
-            :style="handleStyle"
-          />
+          <div class="drawer-handle-bar" :style="handleStyle" />
           <div
             v-if="!prefersReducedMotion && swipeProgress > 0"
             class="drawer-handle-glow"
@@ -136,12 +133,16 @@
           <button
             ref="closeButtonRef"
             type="button"
-            class="close-button p-2 -mr-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-500"
+            class="close-button p-2 -mr-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-500 relative"
             :class="{ 'is-pressed': isCloseButtonPressed }"
-            aria-label="Close filters panel"
+            :aria-label="`Close filters panel. Press Escape key to close`"
             @click="closeDrawer"
             @mousedown="isCloseButtonPressed = true"
             @mouseup="isCloseButtonPressed = false"
+            @mouseenter="showCloseHint = true"
+            @mouseleave="showCloseHint = false"
+            @focus="showCloseHint = true"
+            @blur="showCloseHint = false"
             @touchstart="isCloseButtonPressed = true"
             @touchend="isCloseButtonPressed = false"
           >
@@ -159,6 +160,24 @@
                 d="M6 18L18 6M6 6l12 12"
               />
             </svg>
+            <!-- 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint tooltip -->
+            <Transition
+              :enter-active-class="`transition-all ${animationConfig.tailwindDurations.fast} ease-out`"
+              enter-from-class="opacity-0 scale-95 translate-y-1"
+              enter-to-class="opacity-100 scale-100 translate-y-0"
+              :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
+              leave-from-class="opacity-100 scale-100 translate-y-0"
+              leave-to-class="opacity-0 scale-95 translate-y-1"
+            >
+              <span
+                v-if="showCloseHint && !prefersReducedMotion"
+                class="close-button-hint"
+                aria-hidden="true"
+              >
+                <kbd class="close-hint-key">Esc</kbd>
+                <span class="close-hint-text">to close</span>
+              </span>
+            </Transition>
           </button>
         </div>
 
@@ -211,9 +230,11 @@
             @touchstart="isResultsButtonPressed = true"
             @touchend="isResultsButtonPressed = false"
           >
-            <span class="button-text">Show {{ resultsCount }} result{{
-              resultsCount === 1 ? '' : 's'
-            }}</span>
+            <span class="button-text"
+              >Show {{ resultsCount }} result{{
+                resultsCount === 1 ? '' : 's'
+              }}</span
+            >
             <svg
               v-if="resultsCount > 0"
               class="ml-2 w-4 h-4 arrow-icon"
@@ -242,6 +263,7 @@ import ResourceFilters from '~/components/ResourceFilters.vue'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
 import { EASING, easingConfig } from '~/configs/easing.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 
 interface FacetCounts {
   [key: string]: number
@@ -306,6 +328,8 @@ let previouslyFocusedElement: HTMLElement | null = null
 const prefersReducedMotion = ref(false)
 const isHandleHovered = ref(false)
 const isCloseButtonPressed = ref(false)
+// 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint state
+const showCloseHint = ref(false)
 const isResultsButtonPressed = ref(false)
 const shouldBounceButton = ref(false)
 const hasFilterCountChanged = ref(false)
@@ -894,6 +918,61 @@ onUnmounted(() => {
   z-index: 1;
 }
 
+/* 🎨 Pallete's micro-UX enhancement: Close button keyboard shortcut hint tooltip */
+.close-button {
+  position: relative;
+}
+
+.close-button-hint {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: rgba(17, 24, 39, 0.9);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: 6px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  pointer-events: none;
+  z-index: v-bind('zIndexConfig.tooltip');
+  transform-origin: top right;
+}
+
+.close-button-hint::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  right: 12px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid rgba(17, 24, 39, 0.9);
+}
+
+.close-hint-key {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 600;
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1px 4px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 11px;
+}
+
+.close-hint-text {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 400;
+}
+
 /* Prevent body scroll when drawer is open */
 :global(body.drawer-open) {
   overflow: hidden;
@@ -921,6 +1000,11 @@ onUnmounted(() => {
   .animate-bounce-gentle,
   .animate-pulse-gentle {
     animation: none !important;
+  }
+
+  /* 🎨 Pallete's micro-UX: Hide keyboard shortcut hint for reduced motion users */
+  .close-button-hint {
+    display: none;
   }
 }
 </style>
