@@ -5,6 +5,32 @@
       position="top"
       :delay="tooltipDelayMs"
     >
+      <!-- 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint tooltip -->
+      <Transition
+        :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
+        enter-from-class="opacity-0 scale-95 translate-y-1"
+        enter-to-class="opacity-100 scale-100 translate-y-0"
+        :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
+        leave-from-class="opacity-100 scale-100 translate-y-0"
+        leave-to-class="opacity-0 scale-95 translate-y-1"
+      >
+        <div
+          v-if="showKeyboardHint && !isCopied && !prefersReducedMotion"
+          class="keyboard-hint-tooltip"
+          role="tooltip"
+          aria-hidden="true"
+        >
+          <span class="keyboard-hint-text">
+            Press
+            <kbd class="keyboard-key">Ctrl</kbd>
+            +
+            <kbd class="keyboard-key">C</kbd>
+            to copy
+          </span>
+          <div class="keyboard-hint-arrow" />
+        </div>
+      </Transition>
+
       <button
         ref="buttonRef"
         type="button"
@@ -19,8 +45,10 @@
         ]"
         :aria-label="isCopied ? copiedAriaLabel : label"
         @click="handleCopyWithRipple"
-        @focus="handleFocus"
-        @blur="handleBlur"
+        @focus="handleButtonFocus"
+        @blur="handleButtonBlur"
+        @mouseenter="handleMouseEnter"
+        @mouseleave="handleMouseLeave"
       >
         <!-- Copy Icon -->
         <svg
@@ -66,12 +94,7 @@
     </Tooltip>
 
     <!-- Screen reader live region for copy status announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
 
@@ -105,6 +128,7 @@ import Tooltip from './Tooltip.vue'
 import { useRipple } from '~/composables/useRipple'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
+import { zIndexScale } from '~/configs/z-index.config'
 
 import { hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 
@@ -132,6 +156,10 @@ const isHovering = ref(false)
 const announcementText = ref('')
 const prefersReducedMotion = ref(false)
 const buttonRef = ref<HTMLButtonElement | null>(null)
+
+// 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint state
+const showKeyboardHint = ref(false)
+let keyboardHintTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Palette's micro-UX enhancement: Keyboard focus pulse for accessibility
 const showFocusPulse = ref(false)
@@ -162,6 +190,52 @@ const handleBlur = () => {
     clearTimeout(focusPulseTimeout)
     focusPulseTimeout = null
   }
+}
+
+// 🎨 Pallete's micro-UX enhancement: Show keyboard shortcut hint on hover/focus
+const handleMouseEnter = () => {
+  isHovering.value = true
+  if (prefersReducedMotion.value || isCopied.value) return
+
+  // Clear any existing timeout
+  if (keyboardHintTimeout) {
+    clearTimeout(keyboardHintTimeout)
+  }
+
+  // Show hint after a short delay
+  keyboardHintTimeout = setTimeout(() => {
+    showKeyboardHint.value = true
+  }, animationConfig.keyboardHint?.showDelayMs || 300)
+}
+
+const handleMouseLeave = () => {
+  isHovering.value = false
+  // Clear timeout and hide hint
+  if (keyboardHintTimeout) {
+    clearTimeout(keyboardHintTimeout)
+    keyboardHintTimeout = null
+  }
+  showKeyboardHint.value = false
+}
+
+const handleButtonFocus = () => {
+  handleFocus()
+  if (prefersReducedMotion.value || isCopied.value) return
+
+  // Show hint on keyboard focus
+  keyboardHintTimeout = setTimeout(() => {
+    showKeyboardHint.value = true
+  }, animationConfig.keyboardHint?.showDelayMs || 300)
+}
+
+const handleButtonBlur = () => {
+  handleBlur()
+  // Hide hint on blur
+  if (keyboardHintTimeout) {
+    clearTimeout(keyboardHintTimeout)
+    keyboardHintTimeout = null
+  }
+  showKeyboardHint.value = false
 }
 
 // Tooltip text computed from props or config
@@ -284,6 +358,9 @@ const handleCopy = async () => {
 onUnmounted(() => {
   if (focusPulseTimeout) {
     clearTimeout(focusPulseTimeout)
+  }
+  if (keyboardHintTimeout) {
+    clearTimeout(keyboardHintTimeout)
   }
 })
 
@@ -469,6 +546,70 @@ const particleDurationMs = animationConfig.copyParticles.durationMs
   .animate-focus-pulse,
   .bg-green-100.animate-focus-pulse {
     animation: none;
+  }
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Keyboard Shortcut Hint Tooltip Styles */
+.keyboard-hint-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.3),
+    0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  z-index: v-bind('zIndexScale.medium[50]');
+  pointer-events: none;
+}
+
+.keyboard-hint-text {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.keyboard-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  padding: 0.125rem 0.375rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.25rem;
+  font-family:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #f3f4f6;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.keyboard-hint-arrow {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #111827;
+}
+
+/* Reduced motion support for keyboard hint */
+@media (prefers-reduced-motion: reduce) {
+  .keyboard-hint-tooltip {
+    display: none;
   }
 }
 </style>
