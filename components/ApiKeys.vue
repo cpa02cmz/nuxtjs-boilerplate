@@ -2,10 +2,7 @@
   <div class="api-keys-manager">
     <div class="api-keys-header">
       <h2>{{ contentConfig.apiKeys.title }}</h2>
-      <button
-        class="btn btn-primary"
-        @click="showCreateForm = true"
-      >
+      <button class="btn btn-primary" @click="showCreateForm = true">
         {{ contentConfig.apiKeys.buttons.create }}
       </button>
     </div>
@@ -27,7 +24,7 @@
             required
             :placeholder="contentConfig.apiKeys.placeholders.keyNameAlt"
             class="form-control"
-          >
+          />
         </div>
 
         <div class="form-group">
@@ -117,10 +114,7 @@
         aria-live="polite"
       >
         <!-- Animated Illustration -->
-        <div
-          class="api-key-illustration"
-          aria-hidden="true"
-        >
+        <div class="api-key-illustration" aria-hidden="true">
           <!-- Background Circle -->
           <div
             class="api-key-bg-circle"
@@ -193,10 +187,7 @@
           {{ contentConfig.apiKeys.empty.ctaButton }}
         </button>
       </div>
-      <div
-        v-else
-        class="api-key-items"
-      >
+      <div v-else class="api-key-items">
         <TransitionGroup
           name="api-key-item"
           tag="div"
@@ -266,9 +257,9 @@
                   revokingKeyId === key.id
                     ? `Revoking API key: ${key.name}`
                     : contentConfig.apiKeys.aria.revokeButton.replace(
-                      '{{name}}',
-                      key.name
-                    )
+                        '{{name}}',
+                        key.name
+                      )
                 "
                 :disabled="revokingKeyId === key.id"
                 :aria-busy="revokingKeyId === key.id"
@@ -310,11 +301,7 @@
     </div>
 
     <!-- API Key Created Modal -->
-    <div
-      v-if="showKeyCreatedModal"
-      class="modal-overlay"
-      @click="closeModal"
-    >
+    <div v-if="showKeyCreatedModal" class="modal-overlay" @click="closeModal">
       <div
         ref="modalContent"
         class="modal-content"
@@ -329,10 +316,7 @@
           {{ contentConfig.apiKeys.buttons.create }}
         </h3>
         <p><strong>Key:</strong> {{ createdApiKey?.key }}</p>
-        <p
-          class="warning"
-          role="alert"
-        >
+        <p class="warning" role="alert">
           Make sure to copy this key now. You won't be able to see it again.
         </p>
         <div class="form-actions">
@@ -379,10 +363,7 @@
                 : contentConfig.messages.clipboard.copy
             }}
           </button>
-          <button
-            class="btn btn-secondary"
-            @click="closeModal"
-          >
+          <button class="btn btn-secondary" @click="closeModal">
             {{ contentConfig.apiKeys.buttons.cancel }}
           </button>
         </div>
@@ -476,18 +457,30 @@ let particleIdCounter = 0
 const createParticleBurst = () => {
   if (reducedMotion.value) return
 
-  const colors = ['#10b981', '#34d399', '#6ee7b7', '#059669', '#047857']
+  // Flexy hates hardcoded colors! Now using config
+  const colors = animationConfig.copyParticles.colors
   const newParticles: Particle[] = []
+  const particleCount = animationConfig.copyParticles.particleCount
 
-  for (let i = 0; i < 12; i++) {
-    const angle = (i / 12) * Math.PI * 2
-    const distance = 30 + Math.random() * 20
+  // Flexy hates hardcoded 12! Now using configurable particle count
+  for (let i = 0; i < particleCount; i++) {
+    const angle = (i / particleCount) * Math.PI * 2
+    // Flexy hates hardcoded 30 and 20! Now using configurable spread
+    const distance =
+      animationConfig.copyParticles.spreadPx * 0.6 +
+      Math.random() * (animationConfig.copyParticles.spreadPx * 0.4)
+    // Flexy hates hardcoded 4! Now using configurable size range
+    const size =
+      animationConfig.copyParticles.minSizePx +
+      Math.random() *
+        (animationConfig.copyParticles.maxSizePx -
+          animationConfig.copyParticles.minSizePx)
     newParticles.push({
       id: particleIdCounter++,
       x: Math.cos(angle) * distance,
       y: Math.sin(angle) * distance,
       color: colors[Math.floor(Math.random() * colors.length)],
-      size: 4 + Math.random() * 4,
+      size: size,
       rotation: Math.random() * 360,
     })
   }
