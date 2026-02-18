@@ -1,3 +1,7 @@
+# syntax=docker/dockerfile:1.4
+# DevOps Engineer: Added BuildKit syntax for cache mount support
+# Improves build time by caching npm dependencies between builds
+
 # Stage 1: Build
 FROM node:20-alpine AS builder
 
@@ -7,8 +11,10 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies (including dev dependencies for build)
-RUN npm ci
+# Install dependencies using BuildKit cache mount for faster builds
+# Cache is shared across builds, significantly reducing npm install time
+RUN --mount=type=cache,target=/root/.npm,sharing=locked \
+    npm ci --prefer-offline --no-audit
 
 # Copy source code
 COPY . .
