@@ -9,7 +9,7 @@
     @touchstart="handleTouchStart"
     @touchend="handleTouchEnd"
     @touchcancel="handleTouchCancel"
-    @touchmove="handleTouchMove"
+    @touchmove.passive="handleTouchMove"
     @keydown="handleTriggerKeyDown"
   >
     <!-- Wrapper slot with aria-labelledby for accessibility -->
@@ -67,12 +67,7 @@
     </Transition>
 
     <!-- Screen reader announcement - announces tooltip content when visible -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ isVisible ? content : '' }}
     </div>
   </div>
