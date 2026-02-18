@@ -341,7 +341,6 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     return this._isConnected
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async query<T = unknown>(sql: string, params?: unknown[]): Promise<T[]> {
     try {
       // BugFixer: Ensure initialized before querying
@@ -376,10 +375,64 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       // SECURITY FIX #3650: Apply soft delete filtering to raw queries
       const filteredSql = appendSoftDeleteFilter(sql)
 
-      // SECURITY FIX: Use parameterized queries with template literals
-      const result = await this.prisma.$queryRaw<
-        T[]
-      >`${Prisma.raw(filteredSql)}`
+      // SECURITY FIX #3755: Validate and sanitize input parameters
+      const validatedParams = params?.map((param, index) => {
+        // Validate parameter type
+        if (param === null || param === undefined) {
+          return null
+        }
+        if (typeof param === 'string') {
+          // Basic sanitization: remove null bytes and trim
+          // Use charCodeAt to check for null byte instead of regex
+          return param
+            .split('')
+            .filter(char => char.charCodeAt(0) !== 0)
+            .join('')
+            .trim()
+        }
+        if (typeof param === 'number') {
+          // Ensure it's a valid number
+          if (Number.isFinite(param)) {
+            return param
+          }
+          throw new Error(`Invalid number parameter at index ${index}`)
+        }
+        if (typeof param === 'boolean') {
+          return param
+        }
+        if (param instanceof Date) {
+          return param.toISOString()
+        }
+        // Convert other types to string with basic sanitization
+        // Use charCodeAt to check for null byte instead of regex
+        const str = String(param)
+        return str
+          .split('')
+          .filter(char => char.charCodeAt(0) !== 0)
+          .join('')
+          .trim()
+      })
+
+      // SECURITY FIX: Use parameterized queries with validated parameters
+      // Build the query with parameters using Prisma's query builder
+      let result: T[]
+      if (validatedParams && validatedParams.length > 0) {
+        // Use parameterized query with $1, $2, etc. placeholders
+        const parameterizedSql = filteredSql.replace(
+          /\?/g,
+          (match, offset, string) => {
+            const index = (string.slice(0, offset).match(/\?/g) || []).length
+            return `$${index + 1}`
+          }
+        )
+        result = await this.prisma.$queryRawUnsafe<T[]>(
+          parameterizedSql,
+          ...validatedParams
+        )
+      } else {
+        // No parameters, use raw query
+        result = await this.prisma.$queryRaw<T[]>`${Prisma.raw(filteredSql)}`
+      }
       return result
     } catch (error) {
       throw new Error(
