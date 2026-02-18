@@ -6,9 +6,11 @@ import {
   generateSitemapXML,
 } from '../utils/sitemap'
 import { handleApiRouteError } from '~/server/utils/api-response'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event, 'sitemap')
     const baseUrl = getBaseUrlFromConfig()
 
     const entries = STATIC_PAGES.map(page =>

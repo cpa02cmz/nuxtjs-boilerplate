@@ -2,6 +2,7 @@ import { defineEventHandler } from 'h3'
 import type { Resource } from '~/types/resource'
 import { contentConfig } from '~/configs/content.config'
 import { handleApiRouteError } from '~/server/utils/api-response'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 /**
  * GET /api/resources.json
@@ -11,6 +12,7 @@ import { handleApiRouteError } from '~/server/utils/api-response'
  */
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event, 'resources-export')
     // Import resources from JSON
     const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule

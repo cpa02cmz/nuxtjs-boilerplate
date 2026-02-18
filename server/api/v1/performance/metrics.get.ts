@@ -11,6 +11,7 @@ import type {
   TimeSeriesDataPoint,
 } from '~/types/performance'
 import logger from '~/utils/logger'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 /**
  * GET /api/v1/performance/metrics
@@ -22,6 +23,7 @@ import logger from '~/utils/logger'
  */
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event, 'performance-metrics')
     const query = getQuery(event)
     const rangeHours = parseInt(
       (query.range as string) ||
