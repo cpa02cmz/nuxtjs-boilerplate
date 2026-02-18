@@ -15,8 +15,9 @@
         {{ contentConfig.filters.title }}
       </h2>
       <button
+        ref="resetButtonRef"
         :class="[
-          `text-sm transition-all ${animationConfig.tailwindDurations.normal} ease-out focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded px-2 py-1 rounded`,
+          `text-sm transition-all ${animationConfig.tailwindDurations.normal} ease-out focus:outline-none focus:ring-2 focus:ring-gray-800 focus:rounded px-2 py-1 rounded relative`,
           resetConfirming
             ? 'text-green-600 bg-green-50'
             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100',
@@ -27,6 +28,10 @@
             : contentConfig.filters.ariaLabels.resetAll
         "
         @click="handleResetWithFeedback"
+        @mouseenter="showResetHint = true"
+        @mouseleave="showResetHint = false"
+        @focus="showResetHint = true"
+        @blur="showResetHint = false"
       >
         <span class="flex items-center">
           <svg
@@ -49,6 +54,23 @@
               : contentConfig.filters.resetAll
           }}
         </span>
+        <!-- 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint tooltip -->
+        <Transition
+          :enter-active-class="`transition-all ${animationConfig.tailwindDurations.fast} ease-out`"
+          enter-from-class="opacity-0 scale-95 translate-y-1"
+          enter-to-class="opacity-100 scale-100 translate-y-0"
+          :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
+          leave-from-class="opacity-100 scale-100 translate-y-0"
+          leave-to-class="opacity-0 scale-95 translate-y-1"
+        >
+          <span
+            v-if="showResetHint && !prefersReducedMotion && !resetConfirming"
+            class="reset-button__hint"
+            aria-hidden="true"
+          >
+            <span class="reset-hint__text">Click to clear all filters</span>
+          </span>
+        </Transition>
       </button>
     </div>
 
@@ -111,11 +133,8 @@
             @change="onDateRangeChange(option.value)"
             @focus="focusedDateOption = option.value"
             @blur="focusedDateOption = null"
-          >
-          <span
-            class="date-range-radio"
-            aria-hidden="true"
-          >
+          />
+          <span class="date-range-radio" aria-hidden="true">
             <span class="date-range-radio-inner" />
           </span>
           <span class="date-range-label">{{ option.label }}</span>
@@ -150,6 +169,7 @@ import { triggerHaptic } from '~/utils/hapticFeedback'
 import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 import { EASING } from '~/configs/easing.config'
 
 interface FacetCounts {
@@ -212,6 +232,10 @@ const entranceComplete = ref(false)
 const prefersReducedMotion = ref(false)
 const focusedDateOption = ref<string | null>(null)
 const hoveredDateOption = ref<string | null>(null)
+
+// 🎨 Pallete's micro-UX enhancement: Reset button tooltip state
+const resetButtonRef = ref<HTMLElement | null>(null)
+const showResetHint = ref(false)
 
 // 🎨 Pallete's micro-UX enhancement: Check for reduced motion preference
 const checkReducedMotion = () => {
@@ -698,5 +722,40 @@ onUnmounted(() => {
   .date-range-option.is-selected {
     border-width: 3px;
   }
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Reset button tooltip styles */
+.reset-button__hint {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #1f2937;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: v-bind('zIndexConfig.tooltip');
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform-origin: top right;
+}
+
+.reset-button__hint::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  right: 16px;
+  width: 8px;
+  height: 8px;
+  background: #1f2937;
+  transform: rotate(45deg);
+}
+
+.reset-hint__text {
+  display: block;
+  line-height: 1.4;
 }
 </style>
