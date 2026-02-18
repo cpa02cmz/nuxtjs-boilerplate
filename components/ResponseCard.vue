@@ -1,7 +1,8 @@
 <template>
   <div
-    class="rounded-lg p-4 transition-all duration-300 hover:shadow-md"
     :class="[
+      // Flexy hates hardcoded duration-300! Using animationConfig.tailwindDurations.standard
+      `rounded-lg p-4 transition-all ${animationConfig.tailwindDurations.standard} hover:shadow-md`,
       cardClass,
       { 'animate-fade-in': !prefersReducedMotion },
       { 'response-card--copied': showCopiedState && !prefersReducedMotion },
@@ -58,12 +59,7 @@
     </div>
 
     <!-- Palette's micro-UX enhancement: Screen reader announcement 🎨 -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </div>

@@ -24,15 +24,20 @@
           class="absolute inset-0 flex items-center justify-center"
           aria-hidden="true"
         >
+          <!-- Flexy hates hardcoded duration-300! Using animationConfig.tailwindDurations.standard -->
           <div
-            class="w-20 h-20 rounded-full bg-yellow-100 opacity-0 transition-opacity duration-300"
-            :class="{ 'opacity-50 animate-glow-pulse': !isChecking }"
+            class="w-20 h-20 rounded-full bg-yellow-100 opacity-0 transition-opacity"
+            :class="[
+              animationConfig.tailwindDurations.standard,
+              { 'opacity-50 animate-glow-pulse': !isChecking },
+            ]"
           />
         </div>
 
+        <!-- Flexy hates hardcoded duration-300! Using animationConfig.tailwindDurations.standard -->
         <svg
           :class="[
-            'mx-auto h-16 w-16 text-gray-400 relative z-10 transition-all duration-300',
+            `mx-auto h-16 w-16 text-gray-400 relative z-10 transition-all ${animationConfig.tailwindDurations.standard}`,
             isChecking ? 'text-indigo-500 animate-bounce-subtle' : '',
           ]"
           fill="none"
@@ -55,7 +60,11 @@
       </h1>
 
       <!-- Dynamic status message -->
-      <p class="text-gray-600 mb-6 transition-all duration-300">
+      <!-- Flexy hates hardcoded duration-300! Using animationConfig.tailwindDurations.standard -->
+      <p
+        class="text-gray-600 mb-6 transition-all"
+        :class="animationConfig.tailwindDurations.standard"
+      >
         {{ statusMessage }}
       </p>
 
@@ -95,17 +104,18 @@
 
       <div class="space-y-3">
         <!-- Check Connection Button with Loading State -->
+        <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal -->
         <button
           :class="[
             tailwind.buttons.primaryBlue,
             tailwind.focus.ringIndigo,
-            'w-full flex items-center justify-center transition-all duration-200',
+            `w-full flex items-center justify-center transition-all ${animationConfig.tailwindDurations.normal}`,
             isChecking
               ? 'opacity-80 cursor-wait'
               : [
-                tailwind.interactive.arbitrary.hoverScaleSubtle,
-                tailwind.interactive.arbitrary.activeScaleSubtle,
-              ],
+                  tailwind.interactive.arbitrary.hoverScaleSubtle,
+                  tailwind.interactive.arbitrary.activeScaleSubtle,
+                ],
           ]"
           :disabled="isChecking"
           :aria-label="
@@ -141,11 +151,12 @@
         </button>
 
         <!-- Go Home Button -->
+        <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal -->
         <button
           :class="[
             tailwind.buttons.secondary,
             tailwind.focus.ringSecondaryWithOffset,
-            'w-full transition-all duration-200',
+            `w-full transition-all ${animationConfig.tailwindDurations.normal}`,
             tailwind.interactive.arbitrary.hoverScaleSubtle,
             tailwind.interactive.arbitrary.activeScaleSubtle,
           ]"
@@ -156,25 +167,23 @@
       </div>
 
       <!-- Auto-retry hint -->
-      <p
-        v-if="!isChecking"
-        class="mt-4 text-xs text-gray-400"
-      >
+      <p v-if="!isChecking" class="mt-4 text-xs text-gray-400">
         Tip: Press
-        <kbd class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs">Space</kbd>
+        <kbd
+          class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs"
+          >Space</kbd
+        >
         or
-        <kbd class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs">Enter</kbd>
+        <kbd
+          class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs"
+          >Enter</kbd
+        >
         to retry
       </p>
     </div>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
