@@ -34,7 +34,8 @@
         <kbd
           class="hidden sm:inline-flex items-center ml-2 px-1.5 py-0.5 text-xs bg-white/50 border border-current/20 rounded"
           aria-hidden="true"
-        >Ctrl+Z</kbd>
+          >Ctrl+Z</kbd
+        >
         <!-- Progress bar for undo window -->
         <span
           class="error-message__undo-progress"
@@ -46,12 +47,7 @@
     </Transition>
 
     <!-- Aria live region for announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
 
@@ -133,10 +129,7 @@
           <p class="error-message__text">
             {{ message }}
           </p>
-          <div
-            v-if="action"
-            class="error-message__action"
-          >
+          <div v-if="action" class="error-message__action">
             <button
               type="button"
               class="error-message__action-button"
@@ -148,13 +141,18 @@
           </div>
         </div>
 
-        <!-- Dismiss button -->
+        <!-- Dismiss button with keyboard shortcut hint -->
         <button
           v-if="dismissible"
+          ref="dismissButtonRef"
           type="button"
           class="error-message__dismiss"
-          :aria-label="`Dismiss ${variant} message`"
+          :aria-label="`Dismiss ${variant} message. Press Escape key to dismiss`"
           @click="dismiss"
+          @mouseenter="showDismissHint = true"
+          @mouseleave="showDismissHint = false"
+          @focus="showDismissHint = true"
+          @blur="showDismissHint = false"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -169,6 +167,24 @@
               clip-rule="evenodd"
             />
           </svg>
+          <!-- 🎨 Pallete's micro-UX enhancement: Keyboard shortcut tooltip -->
+          <Transition
+            :enter-active-class="`transition-all ${animationConfig.tailwindDurations.fast} ease-out`"
+            enter-from-class="opacity-0 scale-95 translate-y-1"
+            enter-to-class="opacity-100 scale-100 translate-y-0"
+            :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
+            leave-from-class="opacity-100 scale-100 translate-y-0"
+            leave-to-class="opacity-0 scale-95 translate-y-1"
+          >
+            <span
+              v-if="showDismissHint && !prefersReducedMotion"
+              class="error-message__dismiss-hint"
+              aria-hidden="true"
+            >
+              <kbd class="dismiss-hint__key">Esc</kbd>
+              <span class="dismiss-hint__text">to dismiss</span>
+            </span>
+          </Transition>
         </button>
 
         <!-- Auto-dismiss progress bar -->
@@ -194,6 +210,7 @@ import { themeConfig } from '../configs/theme.config'
 import { uiConfig } from '../configs/ui.config'
 import { componentStylesConfig } from '../configs/component-styles.config'
 import { animationConfig } from '../configs/animation.config'
+import { zIndexConfig } from '../configs/z-index.config'
 import { PROGRESS } from '~/server/utils/constants'
 
 interface Action {
@@ -243,6 +260,9 @@ const prefersReducedMotion = ref(false)
 const showUndo = ref(false)
 const undoProgress = ref(PROGRESS.MAX_PERCENT)
 const announcement = ref('')
+// 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint state
+const showDismissHint = ref(false)
+const dismissButtonRef = ref<HTMLButtonElement | null>(null)
 let dismissTimeout: ReturnType<typeof setTimeout> | null = null
 let undoTimeout: ReturnType<typeof setTimeout> | null = null
 let undoProgressInterval: ReturnType<typeof setInterval> | null = null
@@ -669,6 +689,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: visible;
 }
 
 .error-message__dismiss:hover {
@@ -683,6 +704,54 @@ onUnmounted(() => {
     'componentStylesConfig.errorMessage.dismissFocusOffset'
   );
   opacity: v-bind('componentStylesConfig.errorMessage.dismissHoverOpacity');
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Keyboard shortcut hint tooltip */
+.error-message__dismiss-hint {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background-color: rgba(17, 24, 39, 0.9);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: v-bind('zIndexConfig.tooltip');
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Tooltip arrow */
+.error-message__dismiss-hint::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  right: 12px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent rgba(17, 24, 39, 0.9) transparent;
+}
+
+.dismiss-hint__key {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+}
+
+.dismiss-hint__text {
+  opacity: 0.9;
 }
 
 /* Progress bar for auto-dismiss */
@@ -749,6 +818,11 @@ onUnmounted(() => {
 
   .error-message__undo-progress {
     transition: none;
+  }
+
+  /* 🎨 Pallete's micro-UX enhancement: Hide keyboard hint for reduced motion users */
+  .error-message__dismiss-hint {
+    display: none;
   }
 }
 
