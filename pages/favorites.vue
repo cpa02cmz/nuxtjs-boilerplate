@@ -2,7 +2,10 @@
   <ClientErrorBoundary component-name="FavoritesPage">
     <div class="py-12">
       <!-- Confetti celebration when clearing all bookmarks -->
-      <ConfettiCelebration ref="confettiRef" intensity="light" />
+      <ConfettiCelebration
+        ref="confettiRef"
+        intensity="light"
+      />
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
           <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
@@ -21,7 +24,10 @@
           aria-live="polite"
         >
           <!-- Animated bookmark illustration -->
-          <div class="relative mx-auto h-32 w-32 mb-4" aria-hidden="true">
+          <div
+            class="relative mx-auto h-32 w-32 mb-4"
+            aria-hidden="true"
+          >
             <!-- Background circle with pulse -->
             <div
               class="absolute inset-0 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-full"
@@ -55,7 +61,10 @@
               v-if="!prefersReducedMotion"
               class="absolute top-2 right-4 w-3 h-3 text-yellow-400 animate-sparkle"
             >
-              <svg viewBox="0 0 24 24" fill="currentColor">
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
                 <path
                   d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
                 />
@@ -65,7 +74,10 @@
               v-if="!prefersReducedMotion"
               class="absolute bottom-4 left-2 w-2 h-2 text-yellow-400 animate-sparkle-delayed"
             >
-              <svg viewBox="0 0 24 24" fill="currentColor">
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
                 <path
                   d="M12 2l1.5 4.5h4.5l-3.75 2.75 1.5 4.5-3.75-2.75-3.75 2.75 1.5-4.5-3.75-2.75h4.5z"
                 />
@@ -301,7 +313,7 @@
                   :aria-label="`Remove ${bookmark.title} from bookmarks`"
                   :title="
                     contentConfig.favorites.aria?.removeBookmark ||
-                    'Remove bookmark'
+                      'Remove bookmark'
                   "
                   @click="removeBookmark(bookmark.id)"
                 >
@@ -341,7 +353,7 @@ import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 import { PROGRESS } from '~/server/utils/constants'
 
 // Flexy: animationConfig IS used in template - linter doesn't detect usage in template literal bindings
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const animationConfig = _animationConfig
 
 // Respect user's motion preferences for accessibility
