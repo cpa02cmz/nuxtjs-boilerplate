@@ -72,7 +72,6 @@ jobs:
 
       - name: Run tests
         run: npm test
-        continue-on-error: true
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -110,7 +109,6 @@ jobs:
         run: |
           # Fail on moderate or higher vulnerabilities
           npm audit --audit-level=moderate
-        continue-on-error: true
 
   # ------------------------------------------------------------------
   # Job 4: Build Verification
