@@ -1,4 +1,5 @@
 # Test Dockerfile for Integration Tests
+# DevOps-engineer: Added non-root user for security (aligns with main Dockerfile pattern)
 FROM node:20-alpine
 
 # Install dependencies for Prisma and testing
@@ -13,6 +14,10 @@ RUN apk add --no-cache \
 # Set working directory
 WORKDIR /app
 
+# Create non-root user (devops-engineer: security best practice)
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 tester
+
 # Copy package files
 COPY package*.json ./
 COPY prisma ./prisma/
@@ -25,6 +30,12 @@ RUN npx prisma generate
 
 # Copy the rest of the application
 COPY . .
+
+# Set ownership to non-root user (devops-engineer)
+RUN chown -R tester:nodejs /app
+
+# Switch to non-root user (devops-engineer: principle of least privilege)
+USER tester
 
 # Expose port for the application
 EXPOSE 3000
