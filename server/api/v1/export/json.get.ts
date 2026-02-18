@@ -1,4 +1,4 @@
-import { defineEventHandler, setResponseHeader } from 'h3'
+import { defineEventHandler, setResponseHeader, createError } from 'h3'
 import type { Resource } from '~/types/resource'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
