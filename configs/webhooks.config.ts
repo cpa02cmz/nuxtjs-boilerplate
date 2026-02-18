@@ -314,6 +314,14 @@ export const webhooksConfig = {
         process.env.DEAD_LETTER_THRESHOLD_WINDOW_MINUTES || '60'
       ),
     },
+
+    // GitHub API Integration - Flexy hates hardcoded timeouts!
+    github: {
+      // Timeout for GitHub API calls when creating issues (ms) - default: 30s
+      apiTimeoutMs: parseInt(
+        process.env.DEAD_LETTER_GITHUB_API_TIMEOUT_MS || '30000'
+      ),
+    },
   },
 
   // SSRF Protection Settings - Flexy hates hardcoded security values!

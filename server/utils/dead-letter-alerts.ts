@@ -252,7 +252,9 @@ ${this.config.notifications.includePayload ? `### Payload\n\n\`\`\`json\n${JSON.
 `
 
       // ULW Loop Fix #3860: Add timeout protection to prevent indefinite blocking
-      const GITHUB_API_TIMEOUT_MS = 30000 // 30 seconds
+      // Flexy hates hardcoded 30000! Using webhooksConfig.deadLetter.github.apiTimeoutMs
+      const GITHUB_API_TIMEOUT_MS =
+        webhooksConfig.deadLetter.github.apiTimeoutMs
       const response = await Promise.race([
         octokit.issues.create({
           owner,
@@ -264,7 +266,12 @@ ${this.config.notifications.includePayload ? `### Payload\n\n\`\`\`json\n${JSON.
         }),
         new Promise<never>((_, reject) =>
           setTimeout(
-            () => reject(new Error('GitHub API timeout after 30s')),
+            () =>
+              reject(
+                new Error(
+                  `GitHub API timeout after ${GITHUB_API_TIMEOUT_MS / 1000}s`
+                )
+              ),
             GITHUB_API_TIMEOUT_MS
           )
         ),
