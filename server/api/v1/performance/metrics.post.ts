@@ -2,6 +2,7 @@ import { defineEventHandler, readBody, createError } from 'h3'
 import { storePerformanceMetric } from '~/server/utils/performance-metrics'
 import { transformWebVitalsReport } from '~/types/performance'
 import logger from '~/utils/logger'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 
 /**
  * POST /api/v1/performance/metrics
@@ -16,6 +17,7 @@ import logger from '~/utils/logger'
  */
 export default defineEventHandler(async event => {
   try {
+    await rateLimit(event, 'performance-metrics')
     const body = await readBody(event)
 
     // Validate required fields
