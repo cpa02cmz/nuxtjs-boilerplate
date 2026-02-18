@@ -1,4 +1,5 @@
-// Error codes and categories are exported for external use
+import { contentConfig } from '../../configs/content.config'
+
 export enum ErrorCode {
   INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
   BAD_REQUEST = 'BAD_REQUEST',
@@ -93,8 +94,6 @@ export function createNotFoundError(
     identifier,
   })
 }
-
-import { contentConfig } from '../../configs/content.config'
 
 export function createUnauthorizedError(
   message: string = contentConfig.errors.authentication.required
