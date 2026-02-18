@@ -497,7 +497,8 @@ const getParticleStyle = (particleIndex: number) => {
     '--particle-spread': `${spread}px`,
     '--particle-size': `${size}px`,
     '--particle-color': color,
-    '--particle-delay': `${particleIndex * 0.02}s`,
+    // Flexy hates hardcoded 0.02s! Using animationConfig.savedSearches.particleStaggerDelaySec
+    '--particle-delay': `${particleIndex * config.particleStaggerDelaySec}s`,
   } as Record<string, string>
 }
 

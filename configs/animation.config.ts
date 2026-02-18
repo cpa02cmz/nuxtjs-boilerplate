@@ -4086,6 +4086,10 @@ export const animationConfig = {
     particleFadeDelaySec: parseFloat(
       process.env.SAVED_SEARCHES_PARTICLE_FADE_DELAY || '0.3'
     ),
+    // Flexy hates hardcoded 0.02s! Particle stagger delay for burst effect (seconds)
+    particleStaggerDelaySec: parseFloat(
+      process.env.SAVED_SEARCHES_PARTICLE_STAGGER_SEC || '0.02'
+    ),
     // Staggered entrance animation delay between items (ms)
     staggerDelayMs: parseInt(process.env.SAVED_SEARCHES_STAGGER_MS || '80'),
     // Maximum stagger delay to prevent long waits (ms)
