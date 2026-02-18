@@ -1,0 +1,213 @@
+name: Security Scanning
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    # Run weekly on Sundays at 00:00 UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read # Minimal global permissions
+
+jobs:
+  # ------------------------------------------------------------------
+  # Job 1: CodeQL Analysis (Static Code Security)
+  # ------------------------------------------------------------------
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # Required for CodeQL results
+      actions: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript', 'typescript']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended,security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:${{matrix.language}}'
+
+  # ------------------------------------------------------------------
+  # Job 2: Dependency Review (PR Validation)
+  # ------------------------------------------------------------------
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write # Required for PR comments
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          comment-summary-in-pr: always
+          fail-on-severity: moderate
+          vulnerability-check: true
+          license-check: true
+
+  # ------------------------------------------------------------------
+  # Job 3: NPM Audit (Vulnerability Scanning)
+  # ------------------------------------------------------------------
+  npm-audit:
+    name: NPM Audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # Required for SARIF upload
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+
+      - name: Generate security report
+        run: |
+          npm audit --json > audit-report.json || true
+          echo "Security audit completed"
+
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: npm-audit-report
+          path: audit-report.json
+          retention-days: 30
+
+  # ------------------------------------------------------------------
+  # Job 4: Secret Scanning (Prevent credential leaks)
+  # ------------------------------------------------------------------
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run GitLeaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+        continue-on-error: true
+
+  # ------------------------------------------------------------------
+  # Job 5: Workflow Permission Validation
+  # ------------------------------------------------------------------
+  workflow-security:
+    name: Workflow Security Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check workflow permissions
+        run: |
+          echo "Checking workflow file permissions..."
+
+          # Find all workflows with global permissions
+          echo "Workflows with global permissions:"
+          grep -l "^permissions:" .github/workflows/*.yml || echo "None found"
+
+          # Check for dangerous permissions
+          echo ""
+          echo "Checking for excessive permissions..."
+
+          # Check for actions: write (dangerous)
+          if grep -r "actions: write" .github/workflows/*.yml; then
+            echo "⚠️ WARNING: Found actions: write permission"
+            echo "This is dangerous and should be removed unless absolutely necessary"
+          else
+            echo "✅ No dangerous actions: write permissions found"
+          fi
+
+          # Check for contents: write at global level
+          for file in .github/workflows/*.yml; do
+            if grep -A10 "^permissions:" "$file" | grep -q "contents: write"; then
+              echo "⚠️ WARNING: $file has global contents: write permission"
+            fi
+          done
+
+          echo ""
+          echo "Workflow security check completed"
+
+  # ------------------------------------------------------------------
+  # Job 6: Security Summary
+  # ------------------------------------------------------------------
+  security-summary:
+    name: Security Summary
+    needs:
+      [codeql, dependency-review, npm-audit, secret-scan, workflow-security]
+    runs-on: ubuntu-latest
+    if: always()
+    permissions:
+      contents: read
+
+    steps:
+      - name: Generate Security Report
+        run: |
+          echo "🔒 Security Scanning Summary"
+          echo "============================="
+          echo ""
+          echo "CodeQL Analysis: ${{ needs.codeql.result }}"
+          echo "Dependency Review: ${{ needs.dependency-review.result }}"
+          echo "NPM Audit: ${{ needs.npm-audit.result }}"
+          echo "Secret Scanning: ${{ needs.secret-scan.result }}"
+          echo "Workflow Security: ${{ needs.workflow-security.result }}"
+          echo ""
+
+          # Fail if any critical job failed
+          if [[ "${{ needs.codeql.result }}" == "failure" ]] || \
+             [[ "${{ needs.npm-audit.result }}" == "failure" ]]; then
+            echo "❌ Critical security checks failed"
+            exit 1
+          fi
+
+          echo "✅ Security scanning completed"

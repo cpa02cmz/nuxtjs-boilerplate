@@ -5,14 +5,11 @@ on:
     branches:
       - main # Architect runs on main changes
   schedule:
-    - cron: "0 */4 * * *" # Routine check every 4 hours
+    - cron: '0 */4 * * *' # Routine check every 4 hours
   workflow_dispatch:
 
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  actions: write
+# Minimal permissions - least privilege principle
+# Each job defines its own specific permissions
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,11 +20,16 @@ jobs:
   # STAGE 1: THE BRAIN (Architect & Manager)
   # ------------------------------------------------------------------
   architect:
-    name: "Architect: Strategy & Triage"
+    name: 'Architect: Strategy & Triage'
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: write # Required for creating commits/branches
+      issues: write # Required for creating/updating issues
+      pull-requests: write # Required for creating/updating PRs
+      actions: read # Required for workflow operations
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}    
+      IFLOW_API_KEY: ${{ secrets.IFLOW_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -52,7 +54,7 @@ jobs:
         continue-on-error: true
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
       - name: Install Dependencies
         continue-on-error: true
         run: npm ci
@@ -87,15 +89,18 @@ jobs:
               fi
             fi
           done
-            
+
   # ------------------------------------------------------------------
   # STAGE 2: THE MUSCLE (Specialist Executors)
   # ------------------------------------------------------------------
   specialists:
-    name: "Specialist: ${{ matrix.role }}"
+    name: 'Specialist: ${{ matrix.role }}'
     continue-on-error: true
     needs: architect
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read # Required for checkout
+      issues: write # Required for creating issues from findings
     strategy:
       fail-fast: false
       matrix:
@@ -124,7 +129,7 @@ jobs:
         continue-on-error: true
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
       - name: Install Dependencies
         continue-on-error: true
         run: npm ci
@@ -142,7 +147,7 @@ jobs:
           # 1. Finds Issue -> Fixes it
           # 2. No Issue -> Proactive Scan -> findings.md
           echo "Starting specialist work for ${{ matrix.role }}"
-          
+
           if opencode run /ulw-loop \
             "You are ${{ matrix.role }} specialist. read documentations (*.md), check all open pr and open issues. your goal not to code but only find/verify all bugs/errors based your specialization and make github issues from findings, ensure no duplicate or out date issues. create/update github issues base your findings, strict format "[bug/error title]", strict label: [${{ matrix.role }}] and priority [P0-P4]. Skip your work if open issues >10." \
             --model opencode/kimi-k2.5-free \
@@ -157,9 +162,13 @@ jobs:
   # STAGE 3: ISSUE MANAGER
   # ------------------------------------------------------------------
   IsMan:
-    name: "IsMan"
+    name: 'IsMan'
     needs: specialists
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read # Required for checkout
+      issues: write # Required for consolidating issues
+      pull-requests: read # Required for reviewing PRs
     steps:
       - uses: actions/checkout@v6
 
@@ -170,7 +179,7 @@ jobs:
       - name: Setup Node & OpenCode
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
       - name: Install Dependencies
         continue-on-error: true
         run: npm ci
@@ -192,9 +201,14 @@ jobs:
   # STAGE 4: THE GATEKEEPER (Integrator)
   # ------------------------------------------------------------------
   integrator:
-    name: "Fixer"
+    name: 'Fixer'
     needs: IsMan
     runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: write # Required for pushing fixes
+      issues: write # Required for closing fixed issues
+      pull-requests: write # Required for merging PRs
+      actions: read # Required for checking workflow status
     steps:
       - uses: actions/checkout@v6
 
@@ -205,7 +219,7 @@ jobs:
       - name: Setup Node & OpenCode
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
       - name: Install Dependencies
         continue-on-error: true
         run: npm ci
