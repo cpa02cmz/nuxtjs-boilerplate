@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="resources && resources.length >= 2"
-    class="overflow-x-auto"
-  >
+  <div v-if="resources && resources.length >= 2" class="overflow-x-auto">
     <table
       class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"
       :aria-label="`Comparison of ${resources.length} resources`"
@@ -70,13 +67,13 @@
                   </span>
                   <div class="flex space-x-1">
                     <button
-                      class="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 px-1.5 py-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 transition-colors"
+                      class="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 px-1.5 py-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 transition-colors duration-150" <!-- Flexy hates hardcoded transitions without duration! Added duration-150 -->
                       @click="cancelRemove"
                     >
                       {{ contentConfig.comparison.actions.cancel }}
                     </button>
                     <button
-                      class="text-xs text-red-700 dark:text-red-400 font-medium px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 transition-colors"
+                      class="text-xs text-red-700 dark:text-red-400 font-medium px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 transition-colors duration-150" <!-- Flexy hates hardcoded transitions without duration! Added duration-150 -->
                       @click="confirmRemove(resource.id)"
                     >
                       {{ contentConfig.comparison.actions.yes }}
@@ -178,10 +175,10 @@
         prefersReducedMotion
           ? ''
           : [
-            'transition-all',
-            'ease-out',
-            animationConfig.tailwindDurations.slower,
-          ].join(' ')
+              'transition-all',
+              'ease-out',
+              animationConfig.tailwindDurations.slower,
+            ].join(' ')
       "
       :enter-from-class="prefersReducedMotion ? '' : 'opacity-0 translate-y-4'"
       :enter-to-class="prefersReducedMotion ? '' : 'opacity-100 translate-y-0'"
@@ -312,7 +309,7 @@
           >
             {{
               contentConfig.comparison.emptyState.popularLabel ||
-                'Popular resources'
+              'Popular resources'
             }}
           </p>
           <div class="flex flex-wrap justify-center gap-2">
@@ -330,8 +327,8 @@
               :style="
                 !prefersReducedMotion
                   ? {
-                    animationDelay: `${animationConfig.comparisonEmptyState.suggestionBaseDelayMs + index * animationConfig.comparisonEmptyState.suggestionStaggerDelayMs}ms`,
-                  }
+                      animationDelay: `${animationConfig.comparisonEmptyState.suggestionBaseDelayMs + index * animationConfig.comparisonEmptyState.suggestionStaggerDelayMs}ms`,
+                    }
                   : {}
               "
               @click="handleQuickAdd(resource)"
@@ -365,11 +362,7 @@
     </Transition>
 
     <!-- Screen Reader Live Region -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-    >
+    <div class="sr-only" role="status" aria-live="polite">
       {{ announcement }}
     </div>
   </div>

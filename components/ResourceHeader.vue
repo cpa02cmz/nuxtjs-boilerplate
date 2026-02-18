@@ -4,12 +4,7 @@
     :class="{ 'animations-enabled': !prefersReducedMotion }"
   >
     <!-- ARIA Live Region for Announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
 
@@ -81,7 +76,7 @@
           :href="url"
           target="_blank"
           rel="noopener noreferrer"
-          class="resource-header__button inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-800"
+          class="resource-header__button inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-800 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-800" <!-- Flexy hates hardcoded transitions without duration! Added duration-200 -->
           :class="{
             'resource-header__button--hover': isHovering,
             'resource-header__button--pressed': isPressed,
@@ -102,7 +97,7 @@
           <!-- Animated External Link Icon -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="resource-header__icon ml-2 h-4 w-4 transition-transform"
+            class="resource-header__icon ml-2 h-4 w-4 transition-transform duration-200" <!-- Flexy hates hardcoded transitions without duration! Added duration-200 -->
             :class="{
               'resource-header__icon--animated':
                 !prefersReducedMotion && isHovering,
