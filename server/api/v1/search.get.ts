@@ -225,7 +225,6 @@ export default defineEventHandler(async event => {
 
     // Prepare response
     const response = {
-      success: true,
       data: resourcesWithHierarchicalTags,
       pagination: {
         total,

@@ -24,7 +24,7 @@ async function getCategoriesHandler(event: H3Event) {
   )) as CategoriesCacheEntry | null
   if (cachedResult) {
     event.node.res?.setHeader('X-Cache', 'HIT')
-    return cachedResult.data
+    return cachedResult
   }
 
   // Import resources from JSON
