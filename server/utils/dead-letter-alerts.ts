@@ -192,9 +192,7 @@ class DeadLetterEventEmitter {
 
     try {
       // Import dynamically to avoid issues if Octokit is not installed
-      // BroCula: Using dynamic import wrapped in try-catch to avoid TS errors
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let Octokit: any
+      let Octokit: typeof import('@octokit/rest').Octokit | undefined
       try {
         const octokitModule = await import('@octokit/rest')
         Octokit = octokitModule.Octokit
@@ -202,6 +200,11 @@ class DeadLetterEventEmitter {
         logger.warn(
           '[DeadLetterAlert] @octokit/rest not installed. Run: npm install @octokit/rest'
         )
+        return
+      }
+
+      if (!Octokit) {
+        logger.warn('[DeadLetterAlert] Octokit not available')
         return
       }
 
