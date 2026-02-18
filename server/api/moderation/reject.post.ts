@@ -1,15 +1,16 @@
-import { defineEventHandler, readBody } from 'h3'
+import { defineEventHandler } from 'h3'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { prisma } from '~/server/utils/db'
 import {
   sendSuccessResponse,
-  sendBadRequestError,
   sendNotFoundError,
   handleApiRouteError,
   sendUnauthorizedError,
   sendForbiddenError,
 } from '~/server/utils/api-response'
 import { logger } from '~/utils/logger'
+import { moderationRejectionSchema } from '~/server/utils/validation-schemas'
+import { validateRequestBody } from '~/server/utils/validation-utils'
 
 export default defineEventHandler(async event => {
   await rateLimit(event)
@@ -39,23 +40,8 @@ export default defineEventHandler(async event => {
   }
 
   try {
-    const body = await readBody(event)
-
-    if (!body.submissionId) {
-      return sendBadRequestError(event, 'Submission ID is required')
-    }
-
-    if (!body.reviewedBy) {
-      return sendBadRequestError(event, 'Reviewer ID is required')
-    }
-
-    if (
-      !body.rejectionReason ||
-      typeof body.rejectionReason !== 'string' ||
-      body.rejectionReason.trim().length === 0
-    ) {
-      return sendBadRequestError(event, 'Rejection reason is required')
-    }
+    // BugFixer: Fixed Issue #3903 - Use schema validation instead of manual validation
+    const body = await validateRequestBody(moderationRejectionSchema, event)
 
     // Check if submission exists
     const existingSubmission = await prisma.submission.findUnique({
