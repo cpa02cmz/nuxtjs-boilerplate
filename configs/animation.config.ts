@@ -4924,6 +4924,46 @@ export const animationConfig = {
       process.env.LIFECYCLE_NARRATION_DELAY_MS || '600'
     ),
   },
+
+  // 🎨 Palette's micro-UX enhancement: Typing Momentum Indicator ✨
+  // Adds delightful visual feedback when users type rapidly, creating a sense of flow
+  typingMomentum: {
+    // Enable/disable typing momentum indicator
+    enabled: process.env.TYPING_MOMENTUM_ENABLED !== 'false',
+    // Time window to consider for "rapid typing" (ms) - characters typed within this window count toward momentum
+    timeWindowMs: parseInt(process.env.TYPING_MOMENTUM_TIME_WINDOW_MS || '800'),
+    // Minimum characters typed rapidly to trigger momentum indicator
+    minCharacters: parseInt(process.env.TYPING_MOMENTUM_MIN_CHARS || '3'),
+    // Duration the momentum indicator stays visible after typing stops (ms)
+    displayDurationMs: parseInt(
+      process.env.TYPING_MOMENTUM_DISPLAY_DURATION_MS || '1000'
+    ),
+    // CSS duration string for v-bind
+    displayDurationSec: `${parseInt(process.env.TYPING_MOMENTUM_DISPLAY_DURATION_MS || '1000') / 1000}s`,
+    // Fade-in duration for momentum indicator (ms)
+    fadeInDurationMs: parseInt(process.env.TYPING_MOMENTUM_FADE_IN_MS || '150'),
+    // Fade-out duration for momentum indicator (ms)
+    fadeOutDurationMs: parseInt(
+      process.env.TYPING_MOMENTUM_FADE_OUT_MS || '300'
+    ),
+    // Height of the momentum bar in pixels
+    barHeightPx: parseInt(process.env.TYPING_MOMENTUM_BAR_HEIGHT_PX || '3'),
+    // Colors for different momentum levels (low to high)
+    colors: {
+      low: process.env.TYPING_MOMENTUM_COLOR_LOW || 'rgba(59, 130, 246, 0.6)', // blue-500
+      medium:
+        process.env.TYPING_MOMENTUM_COLOR_MEDIUM || 'rgba(34, 197, 94, 0.7)', // green-500
+      high: process.env.TYPING_MOMENTUM_COLOR_HIGH || 'rgba(139, 92, 246, 0.8)', // violet-500
+    },
+    // Glow effect intensity (0-1)
+    glowIntensity: parseFloat(
+      process.env.TYPING_MOMENTUM_GLOW_INTENSITY || '0.4'
+    ),
+    // Scale effect when momentum is high (1.0 = no scale)
+    highMomentumScale: parseFloat(
+      process.env.TYPING_MOMENTUM_HIGH_SCALE || '1.02'
+    ),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
