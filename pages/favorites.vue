@@ -108,14 +108,18 @@
           <div class="mt-8">
             <NuxtLink
               to="/"
-              class="group inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-200"
-              :class="tailwindClassesConfig.interactive.lift"
+              :class="[
+                `group inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all ${animationConfig.tailwindDurations.normal}`,
+                tailwindClassesConfig.interactive.lift,
+              ]"
             >
               {{ contentConfig.favorites.emptyState.ctaButton }}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="ml-2 h-5 w-5 transition-transform duration-200"
-                :class="tailwindClassesConfig.interactive.groupHoverSlideRight"
+                :class="[
+                  `ml-2 h-5 w-5 transition-transform ${animationConfig.tailwindDurations.normal}`,
+                  tailwindClassesConfig.interactive.groupHoverSlideRight,
+                ]"
                 viewBox="0 0 20 20"
                 fill="currentColor"
                 aria-hidden="true"
@@ -201,13 +205,14 @@
                     class="w-24 h-1 bg-blue-200 rounded-full overflow-hidden"
                     aria-hidden="true"
                   >
+                    <!-- Flexy hates hardcoded duration-100! Using animationConfig.tailwindDurations.fast -->
                     <div
-                      class="h-full bg-blue-500 rounded-full transition-all duration-100 ease-linear"
+                      :class="`h-full bg-blue-500 rounded-full transition-all ${animationConfig.tailwindDurations.fast} ease-linear`"
                       :style="{ width: `${undoProgress}%` }"
                     />
                   </div>
                   <button
-                    class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    :class="`inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors ${animationConfig.tailwindDurations.normal} focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`"
                     @click="undoAllDeletions"
                   >
                     <svg
@@ -304,9 +309,10 @@
               :date-added="bookmark.dateAdded"
             >
               <template #actions>
+                <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal -->
                 <button
-                  class="text-red-500 hover:text-red-700 transition-all duration-200"
                   :class="[
+                    `text-red-500 hover:text-red-700 transition-all ${animationConfig.tailwindDurations.normal}`,
                     tailwindClassesConfig.interactive.hoverScaleLarge,
                     tailwindClassesConfig.interactive.activeScale,
                   ]"
@@ -353,7 +359,7 @@ import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 import { PROGRESS } from '~/server/utils/constants'
 
 // Flexy: animationConfig IS used in template - linter doesn't detect usage in template literal bindings
- 
+
 const animationConfig = _animationConfig
 
 // Respect user's motion preferences for accessibility
