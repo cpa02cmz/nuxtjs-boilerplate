@@ -36,7 +36,7 @@
 
     <!-- Actual card with entrance animation -->
     <Transition
-      enter-active-class="transition-all ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
       :enter-active-class-duration="entranceDuration"
       enter-from-class="opacity-0 translate-y-4 scale-95"
       enter-to-class="opacity-100 translate-y-0 scale-100"

@@ -135,11 +135,11 @@
 
     <!-- Interactive Tooltip - Palette's micro-UX delight! 🎨 -->
     <Transition
-      enter-active-class="transition-all ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
       :enter-active-class-duration="tooltipEnterDuration"
       enter-from-class="opacity-0 scale-95 translate-y-2"
       enter-to-class="opacity-100 scale-100 translate-y-0"
-      leave-active-class="transition-all ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
       :leave-active-class-duration="tooltipLeaveDuration"
       leave-from-class="opacity-100 scale-100 translate-y-0"
       leave-to-class="opacity-0 scale-95 translate-y-2"
