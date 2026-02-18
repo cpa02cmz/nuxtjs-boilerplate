@@ -174,8 +174,12 @@ export function getResourceHealthStats(): {
 } {
   const allStatuses = getAllResourceHealthStatuses()
 
-  const healthy = allStatuses.filter(s => s.isHealthy).length
-  const unhealthy = allStatuses.filter(s => s.isHealthy === false).length
+  let healthy = 0
+  let unhealthy = 0
+  for (const status of allStatuses) {
+    if (status.isHealthy === true) healthy++
+    else if (status.isHealthy === false) unhealthy++
+  }
   const unknown = allStatuses.length - healthy - unhealthy
 
   return {
