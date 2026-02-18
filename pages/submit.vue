@@ -4,10 +4,7 @@
     <!-- Content only renders after hydration to prevent mismatch with ssr: false -->
     <template v-if="isHydrated">
       <!-- Confetti celebration for successful submission -->
-      <ConfettiCelebration
-        ref="confettiRef"
-        intensity="medium"
-      />
+      <ConfettiCelebration ref="confettiRef" intensity="medium" />
 
       <!-- Smart Paste indicator - Palette's micro-UX enhancement! -->
       <!-- BroCula: Wrapped in ClientOnly to prevent hydration mismatch -->
@@ -71,6 +68,68 @@
             novalidate
             @submit.prevent="handleSubmitWithShake"
           >
+            <!-- 🎨 Pallete's micro-UX enhancement: Form Completion Progress Indicator
+                 Shows real-time progress through the form to encourage completion -->
+            <div
+              class="form-progress-container"
+              :class="{
+                'form-progress--complete': formCompletionPercent === 100,
+              }"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-gray-600">
+                  {{ formCompletionLabel }}
+                </span>
+                <span
+                  class="text-sm font-bold transition-colors duration-300"
+                  :class="formCompletionTextClass"
+                >
+                  {{ formCompletionPercent }}%
+                </span>
+              </div>
+              <div class="form-progress-track">
+                <div
+                  class="form-progress-bar"
+                  :class="{
+                    'form-progress-bar--complete':
+                      formCompletionPercent === 100,
+                  }"
+                  :style="formProgressStyle"
+                />
+              </div>
+              <!-- Completion celebration - shows when form is 100% complete -->
+              <Transition
+                enter-active-class="transition-all duration-500 ease-out"
+                enter-from-class="opacity-0 scale-75 translate-y-2"
+                enter-to-class="opacity-100 scale-100 translate-y-0"
+                leave-active-class="transition-all duration-300 ease-in"
+                leave-from-class="opacity-100 scale-100 translate-y-0"
+                leave-to-class="opacity-0 scale-75 translate-y-2"
+              >
+                <div
+                  v-if="formCompletionPercent === 100 && !prefersReducedMotion"
+                  class="form-completion-message"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span>{{ contentConfig.submit.form.readyToSubmit }}</span>
+                </div>
+              </Transition>
+            </div>
+
             <div ref="titleFieldRef">
               <!-- Floating Label Container - Palette's micro-UX delight! -->
               <div
@@ -81,10 +140,7 @@
                   'has-success': formData.title && !errors.title,
                 }"
               >
-                <label
-                  for="title"
-                  class="floating-label"
-                >
+                <label for="title" class="floating-label">
                   Resource Title <span aria-hidden="true">*</span>
                   <span class="sr-only">(required)</span>
                 </label>
@@ -120,7 +176,7 @@
                       ]"
                       @focus="isTitleFocused = true"
                       @blur="handleTitleBlur"
-                    >
+                    />
                   </template>
                 </CharacterCounter>
                 <!-- Validation checkmark - Palette's micro-UX delight! -->
@@ -156,10 +212,7 @@
                   </div>
                 </Transition>
               </div>
-              <p
-                id="title-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              <p id="title-description" class="mt-1 text-sm text-gray-500">
                 The name of the resource or service
               </p>
               <!-- Character limit progress bar for visual feedback -->
@@ -302,10 +355,7 @@
                   'has-success': formData.url && !errors.url,
                 }"
               >
-                <label
-                  for="url"
-                  class="floating-label"
-                >
+                <label for="url" class="floating-label">
                   URL <span aria-hidden="true">*</span>
                   <span class="sr-only">(required)</span>
                 </label>
@@ -328,7 +378,7 @@
                   ]"
                   @blur="handleUrlBlur"
                   @paste="handleSmartPaste"
-                >
+                />
                 <!-- Validation checkmark - Palette's micro-UX delight! -->
                 <Transition
                   enter-active-class="transition-all duration-200 ease-out"
@@ -399,12 +449,7 @@
                   ]"
                   @blur="handleCategoryBlur"
                 >
-                  <option
-                    value=""
-                    disabled
-                  >
-                    Select a category
-                  </option>
+                  <option value="" disabled>Select a category</option>
                   <option
                     v-for="category in categoryOptions"
                     :key="category.value"
@@ -462,10 +507,7 @@
                   </div>
                 </Transition>
               </div>
-              <p
-                id="category-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              <p id="category-description" class="mt-1 text-sm text-gray-500">
                 Choose the most appropriate category for this resource
               </p>
               <div
@@ -486,10 +528,7 @@
                   'has-value': tagsInput.length > 0,
                 }"
               >
-                <label
-                  for="tags"
-                  class="floating-label"
-                >
+                <label for="tags" class="floating-label">
                   Tags (Optional)
                 </label>
                 <input
@@ -498,12 +537,9 @@
                   type="text"
                   aria-describedby="tags-description"
                   class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all duration-200 input-focus-glow"
-                >
+                />
               </div>
-              <p
-                id="tags-description"
-                class="mt-1 text-sm text-gray-500"
-              >
+              <p id="tags-description" class="mt-1 text-sm text-gray-500">
                 Add relevant tags to help categorize this resource (e.g., "api,
                 free-tier, openai")
               </p>
@@ -547,7 +583,9 @@
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span class="relative z-10">Draft saved {{ lastSavedText }}</span>
+                    <span class="relative z-10"
+                      >Draft saved {{ lastSavedText }}</span
+                    >
                     >
                   </div>
                   <div
@@ -571,10 +609,7 @@
                 <span v-if="!isSubmitting">{{
                   contentConfig.submit.button.submit
                 }}</span>
-                <span
-                  v-else
-                  class="flex items-center"
-                >
+                <span v-else class="flex items-center">
                   <svg
                     class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
@@ -676,19 +711,14 @@
       </div>
     </template>
     <!-- BroCula: Loading state while hydrating -->
-    <div
-      v-else
-      class="flex items-center justify-center h-full min-h-[50vh]"
-    >
+    <div v-else class="flex items-center justify-center h-full min-h-[50vh]">
       <div class="text-center">
         <div class="animate-pulse flex space-x-2 justify-center mb-4">
           <div class="w-3 h-3 bg-blue-500 rounded-full" />
           <div class="w-3 h-3 bg-blue-500 rounded-full" />
           <div class="w-3 h-3 bg-blue-500 rounded-full" />
         </div>
-        <p class="text-gray-500 text-sm">
-          Loading form...
-        </p>
+        <p class="text-gray-500 text-sm">Loading form...</p>
       </div>
     </div>
   </div>
@@ -963,6 +993,57 @@ const descriptionProgressClass = computed(() => {
   }
   return 'bg-green-500'
 })
+
+// 🎨 Pallete's micro-UX enhancement: Form Completion Progress Indicator
+// Calculates completion percentage based on required fields
+const formCompletionPercent = computed(() => {
+  const requiredFields = ['title', 'description', 'url', 'category']
+  const totalFields = requiredFields.length
+
+  let completedFields = 0
+  if (
+    formData.value.title.trim().length >=
+    validationConfig.resource.name.minLength
+  )
+    completedFields++
+  if (
+    formData.value.description.trim().length >=
+    validationConfig.resource.description.minLength
+  )
+    completedFields++
+  if (formData.value.url.trim().length > 0 && !errors.value.url)
+    completedFields++
+  if (formData.value.category) completedFields++
+
+  return Math.round((completedFields / totalFields) * 100)
+})
+
+// Form completion label based on progress
+const formCompletionLabel = computed(() => {
+  const percent = formCompletionPercent.value
+  if (percent === 0) return contentConfig.submit.form.progress.start
+  if (percent === 100) return contentConfig.submit.form.progress.complete
+  if (percent >= 75) return contentConfig.submit.form.progress.almostThere
+  if (percent >= 50) return contentConfig.submit.form.progress.halfway
+  return contentConfig.submit.form.progress.keepGoing
+})
+
+// Form completion text color class
+const formCompletionTextClass = computed(() => {
+  const percent = formCompletionPercent.value
+  if (percent === 100) return 'text-green-600'
+  if (percent >= 75) return 'text-blue-600'
+  if (percent >= 50) return 'text-amber-600'
+  return 'text-gray-500'
+})
+
+// Form progress bar style with smooth width transition
+const formProgressStyle = computed(() => ({
+  width: `${formCompletionPercent.value}%`,
+  transition: prefersReducedMotion.value
+    ? 'none'
+    : 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+}))
 
 const descriptionCounterClass = computed(() => {
   const length = formData.value.description.length
@@ -1303,6 +1384,141 @@ useSeoMeta({
     100% {
       opacity: 0;
     }
+  }
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Form Completion Progress Indicator Styles */
+.form-progress-container {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  transition: all v-bind('animationConfig.cssTransitions.normalSec') ease-out;
+}
+
+.form-progress-container.form-progress--complete {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-progress-track {
+  height: 8px;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.form-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+  border-radius: 9999px;
+  position: relative;
+  overflow: hidden;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Shimmer effect on progress bar */
+.form-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  animation: progress-shimmer 2s ease-in-out infinite;
+}
+
+@keyframes progress-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.form-progress-bar--complete {
+  background: linear-gradient(90deg, #10b981 0%, #059669 50%, #047857 100%);
+  animation: progress-complete-pulse 0.6s ease-out;
+}
+
+@keyframes progress-complete-pulse {
+  0% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.5);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+.form-completion-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background-color: #10b981;
+  color: white;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: completion-message-slide 0.5s ease-out;
+}
+
+@keyframes completion-message-slide {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .form-progress-bar {
+    transition: none;
+  }
+
+  .form-progress-bar::after {
+    display: none;
+  }
+
+  .form-progress-bar--complete {
+    animation: none;
+  }
+
+  .form-completion-message {
+    animation: none;
+  }
+
+  .form-progress-container {
+    transition: opacity 0.2s ease-out;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .form-progress-container {
+    border: 2px solid currentColor;
+  }
+
+  .form-progress-track {
+    border: 1px solid currentColor;
   }
 }
 </style>

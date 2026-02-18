@@ -543,6 +543,21 @@ export const contentConfig = {
       tagsPlaceholder:
         process.env.CONTENT_SUBMIT_TAGS_PLACEHOLDER ||
         'Enter tags separated by commas',
+      // 🎨 Pallete's micro-UX enhancement: Form completion progress indicator labels
+      progress: {
+        start: process.env.CONTENT_SUBMIT_PROGRESS_START || 'Form completion',
+        keepGoing:
+          process.env.CONTENT_SUBMIT_PROGRESS_KEEP_GOING || 'Keep going...',
+        halfway:
+          process.env.CONTENT_SUBMIT_PROGRESS_HALFWAY || 'Halfway there!',
+        almostThere:
+          process.env.CONTENT_SUBMIT_PROGRESS_ALMOST || 'Almost done!',
+        complete:
+          process.env.CONTENT_SUBMIT_PROGRESS_COMPLETE || 'Ready to submit!',
+      },
+      readyToSubmit:
+        process.env.CONTENT_SUBMIT_READY ||
+        'All fields complete. Ready to submit!',
     },
     categories: {
       ai: process.env.CONTENT_CATEGORY_AI || 'AI & Machine Learning',
