@@ -65,11 +65,12 @@
         />
 
         <!-- Copy Success Animation -->
+        <!-- Flexy hates hardcoded duration-200 and duration-150! Using animationConfig.tailwindDurations -->
         <Transition
-          enter-active-class="transition-all duration-200 ease-out"
+          :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
           enter-from-class="opacity-0 scale-50"
           enter-to-class="opacity-100 scale-100"
-          leave-active-class="transition-all duration-150 ease-in"
+          :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
           leave-from-class="opacity-100 scale-100"
           leave-to-class="opacity-0 scale-75"
         >

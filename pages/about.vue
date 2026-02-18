@@ -55,8 +55,10 @@
             }"
             :style="getCategoryStyle(index)"
           >
+            <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal -->
             <div
-              class="flex items-start p-2 rounded-lg transition-all duration-200"
+              class="flex items-start p-2 rounded-lg transition-all"
+              :class="animationConfig.tailwindDurations.normal"
             >
               <!-- Animated checkmark icon -->
               <div class="flex-shrink-0 mr-2">
