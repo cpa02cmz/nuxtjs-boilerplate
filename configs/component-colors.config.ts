@@ -341,6 +341,24 @@ export const componentColorsConfig = {
     headerIcon: process.env.KB_SHORTCUTS_HEADER_ICON || 'text-blue-500',
   },
 
+  // Keyboard Hint Tooltip Colors - Pallete's micro-UX enhancement!
+  // Used for inline keyboard shortcut hints throughout the UI
+  keyboardHint: {
+    // Background color for hint tooltip
+    bg: process.env.KEYBOARD_HINT_BG || 'rgba(17, 24, 39, 0.95)',
+    // Text color for hint text
+    text: process.env.KEYBOARD_HINT_TEXT || '#ffffff',
+    // Border color
+    border: process.env.KEYBOARD_HINT_BORDER || 'rgba(255, 255, 255, 0.2)',
+    // Key background color
+    keyBg: process.env.KEYBOARD_HINT_KEY_BG || 'rgba(255, 255, 255, 0.15)',
+    // Key text color
+    keyText: process.env.KEYBOARD_HINT_KEY_TEXT || '#ffffff',
+    // Key border color
+    keyBorder:
+      process.env.KEYBOARD_HINT_KEY_BORDER || 'rgba(255, 255, 255, 0.3)',
+  },
+
   // Tooltip Component Colors - Flexy hates hardcoded tooltip colors!
   tooltip: {
     // Background color (default: gray-900)
