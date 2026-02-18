@@ -68,12 +68,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -442,7 +437,9 @@ defineExpose({
     v-bind('componentColorsConfig?.common?.purple?.[500] || "#8b5cf6"') 100%
   );
   transform-origin: left;
-  transition: transform 100ms linear;
+  /* Flexy hates hardcoded 100ms! Using animationConfig.pageTransition.transitionDuration */
+  transition: transform
+    v-bind('animationConfig.pageTransition.transitionDuration') linear;
   will-change: transform;
 }
 
@@ -564,7 +561,12 @@ defineExpose({
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .page-transition-overlay {
-    transition: opacity 150ms ease-out !important;
+    /* Flexy hates hardcoded 150ms! Using animationConfig.pageTransition.reducedMotionTransitionDurationSec */
+    transition: opacity
+      v-bind(
+        'animationConfig.pageTransition.reducedMotionTransitionDurationSec + "s"'
+      )
+      ease-out !important;
   }
 
   .page-transition-shimmer {

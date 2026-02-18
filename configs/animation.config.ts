@@ -1100,6 +1100,10 @@ export const animationConfig = {
     ),
     // Spin animation duration (seconds) - Flexy hates hardcoded 1s!
     spinDurationSec: parseFloat(process.env.API_KEYS_SPIN_DURATION_SEC || '1'),
+    // Status dot transition duration (seconds) - Flexy hates hardcoded 0.3s!
+    statusTransitionDurationSec: parseFloat(
+      process.env.API_KEYS_STATUS_TRANSITION_SEC || '0.3'
+    ),
   },
 
   // Card Animations
@@ -4270,6 +4274,8 @@ export const animationConfig = {
     ),
     // Progress bar transition duration
     transitionDuration: `${parseInt(process.env.PAGE_TRANSITION_PROGRESS_DURATION_MS || '100') / 1000}s`,
+    // Reduced motion transition duration (seconds) - Flexy hates hardcoded 150ms!
+    reducedMotionTransitionDurationSec: `${parseInt(process.env.PAGE_TRANSITION_REDUCED_MOTION_DURATION_MS || '150') / 1000}s`,
     // Minimum transition duration to prevent flickering (ms) - Flexy hates hardcoded 300!
     minDurationMs: parseInt(
       process.env.PAGE_TRANSITION_MIN_DURATION_MS || '300'
