@@ -88,8 +88,8 @@
           <div
             v-if="
               hoveredCard === resource.id &&
-                !prefersReducedMotion &&
-                spotlightConfig.enabled
+              !prefersReducedMotion &&
+              spotlightConfig.enabled
             "
             class="spotlight-overlay"
             :style="getSpotlightStyle(index)"
@@ -112,18 +112,9 @@
               (resource.similarityScore || 0) * 100
             )}%`"
           >
-            <svg
-              class="similarity-ring"
-              viewBox="0 0 36 36"
-              aria-hidden="true"
-            >
+            <svg class="similarity-ring" viewBox="0 0 36 36" aria-hidden="true">
               <!-- Background circle -->
-              <circle
-                class="similarity-ring-bg"
-                cx="18"
-                cy="18"
-                r="15"
-              />
+              <circle class="similarity-ring-bg" cx="18" cy="18" r="15" />
               <!-- Progress circle with animated stroke -->
               <circle
                 class="similarity-ring-progress"
@@ -151,12 +142,7 @@
       </TransitionGroup>
 
       <!-- Screen reader announcement -->
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        class="sr-only"
-      >
+      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
         {{ announcement }}
       </div>
     </section>
@@ -191,14 +177,8 @@ const isVisible = ref(false)
 // 🎨 Pallete's micro-UX enhancement: Spotlight cursor effect state
 const cardRefs = ref<HTMLElement[]>([])
 const spotlightPositions = ref<{ [key: number]: { x: number; y: number } }>({})
-const spotlightConfig = animationConfig.similarResources.spotlight || {
-  enabled: true,
-  sizePx: 200,
-  primaryColor: 'rgba(255, 255, 255, 0.15)',
-  secondaryColor: 'rgba(255, 255, 255, 0)',
-  transitionDurationMs: 150,
-  borderRadiusPx: 12,
-}
+// Flexy hates hardcoded fallback values! Using animationConfig.similarResources.spotlight directly
+const spotlightConfig = animationConfig.similarResources.spotlight
 
 // 🎨 Pallete's micro-UX enhancement: Similarity score indicator helpers
 const getSimilarityLevel = (score?: number): 'high' | 'medium' | 'low' => {
@@ -217,7 +197,8 @@ const getSimilarityRingStyle = (score?: number, index: number = 0) => {
     '--ring-circumference': circumference,
     '--ring-offset': offset,
     '--ring-percentage': percentage,
-    '--ring-delay': `${index * 100}ms`,
+    // Flexy hates hardcoded 100ms! Using animationConfig.similarResources.staggerDelayMs
+    '--ring-delay': `${index * animationConfig.similarResources.staggerDelayMs}ms`,
     '--ring-color':
       percentage >= 70
         ? 'var(--score-high-color, #10b981)'
