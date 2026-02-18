@@ -55,11 +55,7 @@
     </div>
 
     <!-- Specifications Grid -->
-    <dl
-      v-else
-      :class="gridClass"
-      class="specifications-grid"
-    >
+    <dl v-else :class="gridClass" class="specifications-grid">
       <div
         v-for="(value, key, index) in specifications"
         :key="key"
@@ -133,6 +129,28 @@
           </span>
         </dt>
 
+        <!-- 🎨 Pallete's micro-UX enhancement: Copy hint tooltip ✨
+             Shows on hover to make copy functionality more discoverable
+             Helps users understand they can click to copy specifications -->
+        <Transition
+          :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
+          enter-from-class="opacity-0 scale-95 -translate-y-1"
+          enter-to-class="opacity-100 scale-100 translate-y-0"
+          :leave-active-class="`transition-all ${animationConfig.tailwindDurations.quick} ease-in`"
+          leave-from-class="opacity-100 scale-100 translate-y-0"
+          leave-to-class="opacity-0 scale-95 -translate-y-1"
+        >
+          <div
+            v-if="
+              hoveredItem === key && copiedItem !== key && !prefersReducedMotion
+            "
+            class="copy-tooltip"
+            aria-hidden="true"
+          >
+            <span class="copy-tooltip-text">Click to copy</span>
+          </div>
+        </Transition>
+
         <!-- Value -->
         <dd class="specification-value">
           {{ value }}
@@ -172,12 +190,7 @@
     </div>
 
     <!-- Screen Reader Announcements -->
-    <div
-      aria-atomic="true"
-      aria-live="polite"
-      class="sr-only"
-      role="status"
-    >
+    <div aria-atomic="true" aria-live="polite" class="sr-only" role="status">
       {{ announcementText }}
     </div>
   </section>
@@ -523,6 +536,40 @@ onUnmounted(() => {
 .copy-hint--visible {
   opacity: 1;
   transform: translateX(0);
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Copy tooltip styles */
+.copy-tooltip {
+  position: absolute;
+  top: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgb(17, 24, 39);
+  color: white;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: v-bind('zIndexConfig.tooltip');
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.copy-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: rgb(17, 24, 39);
+}
+
+.copy-tooltip-text {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .specification-value {
