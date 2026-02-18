@@ -1,8 +1,11 @@
 <template>
+  <!-- Flexy hates hardcoded duration-500! Using animationConfig.tailwindDurations -->
   <Transition
     appear
     :enter-active-class="
-      prefersReducedMotion ? '' : 'transition-all duration-500 ease-out'
+      prefersReducedMotion
+        ? ''
+        : `transition-all ${animationConfig.tailwindDurations.slower} ease-out`
     "
     :enter-from-class="prefersReducedMotion ? '' : 'opacity-0 translate-y-4'"
     :enter-to-class="prefersReducedMotion ? '' : 'opacity-100 translate-y-0'"
@@ -20,15 +23,17 @@
         <h2 class="text-2xl font-bold text-gray-900">
           {{ contentConfig.similarResources.title }}
         </h2>
+        <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations -->
         <NuxtLink
           to="/"
-          class="group flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-md px-2 py-1 -mr-2 transition-colors duration-200"
+          :class="`group flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-md px-2 py-1 -mr-2 transition-colors ${animationConfig.tailwindDurations.normal}`"
           @click="handleViewAllClick"
         >
           <span>{{ contentConfig.similarResources.viewAll }}</span>
+          <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations -->
           <svg
             :class="[
-              'w-4 h-4 ml-1 transition-transform duration-200',
+              `w-4 h-4 ml-1 transition-transform ${animationConfig.tailwindDurations.normal}`,
               'group-hover:translate-x-1',
             ]"
             fill="none"
@@ -47,14 +52,15 @@
       </div>
 
       <!-- Resource Cards Grid with Staggered Entrance -->
+      <!-- Flexy hates hardcoded duration-500 and duration-300! Using animationConfig.tailwindDurations -->
       <TransitionGroup
         tag="div"
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         :class="{ 'animations-enabled': !prefersReducedMotion }"
-        enter-active-class="transition-all duration-500 ease-out"
+        :enter-active-class="`transition-all ${animationConfig.tailwindDurations.slower} ease-out`"
         enter-from-class="opacity-0 translate-y-6 scale-95"
         enter-to-class="opacity-100 translate-y-0 scale-100"
-        leave-active-class="transition-all duration-300 ease-in"
+        :leave-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-in`"
         leave-from-class="opacity-100 translate-y-0 scale-100"
         leave-to-class="opacity-0 translate-y-4 scale-95"
         @before-enter="handleBeforeEnter"
@@ -82,8 +88,8 @@
           <div
             v-if="
               hoveredCard === resource.id &&
-                !prefersReducedMotion &&
-                spotlightConfig.enabled
+              !prefersReducedMotion &&
+              spotlightConfig.enabled
             "
             class="spotlight-overlay"
             :style="getSpotlightStyle(index)"
@@ -104,18 +110,9 @@
             }"
             :aria-label="`Similarity score: ${Math.round((resource.similarityScore || 0) * 100)}%`"
           >
-            <svg
-              class="similarity-ring"
-              viewBox="0 0 36 36"
-              aria-hidden="true"
-            >
+            <svg class="similarity-ring" viewBox="0 0 36 36" aria-hidden="true">
               <!-- Background circle -->
-              <circle
-                class="similarity-ring-bg"
-                cx="18"
-                cy="18"
-                r="15"
-              />
+              <circle class="similarity-ring-bg" cx="18" cy="18" r="15" />
               <!-- Progress circle with animated stroke -->
               <circle
                 class="similarity-ring-progress"
@@ -143,12 +140,7 @@
       </TransitionGroup>
 
       <!-- Screen reader announcement -->
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        class="sr-only"
-      >
+      <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
         {{ announcement }}
       </div>
     </section>
