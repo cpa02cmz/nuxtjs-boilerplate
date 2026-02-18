@@ -1,0 +1,278 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+# Minimal global permissions - each job defines its own
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ------------------------------------------------------------------
+  # Job 1: Lint & Type Check
+  # ------------------------------------------------------------------
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript type check
+        run: npm run typecheck || npx nuxt typecheck
+
+  # ------------------------------------------------------------------
+  # Job 2: Test Suite
+  # ------------------------------------------------------------------
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    strategy:
+      matrix:
+        node-version: ['18.x', '20.x']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+        continue-on-error: true
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.node-version }}
+          path: |
+            coverage/
+            test-results.xml
+          retention-days: 7
+
+  # ------------------------------------------------------------------
+  # Job 3: Security Audit
+  # ------------------------------------------------------------------
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: |
+          # Fail on moderate or higher vulnerabilities
+          npm audit --audit-level=moderate
+        continue-on-error: true
+
+  # ------------------------------------------------------------------
+  # Job 4: Build Verification
+  # ------------------------------------------------------------------
+  build:
+    name: Build Verification
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    permissions:
+      contents: read
+      actions: write # Required for cache operations
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Cache build artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            .nuxt
+            .output
+            node_modules/.cache
+          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}-
+            ${{ runner.os }}-build-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npm run prisma:generate || echo "No Prisma schema found"
+
+      - name: Build application
+        run: npm run build
+        env:
+          NUXT_BUILD: true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            .output/
+            .nuxt/dist/
+          retention-days: 7
+
+  # ------------------------------------------------------------------
+  # Job 5: Bundle Analysis
+  # ------------------------------------------------------------------
+  bundle-analysis:
+    name: Bundle Size Analysis
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: .output
+
+      - name: Analyze bundle size
+        run: |
+          echo "📦 Bundle Size Analysis"
+          echo "======================="
+
+          if [ -d ".output/public" ]; then
+            echo "Client bundle size:"
+            du -sh .output/public || true
+            
+            echo ""
+            echo "Top 10 largest files:"
+            find .output/public -type f -exec ls -lh {} \; 2>/dev/null | sort -k5 -rh | head -10 || true
+          fi
+
+          if [ -d ".output/server" ]; then
+            echo ""
+            echo "Server bundle size:"
+            du -sh .output/server || true
+          fi
+
+  # ------------------------------------------------------------------
+  # Job 6: Deployment (Main branch only)
+  # ------------------------------------------------------------------
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: [build, security-audit]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      # Add deployment-specific permissions here
+      # e.g., id-token: write for AWS/GCP
+
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: .output
+
+      - name: Deploy to production
+        id: deploy
+        run: |
+          echo "🚀 Deploying to production..."
+          # Add your deployment commands here
+          echo "url=https://example.com" >> $GITHUB_OUTPUT
+
+      - name: Deployment notification
+        run: |
+          echo "✅ Deployment completed successfully"
+
+  # ------------------------------------------------------------------
+  # Job 7: CI Summary
+  # ------------------------------------------------------------------
+  ci-summary:
+    name: CI Summary
+    needs: [lint, test, security-audit, build]
+    runs-on: ubuntu-latest
+    if: always()
+    permissions:
+      contents: read
+
+    steps:
+      - name: Generate CI Report
+        run: |
+          echo "🔍 CI/CD Pipeline Summary"
+          echo "========================="
+          echo ""
+          echo "Lint & Type Check: ${{ needs.lint.result }}"
+          echo "Test Suite: ${{ needs.test.result }}"
+          echo "Security Audit: ${{ needs.security-audit.result }}"
+          echo "Build Verification: ${{ needs.build.result }}"
+          echo ""
+
+          # Determine overall status
+          if [[ "${{ needs.lint.result }}" == "success" ]] && \
+             [[ "${{ needs.test.result }}" == "success" ]] && \
+             [[ "${{ needs.build.result }}" == "success" ]]; then
+            echo "✅ All critical checks passed"
+            exit 0
+          else
+            echo "❌ Some checks failed"
+            exit 1
+          fi

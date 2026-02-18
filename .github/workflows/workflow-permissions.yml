@@ -1,0 +1,291 @@
+name: Workflow Permissions Validation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/**'
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+  schedule:
+    # Run weekly to ensure compliance
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+# Minimal permissions for this workflow
+permissions:
+  contents: read
+  pull-requests: write # Required to comment on PRs
+
+jobs:
+  # ------------------------------------------------------------------
+  # Job 1: Validate Workflow Permissions
+  # ------------------------------------------------------------------
+  validate-permissions:
+    name: Validate Workflow Permissions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      security-events: write # For uploading SARIF results
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup validation tools
+        run: |
+          # Install yq for YAML parsing
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Validate workflow permissions
+        id: validate
+        run: |
+          echo "🔐 Workflow Permissions Validation"
+          echo "==================================="
+          echo ""
+
+          VIOLATIONS=0
+          REPORT=""
+
+          # Check each workflow file
+          for file in .github/workflows/*.yml; do
+            filename=$(basename "$file")
+            echo "Checking: $filename"
+            
+            # Check for global permissions
+            if grep -q "^permissions:" "$file"; then
+              # Check if it's at global level (before jobs:)
+              if grep -B100 "^jobs:" "$file" | grep -q "^permissions:" || ! grep -q "^jobs:" "$file"; then
+                REPORT+="❌ VIOLATION: $filename has global permissions block\n"
+                REPORT+="   Impact: All jobs inherit these permissions\n"
+                REPORT+="   Fix: Move permissions to individual jobs\n\n"
+                VIOLATIONS=$((VIOLATIONS + 1))
+              fi
+            fi
+            
+            # Check for dangerous permissions
+            if grep -q "actions: write" "$file"; then
+              REPORT+="⚠️ WARNING: $filename has actions: write permission\n"
+              REPORT+="   Impact: Can modify workflow files (supply chain risk)\n"
+              REPORT+="   Review: Ensure this is absolutely necessary\n\n"
+            fi
+            
+            if grep -q "contents: write" "$file"; then
+              # Check if it's at global level
+              if grep -B100 "^jobs:" "$file" | grep -q "contents: write" || ! grep -q "^jobs:" "$file"; then
+                REPORT+="⚠️ WARNING: $filename has global contents: write permission\n"
+                REPORT+="   Impact: Can modify repository contents\n"
+                REPORT+="   Fix: Move to job-level if only specific jobs need it\n\n"
+              fi
+            fi
+            
+            # Check for security-events without CodeQL
+            if grep -q "security-events: write" "$file" && ! grep -q "codeql" "$file"; then
+              REPORT+="ℹ️ INFO: $filename has security-events: write but may not be CodeQL\n"
+              REPORT+="   Review: Ensure this permission is necessary\n\n"
+            fi
+          done
+
+          # Check for missing permissions entirely
+          for file in .github/workflows/*.yml; do
+            if ! grep -q "permissions:" "$file"; then
+              REPORT+="❌ VIOLATION: $file has no permissions defined\n"
+              REPORT+="   Impact: Workflow uses default permissions (potentially excessive)\n"
+              REPORT+="   Fix: Add explicit permissions block\n\n"
+              VIOLATIONS=$((VIOLATIONS + 1))
+            fi
+          done
+
+          # Output results
+          echo -e "$REPORT"
+          echo ""
+          echo "==================================="
+          echo "Total Violations: $VIOLATIONS"
+
+          # Set output for next steps
+          echo "violations=$VIOLATIONS" >> $GITHUB_OUTPUT
+          echo "report<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$REPORT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Exit with error if violations found
+          if [ $VIOLATIONS -gt 0 ]; then
+            echo "❌ Validation failed - $VIOLATIONS violation(s) found"
+            exit 1
+          else
+            echo "✅ All workflow permissions are compliant"
+            exit 0
+          fi
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const report = `${{ steps.validate.outputs.report }}`;
+            const violations = ${{ steps.validate.outputs.violations }};
+
+            const body = `## 🔐 Workflow Permissions Validation Failed
+
+            **${violations} violation(s) found**
+
+            ${report}
+
+            ### Required Actions:
+            1. Review and fix the violations listed above
+            2. Ensure all workflows follow the principle of least privilege
+            3. Move global permissions to job-level where possible
+
+            ### Best Practices:
+            - Use minimal required permissions for each job
+            - Avoid \`actions: write\` unless absolutely necessary
+            - Document why each permission is required
+            - Use per-job permissions instead of global permissions
+
+            For more information, see [GitHub Actions Security Guide](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions).`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+  # ------------------------------------------------------------------
+  # Job 2: Generate Permissions Documentation
+  # ------------------------------------------------------------------
+  generate-docs:
+    name: Generate Permissions Documentation
+    runs-on: ubuntu-latest
+    needs: validate-permissions
+    if: always()
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate permissions matrix
+        run: |
+          echo "📊 Workflow Permissions Matrix"
+          echo "==============================="
+          echo ""
+
+          # Create markdown table
+          echo "| Workflow | Global Permissions | Job-Level Permissions | Status |"
+          echo "|----------|-------------------|----------------------|--------|"
+
+          for file in .github/workflows/*.yml; do
+            filename=$(basename "$file")
+            
+            # Check for global permissions
+            if grep -B100 "^jobs:" "$file" 2>/dev/null | grep -q "^permissions:" || ! grep -q "^jobs:" "$file"; then
+              if grep -q "^permissions:" "$file"; then
+                global="⚠️ Yes"
+              else
+                global="❌ None"
+              fi
+            else
+              global="✅ No"
+            fi
+            
+            # Check for job-level permissions
+            if grep -A100 "^jobs:" "$file" 2>/dev/null | grep -q "permissions:" || ! grep -q "^jobs:" "$file"; then
+              if grep -A100 "^jobs:" "$file" 2>/dev/null | grep -q "permissions:" || ! grep -q "^permissions:" "$file"; then
+                if grep -A100 "^jobs:" "$file" 2>/dev/null | grep -q "permissions:" || grep "^permissions:" "$file" | head -1 | grep -q "^permissions:" "$file"; then
+                  joblevel="✅ Yes"
+                else
+                  joblevel="❌ No"
+                fi
+              else
+                joblevel="❌ No"
+              fi
+            else
+              joblevel="❌ No"
+            fi
+            
+            # Determine status
+            if grep -q "^permissions:" "$file"; then
+              status="✅ Configured"
+            else
+              status="⚠️ Missing"
+            fi
+            
+            echo "| $filename | $global | $joblevel | $status |"
+          done
+
+          echo ""
+          echo "### Legend"
+          echo "- ✅ Compliant / Present"
+          echo "- ⚠️ Warning / Attention needed"
+          echo "- ❌ Violation / Missing"
+
+  # ------------------------------------------------------------------
+  # Job 3: Security Compliance Check
+  # ------------------------------------------------------------------
+  compliance-check:
+    name: Security Compliance
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check compliance frameworks
+        run: |
+          echo "🔒 Security Compliance Verification"
+          echo "===================================="
+          echo ""
+
+          # SOC2 / ISO27001 Checks
+          echo "Checking compliance with security frameworks..."
+          echo ""
+
+          VIOLATIONS=0
+
+          # Check 1: No default permissions
+          echo "Check 1: Explicit permissions defined"
+          for file in .github/workflows/*.yml; do
+            if ! grep -q "permissions:" "$file"; then
+              echo "  ❌ $file - Missing permissions"
+              VIOLATIONS=$((VIOLATIONS + 1))
+            else
+              echo "  ✅ $file"
+            fi
+          done
+          echo ""
+
+          # Check 2: No global write permissions (except for specific cases)
+          echo "Check 2: No dangerous global permissions"
+          for file in .github/workflows/*.yml; do
+            if grep -B100 "^jobs:" "$file" 2>/dev/null | grep -q "actions: write" || \
+               (! grep -q "^jobs:" "$file" && grep -q "actions: write" "$file"); then
+              echo "  ⚠️ $file - Has actions: write (review required)"
+            fi
+          done
+          echo ""
+
+          # Check 3: PR workflows use minimal permissions
+          echo "Check 3: PR workflow security"
+          for file in .github/workflows/*pull*.yml .github/workflows/*pr*.yml; do
+            if [ -f "$file" ]; then
+              if grep -q "pull_request_target" "$file"; then
+                echo "  ⚠️ $file - Uses pull_request_target (ensure security)"
+              fi
+            fi
+          done
+          echo ""
+
+          if [ $VIOLATIONS -eq 0 ]; then
+            echo "✅ All compliance checks passed"
+          else
+            echo "❌ $VIOLATIONS compliance violation(s) found"
+            exit 1
+          fi
