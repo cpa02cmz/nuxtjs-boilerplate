@@ -38,9 +38,10 @@
           aria-hidden="true"
         />
 
+        <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations -->
         <div class="flex-1 min-w-0 relative z-10">
           <button
-            class="saved-search-button text-left text-sm text-gray-800 truncate focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded px-1 -ml-1 transition-colors duration-200"
+            :class="`saved-search-button text-left text-sm text-gray-800 truncate focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded px-1 -ml-1 transition-colors ${animationConfig.tailwindDurations.normal}`"
             :title="`Search: ${search.query}`"
             :aria-label="`Use saved search: ${search.name || search.query}`"
             @click="onUseSavedSearch(search)"
@@ -48,7 +49,7 @@
             <span class="flex items-center gap-2">
               <!-- Search icon -->
               <svg
-                class="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors duration-200"
+                :class="`w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors ${animationConfig.tailwindDurations.normal}`"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -62,7 +63,7 @@
                 />
               </svg>
               <span
-                class="group-hover:text-blue-600 transition-colors duration-200"
+                :class="`group-hover:text-blue-600 transition-colors ${animationConfig.tailwindDurations.normal}`"
               >
                 {{ search.name || search.query }}
               </span>
@@ -116,13 +117,16 @@
           @touchstart="handleDeletePress(search.query)"
           @touchend="handleDeleteRelease"
         >
+          <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations -->
           <svg
-            class="w-4 h-4 pointer-events-none transition-all duration-200"
-            :class="{
-              'text-gray-400 group-hover:text-red-400': !deletePressed,
-              'text-red-500':
-                deletePressed && activeDeleteItem === search.query,
-            }"
+            :class="[
+              `w-4 h-4 pointer-events-none transition-all ${animationConfig.tailwindDurations.normal}`,
+              {
+                'text-gray-400 group-hover:text-red-400': !deletePressed,
+                'text-red-500':
+                  deletePressed && activeDeleteItem === search.query,
+              },
+            ]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -141,11 +145,12 @@
     </TransitionGroup>
 
     <!-- Palette's micro-UX enhancement: Restore notification with undo action and progress bar -->
+    <!-- Flexy hates hardcoded duration-300 and duration-200! Using animationConfig.tailwindDurations -->
     <Transition
-      enter-active-class="transition-all duration-300 ease-out"
+      :enter-active-class="`transition-all ${animationConfig.tailwindDurations.standard} ease-out`"
       enter-from-class="opacity-0 translate-y-2"
       enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition-all duration-200 ease-in"
+      :leave-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-in`"
       leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 translate-y-2"
     >
@@ -181,8 +186,9 @@
             {{ restorePromptText }}
           </span>
         </div>
+        <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations -->
         <button
-          class="restore-button text-sm font-medium text-amber-700 hover:text-amber-900 px-3 py-1 rounded-md hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-1 transition-all duration-200 relative z-10"
+          :class="`restore-button text-sm font-medium text-amber-700 hover:text-amber-900 px-3 py-1 rounded-md hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-1 transition-all ${animationConfig.tailwindDurations.normal} relative z-10`"
           @click="restoreLastDeleted"
         >
           <span class="flex items-center gap-1">
