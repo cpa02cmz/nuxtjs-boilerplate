@@ -16,7 +16,7 @@ jobs:
   pr-check:
     name: Build & Test
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 20
+    timeout-minutes: 5
 
     env:
       CI: true
