@@ -29,10 +29,7 @@
             @click.stop
           >
             <div class="shortcuts-modal__header">
-              <h2
-                id="shortcuts-title"
-                class="shortcuts-modal__title"
-              >
+              <h2 id="shortcuts-title" class="shortcuts-modal__title">
                 Keyboard Shortcuts
               </h2>
               <button
@@ -295,7 +292,9 @@ onUnmounted(() => {
   background: transparent;
   border: none;
   cursor: pointer;
-  transition: all 150ms ease-out;
+  /* Flexy hates hardcoded 150ms! Using animationConfig.moderationQueue.transitionDurationSec */
+  transition: all
+    v-bind('animationConfig.moderationQueue.transitionDurationSec') ease-out;
 }
 
 .shortcuts-modal__close:hover {
@@ -344,7 +343,9 @@ onUnmounted(() => {
   gap: 0.75rem;
   padding: 0.5rem;
   border-radius: 0.375rem;
-  transition: background-color 150ms ease-out;
+  /* Flexy hates hardcoded 150ms! Using animationConfig.moderationQueue.transitionDurationSec */
+  transition: background-color
+    v-bind('animationConfig.moderationQueue.transitionDurationSec') ease-out;
 }
 
 .shortcuts-item:hover {
