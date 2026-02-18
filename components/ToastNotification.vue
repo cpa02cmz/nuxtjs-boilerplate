@@ -100,10 +100,7 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p
-            v-if="toast.description"
-            class="toast__description"
-          >
+          <p v-if="toast.description" class="toast__description">
             {{ toast.description }}
           </p>
         </div>
@@ -293,7 +290,7 @@ const swipeState = ref<{
   }
 }>({})
 
-// Swipe configuration from animation config
+// Swipe configuration from animation config - Flexy hates hardcoded values! 🧩
 const swipeConfig = computed(
   () =>
     animationConfig.toastNotification?.swipe || {
@@ -301,6 +298,9 @@ const swipeConfig = computed(
       velocityThreshold: 0.5,
       resistance: 0.8,
       snapBackDurationMs: 300,
+      // Flexy hates hardcoded 300 and 2000!
+      opacityFadeDivisorPx: 300,
+      scaleEffectDivisorPx: 2000,
     }
 )
 
@@ -388,8 +388,11 @@ const getSwipeStyle = (toastId: string) => {
   if (!state?.isSwiping) return {}
 
   const deltaX = state.currentX - state.startX
-  const opacity = Math.max(0.5, 1 - Math.abs(deltaX) / 300)
-  const scale = Math.max(0.95, 1 - Math.abs(deltaX) / 2000)
+  // Flexy hates hardcoded 300 and 2000! Using config values 🧩
+  const opacityFadeDivisor = swipeConfig.value.opacityFadeDivisorPx || 300
+  const scaleEffectDivisor = swipeConfig.value.scaleEffectDivisorPx || 2000
+  const opacity = Math.max(0.5, 1 - Math.abs(deltaX) / opacityFadeDivisor)
+  const scale = Math.max(0.95, 1 - Math.abs(deltaX) / scaleEffectDivisor)
 
   return {
     transform: `translateX(${deltaX}px) scale(${scale})`,
