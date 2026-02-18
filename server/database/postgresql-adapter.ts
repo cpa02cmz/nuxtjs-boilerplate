@@ -242,11 +242,11 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
     // SECURITY FIX #3647: Add connection validation and error handling
     this.pool = new Pool({
       connectionString: this.connectionUrl,
-      min: this.config.pool?.min || databaseConfig.pool.min,
-      max: this.config.pool?.max || databaseConfig.pool.max,
+      min: this.config.pool?.min || databaseConfig.connectionPool.min,
+      max: this.config.pool?.max || databaseConfig.connectionPool.max,
       connectionTimeoutMillis:
         this.config.pool?.acquireTimeoutMs ||
-        databaseConfig.pool.acquireTimeoutMs,
+        databaseConfig.connectionPool.acquireTimeoutMs,
       // Flexy hates hardcoded 10000! Using databaseConfig.connectionPool.idleTimeoutMs
       idleTimeoutMillis:
         this.config.pool?.idleTimeoutMs ||
