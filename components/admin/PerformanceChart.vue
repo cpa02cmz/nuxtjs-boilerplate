@@ -107,22 +107,13 @@
     </svg>
 
     <!-- Empty State -->
-    <div
-      v-if="chartData.length === 0"
-      class="empty-state"
-    >
-      <span
-        class="empty-icon"
-        aria-hidden="true"
-      >📊</span>
+    <div v-if="chartData.length === 0" class="empty-state">
+      <span class="empty-icon" aria-hidden="true">📊</span>
       <span class="empty-text">No data available</span>
     </div>
 
     <!-- X-Axis Labels -->
-    <div
-      v-if="chartData.length > 0"
-      class="x-axis-labels"
-    >
+    <div v-if="chartData.length > 0" class="x-axis-labels">
       <span
         v-for="(label, index) in xAxisLabels"
         :key="`label-${index}`"
@@ -157,10 +148,7 @@
         :style="tooltipStyle"
       >
         <div class="tooltip-content">
-          <div
-            class="tooltip-value"
-            :style="{ color: chartColor }"
-          >
+          <div class="tooltip-value" :style="{ color: chartColor }">
             {{ hoveredPoint.value.toFixed(2) }}
           </div>
           <div class="tooltip-metric">
@@ -170,20 +158,12 @@
             {{ hoveredPoint.label }}
           </div>
         </div>
-        <div
-          aria-hidden="true"
-          class="tooltip-arrow"
-        />
+        <div aria-hidden="true" class="tooltip-arrow" />
       </div>
     </Transition>
 
     <!-- Screen Reader Announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ chartAnnouncement }}
     </div>
   </div>
@@ -194,6 +174,7 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import type { TimeSeriesDataPoint } from '~/types/performance'
 import { performanceDashboardConfig } from '~/configs/performance-dashboard.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexScale } from '~/configs/z-index.config'
 
 interface Props {
   data: TimeSeriesDataPoint[]
@@ -653,7 +634,8 @@ function handleKeyDown(event: KeyboardEvent) {
     0 10px 25px -5px rgba(0, 0, 0, 0.2),
     0 4px 10px -2px rgba(0, 0, 0, 0.1);
   pointer-events: none;
-  z-index: 50;
+  /* Flexy hates hardcoded z-index: 50! Using zIndexScale.medium[50] 🧩 */
+  z-index: v-bind('zIndexScale.medium[50]');
   transform: translate(-50%, calc(-100% - 12px));
   min-width: 120px;
   text-align: center;
