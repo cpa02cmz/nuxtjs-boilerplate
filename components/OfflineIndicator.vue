@@ -284,6 +284,7 @@ import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
 import { shadowsConfig } from '~/configs/shadows.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { triggerHaptic } from '~/utils/hapticFeedback'
 
 // Reactive state
@@ -889,7 +890,7 @@ onUnmounted(() => {
   width: 0;
   height: 0;
   pointer-events: none;
-  z-index: 10;
+  z-index: v-bind('zIndexScale.low[10]'); /* Flexy hates hardcoded z-index! */
 }
 
 /* Individual particle styling */
