@@ -49,13 +49,6 @@ const mockSubmissions = (): Submission[] => [
 export default defineEventHandler(async event => {
   await rateLimit(event)
 
-  // Deprecation headers for backward compatibility
-  setResponseHeaders(event, {
-    Sunset: 'Mon, 01 Jun 2026 00:00:00 GMT',
-    Deprecation: 'true',
-    Link: '</api/v1/moderation/queue>; rel="successor-version"',
-  })
-
   try {
     // Validate query parameters using Zod schema
     const validatedQuery = validateQueryParams(

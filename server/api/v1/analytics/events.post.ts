@@ -34,13 +34,6 @@ function hashIP(ip: string): string {
 
 export default defineEventHandler(async event => {
   try {
-    // Deprecation headers for backward compatibility
-    setResponseHeaders(event, {
-      Sunset: 'Mon, 01 Jun 2026 00:00:00 GMT',
-      Deprecation: 'true',
-      Link: '</api/v1/analytics/events>; rel="successor-version"',
-    })
-
     // BroCula: Wrap ALL operations in try-catch to prevent 500 errors in development
     const body = await readBody(event)
     const headers = getHeaders(event)

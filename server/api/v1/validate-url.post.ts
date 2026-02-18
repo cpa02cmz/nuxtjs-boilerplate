@@ -19,14 +19,6 @@ export {}
 export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
-
-    // Deprecation headers for backward compatibility
-    setResponseHeaders(event, {
-      Sunset: 'Mon, 01 Jun 2026 00:00:00 GMT',
-      Deprecation: 'true',
-      Link: '</api/v1/validate-url>; rel="successor-version"',
-    })
-
     const body = await readBody(event)
 
     const validationResult = validateUrlSchema.safeParse(body)

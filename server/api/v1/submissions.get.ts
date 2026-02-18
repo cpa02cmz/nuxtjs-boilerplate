@@ -9,18 +9,9 @@ export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
 
-    // Deprecation headers for backward compatibility
-    setResponseHeaders(event, {
-      Sunset: 'Mon, 01 Jun 2026 00:00:00 GMT',
-      Deprecation: 'true',
-      Link: '</api/v1/submissions>; rel="successor-version"',
-    })
-
     const responseData = {
       submissions: [],
       note: 'Submissions are not currently persisted to database',
-      deprecationWarning:
-        'This endpoint is deprecated. Please migrate to /api/v1/submissions',
     }
 
     return sendSuccessResponse(event, responseData)
