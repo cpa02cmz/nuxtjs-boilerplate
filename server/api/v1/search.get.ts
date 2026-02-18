@@ -67,8 +67,9 @@ export default defineEventHandler(async event => {
     if (cachedResult) {
       event.node.res?.setHeader('X-Cache', 'HIT')
       event.node.res?.setHeader('X-Cache-Key', cacheKey)
-      // Cached result already has { success: true, data: ..., pagination: ... } wrapper
-      return cachedResult
+      // Cached result contains raw data { data: ..., pagination: ... }
+      // sendSuccessResponse will wrap it with { success: true, data: ... }
+      return sendSuccessResponse(event, cachedResult)
     }
 
     // Import resources from JSON
@@ -190,14 +191,10 @@ export default defineEventHandler(async event => {
 
     // Cache the result with tags for easier invalidation
     // Use shorter TTL for search results since they change more frequently
-    // Cache the full response with wrapper for consistency
-    const responseWithWrapper = {
-      success: true,
-      ...responseData,
-    }
+    // Cache only the raw response data (without wrapper) - sendSuccessResponse adds the wrapper
     await cacheSetWithTags(
       cacheKey,
-      responseWithWrapper,
+      responseData,
       cacheConfig.server.defaultTtlMs / 1000,
       generateCacheTags(
         cacheTagsConfig.search.results,
