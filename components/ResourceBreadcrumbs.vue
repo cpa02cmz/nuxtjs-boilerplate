@@ -4,6 +4,8 @@
     class="mb-6 breadcrumb-nav"
     :class="{
       'breadcrumb-nav--hovered': isNavHovered && !prefersReducedMotion,
+      'using-keyboard': isUsingKeyboard,
+      'using-mouse': !isUsingKeyboard,
     }"
     aria-label="Breadcrumb"
     @mouseenter="handleNavEnter"
@@ -28,6 +30,7 @@
       <li class="breadcrumb-item">
         <NuxtLink
           to="/"
+          data-breadcrumb="home"
           class="breadcrumb-link group"
           :class="{
             'is-pressed': pressedLink === 'home',
@@ -40,6 +43,7 @@
           @touchstart="handlePressStart('home')"
           @touchend="handlePressEnd"
           @click="handleBreadcrumbClick('home')"
+          @keydown="handleBreadcrumbKeydown($event, 'home')"
         >
           <span class="breadcrumb-text">Home</span>
           <span
@@ -54,6 +58,7 @@
       <li class="breadcrumb-item">
         <NuxtLink
           to="/search"
+          data-breadcrumb="resources"
           class="breadcrumb-link group"
           :class="{
             'is-pressed': pressedLink === 'resources',
@@ -66,6 +71,7 @@
           @touchstart="handlePressStart('resources')"
           @touchend="handlePressEnd"
           @click="handleBreadcrumbClick('resources')"
+          @keydown="handleBreadcrumbKeydown($event, 'resources')"
         >
           <span class="breadcrumb-text">Resources</span>
           <span
@@ -102,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { animationConfig } from '~/configs/animation.config'
 import { contentConfig } from '~/configs/content.config'
 import { zIndexConfig } from '~/configs/z-index.config'
@@ -112,6 +118,11 @@ import { hapticLight } from '~/utils/hapticFeedback'
 const props = defineProps<{
   title: string
 }>()
+
+// 🎨 Pallete's micro-UX enhancement: Adaptive Focus Indicators ✨
+// Detects keyboard vs mouse navigation to show appropriate focus styles
+const isUsingKeyboard = ref(false)
+const keyboardModeTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 
 // 🎨 Pallete's micro-UX enhancement: Press and hover states
 const pressedLink = ref<string | null>(null)
@@ -148,6 +159,59 @@ const handleBreadcrumbClick = (link: string) => {
   setTimeout(() => {
     announcement.value = ''
   }, uiTimingConfig.breadcrumbs.announcementClearDelay)
+}
+
+// 🎨 Pallete's micro-UX enhancement: Keyboard navigation detection
+// Switches to keyboard mode when Tab or Arrow keys are used
+const handleKeydown = (e: KeyboardEvent) => {
+  if (['Tab', 'ArrowLeft', 'ArrowRight', 'Enter', ' '].includes(e.key)) {
+    // Clear any pending mouse mode switch
+    if (keyboardModeTimeout.value) {
+      clearTimeout(keyboardModeTimeout.value)
+      keyboardModeTimeout.value = null
+    }
+    isUsingKeyboard.value = true
+  }
+}
+
+// 🎨 Pallete's micro-UX enhancement: Mouse detection
+// Switches to mouse mode with debounce to prevent flickering
+const handleMousedown = () => {
+  // Debounce the switch from keyboard to mouse mode
+  if (keyboardModeTimeout.value) {
+    clearTimeout(keyboardModeTimeout.value)
+  }
+  keyboardModeTimeout.value = setTimeout(() => {
+    isUsingKeyboard.value = false
+  }, animationConfig.breadcrumbs.adaptiveFocus.modeSwitchDebounceMs)
+}
+
+// Handle keyboard navigation between breadcrumbs
+const handleBreadcrumbKeydown = (e: KeyboardEvent, currentLink: string) => {
+  const links = ['home', 'resources']
+  const currentIndex = links.indexOf(currentLink)
+
+  if (e.key === 'ArrowLeft' && currentIndex > 0) {
+    e.preventDefault()
+    const prevLink = links[currentIndex - 1]
+    const prevElement = document.querySelector(
+      `[data-breadcrumb="${prevLink}"]`
+    )
+    if (prevElement instanceof HTMLElement) {
+      prevElement.focus()
+      hapticLight()
+    }
+  } else if (e.key === 'ArrowRight' && currentIndex < links.length - 1) {
+    e.preventDefault()
+    const nextLink = links[currentIndex + 1]
+    const nextElement = document.querySelector(
+      `[data-breadcrumb="${nextLink}"]`
+    )
+    if (nextElement instanceof HTMLElement) {
+      nextElement.focus()
+      hapticLight()
+    }
+  }
 }
 
 // Screen reader announcement
@@ -224,6 +288,19 @@ onMounted(() => {
     prefersReducedMotion.value = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
     ).matches
+  }
+
+  // 🎨 Pallete's micro-UX enhancement: Set up input method detection
+  window.addEventListener('keydown', handleKeydown)
+  window.addEventListener('mousedown', handleMousedown)
+})
+
+// Cleanup event listeners
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+  window.removeEventListener('mousedown', handleMousedown)
+  if (keyboardModeTimeout.value) {
+    clearTimeout(keyboardModeTimeout.value)
   }
 })
 </script>
@@ -328,6 +405,95 @@ onMounted(() => {
 .breadcrumb-link:focus-visible {
   outline: 2px solid rgb(37, 99, 235);
   outline-offset: 2px;
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Adaptive Focus Indicators ✨
+   Keyboard users get prominent focus rings with glow effect
+   Mouse users get subtle hover states without intrusive focus rings */
+
+/* Using keyboard: Prominent focus styles */
+.using-keyboard .breadcrumb-link:focus-visible {
+  outline: v-bind(
+      '`${animationConfig.breadcrumbs.adaptiveFocus.keyboardOutlineWidthPx}px`'
+    )
+    solid rgb(37, 99, 235);
+  outline-offset: 3px;
+  box-shadow:
+    0 0 0
+      v-bind(
+        '`${animationConfig.breadcrumbs.adaptiveFocus.keyboardOutlineWidthPx + 2}px`'
+      )
+      rgba(255, 255, 255, 0.8),
+    0 0
+      v-bind(
+        '`${animationConfig.breadcrumbs.adaptiveFocus.keyboardGlowSpreadPx}px`'
+      )
+      v-bind(
+        '`${animationConfig.breadcrumbs.adaptiveFocus.keyboardGlowSpreadPx}px`'
+      )
+      rgba(
+        37,
+        99,
+        235,
+        v-bind('animationConfig.breadcrumbs.adaptiveFocus.keyboardGlowOpacity')
+      );
+  border-radius: 0.375rem;
+  transition:
+    box-shadow
+      v-bind('animationConfig.breadcrumbs.adaptiveFocus.transitionDurationSec')
+      ease-out,
+    outline
+      v-bind('animationConfig.breadcrumbs.adaptiveFocus.transitionDurationSec')
+      ease-out;
+}
+
+/* Using mouse: Subtle focus styles */
+.using-mouse .breadcrumb-link:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+.using-mouse .breadcrumb-link:focus-visible {
+  outline: 2px solid rgb(37, 99, 235);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Enhanced hover for keyboard users */
+.using-keyboard .breadcrumb-link:hover {
+  background-color: rgba(37, 99, 235, 0.08);
+}
+
+/* Keyboard shortcut hint tooltip */
+.breadcrumb-keyboard-hint {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  background: rgba(17, 24, 39, 0.9);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity
+      v-bind('animationConfig.breadcrumbs.adaptiveFocus.transitionDurationSec')
+      ease-out,
+    transform
+      v-bind('animationConfig.breadcrumbs.adaptiveFocus.transitionDurationSec')
+      ease-out;
+  pointer-events: none;
+  z-index: v-bind('zIndexConfig.tooltip');
+}
+
+.breadcrumb-link:focus-visible .breadcrumb-keyboard-hint,
+.breadcrumb-link:hover .breadcrumb-keyboard-hint {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
 }
 
 /* Breadcrumb text */
