@@ -12,6 +12,7 @@ const transactionContext = new AsyncLocalStorage<typeof prisma>()
 const LOG_PREFIX = databaseConfig.logging.prefix
 
 // Models that support soft deletes (have deletedAt field)
+// -architect: Added Flag, TrackedError, ErrorMetric, PerformanceMetric for complete soft delete coverage
 const SOFT_DELETE_MODELS = [
   'analyticsEvent',
   'webhook',
@@ -22,6 +23,10 @@ const SOFT_DELETE_MODELS = [
   'resource',
   'submission',
   'idempotencyKey',
+  'flag', // -architect: Added for Flag model soft delete support
+  'trackedError', // -architect: Added for TrackedError model soft delete support
+  'errorMetric', // -architect: Added for ErrorMetric model soft delete support
+  'performanceMetric', // -architect: Added for PerformanceMetric model soft delete support
 ] as const
 
 declare global {
@@ -30,6 +35,7 @@ declare global {
 
 // SECURITY FIX #3650: Soft delete model names for validation
 // These models have deletedAt field and should always be filtered
+// -architect: Added Flag, TrackedError, ErrorMetric, PerformanceMetric for complete coverage
 const SOFT_DELETE_MODEL_NAMES = [
   'AnalyticsEvent',
   'Webhook',
@@ -40,6 +46,10 @@ const SOFT_DELETE_MODEL_NAMES = [
   'Resource',
   'Submission',
   'IdempotencyKey',
+  'Flag', // -architect: Added for Flag model soft delete validation
+  'TrackedError', // -architect: Added for TrackedError model soft delete validation
+  'ErrorMetric', // -architect: Added for ErrorMetric model soft delete validation
+  'PerformanceMetric', // -architect: Added for PerformanceMetric model soft delete validation
 ] as const
 
 // FIXED: Add retry logic and error handling for database connection
