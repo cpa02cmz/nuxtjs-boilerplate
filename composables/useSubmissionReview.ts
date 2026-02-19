@@ -27,7 +27,29 @@ export interface UseSubmissionReviewOptions extends SubmissionReviewOptions {
   apiClient?: ApiClient
 }
 
-export const useSubmissionReview = (options: UseSubmissionReviewOptions) => {
+/**
+ * Return type for useSubmissionReview composable
+ */
+export interface UseSubmissionReviewReturn {
+  /** Loading state for submission operations */
+  loading: Ref<boolean>
+  /** Error message if operation failed */
+  error: Ref<string>
+  /** Current submission being reviewed */
+  submission: Ref<Submission | null>
+  /** Rejection reason input */
+  rejectionReason: Ref<string>
+  /** Fetch submission data from API */
+  fetchSubmission: () => Promise<void>
+  /** Approve the current submission */
+  approveSubmission: () => Promise<boolean>
+  /** Reject the current submission with a reason */
+  rejectSubmission: (reason: string) => Promise<boolean>
+}
+
+export const useSubmissionReview = (
+  options: UseSubmissionReviewOptions
+): UseSubmissionReviewReturn => {
   const {
     submissionId,
     reviewedBy = userConfig.defaults.moderatorId,
