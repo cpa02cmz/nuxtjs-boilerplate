@@ -307,9 +307,31 @@ export function generateCsp(nonce?: string): string {
 }
 
 // Function to get all security headers
-export function getSecurityHeaders(nonce?: string): Record<string, string> {
+// Security Engineer FIX: Dynamic CORS origin validation (CWE-942)
+// Validates request origin against allowed list and reflects it if authorized
+// This prevents unauthorized cross-origin requests while supporting multi-origin scenarios
+export function getSecurityHeaders(
+  nonce?: string,
+  requestOrigin?: string
+): Record<string, string> {
   // SECURITY FIX: Issue #3526 - Validate CORS origins, remove wildcard fallback (CWE-942)
-  const allowedOrigin = securityConfig.cors.allowedOrigins[0]
+  // Security Engineer: Implement dynamic origin reflection for multi-origin support
+  let allowedOrigin: string | undefined
+
+  if (requestOrigin) {
+    // Validate the request origin against the allowed list
+    // This prevents CORS bypass attacks by only reflecting authorized origins
+    const normalizedRequestOrigin = requestOrigin.toLowerCase().trim()
+    allowedOrigin = securityConfig.cors.allowedOrigins.find(
+      origin => origin.toLowerCase().trim() === normalizedRequestOrigin
+    )
+  }
+
+  // Fall back to first configured origin if request origin not in allowed list
+  if (!allowedOrigin) {
+    allowedOrigin = securityConfig.cors.allowedOrigins[0]
+  }
+
   if (!allowedOrigin) {
     console.warn(
       '[Security] No CORS allowed origins configured. Set ALLOWED_ORIGINS environment variable.'

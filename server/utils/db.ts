@@ -65,45 +65,49 @@ function createPrismaClient(): PrismaClient {
 
       // SECURITY FIX #3650: Add middleware to warn about raw queries bypassing soft deletes
       // This helps catch potential data leaks during development
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(baseClient as any).$use(
-        async (
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          params: { action: string; args: any },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          next: (params?: any) => Promise<unknown>
-        ) => {
-          // Check if this is a raw query on a soft-delete model
-          if (params.action === 'queryRaw' || params.action === 'executeRaw') {
-            const query = String(params.args?.query || params.args || '')
-            const lowerQuery = query.toLowerCase()
+      // Type the Prisma middleware with unknown for better type safety
+      type MiddlewareParams = { action: string; args?: unknown }
+      type MiddlewareNext = (params?: unknown) => Promise<unknown>
+      ;(
+        baseClient as unknown as {
+          $use: (
+            fn: (
+              params: MiddlewareParams,
+              next: MiddlewareNext
+            ) => Promise<unknown>
+          ) => void
+        }
+      ).$use(async (params: MiddlewareParams, next: MiddlewareNext) => {
+        // Check if this is a raw query on a soft-delete model
+        if (params.action === 'queryRaw' || params.action === 'executeRaw') {
+          const query = String(params.args?.query || params.args || '')
+          const lowerQuery = query.toLowerCase()
 
-            // Check if query references soft-delete tables without filtering
-            for (const modelName of SOFT_DELETE_MODEL_NAMES) {
-              const tableName = modelName.toLowerCase()
-              if (
-                lowerQuery.includes(`from ${tableName}`) ||
-                lowerQuery.includes(`join ${tableName}`)
-              ) {
-                // Check if deletedAt filter is present
-                if (!lowerQuery.includes('deletedat')) {
-                  const warning = `[SECURITY WARNING] Raw query on ${modelName} missing deletedAt filter. Query: ${query.substring(0, 100)}...`
-                  logger.warn(warning)
+          // Check if query references soft-delete tables without filtering
+          for (const modelName of SOFT_DELETE_MODEL_NAMES) {
+            const tableName = modelName.toLowerCase()
+            if (
+              lowerQuery.includes(`from ${tableName}`) ||
+              lowerQuery.includes(`join ${tableName}`)
+            ) {
+              // Check if deletedAt filter is present
+              if (!lowerQuery.includes('deletedat')) {
+                const warning = `[SECURITY WARNING] Raw query on ${modelName} missing deletedAt filter. Query: ${query.substring(0, 100)}...`
+                logger.warn(warning)
 
-                  // In strict mode, throw error
-                  if (process.env.STRICT_SOFT_DELETE === 'true') {
-                    throw new Error(
-                      `Security violation: Raw query on ${modelName} must include deletedAt filter`
-                    )
-                  }
+                // In strict mode, throw error
+                if (process.env.STRICT_SOFT_DELETE === 'true') {
+                  throw new Error(
+                    `Security violation: Raw query on ${modelName} must include deletedAt filter`
+                  )
                 }
               }
             }
           }
-
-          return next(params)
         }
-      )
+
+        return next(params)
+      })
 
       // Extend client with soft delete filtering
       const client = baseClient.$extends({
@@ -398,9 +402,12 @@ const DEFAULT_TRANSACTION_OPTIONS: TransactionOptions = {
 /**
  * PostgreSQL error codes that indicate transient/retryable errors
  * -architect: Added comprehensive error code detection for better retry handling
+ * -architect: Added 08006 connection_failure for network resilience
  * @see https://www.postgresql.org/docs/current/errcodes-appendix.html
  */
 const POSTGRESQL_RETRYABLE_CODES = {
+  // Class 08 - Connection Exception
+  '08006': 'connection_failure', // -architect: Common during temporary network issues
   // Class 40 - Transaction Rollback
   '40001': 'serialization_failure',
   '40003': 'statement_completion_unknown',

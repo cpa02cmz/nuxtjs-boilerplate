@@ -448,8 +448,7 @@
           class="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <span>
-            © {{ new Date().getFullYear() }} Free Stuff on the Internet. All
-            rights reserved.
+            © {{ currentYear }} Free Stuff on the Internet. All rights reserved.
           </span>
           <button
             :class="`inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded px-2 py-1 transition-colors ${animationConfig.tailwindDurations.normal}`"
@@ -567,6 +566,9 @@ const searchQuery = computed({
   get: () => filterOptions.value.searchQuery || '',
   set: value => updateSearchQuery(value),
 })
+
+// Performance: Cache current year to avoid creating new Date() on every render
+const currentYear = computed(() => new Date().getFullYear())
 
 const handleSearch = (query: string) => {
   updateSearchQuery(query)
