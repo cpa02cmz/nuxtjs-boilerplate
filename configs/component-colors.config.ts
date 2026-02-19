@@ -167,6 +167,19 @@ export const componentColorsConfig = {
   // Toast Notification Colors - Flexy hates hardcoded toast colors!
   toast: {
     backdrop: process.env.TOAST_BACKDROP_COLOR || '0, 0, 0, 0.2',
+    // Dismiss shortcut hint tooltip colors - modularity-engineer improvement
+    dismissHint: {
+      // Key element colors (keyboard key style)
+      keyText: process.env.TOAST_DISMISS_HINT_KEY_TEXT || '#1f2937',
+      keyBgStart: process.env.TOAST_DISMISS_HINT_KEY_BG_START || '#f9fafb',
+      keyBgEnd: process.env.TOAST_DISMISS_HINT_KEY_BG_END || '#e5e7eb',
+      keyBorder: process.env.TOAST_DISMISS_HINT_KEY_BORDER || '#d1d5db',
+      // Label text color
+      labelText: process.env.TOAST_DISMISS_HINT_LABEL_TEXT || '#f9fafb',
+      // Arrow color (matches tooltip background)
+      arrowColor:
+        process.env.TOAST_DISMISS_HINT_ARROW || 'rgba(31, 41, 55, 0.95)',
+    },
   },
 
   // Submission Review Colors - Flexy hates hardcoded review badge colors!
