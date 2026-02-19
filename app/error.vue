@@ -53,10 +53,7 @@
         </div>
 
         <div class="mt-8 space-y-4">
-          <details
-            v-if="error.message"
-            class="text-left inline-block"
-          >
+          <details v-if="error.message" class="text-left inline-block">
             <summary class="text-sm text-gray-500 cursor-pointer">
               {{ content.error.details }}
             </summary>
@@ -123,7 +120,7 @@
 
 <script setup lang="ts">
 // Flexy hates hardcoded values! Using config imports instead.
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { contentConfig } from '~/configs/content.config'
 import { iconsConfig } from '~/configs/icons.config'
 import { animationConfig } from '~/configs/animation.config'
@@ -142,17 +139,30 @@ const error = computed(() => ({
 // Palette's micro-UX enhancement: Respect user's motion preferences
 const prefersReducedMotion = ref(false)
 
+// BugFixer: Declare refs outside onMounted so they're accessible in onUnmounted for cleanup
+let mediaQueryRef: MediaQueryList | null = null
+let handleChangeRef: ((e: MediaQueryListEvent) => void) | null = null
+
 // Check reduced motion preference on mount
 onMounted(() => {
   if (typeof window !== 'undefined' && window.matchMedia) {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    prefersReducedMotion.value = mediaQuery.matches
+    mediaQueryRef = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.value = mediaQueryRef.matches
 
     // Listen for changes
-    const handleChange = (e: MediaQueryListEvent) => {
+    handleChangeRef = (e: MediaQueryListEvent) => {
       prefersReducedMotion.value = e.matches
     }
-    mediaQuery.addEventListener('change', handleChange)
+    mediaQueryRef.addEventListener('change', handleChangeRef)
+  }
+})
+
+// BugFixer: Cleanup event listener on unmount to prevent memory leak 🐛
+onUnmounted(() => {
+  if (mediaQueryRef && handleChangeRef) {
+    mediaQueryRef.removeEventListener('change', handleChangeRef)
+    mediaQueryRef = null
+    handleChangeRef = null
   }
 })
 
