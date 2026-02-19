@@ -49,8 +49,7 @@ export default defineNitroPlugin(nitroApp => {
   nitroApp.hooks.hook('request', async event => {
     const originalEnd = event.node.res.end.bind(event.node.res)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    event.node.res.end = function (...args: any[]) {
+    event.node.res.end = function (...args: unknown[]) {
       const statusCode = event.node.res.statusCode
 
       // Track 4xx/5xx errors
@@ -79,8 +78,7 @@ export default defineNitroPlugin(nitroApp => {
           })
       }
 
-       
-      return originalEnd(...args)
+      return originalEnd(...(args as unknown as Parameters<typeof originalEnd>))
     }
   })
 
