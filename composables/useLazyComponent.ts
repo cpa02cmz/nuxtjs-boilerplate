@@ -1,7 +1,12 @@
 // Lazy Component Loader - Issue #2404 Fix
 // Provides dynamic imports with intersection observer for below-fold content
-import { ref, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
-import type { Component } from 'vue'
+import {
+  ref,
+  onMounted,
+  onUnmounted,
+  defineAsyncComponent,
+  type Component,
+} from 'vue'
 import { performanceConfig } from '~/configs/performance.config'
 import { logger } from '~/utils/logger'
 
