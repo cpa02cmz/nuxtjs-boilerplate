@@ -72,7 +72,7 @@
               :title="resource.title"
               :category="resource.category"
               :status="resource.status"
-              :health-score="(resource as any).healthScore"
+              :health-score="resource.healthScore"
               :url="resource.url"
               :resource-id="resource.id"
             />
@@ -93,17 +93,15 @@
                   resource.limitations ? [...resource.limitations] : undefined
                 "
                 :status="resource.status"
-                :migration-path="(resource as any).migrationPath"
-                :deprecation-date="(resource as any).deprecationDate"
-                @image-error="handleImageError as any"
+                :migration-path="resource.migrationPath"
+                :deprecation-date="resource.deprecationDate"
+                @image-error="handleImageError"
               />
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="md:col-span-2">
                   <ClientOnly>
-                    <LazyResourceAnalytics
-                      :analytics-data="analyticsData as any"
-                    />
+                    <LazyResourceAnalytics :analytics-data="analyticsData" />
                   </ClientOnly>
                 </div>
 
@@ -111,18 +109,15 @@
                 <div class="md:col-span-1">
                   <!-- Resource Status and Lifecycle -->
                   <div
-                    v-if="
-                      (resource as any).statusHistory ||
-                        (resource as any).updateHistory
-                    "
+                    v-if="resource.statusHistory || resource.updateHistory"
                     class="mb-8"
                   >
                     <h3 class="text-lg font-medium text-gray-900 mb-3">
                       Lifecycle
                     </h3>
                     <LifecycleTimeline
-                      :status-history="(resource as any).statusHistory"
-                      :update-history="(resource as any).updateHistory"
+                      :status-history="resource.statusHistory"
+                      :update-history="resource.updateHistory"
                     />
                   </div>
 
@@ -171,7 +166,7 @@
 
                   <ClientOnly>
                     <LazyResourceShare
-                      :share-urls="shareUrls as any"
+                      :share-urls="shareUrls"
                       @copy="copyToClipboard"
                     />
                   </ClientOnly>
