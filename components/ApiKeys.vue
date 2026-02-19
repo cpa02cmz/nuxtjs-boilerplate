@@ -259,22 +259,81 @@
               </div>
             </div>
             <div class="api-key-actions">
+              <!-- Frontend Engineer: Press and Hold button for destructive revoke action -->
+              <!-- Replaces confirm() dialog with intentional press-and-hold UX -->
               <button
-                class="btn btn-sm btn-danger"
-                :class="{ 'btn--revoking': revokingKeyId === key.id }"
+                class="btn btn-sm btn-danger press-hold-button"
+                :class="{
+                  'is-pressing': getPressAndHold(key.id, key).isPressing,
+                  'is-complete': getPressAndHold(key.id, key).isComplete,
+                  'btn--revoking': revokingKeyId === key.id,
+                }"
+                :style="getPressAndHold(key.id, key).progressStyle"
                 :aria-label="
-                  revokingKeyId === key.id
-                    ? `Revoking API key: ${key.name}`
-                    : contentConfig.apiKeys.aria.revokeButton.replace(
-                      '{{name}}',
-                      key.name
-                    )
+                  contentConfig.apiKeys.aria.revokeButton.replace(
+                    '{{name}}',
+                    key.name
+                  ) + ' (Press and hold to confirm)'
                 "
                 :disabled="revokingKeyId === key.id"
                 :aria-busy="revokingKeyId === key.id"
-                @click="revokeApiKey(key.id)"
+                @mousedown="getPressAndHold(key.id, key).startPress"
+                @mouseup="getPressAndHold(key.id, key).endPress"
+                @mouseleave="getPressAndHold(key.id, key).endPress"
+                @touchstart.prevent="getPressAndHold(key.id, key).startPress"
+                @touchend.prevent="getPressAndHold(key.id, key).endPress"
+                @touchcancel.prevent="getPressAndHold(key.id, key).endPress"
               >
-                <!-- Pallete: Loading spinner for revoke feedback -->
+                <!-- Progress Ring SVG -->
+                <span
+                  v-if="
+                    getPressAndHold(key.id, key).isPressing && !reducedMotion
+                  "
+                  class="press-hold-ring"
+                  aria-hidden="true"
+                >
+                  <svg
+                    class="progress-ring"
+                    :width="animationConfig.pressAndHold.ringSize"
+                    :height="animationConfig.pressAndHold.ringSize"
+                    :viewBox="`0 0 ${animationConfig.pressAndHold.ringSize} ${animationConfig.pressAndHold.ringSize}`"
+                  >
+                    <!-- Background circle -->
+                    <circle
+                      class="progress-ring-bg"
+                      :cx="animationConfig.pressAndHold.ringSize / 2"
+                      :cy="animationConfig.pressAndHold.ringSize / 2"
+                      :r="
+                        (animationConfig.pressAndHold.ringSize -
+                          animationConfig.pressAndHold.strokeWidth) /
+                          2
+                      "
+                      fill="none"
+                      :stroke-width="animationConfig.pressAndHold.strokeWidth"
+                    />
+                    <!-- Progress circle -->
+                    <circle
+                      class="progress-ring-fill"
+                      :cx="animationConfig.pressAndHold.ringSize / 2"
+                      :cy="animationConfig.pressAndHold.ringSize / 2"
+                      :r="
+                        (animationConfig.pressAndHold.ringSize -
+                          animationConfig.pressAndHold.strokeWidth) /
+                          2
+                      "
+                      fill="none"
+                      :stroke-width="animationConfig.pressAndHold.strokeWidth"
+                      :stroke-dasharray="`var(--circumference)`"
+                      :stroke-dashoffset="`var(--progress-offset)`"
+                      stroke-linecap="round"
+                      :style="{
+                        transform: 'rotate(-90deg)',
+                        transformOrigin: 'center',
+                      }"
+                    />
+                  </svg>
+                </span>
+                <!-- Loading spinner during revocation -->
                 <svg
                   v-if="revokingKeyId === key.id"
                   class="animate-spin -ml-1 mr-1.5 h-3.5 w-3.5 text-white inline-block"
@@ -297,11 +356,18 @@
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                {{
-                  revokingKeyId === key.id
-                    ? contentConfig.apiKeys.buttons.revoking
-                    : contentConfig.apiKeys.buttons.revoke
-                }}
+                <!-- Button text changes during press -->
+                <span class="button-text">
+                  <template v-if="revokingKeyId === key.id">
+                    {{ contentConfig.apiKeys.buttons.revoking }}
+                  </template>
+                  <template v-else-if="getPressAndHold(key.id, key).isPressing">
+                    {{ Math.round(getPressAndHold(key.id, key).progress) }}%
+                  </template>
+                  <template v-else>
+                    {{ contentConfig.apiKeys.buttons.revoke }}
+                  </template>
+                </span>
               </button>
             </div>
           </div>
@@ -426,10 +492,11 @@ import { ref, computed, onMounted, reactive, nextTick } from 'vue'
 import type { ApiKey } from '~/types/webhook'
 import type { NewApiKey } from '~/composables/useApiKeysManager'
 import { useApiKeysManager } from '~/composables/useApiKeysManager'
+import { usePressAndHold } from '~/composables/usePressAndHold'
 import logger from '~/utils/logger'
 import { permissionsConfig } from '~/configs/permissions.config'
 import { animationConfig } from '~/configs/animation.config'
-import { zIndexScale } from '~/configs/z-index.config'
+import { zIndexScale, zIndexConfig } from '~/configs/z-index.config'
 import { EASING } from '~/configs/easing.config'
 import { contentConfig } from '~/configs/content.config'
 import { componentStylesConfig } from '~/configs/component-styles.config'
@@ -621,17 +688,41 @@ const createApiKey = async () => {
   }
 }
 
-// Revoke API key with loading state feedback
-const revokeApiKey = async (id: string) => {
-  if (confirm('Are you sure you want to revoke this API key?')) {
-    // Pallete: Track which key is being revoked for loading feedback
-    revokingKeyId.value = id
-    const success = await revokeApiKeys(id)
-    revokingKeyId.value = null
-    if (!success) {
-      logger.error('Failed to revoke API key')
-    }
+// Revoke API key handler - called when press-and-hold completes
+const handleRevokeApiKey = async (key: ApiKey) => {
+  // Frontend Engineer: Track which key is being revoked for loading feedback
+  revokingKeyId.value = key.id
+  const success = await revokeApiKeys(key.id)
+  revokingKeyId.value = null
+  if (!success) {
+    logger.error('Failed to revoke API key')
+  } else {
+    // Palette's micro-UX enhancement: Light haptic feedback for deletion
+    hapticLight()
   }
+}
+
+// Frontend Engineer: Press and Hold state management for destructive revoke action
+// Replaces confirm() dialog with intentional press-and-hold UX for consistency with WebhookManager
+const pressAndHoldStates = ref<Map<string, ReturnType<typeof usePressAndHold>>>(
+  new Map()
+)
+
+// Initialize press and hold for a specific API key
+const getPressAndHold = (keyId: string, key: ApiKey) => {
+  if (!pressAndHoldStates.value.has(keyId)) {
+    const pressAndHold = usePressAndHold({
+      onComplete: () => {
+        handleRevokeApiKey(key)
+      },
+      onCancel: () => {
+        // Optional: Add visual cancellation cue or haptic feedback
+      },
+    })
+    // @ts-expect-error - Type mismatch between Ref and plain object in pressAndHold return
+    pressAndHoldStates.value.set(keyId, pressAndHold)
+  }
+  return pressAndHoldStates.value.get(keyId)!
 }
 
 // Copy API key to clipboard with visual and haptic feedback
@@ -1315,5 +1406,64 @@ onMounted(() => {
   .api-key-particle-container {
     display: none;
   }
+}
+
+/* Frontend Engineer: Press and Hold Button Styles */
+/* Consistent with WebhookManager.vue press-and-hold UX pattern */
+.press-hold-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 5rem;
+  transition: all v-bind('animationConfig.apiKeys.itemTransitionMs + "ms"')
+    ease-out;
+  overflow: hidden;
+}
+
+.press-hold-button.is-pressing {
+  transform: scale(v-bind('animationConfig.pressAndHold.pressScale'));
+}
+
+.press-hold-button.is-complete {
+  background-color: v-bind(
+    'componentStylesConfig.apiKeys.buttonDangerHoverBg'
+  ) !important;
+}
+
+.press-hold-ring {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+  stroke: var(--ring-bg-color, rgba(239, 68, 68, 0.2));
+}
+
+.progress-ring-fill {
+  stroke: var(--ring-color, #ef4444);
+  transition: stroke-dashoffset 300ms linear;
+}
+
+.button-text {
+  position: relative;
+  z-index: v-bind('zIndexConfig.floatingLabel');
+  font-variant-numeric: tabular-nums;
+  min-width: 2ch;
+  text-align: center;
+}
+
+/* Shrink progress ring slightly to fit inside button */
+.press-hold-ring .progress-ring {
+  width: calc(var(--ring-size, 24px) * 0.9) !important;
+  height: calc(var(--ring-size, 24px) * 0.9) !important;
 }
 </style>
