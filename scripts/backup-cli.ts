@@ -24,6 +24,8 @@ import {
   verifyBackup,
   cleanupOldBackups,
   getBackupHealth,
+  VALID_BACKUP_TYPES,
+  type BackupType,
 } from '../utils/backup/backup-manager'
 import { TIME, SIZE } from '../server/utils/constants'
 import { backupConfig } from '../configs/backup.config'
@@ -81,6 +83,17 @@ function formatDate(date: Date): string {
   return date.toISOString().replace('T', ' ').slice(0, 19)
 }
 
+function parseBackupType(type: string | undefined): BackupType {
+  if (!type) return 'manual'
+  if (VALID_BACKUP_TYPES.includes(type as BackupType)) {
+    return type as BackupType
+  }
+  console.warn(
+    `Warning: Invalid backup type "${type}". Valid types: ${VALID_BACKUP_TYPES.join(', ')}. Using "manual".`
+  )
+  return 'manual'
+}
+
 async function showHelp(): Promise<void> {
   console.log(`
 Database Backup CLI
@@ -115,7 +128,7 @@ async function handleCreate(args: CommandLineArgs): Promise<void> {
   console.log('Creating backup...\n')
 
   const result = await createBackup({
-    type: (args.type as any) || 'manual',
+    type: parseBackupType(args.type),
     tags: args.tags,
   })
 
