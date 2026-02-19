@@ -1,0 +1,110 @@
+# Git Attributes Configuration
+# Ensures consistent behavior across different operating systems and environments
+
+# =============================================================================
+# Text file handling - Normalize line endings to LF
+# =============================================================================
+* text=auto eol=lf
+
+# Source code files - always normalize
+*.js text eol=lf
+*.ts text eol=lf
+*.vue text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.xml text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.sass text eol=lf
+*.less text eol=lf
+
+# Configuration files
+*.config.js text eol=lf
+*.config.ts text eol=lf
+.env.example text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.dockerignore text eol=lf
+.editorconfig text eol=lf
+.eslintrc text eol=lf
+.eslintrc.js text eol=lf
+.eslintrc.json text eol=lf
+.eslintrc.yml text eol=lf
+.prettierrc text eol=lf
+.prettierrc.js text eol=lf
+.prettierrc.json text eol=lf
+.nvmrc text eol=lf
+.npmrc text eol=lf
+
+# Shell scripts - ensure LF for bash compatibility
+*.sh text eol=lf
+*.bash text eol=lf
+
+# =============================================================================
+# Binary files - Don't touch line endings
+# =============================================================================
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.avif binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+
+# Database files - binary
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+
+# =============================================================================
+# Language detection for GitHub
+# =============================================================================
+# Prevent misidentification of files
+*.vue linguist-language=Vue
+*.prisma linguist-language=Prisma
+
+# Reduce generated/bundled code in language stats
+# These are typically build artifacts or generated files
+pnpm-lock.yaml linguist-generated=true
+package-lock.json linguist-generated=true
+yarn.lock linguist-generated=true
+
+# =============================================================================
+# Diff improvements
+# =============================================================================
+# Use better diff algorithm for specific files
+*.md diff=markdown
+*.json diff=json
+*.ts diff=typescript
+*.vue diff=vue
+
+# =============================================================================
+# Export ignore for archives
+# =============================================================================
+# Exclude from archive exports (zip, tar)
+.github export-ignore
+.gitignore export-ignore
+.gitattributes export-ignore
+.editorconfig export-ignore
+.eslintrc* export-ignore
+.prettierrc* export-ignore
+*.md export-ignore
+docs/ export-ignore
+tests/ export-ignore
+test/ export-ignore
+__tests__/ export-ignore
+coverage/ export-ignore
+.nyc_output/ export-ignore
