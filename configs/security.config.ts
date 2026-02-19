@@ -325,6 +325,13 @@ export function getSecurityHeaders(nonce?: string): Record<string, string> {
     'Access-Control-Max-Age': securityConfig.cors.maxAge.toString(),
   }
 
+  // SECURITY FIX: Add Access-Control-Allow-Credentials when enabled
+  // This is required for cross-origin requests with cookies/authorization headers
+  // See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
+  if (securityConfig.cors.credentials) {
+    headers['Access-Control-Allow-Credentials'] = 'true'
+  }
+
   if (nonce) {
     headers['Content-Security-Policy'] = generateCsp(nonce)
   } else {
