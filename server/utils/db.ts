@@ -4,6 +4,16 @@ import { databaseConfig } from '~/configs/database.config'
 import { timeConfig } from '~/configs/time.config'
 import { logger } from '~/utils/logger'
 
+// Prisma doesn't publicly export middleware types, so we define them locally
+// @see https://www.prisma.io/docs/concepts/components/prisma-client/middleware
+interface MiddlewareParams {
+  model?: string
+  action: string
+  dataPath: string[]
+  runInTransaction: boolean
+  args?: Record<string, unknown>
+}
+
 // Transaction context for nested transaction support
 // Prevents deadlocks by reusing existing transactions instead of creating new ones
 const transactionContext = new AsyncLocalStorage<typeof prisma>()
@@ -65,13 +75,10 @@ function createPrismaClient(): PrismaClient {
 
       // SECURITY FIX #3650: Add middleware to warn about raw queries bypassing soft deletes
       // This helps catch potential data leaks during development
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(baseClient as any).$use(
+      baseClient.$use(
         async (
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          params: { action: string; args: any },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          next: (params?: any) => Promise<unknown>
+          params: MiddlewareParams,
+          next: (params: MiddlewareParams) => Promise<unknown>
         ) => {
           // Check if this is a raw query on a soft-delete model
           if (params.action === 'queryRaw' || params.action === 'executeRaw') {
