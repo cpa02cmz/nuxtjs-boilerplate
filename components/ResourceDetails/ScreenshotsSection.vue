@@ -1,9 +1,5 @@
 <template>
-  <section
-    class="screenshots-section"
-    role="region"
-    :aria-label="ariaLabel"
-  >
+  <section class="screenshots-section" role="region" :aria-label="ariaLabel">
     <!-- Header with screenshot count -->
     <div class="screenshots-header">
       <h2 class="screenshots-title">
@@ -144,10 +140,7 @@
             </div>
 
             <!-- Image Counter in Lightbox -->
-            <div
-              class="lightbox-counter"
-              aria-live="polite"
-            >
+            <div class="lightbox-counter" aria-live="polite">
               {{ currentImageIndex + 1 }} / {{ screenshots.length }}
             </div>
           </div>
@@ -312,12 +305,7 @@
     </TransitionGroup>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -977,7 +965,8 @@ const lightboxZoomDuration = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  /* Flexy hates hardcoded z-index: 9999! Using zIndexScale.maximum */
+  z-index: v-bind('zIndexScale.maximum[9999]');
   padding: 2rem;
   backdrop-filter: blur(8px);
 }
@@ -999,7 +988,8 @@ const lightboxZoomDuration = computed(() => {
   /* Flexy hates hardcoded 0.3s! Using animationConfig.cssTransitions.standardSec */
   transition: all v-bind('animationConfig.cssTransitions.standardSec')
     cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 10;
+  /* Flexy hates hardcoded z-index: 10! Using zIndexScale.low */
+  z-index: v-bind('zIndexScale.low[10]');
 }
 
 .lightbox-close:hover,
@@ -1031,7 +1021,8 @@ const lightboxZoomDuration = computed(() => {
   /* Flexy hates hardcoded 0.3s! Using animationConfig.cssTransitions.standardSec */
   transition: all v-bind('animationConfig.cssTransitions.standardSec')
     cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 10;
+  /* Flexy hates hardcoded z-index: 10! Using zIndexScale.low */
+  z-index: v-bind('zIndexScale.low[10]');
 }
 
 .lightbox-nav--prev {
