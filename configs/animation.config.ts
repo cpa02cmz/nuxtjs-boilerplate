@@ -1128,6 +1128,10 @@ export const animationConfig = {
     statusTransitionDurationSec: parseFloat(
       process.env.API_KEYS_STATUS_TRANSITION_SEC || '0.3'
     ),
+    // Progress ring stroke-dashoffset transition (ms) - Flexy hates hardcoded 300ms!
+    progressRingTransitionMs: parseInt(
+      process.env.API_KEYS_PROGRESS_RING_TRANSITION_MS || '300'
+    ),
   },
 
   // Card Animations
@@ -2276,6 +2280,34 @@ export const animationConfig = {
     trailPulseDurationMs: parseInt(
       process.env.BREADCRUMBS_TRAIL_PULSE_DURATION_MS || '2000'
     ),
+    // 🎨 Pallete's micro-UX enhancement: Adaptive Focus Indicators ✨
+    // Detects keyboard vs mouse navigation and shows appropriate focus styles
+    // Keyboard users get prominent focus rings, mouse users get subtle hover states
+    adaptiveFocus: {
+      // Transition duration for focus style changes (ms)
+      transitionDurationMs: parseInt(
+        process.env.BREADCRUMBS_FOCUS_TRANSITION_MS || '150'
+      ),
+      // CSS duration string for v-bind
+      transitionDurationSec: `${parseInt(process.env.BREADCRUMBS_FOCUS_TRANSITION_MS || '150') / 1000}s`,
+      // Glow opacity for keyboard focus state (0-1)
+      keyboardGlowOpacity: parseFloat(
+        process.env.BREADCRUMBS_KEYBOARD_GLOW_OPACITY || '0.4'
+      ),
+      // Glow spread radius for keyboard focus (px)
+      keyboardGlowSpreadPx: parseInt(
+        process.env.BREADCRUMBS_KEYBOARD_GLOW_SPREAD_PX || '8'
+      ),
+      // Outline width for keyboard focus (px)
+      keyboardOutlineWidthPx: parseInt(
+        process.env.BREADCRUMBS_KEYBOARD_OUTLINE_WIDTH_PX || '3'
+      ),
+      // Debounce delay when switching from keyboard to mouse (ms)
+      // Prevents flickering when user switches input methods
+      modeSwitchDebounceMs: parseInt(
+        process.env.BREADCRUMBS_MODE_SWITCH_DEBOUNCE_MS || '100'
+      ),
+    },
   },
 
   // Status Manager Component - Flexy hates hardcoded values!
