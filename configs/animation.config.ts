@@ -1128,6 +1128,12 @@ export const animationConfig = {
     statusTransitionDurationSec: parseFloat(
       process.env.API_KEYS_STATUS_TRANSITION_SEC || '0.3'
     ),
+    // Progress ring stroke-dashoffset transition duration (ms) - Flexy hates hardcoded 300ms!
+    progressRingTransitionMs: parseInt(
+      process.env.API_KEYS_PROGRESS_RING_TRANSITION_MS || '300'
+    ),
+    // Progress ring stroke-dashoffset transition duration (seconds) for CSS
+    progressRingTransitionSec: `${parseInt(process.env.API_KEYS_PROGRESS_RING_TRANSITION_MS || '300') / 1000}s`,
   },
 
   // Card Animations
