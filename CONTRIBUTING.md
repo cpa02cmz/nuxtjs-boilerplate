@@ -21,11 +21,12 @@ Thank you for your interest in contributing to this project! We welcome contribu
 
 ### Development Setup
 
-See our [Development Setup Guide](./docs/development-setup.md) for detailed instructions.
+See the [Quick Start section in README](./README.md#-quick-start) for environment setup instructions.
 
 ### Code Standards
 
-See our [Development Guidelines](./docs/development.md) for:
+See our [AGENTS.md](./AGENTS.md) for comprehensive development guidelines including:
+
 - Code standards and conventions
 - Component guidelines
 - Testing practices
@@ -34,6 +35,7 @@ See our [Development Guidelines](./docs/development.md) for:
 ### Commit Message Convention
 
 We follow conventional commits:
+
 - `feat:` - New features
 - `fix:` - Bug fixes
 - `docs:` - Documentation changes
