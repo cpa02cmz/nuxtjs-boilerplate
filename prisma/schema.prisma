@@ -183,6 +183,7 @@ model Flag {
   @@index([resolved])
   @@index([createdAt])
   @@index([deletedAt])
+  @@index([resolved, deletedAt]) // Database-Architect: Optimizes unresolved flag queries with soft delete filter
 }
 
 model Resource {
