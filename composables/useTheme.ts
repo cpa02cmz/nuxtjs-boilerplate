@@ -1,11 +1,20 @@
-import { ref, onMounted, getCurrentInstance } from 'vue'
+import { ref, onMounted, getCurrentInstance, type Ref } from 'vue'
 import { patternsConfig } from '~/configs/patterns.config'
 
 type Theme = 'light' | 'dark' | 'system'
 
 const STORAGE_KEY = patternsConfig.storageKeys.themePreference
 
-export function useTheme() {
+export interface UseThemeReturn {
+  theme: Ref<Theme>
+  isDark: Ref<boolean | null>
+  isMounted: Ref<boolean>
+  setTheme: (newTheme: Theme) => void
+  toggleTheme: () => void
+  cycleTheme: () => void
+}
+
+export function useTheme(): UseThemeReturn {
   // Initialize as null to indicate "not yet determined" - prevents hydration mismatches
   const theme = ref<Theme>('system')
   const isDark = ref<boolean | null>(null)
