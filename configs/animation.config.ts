@@ -1128,6 +1128,11 @@ export const animationConfig = {
     statusTransitionDurationSec: parseFloat(
       process.env.API_KEYS_STATUS_TRANSITION_SEC || '0.3'
     ),
+    // Progress ring stroke-dashoffset transition (ms) - Flexy hates hardcoded 300ms!
+    // Used for press-and-hold button progress ring animation
+    progressRingTransitionMs: parseInt(
+      process.env.API_KEYS_PROGRESS_RING_TRANSITION_MS || '300'
+    ),
   },
 
   // Card Animations
