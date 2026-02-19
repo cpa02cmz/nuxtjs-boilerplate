@@ -68,6 +68,7 @@ function createPrismaClient(): PrismaClient {
       // Type the Prisma middleware with unknown for better type safety
       type MiddlewareParams = { action: string; args?: unknown }
       type MiddlewareNext = (params?: unknown) => Promise<unknown>
+      type RawQueryArgs = { query?: unknown } | unknown
       ;(
         baseClient as unknown as {
           $use: (
@@ -80,7 +81,12 @@ function createPrismaClient(): PrismaClient {
       ).$use(async (params: MiddlewareParams, next: MiddlewareNext) => {
         // Check if this is a raw query on a soft-delete model
         if (params.action === 'queryRaw' || params.action === 'executeRaw') {
-          const query = String(params.args?.query || params.args || '')
+          const args = params.args as RawQueryArgs
+          const query = String(
+            (args && typeof args === 'object' && 'query' in args
+              ? args.query
+              : args) || ''
+          )
           const lowerQuery = query.toLowerCase()
 
           // Check if query references soft-delete tables without filtering
