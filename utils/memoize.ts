@@ -80,8 +80,7 @@ export const memoize = <T extends (...args: unknown[]) => ReturnType<T>>(
   allCaches.add(cache)
 
   const defaultKeyGenerator = (...args: Parameters<T>): string => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return keyGenerator ? (keyGenerator as any)(...args) : generateArgsKey(args)
+    return keyGenerator ? keyGenerator(...args) : generateArgsKey(args)
   }
 
   return ((...args: Parameters<T>) => {
