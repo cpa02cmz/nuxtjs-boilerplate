@@ -6,6 +6,7 @@ import {
   sendBadRequestError,
   sendNotFoundError,
   sendSuccessResponse,
+  sendUnauthorizedError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { defineEventHandler, getRouterParam } from 'h3'
@@ -17,6 +18,14 @@ export default defineEventHandler(async event => {
   try {
     // Apply rate limiting
     await rateLimit(event)
+
+    // SECURITY: CWE-862 - Require authentication for modifying resource relationships
+    if (!event.context.auth?.userId) {
+      return sendUnauthorizedError(
+        event,
+        'Authentication required to manage alternatives'
+      )
+    }
 
     const resourceId = getRouterParam(event, 'id')
 
