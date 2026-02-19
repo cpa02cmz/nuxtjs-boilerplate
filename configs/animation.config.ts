@@ -2553,6 +2553,24 @@ export const animationConfig = {
     springDurationSec: parseFloat(
       process.env.ZERO_RESULT_SPRING_DURATION_SEC || '0.4'
     ),
+    // 🎨 Pallete's micro-UX enhancement: Text Decode Effect configuration
+    // Cyberpunk-style text scramble animation for search queries on hover
+    textDecode: {
+      // Duration of the decode animation in ms
+      durationMs: parseInt(
+        process.env.ZERO_RESULT_TEXT_DECODE_DURATION_MS || '600'
+      ),
+      // Frame interval for character updates (lower = faster scramble)
+      frameIntervalMs: parseInt(
+        process.env.ZERO_RESULT_TEXT_DECODE_FRAME_MS || '50'
+      ),
+      // Characters to use during scramble phase
+      scrambleChars:
+        process.env.ZERO_RESULT_TEXT_DECODE_CHARS ||
+        '!<>-_\\/[]{}—=+*^?#________',
+      // Easing function for decode progress
+      easing: process.env.ZERO_RESULT_TEXT_DECODE_EASING || 'ease-out',
+    },
   },
 
   // Convenience easing reference for component use - uses standard ease-out

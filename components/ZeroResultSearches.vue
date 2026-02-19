@@ -72,10 +72,15 @@
               />
             </svg>
           </span>
+          <!-- 🎨 Pallete's micro-UX enhancement: Text Decode Effect - Cyberpunk-style scramble on hover! -->
           <span
-            :class="`text-gray-800 truncate group-hover:text-gray-900 transition-colors ${animationConfig.tailwindDurations.normal} font-medium`"
+            :class="`text-gray-800 truncate group-hover:text-gray-900 transition-colors ${animationConfig.tailwindDurations.normal} font-medium decode-text`"
+            :data-original-text="search.query"
+            :data-index="index"
+            @mouseenter="startTextDecode(index, search.query)"
+            @mouseleave="stopTextDecode(index)"
           >
-            {{ search.query }}
+            {{ decodedTexts[index] || search.query }}
           </span>
         </div>
 
@@ -252,6 +257,11 @@ const ripples = ref<{ [key: number]: { x: number; y: number; size: number } }>(
 const announcement = ref('')
 const searchButtons = ref<HTMLButtonElement[]>([])
 const prefersReducedMotion = ref(false)
+// 🎨 Pallete's micro-UX enhancement: Text decode effect state
+const decodedTexts = ref<{ [key: number]: string }>({})
+const textDecodeIntervals = ref<{
+  [key: number]: ReturnType<typeof setInterval> | null
+}>({})
 
 const zeroResultSearches = computed(() => {
   return getZeroResultSearches(props.limit)
@@ -351,6 +361,71 @@ const handleKeydown = (event: KeyboardEvent, currentIndex: number) => {
   }
 }
 
+// 🎨 Pallete's micro-UX enhancement: Text Decode Effect - Cyberpunk-style scramble!
+// Scrambles characters through random symbols before revealing the original text
+const startTextDecode = (index: number, originalText: string) => {
+  if (prefersReducedMotion.value) return
+
+  const config = animationConfig.zeroResultSearches.textDecode
+  const duration = config.durationMs
+  const frameInterval = config.frameIntervalMs
+  const scrambleChars = config.scrambleChars
+
+  let frame = 0
+  const totalFrames = Math.floor(duration / frameInterval)
+
+  // Clear any existing interval for this index
+  if (textDecodeIntervals.value[index]) {
+    clearInterval(textDecodeIntervals.value[index]!)
+  }
+
+  // Start the decode animation
+  textDecodeIntervals.value[index] = setInterval(() => {
+    frame++
+    const progress = frame / totalFrames
+
+    // Calculate how many characters should be revealed
+    const revealedLength = Math.floor(progress * originalText.length)
+
+    // Build the decoded text
+    let result = ''
+    for (let i = 0; i < originalText.length; i++) {
+      if (i < revealedLength) {
+        // Character is revealed
+        result += originalText[i]
+      } else if (originalText[i] === ' ') {
+        // Keep spaces as spaces
+        result += ' '
+      } else {
+        // Scramble this character
+        const randomChar =
+          scrambleChars[Math.floor(Math.random() * scrambleChars.length)]
+        result += randomChar
+      }
+    }
+
+    decodedTexts.value[index] = result
+
+    // Animation complete
+    if (frame >= totalFrames) {
+      decodedTexts.value[index] = originalText
+      if (textDecodeIntervals.value[index]) {
+        clearInterval(textDecodeIntervals.value[index]!)
+        textDecodeIntervals.value[index] = null
+      }
+    }
+  }, frameInterval)
+}
+
+// Stop the text decode animation and restore original text
+const stopTextDecode = (index: number) => {
+  if (textDecodeIntervals.value[index]) {
+    clearInterval(textDecodeIntervals.value[index]!)
+    textDecodeIntervals.value[index] = null
+  }
+  decodedTexts.value[index] = ''
+}
+
 // Store mediaQuery reference for cleanup
 let mediaQueryRef: MediaQueryList | null = null
 
@@ -370,6 +445,11 @@ onUnmounted(() => {
     mediaQueryRef.removeEventListener('change', checkReducedMotion)
     mediaQueryRef = null
   }
+  // 🎨 Pallete's micro-UX: Clean up text decode intervals to prevent memory leaks
+  Object.values(textDecodeIntervals.value).forEach(interval => {
+    if (interval) clearInterval(interval)
+  })
+  textDecodeIntervals.value = {}
 })
 </script>
 
