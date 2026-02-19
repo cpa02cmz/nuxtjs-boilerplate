@@ -398,9 +398,12 @@ const DEFAULT_TRANSACTION_OPTIONS: TransactionOptions = {
 /**
  * PostgreSQL error codes that indicate transient/retryable errors
  * -architect: Added comprehensive error code detection for better retry handling
+ * -architect: Added 08006 connection_failure for network resilience
  * @see https://www.postgresql.org/docs/current/errcodes-appendix.html
  */
 const POSTGRESQL_RETRYABLE_CODES = {
+  // Class 08 - Connection Exception
+  '08006': 'connection_failure', // -architect: Common during temporary network issues
   // Class 40 - Transaction Rollback
   '40001': 'serialization_failure',
   '40003': 'statement_completion_unknown',
