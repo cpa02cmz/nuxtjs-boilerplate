@@ -1,7 +1,7 @@
 name: PR Gate (ARM)
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
 
@@ -9,14 +9,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: pr-${{ github.event.pull_request.number }}
+  group: pr-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   pr-check:
     name: Build & Test
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 5
+    timeout-minutes: 15
 
     env:
       CI: true
