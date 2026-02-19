@@ -103,4 +103,50 @@ describe('Security Configuration', () => {
       expect(securityConfig.headers).toHaveProperty('Permissions-Policy')
     })
   })
+
+  describe('Dynamic CORS Origin Validation', () => {
+    it('should reflect allowed request origin when provided', () => {
+      const firstAllowedOrigin = securityConfig.cors.allowedOrigins[0]
+      const headers = getSecurityHeaders(undefined, firstAllowedOrigin)
+      expect(headers['Access-Control-Allow-Origin']).toBe(firstAllowedOrigin)
+    })
+
+    it('should fall back to first origin when request origin not in allowed list', () => {
+      const headers = getSecurityHeaders(
+        undefined,
+        'https://malicious-site.com'
+      )
+      expect(headers['Access-Control-Allow-Origin']).toBe(
+        securityConfig.cors.allowedOrigins[0]
+      )
+    })
+
+    it('should perform case-insensitive origin matching', () => {
+      const firstAllowedOrigin = securityConfig.cors.allowedOrigins[0]
+      const upperCaseOrigin = firstAllowedOrigin?.toUpperCase()
+      const headers = getSecurityHeaders(undefined, upperCaseOrigin)
+      expect(headers['Access-Control-Allow-Origin']).toBe(firstAllowedOrigin)
+    })
+
+    it('should maintain backward compatibility when no request origin provided', () => {
+      const headers = getSecurityHeaders()
+      expect(headers['Access-Control-Allow-Origin']).toBe(
+        securityConfig.cors.allowedOrigins[0]
+      )
+    })
+
+    it('should handle undefined request origin', () => {
+      const headers = getSecurityHeaders(undefined, undefined)
+      expect(headers['Access-Control-Allow-Origin']).toBe(
+        securityConfig.cors.allowedOrigins[0]
+      )
+    })
+
+    it('should trim whitespace from request origin', () => {
+      const firstAllowedOrigin = securityConfig.cors.allowedOrigins[0]
+      const paddedOrigin = `  ${firstAllowedOrigin}  `
+      const headers = getSecurityHeaders(undefined, paddedOrigin)
+      expect(headers['Access-Control-Allow-Origin']).toBe(firstAllowedOrigin)
+    })
+  })
 })
