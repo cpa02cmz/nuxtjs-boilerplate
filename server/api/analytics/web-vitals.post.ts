@@ -10,6 +10,7 @@ import {
   sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { getClientIp } from '~/server/utils/enhanced-rate-limit'
 
 // Validation schema for web vitals report
 const webVitalsSchema = z.object({
@@ -42,12 +43,14 @@ export default defineEventHandler(async event => {
     const report = result.data
     const headers = getRequestHeaders(event)
 
-    // Add server-side metadata
+    // SECURITY: Use secure IP extraction with TRUST_PROXY validation (CWE-290)
+    // Previous code was vulnerable to X-Forwarded-For spoofing
+    const clientIp = getClientIp(event)
     const enrichedReport = {
       ...report,
       server: {
         receivedAt: new Date().toISOString(),
-        ip: headers['x-forwarded-for'] || 'unknown',
+        ip: clientIp,
         country: headers['cf-ipcountry'] || 'unknown',
       },
     }

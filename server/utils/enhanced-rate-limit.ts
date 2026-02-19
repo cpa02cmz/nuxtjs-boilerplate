@@ -7,10 +7,12 @@ import { logger } from '~/utils/logger'
 /**
  * Extract and validate client IP address from request
  * Respects TRUST_PROXY setting to prevent X-Forwarded-For spoofing
+ * SECURITY: This function should be used instead of directly accessing x-forwarded-for header
+ * to prevent IP spoofing attacks (CWE-290)
  * @param event - H3Event containing the request
  * @returns Validated client IP or 'unknown'
  */
-function getClientIp(event: H3Event): string {
+export function getClientIp(event: H3Event): string {
   const forwarded = event.node.req.headers['x-forwarded-for']
   const remoteAddress =
     event.node.req.socket?.remoteAddress ||
