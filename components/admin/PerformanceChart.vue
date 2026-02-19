@@ -194,6 +194,7 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import type { TimeSeriesDataPoint } from '~/types/performance'
 import { performanceDashboardConfig } from '~/configs/performance-dashboard.config'
 import { animationConfig } from '~/configs/animation.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 
 interface Props {
   data: TimeSeriesDataPoint[]
@@ -653,7 +654,8 @@ function handleKeyDown(event: KeyboardEvent) {
     0 10px 25px -5px rgba(0, 0, 0, 0.2),
     0 4px 10px -2px rgba(0, 0, 0, 0.1);
   pointer-events: none;
-  z-index: 50;
+  /* Flexy hates hardcoded z-index! Using zIndexConfig for consistency */
+  z-index: v-bind('zIndexConfig.tooltip');
   transform: translate(-50%, calc(-100% - 12px));
   min-width: 120px;
   text-align: center;

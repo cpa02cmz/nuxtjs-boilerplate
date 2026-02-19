@@ -22,8 +22,11 @@ export default defineNitroPlugin(nitroApp => {
         ? undefined
         : randomBytes(securityConfig.crypto.nonceLength).toString('base64')
 
-      // Get security headers with nonce (nonce only in production)
-      const securityHeaders = getSecurityHeaders(nonce)
+      // Security Engineer: Get request origin for dynamic CORS validation
+      const requestOrigin = event.node.req.headers.origin as string | undefined
+
+      // Get security headers with nonce and request origin for dynamic CORS
+      const securityHeaders = getSecurityHeaders(nonce, requestOrigin)
 
       // Set security headers for this response
       if (event.node.res.setHeader) {

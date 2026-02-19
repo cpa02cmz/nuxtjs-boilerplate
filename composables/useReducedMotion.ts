@@ -1,4 +1,8 @@
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, type Ref } from 'vue'
+
+export interface UseReducedMotionReturn {
+  prefersReducedMotion: Ref<boolean>
+}
 
 /**
  * Composable for detecting and responding to reduced motion preference
@@ -15,7 +19,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
  *   .my-animation { animation: none; }
  * }
  */
-export function useReducedMotion() {
+export function useReducedMotion(): UseReducedMotionReturn {
   const prefersReducedMotion = ref(false)
 
   onMounted(() => {
