@@ -100,10 +100,7 @@
           <p class="toast__message">
             {{ toast.message }}
           </p>
-          <p
-            v-if="toast.description"
-            class="toast__description"
-          >
+          <p v-if="toast.description" class="toast__description">
             {{ toast.description }}
           </p>
         </div>
@@ -652,7 +649,11 @@ onUnmounted(() => {
     transform v-bind('toastConfig.entranceDurationSec')
       v-bind('toastConfig.springEasing'),
     opacity v-bind('toastConfig.entranceDurationSec') ease-out;
-  transition-delay: var(--toast-stagger-delay, 0ms);
+  /* Flexy hates hardcoded 0ms! Using animationConfig.stagger.baseDelayMs */
+  transition-delay: var(
+    --toast-stagger-delay,
+    v-bind('animationConfig.stagger.baseDelayMs + "ms"')
+  );
 }
 
 .toast-leave-active {

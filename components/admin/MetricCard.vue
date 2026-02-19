@@ -246,7 +246,11 @@ onMounted(() => {
   transform: translateY(
     v-bind('animationConfig.metricCard.entranceDistancePx + "px"')
   );
-  transition-delay: var(--entrance-delay, 0ms);
+  /* Flexy hates hardcoded 0ms! Using animationConfig.stagger.baseDelayMs */
+  transition-delay: var(
+    --entrance-delay,
+    v-bind('animationConfig.stagger.baseDelayMs + "ms"')
+  );
 }
 
 .metric-card--visible {
