@@ -1,5 +1,35 @@
 # AGENTS.md - Repository Guide for AI Assistants
 
+> **Purpose**: This document provides AI assistants and developers with real-time repository health status, autonomous maintenance audit results, and operational context for the ULW Loop system.
+
+## Executive Summary
+
+| Metric         | Value            |
+| -------------- | ---------------- |
+| **Status**     | ✅ Healthy       |
+| **Tests**      | 1,339 passing    |
+| **Lint**       | 0 errors         |
+| **Build**      | Successful       |
+| **Last Audit** | 2026-02-19 11:47 |
+
+### Quick Navigation
+
+- [**Repository Health Status**](#repository-health-status) - Current operational state
+- [**PR Handler Results**](#ulw-loop-pr-handler-results-2026-02-19-0610---latest) - Open PR processing
+- [**BugFixer Results**](#bugfixer-ulw-loop-results-2026-02-19-1147---latest) - Bug detection audit
+
+### Active Agents
+
+| Agent         | Role                   | Status      |
+| ------------- | ---------------------- | ----------- |
+| BugFixer 🐛   | Bug Detection          | ✅ Complete |
+| Pallete 🎨    | UX Improvements        | ✅ Complete |
+| RepoKeeper 🛡️ | Repository Maintenance | ✅ Complete |
+| Flexy 🧩      | Modularity             | ✅ Complete |
+| BroCula 🧛    | Browser Console        | ✅ Complete |
+
+---
+
 ## Repository Health Status
 
 **Last Updated**: 2026-02-20 20:52
