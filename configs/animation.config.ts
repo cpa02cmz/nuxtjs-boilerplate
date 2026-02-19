@@ -5135,6 +5135,42 @@ export const animationConfig = {
     // CSS duration string for v-bind
     highMomentumRingScaleDurationSec: `${parseInt(process.env.TYPING_MOMENTUM_RING_SCALE_MS || '300') / 1000}s`,
   },
+
+  // 🎨 Pallete's micro-UX enhancement: Rubber Band Animation ✨
+  // Playful elastic stretch-and-snap effect for delightful interactions
+  // Perfect for drawing attention, celebrating actions, or adding tactile playfulness
+  rubberBand: {
+    // Duration of the rubber band animation (ms) - Flexy hates hardcoded 800!
+    durationMs: parseInt(process.env.RUBBER_BAND_DURATION_MS || '800'),
+    // CSS duration string for v-bind
+    durationSec: `${parseInt(process.env.RUBBER_BAND_DURATION_MS || '800') / 1000}s`,
+    // Scale at peak stretch (width) - Flexy hates hardcoded 1.25!
+    stretchScaleX: parseFloat(process.env.RUBBER_BAND_STRETCH_X || '1.25'),
+    // Scale at peak stretch (height) - inverse for squash effect
+    stretchScaleY: parseFloat(process.env.RUBBER_BAND_STRETCH_Y || '0.75'),
+    // Scale at peak squeeze (inverse stretch)
+    squeezeScaleX: parseFloat(process.env.RUBBER_BAND_SQUEEZE_X || '0.85'),
+    // Scale at peak squeeze (height)
+    squeezeScaleY: parseFloat(process.env.RUBBER_BAND_SQUEEZE_Y || '1.15'),
+    // Rotation angle at peak (degrees) - adds playful twist
+    rotationDegrees: parseInt(process.env.RUBBER_BAND_ROTATION || '5'),
+    // Number of oscillations before settling
+    oscillations: parseInt(process.env.RUBBER_BAND_OSCILLATIONS || '3'),
+    // Easing function - elastic out for snappy feel
+    easing:
+      process.env.RUBBER_BAND_EASING ||
+      'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+    // Delay before animation starts (ms)
+    delayMs: parseInt(process.env.RUBBER_BAND_DELAY_MS || '0'),
+    // Enable rubber band on hover (for interactive elements)
+    enableOnHover: process.env.RUBBER_BAND_ENABLE_HOVER !== 'false',
+    // Hover duration (faster than click) (ms)
+    hoverDurationMs: parseInt(
+      process.env.RUBBER_BAND_HOVER_DURATION_MS || '400'
+    ),
+    // Hover stretch scale (subtler than click)
+    hoverStretchScale: parseFloat(process.env.RUBBER_BAND_HOVER_SCALE || '1.1'),
+  },
 } as const
 
 export type AnimationConfig = typeof animationConfig
