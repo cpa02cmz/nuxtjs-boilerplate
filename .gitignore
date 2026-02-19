@@ -129,7 +129,6 @@ data/*.db-journal
 reports/
 
 # Log and report files
-*.log
 *.json
 branch_cleanup_actions.json
 cleanup_action_log.json
@@ -139,10 +138,7 @@ ISSUE_*.md
 docs/*-report-*.md
 docs/*-task-*.md
 pr_intel/
+
 # Database files - using data/ directory (not prisma/)
 data/dev.db
-data/*.db
 *.db-journal
-# Keep directory structure
-!data/.gitkeep
-reports/

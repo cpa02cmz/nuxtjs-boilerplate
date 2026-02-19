@@ -175,6 +175,7 @@ import { shadowsConfig } from '~/configs/shadows.config'
 import { animationConfig } from '~/configs/animation.config'
 import { tailwindClassesConfig } from '~/configs/tailwind-classes.config'
 import { zIndexConfig } from '~/configs/z-index.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import { generateId } from '~/utils/generateId'
 import { hapticLight } from '~/utils/hapticFeedback'
 
@@ -861,9 +862,13 @@ onUnmounted(() => {
   font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, monospace;
   font-size: 11px;
   font-weight: 600;
-  color: #1f2937;
-  background: linear-gradient(180deg, #f9fafb 0%, #e5e7eb 100%);
-  border: 1px solid #d1d5db;
+  color: v-bind('componentColorsConfig.toast.dismissHint.keyText');
+  background: linear-gradient(
+    180deg,
+    v-bind('componentColorsConfig.toast.dismissHint.keyBgStart') 0%,
+    v-bind('componentColorsConfig.toast.dismissHint.keyBgEnd') 100%
+  );
+  border: 1px solid v-bind('componentColorsConfig.toast.dismissHint.keyBorder');
   border-radius: 4px;
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.1),
@@ -873,7 +878,7 @@ onUnmounted(() => {
 .dismiss-shortcut-hint__label {
   font-size: 12px;
   font-weight: 500;
-  color: #f9fafb;
+  color: v-bind('componentColorsConfig.toast.dismissHint.labelText');
 }
 
 .dismiss-shortcut-hint__arrow {
@@ -885,7 +890,8 @@ onUnmounted(() => {
   height: 0;
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
-  border-left: 5px solid rgba(31, 41, 55, 0.95);
+  border-left: 5px solid
+    v-bind('componentColorsConfig.toast.dismissHint.arrowColor');
 }
 
 /* Show hint on hover/focus */

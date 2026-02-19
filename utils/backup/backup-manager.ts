@@ -13,9 +13,19 @@ import { TIME, SIZE } from '../../server/utils/constants'
 
 const execAsync = promisify(exec)
 
-/**
- * Backup metadata structure
- */
+export type BackupType =
+  | 'manual'
+  | 'scheduled'
+  | 'pre-migration'
+  | 'pre-restore'
+
+export const VALID_BACKUP_TYPES: readonly BackupType[] = [
+  'manual',
+  'scheduled',
+  'pre-migration',
+  'pre-restore',
+] as const
+
 export interface BackupMetadata {
   id: string
   createdAt: string
@@ -31,7 +41,7 @@ export interface BackupMetadata {
   tags: string[]
   verified: boolean
   verificationDate?: string
-  backupType: 'manual' | 'scheduled' | 'pre-migration' | 'pre-restore'
+  backupType: BackupType
 }
 
 /**
@@ -249,7 +259,7 @@ async function decompressBackup(
  */
 export async function createBackup(
   options: {
-    type?: 'manual' | 'scheduled' | 'pre-migration' | 'pre-restore'
+    type?: BackupType
     tags?: string[]
     logger?: BackupLogger
   } = {}
