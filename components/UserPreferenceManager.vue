@@ -30,6 +30,7 @@
           <button
             v-for="category in availableCategories"
             :key="category"
+            ref="(el) => _setCategoryChipRef(el as HTMLButtonElement, category)"
             :class="[
               `category-chip px-3 py-1 rounded-full text-sm font-medium transition-all ${animationConfig.tailwindDurations.normal}`,
               selectedCategories.includes(category)
@@ -43,7 +44,7 @@
                 ? `Remove ${category} from interests`
                 : `Add ${category} to interests`
             "
-            @click="toggleCategory(category)"
+            @click="event => toggleCategory(category, event as MouseEvent)"
           >
             <span class="flex items-center gap-1">
               <!-- Checkmark icon for selected categories -->
@@ -81,6 +82,7 @@
           <button
             v-for="level in skillLevels"
             :key="level.value"
+            ref="(el) => _setSkillButtonRef(el as HTMLButtonElement, level.value)"
             :class="[
               `skill-level-btn py-2 px-4 rounded-md text-center text-sm font-medium transition-all ${animationConfig.tailwindDurations.normal} ease-out`,
               selectedSkillLevel === level.value
@@ -90,7 +92,7 @@
             ]"
             :aria-pressed="selectedSkillLevel === level.value"
             :aria-label="`Set skill level to ${level.label}`"
-            @click="selectSkillLevel(level.value)"
+            @click="event => selectSkillLevel(level.value, event as MouseEvent)"
           >
             {{ level.label }}
           </button>
@@ -307,7 +309,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, type Ref } from 'vue'
 import logger from '~/utils/logger'
 import { useUserPreferences } from '~/composables/useUserPreferences'
 import { uiConfig } from '~/configs/ui.config'
@@ -316,6 +318,7 @@ import { hapticLight, hapticSuccess, hapticError } from '~/utils/hapticFeedback'
 import ConfettiCelebration from '~/components/ConfettiCelebration.vue'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
+import { useRipple } from '~/composables/useRipple'
 
 const userPrefs = useUserPreferences()
 
@@ -356,6 +359,14 @@ const isAnimatingSkill = ref<string | null>(null)
 const error = ref<string | null>(null)
 const announcementText = ref('')
 const saveButtonRef = ref<HTMLButtonElement | null>(null)
+
+// 🎨 Pallete's micro-UX enhancement: Ripple effect refs for category chips and skill buttons
+const categoryChipRefs = ref<Map<string, HTMLButtonElement>>(new Map())
+const skillButtonRefs = ref<Map<string, HTMLButtonElement>>(new Map())
+const categoryRipples = ref<Map<string, ReturnType<typeof useRipple>>>(
+  new Map()
+)
+const skillRipples = ref<Map<string, ReturnType<typeof useRipple>>>(new Map())
 
 // Timer refs for cleanup
 let successAnimationTimer: ReturnType<typeof setTimeout> | null = null
@@ -402,8 +413,44 @@ onUnmounted(() => {
   if (announcementTimer) clearTimeout(announcementTimer)
 })
 
-// Toggle category selection with haptic feedback and animation
-const toggleCategory = (category: string) => {
+// 🎨 Pallete's micro-UX enhancement: Set up ripple for a category chip
+const _setCategoryChipRef = (
+  el: HTMLButtonElement | null,
+  category: string
+) => {
+  if (!el) return
+  categoryChipRefs.value.set(category, el)
+  // Initialize ripple if not already set up
+  if (!categoryRipples.value.has(category)) {
+    const ripple = useRipple({ value: el } as Ref<HTMLButtonElement | null>, {
+      color: selectedCategories.value.includes(category)
+        ? 'rgba(255, 255, 255, 0.3)'
+        : 'rgba(99, 102, 241, 0.2)',
+      duration: animationConfig.ripple.durationMs,
+    })
+    categoryRipples.value.set(category, ripple)
+  }
+}
+
+// 🎨 Pallete's micro-UX enhancement: Set up ripple for a skill button
+const _setSkillButtonRef = (el: HTMLButtonElement | null, level: string) => {
+  if (!el) return
+  skillButtonRefs.value.set(level, el)
+  // Initialize ripple if not already set up
+  if (!skillRipples.value.has(level)) {
+    const ripple = useRipple({ value: el } as Ref<HTMLButtonElement | null>, {
+      color:
+        selectedSkillLevel.value === level
+          ? 'rgba(255, 255, 255, 0.3)'
+          : 'rgba(99, 102, 241, 0.2)',
+      duration: animationConfig.ripple.durationMs,
+    })
+    skillRipples.value.set(level, ripple)
+  }
+}
+
+// Toggle category selection with haptic feedback, animation, and ripple
+const toggleCategory = (category: string, event?: MouseEvent) => {
   const index = selectedCategories.value.indexOf(category)
   const isSelecting = index === -1
 
@@ -413,6 +460,14 @@ const toggleCategory = (category: string) => {
   } else {
     selectedCategories.value.push(category)
     announce(`${category} added to interests`)
+  }
+
+  // 🎨 Pallete's micro-UX enhancement: Trigger ripple effect
+  if (event && !prefersReducedMotion()) {
+    const ripple = categoryRipples.value.get(category)
+    if (ripple) {
+      ripple.createRipple(event)
+    }
   }
 
   // Haptic feedback - lighter for deselect, stronger for select
@@ -432,13 +487,21 @@ const toggleCategory = (category: string) => {
   }
 }
 
-// Select skill level with haptic feedback and animation
-const selectSkillLevel = (level: SkillLevel['value']) => {
+// Select skill level with haptic feedback, animation, and ripple
+const selectSkillLevel = (level: SkillLevel['value'], event?: MouseEvent) => {
   if (selectedSkillLevel.value === level) return
 
   selectedSkillLevel.value = level
   const levelLabel = skillLevels.find(l => l.value === level)?.label || level
   announce(`Skill level set to ${levelLabel}`)
+
+  // 🎨 Pallete's micro-UX enhancement: Trigger ripple effect
+  if (event && !prefersReducedMotion()) {
+    const ripple = skillRipples.value.get(level)
+    if (ripple) {
+      ripple.createRipple(event)
+    }
+  }
 
   // Haptic feedback
   hapticLight()
