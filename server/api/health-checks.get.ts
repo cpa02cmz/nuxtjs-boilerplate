@@ -1,4 +1,5 @@
 import { defineEventHandler, setResponseHeaders } from 'h3'
+import { apiConfig } from '~/configs/api.config'
 import { getAllResourceHealthStatuses } from '~/server/utils/resourceHealth'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
@@ -12,9 +13,9 @@ export default defineEventHandler(async event => {
 
     // Deprecation headers for backward compatibility
     setResponseHeaders(event, {
-      Sunset: 'Mon, 01 Jun 2026 00:00:00 GMT',
+      Sunset: apiConfig.deprecation.sunsetDate,
       Deprecation: 'true',
-      Link: '</api/v1/health-checks>; rel="successor-version"',
+      Link: `<${apiConfig.deprecation.healthChecksSuccessorUrl}>; rel="successor-version"`,
     })
 
     const healthStatuses = getAllResourceHealthStatuses()
