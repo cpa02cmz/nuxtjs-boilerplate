@@ -8,9 +8,17 @@ import { updateAllResourceHealth } from '../utils/resourceHealth'
 import logger from '~/utils/logger'
 
 export default defineNitroPlugin(async nitroApp => {
-  // Skip resource validation during Vercel build to prevent long build times
-  if (process.env.VERCEL === '1') {
-    return // Skip plugin initialization on Vercel
+  // Skip resource validation during build to prevent long build times
+  // This includes Vercel builds, local builds, and CI/CD pipelines
+  const isBuildTime =
+    process.env.VERCEL === '1' ||
+    process.env.CI === 'true' ||
+    process.env.NODE_ENV === 'production' ||
+    process.env.NITRO_PRESET === 'vercel' ||
+    process.env.BUILD_TIME === 'true'
+
+  if (isBuildTime) {
+    return // Skip plugin initialization during build
   }
 
   // Only log in development or test environments to prevent information disclosure in production
@@ -64,14 +72,16 @@ export default defineNitroPlugin(async nitroApp => {
   }, 5000) // 5 seconds delay to allow server to fully start
 
   // Store the validation interval in nitroApp for potential cleanup
-  ;(nitroApp as any)._resourceValidationInterval = validationInterval
+  ;(
+    nitroApp as { _resourceValidationInterval?: NodeJS.Timeout }
+  )._resourceValidationInterval = validationInterval
 
   // Add cleanup handler to clear interval on shutdown
   process.on('SIGTERM', () => {
     if (process.env.NODE_ENV !== 'production') {
       console.log('Shutting down resource validation...')
     }
-    const app = nitroApp as any
+    const app = nitroApp as { _resourceValidationInterval?: NodeJS.Timeout }
     if (app._resourceValidationInterval) {
       clearInterval(app._resourceValidationInterval)
     }
@@ -81,7 +91,7 @@ export default defineNitroPlugin(async nitroApp => {
     if (process.env.NODE_ENV !== 'production') {
       console.log('Shutting down resource validation...')
     }
-    const app = nitroApp as any
+    const app = nitroApp as { _resourceValidationInterval?: NodeJS.Timeout }
     if (app._resourceValidationInterval) {
       clearInterval(app._resourceValidationInterval)
     }
