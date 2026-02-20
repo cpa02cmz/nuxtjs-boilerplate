@@ -28,20 +28,6 @@ declare global {
   var __dbPrisma: PrismaClient | undefined
 }
 
-// SECURITY FIX #3650: Soft delete model names for validation
-// These models have deletedAt field and should always be filtered
-const SOFT_DELETE_MODEL_NAMES = [
-  'AnalyticsEvent',
-  'Webhook',
-  'WebhookDelivery',
-  'WebhookQueue',
-  'DeadLetterWebhook',
-  'ApiKey',
-  'Resource',
-  'Submission',
-  'IdempotencyKey',
-] as const
-
 // FIXED: Add retry logic and error handling for database connection
 const MAX_RETRIES = databaseConfig.retries.maxAttempts
 
