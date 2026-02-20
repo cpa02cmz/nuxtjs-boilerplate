@@ -12,7 +12,7 @@
   "crons": [],
   "headers": [
     {
-      "source": "/_nuxt/(.*)",
+      "source": "/_next/static/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

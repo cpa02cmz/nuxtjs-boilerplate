@@ -11,6 +11,7 @@
   },
   "scripts": {
     "build": "prisma generate && nuxt build",
+    "build:ci": "bash scripts/ci-build.sh",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",

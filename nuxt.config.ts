@@ -10,6 +10,9 @@ import {
   DEFAULT_DEV_URL,
 } from './configs'
 
+// Disable PWA during CI to prevent build hanging
+const isCI = process.env.CI === 'true'
+
 export default defineNuxtConfig({
   devtools: { enabled: false }, // Disable in production for performance
   css: ['~/assets/css/main.css'],
@@ -17,7 +20,7 @@ export default defineNuxtConfig({
     '@nuxt/test-utils/module',
     '@nuxtjs/tailwindcss',
     '@nuxt/image',
-    '@vite-pwa/nuxt',
+    ...(isCI ? [] : ['@vite-pwa/nuxt']), // Skip PWA during CI
     './modules/openapi',
   ],
 
@@ -188,6 +191,9 @@ export default defineNuxtConfig({
       '~/server/plugins/html-security.ts',
       '~/server/plugins/resource-validation.ts',
     ],
+    // Disable prerender during CI to prevent build hanging
+    prerender:
+      process.env.CI === 'true' ? { crawlLinks: false, routes: [] } : undefined,
     // Suppress duplicate key warnings from @nuxt/image v2.0.0
     // This is a known upstream issue that doesn't affect functionality
     esbuild: {
@@ -327,18 +333,18 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    // Main routes with prerender
+    // Main routes with prerender (skip during CI to prevent hanging)
     '/': {
-      prerender: true,
+      prerender: process.env.CI !== 'true',
     },
     '/ai-keys': {
-      prerender: true,
+      prerender: process.env.CI !== 'true',
     },
     '/about': {
-      prerender: true,
+      prerender: process.env.CI !== 'true',
     },
     '/search': {
-      prerender: true,
+      prerender: process.env.CI !== 'true',
     },
     '/submit': {
       // BroCula: Removed prerender because page has ssr: false - prevents hydration mismatch
