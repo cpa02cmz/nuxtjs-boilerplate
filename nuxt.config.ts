@@ -13,6 +13,131 @@ import {
 // Disable PWA during CI to prevent build hanging
 const isCI = process.env.CI === 'true'
 
+// PWA Configuration - using modular config (only when PWA module is loaded)
+// CI Build–Runtime Boundary: Conditionally include PWA config to avoid TypeScript error
+// when @vite-pwa/nuxt module is not loaded in CI environment
+const pwaConfiguration = {
+  strategies: pwaConfig.workbox.strategy as 'generateSW' | 'injectManifest',
+  registerType: pwaConfig.workbox.registerType as 'autoUpdate' | 'prompt',
+  manifest: {
+    name: pwaConfig.manifest.name,
+    short_name: pwaConfig.manifest.short_name,
+    description: pwaConfig.manifest.description,
+    theme_color: pwaConfig.manifest.theme_color,
+    lang: pwaConfig.manifest.lang,
+    display: pwaConfig.manifest.display as
+      | 'standalone'
+      | 'fullscreen'
+      | 'minimal-ui'
+      | 'browser',
+    orientation: pwaConfig.manifest.orientation as
+      | 'any'
+      | 'natural'
+      | 'landscape'
+      | 'landscape-primary'
+      | 'landscape-secondary'
+      | 'portrait'
+      | 'portrait-primary'
+      | 'portrait-secondary'
+      | undefined,
+    background_color: pwaConfig.manifest.background_color,
+    id: pwaConfig.manifest.id,
+    start_url: pwaConfig.manifest.start_url,
+    scope: pwaConfig.manifest.scope,
+    icons: [...pwaConfig.manifest.icons],
+  },
+  workbox: {
+    // Cache strategies for different assets
+    globPatterns: cacheConfig.pwa.globPatterns,
+    runtimeCaching: [
+      {
+        // Cache API calls with a network-first strategy
+        urlPattern: '^/api/.*',
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: cacheConfig.pwa.api.name,
+          expiration: {
+            maxEntries: cacheConfig.pwa.api.maxEntries,
+            maxAgeSeconds: cacheConfig.pwa.api.maxAgeSeconds,
+          },
+        },
+      },
+      {
+        // Cache resources data
+        urlPattern: '.*resources\\.json',
+        handler: 'CacheFirst',
+        options: {
+          cacheName: cacheConfig.pwa.resources.name,
+          expiration: {
+            maxEntries: cacheConfig.pwa.resources.maxEntries,
+            maxAgeSeconds: cacheConfig.pwa.resources.maxAgeSeconds,
+          },
+        },
+      },
+      {
+        // Cache static assets
+        urlPattern: '^https://fonts\\.(?:googleapis|gstatic)\\.com/.*',
+        handler: 'CacheFirst',
+        options: {
+          cacheName: cacheConfig.pwa.fonts.name,
+          expiration: {
+            maxEntries: cacheConfig.pwa.fonts.maxEntries,
+            maxAgeSeconds: cacheConfig.pwa.fonts.maxAgeSeconds,
+          },
+        },
+      },
+      {
+        // Cache Nuxt build assets
+        urlPattern:
+          '^/_nuxt/.*\\.(js|css|png|svg|jpg|jpeg|gif|webp|woff|woff2)',
+        handler: 'CacheFirst',
+        options: {
+          cacheName: cacheConfig.pwa.assets.name,
+          expiration: {
+            maxEntries: cacheConfig.pwa.assets.maxEntries,
+            maxAgeSeconds: cacheConfig.pwa.assets.maxAgeSeconds,
+          },
+        },
+      },
+      {
+        urlPattern: 'https://.*\\.githubusercontent\\.com/.*',
+        handler: 'CacheFirst',
+        options: {
+          cacheName: cacheConfig.pwa.github.name,
+          expiration: {
+            maxEntries: cacheConfig.pwa.github.maxEntries,
+            maxAgeSeconds: cacheConfig.pwa.github.maxAgeSeconds,
+          },
+          cacheableResponse: {
+            statuses: [0, 200],
+          },
+        },
+      },
+      {
+        urlPattern: '^https://.*\\.(png|jpe?g|gif|svg|webp)$',
+        handler: 'CacheFirst',
+        options: {
+          cacheName: cacheConfig.pwa.images.name,
+          expiration: {
+            maxEntries: cacheConfig.pwa.images.maxEntries,
+            maxAgeSeconds: cacheConfig.pwa.images.maxAgeSeconds,
+          },
+          cacheableResponse: {
+            statuses: [0, 200],
+          },
+        },
+      },
+    ],
+  },
+  devOptions: {
+    enabled: pwaConfig.devOptions.enabled,
+    suppressWarnings: pwaConfig.devOptions.suppressWarnings,
+    navigateFallback: pwaConfig.devOptions.navigateFallback,
+    navigateFallbackAllowlist: [/^\/$/],
+    type: pwaConfig.devOptions.type as 'classic' | 'module',
+  },
+}
+
 export default defineNuxtConfig({
   devtools: { enabled: false }, // Disable in production for performance
   css: ['~/assets/css/main.css'],
@@ -42,128 +167,7 @@ export default defineNuxtConfig({
     },
   },
 
-  // PWA Configuration - using modular config
-  pwa: {
-    strategies: pwaConfig.workbox.strategy as 'generateSW' | 'injectManifest',
-    registerType: pwaConfig.workbox.registerType as 'autoUpdate' | 'prompt',
-    manifest: {
-      name: pwaConfig.manifest.name,
-      short_name: pwaConfig.manifest.short_name,
-      description: pwaConfig.manifest.description,
-      theme_color: pwaConfig.manifest.theme_color,
-      lang: pwaConfig.manifest.lang,
-      display: pwaConfig.manifest.display as
-        | 'standalone'
-        | 'fullscreen'
-        | 'minimal-ui'
-        | 'browser',
-      orientation: pwaConfig.manifest.orientation as
-        | 'any'
-        | 'natural'
-        | 'landscape'
-        | 'landscape-primary'
-        | 'landscape-secondary'
-        | 'portrait'
-        | 'portrait-primary'
-        | 'portrait-secondary'
-        | undefined,
-      background_color: pwaConfig.manifest.background_color,
-      id: pwaConfig.manifest.id,
-      start_url: pwaConfig.manifest.start_url,
-      scope: pwaConfig.manifest.scope,
-      icons: [...pwaConfig.manifest.icons],
-    },
-    workbox: {
-      // Cache strategies for different assets
-      globPatterns: cacheConfig.pwa.globPatterns,
-      runtimeCaching: [
-        {
-          // Cache API calls with a network-first strategy
-          urlPattern: '^/api/.*',
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: cacheConfig.pwa.api.name,
-            expiration: {
-              maxEntries: cacheConfig.pwa.api.maxEntries,
-              maxAgeSeconds: cacheConfig.pwa.api.maxAgeSeconds,
-            },
-          },
-        },
-        {
-          // Cache resources data
-          urlPattern: '.*resources\\.json',
-          handler: 'CacheFirst',
-          options: {
-            cacheName: cacheConfig.pwa.resources.name,
-            expiration: {
-              maxEntries: cacheConfig.pwa.resources.maxEntries,
-              maxAgeSeconds: cacheConfig.pwa.resources.maxAgeSeconds,
-            },
-          },
-        },
-        {
-          // Cache static assets
-          urlPattern: '^https://fonts\\.(?:googleapis|gstatic)\\.com/.*',
-          handler: 'CacheFirst',
-          options: {
-            cacheName: cacheConfig.pwa.fonts.name,
-            expiration: {
-              maxEntries: cacheConfig.pwa.fonts.maxEntries,
-              maxAgeSeconds: cacheConfig.pwa.fonts.maxAgeSeconds,
-            },
-          },
-        },
-        {
-          // Cache Nuxt build assets
-          urlPattern:
-            '^/_nuxt/.*\\.(js|css|png|svg|jpg|jpeg|gif|webp|woff|woff2)',
-          handler: 'CacheFirst',
-          options: {
-            cacheName: cacheConfig.pwa.assets.name,
-            expiration: {
-              maxEntries: cacheConfig.pwa.assets.maxEntries,
-              maxAgeSeconds: cacheConfig.pwa.assets.maxAgeSeconds,
-            },
-          },
-        },
-        {
-          urlPattern: 'https://.*\\.githubusercontent\\.com/.*',
-          handler: 'CacheFirst',
-          options: {
-            cacheName: cacheConfig.pwa.github.name,
-            expiration: {
-              maxEntries: cacheConfig.pwa.github.maxEntries,
-              maxAgeSeconds: cacheConfig.pwa.github.maxAgeSeconds,
-            },
-            cacheableResponse: {
-              statuses: [0, 200],
-            },
-          },
-        },
-        {
-          urlPattern: '^https://.*\\.(png|jpe?g|gif|svg|webp)$',
-          handler: 'CacheFirst',
-          options: {
-            cacheName: cacheConfig.pwa.images.name,
-            expiration: {
-              maxEntries: cacheConfig.pwa.images.maxEntries,
-              maxAgeSeconds: cacheConfig.pwa.images.maxAgeSeconds,
-            },
-            cacheableResponse: {
-              statuses: [0, 200],
-            },
-          },
-        },
-      ],
-    },
-    devOptions: {
-      enabled: pwaConfig.devOptions.enabled,
-      suppressWarnings: pwaConfig.devOptions.suppressWarnings,
-      navigateFallback: pwaConfig.devOptions.navigateFallback,
-      navigateFallbackAllowlist: [/^\/$/],
-      type: pwaConfig.devOptions.type as 'classic' | 'module',
-    },
-  },
+  ...(isCI ? {} : { pwa: pwaConfiguration }),
 
   // Security and performance configuration
   experimental: {
