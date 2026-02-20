@@ -53,6 +53,7 @@ jobs:
       # =========================
       - name: Build
         if: hashFiles('package.json') != ''
+        timeout-minutes: 3
         run: npm run build --if-present
 
       # =========================
