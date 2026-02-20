@@ -63,54 +63,6 @@ function createPrismaClient(): PrismaClient {
             : ['error'],
       })
 
-      // SECURITY FIX #3650: Add middleware to warn about raw queries bypassing soft deletes
-      // This helps catch potential data leaks during development
-      // Type the Prisma middleware with unknown for better type safety
-      type MiddlewareParams = { action: string; args?: unknown }
-      type MiddlewareNext = (params?: unknown) => Promise<unknown>
-      ;(
-        baseClient as unknown as {
-          $use: (
-            fn: (
-              params: MiddlewareParams,
-              next: MiddlewareNext
-            ) => Promise<unknown>
-          ) => void
-        }
-      ).$use(async (params: MiddlewareParams, next: MiddlewareNext) => {
-        // Check if this is a raw query on a soft-delete model
-        if (params.action === 'queryRaw' || params.action === 'executeRaw') {
-          // Type assertion to safely access query property from unknown args
-          const args = params.args as { query?: string } | undefined
-          const query = String(args?.query || params.args || '')
-          const lowerQuery = query.toLowerCase()
-
-          // Check if query references soft-delete tables without filtering
-          for (const modelName of SOFT_DELETE_MODEL_NAMES) {
-            const tableName = modelName.toLowerCase()
-            if (
-              lowerQuery.includes(`from ${tableName}`) ||
-              lowerQuery.includes(`join ${tableName}`)
-            ) {
-              // Check if deletedAt filter is present
-              if (!lowerQuery.includes('deletedat')) {
-                const warning = `[SECURITY WARNING] Raw query on ${modelName} missing deletedAt filter. Query: ${query.substring(0, 100)}...`
-                logger.warn(warning)
-
-                // In strict mode, throw error
-                if (process.env.STRICT_SOFT_DELETE === 'true') {
-                  throw new Error(
-                    `Security violation: Raw query on ${modelName} must include deletedAt filter`
-                  )
-                }
-              }
-            }
-          }
-        }
-
-        return next(params)
-      })
-
       // Extend client with soft delete filtering
       const client = baseClient.$extends({
         query: {
