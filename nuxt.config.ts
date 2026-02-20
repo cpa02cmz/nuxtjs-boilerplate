@@ -188,6 +188,9 @@ export default defineNuxtConfig({
       '~/server/plugins/html-security.ts',
       '~/server/plugins/resource-validation.ts',
     ],
+    // Disable prerender during CI to prevent build hanging
+    prerender:
+      process.env.CI === 'true' ? { crawlLinks: false, routes: [] } : undefined,
     // Suppress duplicate key warnings from @nuxt/image v2.0.0
     // This is a known upstream issue that doesn't affect functionality
     esbuild: {
