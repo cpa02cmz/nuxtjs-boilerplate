@@ -60,6 +60,7 @@ describe('Security Configuration', () => {
       expect(headers['Permissions-Policy']).toBe(
         'geolocation=(), microphone=(), camera=()'
       )
+      expect(headers['Cross-Origin-Resource-Policy']).toBe('same-origin')
       expect(headers['Access-Control-Allow-Methods']).toBe(
         'GET, HEAD, POST, OPTIONS'
       )
@@ -101,6 +102,9 @@ describe('Security Configuration', () => {
       expect(securityConfig.headers).toHaveProperty('Referrer-Policy')
       expect(securityConfig.headers).toHaveProperty('Strict-Transport-Security')
       expect(securityConfig.headers).toHaveProperty('Permissions-Policy')
+      expect(securityConfig.headers).toHaveProperty(
+        'Cross-Origin-Resource-Policy'
+      )
     })
   })
 
