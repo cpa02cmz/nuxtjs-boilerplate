@@ -327,18 +327,18 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    // Main routes with prerender
+    // Main routes with prerender (skip during CI to prevent hanging)
     '/': {
-      prerender: true,
+      prerender: process.env.CI !== 'true',
     },
     '/ai-keys': {
-      prerender: true,
+      prerender: process.env.CI !== 'true',
     },
     '/about': {
-      prerender: true,
+      prerender: process.env.CI !== 'true',
     },
     '/search': {
-      prerender: true,
+      prerender: process.env.CI !== 'true',
     },
     '/submit': {
       // BroCula: Removed prerender because page has ssr: false - prevents hydration mismatch
