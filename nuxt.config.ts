@@ -10,6 +10,9 @@ import {
   DEFAULT_DEV_URL,
 } from './configs'
 
+// Disable PWA during CI to prevent build hanging
+const isCI = process.env.CI === 'true'
+
 export default defineNuxtConfig({
   devtools: { enabled: false }, // Disable in production for performance
   css: ['~/assets/css/main.css'],
@@ -17,7 +20,7 @@ export default defineNuxtConfig({
     '@nuxt/test-utils/module',
     '@nuxtjs/tailwindcss',
     '@nuxt/image',
-    '@vite-pwa/nuxt',
+    ...(isCI ? [] : ['@vite-pwa/nuxt']), // Skip PWA during CI
     './modules/openapi',
   ],
 
