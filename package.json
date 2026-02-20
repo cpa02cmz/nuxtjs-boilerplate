@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "prisma generate && nuxt build",
-    "build:ci": "timeout 180 sh -c 'prisma generate && nuxt build' || test $? -eq 0",
+    "build:ci": "bash scripts/ci-build.sh",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
