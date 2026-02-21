@@ -66,11 +66,12 @@ class DeadLetterEventEmitter {
   private listeners: Map<string, DeadLetterEventListener[]> = new Map()
   private recentEvents: DeadLetterEvent[] = []
   private config: DeadLetterAlertConfig
-  // ULW Loop Fix #3859: Maximum buffer size to prevent unbounded memory growth
-  private readonly MAX_EVENTS_SIZE = 1000
+  // Flexy hates hardcoded 1000! Using webhooksConfig.deadLetter.maxEventsBufferSize
+  private readonly maxEventsSize: number
 
   constructor(config: DeadLetterAlertConfig = defaultConfig) {
     this.config = config
+    this.maxEventsSize = webhooksConfig.deadLetter.maxEventsBufferSize
     this.setupDefaultListeners()
   }
 
@@ -94,9 +95,9 @@ class DeadLetterEventEmitter {
   async emit(event: string, data: DeadLetterEvent): Promise<void> {
     this.recentEvents.push(data)
 
-    // ULW Loop Fix #3859: Prevent unbounded memory growth
-    if (this.recentEvents.length > this.MAX_EVENTS_SIZE) {
-      this.recentEvents = this.recentEvents.slice(-this.MAX_EVENTS_SIZE)
+    // Prevent unbounded memory growth
+    if (this.recentEvents.length > this.maxEventsSize) {
+      this.recentEvents = this.recentEvents.slice(-this.maxEventsSize)
     }
 
     this.cleanupOldEvents()
