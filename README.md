@@ -143,11 +143,12 @@ npm run test:coverage
 
 ## 📚 Documentation
 
+> **Note**: The comprehensive documentation is available in [AGENTS.md](AGENTS.md). The linked guides below are planned documentation that will be added in future updates.
+
 ### Getting Started
 
-- **[Development Setup Guide](docs/development-setup.md)** - Complete environment setup (Start here!)
-- [Getting Started](./docs/getting-started.md) - Project overview
-- [AGENTS.md](AGENTS.md) - Comprehensive guide for AI assistants and developers
+- [AGENTS.md](AGENTS.md) - **Comprehensive guide for AI assistants and developers (Start here!)**
+- **[Development Setup Guide](docs/development-setup.md)** - Complete environment setup (coming soon)
 
 ### Development
 
