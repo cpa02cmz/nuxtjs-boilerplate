@@ -309,5 +309,5 @@ model PerformanceMetric {
   @@index([timestamp, metricType])           // Time range queries with type filter
   @@index([timestamp, metricName])           // Time range queries with name filter
   @@index([metricType, metricName, timestamp]) // Dashboard aggregation queries
-  @@index([timestamp])                       // Cleanup queries
+  @@index([timestamp, deletedAt])            // -architect: Cleanup queries with soft delete filter
 }
