@@ -70,7 +70,10 @@
           />
         </svg>
       </div>
-      <h4 :id="titleId" class="font-semibold text-gray-800 capitalize">
+      <h4
+        :id="titleId"
+        class="font-semibold text-gray-800 capitalize"
+      >
         {{ type }}
       </h4>
     </div>
@@ -79,8 +82,9 @@
       <span
         class="text-2xl font-bold text-gray-900"
         :aria-label="`${limit} ${unit}`"
-        >{{ limit }}</span
       >
+        {{ limit }}
+      </span>
     </div>
 
     <p
@@ -91,7 +95,12 @@
     </p>
 
     <!-- Palette's micro-UX: Screen reader announcement for interactions -->
-    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="sr-only"
+    >
       {{ announcement }}
     </div>
   </div>

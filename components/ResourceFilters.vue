@@ -111,8 +111,11 @@
             @change="onDateRangeChange(option.value)"
             @focus="focusedDateOption = option.value"
             @blur="focusedDateOption = null"
-          />
-          <span class="date-range-radio" aria-hidden="true">
+          >
+          <span
+            class="date-range-radio"
+            aria-hidden="true"
+          >
             <span class="date-range-radio-inner" />
           </span>
           <span class="date-range-label">{{ option.label }}</span>
