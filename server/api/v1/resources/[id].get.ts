@@ -10,7 +10,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { cacheConfig } from '~/configs/cache.config'
-import { contentConfig } from '~/configs/content.config'
+import { getResourceMap } from '~/server/utils/server-resources'
 
 /**
  * GET /api/v1/resources/:id
@@ -44,12 +44,8 @@ export default defineEventHandler(async event => {
       return sendSuccessResponse(event, cachedResult.data)
     }
 
-    // Import resources from JSON
-    const resourcesModule = await import(contentConfig.paths.resourcesData)
-    const resources: Resource[] = resourcesModule.default || resourcesModule
-
-    // Find the resource by ID
-    const resource = resources.find(r => r.id === id)
+    // Performance-engineer: Use O(1) Map lookup instead of O(n) array.find
+    const resource = getResourceMap().get(id)
 
     if (!resource) {
       return sendNotFoundError(event, 'Resource', id)

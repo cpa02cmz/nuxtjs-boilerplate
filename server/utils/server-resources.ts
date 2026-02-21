@@ -9,6 +9,9 @@ let cachedResources: Resource[] | null = null
 let cacheTimestamp = 0
 const CACHE_TTL_MS = cacheConfig.server.defaultTtlMs
 
+// Performance-engineer: Cached Map for O(1) resource lookups
+let resourceMap: Map<string, Resource> | undefined
+
 /**
  * Load resources from the JSON file - Server-side only
  * This is a server-side utility that should NOT be used in Vue composables
@@ -76,6 +79,8 @@ export function loadServerResources(): Resource[] {
 export function clearServerResourcesCache(): void {
   cachedResources = null
   cacheTimestamp = 0
+  // Performance-engineer: Also clear the resource map cache
+  resourceMap = undefined
 }
 
 /**
@@ -116,8 +121,25 @@ export function getServerDifficultyLevels(): string[] {
  * Find a resource by ID
  */
 export function findServerResourceById(id: string): Resource | undefined {
+  // Performance-engineer: Use O(1) Map lookup instead of O(n) array.find
+  return getResourceMap().get(id)
+}
+
+/**
+ * Get a cached Map<string, Resource> for O(1) lookups by ID.
+ * Performance-engineer: Rebuilds map only when resource list changes.
+ * @returns Map of resource IDs to Resource objects
+ */
+export function getResourceMap(): Map<string, Resource> {
   const resources = loadServerResources()
-  return resources.find(r => r.id === id)
+  if (!resourceMap || resourceMap.size !== resources.length) {
+    const map = new Map<string, Resource>()
+    for (const r of resources) {
+      map.set(r.id, r)
+    }
+    resourceMap = map
+  }
+  return resourceMap
 }
 
 /**
