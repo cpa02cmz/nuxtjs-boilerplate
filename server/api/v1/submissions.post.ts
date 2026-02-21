@@ -3,6 +3,7 @@ import { defineEventHandler, readBody } from 'h3'
 import { randomUUID } from 'crypto'
 import { logger } from '~/utils/logger'
 import { prisma } from '~/server/utils/db'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import type { Submission } from '~/types/submission'
 import {
   sendSuccessResponse,
@@ -13,6 +14,9 @@ import { createSubmissionSchema } from '~/server/utils/validation-schemas'
 
 export default defineEventHandler(async event => {
   try {
+    // SECURITY: Apply rate limiting to prevent spam submissions (CWE-770)
+    await rateLimit(event, 'submission-create')
+
     // Parse request body
     const body = await readBody(event)
 
