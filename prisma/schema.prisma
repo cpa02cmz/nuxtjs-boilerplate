@@ -230,6 +230,7 @@ model Resource {
   @@index([category, status])
   @@index([status, deletedAt])
   @@index([status, dateAdded]) // -architect: Optimizes resource listing queries with status filter and date ordering
+  @@index([status, deletedAt, dateAdded]) // Database-Architect: Optimizes resource listing with status + soft delete filter + date ordering
 }
 
 model Submission {
