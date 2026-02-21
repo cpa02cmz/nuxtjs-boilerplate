@@ -1,11 +1,41 @@
 import { ref, onUnmounted, getCurrentInstance } from 'vue'
 
 /**
+ * Options for the completeLoading function
+ */
+export interface CompleteLoadingOptions {
+  /** Whether to return focus to the trigger element (default: true) */
+  returnFocus?: boolean
+  /** Delay in ms before returning focus (default: 0) */
+  delay?: number
+  /** CSS selector for fallback element if trigger is not available */
+  fallbackSelector?: string
+}
+
+/**
+ * Return type for useLoadingFocus composable
+ */
+export interface UseLoadingFocusReturn {
+  /** Reactive loading state */
+  isLoading: import('vue').Ref<boolean>
+  /** The element that triggered the loading state */
+  triggerElement: import('vue').Ref<HTMLElement | null>
+  /** Save the currently focused element before starting loading */
+  saveTriggerElement: () => void
+  /** Start the loading state and save the trigger element */
+  startLoading: () => void
+  /** Complete loading and optionally return focus to the trigger element */
+  completeLoading: (options?: CompleteLoadingOptions) => void
+  /** Cancel loading and return focus to the trigger element */
+  cancelLoading: () => void
+}
+
+/**
  * Composable for managing focus during loading states
  * Ensures accessibility by returning focus to the triggering element
  * after loading completes
  */
-export function useLoadingFocus() {
+export function useLoadingFocus(): UseLoadingFocusReturn {
   // Store the element that triggered the loading state
   const triggerElement = ref<HTMLElement | null>(null)
   const isLoading = ref(false)
@@ -41,13 +71,7 @@ export function useLoadingFocus() {
    * @param options.delay Delay in ms before returning focus (default: 0)
    * @param options.fallbackSelector CSS selector for fallback element if trigger is not available
    */
-  const completeLoading = (
-    options: {
-      returnFocus?: boolean
-      delay?: number
-      fallbackSelector?: string
-    } = {}
-  ) => {
+  const completeLoading = (options: CompleteLoadingOptions = {}) => {
     const { returnFocus = true, delay = 0, fallbackSelector } = options
 
     isLoading.value = false
