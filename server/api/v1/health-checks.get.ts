@@ -1,15 +1,14 @@
-import { defineEventHandler } from 'h3'
+import { createApiRoute } from '~/server/utils/create-api-route'
 import { getAllResourceHealthStatuses } from '~/server/utils/resourceHealth'
-import { rateLimit } from '~/server/utils/enhanced-rate-limit'
-import {
-  sendSuccessResponse,
-  handleApiRouteError,
-} from '~/server/utils/api-response'
 
-export default defineEventHandler(async event => {
-  try {
-    await rateLimit(event)
-
+/**
+ * GET /api/v1/health-checks
+ *
+ * Retrieve health status for all monitored resources
+ * Uses standardized API route wrapper for consistent error handling and logging
+ */
+export default createApiRoute(
+  async () => {
     const healthStatuses = getAllResourceHealthStatuses()
 
     // Performance: Single-pass reduce instead of three filter calls (O(3n) → O(n))
@@ -22,15 +21,18 @@ export default defineEventHandler(async event => {
       { healthy: 0, unhealthy: 0, unknown: 0 }
     )
 
-    const responseData = {
+    return {
       totalChecks: healthStatuses.length,
       healthStatuses,
       summary,
       lastUpdated: new Date().toISOString(),
     }
-
-    return sendSuccessResponse(event, responseData)
-  } catch (error) {
-    return handleApiRouteError(event, error)
+  },
+  {
+    logContext: 'api-v1-health-checks',
+    logMetadata: {
+      endpoint: '/api/v1/health-checks',
+      description: 'Health status for all monitored resources',
+    },
   }
-})
+)
