@@ -227,10 +227,7 @@
     />
 
     <!-- Enhanced Empty State - Palette's micro-UX delight! -->
-    <div
-      v-else
-      class="empty-state"
-    >
+    <div v-else class="empty-state">
       <div class="empty-state__illustration">
         <!-- Animated Background Circle -->
         <div
@@ -275,9 +272,7 @@
         />
       </div>
 
-      <h3 class="empty-state__title">
-        No resources selected
-      </h3>
+      <h3 class="empty-state__title">No resources selected</h3>
       <p class="empty-state__description">
         Add resources to compare them side-by-side and see detailed differences.
       </p>
@@ -645,10 +640,13 @@ defineExpose({
   cursor: pointer;
 }
 
-.comparison-control-btn:focus {
-  outline: none;
-  ring: 2px;
-  ring-offset: 2px;
+/* Frontend-engineer: Fix invalid CSS properties - use focus-visible for accessibility */
+.comparison-control-btn:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px rgb(37, 99, 235);
 }
 
 .comparison-control-btn.is-pressed {
@@ -668,8 +666,10 @@ defineExpose({
   transform: translateY(-1px);
 }
 
-.comparison-control-btn--primary:focus {
-  ring-color: rgb(37, 99, 235);
+.comparison-control-btn--primary:focus-visible {
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px rgb(37, 99, 235);
 }
 
 .comparison-control-btn--secondary {
@@ -694,8 +694,10 @@ defineExpose({
   background-color: rgb(75, 85, 99);
 }
 
-.comparison-control-btn--secondary:focus {
-  ring-color: rgb(156, 163, 175);
+.comparison-control-btn--secondary:focus-visible {
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px rgb(156, 163, 175);
 }
 
 .comparison-control-btn--large {
