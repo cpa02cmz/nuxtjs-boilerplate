@@ -611,13 +611,11 @@
               >
                 <kbd
                   class="px-1.5 py-0.5 text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded border border-gray-200 dark:border-gray-600"
-                  >Ctrl</kbd
-                >
+                >Ctrl</kbd>
                 +
                 <kbd
                   class="px-1.5 py-0.5 text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded border border-gray-200 dark:border-gray-600"
-                  >Enter</kbd
-                >
+                >Enter</kbd>
                 to submit
               </p>
             </div>
