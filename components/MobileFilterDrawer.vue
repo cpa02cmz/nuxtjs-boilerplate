@@ -106,7 +106,10 @@
           @mouseenter="isHandleHovered = true"
           @mouseleave="isHandleHovered = false"
         >
-          <div class="drawer-handle-bar" :style="handleStyle" />
+          <div
+            class="drawer-handle-bar"
+            :style="handleStyle"
+          />
           <div
             v-if="!prefersReducedMotion && swipeProgress > 0"
             class="drawer-handle-glow"
