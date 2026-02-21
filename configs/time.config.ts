@@ -119,6 +119,8 @@ export const timeConfig = {
     resize: parseInt(process.env.DEBOUNCE_RESIZE_MS || '200'),
     scroll: parseInt(process.env.DEBOUNCE_SCROLL_MS || '100'),
     draft: parseInt(process.env.DEBOUNCE_DRAFT_MS || '2000'),
+    // URL sync debounce - Modularity Engineer hates hardcoded 120ms!
+    urlSync: parseInt(process.env.DEBOUNCE_URL_SYNC_MS || '120'),
   },
 
   // Validation and cleanup intervals

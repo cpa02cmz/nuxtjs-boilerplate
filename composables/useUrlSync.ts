@@ -2,14 +2,15 @@ import { watch, onMounted, onUnmounted, type Ref } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import type { FilterOptions, SortOption } from '~/types/resource'
 import { SORT_OPTIONS } from '~/configs/sort.config'
+import { timeConfig } from '~/configs/time.config'
 
 export const useUrlSync = (
   filterOptions: Ref<FilterOptions>,
   sortOption: Ref<SortOption>
 ) => {
   // Debounce timer for URL updates to prevent excessive router navigations
+  // Modularity Engineer hates hardcoded 120ms! Using timeConfig.debounce.urlSync
   let updateTimer: ReturnType<typeof setTimeout> | null = null
-  const DEBOUNCE_MS = 120
 
   const route = useRoute()
   const router = useRouter()
@@ -127,7 +128,7 @@ export const useUrlSync = (
       updateTimer = setTimeout(() => {
         updateUrlParams()
         updateTimer = null
-      }, DEBOUNCE_MS)
+      }, timeConfig.debounce.urlSync)
     },
     { deep: true }
   )
@@ -139,7 +140,7 @@ export const useUrlSync = (
     updateTimer = setTimeout(() => {
       updateUrlParams()
       updateTimer = null
-    }, DEBOUNCE_MS)
+    }, timeConfig.debounce.urlSync)
   })
 
   // Parse initial URL params on mount
