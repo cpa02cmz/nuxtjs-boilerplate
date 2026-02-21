@@ -21,7 +21,7 @@ Thank you for your interest in contributing to this project! We welcome contribu
 
 ### Development Setup
 
-See the [Quick Start section in README](./README.md#-quick-start) for environment setup instructions.
+See the [Quick Start section in README](./README.md#quick-start) for environment setup instructions.
 
 ### Code Standards
 
