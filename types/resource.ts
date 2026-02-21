@@ -68,7 +68,7 @@ export interface ResourceUpdate {
   version: string
   updatedAt: string
   changelog?: string
-  changes?: string[]
+  changes?: string[] | readonly string[] // ai-agent-engineer: Accept both mutable and readonly arrays for type compatibility
 }
 
 export interface User {
