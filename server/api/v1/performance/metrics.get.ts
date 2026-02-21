@@ -119,8 +119,19 @@ function calculateWebVitalsSummary(
   const webVitalNames = ['LCP', 'INP', 'CLS', 'FCP', 'TTFB']
   const summary = {} as WebVitalsSummary
 
+  // Pre-group metrics by name in a single pass O(n) instead of O(5n) filter+map chains
+  const metricsByName = new Map<string, number[]>()
+  for (const m of metrics) {
+    const existing = metricsByName.get(m.metricName)
+    if (existing) {
+      existing.push(m.value)
+    } else {
+      metricsByName.set(m.metricName, [m.value])
+    }
+  }
+
   for (const name of webVitalNames) {
-    const values = metrics.filter(m => m.metricName === name).map(m => m.value)
+    const values = metricsByName.get(name) ?? []
 
     if (values.length === 0) {
       summary[name as keyof WebVitalsSummary] = {

@@ -28,6 +28,14 @@ Thumbs.db
 # Testing
 coverage
 .nyc_output
+__tests__
+tests
+test-mocks
+test-tmp
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
 
 # Logs
 logs
