@@ -107,6 +107,40 @@ function createPrismaClient(): PrismaClient {
               }
               return query(args)
             },
+            // Database-Architect: Issue #4154 - Extend soft-delete filtering to mutation operations
+            async update({ model, args, query }) {
+              if (
+                SOFT_DELETE_MODELS.includes(
+                  model as (typeof SOFT_DELETE_MODELS)[number]
+                )
+              ) {
+                args = args || {}
+                args.where = { ...args.where, deletedAt: null }
+              }
+              return query(args)
+            },
+            async updateMany({ model, args, query }) {
+              if (
+                SOFT_DELETE_MODELS.includes(
+                  model as (typeof SOFT_DELETE_MODELS)[number]
+                )
+              ) {
+                args = args || {}
+                args.where = { ...args.where, deletedAt: null }
+              }
+              return query(args)
+            },
+            async upsert({ model, args, query }) {
+              if (
+                SOFT_DELETE_MODELS.includes(
+                  model as (typeof SOFT_DELETE_MODELS)[number]
+                )
+              ) {
+                args = args || {}
+                args.where = { ...args.where, deletedAt: null }
+              }
+              return query(args)
+            },
           },
         },
       }) as unknown as PrismaClient
