@@ -4,8 +4,8 @@ A comprehensive Nuxt.js 3 boilerplate with advanced features for building modern
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/cpa02cmz/nuxtjs-boilerplate)
 
-[![Security Scan](https://github.com/cpa02cmz/nuxtjs-boilerplate/workflows/Security%20Scan/badge.svg)](https://github.com/cpa02cmz/nuxtjs-boilerplate/actions/workflows/security.yml)
-[![CI/CD Pipeline](https://github.com/cpa02cmz/nuxtjs-boilerplate/workflows/CI%2FCD%20Pipeline/badge.svg)](https://github.com/cpa02cmz/nuxtjs-boilerplate/actions/workflows/ci.yml)
+[![Security Scanning](https://github.com/cpa02cmz/nuxtjs-boilerplate/workflows/Security%20Scanning/badge.svg)](https://github.com/cpa02cmz/nuxtjs-boilerplate/actions/workflows/security.yml)
+[![PR Gate](https://github.com/cpa02cmz/nuxtjs-boilerplate/workflows/PR%20Gate%20(ARM)/badge.svg)](https://github.com/cpa02cmz/nuxtjs-boilerplate/actions/workflows/ci.yml)
 
 A production-ready Nuxt.js 3 template with authentication, search, analytics, and community features.
 
