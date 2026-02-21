@@ -144,6 +144,11 @@ export const cacheConfig = {
     analyticsTtlSeconds: parseInt(
       process.env.CACHE_API_ANALYTICS_TTL_SECONDS || '60'
     ), // 1 minute
+
+    // Default TTL for recommendations endpoints (seconds)
+    recommendationsTtlSeconds: parseInt(
+      process.env.CACHE_API_RECOMMENDATIONS_TTL_SECONDS || '300'
+    ), // 5 minutes
   },
 
   // Route Cache Settings - HTTP Cache-Control headers for different routes

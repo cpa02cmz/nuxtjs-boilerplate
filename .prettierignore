@@ -1,0 +1,60 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.nuxt/
+.output/
+dist/
+build/
+
+# Generated files
+*.generated.*
+prisma/generated/
+
+# Lock files (large, auto-generated)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Coverage reports
+coverage/
+.nyc_output/
+
+# Test artifacts
+test-results/
+playwright-report/
+.nuxt/test/
+
+# Cache directories
+.cache/
+.temp/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Large data files
+*.min.js
+*.min.css
+
+# Static assets (pre-optimized)
+public/fonts/
+public/images/optimized/
+
+# Legacy/deprecated files
+legacy/
+deprecated/
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Prisma schema (has its own formatting)
+prisma/schema.prisma

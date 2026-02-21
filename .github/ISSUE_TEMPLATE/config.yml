@@ -1,0 +1,19 @@
+# GitHub Issue Template Configuration
+# See: https://docs.github.com/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository
+
+# Disable blank issues to encourage use of templates
+blank_issues_enabled: false
+
+# Contact links for common questions and resources
+contact_links:
+  - name: 📖 Documentation
+    url: https://github.com/cpa02cmz/nuxtjs-boilerplate#readme
+    about: Check the README for setup instructions and feature documentation
+
+  - name: 💬 Discussions
+    url: https://github.com/cpa02cmz/nuxtjs-boilerplate/discussions
+    about: Ask questions and discuss ideas with the community
+
+  - name: 🔒 Security Vulnerability
+    url: https://github.com/cpa02cmz/nuxtjs-boilerplate/security/advisories/new
+    about: Report security vulnerabilities privately through GitHub Security Advisories

@@ -1,9 +1,7 @@
 <template>
   <div class="webhooks-page">
     <div class="container mx-auto px-4 py-8">
-      <h1 class="text-3xl font-bold mb-8">
-        Webhook & API Integration
-      </h1>
+      <h1 class="text-3xl font-bold mb-8">Webhook & API Integration</h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="card">
@@ -23,6 +21,8 @@
 </template>
 
 <script setup lang="ts">
+import { componentColorsConfig } from '~/configs/component-colors.config'
+
 definePageMeta({
   layout: 'default',
 })
@@ -40,12 +40,13 @@ useHead({
 </script>
 
 <style scoped>
+/* Flexy hates hardcoded rgba values! Using componentColorsConfig.shadows */
 .card {
   background: white;
   border-radius: 0.5rem;
   box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.1),
-    0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    0 1px 3px 0 v-bind('`rgba(${componentColorsConfig.shadows.light.default})`'),
+    0 1px 2px 0 v-bind('`rgba(${componentColorsConfig.shadows.light.sm})`');
   padding: 1.5rem;
 }
 </style>

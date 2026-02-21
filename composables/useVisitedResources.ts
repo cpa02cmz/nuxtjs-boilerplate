@@ -6,6 +6,17 @@ const STORAGE_KEY = STORAGE_KEYS.VISITED_RESOURCES
 const visitedResources = ref<Set<string>>(new Set())
 
 /**
+ * Return type for useVisitedResources composable
+ * user-story-engineer: Explicit return type for better type safety and IDE support
+ */
+export interface UseVisitedResourcesReturn {
+  visitedResources: Readonly<typeof visitedResources>
+  markVisited: (resourceId: string) => void
+  isVisited: (resourceId: string) => boolean
+  clearVisited: () => void
+}
+
+/**
  * Load visited resources from sessionStorage
  * Called once when module is imported and on mount when in component
  */
@@ -31,7 +42,7 @@ loadFromStorage()
  * Uses sessionStorage for persistence across page reloads
  * but clears when the tab/browser is closed (privacy-friendly)
  */
-export function useVisitedResources() {
+export function useVisitedResources(): UseVisitedResourcesReturn {
   // Load visited resources from sessionStorage on mount (only in component context)
   if (getCurrentInstance()) {
     onMounted(() => {

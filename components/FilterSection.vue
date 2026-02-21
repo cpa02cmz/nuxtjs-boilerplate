@@ -1,8 +1,5 @@
 <template>
-  <fieldset
-    class="mb-6"
-    @keydown="handleKeydown"
-  >
+  <fieldset class="mb-6" @keydown="handleKeydown">
     <div class="flex items-center justify-between mb-3">
       <button
         v-if="collapsible"
@@ -184,7 +181,7 @@
               <span
                 v-if="
                   !prefersReducedMotion &&
-                    (recentlySelected === option || recentlyDeselected === option)
+                  (recentlySelected === option || recentlyDeselected === option)
                 "
                 class="checkbox-bloom absolute inset-0 rounded pointer-events-none"
                 :class="{
@@ -216,7 +213,7 @@
                 ]"
                 @change="toggleOption(option)"
                 @click.stop
-              >
+              />
             </div>
             <label
               :for="`${id}-${option}`"
@@ -259,7 +256,7 @@ import { hapticLight } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
 import { EASING } from '~/configs/easing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
-import { zIndexConfig } from '~/configs/z-index.config'
+import { zIndexConfig, zIndexScale } from '~/configs/z-index.config'
 import { shadowsConfig } from '~/configs/shadows.config'
 
 interface Props {
@@ -806,7 +803,8 @@ button:hover {
     rgba(59, 130, 246, 0) 70%
   );
   pointer-events: none;
-  z-index: 0;
+  /* Flexy hates hardcoded z-index! Using zIndexScale.ground */
+  z-index: v-bind('zIndexScale.ground');
   transform: scale(0);
   opacity: 0;
   transition:

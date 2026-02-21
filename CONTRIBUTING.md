@@ -45,6 +45,22 @@ We follow conventional commits:
 
 Example: `feat: add user authentication`
 
+### Pull Request Naming Convention
+
+We use PR prefixes to categorize and track contributions. Include the appropriate prefix in your PR title:
+
+| Prefix              | Category                  | Example                                              |
+| ------------------- | ------------------------- | ---------------------------------------------------- |
+| `[-writer]`         | Documentation             | `docs: Add API reference 📝 [-writer]`               |
+| `[-engineer]`       | General engineering       | `feat: Add search feature [-engineer]`               |
+| `[-story-engineer]` | User story implementation | `feat: User can reset password [-story-engineer]`    |
+| `[-manager]`        | Repository management     | `chore: Update dependencies [-manager]`              |
+| `[-assurance]`      | Quality assurance         | `fix: Type error in Resource interface [-assurance]` |
+
+**Format:** `<type>: <description> [emoji] [prefix]`
+
+For autonomous agent contributions (ULW Loop), see [AGENTS.md](./AGENTS.md) for the complete list of agent roles and their domains.
+
 ### Pull Request Process
 
 1. Update the README.md with details of changes if applicable

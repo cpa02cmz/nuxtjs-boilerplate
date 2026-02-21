@@ -573,10 +573,10 @@ onMounted(() => {
   document.addEventListener('focusout', handleBlur)
 
   // 🎨 Pallete's micro-UX enhancement: Initialize scroll-triggered narrative reveal
-  // Small delay to ensure DOM is ready
+  // Small delay to ensure DOM is ready - Flexy hates hardcoded 100ms!
   setTimeout(() => {
     initIntersectionObserver()
-  }, 100)
+  }, animationConfig.lifecycleTimeline.domInitDelayMs)
 })
 
 // Cleanup on unmount

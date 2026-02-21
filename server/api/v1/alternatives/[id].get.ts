@@ -39,8 +39,12 @@ export default defineEventHandler(async event => {
     const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
-    // Find the specific resource
-    const resource = resources.find(r => r.id === resourceId)
+    const resourceMap = new Map<string, Resource>()
+    for (const r of resources) {
+      resourceMap.set(r.id, r)
+    }
+
+    const resource = resourceMap.get(resourceId)
 
     if (!resource) {
       return sendNotFoundError(event, 'Resource', resourceId)
@@ -50,10 +54,9 @@ export default defineEventHandler(async event => {
     let alternatives: Resource[] = []
 
     if (resource.alternatives && Array.isArray(resource.alternatives)) {
-      // Get alternative resources by ID
       alternatives = resource.alternatives
-        .map(altId => resources.find(r => r.id === altId))
-        .filter(Boolean) as Resource[] // Remove any undefined values
+        .map(altId => resourceMap.get(altId))
+        .filter((r): r is Resource => !!r)
     } else {
       // If no explicit alternatives, find similar resources based on category, tags, and technology
       const resourceCategory = resource.category
