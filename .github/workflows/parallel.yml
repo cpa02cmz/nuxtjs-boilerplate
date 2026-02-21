@@ -5,14 +5,14 @@ on:
     branches:
       - main # Architect runs on main changes
   schedule:
-    - cron: "0 */12 * * *" # Routine check every 4 hours
+    - cron: '0 */12 * * *' # Routine check every 4 hours
   workflow_dispatch:
 
 permissions:
   contents: write
   issues: write
   pull-requests: write
-  actions: write
+  # actions: write removed - not required by any job in this workflow
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -23,7 +23,7 @@ jobs:
   # STAGE 1: THE BRAIN (Architect & Manager)
   # ------------------------------------------------------------------
   architect:
-    name: "Architect: Strategy & Triage"
+    name: 'Architect: Strategy & Triage'
     runs-on: ubuntu-24.04-arm
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -72,12 +72,12 @@ jobs:
               fi
             fi
           done
-            
+
   # ------------------------------------------------------------------
   # STAGE 2: THE MUSCLE (Specialist Executors)
   # ------------------------------------------------------------------
   specialists:
-    name: "Specialist: ${{ matrix.role }}"
+    name: 'Specialist: ${{ matrix.role }}'
     continue-on-error: true
     needs: architect
     runs-on: ubuntu-24.04-arm
@@ -99,17 +99,17 @@ jobs:
           - repository-manager
     steps:
       - uses: actions/checkout@v4
-  
+
       - name: Configure Git
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
-  
+
       - name: Install OpenCode CLI
         run: |
           curl -fsSL https://opencode.ai/install | bash
           echo "$HOME/.opencode/bin" >> $GITHUB_PATH
-  
+
       - name: Execute Work (Controlled Mode)
         timeout-minutes: 30
         continue-on-error: true
@@ -122,7 +122,7 @@ jobs:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         run: |
           echo "Starting specialist work for ${{ matrix.role }}"
-  
+
           if opencode run /ulw-loop \
             "You are Autonomous ${{ matrix.role }}, work on ${{ matrix.role }} branch. Act only within your ownership domain. Never modify files outside your concern. If change crosses boundary or exceeds 5 files, abort and open issue instead. Improve exactly one small thing. No large refactor. No major dependency upgrade unless security critical. Must pass build/lint/test with zero warnings. If another open PR modifies same files, do not compete—open issue instead. Rebase with default branch before PR. Small diff only. PR prefix [$${{ matrix.role }}]. Add label ${{ matrix.role }}." \
             --model opencode/glm-5-free \
@@ -137,7 +137,7 @@ jobs:
   # STAGE 3: ISSUE MANAGER
   # ------------------------------------------------------------------
   PR-Handler:
-    name: "PR-Handler"
+    name: 'PR-Handler'
     needs: specialists
     runs-on: ubuntu-24.04-arm
     steps:
@@ -171,7 +171,7 @@ jobs:
   # STAGE 4: THE GATEKEEPER (Integrator)
   # ------------------------------------------------------------------
   integrator:
-    name: "Fixer"
+    name: 'Fixer'
     needs: PR-Handler
     runs-on: ubuntu-24.04-arm
     steps:
