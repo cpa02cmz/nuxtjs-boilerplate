@@ -55,9 +55,12 @@ export default defineEventHandler(async event => {
     const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
-    // Fetch requested resources
+    // Create a Map for O(1) lookups (performance optimization: O(n*m) → O(n+m))
+    const resourceMap = new Map(resources.map(r => [r.id, r]))
+
+    // Fetch requested resources using Map lookup
     const requestedResources = resourceIds
-      .map(id => resources.find(r => r.id === id))
+      .map(id => resourceMap.get(id))
       .filter(Boolean) as Resource[]
 
     if (requestedResources.length !== resourceIds.length) {
