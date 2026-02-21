@@ -8,7 +8,14 @@
 const FOCUSABLE_ELEMENTS_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled]), summary, details > summary, audio[controls], video[controls], [contenteditable]:not([contenteditable="false"]), iframe, object, embed'
 
-export const useFocusManagement = () => {
+// Explicit return type for useFocusManagement composable
+export interface UseFocusManagementReturn {
+  trapFocus: (element: HTMLElement | null) => (() => void) | undefined
+  focusFirstElement: (container: HTMLElement | null) => void
+  focusElement: (element: HTMLElement | null) => void
+}
+
+export const useFocusManagement = (): UseFocusManagementReturn => {
   /**
    * Trap focus within an element - useful for modals and dropdowns
    */

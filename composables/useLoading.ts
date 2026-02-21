@@ -1,4 +1,11 @@
-import { reactive, readonly, onUnmounted, ref, getCurrentInstance } from 'vue'
+import {
+  reactive,
+  readonly,
+  onUnmounted,
+  ref,
+  getCurrentInstance,
+  type DeepReadonly,
+} from 'vue'
 import { UI_FEEDBACK_DURATION } from '~/server/utils/constants'
 import { messagesConfig } from '~/configs/messages.config'
 
@@ -10,8 +17,24 @@ export interface LoadingState {
   message: string | null
 }
 
+// Explicit return type for useLoading composable
+export interface UseLoadingReturn {
+  loadingState: DeepReadonly<LoadingState>
+  withLoading: <T>(
+    fn: () => Promise<T>,
+    options?: {
+      successMessage?: string
+      errorMessage?: string
+    }
+  ) => Promise<T | null>
+  startLoading: (message?: string) => void
+  stopLoading: (message?: string, isSuccess?: boolean) => void
+  setError: (error: string) => void
+  reset: () => void
+}
+
 // Loading composable for consistent loading state management
-export const useLoading = () => {
+export const useLoading = (): UseLoadingReturn => {
   const loadingState = reactive<LoadingState>({
     loading: false,
     error: null,
