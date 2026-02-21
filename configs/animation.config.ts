@@ -4919,6 +4919,15 @@ export const animationConfig = {
     warningRatingColor: process.env.METRIC_CARD_WARNING_COLOR || '#f59e0b',
     // Poor rating color
     poorRatingColor: process.env.METRIC_CARD_POOR_COLOR || '#ef4444',
+    // Good rating badge colors - Flexy hates hardcoded badge colors!
+    goodBadgeBg: process.env.METRIC_CARD_GOOD_BADGE_BG || '#d1fae5',
+    goodBadgeText: process.env.METRIC_CARD_GOOD_BADGE_TEXT || '#065f46',
+    // Needs improvement badge colors
+    warningBadgeBg: process.env.METRIC_CARD_WARNING_BADGE_BG || '#fef3c7',
+    warningBadgeText: process.env.METRIC_CARD_WARNING_BADGE_TEXT || '#92400e',
+    // Poor badge colors
+    poorBadgeBg: process.env.METRIC_CARD_POOR_BADGE_BG || '#fee2e2',
+    poorBadgeText: process.env.METRIC_CARD_POOR_BADGE_TEXT || '#991b1b',
     // Indicator dot size (px)
     indicatorDotSizePx: parseInt(process.env.METRIC_CARD_DOT_SIZE || '6'),
     // Active indicator dot size (px)

@@ -293,15 +293,15 @@ onMounted(() => {
 }
 
 .metric-card.rating-good::before {
-  background: #10b981;
+  background: v-bind('animationConfig.metricCard.goodRatingColor');
 }
 
 .metric-card.rating-needs-improvement::before {
-  background: #f59e0b;
+  background: v-bind('animationConfig.metricCard.warningRatingColor');
 }
 
 .metric-card.rating-poor::before {
-  background: #ef4444;
+  background: v-bind('animationConfig.metricCard.poorRatingColor');
 }
 
 .metric-card:hover {
@@ -330,18 +330,18 @@ onMounted(() => {
 }
 
 .badge-good {
-  background: #d1fae5;
-  color: #065f46;
+  background: v-bind('animationConfig.metricCard.goodBadgeBg');
+  color: v-bind('animationConfig.metricCard.goodBadgeText');
 }
 
 .badge-needs-improvement {
-  background: #fef3c7;
-  color: #92400e;
+  background: v-bind('animationConfig.metricCard.warningBadgeBg');
+  color: v-bind('animationConfig.metricCard.warningBadgeText');
 }
 
 .badge-poor {
-  background: #fee2e2;
-  color: #991b1b;
+  background: v-bind('animationConfig.metricCard.poorBadgeBg');
+  color: v-bind('animationConfig.metricCard.poorBadgeText');
 }
 
 .metric-value-section {
