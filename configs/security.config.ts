@@ -102,6 +102,10 @@ export const securityConfig = {
     // 'same-origin' blocks all cross-origin requests for this resource
     'Cross-Origin-Resource-Policy':
       process.env.HEADER_CROSS_ORIGIN_RESOURCE_POLICY || 'same-origin',
+    // Security Engineer: Add X-DNS-Prefetch-Control to reduce side-channel DNS lookup risk
+    // Disabling DNS prefetching prevents browsers from preemptively performing DNS resolution
+    // on links in the page, which can reduce information leakage and timing attacks
+    'X-DNS-Prefetch-Control': process.env.HEADER_DNS_PREFETCH_CONTROL || 'off',
   },
 
   // Alias for backward compatibility with tests
@@ -119,6 +123,7 @@ export const securityConfig = {
       'geolocation=(), microphone=(), camera=()',
     'Cross-Origin-Resource-Policy':
       process.env.HEADER_CROSS_ORIGIN_RESOURCE_POLICY || 'same-origin',
+    'X-DNS-Prefetch-Control': process.env.HEADER_DNS_PREFETCH_CONTROL || 'off',
     'Access-Control-Allow-Methods':
       process.env.CORS_ALLOWED_METHODS || 'GET, HEAD, POST, OPTIONS',
     'Access-Control-Allow-Headers':

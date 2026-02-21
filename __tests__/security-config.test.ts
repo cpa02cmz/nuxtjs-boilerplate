@@ -61,6 +61,8 @@ describe('Security Configuration', () => {
         'geolocation=(), microphone=(), camera=()'
       )
       expect(headers['Cross-Origin-Resource-Policy']).toBe('same-origin')
+      // Security Engineer: Verify X-DNS-Prefetch-Control header is set
+      expect(headers['X-DNS-Prefetch-Control']).toBe('off')
       expect(headers['Access-Control-Allow-Methods']).toBe(
         'GET, HEAD, POST, OPTIONS'
       )
@@ -105,6 +107,8 @@ describe('Security Configuration', () => {
       expect(securityConfig.headers).toHaveProperty(
         'Cross-Origin-Resource-Policy'
       )
+      // Security Engineer: Verify X-DNS-Prefetch-Control header is configured
+      expect(securityConfig.headers).toHaveProperty('X-DNS-Prefetch-Control')
     })
   })
 
