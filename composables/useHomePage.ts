@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, type ComputedRef } from 'vue'
 import type { Resource } from '~/types/resource'
 import { homepageConfig } from '~/configs/homepage.config'
 
@@ -7,7 +7,7 @@ import { homepageConfig } from '~/configs/homepage.config'
  */
 export interface UseHomePageReturn {
   /** Computed list of trending resources sorted by popularity */
-  trendingResources: ReturnType<typeof computed<Resource[]>>
+  trendingResources: ComputedRef<Resource[]>
   /** Get related resources in the same category */
   getRelatedResources: (
     currentResource: Resource | undefined,

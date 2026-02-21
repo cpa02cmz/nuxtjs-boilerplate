@@ -113,9 +113,9 @@
             isChecking
               ? 'opacity-80 cursor-wait'
               : [
-                tailwind.interactive.arbitrary.hoverScaleSubtle,
-                tailwind.interactive.arbitrary.activeScaleSubtle,
-              ],
+                  tailwind.interactive.arbitrary.hoverScaleSubtle,
+                  tailwind.interactive.arbitrary.activeScaleSubtle,
+                ],
           ]"
           :disabled="isChecking"
           :aria-label="
@@ -167,29 +167,23 @@
       </div>
 
       <!-- Auto-retry hint -->
-      <p
-        v-if="!isChecking"
-        class="mt-4 text-xs text-gray-400"
-      >
+      <p v-if="!isChecking" class="mt-4 text-xs text-gray-400">
         Tip: Press
         <kbd
           class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs"
-        >Space</kbd>
+          >Space</kbd
+        >
         or
         <kbd
           class="px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 font-mono text-xs"
-        >Enter</kbd>
+          >Enter</kbd
+        >
         to retry
       </p>
     </div>
 
     <!-- Screen reader announcement -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -199,6 +193,7 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { tailwindClassesConfig as tailwind } from '~/configs/tailwind-classes.config'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import { hapticLight, hapticError, hapticSuccess } from '~/utils/hapticFeedback'
 
 definePageMeta({
@@ -378,8 +373,9 @@ onUnmounted(() => {
 }
 
 /* Keyboard shortcut styling */
+/* Flexy hates hardcoded #d1d5db and rgba! Using componentColorsConfig */
 kbd {
-  border: 1px solid #d1d5db;
+  border: 1px solid v-bind('componentColorsConfig.skeleton.checkbox.start');
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
 }
 
