@@ -1,4 +1,5 @@
 import { getHeader } from 'h3'
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { webhookStorage } from '~/server/utils/webhookStorage'
 import {
   sendNotFoundError,
@@ -9,6 +10,10 @@ import {
 
 export default defineEventHandler(async event => {
   try {
+    // Security Engineer: Rate limit API key deletion to prevent abuse (CWE-770)
+    // This protects against brute force and DoS attacks on this sensitive endpoint
+    await rateLimit(event, 'api-key-delete')
+
     // Security: Only accept API key via header, never via query parameter
     // Query parameters expose keys in server logs, browser history, and referrer headers
     const authApiKey = getHeader(event, 'X-API-Key')
