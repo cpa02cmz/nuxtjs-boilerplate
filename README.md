@@ -59,7 +59,7 @@ npm run dev
 
 The application will be available at **http://localhost:3000**
 
-📚 **[Complete Development Setup Guide →](docs/development-setup.md)**
+📚 **See [AGENTS.md](AGENTS.md) for comprehensive development documentation**
 
 ### Prerequisites
 
