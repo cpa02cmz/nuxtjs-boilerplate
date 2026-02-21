@@ -112,6 +112,25 @@ export const databaseConfig = {
     ),
   },
 
+  // Soft Delete Configuration
+  // -architect: Models that support soft delete (deletedAt field)
+  // Used by the PostgreSQL adapter to automatically filter deleted records
+  softDeleteModels: [
+    'analyticsEvent',
+    'webhook',
+    'webhookDelivery',
+    'webhookQueue',
+    'deadLetterWebhook',
+    'apiKey',
+    'resource',
+    'submission',
+    'idempotencyKey',
+    'flag',
+    'trackedError',
+    'errorMetric',
+    'performanceMetric',
+  ],
+
   // Transaction Settings - Flexy hates hardcoded transaction options!
   transaction: {
     // Maximum time to wait for a transaction to start (ms)
