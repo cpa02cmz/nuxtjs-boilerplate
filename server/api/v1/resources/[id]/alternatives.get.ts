@@ -1,5 +1,5 @@
 import { useAlternativeSuggestions } from '~/composables/useAlternativeSuggestions'
-import { loadServerResources } from '~/server/utils/server-resources'
+import { loadServerResources, getResourceMap } from '~/server/utils/server-resources'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendBadRequestError,
@@ -21,8 +21,8 @@ export default defineEventHandler(async event => {
       return sendBadRequestError(event, 'Resource ID is required')
     }
 
-    // Find the target resource
-    const targetResource = resources?.find(r => r.id === resourceId)
+    // Performance-engineer: Use O(1) Map lookup instead of O(n) array.find
+    const targetResource = getResourceMap().get(resourceId)
     if (!targetResource) {
       return sendNotFoundError(event, 'Resource', resourceId)
     }
