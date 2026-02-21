@@ -5,15 +5,31 @@ import { handleApiRouteError } from '~/server/utils/api-response'
 import { RSS_CONFIG } from '~/server/utils/constants'
 import { contentConfig } from '~/configs/content.config'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
+import { cacheManager } from '~/server/utils/enhanced-cache'
+import { cacheConfig } from '~/configs/cache.config'
 
 /**
  * GET /api/v1/rss
  *
- * Generate RSS feed of latest resources
+ * Generate RSS feed of latest resources with caching
  */
 export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
+
+    // Check cache first
+    const cacheKey = 'rss:feed'
+    const cachedRss = await cacheManager.get(cacheKey)
+    if (cachedRss) {
+      event.node.res?.setHeader('X-Cache', 'HIT')
+      setResponseHeader(
+        event,
+        'Content-Type',
+        'application/rss+xml; charset=utf-8'
+      )
+      return cachedRss
+    }
+
     // Import resources from JSON
     const resourcesModule = await import(contentConfig.paths.resourcesData)
     let resources: Resource[] = resourcesModule.default || resourcesModule
@@ -29,7 +45,11 @@ export default defineEventHandler(async event => {
     // Generate RSS XML
     const rssContent = generateRssFeed(resources)
 
-    // Set's appropriate content type for RSS
+    // Cache the RSS feed
+    await cacheManager.set(cacheKey, rssContent, cacheConfig.rss.ttlSeconds)
+
+    // Set cache miss header and content type
+    event.node.res?.setHeader('X-Cache', 'MISS')
     setResponseHeader(
       event,
       'Content-Type',
