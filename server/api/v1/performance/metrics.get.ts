@@ -15,6 +15,15 @@ import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { performanceMetricsQuerySchema } from '~/server/utils/validation-schemas'
 import { validateQueryParams } from '~/server/utils/validation-utils'
 
+// Performance-engineer: In-memory cache for metrics to reduce CPU/DB load
+interface CachedMetricsEntry {
+  timestamp: number
+  data: PerformanceDashboardData
+}
+
+const metricsCache = new Map<string, CachedMetricsEntry>()
+const METRICS_CACHE_TTL_MS = 60_000 // 60 seconds TTL
+
 /**
  * GET /api/v1/performance/metrics
  * Get performance metrics for dashboard
@@ -43,6 +52,19 @@ export default defineEventHandler(async event => {
         statusCode: 400,
         statusMessage: `Invalid range. Valid values: ${validRanges.join(', ')}`,
       })
+    }
+
+    // Check cache before heavy computation
+    const cacheKey = `metrics:${rangeHours}`
+    const refreshRequested =
+      (validatedQuery as { refresh?: boolean }).refresh === true
+
+    if (!refreshRequested) {
+      const cached = metricsCache.get(cacheKey)
+      if (cached && Date.now() - cached.timestamp < METRICS_CACHE_TTL_MS) {
+        event.node.res.setHeader('X-Cache', 'HIT')
+        return cached.data
+      }
     }
 
     // Calculate date range
@@ -91,6 +113,10 @@ export default defineEventHandler(async event => {
       timeSeries,
       apiPerformance,
       lastUpdated: new Date().toISOString(),
+    }
+
+    if (!refreshRequested) {
+      metricsCache.set(cacheKey, { timestamp: Date.now(), data: response })
     }
 
     return response
