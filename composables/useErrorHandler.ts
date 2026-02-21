@@ -1,4 +1,4 @@
-import { ref, computed, type Ref } from 'vue'
+import { ref, computed, type Ref, type ComputedRef } from 'vue'
 import { logError, logWarning, logCritical } from '~/utils/errorLogger'
 import { limitsConfig } from '~/configs/limits.config'
 
@@ -11,9 +11,38 @@ export interface ErrorState {
 
 export type ErrorSeverity = 'info' | 'warning' | 'error' | 'critical'
 
+// Explicit return type for useErrorHandler composable
+export interface UseErrorHandlerReturn {
+  error: ComputedRef<ErrorState>
+  hasError: ComputedRef<boolean>
+  errorMessage: ComputedRef<string | null>
+  errorDetails: ComputedRef<string | null>
+  clearError: () => void
+  handleError: (
+    error: Error | string,
+    options?: {
+      severity?: ErrorSeverity
+      component?: string
+      details?: string
+    }
+  ) => ErrorState
+  handleAsyncError: <T>(
+    fn: () => Promise<T>,
+    options?: {
+      severity?: ErrorSeverity
+      component?: string
+      fallbackValue?: T
+      onError?: (error: Error) => void
+    }
+  ) => Promise<T | null>
+  globalErrors: ComputedRef<ErrorState[]>
+  clearGlobalErrors: () => void
+  hasGlobalErrors: ComputedRef<boolean>
+}
+
 const globalErrors = ref<ErrorState[]>([])
 
-export const useErrorHandler = () => {
+export const useErrorHandler = (): UseErrorHandlerReturn => {
   const currentError: Ref<ErrorState> = ref({
     hasError: false,
     message: null,
