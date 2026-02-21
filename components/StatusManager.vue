@@ -99,7 +99,7 @@
           :aria-describedby="reasonError ? 'reason-error' : undefined"
           @keydown="handleKeydown"
           @blur="validateReason"
-        >
+        />
         <p
           v-if="reasonError"
           id="reason-error"
@@ -143,6 +143,7 @@
           'update-button--success': showSuccessState,
         }"
         :disabled="isUpdating || !selectedStatus"
+        :aria-label="`Update status to ${getStatusLabel(selectedStatus)}`"
         @click="handleUpdate"
       >
         <span class="update-button__content">
@@ -179,11 +180,7 @@
               key="loading"
               class="update-button__icon update-button__icon--spin"
             >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle
                   class="opacity-25"
                   cx="12"
@@ -199,11 +196,7 @@
                 />
               </svg>
             </span>
-            <span
-              v-else
-              key="default"
-              class="update-button__icon"
-            >
+            <span v-else key="default" class="update-button__icon">
               <svg
                 class="w-4 h-4"
                 fill="none"
@@ -312,12 +305,7 @@
     </Transition>
 
     <!-- Screen reader announcement -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
   </div>
