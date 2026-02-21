@@ -1,6 +1,8 @@
 // For Nuxt 3, we'll use built-in storage system instead of file system directly
 import { defineEventHandler, readBody } from 'h3'
 import { randomUUID } from 'crypto'
+// Security Engineer: Add rate limiting to prevent spam/abuse attacks (CWE-770)
+import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { logger } from '~/utils/logger'
 import { prisma } from '~/server/utils/db'
 import type { Submission } from '~/types/submission'
@@ -12,6 +14,9 @@ import {
 import { createSubmissionSchema } from '~/server/utils/validation-schemas'
 
 export default defineEventHandler(async event => {
+  // Security Engineer: Rate limit submission creation to prevent spam/abuse (CWE-770)
+  await rateLimit(event, 'submission-create')
+
   try {
     // Parse request body
     const body = await readBody(event)
