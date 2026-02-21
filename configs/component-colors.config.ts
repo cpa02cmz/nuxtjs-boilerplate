@@ -777,6 +777,50 @@ export const componentColorsConfig = {
     },
   },
 
+  // SearchAnalytics Component Colors - Flexy hates hardcoded analytics colors!
+  // Used by SearchAnalytics.vue for live indicators, shimmer effects, and performance metrics
+  searchAnalytics: {
+    // Live pulse indicator colors (green for live/active status)
+    liveIndicator: {
+      // Main pulse background color (emerald-500)
+      bg: process.env.SEARCH_ANALYTICS_LIVE_BG || '#10b981',
+      // Ring border color for the pulsing effect
+      ring: process.env.SEARCH_ANALYTICS_LIVE_RING || '#10b981',
+    },
+    // Shimmer spinner colors (blue tones for loading states)
+    shimmer: {
+      // Primary ring color (blue-500)
+      ringPrimary: process.env.SEARCH_ANALYTICS_SHIMMER_PRIMARY || '#3b82f6',
+      // Secondary ring color (blue-400)
+      ringSecondary: process.env.SEARCH_ANALYTICS_SHIMMER_SECONDARY || '#60a5fa',
+      // Dot gradient start color
+      dotGradientStart: process.env.SEARCH_ANALYTICS_DOT_START || '#3b82f6',
+      // Dot gradient end color
+      dotGradientEnd: process.env.SEARCH_ANALYTICS_DOT_END || '#60a5fa',
+    },
+    // Performance metric hover state colors
+    performanceMetric: {
+      // Fast (green) hover state
+      fastBg: process.env.SEARCH_ANALYTICS_FAST_BG || '#f0fdf4',
+      fastBorder: process.env.SEARCH_ANALYTICS_FAST_BORDER || '#86efac',
+      // Medium (yellow) hover state
+      mediumBg: process.env.SEARCH_ANALYTICS_MEDIUM_BG || '#fefce8',
+      mediumBorder: process.env.SEARCH_ANALYTICS_MEDIUM_BORDER || '#fde047',
+      // Slow (red) hover state
+      slowBg: process.env.SEARCH_ANALYTICS_SLOW_BG || '#fef2f2',
+      slowBorder: process.env.SEARCH_ANALYTICS_SLOW_BORDER || '#fca5a5',
+    },
+    // Search rank colors
+    rank: {
+      // Top rank highlight color (amber-500)
+      top: process.env.SEARCH_ANALYTICS_RANK_TOP || '#f59e0b',
+      // Search count text color (gray-500)
+      count: process.env.SEARCH_ANALYTICS_RANK_COUNT || '#6b7280',
+      // Hover state accent color (blue-500)
+      hoverAccent: process.env.SEARCH_ANALYTICS_HOVER_ACCENT || '#3b82f6',
+    },
+  },
+
   // Text Colors - Flexy hates hardcoded text colors!
   text: {
     primary: process.env.TEXT_PRIMARY || '#111827',
