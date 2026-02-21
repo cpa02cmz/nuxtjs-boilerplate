@@ -119,14 +119,12 @@ describe('Security Configuration', () => {
       expect(headers['Access-Control-Allow-Origin']).toBe(firstAllowedOrigin)
     })
 
-    it('should fall back to first origin when request origin not in allowed list', () => {
+    it('should reject unauthorized origins (CORS bypass prevention - CWE-942)', () => {
       const headers = getSecurityHeaders(
         undefined,
         'https://malicious-site.com'
       )
-      expect(headers['Access-Control-Allow-Origin']).toBe(
-        securityConfig.cors.allowedOrigins[0]
-      )
+      expect(headers['Access-Control-Allow-Origin']).toBe('')
     })
 
     it('should perform case-insensitive origin matching', () => {
