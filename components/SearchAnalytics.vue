@@ -534,6 +534,7 @@ import { useSearchAnalytics } from '~/composables/useSearchAnalytics'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
 import { zIndexScale } from '~/configs/z-index.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import { hapticLight } from '~/utils/hapticFeedback'
 
 const {
@@ -893,7 +894,8 @@ onUnmounted(() => {
   right: -2px;
   width: 12px;
   height: 12px;
-  background: #10b981;
+  /* Flexy hates hardcoded #10b981! Using componentColorsConfig */
+  background: v-bind('componentColorsConfig.searchAnalytics.liveIndicator.bg');
   border-radius: 50%;
   animation: live-pulse
     v-bind('animationConfig.searchAnalytics.livePulseDurationSec + "s"')
@@ -905,7 +907,8 @@ onUnmounted(() => {
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  border: 2px solid #10b981;
+  /* Flexy hates hardcoded #10b981! Using componentColorsConfig */
+  border: 2px solid v-bind('componentColorsConfig.searchAnalytics.liveIndicator.ring');
   opacity: 0;
   animation: live-ring
     v-bind('animationConfig.searchAnalytics.liveRingDurationSec + "s"') ease-out
