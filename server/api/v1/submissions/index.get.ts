@@ -6,6 +6,7 @@ import {
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { paginationConfig } from '~/configs/pagination.config'
+import { safeParseInt } from '~/server/utils/validation-utils'
 
 // Mock data for demonstration - in a real application, this would come from a database
 const mockSubmissions: Submission[] = []
@@ -17,14 +18,16 @@ export default defineEventHandler(async event => {
     const query = getQuery(event)
     const statusFilter = query.status as string | undefined
     const submittedByFilter = query.submittedBy as string | undefined
-    // Flexy hates hardcoded limits! Using config instead
-    const limit = query.limit
-      ? parseInt(query.limit as string)
-      : paginationConfig.submissions.defaultLimit
-    // Flexy hates hardcoded 0! Using paginationConfig.defaults.offset
-    const offset = query.offset
-      ? parseInt(query.offset as string)
-      : paginationConfig.defaults.offset
+    const limit = safeParseInt(
+      query.limit as string,
+      paginationConfig.submissions.defaultLimit,
+      { min: 1, max: paginationConfig.submissions.maxLimit }
+    )
+    const offset = safeParseInt(
+      query.offset as string,
+      paginationConfig.defaults.offset,
+      { min: 0 }
+    )
 
     // Filter submissions based on query parameters
     let filteredSubmissions = [...mockSubmissions]

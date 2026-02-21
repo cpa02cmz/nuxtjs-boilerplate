@@ -51,3 +51,38 @@ export function validateQueryParams<T>(schema: ZodType<T>, event: H3Event): T {
   const query = getQuery(event)
   return validateRequest(schema, query, event)
 }
+
+/**
+ * Safely parses an integer from a string with fallback value.
+ * Returns fallback if the string cannot be parsed as a valid integer.
+ *
+ * @param value - The string to parse
+ * @param fallback - The default value if parsing fails
+ * @param options - Optional constraints (min, max)
+ * @returns Parsed integer or fallback value
+ */
+export function safeParseInt(
+  value: string | undefined | null,
+  fallback: number,
+  options?: { min?: number; max?: number }
+): number {
+  if (value === undefined || value === null || value === '') {
+    return fallback
+  }
+
+  const parsed = parseInt(value, 10)
+
+  if (Number.isNaN(parsed)) {
+    return fallback
+  }
+
+  if (options?.min !== undefined && parsed < options.min) {
+    return options.min
+  }
+
+  if (options?.max !== undefined && parsed > options.max) {
+    return options.max
+  }
+
+  return parsed
+}
