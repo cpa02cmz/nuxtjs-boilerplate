@@ -96,6 +96,7 @@ import { ref, computed, onMounted } from 'vue'
 import { contentConfig } from '~/configs/content.config'
 import { DEFAULT_DEV_URL } from '~/configs/url.config'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 definePageMeta({
   layout: 'default',
@@ -270,8 +271,9 @@ useSeoMeta({
   );
 }
 
+/* Flexy hates hardcoded rgba(59, 130, 246, 0.05)! Using componentColorsConfig.about.hoverBg */
 .about-category-item--hoverable:hover > div {
-  background-color: rgba(59, 130, 246, 0.05);
+  background-color: v-bind('componentColorsConfig.about.hoverBg');
   transform: translateX(8px);
 }
 
