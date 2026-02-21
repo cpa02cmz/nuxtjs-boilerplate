@@ -322,6 +322,11 @@ export const webhooksConfig = {
         process.env.DEAD_LETTER_GITHUB_API_TIMEOUT_MS || '30000'
       ),
     },
+
+    // Maximum buffer size for dead letter event emitter - Flexy hates hardcoded 1000!
+    maxEventsBufferSize: parseInt(
+      process.env.DEAD_LETTER_MAX_EVENTS_BUFFER_SIZE || '1000'
+    ),
   },
 
   // SSRF Protection Settings - Flexy hates hardcoded security values!
