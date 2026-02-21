@@ -42,6 +42,13 @@ jobs:
         run: npm ci
 
       # =========================
+      # Security Audit
+      # =========================
+      - name: Audit dependencies for vulnerabilities
+        if: hashFiles('package.json') != ''
+        run: npm audit --omit=dev --audit-level=moderate
+
+      # =========================
       # Lint
       # =========================
       - name: Lint
