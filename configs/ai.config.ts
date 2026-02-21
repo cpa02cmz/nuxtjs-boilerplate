@@ -282,3 +282,17 @@ export function isProviderAvailable(provider: AIProvider): boolean {
   if (!providerConfig) return false
   return providerConfig.enabled && !!getProviderApiKey(provider)
 }
+
+/**
+ * Helper function to get all available providers with API keys configured
+ * @returns Array of provider names that are enabled and have valid API keys
+ */
+export function getAvailableProviders(): AIProvider[] {
+  const availableProviders: AIProvider[] = []
+  for (const provider of aiConfig.enabledProviders) {
+    if (isProviderAvailable(provider)) {
+      availableProviders.push(provider)
+    }
+  }
+  return availableProviders
+}
