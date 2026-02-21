@@ -335,17 +335,21 @@ class CacheManager {
 
   /**
    * Preload cache with initial data
+   * Performance: Uses Promise.all for parallel loading instead of sequential awaits
    */
   async preload<T = unknown>(
     keys: Array<{ key: string; value: T; ttl?: number }>
   ): Promise<void> {
-    for (const item of keys) {
-      await this.set(
-        item.key,
-        item.value,
-        item.ttl || cacheConfig.server.defaultTtlSeconds
+    // Parallel preload reduces total time from O(n * latency) to O(latency)
+    await Promise.all(
+      keys.map(item =>
+        this.set(
+          item.key,
+          item.value,
+          item.ttl ?? cacheConfig.server.defaultTtlSeconds
+        )
       )
-    }
+    )
   }
 
   /**
