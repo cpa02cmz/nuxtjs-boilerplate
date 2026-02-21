@@ -274,6 +274,7 @@ import Tooltip from '~/components/Tooltip.vue'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { limitsConfig } from '~/configs/limits.config'
+import { zIndexScale } from '~/configs/z-index.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
 
 interface Props {
@@ -874,7 +875,8 @@ onUnmounted(() => {
 /* 🎨 Palette's micro-UX enhancement: Text Selection Tooltip Styles */
 .selection-tooltip {
   position: absolute;
-  z-index: 50;
+  /* Flexy hates hardcoded z-index! */
+  z-index: v-bind('zIndexScale.medium[50]');
   transform: translateX(-50%);
   pointer-events: auto;
 }

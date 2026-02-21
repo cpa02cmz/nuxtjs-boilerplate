@@ -102,6 +102,15 @@ export const apiConfig = {
   errors: {
     report: '/api/errors/report',
   },
+
+  // API Deprecation Configuration - Flexy hates hardcoded deprecation dates!
+  deprecation: {
+    // Sunset date for deprecated endpoints (RFC 1123 format)
+    sunsetDate: process.env.API_SUNSET_DATE || 'Mon, 01 Jun 2026 00:00:00 GMT',
+    // Successor endpoint for health-checks
+    healthChecksSuccessorUrl:
+      process.env.API_HEALTH_CHECKS_SUCCESSOR_URL || '/api/v1/health-checks',
+  },
 } as const
 
 export type ApiConfig = typeof apiConfig

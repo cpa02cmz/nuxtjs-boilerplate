@@ -63,7 +63,7 @@ The application will be available at **http://localhost:3000**
 
 ### Prerequisites
 
-- Node.js 18+ (check `.nvmrc` for exact version)
+- Node.js 20+ (check `.nvmrc` for exact version)
 - npm 10+
 - SQLite3 (usually pre-installed)
 

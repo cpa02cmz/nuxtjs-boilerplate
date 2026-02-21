@@ -31,6 +31,12 @@ export const cacheTagsConfig = {
     list: 'categories-list',
   },
 
+  // Tags-related cache tags
+  tags: {
+    all: 'tags',
+    hierarchical: 'tags-hierarchical',
+  },
+
   // Submission-related cache tags
   submissions: {
     all: 'submissions',

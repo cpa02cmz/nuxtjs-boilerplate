@@ -32,7 +32,9 @@ export default defineNitroPlugin(nitroApp => {
     errorTracker
       .trackError({
         message: error.message || 'Unknown server error',
-        stack: error.stack,
+        // SECURITY (CWE-532): Omit stack traces in production to prevent information disclosure
+        // Stack traces can leak internal paths, dependencies, and architecture details
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
         source: 'server',
         severity:
           error.statusCode && error.statusCode >= 500 ? 'critical' : 'error',
@@ -79,7 +81,6 @@ export default defineNitroPlugin(nitroApp => {
           })
       }
 
-       
       return originalEnd(...args)
     }
   })

@@ -115,6 +115,9 @@ export const cacheConfig = {
   rss: {
     maxItems: parseInt(process.env.RSS_MAX_ITEMS || '50'),
     defaultLimit: parseInt(process.env.RSS_DEFAULT_LIMIT || '20'),
+    // TTL for RSS feed cache (seconds) - Flexy hates hardcoded values!
+    // Default: 15 minutes (reasonable for feed readers)
+    ttlSeconds: parseInt(process.env.RSS_CACHE_TTL_SECONDS || '900'),
   },
 
   // Search Suggestions Cache
