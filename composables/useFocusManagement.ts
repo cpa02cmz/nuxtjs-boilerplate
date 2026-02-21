@@ -8,25 +8,44 @@
 const FOCUSABLE_ELEMENTS_SELECTOR =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled]), summary, details > summary, audio[controls], video[controls], [contenteditable]:not([contenteditable="false"]), iframe, object, embed'
 
-export const useFocusManagement = () => {
+/**
+ * Return type for useFocusManagement composable
+ */
+export interface UseFocusManagementReturn {
+  /**
+   * Trap focus within an element - useful for modals and dropdowns
+   * Returns cleanup function to remove event listener, or undefined if invalid element
+   */
+  trapFocus: (element: HTMLElement | null) => (() => void) | undefined
+  /**
+   * Focus the first focusable element in a container
+   */
+  focusFirstElement: (container: HTMLElement | null) => void
+  /**
+   * Move focus to an element and scroll if needed
+   */
+  focusElement: (element: HTMLElement | null) => void
+}
+
+export const useFocusManagement = (): UseFocusManagementReturn => {
   /**
    * Trap focus within an element - useful for modals and dropdowns
    */
-  const trapFocus = (element: HTMLElement | null) => {
-    if (!element) return
+  const trapFocus = (element: HTMLElement | null): (() => void) | undefined => {
+    if (!element) return undefined
 
     const focusableElements = element.querySelectorAll(
       FOCUSABLE_ELEMENTS_SELECTOR
     )
 
-    if (focusableElements.length === 0) return
+    if (focusableElements.length === 0) return undefined
 
     const firstFocusable = focusableElements[0] as HTMLElement
     const lastFocusable = focusableElements[
       focusableElements.length - 1
     ] as HTMLElement
 
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent): void => {
       if (e.key !== 'Tab') return
       if (typeof document === 'undefined') return
 
@@ -56,7 +75,7 @@ export const useFocusManagement = () => {
   /**
    * Focus the first focusable element in a container
    */
-  const focusFirstElement = (container: HTMLElement | null) => {
+  const focusFirstElement = (container: HTMLElement | null): void => {
     if (!container) return
 
     const firstFocusable = container.querySelector(
@@ -71,7 +90,7 @@ export const useFocusManagement = () => {
   /**
    * Move focus to an element and scroll if needed
    */
-  const focusElement = (element: HTMLElement | null) => {
+  const focusElement = (element: HTMLElement | null): void => {
     if (element) {
       element.focus({ preventScroll: false })
     }
