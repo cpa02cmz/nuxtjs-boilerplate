@@ -378,3 +378,42 @@ export const performanceMetricsBodySchema = z.object({
   userAgent: z.string().optional().default('unknown'),
   connection: z.string().optional(),
 })
+
+// Error Report Schema - Backend Engineer: Unified validation with Zod for consistency
+export const errorReportSchema = z.object({
+  message: z
+    .string()
+    .min(1, 'Message is required')
+    .max(limitsConfig.errorReport.maxMessageLength, 'Message too long'),
+  stack: z
+    .string()
+    .max(limitsConfig.errorReport.maxStackLength, 'Stack trace too long')
+    .optional(),
+  component: z
+    .string()
+    .max(limitsConfig.errorReport.maxComponentLength, 'Component name too long')
+    .optional(),
+  severity: z
+    .enum(['error', 'warning', 'info', 'critical'])
+    .optional()
+    .default('error'),
+  url: z
+    .string()
+    .max(limitsConfig.errorReport.maxUrlLength, 'URL too long')
+    .refine(
+      val => {
+        if (!val) return true
+        try {
+          new URL(val)
+          return true
+        } catch {
+          return false
+        }
+      },
+      { message: 'Invalid URL format' }
+    )
+    .optional()
+    .transform(val => (val ? val.trim() : undefined)),
+})
+
+export type ErrorReportInput = z.infer<typeof errorReportSchema>
