@@ -94,6 +94,8 @@ import { componentColorsConfig } from '../configs/component-colors.config'
 import { animationConfig } from '../configs/animation.config'
 import { zIndexScale } from '../configs/z-index.config'
 import { uiTimingConfig } from '../configs/ui-timing.config'
+// 🎨 Pallete's micro-UX enhancement: Haptic feedback for keyboard navigation
+import { hapticLight, hapticError } from '~/utils/hapticFeedback'
 
 interface Props {
   items: T[]
@@ -207,6 +209,7 @@ onUnmounted(() => {
 /**
  * Keyboard navigation handlers for accessibility
  * Implements roving tabindex pattern with full keyboard support
+ * 🎨 Pallete's micro-UX enhancement: Added haptic feedback for navigation and boundaries
  */
 const handleKeyDown = (e: KeyboardEvent) => {
   const itemCount = props.items.length
@@ -214,25 +217,38 @@ const handleKeyDown = (e: KeyboardEvent) => {
 
   let newIndex = focusedIndex.value
   let shouldPreventDefault = true
+  let isAtBoundary = false
 
   switch (e.key) {
     case 'ArrowDown':
       newIndex = Math.min(focusedIndex.value + 1, itemCount - 1)
+      // 🎨 Pallete's micro-UX: Check if we're at the bottom boundary
+      isAtBoundary = focusedIndex.value === itemCount - 1
       break
     case 'ArrowUp':
       newIndex = Math.max(focusedIndex.value - 1, 0)
+      // 🎨 Pallete's micro-UX: Check if we're at the top boundary
+      isAtBoundary = focusedIndex.value === 0
       break
     case 'PageDown':
       newIndex = Math.min(focusedIndex.value + 5, itemCount - 1)
+      // 🎨 Pallete's micro-UX: Check if we're at the bottom boundary
+      isAtBoundary = focusedIndex.value === itemCount - 1
       break
     case 'PageUp':
       newIndex = Math.max(focusedIndex.value - 5, 0)
+      // 🎨 Pallete's micro-UX: Check if we're at the top boundary
+      isAtBoundary = focusedIndex.value === 0
       break
     case 'Home':
       newIndex = 0
+      // 🎨 Pallete's micro-UX: Check if we're at the top boundary
+      isAtBoundary = focusedIndex.value === 0
       break
     case 'End':
       newIndex = itemCount - 1
+      // 🎨 Pallete's micro-UX: Check if we're at the bottom boundary
+      isAtBoundary = focusedIndex.value === itemCount - 1
       break
     default:
       shouldPreventDefault = false
@@ -244,6 +260,12 @@ const handleKeyDown = (e: KeyboardEvent) => {
       focusedIndex.value = newIndex
       scrollToIndex(newIndex)
       announcePosition(newIndex, itemCount)
+      // 🎨 Pallete's micro-UX delight: Haptic feedback on successful navigation
+      hapticLight()
+    } else if (isAtBoundary) {
+      // 🎨 Pallete's micro-UX delight: Boundary feedback - distinct haptic when hitting limits
+      // This helps users feel when they've reached the top or bottom of the list
+      hapticError()
     }
   }
 }

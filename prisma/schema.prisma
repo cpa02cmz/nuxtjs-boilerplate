@@ -275,6 +275,7 @@ model TrackedError {
   @@index([lastSeenAt])
   @@index([severity, source])
   @@index([errorHash, resolvedAt])
+  @@index([resolvedAt, lastSeenAt]) // Database-Architect: Optimizes unresolved error queries with lastSeen ordering
 }
 
 model ErrorMetric {

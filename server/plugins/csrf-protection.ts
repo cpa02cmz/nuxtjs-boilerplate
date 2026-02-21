@@ -59,13 +59,10 @@ export default defineNitroPlugin(nitroApp => {
         return
       }
 
-      // Check if this path requires CSRF protection
-      const requiresProtection = csrfConfig.protectedPaths.prefixes.some(
-        prefix => path.startsWith(prefix)
-      )
+      // CWE-352: Enforce CSRF for all state-changing API requests
+      const requiresCsrfProtection = !isSafeMethod(method)
 
-      // Skip CSRF processing for non-protected paths
-      if (!requiresProtection) {
+      if (!requiresCsrfProtection) {
         return
       }
 

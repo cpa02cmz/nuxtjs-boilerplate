@@ -111,11 +111,8 @@
             @change="onDateRangeChange(option.value)"
             @focus="focusedDateOption = option.value"
             @blur="focusedDateOption = null"
-          >
-          <span
-            class="date-range-radio"
-            aria-hidden="true"
-          >
+          />
+          <span class="date-range-radio" aria-hidden="true">
             <span class="date-range-radio-inner" />
           </span>
           <span class="date-range-label">{{ option.label }}</span>
@@ -515,7 +512,11 @@ onUnmounted(() => {
         v-bind('animationConfig.stagger.entranceDurationMs + "ms"')
       )
       v-bind('EASING.SPRING_SNAPPY');
-  transition-delay: var(--stagger-delay, 0ms);
+  /* Flexy hates hardcoded 0ms! Using animationConfig.stagger.baseDelayMs */
+  transition-delay: var(
+    --stagger-delay,
+    v-bind('animationConfig.stagger.baseDelayMs + "ms"')
+  );
 }
 
 .filter-section-wrapper.is-visible {
@@ -559,7 +560,11 @@ onUnmounted(() => {
         v-bind('animationConfig.stagger.entranceDurationMs + "ms"')
       )
       v-bind('EASING.SPRING_SNAPPY');
-  transition-delay: var(--stagger-delay, 0ms);
+  /* Flexy hates hardcoded 0ms! Using animationConfig.stagger.baseDelayMs */
+  transition-delay: var(
+    --stagger-delay,
+    v-bind('animationConfig.stagger.baseDelayMs + "ms"')
+  );
 }
 
 .date-range-section.is-visible {
