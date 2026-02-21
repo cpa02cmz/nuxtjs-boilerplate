@@ -7,9 +7,9 @@
     <DeprecationNotice
       v-if="
         status &&
-          (status === 'deprecated' ||
-            status === 'discontinued' ||
-            status === 'pending')
+        (status === 'deprecated' ||
+          status === 'discontinued' ||
+          status === 'pending')
       "
       :status="status"
       :migration-path="migrationPath"
@@ -29,11 +29,7 @@
     </div>
 
     <!-- 🎨 Palette's micro-UX enhancement: Quick Navigation for keyboard users ✨ -->
-    <nav
-      v-if="showQuickNav"
-      class="quick-nav"
-      aria-label="Resource sections"
-    >
+    <nav v-if="showQuickNav" class="quick-nav" aria-label="Resource sections">
       <button
         v-for="(section, index) in availableSections"
         :key="section.id"
@@ -199,12 +195,7 @@
     </Transition>
 
     <!-- Screen reader announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -538,14 +529,11 @@ onUnmounted(() => {
 })
 
 // Watch for section visibility changes
-watch(
-  visibleSections,
-  newSet => {
-    newSet.forEach(sectionId => {
-      visitedSections.value.add(sectionId)
-    })
-  }
-)
+watch(visibleSections, newSet => {
+  newSet.forEach(sectionId => {
+    visitedSections.value.add(sectionId)
+  })
+})
 
 // Flexy hates hardcoded values! Using animationConfig for all CSS durations 🧩
 const navEntranceDuration = computed(
@@ -694,7 +682,11 @@ const backToTopBounceDuration = computed(
   /* Flexy hates hardcoded 0.5s! Using v-bind with animationConfig */
   transition: all v-bind(sectionTransitionDuration)
     cubic-bezier(0.34, 1.56, 0.64, 1);
-  transition-delay: var(--section-delay, 0ms);
+  /* Flexy hates hardcoded 0ms! Using animationConfig.stagger.baseDelayMs */
+  transition-delay: var(
+    --section-delay,
+    v-bind('animationConfig.stagger.baseDelayMs + "ms"')
+  );
   border-radius: 0.5rem;
   padding: 0.5rem;
   margin-left: -0.5rem;

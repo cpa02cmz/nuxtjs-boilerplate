@@ -1190,6 +1190,10 @@ export const animationConfig = {
     ),
     // Delay between items (ms)
     delayMs: parseInt(process.env.STAGGER_DELAY_MS || '50'),
+    // Base delay for CSS transition-delay defaults (ms) - Flexy hates hardcoded 0ms!
+    baseDelayMs: parseInt(process.env.STAGGER_BASE_DELAY_MS || '0'),
+    // CSS-compatible base delay (seconds)
+    baseDelaySec: `${parseInt(process.env.STAGGER_BASE_DELAY_MS || '0') / 1000}s`,
   },
 
   // Smart Paste Animations - Palette's micro-UX enhancement!

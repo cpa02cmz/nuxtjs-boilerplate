@@ -700,7 +700,11 @@ watch(
     transform
       v-bind('animationConfig.alternativeSuggestions.entranceDurationSec')
       v-bind('EASING.SPRING_SNAPPY');
-  transition-delay: var(--stagger-delay, 0ms);
+  /* Flexy hates hardcoded 0ms! Using animationConfig.stagger.baseDelayMs */
+  transition-delay: var(
+    --stagger-delay,
+    v-bind('animationConfig.stagger.baseDelayMs + "ms"')
+  );
 }
 
 .alternative-suggestions__grid.animations-enabled
