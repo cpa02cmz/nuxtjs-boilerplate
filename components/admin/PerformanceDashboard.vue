@@ -217,6 +217,8 @@ import logger from '~/utils/logger'
 // 🎨 Pallete's micro-UX enhancement: Haptic feedback for success celebration
 import { hapticSuccess } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
+// 🧩 Flexy: Using zIndexScale for consistent z-index management
+import { zIndexScale } from '~/configs/z-index.config'
 
 // State
 const data = ref<PerformanceDashboardData | null>(null)
@@ -697,7 +699,8 @@ onUnmounted(() => {
   width: 16px;
   height: 16px;
   color: #10b981;
-  z-index: 1;
+  /* 🧩 Flexy hates hardcoded z-index: 1! Using zIndexScale.low[1] */
+  z-index: v-bind('zIndexScale.low[1]');
   animation: checkmark-pop
     v-bind('animationConfig.performanceDashboard.checkmarkPopDurationMs + "ms"')
     ease-out forwards;
