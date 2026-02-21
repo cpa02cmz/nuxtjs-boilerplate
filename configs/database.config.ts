@@ -73,6 +73,12 @@ export const databaseConfig = {
     ),
   },
 
+  // Default PostgreSQL Settings
+  // -architect: Configurable default port for PostgreSQL connections
+  postgresql: {
+    defaultPort: parseInt(process.env.DB_POSTGRESQL_DEFAULT_PORT || '5432'),
+  },
+
   // Connection Pool Configuration for PostgreSQL
   // Now active with PostgreSQL driver
   connectionPool: {

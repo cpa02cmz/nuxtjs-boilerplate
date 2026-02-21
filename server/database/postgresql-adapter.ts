@@ -699,7 +699,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       const username = dbUrl.username
       const password = dbUrl.password
       const host = dbUrl.hostname
-      const port = dbUrl.port || '5432'
+      const port = dbUrl.port || String(databaseConfig.postgresql.defaultPort)
       const database = dbUrl.pathname.slice(1)
 
       // Set PGPASSWORD environment variable for pg_dump
@@ -765,7 +765,7 @@ export class PostgreSQLAdapter implements IDatabaseAdapter {
       const username = dbUrl.username
       const password = dbUrl.password
       const host = dbUrl.hostname
-      const port = dbUrl.port || '5432'
+      const port = dbUrl.port || String(databaseConfig.postgresql.defaultPort)
       const database = dbUrl.pathname.slice(1)
 
       const env = { ...process.env, PGPASSWORD: password }
