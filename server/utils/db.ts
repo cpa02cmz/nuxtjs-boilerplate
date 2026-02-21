@@ -14,6 +14,7 @@ const transactionContext = new AsyncLocalStorage<PrismaClient>()
 const LOG_PREFIX = databaseConfig.logging.prefix
 
 // Models that support soft deletes (have deletedAt field)
+// Database-Architect: Added flag, trackedError, errorMetric, performanceMetric for consistency
 const SOFT_DELETE_MODELS = [
   'analyticsEvent',
   'webhook',
@@ -24,6 +25,10 @@ const SOFT_DELETE_MODELS = [
   'resource',
   'submission',
   'idempotencyKey',
+  'flag',
+  'trackedError',
+  'errorMetric',
+  'performanceMetric',
 ] as const
 
 declare global {
