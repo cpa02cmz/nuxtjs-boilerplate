@@ -148,19 +148,24 @@ export function createAdapterFromEnv(): IDatabaseAdapter {
     directUrl: process.env.DIRECT_URL || url,
     pool: {
       // Flexy hates hardcoded values! Using databaseConfig.connectionPool
+      // -architect: Explicit radix 10 for parseInt to avoid edge case interpretation
       min: parseInt(
-        process.env.DB_POOL_MIN || String(databaseConfig.connectionPool.min)
+        process.env.DB_POOL_MIN || String(databaseConfig.connectionPool.min),
+        10
       ),
       max: parseInt(
-        process.env.DB_POOL_MAX || String(databaseConfig.connectionPool.max)
+        process.env.DB_POOL_MAX || String(databaseConfig.connectionPool.max),
+        10
       ),
       acquireTimeoutMs: parseInt(
         process.env.DB_ACQUIRE_TIMEOUT_MS ||
-          String(databaseConfig.connectionPool.acquireTimeoutMs)
+          String(databaseConfig.connectionPool.acquireTimeoutMs),
+        10
       ),
       idleTimeoutMs: parseInt(
         process.env.DB_IDLE_TIMEOUT_MS ||
-          String(databaseConfig.connectionPool.idleTimeoutMs)
+          String(databaseConfig.connectionPool.idleTimeoutMs),
+        10
       ),
     },
   }
