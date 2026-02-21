@@ -13,7 +13,21 @@ const generateRandomBytes = (length: number): Uint8Array => {
     // Node.js environment with Web Crypto API
     return globalThis.crypto.getRandomValues(new Uint8Array(length))
   } else {
-    // Fallback for older environments - generate pseudo-random bytes
+    // Security Engineer FIX: CWE-338 - Use cryptographically secure random in fallback
+    // Try Node.js crypto module before falling back to Math.random
+    try {
+      // Dynamic require for server-side Node.js environments
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const nodeCrypto = require('crypto')
+      if (nodeCrypto && typeof nodeCrypto.randomBytes === 'function') {
+        return new Uint8Array(nodeCrypto.randomBytes(length))
+      }
+    } catch {
+      // Not in Node.js environment or crypto unavailable, fall through
+    }
+    // Last resort fallback for environments without any crypto API
+    // WARNING: Math.random is NOT cryptographically secure (CWE-338)
+    // This should only be reached in severely constrained environments
     const bytes = new Uint8Array(length)
     for (let i = 0; i < length; i++) {
       bytes[i] = Math.floor(Math.random() * 256)
