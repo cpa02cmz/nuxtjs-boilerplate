@@ -18,6 +18,7 @@
     "postinstall": "node scripts/setup-env.mjs && nuxt prepare",
     "lint": "eslint . && stylelint **/*.{css,scss,less,vue}",
     "lint:fix": "eslint --fix . && stylelint --fix **/*.{css,scss,less,vue}",
+    "typecheck": "nuxi typecheck",
     "format": "prettier --write .",
     "audit": "npm audit",
     "security": "npm audit --audit-level high",
