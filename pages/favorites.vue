@@ -213,6 +213,7 @@
                   </div>
                   <button
                     :class="`inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-md transition-colors ${animationConfig.tailwindDurations.normal} focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`"
+                    aria-label="Undo removal of bookmarks"
                     @click="undoAllDeletions"
                   >
                     <svg
@@ -245,6 +246,7 @@
             <div class="flex space-x-3">
               <button
                 class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                aria-label="Export bookmarks"
                 @click="exportBookmarks"
               >
                 {{ contentConfig.favorites.controls.export }}
@@ -272,12 +274,14 @@
                   </span>
                   <button
                     class="text-sm text-gray-600 hover:text-gray-900 px-2 py-1 rounded hover:bg-red-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-colors"
+                    aria-label="Cancel clear all bookmarks"
                     @click="handleCancelClear"
                   >
                     {{ contentConfig.favorites.controls.cancel }}
                   </button>
                   <button
                     class="text-sm text-red-700 font-medium px-2 py-1 rounded bg-red-100 hover:bg-red-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-colors"
+                    aria-label="Confirm clear all bookmarks"
                     @click="handleConfirmClear"
                   >
                     {{ contentConfig.favorites.controls.delete }}
@@ -287,6 +291,7 @@
                   v-else
                   key="clear-button"
                   class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  aria-label="Clear all bookmarks"
                   @click="handleClearClick"
                 >
                   {{ contentConfig.favorites.controls.clearAll }}
