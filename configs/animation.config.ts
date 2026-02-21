@@ -3020,6 +3020,14 @@ export const animationConfig = {
       snapBackDurationMs: parseInt(
         process.env.TOAST_SWIPE_SNAP_BACK_MS || '300'
       ),
+      // Flexy hates hardcoded 300! Opacity decay divisor for swipe (px)
+      // Controls how quickly opacity decreases during swipe
+      opacityDecayPx: parseInt(
+        process.env.TOAST_SWIPE_OPACITY_DECAY_PX || '300'
+      ),
+      // Flexy hates hardcoded 2000! Scale decay divisor for swipe (px)
+      // Controls how quickly scale decreases during swipe
+      scaleDecayPx: parseInt(process.env.TOAST_SWIPE_SCALE_DECAY_PX || '2000'),
     },
   },
 

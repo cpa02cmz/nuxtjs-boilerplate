@@ -418,8 +418,16 @@ const getSwipeStyle = (toastId: string) => {
   if (!state?.isSwiping) return {}
 
   const deltaX = state.currentX - state.startX
-  const opacity = Math.max(0.5, 1 - Math.abs(deltaX) / 300)
-  const scale = Math.max(0.95, 1 - Math.abs(deltaX) / 2000)
+  // Flexy hates hardcoded 300! Using swipeConfig.opacityDecayPx
+  const opacity = Math.max(
+    0.5,
+    1 - Math.abs(deltaX) / (swipeConfig.value.opacityDecayPx || 300)
+  )
+  // Flexy hates hardcoded 2000! Using swipeConfig.scaleDecayPx
+  const scale = Math.max(
+    0.95,
+    1 - Math.abs(deltaX) / (swipeConfig.value.scaleDecayPx || 2000)
+  )
 
   return {
     transform: `translateX(${deltaX}px) scale(${scale})`,
