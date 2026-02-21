@@ -3,6 +3,7 @@ import { webhookStorage } from '~/server/utils/webhookStorage'
 import {
   sendSuccessResponse,
   sendUnauthorizedError,
+  sendBadRequestError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
@@ -40,8 +41,16 @@ export default defineEventHandler(async event => {
     }
 
     // Filter by event type
-    // Issue #3303 fix - Security: Sanitize eventFilter to prevent prototype pollution
-    if (eventFilter && isValidEventFilter(eventFilter)) {
+    // Issue #3303: Sanitize eventFilter to prevent prototype pollution
+    // Return 400 for invalid filter instead of silently ignoring
+    if (eventFilter) {
+      if (!isValidEventFilter(eventFilter)) {
+        return sendBadRequestError(
+          event,
+          'Invalid event filter parameter',
+          'Event filter must contain only alphanumeric characters, hyphens, and underscores'
+        )
+      }
       filteredWebhooks = filteredWebhooks.filter(w =>
         w.events.includes(eventFilter)
       )

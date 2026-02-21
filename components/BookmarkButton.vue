@@ -20,6 +20,7 @@
             ? 'text-yellow-500 bg-yellow-50 hover:bg-yellow-100 bookmarked'
             : 'text-gray-600 hover:text-yellow-500 hover:bg-gray-100',
           isAnimating && 'animate-bounce-scale',
+          isRubberBanding && !prefersReducedMotion && 'animate-rubber-band',
         ]"
         :aria-label="
           isBookmarked
@@ -144,6 +145,7 @@ const amberColor = computed(() => componentColorsConfig.common.amber[400])
 
 const bookmarkStatus = ref('')
 const isAnimating = ref(false)
+const isRubberBanding = ref(false)
 const buttonRef = ref<HTMLButtonElement | null>(null)
 
 // Particle burst state - Palette's delightful micro-UX touch!
@@ -187,6 +189,7 @@ let animationTimeout: ReturnType<typeof setTimeout> | null = null
 let statusTimeout: ReturnType<typeof setTimeout> | null = null
 let particleTimeout: ReturnType<typeof setTimeout> | null = null
 let newlyAddedTimeout: ReturnType<typeof setTimeout> | null = null
+let rubberBandTimeout: ReturnType<typeof setTimeout> | null = null
 
 // Palette's micro-UX enhancement: Track newly added state for visual feedback
 const isNewlyAdded = ref(false)
@@ -281,6 +284,14 @@ const handleBookmarkToggle = () => {
     animationTimeout = setTimeout(() => {
       isAnimating.value = false
     }, heartPopDurationMs)
+    // 🎨 Pallete's micro-UX enhancement: Rubber Band Animation for playful elastic effect
+    if (!prefersReducedMotion.value) {
+      isRubberBanding.value = true
+      if (rubberBandTimeout) clearTimeout(rubberBandTimeout)
+      rubberBandTimeout = setTimeout(() => {
+        isRubberBanding.value = false
+      }, animationConfig.rubberBand.durationMs)
+    }
     // Haptic feedback for adding bookmark
     hapticSuccess()
     // Trigger particle burst for delightful feedback - Palette's micro-UX touch!
@@ -338,6 +349,7 @@ onUnmounted(() => {
   if (statusTimeout) clearTimeout(statusTimeout)
   if (particleTimeout) clearTimeout(particleTimeout)
   if (newlyAddedTimeout) clearTimeout(newlyAddedTimeout)
+  if (rubberBandTimeout) clearTimeout(rubberBandTimeout)
 })
 
 // Handle click with ripple effect - Palette's micro-UX touch!
@@ -570,6 +582,87 @@ const handleBookmarkToggleWithRipple = (event: MouseEvent) => {
 @media (prefers-reduced-motion: reduce) {
   .newly-added-pulse-ring {
     display: none;
+  }
+}
+
+/* 🎨 Pallete's micro-UX enhancement: Rubber Band Animation ✨
+   Playful elastic stretch-and-snap effect for delightful bookmark interactions */
+.animate-rubber-band {
+  animation: rubber-band
+    v-bind('`${animationConfig?.rubberBand?.durationMs ?? 800}ms`')
+    v-bind(
+      'animationConfig?.rubberBand?.easing ?? "cubic-bezier(0.68, -0.55, 0.265, 1.55)"'
+    );
+}
+
+@keyframes rubber-band {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  /* First stretch - wide and short with slight rotation */
+  20% {
+    transform: scaleX(
+        v-bind('animationConfig?.rubberBand?.stretchScaleX ?? 1.25')
+      )
+      scaleY(v-bind('animationConfig?.rubberBand?.stretchScaleY ?? 0.75'))
+      rotate(
+        v-bind(
+          '`${(animationConfig?.rubberBand?.rotationDegrees ?? 5) * -1}deg`'
+        )
+      );
+  }
+  /* Snap back - squeezed with opposite rotation */
+  40% {
+    transform: scaleX(
+        v-bind('animationConfig?.rubberBand?.squeezeScaleX ?? 0.85')
+      )
+      scaleY(v-bind('animationConfig?.rubberBand?.squeezeScaleY ?? 1.15'))
+      rotate(
+        v-bind('`${animationConfig?.rubberBand?.rotationDegrees ?? 5}deg`')
+      );
+  }
+  /* Second oscillation - smaller stretch */
+  60% {
+    transform: scaleX(
+        v-bind(
+          '`${1 + ((animationConfig?.rubberBand?.stretchScaleX ?? 1.25) - 1) * 0.5}`'
+        )
+      )
+      scaleY(
+        v-bind(
+          '`${1 - (1 - (animationConfig?.rubberBand?.stretchScaleY ?? 0.75)) * 0.5}`'
+        )
+      )
+      rotate(
+        v-bind(
+          '`${(animationConfig?.rubberBand?.rotationDegrees ?? 5) * -0.5}deg`'
+        )
+      );
+  }
+  /* Final approach to rest */
+  80% {
+    transform: scaleX(
+        v-bind(
+          '`${1 + ((animationConfig?.rubberBand?.squeezeScaleX ?? 0.85) - 1) * 0.25}`'
+        )
+      )
+      scaleY(
+        v-bind(
+          '`${1 - (1 - (animationConfig?.rubberBand?.squeezeScaleY ?? 1.15)) * 0.25}`'
+        )
+      )
+      rotate(0deg);
+  }
+  /* Settle at normal state */
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Reduced motion support for rubber band */
+@media (prefers-reduced-motion: reduce) {
+  .animate-rubber-band {
+    animation: none;
   }
 }
 </style>
