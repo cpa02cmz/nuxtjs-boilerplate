@@ -141,6 +141,27 @@ export const createFetchApiClient = (
     return merged
   }
 
+  /**
+   * Check if a parameter key contains sensitive information that should not be exposed in URLs.
+   * Sensitive data in URLs can leak via browser history, server logs, and referrer headers.
+   *
+   * Security-engineer: This prevents accidental exposure of secrets in query parameters.
+   */
+  const isSensitiveKey = (key: string): boolean => {
+    const sensitivePatterns = [
+      'token',
+      'secret',
+      'password',
+      'apikey',
+      'api_key',
+      'authorization',
+      'credential',
+      'private',
+    ]
+    const lowerKey = key.toLowerCase()
+    return sensitivePatterns.some(pattern => lowerKey.includes(pattern))
+  }
+
   const buildUrl = (
     url: string,
     params?: Record<string, string | number | boolean>
@@ -151,6 +172,10 @@ export const createFetchApiClient = (
 
     const searchParams = new URLSearchParams()
     Object.entries(params).forEach(([key, value]) => {
+      // Security: Filter out sensitive keys to prevent leakage in browser history and server logs
+      if (isSensitiveKey(key)) {
+        return
+      }
       searchParams.append(key, String(value))
     })
 
