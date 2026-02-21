@@ -604,6 +604,22 @@
                   {{ contentConfig.submit.button.submitting }}
                 </span>
               </button>
+              <!-- User Story Engineer: Keyboard shortcut hint for quick submission -->
+              <p
+                class="mt-2 text-xs text-gray-400 text-center"
+                aria-hidden="true"
+              >
+                <kbd
+                  class="px-1.5 py-0.5 text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded border border-gray-200 dark:border-gray-600"
+                  >Ctrl</kbd
+                >
+                +
+                <kbd
+                  class="px-1.5 py-0.5 text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded border border-gray-200 dark:border-gray-600"
+                  >Enter</kbd
+                >
+                to submit
+              </p>
             </div>
           </form>
 
@@ -700,7 +716,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, onUnmounted, nextTick, type Ref } from 'vue'
+import {
+  ref,
+  watch,
+  computed,
+  onMounted,
+  onUnmounted,
+  nextTick,
+  type Ref,
+} from 'vue'
 import { useNuxtApp } from '#app'
 import { useSubmitPage } from '~/composables/useSubmitPage'
 import { validationConfig } from '~/configs/validation.config'
@@ -1132,6 +1156,19 @@ const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
   }
 }
 
+// Keyboard shortcut handler for quick submission (Ctrl+Enter / Cmd+Enter)
+// User Story Engineer: Adding keyboard shortcut for power users
+const handleKeyboardSubmit = (event: KeyboardEvent) => {
+  // Check for Ctrl+Enter or Cmd+Enter
+  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+    event.preventDefault()
+    // Only submit if not already submitting
+    if (!isSubmitting.value) {
+      handleSubmitWithShake()
+    }
+  }
+}
+
 onMounted(() => {
   // BroCula: Mark as hydrated to prevent Vue hydration warning with ssr: false
   isHydrated.value = true
@@ -1142,6 +1179,8 @@ onMounted(() => {
   // Set up beforeunload handler
   if (typeof window !== 'undefined') {
     window.addEventListener('beforeunload', beforeUnloadHandler)
+    // User Story Engineer: Add keyboard shortcut for quick submission
+    window.addEventListener('keydown', handleKeyboardSubmit)
   }
 })
 
@@ -1158,6 +1197,8 @@ onUnmounted(() => {
   }
   if (typeof window !== 'undefined') {
     window.removeEventListener('beforeunload', beforeUnloadHandler)
+    // User Story Engineer: Clean up keyboard shortcut listener
+    window.removeEventListener('keydown', handleKeyboardSubmit)
   }
 })
 
