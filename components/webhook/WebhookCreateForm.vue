@@ -139,6 +139,19 @@ const handleCancel = () => {
   emit('cancel')
 }
 
+// User Story Engineer: Keyboard shortcut handler for quick form submission
+// Ctrl+Enter (Windows/Linux) or Cmd+Enter (macOS) submits the form
+const handleFormKeydown = (event: KeyboardEvent) => {
+  // Check for Ctrl+Enter or Cmd+Enter
+  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+    // Only submit if not already submitting and URL has content
+    if (!props.isSubmitting && formData.value.url.trim()) {
+      event.preventDefault()
+      handleSubmit()
+    }
+  }
+}
+
 // Media query refs for cleanup
 let mediaQueryRef: MediaQueryList | null = null
 let handleMotionChangeRef: ((e: MediaQueryListEvent) => void) | null = null
@@ -160,6 +173,11 @@ onMounted(() => {
     }
     mediaQueryRef.addEventListener('change', handleMotionChangeRef)
   }
+
+  // User Story Engineer: Register keyboard shortcut listener
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', handleFormKeydown)
+  }
 })
 
 onUnmounted(() => {
@@ -167,6 +185,11 @@ onUnmounted(() => {
     mediaQueryRef.removeEventListener('change', handleMotionChangeRef)
     mediaQueryRef = null
     handleMotionChangeRef = null
+  }
+
+  // User Story Engineer: Cleanup keyboard listener
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('keydown', handleFormKeydown)
   }
 })
 </script>
@@ -450,6 +473,10 @@ onUnmounted(() => {
           {{ contentConfig.webhooks.buttons.cancel }}
         </button>
       </div>
+      <!-- User Story Engineer: Keyboard shortcut hint for quick submission -->
+      <p class="keyboard-hint">
+        <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Enter</kbd> to submit
+      </p>
     </form>
   </div>
 </template>
@@ -1019,5 +1046,31 @@ onUnmounted(() => {
     outline: 2px solid currentColor;
     outline-offset: 2px;
   }
+}
+
+/* User Story Engineer: Keyboard shortcut hint styles */
+.keyboard-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.kbd {
+  display: inline-block;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.6875rem;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  line-height: 1;
+  color: #374151;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 </style>
