@@ -25,14 +25,16 @@ const generateRandomBytes = (length: number): Uint8Array => {
     } catch {
       // Not in Node.js environment or crypto unavailable, fall through
     }
-    // Last resort fallback for environments without any crypto API
-    // WARNING: Math.random is NOT cryptographically secure (CWE-338)
-    // This should only be reached in severely constrained environments
-    const bytes = new Uint8Array(length)
-    for (let i = 0; i < length; i++) {
-      bytes[i] = Math.floor(Math.random() * 256)
-    }
-    return bytes
+    // Security Engineer FIX: CWE-338 - NEVER use Math.random() for cryptographic purposes
+    // Instead of silently using insecure randomness, fail explicitly to prevent security issues
+    // This ensures the environment is properly configured before running in production
+    throw new Error(
+      'SECURITY ERROR: No cryptographically secure random number generator available. ' +
+        'This environment lacks both Web Crypto API (window.crypto/globalThis.crypto) ' +
+        'and Node.js crypto module. CSP nonces and other security features require a ' +
+        'secure random source. Please ensure you are running in a supported environment ' +
+        '(modern browser or Node.js 15+). See CWE-338 for more information.'
+    )
   }
 }
 
