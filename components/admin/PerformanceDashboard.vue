@@ -264,7 +264,8 @@ const webVitalsList = computed(() => {
 
 const timeSeries = computed(() => data.value?.timeSeries || {})
 
-const chartMetrics = computed(() => ['LCP', 'INP', 'CLS', 'FCP', 'TTFB'])
+// Performance Engineer: Static array - no reactive dependencies, removed unnecessary computed() wrapper
+const chartMetrics = ['LCP', 'INP', 'CLS', 'FCP', 'TTFB'] as const
 
 const apiPerformance = computed(
   () =>
