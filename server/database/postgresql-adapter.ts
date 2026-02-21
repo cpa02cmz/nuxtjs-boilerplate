@@ -27,23 +27,8 @@ import { logger } from '~/utils/logger'
 const DEFAULT_HEALTH_CHECK_TIMEOUT_MS = databaseConfig.healthCheck.timeoutMs
 const DEFAULT_HEALTH_CHECK_QUERY = databaseConfig.healthCheck.query
 
-// SECURITY FIX #3650: Models with soft delete support
-// -architect: Added Flag, TrackedError, ErrorMetric, PerformanceMetric (had deletedAt but were missing)
-const SOFT_DELETE_TABLES = [
-  'analyticsEvent',
-  'webhook',
-  'webhookDelivery',
-  'webhookQueue',
-  'deadLetterWebhook',
-  'apiKey',
-  'resource',
-  'submission',
-  'idempotencyKey',
-  'flag',
-  'trackedError',
-  'errorMetric',
-  'performanceMetric',
-]
+// -architect: Soft delete models now configurable via database.config.softDeleteModels
+const SOFT_DELETE_TABLES = databaseConfig.softDeleteModels ?? []
 
 /**
  * SECURITY FIX #3650: Helper function to append soft delete filter to SQL queries
