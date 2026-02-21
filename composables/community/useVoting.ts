@@ -152,16 +152,19 @@ export const useVoting = (
       .filter(v => v.targetType === targetType && v.targetId === targetId)
       .map(v => v.id)
 
+    // Performance: Use Set for O(1) lookups instead of O(n) includes [-engineer]
+    const targetVoteIdSet = new Set(targetVoteIds)
+
     // Remove from map
     votes.value.forEach(vote => {
-      if (targetVoteIds.includes(vote.id)) {
+      if (targetVoteIdSet.has(vote.id)) {
         const key = `${vote.userId}_${vote.targetType}_${vote.targetId}`
         voteMap.value.delete(key)
       }
     })
 
     // Remove from array
-    votes.value = votes.value.filter(v => !targetVoteIds.includes(v.id))
+    votes.value = votes.value.filter(v => !targetVoteIdSet.has(v.id))
 
     return targetVoteIds.length
   }
