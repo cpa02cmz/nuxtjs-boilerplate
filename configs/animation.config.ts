@@ -8,6 +8,8 @@ import {
 // Convenience alias for cubic-bezier easing functions
 const EASING_REF = EASING_CONSTANTS
 
+const DEFAULT_ANIMATION_MS = 2000
+
 export const animationConfig = {
   // Tooltip Animations
   tooltip: {
@@ -772,9 +774,9 @@ export const animationConfig = {
         process.env.BOOKMARK_NEWLY_ADDED_MID_OPACITY || '0.6'
       ),
       // Duration to show the pulse ring before hiding (ms)
-      // Flexy hates hardcoded 2000! Now configurable via env var
       displayDurationMs: parseInt(
-        process.env.BOOKMARK_NEWLY_ADDED_DISPLAY_DURATION_MS || '2000'
+        process.env.BOOKMARK_NEWLY_ADDED_DISPLAY_DURATION_MS ??
+          String(DEFAULT_ANIMATION_MS)
       ),
     },
   },
