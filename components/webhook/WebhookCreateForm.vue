@@ -139,6 +139,18 @@ const handleCancel = () => {
   emit('cancel')
 }
 
+// User Story Engineer: Keyboard shortcut handler for quick submission (Ctrl+Enter / Cmd+Enter)
+const handleKeydown = (event: KeyboardEvent) => {
+  // Ctrl+Enter (Windows/Linux) or Cmd+Enter (macOS) submits the form
+  if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+    event.preventDefault()
+    handleSubmit()
+    if (!prefersReducedMotion.value) {
+      hapticSuccess()
+    }
+  }
+}
+
 // Media query refs for cleanup
 let mediaQueryRef: MediaQueryList | null = null
 let handleMotionChangeRef: ((e: MediaQueryListEvent) => void) | null = null
@@ -160,6 +172,11 @@ onMounted(() => {
     }
     mediaQueryRef.addEventListener('change', handleMotionChangeRef)
   }
+
+  // User Story Engineer: Register keyboard shortcut listener
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', handleKeydown)
+  }
 })
 
 onUnmounted(() => {
@@ -167,6 +184,11 @@ onUnmounted(() => {
     mediaQueryRef.removeEventListener('change', handleMotionChangeRef)
     mediaQueryRef = null
     handleMotionChangeRef = null
+  }
+
+  // User Story Engineer: Clean up keyboard shortcut listener
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('keydown', handleKeydown)
   }
 })
 </script>
@@ -237,15 +259,9 @@ onUnmounted(() => {
         }"
         :style="getFieldDelay(0)"
       >
-        <label
-          for="webhook-url"
-          class="form-label"
-        >
+        <label for="webhook-url" class="form-label">
           {{ contentConfig.webhooks.form.urlLabel }}
-          <span
-            class="required-indicator"
-            aria-hidden="true"
-          >*</span>
+          <span class="required-indicator" aria-hidden="true">*</span>
           <span class="sr-only">{{
             contentConfig.webhooks.form.required
           }}</span>
@@ -267,7 +283,7 @@ onUnmounted(() => {
             }"
             @focus="handleFieldFocus('url')"
             @blur="handleFieldBlur"
-          >
+          />
           <!-- Pallete's micro-UX enhancement: Focus glow effect -->
           <span
             v-if="!prefersReducedMotion"
@@ -276,19 +292,13 @@ onUnmounted(() => {
             aria-hidden="true"
           />
         </div>
-        <p
-          id="webhook-url-description"
-          class="form-description"
-        >
+        <p id="webhook-url-description" class="form-description">
           {{ contentConfig.webhooks.form.urlDescription }}
         </p>
       </div>
 
       <!-- Pallete's micro-UX enhancement: Events fieldset with staggered animations -->
-      <div
-        class="form-group"
-        :style="getFieldDelay(1)"
-      >
+      <div class="form-group" :style="getFieldDelay(1)">
         <fieldset class="events-fieldset">
           <legend class="form-label">
             {{ contentConfig.webhooks.form.eventsLabel }}
@@ -347,7 +357,7 @@ onUnmounted(() => {
                 :aria-label="`Subscribe to ${event} event`"
                 class="sr-only"
                 @change="handleEventChange(event)"
-              >
+              />
               <span class="checkbox-text">{{ event }}</span>
             </label>
           </div>
@@ -369,7 +379,7 @@ onUnmounted(() => {
               type="checkbox"
               :aria-label="contentConfig.webhooks.ariaLabels.enableWebhook"
               class="sr-only"
-            >
+            />
             <span
               class="toggle-track"
               :class="{ 'toggle-track--active': formData.active }"
@@ -450,6 +460,11 @@ onUnmounted(() => {
           {{ contentConfig.webhooks.buttons.cancel }}
         </button>
       </div>
+
+      <!-- User Story Engineer: Keyboard shortcut hint for power users -->
+      <p v-if="!prefersReducedMotion" class="keyboard-hint">
+        <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Enter</kbd> to submit
+      </p>
     </form>
   </div>
 </template>
@@ -1019,5 +1034,50 @@ onUnmounted(() => {
     outline: 2px solid currentColor;
     outline-offset: 2px;
   }
+}
+
+/* User Story Engineer: Keyboard shortcut hint styles */
+.keyboard-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  opacity: 0;
+  transform: translateY(-5px);
+  animation: hint-fade-in
+    v-bind('animationConfig.transition.normal.durationMs + "ms"') ease-out
+    v-bind('animationConfig.webhookForm.entranceDelayMs + 200 + "ms"') forwards;
+}
+
+@keyframes hint-fade-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  height: 1.25rem;
+  padding: 0 0.25rem;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  font-size: 0.625rem;
+  font-weight: 500;
+  line-height: 1;
+  color: #374151;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  box-shadow:
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.1),
+    0 1px 0 0 rgba(0, 0, 0, 0.05);
 }
 </style>
