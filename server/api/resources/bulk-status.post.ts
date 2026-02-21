@@ -5,11 +5,13 @@ import {
   sendBadRequestError,
   sendSuccessResponse,
   sendUnauthorizedError,
+  sendForbiddenError,
   handleApiRouteError,
 } from '~/server/utils/api-response'
 import { paginationConfig } from '~/configs/pagination.config'
 import { contentConfig } from '~/configs/content.config'
 import { bulkStatusUpdateSchema } from '~/server/utils/validation-schemas'
+import { webhookStorage } from '~/server/utils/webhookStorage'
 
 // Maximum number of resources that can be updated in a single bulk request
 // Flexy hates hardcoded limits! Using config instead
@@ -19,10 +21,32 @@ export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
 
-    // Authentication check - require valid API key
+    // Security Engineer FIX: Add proper API key validation and permission check
+    // Previously only checked header presence without validating key or permissions
+    // CWE-284: Improper Access Control - Any API key could bulk update resources
     const authApiKey = getHeader(event, 'X-API-Key')
     if (!authApiKey) {
       return sendUnauthorizedError(event, 'API key required')
+    }
+
+    // Validate API key
+    const storedKey = await webhookStorage.getApiKeyByValue(authApiKey)
+    if (!storedKey || !storedKey.active) {
+      return sendUnauthorizedError(event, 'Invalid or inactive API key')
+    }
+
+    // Security Engineer FIX: Check for required permissions
+    // Bulk status update requires write, delete, or admin permission
+    const hasRequiredPermission =
+      storedKey.permissions?.includes('write') ||
+      storedKey.permissions?.includes('delete') ||
+      storedKey.permissions?.includes('admin')
+
+    if (!hasRequiredPermission) {
+      return sendForbiddenError(
+        event,
+        'Insufficient permissions. Bulk status update requires write, delete, or admin permission.'
+      )
     }
 
     const body = await readBody(event)
