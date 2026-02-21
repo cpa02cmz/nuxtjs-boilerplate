@@ -106,10 +106,7 @@
           @mouseenter="isHandleHovered = true"
           @mouseleave="isHandleHovered = false"
         >
-          <div
-            class="drawer-handle-bar"
-            :style="handleStyle"
-          />
+          <div class="drawer-handle-bar" :style="handleStyle" />
           <div
             v-if="!prefersReducedMotion && swipeProgress > 0"
             class="drawer-handle-glow"
@@ -916,7 +913,8 @@ onUnmounted(() => {
 /* Button text */
 .button-text {
   position: relative;
-  z-index: 1;
+  /* 🧩 Flexy hates hardcoded z-index: 1! Using zIndexConfig.floatingLabel */
+  z-index: v-bind('zIndexConfig.floatingLabel');
 }
 
 /* 🎨 Pallete's micro-UX enhancement: Close button keyboard shortcut hint tooltip */

@@ -13,6 +13,7 @@ import { contentConfig } from '~/configs/content.config'
 import { webhooksConfig } from '~/configs/webhooks.config'
 import { animationConfig } from '~/configs/animation.config'
 import { easingConfig } from '~/configs/easing.config'
+import { zIndexConfig } from '~/configs/z-index.config'
 import { hapticLight, hapticSuccess } from '~/utils/hapticFeedback'
 
 interface WebhookFormData {
@@ -236,15 +237,9 @@ onUnmounted(() => {
         }"
         :style="getFieldDelay(0)"
       >
-        <label
-          for="webhook-url"
-          class="form-label"
-        >
+        <label for="webhook-url" class="form-label">
           {{ contentConfig.webhooks.form.urlLabel }}
-          <span
-            class="required-indicator"
-            aria-hidden="true"
-          >*</span>
+          <span class="required-indicator" aria-hidden="true">*</span>
           <span class="sr-only">{{
             contentConfig.webhooks.form.required
           }}</span>
@@ -266,7 +261,7 @@ onUnmounted(() => {
             }"
             @focus="handleFieldFocus('url')"
             @blur="handleFieldBlur"
-          >
+          />
           <!-- Pallete's micro-UX enhancement: Focus glow effect -->
           <span
             v-if="!prefersReducedMotion"
@@ -275,19 +270,13 @@ onUnmounted(() => {
             aria-hidden="true"
           />
         </div>
-        <p
-          id="webhook-url-description"
-          class="form-description"
-        >
+        <p id="webhook-url-description" class="form-description">
           {{ contentConfig.webhooks.form.urlDescription }}
         </p>
       </div>
 
       <!-- Pallete's micro-UX enhancement: Events fieldset with staggered animations -->
-      <div
-        class="form-group"
-        :style="getFieldDelay(1)"
-      >
+      <div class="form-group" :style="getFieldDelay(1)">
         <fieldset class="events-fieldset">
           <legend class="form-label">
             {{ contentConfig.webhooks.form.eventsLabel }}
@@ -346,7 +335,7 @@ onUnmounted(() => {
                 :aria-label="`Subscribe to ${event} event`"
                 class="sr-only"
                 @change="handleEventChange(event)"
-              >
+              />
               <span class="checkbox-text">{{ event }}</span>
             </label>
           </div>
@@ -368,7 +357,7 @@ onUnmounted(() => {
               type="checkbox"
               :aria-label="contentConfig.webhooks.ariaLabels.enableWebhook"
               class="sr-only"
-            >
+            />
             <span
               class="toggle-track"
               :class="{ 'toggle-track--active': formData.active }"
@@ -916,7 +905,8 @@ onUnmounted(() => {
 
 .btn-text {
   position: relative;
-  z-index: 1;
+  /* 🧩 Flexy hates hardcoded z-index: 1! Using zIndexConfig.floatingLabel */
+  z-index: v-bind('zIndexConfig.floatingLabel');
 }
 
 /* Pallete: Spinner animation for loading state */
