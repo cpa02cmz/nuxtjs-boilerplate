@@ -15,6 +15,23 @@ export interface ErrorTrackingPayload {
   source?: 'client' | 'server' | 'api'
 }
 
+export interface ErrorTracker {
+  trackError: (payload: ErrorTrackingPayload) => Promise<void>
+  getErrorStats: (timeRange: { start: Date; end: Date }) => Promise<{
+    totalErrors: number
+    errorsBySeverity: Record<string, number>
+    recentErrors: Array<{
+      id: string
+      message: string
+      severity: string
+      source: string
+      occurrenceCount: number
+      lastSeenAt: Date
+    }>
+  } | null>
+  resolveErrors: (errorIds: string[]) => Promise<void>
+}
+
 /**
  * Creates a simple hash for error deduplication
  * Combines message (first N chars) and stack trace (first N chars)
@@ -44,7 +61,7 @@ function createErrorHash(message: string, stack?: string): string {
  * Error tracker for server-side error tracking
  * Provides deduplication and aggregation capabilities
  */
-export function createErrorTracker() {
+export function createErrorTracker(): ErrorTracker {
   return {
     /**
      * Track an error with automatic deduplication
