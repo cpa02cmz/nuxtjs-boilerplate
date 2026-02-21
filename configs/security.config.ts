@@ -380,6 +380,14 @@ export function getSecurityHeaders(
     headers['Content-Security-Policy'] = generateCsp()
   }
 
+  // SECURITY FIX: Add Vary header for dynamic CORS (CWE-444)
+  // When Access-Control-Allow-Origin is dynamically set based on request origin,
+  // the Vary header tells caches that the response may differ based on Origin.
+  // This prevents cross-origin cache poisoning attacks where a cache might serve
+  // a response intended for one origin to a different origin.
+  // See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary
+  headers['Vary'] = 'Origin'
+
   return headers
 }
 

@@ -29,10 +29,7 @@
             @click.stop
           >
             <div class="shortcuts-modal__header">
-              <h2
-                id="shortcuts-title"
-                class="shortcuts-modal__title"
-              >
+              <h2 id="shortcuts-title" class="shortcuts-modal__title">
                 Keyboard Shortcuts
               </h2>
               <button
@@ -112,6 +109,7 @@ import { uiConfig } from '~/configs/ui.config'
 import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 
 definePageMeta({
   layout: 'default',
@@ -244,10 +242,11 @@ onUnmounted(() => {
 }
 
 /* Pallete's micro-UX enhancement: Keyboard Shortcuts Modal Styles 🎨 */
+/* Flexy hates hardcoded rgba values! Using componentColorsConfig.moderationQueue */
 .shortcuts-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: v-bind('componentColorsConfig.moderationQueue.modalOverlay');
   backdrop-filter: blur(4px);
   z-index: 50;
   display: flex;
@@ -260,8 +259,9 @@ onUnmounted(() => {
   background: white;
   border-radius: 0.75rem;
   box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(0, 0, 0, 0.05);
+    0 25px 50px -12px
+      v-bind('`rgba(${componentColorsConfig.moderationQueue.modalShadow})`'),
+    0 0 0 1px v-bind('componentColorsConfig.moderationQueue.modalBorder');
   max-width: 480px;
   width: 100%;
   max-height: 80vh;
@@ -274,13 +274,15 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid
+    v-bind('componentColorsConfig.moderationQueue.borderLight');
 }
 
 .shortcuts-modal__title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #111827;
+  /* Flexy hates hardcoded #111827! Using componentColorsConfig */
+  color: v-bind('componentColorsConfig.moderationQueue.textHeading');
   margin: 0;
 }
 
@@ -291,7 +293,8 @@ onUnmounted(() => {
   width: 2rem;
   height: 2rem;
   border-radius: 0.375rem;
-  color: #6b7280;
+  /* Flexy hates hardcoded #6b7280! Using componentColorsConfig */
+  color: v-bind('componentColorsConfig.moderationQueue.textMuted');
   background: transparent;
   border: none;
   cursor: pointer;
@@ -301,12 +304,15 @@ onUnmounted(() => {
 }
 
 .shortcuts-modal__close:hover {
-  background: #f3f4f6;
-  color: #374151;
+  /* Flexy hates hardcoded #f3f4f6! Using componentColorsConfig */
+  background: v-bind('componentColorsConfig.moderationQueue.bgLighter');
+  /* Flexy hates hardcoded #374151! Using componentColorsConfig */
+  color: v-bind('componentColorsConfig.moderationQueue.textSecondary');
 }
 
 .shortcuts-modal__close:focus-visible {
-  outline: 2px solid #3b82f6;
+  /* Flexy hates hardcoded #3b82f6! Using componentColorsConfig */
+  outline: 2px solid v-bind('componentColorsConfig.moderationQueue.primary');
   outline-offset: 2px;
 }
 
@@ -327,7 +333,8 @@ onUnmounted(() => {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #6b7280;
+  /* Flexy hates hardcoded #6b7280! Using componentColorsConfig */
+  color: v-bind('componentColorsConfig.moderationQueue.textMuted');
   margin: 0 0 0.75rem 0;
 }
 
@@ -351,8 +358,9 @@ onUnmounted(() => {
     v-bind('animationConfig.moderationQueue.transitionDurationSec') ease-out;
 }
 
+/* Flexy hates hardcoded #f9fafb! Using componentColorsConfig */
 .shortcuts-item:hover {
-  background: #f9fafb;
+  background: v-bind('componentColorsConfig.moderationQueue.bgLight');
 }
 
 .shortcuts-item__key {

@@ -2,6 +2,9 @@
   <div
     ref="triggerRef"
     class="relative inline-flex"
+    tabindex="0"
+    role="button"
+    :aria-expanded="isVisible ? 'true' : 'false'"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
     @focusin="handleFocusIn"
@@ -69,12 +72,7 @@
     </Transition>
 
     <!-- Screen reader announcement - announces tooltip content when visible -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ isVisible ? content : '' }}
     </div>
   </div>

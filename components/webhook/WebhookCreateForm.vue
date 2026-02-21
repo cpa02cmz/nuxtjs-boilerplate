@@ -236,15 +236,9 @@ onUnmounted(() => {
         }"
         :style="getFieldDelay(0)"
       >
-        <label
-          for="webhook-url"
-          class="form-label"
-        >
+        <label for="webhook-url" class="form-label">
           {{ contentConfig.webhooks.form.urlLabel }}
-          <span
-            class="required-indicator"
-            aria-hidden="true"
-          >*</span>
+          <span class="required-indicator" aria-hidden="true">*</span>
           <span class="sr-only">{{
             contentConfig.webhooks.form.required
           }}</span>
@@ -266,7 +260,7 @@ onUnmounted(() => {
             }"
             @focus="handleFieldFocus('url')"
             @blur="handleFieldBlur"
-          >
+          />
           <!-- Pallete's micro-UX enhancement: Focus glow effect -->
           <span
             v-if="!prefersReducedMotion"
@@ -275,19 +269,13 @@ onUnmounted(() => {
             aria-hidden="true"
           />
         </div>
-        <p
-          id="webhook-url-description"
-          class="form-description"
-        >
+        <p id="webhook-url-description" class="form-description">
           {{ contentConfig.webhooks.form.urlDescription }}
         </p>
       </div>
 
       <!-- Pallete's micro-UX enhancement: Events fieldset with staggered animations -->
-      <div
-        class="form-group"
-        :style="getFieldDelay(1)"
-      >
+      <div class="form-group" :style="getFieldDelay(1)">
         <fieldset class="events-fieldset">
           <legend class="form-label">
             {{ contentConfig.webhooks.form.eventsLabel }}
@@ -346,7 +334,7 @@ onUnmounted(() => {
                 :aria-label="`Subscribe to ${event} event`"
                 class="sr-only"
                 @change="handleEventChange(event)"
-              >
+              />
               <span class="checkbox-text">{{ event }}</span>
             </label>
           </div>
@@ -368,7 +356,7 @@ onUnmounted(() => {
               type="checkbox"
               :aria-label="contentConfig.webhooks.ariaLabels.enableWebhook"
               class="sr-only"
-            >
+            />
             <span
               class="toggle-track"
               :class="{ 'toggle-track--active': formData.active }"
@@ -484,7 +472,11 @@ onUnmounted(() => {
       ease-out,
     transform v-bind('animationConfig.webhookForm.fieldEntranceDurationSec')
       v-bind('easingConfig.cubicBezier.decelerate');
-  transition-delay: var(--field-delay, 0ms);
+  /* Flexy hates hardcoded 0ms! Using animationConfig.stagger.baseDelayMs */
+  transition-delay: var(
+    --field-delay,
+    v-bind('animationConfig.stagger.baseDelayMs + "ms"')
+  );
 }
 
 .webhook-form--visible .form-group {

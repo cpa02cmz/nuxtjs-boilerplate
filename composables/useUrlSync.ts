@@ -7,6 +7,10 @@ export const useUrlSync = (
   filterOptions: Ref<FilterOptions>,
   sortOption: Ref<SortOption>
 ) => {
+  // Debounce timer for URL updates to prevent excessive router navigations
+  let updateTimer: ReturnType<typeof setTimeout> | null = null
+  const DEBOUNCE_MS = 120
+
   const route = useRoute()
   const router = useRouter()
 
@@ -113,17 +117,29 @@ export const useUrlSync = (
   let stopFilterWatcher: (() => void) | null = null
   let stopSortWatcher: (() => void) | null = null
 
-  // Watch for changes and update URL
+  // Watch for changes and update URL with debouncing to batch rapid changes
   stopFilterWatcher = watch(
     filterOptions,
     () => {
-      updateUrlParams()
+      if (updateTimer !== null) {
+        clearTimeout(updateTimer)
+      }
+      updateTimer = setTimeout(() => {
+        updateUrlParams()
+        updateTimer = null
+      }, DEBOUNCE_MS)
     },
     { deep: true }
   )
 
   stopSortWatcher = watch(sortOption, () => {
-    updateUrlParams()
+    if (updateTimer !== null) {
+      clearTimeout(updateTimer)
+    }
+    updateTimer = setTimeout(() => {
+      updateUrlParams()
+      updateTimer = null
+    }, DEBOUNCE_MS)
   })
 
   // Parse initial URL params on mount
@@ -131,10 +147,14 @@ export const useUrlSync = (
     parseUrlParams()
   })
 
-  // Clean up watchers on unmount to prevent memory leaks
+  // Clean up watchers and timer on unmount to prevent memory leaks
   onUnmounted(() => {
     stopFilterWatcher?.()
     stopSortWatcher?.()
+    if (updateTimer !== null) {
+      clearTimeout(updateTimer)
+      updateTimer = null
+    }
   })
 
   return {

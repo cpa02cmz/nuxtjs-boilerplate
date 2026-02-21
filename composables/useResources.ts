@@ -48,9 +48,10 @@ export const useResources = () => {
   } = useResourceFilters()
 
   // Use the search-filter composable to handle combining search and filters
+  // Performance: Pass stable reference to avoid unnecessary reactivity triggers
   const { finalResources: searchFilteredResources } = useResourceSearchFilter(
     resources.value,
-    { value: { ...filterOptions.value } },
+    { value: filterOptions.value },
     filterOptions.value.searchQuery
   )
 
