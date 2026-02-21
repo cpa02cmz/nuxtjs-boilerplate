@@ -7,10 +7,7 @@
       {{ contentConfig.lifecycle.title }}
     </h3>
 
-    <div
-      v-if="statusHistory && statusHistory.length > 0"
-      class="timeline"
-    >
+    <div v-if="statusHistory && statusHistory.length > 0" class="timeline">
       <div
         v-for="(change, index) in statusHistory"
         :key="change.id"
@@ -87,10 +84,7 @@
           <div class="change-details">
             <!-- 🎨 Pallete's micro-UX enhancement: Typewriter Text Reveal ✨
                  Progressive text reveal for storytelling narrative -->
-            <div
-              v-if="change.reason"
-              class="reason"
-            >
+            <div v-if="change.reason" class="reason">
               <span class="reason-label">{{
                 contentConfig.lifecycle.labels.reason
               }}</span>
@@ -101,12 +95,10 @@
                     typingItems.has(index) && !prefersReducedMotion,
                 }"
                 :style="getTypewriterStyle(index, 'reason')"
-              >{{ change.reason }}</span>
+                >{{ change.reason }}</span
+              >
             </div>
-            <div
-              v-if="change.notes"
-              class="notes"
-            >
+            <div v-if="change.notes" class="notes">
               <span class="notes-label">{{
                 contentConfig.lifecycle.labels.notes
               }}</span>
@@ -117,7 +109,8 @@
                     typingItems.has(index) && !prefersReducedMotion,
                 }"
                 :style="getTypewriterStyle(index, 'notes')"
-              >{{ change.notes }}</span>
+                >{{ change.notes }}</span
+              >
             </div>
             <div
               class="changed-by"
@@ -131,20 +124,12 @@
       </div>
     </div>
 
-    <div
-      v-else
-      class="no-history"
-    >
+    <div v-else class="no-history">
       {{ contentConfig.lifecycle.emptyState }}
     </div>
 
     <!-- Screen reader announcements -->
-    <div
-      class="sr-only"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ announcement }}
     </div>
 
@@ -153,30 +138,22 @@
       class="update-history"
     >
       <h4>{{ contentConfig.lifecycle.updateHistoryTitle }}</h4>
-      <div
-        v-for="update in updateHistory"
-        :key="update.id"
-        class="update-item"
-      >
+      <div v-for="update in updateHistory" :key="update.id" class="update-item">
         <div class="update-header">
-          <span class="version">{{ contentConfig.lifecycle.versionPrefix
-          }}{{ update.version }}</span>
+          <span class="version"
+            >{{ contentConfig.lifecycle.versionPrefix
+            }}{{ update.version }}</span
+          >
           <span class="update-date">{{ formatDate(update.updatedAt) }}</span>
         </div>
-        <div
-          v-if="update.changelog"
-          class="changelog"
-        >
+        <div v-if="update.changelog" class="changelog">
           {{ update.changelog }}
         </div>
         <ul
           v-if="update.changes && update.changes.length > 0"
           class="changes-list"
         >
-          <li
-            v-for="(change, idx) in update.changes"
-            :key="idx"
-          >
+          <li v-for="(change, idx) in update.changes" :key="idx">
             {{ change }}
           </li>
         </ul>
@@ -198,27 +175,18 @@
           <kbd class="keyboard-hint__key">↓</kbd>
           <span class="keyboard-hint__text">Navigate</span>
         </span>
-        <span
-          class="keyboard-hint__divider"
-          aria-hidden="true"
-        >•</span>
+        <span class="keyboard-hint__divider" aria-hidden="true">•</span>
         <span class="keyboard-hint__item">
           <kbd class="keyboard-hint__key">j</kbd>
           <kbd class="keyboard-hint__key">k</kbd>
           <span class="keyboard-hint__text">Vim style</span>
         </span>
-        <span
-          class="keyboard-hint__divider"
-          aria-hidden="true"
-        >•</span>
+        <span class="keyboard-hint__divider" aria-hidden="true">•</span>
         <span class="keyboard-hint__item">
           <kbd class="keyboard-hint__key">Home</kbd>
           <span class="keyboard-hint__text">First</span>
         </span>
-        <span
-          class="keyboard-hint__divider"
-          aria-hidden="true"
-        >•</span>
+        <span class="keyboard-hint__divider" aria-hidden="true">•</span>
         <span class="keyboard-hint__item">
           <kbd class="keyboard-hint__key">End</kbd>
           <span class="keyboard-hint__text">Last</span>
@@ -573,10 +541,10 @@ onMounted(() => {
   document.addEventListener('focusout', handleBlur)
 
   // 🎨 Pallete's micro-UX enhancement: Initialize scroll-triggered narrative reveal
-  // Small delay to ensure DOM is ready
+  // Small delay to ensure DOM is ready - Flexy hates hardcoded 100ms!
   setTimeout(() => {
     initIntersectionObserver()
-  }, 100)
+  }, animationConfig.lifecycleTimeline.domInitDelayMs)
 })
 
 // Cleanup on unmount

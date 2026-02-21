@@ -5082,6 +5082,9 @@ export const animationConfig = {
     narrationDelayMs: parseInt(
       process.env.LIFECYCLE_NARRATION_DELAY_MS || '600'
     ),
+    // DOM initialization delay before setting up Intersection Observer (ms)
+    // Flexy hates hardcoded 100ms!
+    domInitDelayMs: parseInt(process.env.LIFECYCLE_DOM_INIT_DELAY_MS || '100'),
   },
 
   // 🎨 Palette's micro-UX enhancement: Typing Momentum Indicator ✨
