@@ -495,6 +495,12 @@ onUnmounted(() => {
   box-shadow: none;
 }
 
+.check-button:focus-visible {
+  outline: 2px solid v-bind('componentColorsConfig.healthMonitor.button.text');
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px v-bind('componentColorsConfig.healthMonitor.button.focusRing');
+}
+
 .check-button:disabled {
   background-color: v-bind(
     'componentColorsConfig.healthMonitor.button.disabledBg'
