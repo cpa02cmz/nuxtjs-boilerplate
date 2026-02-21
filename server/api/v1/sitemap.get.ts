@@ -10,6 +10,8 @@ import {
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import { handleApiRouteError } from '~/server/utils/api-response'
 import { contentConfig } from '~/configs/content.config'
+import { cacheManager } from '~/server/utils/enhanced-cache'
+import { timeConfig, toSeconds } from '~/configs/time.config'
 
 const API_ENDPOINTS = [
   { url: '/api/v1/resources', priority: '0.9', changefreq: 'daily' },
@@ -23,6 +25,16 @@ const API_ENDPOINTS = [
 export default defineEventHandler(async event => {
   try {
     await rateLimit(event)
+
+    // Performance: Cache sitemap for 1 hour since content rarely changes
+    const cacheKey = 'sitemap:xml'
+    const cachedSitemap = await cacheManager.get<string>(cacheKey)
+    if (cachedSitemap) {
+      setResponseHeader(event, 'Content-Type', 'application/xml')
+      setResponseHeader(event, 'X-Cache', 'HIT')
+      return cachedSitemap
+    }
+
     const resourcesModule = await import(contentConfig.paths.resourcesData)
     const resources: Resource[] = resourcesModule.default || resourcesModule
 
@@ -42,8 +54,18 @@ export default defineEventHandler(async event => {
       entries.push(buildResourceUrlEntry(baseUrl, resource))
     })
 
+    const sitemapXml = generateSitemapXML(entries)
+
+    // Cache for 1 hour (sitemap content changes infrequently)
+    await cacheManager.set(
+      cacheKey,
+      sitemapXml,
+      toSeconds(timeConfig.cache.long)
+    )
+
     setResponseHeader(event, 'Content-Type', 'application/xml')
-    return generateSitemapXML(entries)
+    setResponseHeader(event, 'X-Cache', 'MISS')
+    return sitemapXml
   } catch (error) {
     return handleApiRouteError(event, error)
   }
