@@ -111,7 +111,7 @@ sw.*
 test-tmp/
 
 # Editor backup files
-.vscode/settings.json
+.vscode/
 *.sublime-project
 *.sublime-workspace
 
