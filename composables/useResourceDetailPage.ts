@@ -7,7 +7,7 @@
  * - Separation of Concerns: Delegates to specialized utilities
  * - Orchestrator Pattern: Manages data flow between utilities
  */
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import {
   useRoute,
   useRuntimeConfig,
@@ -234,18 +234,32 @@ export const useResourceDetailPage = (
     }
   }
 
+  // Quality assurance: Track timeout for cleanup to prevent memory leak
+  let pollTimeoutId: ReturnType<typeof setTimeout> | null = null
+
   onMounted(() => {
     if (resourcesLoading.value) {
       const checkResources = () => {
         if (!resourcesLoading.value) {
           loadResource()
         } else {
-          setTimeout(checkResources, UI_TIMING.CONNECTION_RETRY_INTERVAL_MS)
+          pollTimeoutId = setTimeout(
+            checkResources,
+            UI_TIMING.CONNECTION_RETRY_INTERVAL_MS
+          )
         }
       }
       checkResources()
     } else {
       loadResource()
+    }
+  })
+
+  // Quality assurance: Cleanup timeout on unmount to prevent memory leaks
+  onUnmounted(() => {
+    if (pollTimeoutId) {
+      clearTimeout(pollTimeoutId)
+      pollTimeoutId = null
     }
   })
 
