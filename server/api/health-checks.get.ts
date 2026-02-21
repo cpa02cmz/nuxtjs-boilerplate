@@ -4,11 +4,12 @@ import { getAllResourceHealthStatuses } from '~/server/utils/resourceHealth'
 import { rateLimit } from '~/server/utils/enhanced-rate-limit'
 import {
   sendSuccessResponse,
-  handleApiRouteError,
+  wrapApiHandler,
 } from '~/server/utils/api-response'
 
-export default defineEventHandler(async event => {
-  try {
+// [-engineer] Refactored to use wrapApiHandler for standardized error handling
+export default defineEventHandler(
+  wrapApiHandler(async event => {
     await rateLimit(event)
 
     // Deprecation headers for backward compatibility
@@ -32,7 +33,5 @@ export default defineEventHandler(async event => {
     }
 
     return sendSuccessResponse(event, responseData)
-  } catch (error) {
-    return handleApiRouteError(event, error)
-  }
-})
+  })
+)
