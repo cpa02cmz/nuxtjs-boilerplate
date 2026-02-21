@@ -58,7 +58,7 @@ export default defineEventHandler(async event => {
       10
     )
 
-    const cacheKey = generateCacheKey(query)
+    const cacheKey = generateCacheKey(query as Record<string, unknown>)
 
     const cachedResult = await cacheManager.get(cacheKey)
     if (cachedResult) {
