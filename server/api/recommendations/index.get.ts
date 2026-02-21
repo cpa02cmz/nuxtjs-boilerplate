@@ -12,6 +12,7 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
+import { cacheManager, cacheSetWithTags } from '~/server/utils/enhanced-cache'
 import { defineEventHandler, getQuery } from 'h3'
 import { searchAnalyticsTracker } from '~/utils/searchAnalytics'
 import { limitsConfig } from '~/configs/limits.config'
@@ -19,6 +20,25 @@ import { logger } from '~/utils/logger'
 import { analyticsConfig } from '~/configs/analytics.config'
 import { recommendationConfig } from '~/configs/recommendation.config'
 import { TIME_MS } from '~/configs/time.config'
+import { cacheConfig } from '~/configs/cache.config'
+
+/**
+ * Generate cache key with sorted query parameters for consistent ordering
+ * Performance-engineer: Added caching for expensive recommendation computations
+ */
+const generateCacheKey = (query: Record<string, unknown>): string => {
+  const sortedQuery = Object.keys(query)
+    .sort()
+    .reduce(
+      (acc, key) => {
+        acc[key] = query[key]
+        return acc
+      },
+      {} as Record<string, unknown>
+    )
+
+  return `recommendations:${JSON.stringify(sortedQuery)}`
+}
 
 export interface RecommendationQuery {
   userId?: string
@@ -37,6 +57,15 @@ export default defineEventHandler(async event => {
       query.limit || String(limitsConfig.search.defaultPopularSearchesLimit),
       10
     )
+
+    const cacheKey = generateCacheKey(query)
+
+    const cachedResult = await cacheManager.get(cacheKey)
+    if (cachedResult) {
+      event.node.res?.setHeader('X-Cache', 'HIT')
+      event.node.res?.setHeader('X-Cache-Key', cacheKey)
+      return sendSuccessResponse(event, cachedResult)
+    }
 
     // Get all resources
     const resources = loadServerResources()
@@ -198,8 +227,7 @@ export default defineEventHandler(async event => {
         )
     }
 
-    // Return the recommendations
-    return sendSuccessResponse(event, {
+    const responseData = {
       recommendations: recommendations.map(r => ({
         id: r.resource.id,
         title: r.resource.title,
@@ -218,7 +246,19 @@ export default defineEventHandler(async event => {
       userId: query.userId || null,
       searchAnalyticsEnabled: !!searchAnalytics?.data,
       searchQuery: query.query || null,
-    })
+    }
+
+    await cacheSetWithTags(
+      cacheKey,
+      responseData,
+      cacheConfig.api.recommendationsTtlSeconds,
+      ['recommendations', 'api-v1']
+    )
+
+    event.node.res?.setHeader('X-Cache', 'MISS')
+    event.node.res?.setHeader('X-Cache-Key', cacheKey)
+
+    return sendSuccessResponse(event, responseData)
   } catch (error) {
     return handleApiRouteError(event, error)
   }

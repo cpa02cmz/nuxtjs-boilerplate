@@ -28,6 +28,7 @@ const DEFAULT_HEALTH_CHECK_TIMEOUT_MS = databaseConfig.healthCheck.timeoutMs
 const DEFAULT_HEALTH_CHECK_QUERY = databaseConfig.healthCheck.query
 
 // SECURITY FIX #3650: Models with soft delete support
+// -architect: Added Flag, TrackedError, ErrorMetric, PerformanceMetric (had deletedAt but were missing)
 const SOFT_DELETE_TABLES = [
   'analyticsEvent',
   'webhook',
@@ -38,6 +39,10 @@ const SOFT_DELETE_TABLES = [
   'resource',
   'submission',
   'idempotencyKey',
+  'flag',
+  'trackedError',
+  'errorMetric',
+  'performanceMetric',
 ]
 
 /**

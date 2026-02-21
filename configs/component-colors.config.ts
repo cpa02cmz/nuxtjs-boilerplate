@@ -140,6 +140,20 @@ export const componentColorsConfig = {
     },
   },
 
+  // Load More Button Colors - Flexy hates hardcoded colors! 🧩
+  // Progress ring stroke color for the Load More button
+  loadMore: {
+    // Background circle stroke color (gray-200)
+    strokeBg: process.env.LOAD_MORE_STROKE_BG || '#e5e7eb',
+  },
+
+  // About Page Colors - Flexy hates hardcoded colors! 🧩
+  // Hover background color for category items
+  about: {
+    // Light blue background on hover (rgba format)
+    hoverBg: process.env.ABOUT_HOVER_BG || 'rgba(59, 130, 246, 0.05)',
+  },
+
   // Review Queue Colors - Flexy hates hardcoded queue colors!
   reviewQueue: {
     cardShadow: process.env.REVIEW_QUEUE_CARD_SHADOW || '0, 0, 0, 0.1',
@@ -161,6 +175,39 @@ export const componentColorsConfig = {
       start: process.env.REVIEW_QUEUE_SHIMMER_START || '#e5e7eb',
       middle: process.env.REVIEW_QUEUE_SHIMMER_MIDDLE || '#f3f4f6',
       end: process.env.REVIEW_QUEUE_SHIMMER_END || '#e5e7eb',
+    },
+  },
+
+  // Moderation Queue Colors - Flexy hates hardcoded moderation colors! 🧩
+  moderationQueue: {
+    // Modal overlay background
+    modalOverlay: process.env.MODERATION_MODAL_OVERLAY || 'rgba(0, 0, 0, 0.5)',
+    // Modal shadow
+    modalShadow: process.env.MODERATION_MODAL_SHADOW || '0, 0, 0, 0.25',
+    modalBorder: process.env.MODERATION_MODAL_BORDER || 'rgba(0, 0, 0, 0.05)',
+    // Border colors
+    borderLight: process.env.MODERATION_BORDER_LIGHT || '#e5e7eb',
+    borderMedium: process.env.MODERATION_BORDER_MEDIUM || '#d1d5db',
+    // Text colors
+    textHeading: process.env.MODERATION_TEXT_HEADING || '#111827',
+    textMuted: process.env.MODERATION_TEXT_MUTED || '#6b7280',
+    textSecondary: process.env.MODERATION_TEXT_SECONDARY || '#374151',
+    textTertiary: process.env.MODERATION_TEXT_TERTIARY || '#4b5563',
+    // Background colors
+    bgLight: process.env.MODERATION_BG_LIGHT || '#f9fafb',
+    bgLighter: process.env.MODERATION_BG_LIGHTER || '#f3f4f6',
+    // Primary/brand colors
+    primary: process.env.MODERATION_PRIMARY || '#3b82f6',
+    // Dark mode colors
+    dark: {
+      bg: process.env.MODERATION_DARK_BG || '#1f2937',
+      bgSecondary: process.env.MODERATION_DARK_BG_SECONDARY || '#374151',
+      bgTertiary: process.env.MODERATION_DARK_BG_TERTIARY || '#4b5563',
+      border: process.env.MODERATION_DARK_BORDER || '#374151',
+      borderLight: process.env.MODERATION_DARK_BORDER_LIGHT || '#4b5563',
+      text: process.env.MODERATION_DARK_TEXT || '#e5e7eb',
+      textMuted: process.env.MODERATION_DARK_TEXT_MUTED || '#9ca3af',
+      textLight: process.env.MODERATION_DARK_TEXT_LIGHT || '#d1d5db',
     },
   },
 

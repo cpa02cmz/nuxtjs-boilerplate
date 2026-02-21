@@ -76,11 +76,13 @@ export function decryptSecret(encrypted: string): string | null {
     decrypted += decipher.final('utf8')
 
     return decrypted
-  } catch (error) {
-    // Sanitize error logging to prevent potential sensitive data exposure
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error'
-    logger.error('Failed to decrypt webhook secret:', errorMessage)
+  } catch {
+    // SECURITY: Log generic message only - no error details to prevent
+    // information disclosure about cryptographic operations (CWE-532)
+    // Error details are intentionally not logged to avoid side-channel attacks
+    logger.error(
+      'Webhook secret decryption failed - data may be corrupted or tampered'
+    )
     return null
   }
 }

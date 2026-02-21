@@ -6,7 +6,8 @@ import { logger } from '~/utils/logger'
 
 // Transaction context for nested transaction support
 // Prevents deadlocks by reusing existing transactions instead of creating new ones
-const transactionContext = new AsyncLocalStorage<typeof prisma>()
+// -architect: Use PrismaClient type instead of typeof prisma to avoid forward reference fragility
+const transactionContext = new AsyncLocalStorage<PrismaClient>()
 
 // Flexy hates hardcoded values! Using config for log prefix
 const LOG_PREFIX = databaseConfig.logging.prefix

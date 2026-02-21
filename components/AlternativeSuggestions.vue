@@ -185,21 +185,13 @@
       <p class="alternative-suggestions__empty-message">
         {{ contentConfig.alternativeSuggestions.emptyState.message }}
       </p>
-      <NuxtLink
-        to="/"
-        class="alternative-suggestions__empty-cta"
-      >
+      <NuxtLink to="/" class="alternative-suggestions__empty-cta">
         {{ contentConfig.alternativeSuggestions.emptyState.browseAll }}
       </NuxtLink>
     </div>
 
     <!-- Screen reader announcements -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcementText }}
     </div>
   </section>
@@ -562,6 +554,18 @@ watch(
   transform: scale(1);
 }
 
+/* [-engineer] Accessibility: Focus-visible styles for keyboard navigation */
+.alternative-suggestions__view-all:focus-visible {
+  outline: 2px solid
+    v-bind('componentColorsConfig.alternativeSuggestions.icon.gradientStart');
+  outline-offset: 2px;
+}
+
+.alternative-suggestions__view-all:focus-visible::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
 .alternative-suggestions__view-all--pressed {
   transform: scale(0.96);
 }
@@ -696,7 +700,11 @@ watch(
     transform
       v-bind('animationConfig.alternativeSuggestions.entranceDurationSec')
       v-bind('EASING.SPRING_SNAPPY');
-  transition-delay: var(--stagger-delay, 0ms);
+  /* Flexy hates hardcoded 0ms! Using animationConfig.stagger.baseDelayMs */
+  transition-delay: var(
+    --stagger-delay,
+    v-bind('animationConfig.stagger.baseDelayMs + "ms"')
+  );
 }
 
 .alternative-suggestions__grid.animations-enabled
@@ -816,6 +824,15 @@ watch(
     'componentColorsConfig.alternativeSuggestions.emptyState.ctaHover'
   );
   transform: translateY(-1px);
+}
+
+/* [-engineer] Accessibility: Focus-visible styles for keyboard navigation */
+.alternative-suggestions__empty-cta:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+  background-color: v-bind(
+    'componentColorsConfig.alternativeSuggestions.emptyState.ctaHover'
+  );
 }
 
 /* Screen Reader Only */
