@@ -12,14 +12,20 @@ export default defineEventHandler(async event => {
 
     const healthStatuses = getAllResourceHealthStatuses()
 
+    // Performance: Single-pass reduce instead of three filter calls (O(3n) → O(n))
+    const summary = healthStatuses.reduce(
+      (acc, h) => ({
+        healthy: acc.healthy + (h.isHealthy ? 1 : 0),
+        unhealthy: acc.unhealthy + (h.isHealthy === false ? 1 : 0),
+        unknown: acc.unknown + (h.lastStatus === null ? 1 : 0),
+      }),
+      { healthy: 0, unhealthy: 0, unknown: 0 }
+    )
+
     const responseData = {
       totalChecks: healthStatuses.length,
       healthStatuses,
-      summary: {
-        healthy: healthStatuses.filter(h => h.isHealthy).length,
-        unhealthy: healthStatuses.filter(h => h.isHealthy === false).length,
-        unknown: healthStatuses.filter(h => h.lastStatus === null).length,
-      },
+      summary,
       lastUpdated: new Date().toISOString(),
     }
 
