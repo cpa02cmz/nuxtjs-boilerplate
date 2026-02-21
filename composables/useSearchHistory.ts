@@ -1,9 +1,25 @@
-import { ref, computed } from 'vue'
+import { ref, computed, type ComputedRef } from 'vue'
 import { createStorage } from '~/utils/storage'
 import { STORAGE_KEYS } from '~/server/utils/constants'
 import { limitsConfig } from '~/configs/limits.config'
 
-export const useSearchHistory = () => {
+/**
+ * UseSearchHistory Return Type
+ */
+export interface UseSearchHistoryReturn {
+  /** Computed reference to the search history array */
+  searchHistory: ComputedRef<string[]>
+  /** Get the current search history from storage */
+  getSearchHistory: () => string[]
+  /** Add a new search query to history */
+  addSearchToHistory: (query: string) => void
+  /** Remove a specific search query from history */
+  removeSearch: (query: string) => void
+  /** Clear all search history */
+  clearSearchHistory: () => void
+}
+
+export const useSearchHistory = (): UseSearchHistoryReturn => {
   const SEARCH_HISTORY_KEY = STORAGE_KEYS.SEARCH_HISTORY
   const MAX_HISTORY_ITEMS = limitsConfig.search.maxHistoryItems
 
