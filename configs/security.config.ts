@@ -84,6 +84,10 @@ export const securityConfig = {
     'Permissions-Policy':
       process.env.HEADER_PERMISSIONS_POLICY ||
       'geolocation=(), microphone=(), camera=()',
+    // SECURITY: Cross-Origin-Resource-Policy prevents cross-origin resource leaks (CWE-1021)
+    // 'same-origin' blocks all cross-origin requests for this resource
+    'Cross-Origin-Resource-Policy':
+      process.env.HEADER_CROSS_ORIGIN_RESOURCE_POLICY || 'same-origin',
   },
 
   // Alias for backward compatibility with tests
@@ -99,6 +103,8 @@ export const securityConfig = {
     'Permissions-Policy':
       process.env.HEADER_PERMISSIONS_POLICY ||
       'geolocation=(), microphone=(), camera=()',
+    'Cross-Origin-Resource-Policy':
+      process.env.HEADER_CROSS_ORIGIN_RESOURCE_POLICY || 'same-origin',
     'Access-Control-Allow-Methods':
       process.env.CORS_ALLOWED_METHODS || 'GET, HEAD, POST, OPTIONS',
     'Access-Control-Allow-Headers':
