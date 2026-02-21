@@ -140,7 +140,7 @@ async function getSearchAnalyticsHandler(event: H3Event) {
     cacheKey,
     result,
     toSeconds(timeConfig.cache.short),
-    generateCacheTags(cacheTagsConfig.analytics.data)
+    generateCacheTags(cacheTagsConfig.analytics.stats)
   )
 
   event.node.res?.setHeader('X-Cache', 'MISS')
