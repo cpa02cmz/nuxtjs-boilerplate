@@ -3,7 +3,10 @@
     <!-- Content only renders after hydration to prevent mismatch with ssr: false -->
     <template v-if="isHydrated">
       <!-- Confetti celebration for successful submission -->
-      <ConfettiCelebration ref="confettiRef" intensity="medium" />
+      <ConfettiCelebration
+        ref="confettiRef"
+        intensity="medium"
+      />
 
       <!-- Smart Paste indicator - Palette's micro-UX enhancement! -->
       <!-- BroCula: Wrapped in ClientOnly to prevent hydration mismatch -->
@@ -77,7 +80,10 @@
                   'has-success': formData.title && !errors.title,
                 }"
               >
-                <label for="title" class="floating-label">
+                <label
+                  for="title"
+                  class="floating-label"
+                >
                   Resource Title <span aria-hidden="true">*</span>
                   <span class="sr-only">(required)</span>
                 </label>
@@ -114,7 +120,7 @@
                       ]"
                       @focus="isTitleFocused = true"
                       @blur="handleTitleBlur"
-                    />
+                    >
                   </template>
                 </CharacterCounter>
                 <!-- Validation checkmark - Palette's micro-UX delight! -->
@@ -150,7 +156,10 @@
                   </div>
                 </Transition>
               </div>
-              <p id="title-description" class="mt-1 text-sm text-gray-500">
+              <p
+                id="title-description"
+                class="mt-1 text-sm text-gray-500"
+              >
                 The name of the resource or service
               </p>
               <!-- Character limit progress bar for visual feedback -->
@@ -294,7 +303,10 @@
                   'has-success': formData.url && !errors.url,
                 }"
               >
-                <label for="url" class="floating-label">
+                <label
+                  for="url"
+                  class="floating-label"
+                >
                   URL <span aria-hidden="true">*</span>
                   <span class="sr-only">(required)</span>
                 </label>
@@ -318,7 +330,7 @@
                   ]"
                   @blur="handleUrlBlur"
                   @paste="handleSmartPaste"
-                />
+                >
                 <!-- Validation checkmark - Palette's micro-UX delight! -->
                 <Transition
                   :enter-active-class="`transition-all ${animationConfig.tailwindDurations.normal} ease-out`"
@@ -390,7 +402,12 @@
                   ]"
                   @blur="handleCategoryBlur"
                 >
-                  <option value="" disabled>Select a category</option>
+                  <option
+                    value=""
+                    disabled
+                  >
+                    Select a category
+                  </option>
                   <option
                     v-for="category in categoryOptions"
                     :key="category.value"
@@ -448,7 +465,10 @@
                   </div>
                 </Transition>
               </div>
-              <p id="category-description" class="mt-1 text-sm text-gray-500">
+              <p
+                id="category-description"
+                class="mt-1 text-sm text-gray-500"
+              >
                 Choose the most appropriate category for this resource
               </p>
               <div
@@ -469,7 +489,10 @@
                   'has-value': tagsInput.length > 0,
                 }"
               >
-                <label for="tags" class="floating-label">
+                <label
+                  for="tags"
+                  class="floating-label"
+                >
                   Tags (Optional)
                 </label>
                 <!-- Flexy hates hardcoded duration-200! Using animationConfig.tailwindDurations.normal -->
@@ -479,9 +502,12 @@
                   type="text"
                   aria-describedby="tags-description"
                   :class="`w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:border-blue-500 transition-all ${animationConfig.tailwindDurations.normal} input-focus-glow`"
-                />
+                >
               </div>
-              <p id="tags-description" class="mt-1 text-sm text-gray-500">
+              <p
+                id="tags-description"
+                class="mt-1 text-sm text-gray-500"
+              >
                 Add relevant tags to help categorize this resource (e.g., "api,
                 free-tier, openai")
               </p>
@@ -525,9 +551,7 @@
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span class="relative z-10"
-                      >Draft saved {{ lastSavedText }}</span
-                    >
+                    <span class="relative z-10">Draft saved {{ lastSavedText }}</span>
                     >
                   </div>
                   <div
@@ -552,7 +576,10 @@
                 <span v-if="!isSubmitting">{{
                   contentConfig.submit.button.submit
                 }}</span>
-                <span v-else class="flex items-center">
+                <span
+                  v-else
+                  class="flex items-center"
+                >
                   <svg
                     class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
@@ -584,13 +611,11 @@
               >
                 <kbd
                   class="px-1.5 py-0.5 text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded border border-gray-200 dark:border-gray-600"
-                  >Ctrl</kbd
-                >
+                >Ctrl</kbd>
                 +
                 <kbd
                   class="px-1.5 py-0.5 text-xs font-mono bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded border border-gray-200 dark:border-gray-600"
-                  >Enter</kbd
-                >
+                >Enter</kbd>
                 to submit
               </p>
             </div>
@@ -670,14 +695,19 @@
       </div>
     </template>
     <!-- BroCula: Loading state while hydrating -->
-    <div v-else class="flex items-center justify-center h-full min-h-[50vh]">
+    <div
+      v-else
+      class="flex items-center justify-center h-full min-h-[50vh]"
+    >
       <div class="text-center">
         <div class="animate-pulse flex space-x-2 justify-center mb-4">
           <div class="w-3 h-3 bg-blue-500 rounded-full" />
           <div class="w-3 h-3 bg-blue-500 rounded-full" />
           <div class="w-3 h-3 bg-blue-500 rounded-full" />
         </div>
-        <p class="text-gray-500 text-sm">Loading form...</p>
+        <p class="text-gray-500 text-sm">
+          Loading form...
+        </p>
       </div>
     </div>
   </div>
