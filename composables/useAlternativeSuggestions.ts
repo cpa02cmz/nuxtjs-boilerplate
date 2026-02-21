@@ -40,6 +40,11 @@ export const useAlternativeSuggestions = (
     const alternatives: AlternativeSuggestion[] = []
     const engine = useRecommendationEngine(allResources)
 
+    // Performance: Convert targetResource arrays to Sets for O(1) lookups
+    // This changes tag/technology matching from O(n*m) to O(n+m)
+    const targetTagsSet = new Set(targetResource.tags)
+    const targetTechnologySet = new Set(targetResource.technology)
+
     for (const resource of allResources) {
       if (resource.id === targetResource.id) continue
 
@@ -65,15 +70,13 @@ export const useAlternativeSuggestions = (
           factors.push('Same category')
         }
 
-        if (targetResource.tags.some(tag => resource.tags.includes(tag))) {
+        // Performance: Use Set.has() for O(1) lookup instead of Array.includes() O(n)
+        if (resource.tags.some(tag => targetTagsSet.has(tag))) {
           factors.push('Shared tags')
         }
 
-        if (
-          targetResource.technology.some(tech =>
-            resource.technology.includes(tech)
-          )
-        ) {
+        // Performance: Use Set.has() for O(1) lookup instead of Array.includes() O(n)
+        if (resource.technology.some(tech => targetTechnologySet.has(tech))) {
           factors.push('Similar technology')
         }
 
