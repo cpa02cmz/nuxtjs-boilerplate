@@ -70,10 +70,7 @@
           />
         </svg>
       </div>
-      <h4
-        :id="titleId"
-        class="font-semibold text-gray-800 capitalize"
-      >
+      <h4 :id="titleId" class="font-semibold text-gray-800 capitalize">
         {{ type }}
       </h4>
     </div>
@@ -82,7 +79,8 @@
       <span
         class="text-2xl font-bold text-gray-900"
         :aria-label="`${limit} ${unit}`"
-      >{{ limit }}</span>
+        >{{ limit }}</span
+      >
     </div>
 
     <p
@@ -93,12 +91,7 @@
     </p>
 
     <!-- Palette's micro-UX: Screen reader announcement for interactions -->
-    <div
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
       {{ announcement }}
     </div>
   </div>
@@ -108,6 +101,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { hapticLight } from '~/utils/hapticFeedback'
 import { animationConfig } from '~/configs/animation.config'
+import { componentColorsConfig } from '~/configs/component-colors.config'
 import { generateId } from '~/utils/generateId'
 
 interface Props {
@@ -215,6 +209,10 @@ const glowTransitionDuration = computed(
 )
 const fadeInDuration = computed(() => animationConfig.rateLimitCard.fadeInSec)
 
+// Flexy hates hardcoded colors! Using componentColorsConfig 🧩
+const hoverBorderColor = computed(() => componentColorsConfig.common.gray[300])
+const focusBorderColor = computed(() => componentColorsConfig.common.blue[500])
+
 // Palette's micro-UX enhancement: Interaction handlers with haptic feedback
 const handleMouseEnter = () => {
   isHovering.value = true
@@ -272,7 +270,8 @@ const handleKeydown = (event: KeyboardEvent) => {
   box-shadow:
     0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  border-color: #d1d5db;
+  /* Flexy hates hardcoded colors! Using componentColorsConfig 🧩 */
+  border-color: v-bind(hoverBorderColor);
 }
 
 /* Palette's micro-UX enhancement: Scale effect on hover */
@@ -286,7 +285,8 @@ const handleKeydown = (event: KeyboardEvent) => {
   box-shadow:
     0 0 0 3px rgba(59, 130, 246, 0.3),
     0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  border-color: #3b82f6;
+  /* Flexy hates hardcoded colors! Using componentColorsConfig 🧩 */
+  border-color: v-bind(focusBorderColor);
 }
 
 /* Palette's micro-UX enhancement: Icon container with pulse animation */
