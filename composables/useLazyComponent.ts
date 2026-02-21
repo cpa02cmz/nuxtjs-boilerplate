@@ -5,7 +5,7 @@ import type { Component } from 'vue'
 import { performanceConfig } from '~/configs/performance.config'
 import { logger } from '~/utils/logger'
 
-interface LazyComponentOptions {
+export interface LazyComponentOptions {
   // Root margin for intersection observer
   rootMargin?: string
   // Threshold for triggering load
@@ -20,10 +20,23 @@ interface LazyComponentOptions {
   timeout?: number
 }
 
+export interface UseLazyComponentReturn {
+  /** Lazy-loaded component wrapped with defineAsyncComponent */
+  LazyComponent: Component
+  /** Reference to attach to the container element for intersection observation */
+  componentRef: ReturnType<typeof ref<HTMLElement | null>>
+  /** Whether the component is currently visible in viewport */
+  isVisible: ReturnType<typeof ref<boolean>>
+  /** Whether the component has finished loading */
+  isLoaded: ReturnType<typeof ref<boolean>>
+  /** Whether an error occurred during loading */
+  hasError: ReturnType<typeof ref<boolean>>
+}
+
 export function useLazyComponent(
   componentLoader: () => Promise<Component>,
   options: LazyComponentOptions = {}
-) {
+): UseLazyComponentReturn {
   const {
     // Flexy hates hardcoded '50px'! Using config instead
     rootMargin = performanceConfig.lazyLoading.rootMargin,
@@ -117,7 +130,7 @@ export function useLazyComponent(
 export function createLazyComponent(
   importFn: () => Promise<Component>,
   options: LazyComponentOptions = {}
-) {
+): Component {
   return defineAsyncComponent({
     loader: importFn,
     loadingComponent: options.loadingComponent,
@@ -131,7 +144,7 @@ export function createLazyComponent(
 }
 
 // Preload critical components
-export function preloadComponent(importFn: () => Promise<Component>) {
+export function preloadComponent(importFn: () => Promise<Component>): void {
   // Use requestIdleCallback if available, otherwise setTimeout
   const schedule =
     typeof window !== 'undefined' && 'requestIdleCallback' in window
@@ -151,7 +164,7 @@ export function preloadComponent(importFn: () => Promise<Component>) {
 export function prefetchOnHover(
   element: HTMLElement,
   importFn: () => Promise<Component>
-) {
+): () => void {
   const handleMouseEnter = () => {
     importFn().catch(() => {
       // Silently fail prefetches
