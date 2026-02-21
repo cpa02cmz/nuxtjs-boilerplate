@@ -1,10 +1,10 @@
 import { prisma } from './db'
+import { safeJsonParse } from './safeJsonParse'
 import type {
   PerformanceMetricData,
   AggregatedMetric,
 } from '~/types/performance'
 import logger from '~/utils/logger'
-
 // Store a single performance metric
 export async function storePerformanceMetric(
   data: PerformanceMetricData
@@ -79,7 +79,7 @@ export async function getPerformanceMetrics(
     return metrics.map(
       (m: { metadata: string | null; [key: string]: unknown }) => ({
         ...m,
-        metadata: m.metadata ? JSON.parse(m.metadata as string) : null,
+        metadata: m.metadata ? safeJsonParse(m.metadata as string, null) : null,
       })
     ) as MetricResult[]
   } catch (error) {
