@@ -23,6 +23,10 @@ export const zIndexConfig = {
   overlay: parseInt(process.env.Z_INDEX_OVERLAY || '40', 10),
   drawer: parseInt(process.env.Z_INDEX_DRAWER || '50', 10),
   modal: parseInt(process.env.Z_INDEX_MODAL || '50', 10),
+  particleContainer: parseInt(
+    process.env.Z_INDEX_PARTICLE_CONTAINER || '100',
+    10
+  ), // modularity-engineer: configurable z-index for particle burst containers
 
   // Critical layers (1000+) - system elements
   toast: parseInt(process.env.Z_INDEX_TOAST || '50', 10),
