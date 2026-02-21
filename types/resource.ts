@@ -36,6 +36,12 @@ export interface Resource {
   rejectionReason?: string
   qualityScore?: number
   flags?: Flag[] | readonly Flag[]
+  // Resource lifecycle and health
+  healthScore?: number // Health score 0-100
+  migrationPath?: string // Suggested migration path for deprecated resources
+  deprecationDate?: string // Date when resource will be deprecated
+  statusHistory?: StatusChange[] | readonly StatusChange[] // History of status changes
+  updateHistory?: ResourceUpdate[] | readonly ResourceUpdate[] // History of updates
 }
 
 export interface Flag {
