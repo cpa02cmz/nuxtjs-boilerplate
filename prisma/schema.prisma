@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DATABASE_URL")
 }
 
@@ -32,7 +32,7 @@ model AnalyticsEvent {
 
 model RateLimit {
   id        String   @id @default(cuid())
-  key       String   // IP address or user identifier
+  key       String // IP address or user identifier
   window    DateTime // Time window start (minute buckets)
   count     Int      @default(0)
   createdAt DateTime @default(now())
@@ -62,20 +62,20 @@ model Webhook {
 }
 
 model WebhookDelivery {
-  id             String           @id @default(cuid())
-  webhookId      String
-  webhook        Webhook          @relation(fields: [webhookId], references: [id], onDelete: Cascade)
-  event          String
-  payload        String
-  status         String           @default("pending")
-  statusCode     Int?
-  responseBody   String?
-  errorMessage   String?
-  attemptCount   Int              @default(1)
-  idempotencyKey String?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  deletedAt      DateTime?
+  id              String           @id @default(cuid())
+  webhookId       String
+  webhook         Webhook          @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+  event           String
+  payload         String
+  status          String           @default("pending")
+  statusCode      Int?
+  responseBody    String?
+  errorMessage    String?
+  attemptCount    Int              @default(1)
+  idempotencyKey  String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
   idempotencyKeys IdempotencyKey[]
 
   @@index([webhookId])
@@ -130,7 +130,7 @@ model DeadLetterWebhook {
 model ApiKey {
   id          String    @id @default(cuid())
   keyHash     String    @unique // Bcrypt hash of the API key (never store plaintext)
-  keyPrefix   String    // First 8 chars of key for identification (not secret)
+  keyPrefix   String // First 8 chars of key for identification (not secret)
   userId      String?
   name        String
   permissions String
@@ -167,16 +167,16 @@ model IdempotencyKey {
 }
 
 model Flag {
-  id          String    @id @default(cuid())
-  resourceId  String
-  reason      String
-  reportedBy  String
-  resolved    Boolean   @default(false)
-  resolvedBy  String?
-  resolvedAt  DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
+  id         String    @id @default(cuid())
+  resourceId String
+  reason     String
+  reportedBy String
+  resolved   Boolean   @default(false)
+  resolvedBy String?
+  resolvedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
 
   @@index([resourceId])
   @@index([reportedBy])
@@ -187,39 +187,39 @@ model Flag {
 }
 
 model Resource {
-  id              String    @id @default(cuid())
+  id              String      @id @default(cuid())
   title           String
   description     String
-  benefits        String    // JSON array of strings
+  benefits        String // JSON array of strings
   url             String
   category        String
   pricingModel    String
   difficulty      String
-  tags            String    // JSON array of strings
-  technology      String    // JSON array of strings
-  dateAdded       DateTime  @default(now())
-  lastUpdated     DateTime  @updatedAt
-  popularity      Int       @default(0)
-  viewCount       Int       @default(0)
+  tags            String // JSON array of strings
+  technology      String // JSON array of strings
+  dateAdded       DateTime    @default(now())
+  lastUpdated     DateTime    @updatedAt
+  popularity      Int         @default(0)
+  viewCount       Int         @default(0)
   rating          Float?
-  screenshots     String?   // JSON array of URLs
-  specifications  String?   // JSON object
-  features        String?   // JSON array of strings
-  limitations     String?   // JSON array of strings
-  platforms       String?   // JSON array of strings
+  screenshots     String? // JSON array of URLs
+  specifications  String? // JSON object
+  features        String? // JSON array of strings
+  limitations     String? // JSON array of strings
+  platforms       String? // JSON array of strings
   license         String?
   icon            String?
-  alternatives    String?   // JSON array of resource IDs
-  status          String    @default("approved")
+  alternatives    String? // JSON array of resource IDs
+  status          String      @default("approved")
   submittedBy     String?
   reviewedBy      String?
   reviewedAt      DateTime?
   rejectionReason String?
   qualityScore    Float?
-  statusHistory   String?   // JSON array of status change records
+  statusHistory   String? // JSON array of status change records
   deletedAt       DateTime?
   submission      Submission? @relation(fields: [submissionId], references: [id], onDelete: SetNull)
-  submissionId    String?   @unique
+  submissionId    String?     @unique
 
   @@index([url])
   @@index([category])
@@ -229,20 +229,21 @@ model Resource {
   @@index([deletedAt])
   @@index([category, status])
   @@index([status, deletedAt])
+  @@index([status, dateAdded]) // -architect: Optimizes resource listing queries with status filter and date ordering
 }
 
 model Submission {
-  id            String   @id @default(cuid())
-  resourceData  String   // JSON string of Partial<Resource>
-  status        String   @default("pending") // pending, approved, rejected
-  submittedBy   String
-  submittedAt   DateTime @default(now())
-  reviewedBy    String?
-  reviewedAt    DateTime?
-  notes         String?
+  id              String    @id @default(cuid())
+  resourceData    String // JSON string of Partial<Resource>
+  status          String    @default("pending") // pending, approved, rejected
+  submittedBy     String
+  submittedAt     DateTime  @default(now())
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  notes           String?
   rejectionReason String?
-  resource      Resource?
-  deletedAt     DateTime?
+  resource        Resource?
+  deletedAt       DateTime?
 
   @@index([status])
   @@index([submittedBy])
@@ -252,21 +253,21 @@ model Submission {
 }
 
 model TrackedError {
-  id            String   @id @default(cuid())
-  message       String
-  stack         String?
-  component     String?
-  severity      String   @default("error") // info, warning, error, critical
-  url           String?
-  userAgent     String?
-  ip            String?
-  source        String   @default("client") // client, server, api
-  errorHash     String?  // For deduplication
-  occurrenceCount Int    @default(1)
-  firstSeenAt   DateTime @default(now())
-  lastSeenAt    DateTime @updatedAt
-  resolvedAt    DateTime?
-  deletedAt     DateTime?
+  id              String    @id @default(cuid())
+  message         String
+  stack           String?
+  component       String?
+  severity        String    @default("error") // info, warning, error, critical
+  url             String?
+  userAgent       String?
+  ip              String?
+  source          String    @default("client") // client, server, api
+  errorHash       String? // For deduplication
+  occurrenceCount Int       @default(1)
+  firstSeenAt     DateTime  @default(now())
+  lastSeenAt      DateTime  @updatedAt
+  resolvedAt      DateTime?
+  deletedAt       DateTime?
 
   @@index([severity])
   @@index([source])
@@ -279,13 +280,13 @@ model TrackedError {
 }
 
 model ErrorMetric {
-  id            String   @id @default(cuid())
-  date          DateTime @default(now())
-  hour          Int      @default(0)
-  severity      String
-  source        String
-  count         Int      @default(0)
-  deletedAt     DateTime?
+  id        String    @id @default(cuid())
+  date      DateTime  @default(now())
+  hour      Int       @default(0)
+  severity  String
+  source    String
+  count     Int       @default(0)
+  deletedAt DateTime?
 
   @@unique([date, hour, severity, source])
   @@index([date])
@@ -293,21 +294,21 @@ model ErrorMetric {
 }
 
 model PerformanceMetric {
-  id          String    @id @default(cuid())
-  timestamp   DateTime
-  metricType  String    // web-vital, api, resource, custom
-  metricName  String    // LCP, INP, CLS, FCP, TTFB, etc.
-  value       Float
-  rating      String?   // good, needs-improvement, poor
-  url         String?
-  userAgent   String?
-  connection  String?   // network connection type
-  metadata    String?   // JSON string for additional data
-  deletedAt   DateTime?
+  id         String    @id @default(cuid())
+  timestamp  DateTime
+  metricType String // web-vital, api, resource, custom
+  metricName String // LCP, INP, CLS, FCP, TTFB, etc.
+  value      Float
+  rating     String? // good, needs-improvement, poor
+  url        String?
+  userAgent  String?
+  connection String? // network connection type
+  metadata   String? // JSON string for additional data
+  deletedAt  DateTime?
 
   // Optimized indexes for performance dashboard queries
-  @@index([timestamp, metricType])           // Time range queries with type filter
-  @@index([timestamp, metricName])           // Time range queries with name filter
+  @@index([timestamp, metricType]) // Time range queries with type filter
+  @@index([timestamp, metricName]) // Time range queries with name filter
   @@index([metricType, metricName, timestamp]) // Dashboard aggregation queries
-  @@index([timestamp, deletedAt])            // -architect: Cleanup queries with soft delete filter
+  @@index([timestamp, deletedAt]) // -architect: Cleanup queries with soft delete filter
 }
