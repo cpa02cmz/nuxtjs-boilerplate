@@ -148,23 +148,23 @@ npm run test:coverage
 ### Getting Started
 
 - [AGENTS.md](AGENTS.md) - **Comprehensive guide for AI assistants and developers (Start here!)**
-- **[Development Setup Guide](docs/development-setup.md)** - Complete environment setup (coming soon)
+- Development Setup Guide - Complete environment setup (planned)
 
 ### Development
 
-- [Development Guide](./docs/development.md) - Development workflows and patterns
-- [Integration Patterns](./docs/integration-patterns.md) - Architecture and design patterns
-- [Testing Guide](./docs/testing.md) - Testing strategies and procedures
+- Development Guide - Development workflows and patterns (planned)
+- Integration Patterns - Architecture and design patterns (planned)
+- Testing Guide - Testing strategies and procedures (planned)
 
 ### API & Deployment
 
-- [API Reference](./docs/api/README.md) - RESTful API documentation
-- [Deployment Guide](./docs/deployment/README.md) - Production deployment instructions
+- API Reference - RESTful API documentation (planned)
+- Deployment Guide - Production deployment instructions (planned)
 
 ### Troubleshooting
 
-- [Troubleshooting Guide](docs/development-setup.md#troubleshooting) - Common issues and solutions
-- [Repository Management](./docs/repository-management.md) - Project maintenance guidelines
+- Troubleshooting Guide - Common issues and solutions (planned)
+- Repository Management - Project maintenance guidelines (planned)
 
 ## 🤝 Contributing
 
@@ -174,8 +174,9 @@ We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md)
 
 This project follows a structured approach to repository management. For information about our triage process, issue handling, and PR review workflow, see:
 
-- [Repository Management Guide](./docs/repository-management.md)
-- [Triage Process](./docs/repository-triage-process.md)
+- [AGENTS.md](AGENTS.md) - Repository management and maintenance guidelines
+- Repository Management Guide (planned)
+- Triage Process (planned)
 
 We're committed to maintaining a healthy repository with:
 
@@ -198,7 +199,7 @@ This boilerplate implements a comprehensive architecture for modern web applicat
 - **Search & Discovery**: Advanced search with faceted filtering and recommendations
 - **Community Features**: User engagement tools and moderation system
 
-For more details, see the [integration patterns guide](./docs/integration-patterns.md).
+For more details, see the architecture documentation in [AGENTS.md](AGENTS.md).
 
 ## 🏗️ Infrastructure Status
 
@@ -210,7 +211,7 @@ This project has undergone infrastructure stabilization to ensure reliable devel
 - ✅ **Code Quality**: Linting passes with no critical issues
 - ⚠️ **Security**: 40 vulnerabilities detected (dev dependencies only - see [VULNERABILITIES.md](VULNERABILITIES.md))
 
-For more details about our infrastructure improvements, see the [security improvements documentation](./docs/security-improvements.md).
+For more details about our infrastructure improvements, see [AGENTS.md](AGENTS.md).
 
 **Last Updated**: 2026-02-21
 
