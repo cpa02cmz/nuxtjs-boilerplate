@@ -575,7 +575,8 @@ const spotlightFadeInDuration = computed(
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 1;
+  /* Flexy hates hardcoded z-index: 1! Using zIndexScale.low[1] */
+  z-index: v-bind('zIndexScale.low[1]');
   border-radius: var(--spotlight-radius, 12px);
   background: radial-gradient(
     circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
@@ -705,7 +706,8 @@ const spotlightFadeInDuration = computed(
 /* Score value text */
 .similarity-score-value {
   position: relative;
-  z-index: 1;
+  /* Flexy hates hardcoded z-index: 1! Using zIndexScale.low[1] */
+  z-index: v-bind('zIndexScale.low[1]');
   font-size: 11px;
   font-weight: 700;
   color: white;
