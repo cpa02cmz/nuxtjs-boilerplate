@@ -2,10 +2,7 @@
   <div class="api-keys-manager">
     <div class="api-keys-header">
       <h2>{{ contentConfig.apiKeys.title }}</h2>
-      <button
-        class="btn btn-primary"
-        @click="showCreateForm = true"
-      >
+      <button class="btn btn-primary" @click="showCreateForm = true">
         {{ contentConfig.apiKeys.buttons.create }}
       </button>
     </div>
@@ -27,7 +24,7 @@
             required
             :placeholder="contentConfig.apiKeys.placeholders.keyNameAlt"
             class="form-control"
-          >
+          />
         </div>
 
         <div class="form-group">
@@ -102,6 +99,10 @@
             {{ contentConfig.apiKeys.buttons.cancel }}
           </button>
         </div>
+        <!-- User Story Engineer: Keyboard shortcut hint for quick submission -->
+        <p class="keyboard-hint">
+          <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Enter</kbd> to submit
+        </p>
       </form>
     </div>
 
@@ -117,10 +118,7 @@
         aria-live="polite"
       >
         <!-- Animated Illustration -->
-        <div
-          class="api-key-illustration"
-          aria-hidden="true"
-        >
+        <div class="api-key-illustration" aria-hidden="true">
           <!-- Background Circle -->
           <div
             class="api-key-bg-circle"
@@ -193,10 +191,7 @@
           {{ contentConfig.apiKeys.empty.ctaButton }}
         </button>
       </div>
-      <div
-        v-else
-        class="api-key-items"
-      >
+      <div v-else class="api-key-items">
         <TransitionGroup
           name="api-key-item"
           tag="div"
@@ -306,7 +301,7 @@
                       :r="
                         (animationConfig.pressAndHold.ringSize -
                           animationConfig.pressAndHold.strokeWidth) /
-                          2
+                        2
                       "
                       fill="none"
                       :stroke-width="animationConfig.pressAndHold.strokeWidth"
@@ -319,7 +314,7 @@
                       :r="
                         (animationConfig.pressAndHold.ringSize -
                           animationConfig.pressAndHold.strokeWidth) /
-                          2
+                        2
                       "
                       fill="none"
                       :stroke-width="animationConfig.pressAndHold.strokeWidth"
@@ -376,11 +371,7 @@
     </div>
 
     <!-- API Key Created Modal -->
-    <div
-      v-if="showKeyCreatedModal"
-      class="modal-overlay"
-      @click="closeModal"
-    >
+    <div v-if="showKeyCreatedModal" class="modal-overlay" @click="closeModal">
       <div
         ref="modalContent"
         class="modal-content"
@@ -395,10 +386,7 @@
           {{ contentConfig.apiKeys.buttons.create }}
         </h3>
         <p><strong>Key:</strong> {{ createdApiKey?.key }}</p>
-        <p
-          class="warning"
-          role="alert"
-        >
+        <p class="warning" role="alert">
           Make sure to copy this key now. You won't be able to see it again.
         </p>
         <div class="form-actions">
@@ -445,10 +433,7 @@
                 : contentConfig.messages.clipboard.copy
             }}
           </button>
-          <button
-            class="btn btn-secondary"
-            @click="closeModal"
-          >
+          <button class="btn btn-secondary" @click="closeModal">
             {{ contentConfig.apiKeys.buttons.cancel }}
           </button>
         </div>
@@ -488,7 +473,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, reactive, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, reactive, nextTick } from 'vue'
 import type { ApiKey } from '~/types/webhook'
 import type { NewApiKey } from '~/composables/useApiKeysManager'
 import { useApiKeysManager } from '~/composables/useApiKeysManager'
@@ -750,9 +735,32 @@ const copyApiKey = async () => {
   }
 }
 
+// 🎨 User Story Engineer: Keyboard shortcut handler for quick form submission
+// Ctrl+Enter (Windows/Linux) or Cmd+Enter (macOS) submits the form
+const handleCreateFormKeydown = (event: KeyboardEvent) => {
+  // Check for Ctrl+Enter or Cmd+Enter
+  if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+    if (showCreateForm.value && !isCreating.value && newApiKey.name.trim()) {
+      event.preventDefault()
+      createApiKey()
+    }
+  }
+}
+
 // Load API keys on component mount
 onMounted(() => {
   fetchApiKeys()
+  // User Story Engineer: Register keyboard shortcut listener
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', handleCreateFormKeydown)
+  }
+})
+
+// User Story Engineer: Cleanup keyboard listener on unmount
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('keydown', handleCreateFormKeydown)
+  }
 })
 </script>
 
@@ -804,6 +812,32 @@ onMounted(() => {
   display: flex;
   gap: v-bind('componentStylesConfig.apiKeys.actionsGap');
   margin-top: v-bind('componentStylesConfig.apiKeys.actionsMarginTop');
+}
+
+/* User Story Engineer: Keyboard shortcut hint styles */
+.keyboard-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.kbd {
+  display: inline-block;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.6875rem;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  line-height: 1;
+  color: #374151;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .api-keys-list h3 {
