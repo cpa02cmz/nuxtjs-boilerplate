@@ -63,13 +63,17 @@ export default defineEventHandler(async event => {
       const resourceTags = resource.tags || []
       const resourceTech = resource.technology || []
 
+      // Performance optimization: Use Set for O(1) lookups instead of Array.includes O(n)
+      const resourceTagsSet = new Set(resourceTags)
+      const resourceTechSet = new Set(resourceTech)
+
       alternatives = resources
         .filter(
           r =>
             r.id !== resourceId &&
             (r.category === resourceCategory ||
-              r.tags?.some((tag: string) => resourceTags.includes(tag)) ||
-              r.technology?.some((tech: string) => resourceTech.includes(tech)))
+              r.tags?.some((tag: string) => resourceTagsSet.has(tag)) ||
+              r.technology?.some((tech: string) => resourceTechSet.has(tech)))
         )
         .slice(0, limitsConfig.suggestions.maxAlternatives) // Use config instead of hardcoded
     }
