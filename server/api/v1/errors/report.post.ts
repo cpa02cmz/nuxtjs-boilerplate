@@ -9,59 +9,7 @@ import {
   sendSuccessResponse,
   handleApiRouteError,
 } from '~/server/utils/api-response'
-
-// Flexy update: Using centralized limits config - no more hardcoded values!
-const ALLOWED_SEVERITIES = ['error', 'warning', 'info', 'critical'] as const
-
-/**
- * Validates and sanitizes error report input
- * Prevents log injection and ensures data integrity
- */
-function validateErrorReport(body: Record<string, unknown>) {
-  // Validate required message field
-  if (!body.message || typeof body.message !== 'string') {
-    return { error: 'Missing or invalid required field: message' }
-  }
-
-  // Sanitize and validate all fields
-  const validated = {
-    message: body.message
-      .substring(0, limitsConfig.errorReport.maxMessageLength)
-      .trim(),
-    stack:
-      typeof body.stack === 'string'
-        ? body.stack
-            .substring(0, limitsConfig.errorReport.maxStackLength)
-            .trim()
-        : undefined,
-    component:
-      typeof body.component === 'string'
-        ? body.component
-            .substring(0, limitsConfig.errorReport.maxComponentLength)
-            .trim()
-        : undefined,
-    severity: ALLOWED_SEVERITIES.includes(
-      body.severity as (typeof ALLOWED_SEVERITIES)[number]
-    )
-      ? (body.severity as (typeof ALLOWED_SEVERITIES)[number])
-      : 'error',
-    url:
-      typeof body.url === 'string'
-        ? body.url.substring(0, limitsConfig.errorReport.maxUrlLength).trim()
-        : undefined,
-  }
-
-  // Additional validation for URL format if provided
-  if (validated.url) {
-    try {
-      new URL(validated.url)
-    } catch {
-      validated.url = undefined
-    }
-  }
-
-  return { data: validated }
-}
+import { errorReportSchema } from '~/server/utils/validation-schemas'
 
 /**
  * API endpoint for client-side error reporting
@@ -80,13 +28,16 @@ export default defineEventHandler(async event => {
     const body = await readBody(event)
     const errorTracker = createErrorTracker()
 
-    // Validate and sanitize all input fields
-    const validation = validateErrorReport(body)
-    if (validation.error) {
-      return sendBadRequestError(event, validation.error)
+    // Validate input using Zod schema for consistency with other API routes
+    const validation = errorReportSchema.safeParse(body)
+    if (!validation.success) {
+      const errorMessage = validation.error.issues
+        .map(issue => `${issue.path.join('.')}: ${issue.message}`)
+        .join(', ')
+      return sendBadRequestError(event, errorMessage)
     }
 
-    const validatedData = validation.data!
+    const validatedData = validation.data
 
     // Get client info from request
     const rawIp =
