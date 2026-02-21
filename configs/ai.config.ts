@@ -73,10 +73,34 @@ const parseEnabledProviders = (envValue: string | undefined): AIProvider[] => {
 }
 
 /**
+ * ai-agent-engineer: Standardized boolean environment variable parser
+ * Ensures consistent behavior across all boolean config flags
+ * @param envValue - The environment variable value
+ * @param defaultValue - Default value when env var is undefined or invalid
+ * @returns Parsed boolean value
+ */
+const parseBooleanEnv = (
+  envValue: string | undefined,
+  defaultValue: boolean
+): boolean => {
+  if (envValue === undefined || envValue === '') {
+    return defaultValue
+  }
+  const normalized = envValue.toLowerCase().trim()
+  if (normalized === 'true' || normalized === '1' || normalized === 'yes') {
+    return true
+  }
+  if (normalized === 'false' || normalized === '0' || normalized === 'no') {
+    return false
+  }
+  return defaultValue
+}
+
+/**
  * OpenAI Provider Configuration
  */
 const openaiConfig: AIProviderConfig = {
-  enabled: process.env.AI_OPENAI_ENABLED !== 'false',
+  enabled: parseBooleanEnv(process.env.AI_OPENAI_ENABLED, true),
   apiKeyEnvVar: 'OPENAI_API_KEY',
   baseUrl: process.env.AI_OPENAI_BASE_URL || 'https://api.openai.com/v1',
   defaultModel: process.env.AI_OPENAI_DEFAULT_MODEL || 'gpt-4-turbo-preview',
@@ -94,7 +118,7 @@ const openaiConfig: AIProviderConfig = {
  * Anthropic Provider Configuration
  */
 const anthropicConfig: AIProviderConfig = {
-  enabled: process.env.AI_ANTHROPIC_ENABLED === 'true',
+  enabled: parseBooleanEnv(process.env.AI_ANTHROPIC_ENABLED, false),
   apiKeyEnvVar: 'ANTHROPIC_API_KEY',
   baseUrl: process.env.AI_ANTHROPIC_BASE_URL || 'https://api.anthropic.com/v1',
   defaultModel:
@@ -114,7 +138,7 @@ const anthropicConfig: AIProviderConfig = {
  * Google AI Provider Configuration
  */
 const googleConfig: AIProviderConfig = {
-  enabled: process.env.AI_GOOGLE_ENABLED === 'true',
+  enabled: parseBooleanEnv(process.env.AI_GOOGLE_ENABLED, false),
   apiKeyEnvVar: 'GOOGLE_AI_API_KEY',
   baseUrl:
     process.env.AI_GOOGLE_BASE_URL ||
@@ -149,7 +173,7 @@ const defaultPromptConfig: PromptTemplateConfig = {
   systemPrompt:
     process.env.AI_DEFAULT_SYSTEM_PROMPT || 'You are a helpful assistant.',
   maxContextLength: parseInt(process.env.AI_MAX_CONTEXT_LENGTH || '8192'),
-  includeHistory: process.env.AI_INCLUDE_HISTORY !== 'false',
+  includeHistory: parseBooleanEnv(process.env.AI_INCLUDE_HISTORY, true),
   historyWindowSize: parseInt(process.env.AI_HISTORY_WINDOW_SIZE || '10'),
 }
 
@@ -160,14 +184,19 @@ export const aiConfig = {
   // Feature flags
   features: {
     /** Enable AI-powered search */
-    searchEnabled: process.env.AI_SEARCH_ENABLED === 'true',
+    searchEnabled: parseBooleanEnv(process.env.AI_SEARCH_ENABLED, false),
     /** Enable AI-powered recommendations */
-    recommendationsEnabled: process.env.AI_RECOMMENDATIONS_ENABLED === 'true',
+    recommendationsEnabled: parseBooleanEnv(
+      process.env.AI_RECOMMENDATIONS_ENABLED,
+      false
+    ),
     /** Enable AI-powered content generation */
-    contentGenerationEnabled:
-      process.env.AI_CONTENT_GENERATION_ENABLED === 'true',
+    contentGenerationEnabled: parseBooleanEnv(
+      process.env.AI_CONTENT_GENERATION_ENABLED,
+      false
+    ),
     /** Enable AI-powered chat */
-    chatEnabled: process.env.AI_CHAT_ENABLED === 'true',
+    chatEnabled: parseBooleanEnv(process.env.AI_CHAT_ENABLED, false),
   },
 
   // Enabled providers
@@ -203,7 +232,7 @@ export const aiConfig = {
   // Caching
   caching: {
     /** Enable response caching */
-    enabled: process.env.AI_CACHE_ENABLED !== 'false',
+    enabled: parseBooleanEnv(process.env.AI_CACHE_ENABLED, true),
     /** Cache TTL in seconds */
     ttlSeconds: parseInt(process.env.AI_CACHE_TTL_SECONDS || '3600'),
     /** Maximum cache size in bytes */
@@ -213,22 +242,22 @@ export const aiConfig = {
   // Error handling
   errorHandling: {
     /** Enable fallback to secondary provider */
-    enableFallback: process.env.AI_ENABLE_FALLBACK === 'true',
+    enableFallback: parseBooleanEnv(process.env.AI_ENABLE_FALLBACK, false),
     /** Fallback provider */
     fallbackProvider:
       (process.env.AI_FALLBACK_PROVIDER as AIProvider) || 'openai',
     /** Log errors to monitoring */
-    logErrors: process.env.AI_LOG_ERRORS !== 'false',
+    logErrors: parseBooleanEnv(process.env.AI_LOG_ERRORS, true),
   },
 
   // Analytics
   analytics: {
     /** Track AI usage metrics */
-    trackUsage: process.env.AI_TRACK_USAGE !== 'false',
+    trackUsage: parseBooleanEnv(process.env.AI_TRACK_USAGE, true),
     /** Track token consumption */
-    trackTokens: process.env.AI_TRACK_TOKENS !== 'false',
+    trackTokens: parseBooleanEnv(process.env.AI_TRACK_TOKENS, true),
     /** Track latency */
-    trackLatency: process.env.AI_TRACK_LATENCY !== 'false',
+    trackLatency: parseBooleanEnv(process.env.AI_TRACK_LATENCY, true),
   },
 } as const
 
