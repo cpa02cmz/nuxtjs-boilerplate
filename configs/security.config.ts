@@ -350,10 +350,16 @@ export function getSecurityHeaders(
     allowedOrigin = securityConfig.cors.allowedOrigins.find(
       origin => origin.toLowerCase().trim() === normalizedRequestOrigin
     )
-  }
-
-  // Fall back to first configured origin if request origin not in allowed list
-  if (!allowedOrigin) {
+    // Security Engineer FIX: Do NOT fall back to first origin for unauthorized origins
+    // This prevents CORS bypass attacks (CWE-942) where malicious origins get access
+    if (!allowedOrigin) {
+      console.warn(
+        `[Security] CORS: Rejected unauthorized origin: ${requestOrigin}`
+      )
+    }
+  } else {
+    // Same-origin request (no Origin header): use first configured origin
+    // This maintains backward compatibility for same-origin requests
     allowedOrigin = securityConfig.cors.allowedOrigins[0]
   }
 
