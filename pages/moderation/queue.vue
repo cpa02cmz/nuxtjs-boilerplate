@@ -110,6 +110,7 @@ import { contentConfig } from '~/configs/content.config'
 import { animationConfig } from '~/configs/animation.config'
 import { uiTimingConfig } from '~/configs/ui-timing.config'
 import { componentColorsConfig } from '~/configs/component-colors.config'
+import { zIndexScale } from '~/configs/z-index.config'
 
 definePageMeta({
   layout: 'default',
@@ -248,7 +249,8 @@ onUnmounted(() => {
   inset: 0;
   background: v-bind('componentColorsConfig.moderationQueue.modalOverlay');
   backdrop-filter: blur(4px);
-  z-index: 50;
+  /* Flexy hates hardcoded z-index! Using zIndexScale */
+  z-index: v-bind('zIndexScale.medium[50]');
   display: flex;
   align-items: center;
   justify-content: center;
@@ -423,7 +425,8 @@ onUnmounted(() => {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
-  z-index: 40;
+  /* Flexy hates hardcoded z-index! Using zIndexScale */
+  z-index: v-bind('zIndexScale.medium[40]');
   animation: hint-slide-in
     v-bind('animationConfig.moderationQueue.hintSlideInDurationSec') ease-out;
 }
