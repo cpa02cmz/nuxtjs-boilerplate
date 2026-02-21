@@ -458,6 +458,7 @@ export const componentColorsConfig = {
       disabledBg: process.env.HEALTH_BTN_DISABLED_BG || '#9ca3af',
       text: process.env.HEALTH_BTN_TEXT || 'white',
       borderRadius: process.env.HEALTH_BTN_RADIUS || '0.375rem',
+      focusRing: process.env.HEALTH_BTN_FOCUS_RING || 'rgba(59, 130, 246, 0.3)',
     },
     status: {
       healthy: {
