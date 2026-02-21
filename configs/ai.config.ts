@@ -103,10 +103,16 @@ const openaiConfig: AIProviderConfig = {
   enabled: parseBooleanEnv(process.env.AI_OPENAI_ENABLED, true),
   apiKeyEnvVar: 'OPENAI_API_KEY',
   baseUrl: process.env.AI_OPENAI_BASE_URL || 'https://api.openai.com/v1',
-  defaultModel: process.env.AI_OPENAI_DEFAULT_MODEL || 'gpt-4-turbo-preview',
+  defaultModel: process.env.AI_OPENAI_DEFAULT_MODEL || 'gpt-4o-mini',
   models: [
-    'gpt-4-turbo-preview',
+    // GPT-4o series (current generation)
+    'gpt-4o',
+    'gpt-4o-mini',
+    // GPT-4 Turbo
+    'gpt-4-turbo',
+    // GPT-4 legacy
     'gpt-4',
+    // GPT-3.5
     'gpt-3.5-turbo',
     'gpt-3.5-turbo-16k',
   ],
@@ -158,7 +164,7 @@ const googleConfig: AIProviderConfig = {
  * Default Model Configuration
  */
 const defaultModelConfig: AIModelConfig = {
-  model: process.env.AI_DEFAULT_MODEL || 'gpt-4-turbo-preview',
+  model: process.env.AI_DEFAULT_MODEL || 'gpt-4o-mini',
   maxTokens: parseInt(process.env.AI_DEFAULT_MAX_TOKENS || '4096'),
   temperature: parseFloat(process.env.AI_DEFAULT_TEMPERATURE || '0.7'),
   topP: parseFloat(process.env.AI_DEFAULT_TOP_P || '1.0'),
