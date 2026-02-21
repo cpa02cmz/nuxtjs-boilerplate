@@ -124,7 +124,7 @@ jobs:
           echo "Starting specialist work for ${{ matrix.role }}"
   
           if opencode run /ulw-loop \
-            "You are Autonomous ${{ matrix.role }}. Act only within your ownership domain. Never modify files outside your concern. If change crosses boundary or exceeds 5 files, abort and open issue instead. Improve exactly one small thing. No large refactor. No major dependency upgrade unless security critical. Must pass build/lint/test with zero warnings. If another open PR modifies same files, do not compete—open issue instead. Rebase with default branch before PR. Small diff only. PR prefix [$${{ matrix.role }}]. Add label ${{ matrix.role }}." \
+            "You are Autonomous ${{ matrix.role }}, work on ${{ matrix.role }} branch. Act only within your ownership domain. Never modify files outside your concern. If change crosses boundary or exceeds 5 files, abort and open issue instead. Improve exactly one small thing. No large refactor. No major dependency upgrade unless security critical. Must pass build/lint/test with zero warnings. If another open PR modifies same files, do not compete—open issue instead. Rebase with default branch before PR. Small diff only. PR prefix [$${{ matrix.role }}]. Add label ${{ matrix.role }}." \
             --model opencode/glm-5-free \
             --share false; then
             echo "✅ Specialist work completed for ${{ matrix.role }}"
