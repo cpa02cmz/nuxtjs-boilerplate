@@ -64,7 +64,9 @@ export interface MagneticInstance {
  * </template>
  * ```
  */
-export function useMagneticButton(options: MagneticOptions = {}) {
+export function useMagneticButton(
+  options: MagneticOptions = {}
+): MagneticInstance {
   // Merge options with defaults from config
   const config = {
     strength: options.strength ?? animationConfig.magneticButton.strength,
