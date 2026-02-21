@@ -33,7 +33,7 @@ A clear and concise description of what actually happened.
 
 - **OS**: [e.g. macOS 13.0, Windows 11, Ubuntu 22.04]
 - **Browser**: [e.g. Chrome 108, Firefox 107, Safari 16]
-- **Node.js Version**: [e.g. 18.12.1]
+- **Node.js Version**: [e.g. 20.19.0]
 - **Nuxt Version**: [e.g. 3.8.2]
 - **Package Manager**: [e.g. pnpm 7.26.1, npm 8.19.2]
 
